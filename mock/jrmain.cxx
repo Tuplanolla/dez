@@ -3,6 +3,8 @@
 #include "jrdec.hxx"
 
 int main() {
+  std::cout << "Greetings from C++." << std::endl;
+
   std::cout << crunch(42, 13) << std::endl;
 
   mpz_class const xc = 42;

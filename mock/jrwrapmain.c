@@ -3,6 +3,8 @@
 #include "jrwrapper.h"
 
 int main(void) {
+  (void) printf("%s\n", "Greetings from C.");
+
   (void) printf("%d\n", crunch_wrap(42, 13));
 
   unsigned char x[] = {0, 42};

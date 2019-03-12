@@ -1,3 +1,11 @@
+all: bridge jr jrwrapmod bridgemod jrmod dec jrwrap
+
+clean: clean-dec clean-jrwrap clean-jr clean-jrwrapmod clean-bridge clean-jrmod
+
+dec:
+	coqc DEC.v
+	echo coqchk DEC.vo > DEC.log
+
 jrwrapmod:
 	g++ -c -fPIC jrdec.cxx
 	g++ -c -fPIC jrwrapper.cxx
@@ -30,24 +38,47 @@ jr:
 	g++ -o jrmain jrdec.o jrmain.o -lgmpxx -lgmp
 	./jrmain
 
-dec:
-	coqc DEC.v
-	echo coqchk DEC.vo > DEC.log
+bridgemod: jrwrapmod
+	ocamlfind ocamlopt -c jrstub.c
+	ocamlfind ocamlopt -c jr_driver.mli
+	ocamlfind ocamlopt -c jr_driver.ml
 	ocamlfind ocamlopt -c dec.mli
 	ocamlfind ocamlopt -c dec.ml
-
-bridge:
 	ocamlfind ocamlopt -c -package num main.ml
-	ocamlfind ocamlopt -linkpkg -o main -package num dec.cmx main.cmx
+	# If `jrdec.so` is not installed, specify `-L.` as follows.
+	ocamlfind ocamlopt -linkpkg -o main -package num \
+	-ccopt -L. \
+	jrstub.o jr_driver.cmx \
+	-cclib -ljrdec -cclib -lgmpxx -cclib -lgmp -cclib -lstdc++ -cclib -lm \
+	dec.cmx main.cmx
+	# If `jrdec.so` is not installed, specify `LD_LIBRARY_PATH=.` as follows.
+	LD_LIBRARY_PATH=. ./main
+
+bridge: jrwrap
+	ocamlfind ocamlopt -c jrstub.c
+	ocamlfind ocamlopt -c jr_driver.mli
+	ocamlfind ocamlopt -c jr_driver.ml
+	ocamlfind ocamlopt -c dec.mli
+	ocamlfind ocamlopt -c dec.ml
+	ocamlfind ocamlopt -c -package num main.ml
+	ocamlfind ocamlopt -linkpkg -o main -package num \
+	jrdec.o jrwrapper.o jrstub.o jr_driver.cmx \
+	-cclib -lgmpxx -cclib -lgmp -cclib -lstdc++ -cclib -lm \
+	dec.cmx main.cmx
 	./main
 
-clean-dec:
-	$(RM) DEC.glob DEC.vo dec.ml dec.mli
-	$(RM) DEC.log
+clean-bridgemod: clean-jrwrapmod
+	$(RM) jrstub.o
+	$(RM) jr_driver.cmi jr_driver.cmx jr_driver.o
 	$(RM) dec.cmi dec.cmx dec.o
+	$(RM) main.cmi main.cmx main.o
+	$(RM) main
 
-clean-bridge:
-	$(RM) main.cmx main.o main.cmi
+clean-bridge: clean-jrwrap
+	$(RM) jrstub.o
+	$(RM) jr_driver.cmi jr_driver.cmx jr_driver.o
+	$(RM) dec.cmi dec.cmx dec.o
+	$(RM) main.cmi main.cmx main.o
 	$(RM) main
 
 clean-jr:
@@ -73,3 +104,7 @@ clean-jrwrapmod:
 	$(RM) libjrdec.so
 	$(RM) jrwrapmain.o
 	$(RM) jrwrapmain
+
+clean-dec:
+	$(RM) DEC.glob DEC.vo dec.mli dec.ml
+	$(RM) DEC.log
