@@ -6,3 +6,7 @@
 *.o
 *.so
 *.vo
+jrmain
+main
+spec.mli
+spec.ml

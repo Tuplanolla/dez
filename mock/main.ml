@@ -1,7 +1,6 @@
 (** DEC Executable OCaml Implementation *)
 
 open Big_int
-open Char
 open Obj
 open Spec
 

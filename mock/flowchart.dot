@@ -1,0 +1,255 @@
+digraph flowchart {
+  rankdir = LR
+
+  graph [fontname = sans]
+  node [fontname = monospace]
+
+  /*
+  subgraph cluster_c {
+    label = "C"
+
+    node [peripheries = 2, shape = box]
+
+    stddef_h [label = "stddef.h"]
+    stdlib_h [label = "stdlib.h"]
+    libc_so [label = "libc.so"]
+    libdl_so [label = "libdl.so"]
+    libm_so [label = "libm.so"]
+  }
+
+  subgraph cluster_cxx {
+    label = "C++"
+
+    node [peripheries = 2, shape = box]
+
+    algorithm [label = "algorithm"]
+    cstring [label = "cstring"]
+    iostream [label = "iostream"]
+    libstdcxx_so [label = "libstdc++.so"]
+  }
+
+  subgraph cluster_ocaml {
+    label = "OCaml"
+
+    node [peripheries = 2, shape = box]
+
+    caml_alloc_h [label = "caml/alloc.h"]
+    caml_fail_h [label = "caml/fail.h"]
+    caml_memory_h [label = "caml/memory.h"]
+    caml_mlvalues_h [label = "caml/mlvalues.h"]
+  }
+
+  subgraph cluster_gmp {
+    label = "GMP"
+
+    node [peripheries = 2, shape = box]
+
+    gmpxx_h [label = "gmpxx.h"]
+    libgmp_so [label = "libgmp.so"]
+    libgmpxx_so [label = "libgmpxx.so"]
+  }
+  */
+
+  subgraph cluster_dec {
+    label = "DEC"
+
+    node [peripheries = 2, shape = box]
+
+    stubjr_c [label = "stubjr.c"]
+    stubjr_h [label = "stubjr.h"]
+    driver_jr_ml [label = "driver_jr.ml"]
+    driver_jr_mli [label = "driver_jr.mli"]
+    spec_v [label = "Spec.v"]
+    adapter_ml [label = "adapter.ml"]
+    adapter_mli [label = "adapter.mli"]
+    main_ml [label = "main.ml"]
+
+    node [peripheries = 1]
+
+    stubjr_o [label = "stubjr.o"]
+    driver_jr_cmi [label = "driver_jr.cmi"]
+    driver_jr_cmx [label = "driver_jr.cmx"]
+    driver_jr_o [label = "driver_jr.o"]
+    spec_vo [label = "Spec.vo"]
+    spec_glob [label = "Spec.glob"]
+    spec_mli [label = "spec.mli"]
+    spec_ml [label = "spec.ml"]
+    spec_cmi [label = "spec.cmi"]
+    spec_cmx [label = "spec.cmx"]
+    spec_o [label = "spec.o"]
+    adapter_cmi [label = "adapter.cmi"]
+    adapter_cmx [label = "adapter.cmx"]
+    adapter_o [label = "adapter.o"]
+    main_cmi [label = "main.cmi"]
+    main_cmx [label = "main.cmx"]
+    main_o [label = "main.o"]
+
+    node [peripheries = 2]
+
+    spec_log [label = "Spec.log"]
+    main [label = "main"]
+
+    node [peripheries = 1, shape = oval]
+
+    coqc_0 [label = "coqc"]
+    coqchk_0 [label = "coqchk"]
+    ocamlopt_0 [label = "ocamlopt/gcc"]
+    ocamlopt_1 [label = "ocamlopt"]
+    ocamlopt_2 [label = "ocamlopt"]
+    ocamlopt_3 [label = "ocamlopt"]
+    ocamlopt_4 [label = "ocamlopt"]
+    ocamlopt_5 [label = "ocamlopt"]
+    ocamlopt_6 [label = "ocamlopt"]
+    ocamlopt_7 [label = "ocamlopt"]
+    ocamlopt_8 [label = "ocamlopt/ld"]
+  }
+
+  subgraph cluster_jr {
+    label = "JR"
+
+    node [peripheries = 2, shape = box]
+
+    jrlib_hxx [label = "jrlib.hxx"]
+    jrlib_cxx [label = "jrlib.cxx"]
+    jrwrap_hx [label = "jrwrap.hx"]
+    jrwrap_cxx [label = "jrwrap.cxx"]
+    jrmain_cxx [label = "jrmain.cxx"]
+
+    node [peripheries = 1]
+
+    jrlib_o [label = "jrlib.o"]
+    jrwrap_o [label = "jrwrap.o"]
+    jrmain_o [label = "jrmain.o"]
+
+    node [peripheries = 2]
+
+    libjrlib_so [label = "libjrlib.so"]
+    jrmain [label = "jrmain"]
+
+    node [peripheries = 1, shape = oval]
+
+    gxx_0 [label = "g++"]
+    gxx_1 [label = "g++"]
+    gxx_2 [label = "g++/ld"]
+    gxx_3 [label = "g++"]
+    gxx_4 [label = "g++/ld"]
+  }
+
+  edge [style = solid]
+
+  jrlib_hxx -> gxx_0
+  jrlib_cxx -> gxx_0
+  gxx_0 -> jrlib_o
+
+  jrlib_hxx -> gxx_1
+  jrwrap_hx -> gxx_1
+  jrwrap_cxx -> gxx_1
+  gxx_1 -> jrwrap_o
+
+  jrlib_o -> gxx_2
+  jrwrap_o -> gxx_2
+  gxx_2 -> libjrlib_so
+
+  jrlib_hxx -> gxx_3
+  jrmain_cxx -> gxx_3
+  gxx_3 -> jrmain_o
+
+  libjrlib_so -> gxx_4
+  jrmain_o -> gxx_4
+  gxx_4 -> jrmain
+
+  spec_v -> coqc_0
+  coqc_0 -> spec_vo
+  coqc_0 -> spec_glob
+  coqc_0 -> spec_mli
+  coqc_0 -> spec_ml
+
+  spec_vo -> coqchk_0
+  coqchk_0 -> spec_log
+
+  jrwrap_hx -> ocamlopt_0
+  stubjr_h -> ocamlopt_0
+  stubjr_c -> ocamlopt_0
+  ocamlopt_0 -> stubjr_o
+
+  driver_jr_mli -> ocamlopt_1
+  ocamlopt_1 -> driver_jr_cmi
+
+  driver_jr_cmi -> ocamlopt_2
+  driver_jr_ml -> ocamlopt_2
+  ocamlopt_2 -> driver_jr_cmx
+  ocamlopt_2 -> driver_jr_o
+
+  spec_mli -> ocamlopt_3
+  ocamlopt_3 -> spec_cmi
+
+  spec_cmi -> ocamlopt_4
+  spec_ml -> ocamlopt_4
+  ocamlopt_4 -> spec_cmx
+  ocamlopt_4 -> spec_o
+
+  adapter_mli -> ocamlopt_5
+  ocamlopt_5 -> adapter_cmi
+
+  adapter_cmi -> ocamlopt_6
+  adapter_ml -> ocamlopt_6
+  ocamlopt_6 -> adapter_cmx
+  ocamlopt_6 -> adapter_o
+
+  main_ml -> ocamlopt_7
+  ocamlopt_7 -> main_cmi
+  ocamlopt_7 -> main_cmx
+  ocamlopt_7 -> main_o
+
+  libjrlib_so -> ocamlopt_8
+  stubjr_o -> ocamlopt_8
+  driver_jr_cmx -> ocamlopt_8
+  driver_jr_o -> ocamlopt_8
+  spec_cmx -> ocamlopt_8
+  spec_o -> ocamlopt_8
+  adapter_cmx -> ocamlopt_8
+  adapter_o -> ocamlopt_8
+  main_cmx -> ocamlopt_8
+  main_o -> ocamlopt_8
+  ocamlopt_8 -> main
+
+  /*
+  edge [style = dashed]
+
+  gmpxx_h -> gxx_0
+
+  algorithm -> gxx_1
+  cstring -> gxx_1
+  gmpxx_h -> gxx_1
+
+  libc_so -> gxx_2
+  libgmp_so -> gxx_2
+  libgmpxx_so -> gxx_2
+  libm_so -> gxx_2
+  libstdcxx_so -> gxx_2
+
+  gmpxx_h -> gxx_3
+  iostream -> gxx_3
+
+  libc_so -> gxx_4
+  libdl_so -> gxx_4
+  libgmp_so -> gxx_4
+  libgmpxx_so -> gxx_4
+  libm_so -> gxx_4
+  libstdcxx_so -> gxx_4
+
+  caml_alloc_h -> ocamlopt_0
+  caml_fail_h -> ocamlopt_0
+  caml_memory_h -> ocamlopt_0
+  caml_mlvalues_h -> ocamlopt_0
+  stddef_h -> ocamlopt_0
+  stdlib_h -> ocamlopt_0
+
+  libc_so -> ocamlopt_8
+  libdl_so -> ocamlopt_8
+  libgmp_so -> ocamlopt_8
+  libgmpxx_so -> ocamlopt_8
+  libstdcxx_so -> ocamlopt_8
+  libm_so -> ocamlopt_8
+  */
+}

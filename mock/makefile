@@ -6,7 +6,7 @@
 # by the function $(r, t) \mapsto r^3 \cos (3 t)$ in polar coordinates or
 # by the function $(x, y) \mapsto x^3 - 3 x y^2$ in Cartesian coordinates.
 
-all: build-jr1 build-jr2 build-dec
+build: build-jr1 build-jr2 build-dec
 
 clean: clean-dec clean-jr2 clean-jr1
 
@@ -30,15 +30,16 @@ clean-jr1:
 
 build-jr2:
 	g++ -c -fPIC jrlib.cxx
-	g++ -o libjrlib.so -shared jrlib.o
+	g++ -o libjrlib.so -shared jrlib.o -lgmpxx -lgmp
 	# As JR was designed well in the first place, with reentrancy in mind,
 	# the same old executable still works without modifications.
 	g++ -c jrmain.cxx
 	# Since `jrlib.so` is not installed system-wide,
-	# we specify `LIBRARY_PATH=.` and `LD_LIBRARY_PATH=.` as follows.
-	# Using `-L.` or such would also work.
-	LIBRARY_PATH=. g++ -o jrmain jrmain.o -ljrlib -lgmpxx -lgmp
-	LD_LIBRARY_PATH=. ./jrmain
+	# we specify `LIBRARY_PATH=.` and `LD_LIBRARY_PATH=.` equivalents as follows.
+	# LIBRARY_PATH=. g++ -o jrmain jrmain.o -ljrlib -lgmpxx -lgmp
+	# LD_LIBRARY_PATH=. ./jrmain
+	g++ -L. -Wl,-rpath=. -o jrmain jrmain.o -ljrlib -lgmpxx -lgmp
+	./jrmain
 
 clean-jr2:
 	$(RM) jrlib.o
@@ -50,14 +51,16 @@ clean-jr2:
 # we write a C wrapper for JR and include it in the library as well.
 
 build-jr3:
+	g++ -c -fPIC jrlib.cxx
 	g++ -c -fPIC jrwrap.cxx
-	g++ -o libjrlib.so -shared jrlib.o jrwrap.o
-	# We compile the original executable without the wrapper.
+	g++ -o libjrlib.so -shared jrlib.o jrwrap.o -lgmpxx -lgmp
+	# We can still compile the original executable without using the wrapper.
 	g++ -c jrmain.cxx
-	LIBRARY_PATH=. g++ -o jrmain jrmain.o -ljrlib -lgmpxx -lgmp
-	LD_LIBRARY_PATH=. ./jrmain
+	g++ -L. -Wl,-rpath=. -o jrmain jrmain.o -ljrlib -lgmpxx -lgmp
+	./jrmain
 
 clean-jr3:
+	$(RM) jrlib.o
 	$(RM) jrwrap.o
 	$(RM) libjrlib.so
 	$(RM) jrmain.o
@@ -95,11 +98,12 @@ build-dec: build-jr3 build-spec
 	ocamlfind ocamlopt -c -package num adapter.ml
 	ocamlfind ocamlopt -c -package num main.ml
 	# All we have to do is link now.
-	LIBRARY_PATH=. ocamlfind ocamlopt -linkpkg -o main -package num \
-	stubjr.o driver_jr.cmx \
-	-cclib -ljrlib -cclib -lgmpxx -cclib -lgmp -cclib -lstdc++ -cclib -lm \
-	spec.cmx adapter.cmx main.cmx
-	LD_LIBRARY_PATH=. ./main
+	# Note that `jrlib` requires `gmp` and `gmpxx`.
+	# Argument order also matters in the usual linker fashion.
+	ocamlfind ocamlopt -linkpkg -o main -package num \
+	stubjr.o driver_jr.cmx spec.cmx adapter.cmx main.cmx \
+	-ccopt -L. -ccopt -Wl,-rpath=. -cclib -ljrlib -cclib -lgmpxx -cclib -lgmp
+	./jrmain
 
 clean-dec: clean-spec clean-jr3
 	$(RM) stubjr.o
@@ -108,14 +112,3 @@ clean-dec: clean-spec clean-jr3
 	$(RM) adapter.cmi adapter.cmx adapter.o
 	$(RM) main.cmi main.cmx main.o
 	$(RM) main
-
-# @conference{peckham-2011,
-#   author = {S. D. Peckham},
-#   title = {Monkey, Starfish and Octopus Saddles},
-#   date = {2011-05-30},
-#   editor = {T. Hengl and I. S. Evans and J. P. Wilson and M. Gould},
-#   booktitle = {Geomorphometry 2011},
-#   pages = {31--34},
-#   location = {Redlands, California, USA},
-#   url = {http://geomorphometry.org/Peckham2011b},
-# }

@@ -1,7 +1,6 @@
 (** DEC Library OCaml Implementation *)
 
 open Big_int
-open Char
 open Spec
 
 let quomod_big_int_int x y =
