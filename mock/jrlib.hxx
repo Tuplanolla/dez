@@ -1,16 +1,16 @@
 /** JR Library C++ Interface */
 
-#ifndef JRDEC_HXX
-#define JRDEC_HXX
+#ifndef JRLIB_HXX
+#define JRLIB_HXX
 
 #include <gmpxx.h>
 
-/** Quickly evaluate a point on the monkey saddle in cartesian coordinates.
+/** Quickly evaluate a point on the monkey saddle in Cartesian coordinates.
 
     If the result would overflow, then the behavior is undefined. */
 int monkey_saddle_unsafe(int, int);
 
-/** Evaluate a point on the monkey saddle in cartesian coordinates.
+/** Evaluate a point on the monkey saddle in Cartesian coordinates.
 
     If memory allocation fails, then the program will terminate.
     Ideally an exception would be thrown,

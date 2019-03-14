@@ -1,7 +1,7 @@
 /** JR Library C++ Implementation */
 
 #include <gmpxx.h>
-#include "jrdec.hxx"
+#include "jrlib.hxx"
 
 int monkey_saddle_unsafe(int const x, int const y) {
   /** We factor $x^3 - 3 x y^2$ into $x (x^2 - 3 y^2)$,
@@ -14,6 +14,7 @@ int monkey_saddle_unsafe(int const x, int const y) {
 mpz_class monkey_saddle(mpz_class const xc, mpz_class const yc) {
   /** Even though it is not necessary to use `mpz_pow_ui` here,
       we do so anyway to have an excuse to reach around the class interface. */
+
   mpz_class x2c;
   mpz_pow_ui(x2c.get_mpz_t(), xc.get_mpz_t(), 2);
 

@@ -3,7 +3,7 @@
 From Coq Require Extraction.
 From Coq Require ZArith.
 
-Module DEC.
+Module Dec.
 
 Import ZArith.
 Import Z.
@@ -31,6 +31,6 @@ Proof.
     rewrite abs_mul in Hl. rewrite He0 in Hl. admit.
   - admit. Admitted.
 
-End DEC.
+End Dec.
 
-Extraction "dec.ml" DEC.
+Extraction "spec.ml" Dec.
