@@ -86,7 +86,8 @@ digraph flow {
 
     node [peripheries = 2]
 
-    spec_log [label = "Spec.log"]
+    spec_out_log [label = "Spec.out.log"]
+    spec_err_log [label = "Spec.err.log"]
     main [label = "main"]
 
     node [peripheries = 1, shape = oval]
@@ -165,7 +166,8 @@ digraph flow {
   coqc_0 -> spec_ml
 
   spec_vo -> coqchk_0
-  coqchk_0 -> spec_log
+  coqchk_0 -> spec_out_log
+  coqchk_0 -> spec_err_log
 
   jrwrap_hx -> ocamlopt_0
   stubjr_h -> ocamlopt_0

@@ -104,13 +104,14 @@ build-spec:
 	# The checking is disabled in this presentation,
 	# because it can take over a minute,
 	# while everything else in this file takes less than a second.
-	touch Spec.log # coqchk Spec.vo > Spec.log
+	touch Spec.out.log Spec.err.log \
+	# coqchk Spec.vo 1> Spec.out.log 2> Spec.err.log
 
 clean-spec:
 	$(RM) .Spec.aux Spec.vo Spec.glob spec.mli spec.ml
-	$(RM) Spec.log
+	$(RM) Spec.out.log Spec.err.log
 
-# ## Both Sides
+# ## Both Sides Together
 #
 # In order to bring DEC and JR together,
 # we do four things.
