@@ -1,4 +1,3 @@
-*.aux
 *.cmi
 *.cmx
 *.glob
@@ -6,7 +5,9 @@
 *.o
 *.so
 *.vo
+.*.aux
+flow.png
 jrmain
 main
-spec.mli
 spec.ml
+spec.mli

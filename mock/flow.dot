@@ -1,4 +1,4 @@
-digraph flowchart {
+digraph flow {
   rankdir = LR
 
   graph [fontname = sans]
