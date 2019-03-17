@@ -138,7 +138,19 @@ Proof.
   - apply abs_sub_triangle.
   - apply abs_opp_triangle. Qed.
 
+Lemma what : forall x y : Z,
+  (|(|x|) - (|y|)|) <= (|(|x|) + (|y|)|).
+Proof.
+  intros x y. eapply le_trans.
+  - apply abs_opp_rev_triangle.
+  - eapply le_trans.
+    + apply abs_triangle.
+    + apply abs_le_final. Qed.
+
 End Triangles.
+
+Lemma even_2 : Even 2.
+Proof. now exists 1. Qed.
 
 Theorem monkey_saddle_bounded_1 : forall a b x y : Z,
   (|x|) <= a -> (|y|) <= b ->
@@ -147,20 +159,29 @@ Proof.
   unfold monkey_saddle, monkey_saddle_bound_1.
   intros a b x y Hlxa Hlyb.
   apply abs_le_abs in Hlxa. apply abs_le_abs in Hlyb.
-  - rewrite abs_mul. eapply le_trans.
+  rewrite (abs_mul x _). eapply (le_trans _ _ _).
     + apply mul_le_mono_nonneg_l.
       * apply abs_nonneg.
-      * rewrite (pow_even_abs x). rewrite <- abs_pow.
-        rewrite (pow_even_abs y). rewrite <- abs_pow.
-        rewrite <- (abs_eq 3). rewrite <- abs_mul.
-        apply abs_opp_rev_triangle. omega. exists 1; omega. exists 1; omega.
-    + eapply le_trans.
+      * rewrite (pow_even_abs x 2) by apply even_2.
+        rewrite <- (abs_pow x 2).
+        rewrite (pow_even_abs y 2) by apply even_2.
+        rewrite <- (abs_pow y 2).
+        rewrite <- (abs_eq 3) by omega.
+        rewrite <- (abs_mul 3 _).
+        apply what.
+    + eapply (le_trans _ _ _).
       * apply mul_le_mono_nonneg_l.
         { apply abs_nonneg. }
         { apply abs_triangle. }
-      * rewrite mul_add_distr_l. rewrite abs_mul.
-        rewrite abs_pow. rewrite abs_pow.
-        rewrite (abs_eq 3). 2: omega. rewrite mul_shuffle3.
+      * rewrite (mul_add_distr_l _ _ _).
+        rewrite (abs_involutive _).
+        rewrite (abs_involutive _).
+        rewrite (abs_pow x 2).
+        rewrite (abs_mul 3 _).
+        rewrite (abs_pow y 2).
+        rewrite (abs_eq 3) by omega.
+        rewrite mul_shuffle3.
+        rewrite mul_assoc.
         ring_simplify.
         (* Notice.
         (|x|) ^ 3                         + 3 * (|x|) * (|y|) ^ 2             <=
@@ -200,85 +221,17 @@ Proof.
 
 Theorem monkey_saddle_bounded_2inf : forall a b x y : Z,
   (|x|) <= a -> (|y|) <= b ->
-  (|monkey_saddle x y|) <= monkey_saddle_bound_1 a b.
+  (|monkey_saddle x y|) <= monkey_saddle_bound_2inf a b.
 Proof.
   unfold monkey_saddle, monkey_saddle_bound_2inf.
   intros a b x y Hlxa Hlyb.
   apply abs_le_abs in Hlxa. apply abs_le_abs in Hlyb.
-  - destruct (max_spec (|a|) (|b|)) as [[Hlab He] | [Hlba He]];
-    rewrite He; clear He.
-    -- apply lt_le_incl in Hlab.
-    assert (Hlxb : (|x|) <= (|b|)) by omega. (* goal_le_l *)
-    replace (x ^ 2 - 3 * y ^ 2) with (x ^ 2 + y ^ 2 - 4 * y ^ 2).
-    rewrite abs_mul. eapply le_trans.
-    + apply mul_le_mono_nonneg_l.
-      * apply abs_nonneg.
-      * rewrite (pow_even_abs x). rewrite <- abs_pow.
-        rewrite (pow_even_abs y). rewrite <- abs_pow.
-        rewrite <- (abs_eq 4). rewrite <- abs_mul.
-        rewrite (abs_eq (x ^ 2)).
-        rewrite (abs_eq (y ^ 2)).
-        rewrite <- (abs_eq (x ^ 2 + y ^ 2)).
-        apply abs_rev_triangle.
-        rewrite (pow_even_abs x). rewrite <- abs_pow.
-        rewrite (pow_even_abs y). rewrite <- abs_pow.
-        eapply le_trans. 2: apply abs_triangle. apply abs_nonneg.
-        exists 1; omega. exists 1; omega.
-        rewrite (pow_even_abs y). rewrite <- abs_pow. apply abs_nonneg.
-        exists 1; omega.
-        rewrite (pow_even_abs x). rewrite <- abs_pow. apply abs_nonneg.
-        exists 1; omega.
-        omega. exists 1; omega. exists 1; omega.
-    + rewrite <- add_sub_assoc. eapply le_trans.
-      * apply mul_le_mono_nonneg_l.
-        { apply abs_nonneg. }
-        { replace (|x ^ 2 + (y ^ 2 - 4 * y ^ 2)|) with
-          (|(|x ^ 2 + 4 * y ^ 2|) - (|y ^ 2|)|).
-          apply abs_opp_triangle. shelve. }
-      * admit.
-    + admit.
-    -- assert (Hlya : (|y|) <= (|a|)) by omega. (* goal_le_r *)
-  (*
-  - rewrite abs_mul. eapply le_trans.
-    + apply mul_le_mono_nonneg_l.
-      * apply abs_nonneg.
-      * rewrite (pow_even_abs x). rewrite <- abs_pow.
-        rewrite (pow_even_abs y). rewrite <- abs_pow.
-        rewrite <- (abs_eq 3). rewrite <- abs_mul.
-        apply abs_add_triangle. omega. exists 1; omega. exists 1; omega.
-    + eapply le_trans.
-      * apply mul_le_mono_nonneg_l.
-        { apply abs_nonneg. }
-        { apply abs_triangle. }
-      * rewrite mul_add_distr_l. rewrite abs_mul.
-        rewrite abs_pow. rewrite abs_pow.
-        rewrite (abs_eq 3). 2: omega. rewrite mul_shuffle3.
-        destruct (max_spec (|a|) (|b|)) as [[Hl He] | [Hl He]]; rewrite He.
-        apply lt_le_incl in Hl.
-        1-2: ring_simplify.
-        (* Notice this requires a factor fo 2.
-        (|x|) ^ 3                         + 3 * (|x|) * (|y|) ^ 2             <=
-                       2 * (|b|) ^ 3
-        *)
-  *)
-  Admitted.
-
-(*
-import Test.QuickCheck
-
-monkey_saddle :: Integer -> Integer -> Integer
-monkey_saddle x y = x * (x ^ 2 - 3 * y ^ 2)
-
-goal_le_l =
-  \ (NonNegative a) (NonNegative b) (Small x) (Small y) ->
-  abs x <= a && abs y <= b && a <= b ==>
-  abs (x * (x ^ 2 - 3 * y ^ 2)) <= 2 * abs b ^ 3
-
-goal_le_r =
-  \ (NonNegative a) (NonNegative b) (Small x) (Small y) ->
-  abs x <= a && abs y <= b && b <= a ==>
-  abs (x * (x ^ 2 - 3 * y ^ 2)) <= 2 * abs a ^ 3
-*)
+  destruct (max_spec (|a|) (|b|)) as [[Hlab He] | [Hlba He]];
+  [apply lt_le_incl in Hlab |]; rewrite He; clear He.
+  - assert (Hlxb : (|x|) <= (|b|)) by omega.
+    admit.
+  - assert (Hlya : (|y|) <= (|a|)) by omega.
+    admit. Admitted.
 
 End Dec.
 
