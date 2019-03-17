@@ -6,8 +6,7 @@
 int monkey_saddle_unsafe(int const x, int const y) {
   /** We factor $x^3 - 3 x y^2$ into $x (x^2 - 3 y^2)$,
       because the factored expression has one fewer multiplication and
-      does not contain subexpressions that would overflow
-      when the whole expression would not. */
+      does not contain subexpressions that are prone to overflow. */
   return x * (x * x - 3 * (y * y));
 }
 

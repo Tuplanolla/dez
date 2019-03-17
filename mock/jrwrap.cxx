@@ -16,14 +16,18 @@ static void wrap_monkey_saddle_safe(mpz_t zt, mpz_t const xt, mpz_t const yt) {
 
 size_t wrap_monkey_saddle_buffer_size(size_t const nxb, size_t const nyb) {
   /** This estimate is derived as follows.
-      A buffer of size $n$ stores an integer
-      with at most $8$ bits for its sign and
-      $2^{8 (n - 1)}$ bits for its absolute value.
-      Since the monkey saddle is bounded from above and below
-      by $\pm \sqrt{x^2 + y^2}^3$,
-      it suffices to be able to store $\pm 2 (\max |x| |y|)^3$.
-      Thus, the number of bits needed for the sign is $8$ and
-      for the absolute value is $1 + 3 \max (\log |x|) (\log |y|)$. */
+
+      Since the monkey saddle is bounded
+      from above and below by $\sqrt{x^2 + y^2}^3$ and
+      it just so happens that $\sqrt{x^2 + y^2}^3 \le \sqrt 2 (\max |x| |y|)^3
+      \le 2 (\max |x| |y|)^3$,
+      it suffices to be able to store a number
+      with the magnitude $2 (\max |x| |y|)^3$.
+      Further, since
+      $\log (2 (\max |x| |y|)^3) = \log 2 + 3 \max (\log |x|) (\log |y|)
+      \le 1 + 3 \max (\log |x|) (\log |y|)$,
+      the number of bits needed
+      to do that is $1 + 3 \max (\log |x|) (\log |y|)$. */
   return nxb == 0 && nyb == 0 ? 0 : 1 + (1 + 3 * (std::max(nxb - 1, nyb - 1)));
 }
 

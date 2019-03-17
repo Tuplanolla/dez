@@ -4,7 +4,7 @@
 # through an OCaml program
 # extracted from a Coq specification.
 #
-# ## Exemplary Use Case
+# ## Mock Use Case
 #
 # In order to properly demonstrate the challenges involved,
 # we need a use case that is sufficiently complicated,
@@ -16,15 +16,15 @@
 # by the function $(r, t) \mapsto r^3 \cos (3 t)$ in polar coordinates or
 # by the function $(x, y) \mapsto x^3 - 3 x y^2$ in Cartesian coordinates.
 
-build: build-jr1 build-jr2 build-dec
+build: build-jr1 build-jr2 build-dec build-flow
 
-clean: clean-dec clean-jr2 clean-jr1
+clean: clean-flow clean-dec clean-jr2 clean-jr1
 
 # ## Numerical Side
 #
 # Suppose we have a numerical solver called JR
 # that evaluates integer points on the monkey saddle,
-# among other useful things.
+# among other things.
 # Since JR is written in C++ and
 # depends on the GNU Multiple Precision Arithmetic Library,
 # we can build it as follows.
@@ -45,7 +45,7 @@ clean-jr1:
 # put them into their own little library,
 # we also do so for JR.
 # This often requires a lot of work,
-# but because JR was designed well in the first place,
+# but since JR was designed well in the first place,
 # with thread-safety and reentrancy in mind,
 # the same old code works without modifications.
 
@@ -76,7 +76,7 @@ build-jr3:
 	g++ -c -fPIC jrlib.cxx
 	g++ -c -fPIC jrwrap.cxx
 	g++ -o libjrlib.so -shared jrlib.o jrwrap.o -lgmpxx -lgmp
-	# We can ignore the wrapper while compiling the old executable.
+	# We can ignore the wrapper when we compile the old executable.
 	# Link-time optimization should get rid of it anyway.
 	g++ -c jrmain.cxx
 	g++ -L. -Wl,-rpath=. -o jrmain jrmain.o -ljrlib -lgmpxx -lgmp
@@ -92,7 +92,7 @@ clean-jr3:
 # ## Analytical Side
 #
 # Our dependencies are now in order,
-# so we are free to move on to the formal specification,
+# so we can move on to the formal specification,
 # which we shall call DEC.
 # We write the specification in Coq and extract it into OCaml,
 # because it happens to be the language with the best support for extraction.
@@ -103,7 +103,7 @@ build-spec:
 	coqc Spec.v
 	# The checking is disabled in this presentation,
 	# because it can take over a minute,
-	# while everything else in this file takes less than a second.
+	# while everything else takes less than a second.
 	touch Spec.out.log Spec.err.log \
 	# coqchk Spec.vo 1> Spec.out.log 2> Spec.err.log
 
@@ -114,29 +114,25 @@ clean-spec:
 # ## Both Sides Together
 #
 # In order to bring DEC and JR together,
-# we do four things.
+# we do three things.
 #
 # First, we write an OCaml executable that handles all the input and output.
-# This would also be the part for less critical extra features,
+# This would also be the part for less critical features,
 # such as natural language parsers,
 # pretty printers or graphical user interfaces.
 #
 # Second, we write an OCaml adapter
 # that translates inhabitants of extracted types
 # into inhabitants of native types.
-# This is not mandatory and could also be done in Coq,
+# This is not mandatory and could also be done
+# with the extraction mechanism of Coq,
 # but doing it in OCaml is more convenient and
 # makes working with the extracted code much faster and easier.
 #
-# Third, we write an OCaml driver manager for DEC.
-# The purpose of the manager is to interact
-# with the C interfaces of various other libraries,
-# whatever languages those libraries may be written in.
-#
-# Fourth, we write an OCaml driver for JR and
-# integrate it into the driver manager.
+# Third, we write an OCaml driver for JR and
+# integrate it into the executable.
 # This step also involves writing a C stub
-# that handles the memory management between the C interface and OCaml.
+# that handles the memory management between C and OCaml.
 
 build-dec: build-jr3 build-spec
 	# This is the driver.
@@ -146,12 +142,12 @@ build-dec: build-jr3 build-spec
 	# This is the extracted code.
 	ocamlfind ocamlopt -c spec.mli
 	ocamlfind ocamlopt -c spec.ml
-	# This is the driver manager.
+	# This is the adapter.
 	ocamlfind ocamlopt -c -package num adapter.mli
 	ocamlfind ocamlopt -c -package num adapter.ml
 	# This is the executable.
 	ocamlfind ocamlopt -c -package num main.ml
-	# All we have to do is link them all together.
+	# All we have to do now is link them all together.
 	ocamlfind ocamlopt -linkpkg -o main -package num \
 	stubjr.o driver_jr.cmx spec.cmx adapter.cmx main.cmx \
 	-ccopt -L. -ccopt -Wl,-rpath=. -cclib -ljrlib -cclib -lgmpxx -cclib -lgmp
@@ -165,7 +161,13 @@ clean-dec: clean-spec clean-jr3
 	$(RM) main.cmi main.cmx main.o
 	$(RM) main
 
-# All of this is best visualized with a data flow diagram.
+# ## Visualization
+#
+# The compilation chain is best visualized with a data flow diagram.
 
-flow:
-	dot -Tpng -oflow.png flow.dot
+build-flow:
+	dot -Gdpi=100 -Gsize=12,9\! -Tpng -oflow.png flow.dot
+	mogrify -background white -extent 1200x900 -gravity center flow.png
+
+clean-flow:
+	$(RM) flow.png
