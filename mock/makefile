@@ -1,5 +1,8 @@
 # # Jolly Coexistence of Coq and C++
 #
+# ## Introduction
+#
+# You are reading a literate Make file for a mock project.
 # This mock project shows how to call C++ code
 # through an OCaml program
 # extracted from a Coq specification.
@@ -100,7 +103,8 @@ clean-jr3:
 # so that we can be sure erasing them from the extracted code is justified.
 
 build-spec:
-	coqc Spec.v
+	coqc $$(cat _CoqProject) ZTriangle.v
+	coqc $$(cat _CoqProject) Spec.v
 	# The checking is disabled in this presentation,
 	# because it can take over a minute,
 	# while everything else takes less than a second.
