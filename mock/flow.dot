@@ -5,6 +5,27 @@ digraph flow {
   node [fontname = monospace]
 
   /*
+  subgraph cluster_cxx {
+    label = "C++"
+
+    node [peripheries = 2, shape = box]
+
+    algorithm [label = "algorithm"]
+    cstring [label = "cstring"]
+    iostream [label = "iostream"]
+    libstdcxx_so [label = "libstdc++.so"]
+  }
+
+  subgraph cluster_gmp {
+    label = "GMP"
+
+    node [peripheries = 2, shape = box]
+
+    gmpxx_h [label = "gmpxx.h"]
+    libgmp_so [label = "libgmp.so"]
+    libgmpxx_so [label = "libgmpxx.so"]
+  }
+
   subgraph cluster_c {
     label = "C"
 
@@ -15,17 +36,6 @@ digraph flow {
     libc_so [label = "libc.so"]
     libdl_so [label = "libdl.so"]
     libm_so [label = "libm.so"]
-  }
-
-  subgraph cluster_cxx {
-    label = "C++"
-
-    node [peripheries = 2, shape = box]
-
-    algorithm [label = "algorithm"]
-    cstring [label = "cstring"]
-    iostream [label = "iostream"]
-    libstdcxx_so [label = "libstdc++.so"]
   }
 
   subgraph cluster_ocaml {
@@ -39,14 +49,13 @@ digraph flow {
     caml_mlvalues_h [label = "caml/mlvalues.h"]
   }
 
-  subgraph cluster_gmp {
-    label = "GMP"
+  subgraph cluster_coq {
+    label = "Coq"
 
     node [peripheries = 2, shape = box]
 
-    gmpxx_h [label = "gmpxx.h"]
-    libgmp_so [label = "libgmp.so"]
-    libgmpxx_so [label = "libgmpxx.so"]
+    extraction [label = "Extraction.vo"]
+    zarith [label = "ZArith.vo"]
   }
   */
 
@@ -59,6 +68,7 @@ digraph flow {
     stubjr_h [label = "stubjr.h"]
     driver_jr_ml [label = "driver_jr.ml"]
     driver_jr_mli [label = "driver_jr.mli"]
+    ztriangle_v [label = "ZTriangle.v"]
     spec_v [label = "Spec.v"]
     adapter_ml [label = "adapter.ml"]
     adapter_mli [label = "adapter.mli"]
@@ -70,6 +80,8 @@ digraph flow {
     driver_jr_cmi [label = "driver_jr.cmi"]
     driver_jr_cmx [label = "driver_jr.cmx"]
     driver_jr_o [label = "driver_jr.o"]
+    ztriangle_vo [label = "ZTriangle.vo"]
+    ztriangle_glob [label = "ZTriangle.glob"]
     spec_vo [label = "Spec.vo"]
     spec_glob [label = "Spec.glob"]
     spec_mli [label = "spec.mli"]
@@ -93,6 +105,7 @@ digraph flow {
     node [peripheries = 1, shape = oval]
 
     coqc_0 [label = "coqc"]
+    coqc_1 [label = "coqc"]
     coqchk_0 [label = "coqchk"]
     ocamlopt_0 [label = "ocamlopt/gcc"]
     ocamlopt_1 [label = "ocamlopt"]
@@ -159,11 +172,16 @@ digraph flow {
   jrmain_o -> gxx_4
   gxx_4 -> jrmain
 
-  spec_v -> coqc_0
-  coqc_0 -> spec_vo
-  coqc_0 -> spec_glob
-  coqc_0 -> spec_mli
-  coqc_0 -> spec_ml
+  ztriangle_v -> coqc_0
+  coqc_0 -> ztriangle_vo
+  coqc_0 -> ztriangle_glob
+
+  ztriangle_vo -> coqc_1
+  spec_v -> coqc_1
+  coqc_1 -> spec_vo
+  coqc_1 -> spec_glob
+  coqc_1 -> spec_mli
+  coqc_1 -> spec_ml
 
   spec_vo -> coqchk_0
   coqchk_0 -> spec_out_log
@@ -239,6 +257,11 @@ digraph flow {
   libgmpxx_so -> gxx_4
   libm_so -> gxx_4
   libstdcxx_so -> gxx_4
+
+  zarith -> coqc_0
+
+  extraction -> coqc_1
+  zarith -> coqc_1
 
   caml_alloc_h -> ocamlopt_0
   caml_fail_h -> ocamlopt_0

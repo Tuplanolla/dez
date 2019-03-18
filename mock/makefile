@@ -112,6 +112,7 @@ build-spec:
 	# coqchk Spec.vo 1> Spec.out.log 2> Spec.err.log
 
 clean-spec:
+	$(RM) .ZTriangle.aux ZTriangle.vo ZTriangle.glob
 	$(RM) .Spec.aux Spec.vo Spec.glob spec.mli spec.ml
 	$(RM) Spec.out.log Spec.err.log
 
