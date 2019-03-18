@@ -171,8 +171,8 @@ clean-dec: clean-spec clean-jr3
 # The compilation chain is best visualized with a data flow diagram.
 
 build-flow:
-	dot -Gdpi=100 -Gsize=12,9\! -Tpng -oflow.png flow.dot
-	mogrify -background white -extent 1200x900 -gravity center flow.png
+	dot -Gdpi=100 -Gsize=12,8\! -Tpng -oflow.png flow.dot
+	mogrify -background white -extent 1200x800 -gravity center flow.png
 
 clean-flow:
 	$(RM) flow.png
