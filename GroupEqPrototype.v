@@ -1,4 +1,4 @@
-From Coq Require ZArith.
+From Coq Require Extraction ZArith.
 
 Set Warnings "-notation-overridden".
 
@@ -13,7 +13,7 @@ Notation "'0'" := idn.
 Notation "'-' x" := (inv x).
 
 Class Group (A : Type) {opr : Opr A} {idn : Idn A} {inv : Inv A} : Prop := {
-  assoc : forall x y z : A, (x + y) + z = x + (y + z);
+  ass : forall x y z : A, (x + y) + z = x + (y + z);
   idn_l : forall x : A, 0 + x = x;
   idn_r : forall x : A, x + 0 = x;
   inv_l : forall x : A, (- x) + x = 0;
@@ -23,7 +23,7 @@ Class Group (A : Type) {opr : Opr A} {idn : Idn A} {inv : Inv A} : Prop := {
 Module WeakHierarchy.
 
 Class Semigroup (A : Type) {opr : Opr A} : Prop := {
-  assoc : forall x y z : A, (x + y) + z = x + (y + z);
+  ass : forall x y z : A, (x + y) + z = x + (y + z);
 }.
 
 Class Monoid (A : Type) {opr : Opr A} {idn : Idn A} : Prop := {
@@ -46,43 +46,43 @@ Module Properties.
 
 Import Classes.
 
-Theorem invol :
-  forall {A : Type} {opr : Opr A} {idn : Idn A} {inv : Inv A} {G : Group A},
+Theorem ivl : forall {A : Type}
+  {opr : Opr A} {idn : Idn A} {inv : Inv A} {grp : Group A},
   forall x : A, - (- x) = x.
 Proof.
-  intros A opr idn inv G x.
-  destruct G as [pa pnl pnr pvl pvr].
+  intros A opr idn inv grp x.
+  destruct grp as [pa pnl pnr pvl pvr].
   rewrite <- (pnr (- (- x))). rewrite <- (pvl x).
   rewrite <- (pa (- (- x)) (- x) x). rewrite (pvl (- x)). rewrite (pnl x).
   reflexivity. Qed.
 
-Lemma inj_l :
-  forall {A : Type} {opr : Opr A} {idn : Idn A} {inv : Inv A} {G : Group A},
+Lemma inj_l : forall {A : Type}
+  {opr : Opr A} {idn : Idn A} {inv : Inv A} {grp : Group A},
   forall x y z : A, z + x = z + y -> x = y.
 Proof.
-  intros A opr idn inv G x y z p.
-  destruct G as [pa pnl pnr pvl pvr].
+  intros A opr idn inv grp x y z p.
+  destruct grp as [pa pnl pnr pvl pvr].
   rewrite <- (pnl x). rewrite <- (pvl z). rewrite (pa (- z) z x).
   rewrite p. rewrite <- (pa (- z) z y). rewrite (pvl z). rewrite (pnl y).
   reflexivity. Qed.
 
-Lemma inj_r :
-  forall {A : Type} {opr : Opr A} {idn : Idn A} {inv : Inv A} {G : Group A},
+Lemma inj_r : forall {A : Type}
+  {opr : Opr A} {idn : Idn A} {inv : Inv A} {grp : Group A},
   forall x y z : A, x + z = y + z -> x = y.
 Proof.
-  intros A opr idn inv G x y z p.
-  destruct G as [pa pnl pnr pvl pvr].
+  intros A opr idn inv grp x y z p.
+  destruct grp as [pa pnl pnr pvl pvr].
   rewrite <- (pnr x). rewrite <- (pvr z). rewrite <- (pa x z (- z)).
   rewrite p. rewrite (pa y z (- z)). rewrite (pvr z). rewrite (pnr y).
   reflexivity. Qed.
 
-Theorem distr :
-  forall {A : Type} {opr : Opr A} {idn : Idn A} {inv : Inv A} {G : Group A},
+Theorem dis : forall {A : Type}
+  {opr : Opr A} {idn : Idn A} {inv : Inv A} {grp : Group A},
   forall x y : A, - (y + x) = (- x) + (- y).
 Proof.
-  intros A opr idn inv G x y.
+  intros A opr idn inv grp x y.
   apply (inj_l (- (y + x)) ((- x) + (- y)) (y + x)).
-  destruct G as [pa pnl pnr pvl pvr].
+  destruct grp as [pa pnl pnr pvl pvr].
   rewrite (pvr (y + x)). rewrite <- (pa (y + x) (- x) (- y)).
   rewrite (pa y x (- x)). rewrite (pvr x). rewrite (pnr y). rewrite (pvr y).
   reflexivity. Qed.
@@ -100,7 +100,7 @@ Instance Z_Idn : Idn Z := 0.
 Instance Z_Inv : Inv Z := fun x => - x.
 
 Instance Z_Group : Group Z := {
-  assoc := _;
+  ass := _;
   idn_l := _; idn_r := _;
   inv_l := _; inv_r := _;
 }.
@@ -119,7 +119,7 @@ Import WeakHierarchy.
 Instance Z_Opr : Opr Z := fun x y : Z => x + y.
 
 Instance Z_Semigroup : Semigroup Z := {
-  assoc := _;
+  ass := _;
 }.
 Proof.
   all: cbv [Classes.opr Z_Opr Classes.idn Z_Idn Classes.inv Z_Inv].
@@ -171,7 +171,5 @@ Example fate := meaning + (- luck).
 End Output.
 
 End Computations.
-
-From Coq Require Extraction.
 
 Extraction "example.ml" Classes Properties Instances Computations.

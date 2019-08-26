@@ -1,4 +1,4 @@
-From Coq Require ZArith.
+From Coq Require Extraction ZArith.
 
 Set Warnings "-notation-overridden".
 
@@ -16,7 +16,7 @@ Local Notation "'1'" := idn.
 Local Notation "'/' x" := (inv x).
 
 Class Group (A : Type) {opr : Opr A} {idn : Idn A} {inv : Inv A} : Prop := {
-  assoc : forall x y z : A, (x + y) + z = x + (y + z);
+  ass : forall x y z : A, (x + y) + z = x + (y + z);
   idn_l : forall x : A, 0 + x = x;
   idn_r : forall x : A, x + 0 = x;
   inv_l : forall x : A, (- x) + x = 0;
@@ -39,17 +39,17 @@ Notation "'/' x" := (recip x).
 
 Class Ring (A : Type) {add : Add A} {zero : Zero A} {neg : Neg A}
   {mul : Mul A} {one : One A} : Prop := {
-  add_assoc : forall x y z : A, (x + y) + z = x + (y + z);
+  add_ass : forall x y z : A, (x + y) + z = x + (y + z);
   add_idn_l : forall x : A, 0 + x = x;
   add_idn_r : forall x : A, x + 0 = x;
   add_inv_l : forall x : A, (- x) + x = 0;
   add_inv_r : forall x : A, x + (- x) = 0;
-  add_comm : forall x y : A, y + x = x + y;
-  mul_assoc : forall x y z : A, (x * y) * z = x * (y * z);
+  add_com : forall x y : A, y + x = x + y;
+  mul_ass : forall x y z : A, (x * y) * z = x * (y * z);
   mul_idn_l : forall x : A, 1 * x = x;
   mul_idn_r : forall x : A, x * 1 = x;
-  distr_l : forall x y z : A, x * (y + z) = x * y + x * z;
-  distr_r : forall x y z : A, (x + y) * z = x * z + y * z;
+  dis_l : forall x y z : A, x * (y + z) = x * y + x * z;
+  dis_r : forall x y z : A, (x + y) * z = x * z + y * z;
 }.
 
 Module WeakHierarchy.
@@ -59,7 +59,7 @@ Local Notation "'0'" := idn.
 Local Notation "'-' x" := (inv x).
 
 Class Semigroup (A : Type) {opr : Opr A} : Prop := {
-  assoc : forall x y z : A, (x + y) + z = x + (y + z);
+  ass : forall x y z : A, (x + y) + z = x + (y + z);
 }.
 
 Class Monoid (A : Type) {opr : Opr A} {idn : Idn A} : Prop := {
@@ -84,10 +84,10 @@ Notation "'/' x" := (recip x).
 Class Ring (A : Type) {add : Add A} {zero : Zero A} {neg : Neg A}
   {mul : Mul A} {one : One A} : Prop := {
   add_group :> Group A (opr := add) (idn := zero) (inv := neg);
-  add_comm : forall x y : A, y + x = x + y;
+  add_com : forall x y : A, y + x = x + y;
   mul_monoid :> Monoid A (opr := mul) (idn := one);
-  distr_l : forall x y z : A, x * (y + z) = x * y + x * z;
-  distr_r : forall x y z : A, (x + y) * z = x * z + y * z;
+  dis_l : forall x y z : A, x * (y + z) = x * y + x * z;
+  dis_r : forall x y z : A, (x + y) * z = x * z + y * z;
 }.
 
 End WeakHierarchy.
@@ -102,43 +102,43 @@ Local Notation "x '+' y" := (opr x y).
 Local Notation "'0'" := idn.
 Local Notation "'-' x" := (inv x).
 
-Theorem invol :
-  forall {A : Type} {opr : Opr A} {idn : Idn A} {inv : Inv A} {G : Group A},
+Theorem ivl : forall {A : Type}
+  {opr : Opr A} {idn : Idn A} {inv : Inv A} {grp : Group A},
   forall x : A, - (- x) = x.
 Proof.
-  intros A opr idn inv G x.
-  destruct G as [pa pnl pnr pvl pvr].
+  intros A opr idn inv grp x.
+  destruct grp as [pa pnl pnr pvl pvr].
   rewrite <- (pnr (- (- x))). rewrite <- (pvl x).
   rewrite <- (pa (- (- x)) (- x) x). rewrite (pvl (- x)). rewrite (pnl x).
   reflexivity. Qed.
 
-Lemma inj_l :
-  forall {A : Type} {opr : Opr A} {idn : Idn A} {inv : Inv A} {G : Group A},
+Lemma inj_l : forall {A : Type}
+  {opr : Opr A} {idn : Idn A} {inv : Inv A} {grp : Group A},
   forall x y z : A, z + x = z + y -> x = y.
 Proof.
-  intros A opr idn inv G x y z p.
-  destruct G as [pa pnl pnr pvl pvr].
+  intros A opr idn inv grp x y z p.
+  destruct grp as [pa pnl pnr pvl pvr].
   rewrite <- (pnl x). rewrite <- (pvl z). rewrite (pa (- z) z x).
   rewrite p. rewrite <- (pa (- z) z y). rewrite (pvl z). rewrite (pnl y).
   reflexivity. Qed.
 
-Lemma inj_r :
-  forall {A : Type} {opr : Opr A} {idn : Idn A} {inv : Inv A} {G : Group A},
+Lemma inj_r : forall {A : Type}
+  {opr : Opr A} {idn : Idn A} {inv : Inv A} {grp : Group A},
   forall x y z : A, x + z = y + z -> x = y.
 Proof.
-  intros A opr idn inv G x y z p.
-  destruct G as [pa pnl pnr pvl pvr].
+  intros A opr idn inv grp x y z p.
+  destruct grp as [pa pnl pnr pvl pvr].
   rewrite <- (pnr x). rewrite <- (pvr z). rewrite <- (pa x z (- z)).
   rewrite p. rewrite (pa y z (- z)). rewrite (pvr z). rewrite (pnr y).
   reflexivity. Qed.
 
-Theorem distr :
-  forall {A : Type} {opr : Opr A} {idn : Idn A} {inv : Inv A} {G : Group A},
+Theorem dis : forall {A : Type}
+  {opr : Opr A} {idn : Idn A} {inv : Inv A} {grp : Group A},
   forall x y : A, - (y + x) = (- x) + (- y).
 Proof.
-  intros A opr idn inv G x y.
+  intros A opr idn inv grp x y.
   apply (inj_l (- (y + x)) ((- x) + (- y)) (y + x)).
-  destruct G as [pa pnl pnr pvl pvr].
+  destruct grp as [pa pnl pnr pvl pvr].
   rewrite (pvr (y + x)). rewrite <- (pa (y + x) (- x) (- y)).
   rewrite (pa y x (- x)). rewrite (pvr x). rewrite (pnr y). rewrite (pvr y).
   reflexivity. Qed.
@@ -156,7 +156,7 @@ Instance Z_Idn : Idn Z := 0.
 Instance Z_Inv : Inv Z := fun x => - x.
 
 Instance Z_Group : Group Z := {
-  assoc := _;
+  ass := _;
   idn_l := _; idn_r := _;
   inv_l := _; inv_r := _;
 }.
@@ -175,13 +175,13 @@ Instance Z_Mul : Mul Z := fun x y : Z => x * y.
 Instance Z_One : One Z := 1.
 
 Instance Z_Ring : Ring Z := {
-  add_assoc := _;
+  add_ass := _;
   add_idn_l := _; add_idn_r := _;
   add_inv_l := _; add_inv_r := _;
-  add_comm := _;
-  mul_assoc := _;
+  add_com := _;
+  mul_ass := _;
   mul_idn_l := _; mul_idn_r := _;
-  distr_l := _; distr_r := _;
+  dis_l := _; dis_r := _;
 }.
 Proof.
   all: cbv [Classes.add Z_Add Classes.neg Z_Neg Classes.mul Z_Mul].
@@ -204,7 +204,7 @@ Import WeakHierarchy.
 Instance Z_AddOpr : Opr Z := fun x y : Z => x + y.
 
 Instance Z_AddSemigroup : Semigroup Z := {
-  assoc := _;
+  ass := _;
 }.
 Proof.
   all: cbv [Classes.opr Z_Opr Classes.idn Z_Idn Classes.inv Z_Inv].
@@ -233,7 +233,7 @@ Proof.
 Instance Z_MulOpr : Opr Z := fun x y : Z => x * y.
 
 Instance Z_MulSemigroup : Semigroup Z := {
-  assoc := _;
+  ass := _;
 }.
 Proof.
   all: cbv [Classes.opr Z_Opr Classes.idn Z_Idn Classes.inv Z_Inv].
@@ -256,8 +256,8 @@ Instance Z_Mul : Mul Z := Z_MulOpr.
 Instance Z_One : One Z := Z_MulIdn.
 
 Instance Z_Ring : Ring Z := {
-  add_comm := _;
-  distr_l := _; distr_r := _;
+  add_com := _;
+  dis_l := _; dis_r := _;
 }.
 Proof.
   all: cbv [Classes.add Z_Add Classes.neg Z_Neg Classes.mul Z_Mul].
@@ -292,7 +292,5 @@ Example nonsense := meaning * luck.
 End Output.
 
 End Computations.
-
-From Coq Require Extraction.
 
 Extraction "example.ml" Classes Properties Instances Computations.
