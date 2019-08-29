@@ -26,19 +26,51 @@ Class Eqv (A : Type) : Type := eqv : A -> A -> Prop.
 Class Opr (A : Type) : Type := opr : A -> A -> A.
 Class Idn (A : Type) : Type := idn : A.
 Class Inv (A : Type) : Type := inv : A -> A.
+Class Add (A : Type) : Type := add : A -> A -> A.
+Class Zero (A : Type) : Type := zero : A.
+Class Neg (A : Type) : Type := neg : A -> A.
+Class Mul (A : Type) : Type := mul : A -> A -> A.
+Class One (A : Type) : Type := one : A.
+Class Recip (A : Type) : Type := recip : A -> A.
 
 Reserved Notation "x '==' y" (at level 70, no associativity).
 Notation "x '==' y" := (eqv x y).
+Notation "x '+' y" := (add x y).
+Notation "'0'" := zero.
+Notation "'-' x" := (neg x).
+Notation "x '-' y" := (x + (- y)).
+Notation "x '*' y" := (mul x y).
+Notation "'1'" := one.
+Notation "'/' x" := (recip x).
+Notation "x '/' y" := (x * (/ y)).
+
+Module AdditiveNotations.
+
 Notation "x '+' y" := (opr x y).
 Notation "'0'" := idn.
 Notation "'-' x" := (inv x).
 Notation "x '-' y" := (x + (- y)).
+
+End AdditiveNotations.
+
+Module MultiplicativeNotations.
+
+Notation "x '*' y" := (opr x y).
+Notation "'1'" := idn.
+Notation "'/' x" := (inv x).
+Notation "x '/' y" := (x * (/ y)).
+
+End MultiplicativeNotations.
 
 Class Setoid (A : Type) {eqv : Eqv A} : Prop := {
   ref : forall x : A, x == x;
   sym : forall x y : A, x == y -> y == x;
   tra : forall x y z : A, x == y -> y == z -> x == z;
 }.
+
+Section Additive.
+
+Import AdditiveNotations.
 
 Class Semigroup (A : Type) {eqv : Eqv A} {opr : Opr A} : Prop := {
   setoid :> Setoid A;
@@ -58,6 +90,17 @@ Class Group (A : Type) {eqv : Eqv A}
   pro_inv : inv ::> eqv ==> eqv;
   inv_l : forall x : A, (- x) + x = 0;
   inv_r : forall x : A, x + (- x) = 0;
+}.
+
+End Additive.
+
+Class Ring (A : Type) {eqv : Eqv A} {add : Add A} {zero : Zero A} {neg : Neg A}
+  {mul : Mul A} {one : One A} : Prop := {
+  add_group :> Group A (opr := add) (idn := zero) (inv := neg);
+  add_com : forall x y : A, x + y = y + x;
+  mul_monoid :> Monoid A (opr := mul) (idn := one);
+  dis_l : forall x y z : A, x * (y + z) = x * y + x * z;
+  dis_r : forall x y z : A, (x + y) * z = x * z + y * z;
 }.
 
 Add Parametric Relation {A : Type} {eqv' : Eqv A}
@@ -91,7 +134,7 @@ End Classes.
 
 Module Properties.
 
-Import Classes.
+Import Classes AdditiveNotations.
 
 Theorem ivl : forall {A : Type} {eqv : Eqv A}
   {opr : Opr A} {idn : Idn A} {inv : Inv A} {grp : Group A},
@@ -155,38 +198,77 @@ Proof.
   - apply eq_sym.
   - apply eq_trans. Qed.
 
-Instance Z_Opr : Opr Z := fun x y : Z => x + y.
+Instance Z_AddOpr : Opr Z := fun x y : Z => x + y.
 
-Instance Z_Semigroup : Semigroup Z := {
+Instance Z_AddSemigroup : Semigroup Z := {
   pro_opr := _;
   ass := _;
 }.
 Proof.
-  all: cbv [Classes.opr Z_Opr].
+  all: cbv [Classes.opr Z_AddOpr].
   - apply add_wd.
   - intros x y z. rewrite add_assoc. reflexivity. Qed.
 
-Instance Z_Idn : Idn Z := 0.
+Instance Z_AddIdn : Idn Z := 0.
 
-Instance Z_Monoid : Monoid Z := {
+Instance Z_AddMonoid : Monoid Z := {
   idn_l := _; idn_r := _;
 }.
 Proof.
-  all: cbv [Classes.opr Z_Opr Classes.idn Z_Idn].
+  all: cbv [Classes.opr Z_AddOpr Classes.idn Z_AddIdn].
   - intros x. rewrite add_0_l. reflexivity.
   - intros x. rewrite add_0_r. reflexivity. Qed.
 
-Instance Z_Inv : Inv Z := fun x => - x.
+Instance Z_AddInv : Inv Z := fun x => - x.
 
-Instance Z_Group : Group Z := {
+Instance Z_AddGroup : Group Z := {
   pro_inv := _;
   inv_l := _; inv_r := _;
 }.
 Proof.
-  all: cbv [Classes.opr Z_Opr Classes.idn Z_Idn Classes.inv Z_Inv].
+  all: cbv [Classes.opr Z_AddOpr Classes.idn Z_AddIdn Classes.inv Z_AddInv].
   - apply opp_wd.
   - intros x. rewrite add_opp_diag_l. reflexivity.
   - intros x. rewrite add_opp_diag_r. reflexivity. Qed.
+
+Instance Z_MulOpr : Opr Z := fun x y : Z => x * y.
+
+Instance Z_MulSemigroup : Semigroup Z := {
+  pro_opr := _;
+  ass := _;
+}.
+Proof.
+  all: cbv [Classes.opr Z_MulOpr].
+  - apply mul_wd.
+  - intros x y z. rewrite mul_assoc. reflexivity. Qed.
+
+Instance Z_MulIdn : Idn Z := 1.
+
+Instance Z_MulMonoid : Monoid Z := {
+  idn_l := _; idn_r := _;
+}.
+Proof.
+  all: cbv [Classes.opr Z_MulOpr Classes.idn Z_MulIdn].
+  - intros x. rewrite mul_1_l. reflexivity.
+  - intros x. rewrite mul_1_r. reflexivity. Qed.
+
+Instance Z_Add : Add Z := Z_AddOpr.
+Instance Z_Zero : Zero Z := Z_AddIdn.
+Instance Z_Neg : Neg Z := Z_AddInv.
+Instance Z_Mul : Mul Z := Z_MulOpr.
+Instance Z_One : One Z := Z_MulIdn.
+
+Instance Z_Ring : Ring Z := {
+  add_com := _;
+  dis_l := _; dis_r := _;
+}.
+Proof.
+  all: cbv [Classes.add Z_Add Classes.zero Z_Zero Classes.neg Z_Neg
+    Classes.mul Z_Mul Classes.one Z_One].
+  all: cbv [Z_AddOpr Z_AddIdn Z_AddInv Z_MulOpr Z_MulIdn].
+  - intros x y. rewrite add_comm. reflexivity.
+  - intros x y z. rewrite mul_add_distr_l. reflexivity.
+  - intros x y z. rewrite mul_add_distr_r. reflexivity. Qed.
 
 End Instances.
 
