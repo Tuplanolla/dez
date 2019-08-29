@@ -80,7 +80,7 @@ End Properties.
 
 Module Instances.
 
-Import Classes ZArith Z.
+Import ZArith Z Classes.
 
 Open Scope Z_scope.
 
@@ -90,7 +90,8 @@ Instance Z_Semigroup : Semigroup Z := {
   ass := _;
 }.
 Proof.
-  all: cbv [Classes.opr Z_Opr].
+  all: cbv [opr].
+  all: cbv [Z_Opr].
   - intros x y z. rewrite add_assoc. reflexivity. Qed.
 
 Instance Z_Idn : Idn Z := 0.
@@ -99,7 +100,8 @@ Instance Z_Monoid : Monoid Z := {
   idn_l := _; idn_r := _;
 }.
 Proof.
-  all: cbv [Classes.opr Z_Opr Classes.idn Z_Idn].
+  all: cbv [opr idn].
+  all: cbv [Z_Opr Z_Idn].
   - intros x. rewrite add_0_l. reflexivity.
   - intros x. rewrite add_0_r. reflexivity. Qed.
 
@@ -109,7 +111,8 @@ Instance Z_Group : Group Z := {
   inv_l := _; inv_r := _;
 }.
 Proof.
-  all: cbv [Classes.opr Z_Opr Classes.idn Z_Idn Classes.inv Z_Inv].
+  all: cbv [opr idn inv].
+  all: cbv [Z_Opr Z_Idn Z_Inv].
   - intros x. rewrite add_opp_diag_l. reflexivity.
   - intros x. rewrite add_opp_diag_r. reflexivity. Qed.
 
@@ -124,7 +127,7 @@ Import ZArith Z.
 Open Scope Z_scope.
 
 Definition meaning := 42.
-Definition luck := 7.
+Definition luck := 13.
 
 End Input.
 

@@ -123,7 +123,7 @@ End Properties.
 
 Module Instances.
 
-Import Classes ZArith Z.
+Import ZArith Z Classes.
 
 Open Scope Z_scope.
 
@@ -133,7 +133,8 @@ Instance Z_AddSemigroup : Semigroup Z := {
   ass := _;
 }.
 Proof.
-  all: cbv [Classes.opr Z_AddOpr].
+  all: cbv [opr].
+  all: cbv [Z_AddOpr].
   - intros x y z. rewrite add_assoc. reflexivity. Qed.
 
 Instance Z_AddIdn : Idn Z := 0.
@@ -142,7 +143,8 @@ Instance Z_AddMonoid : Monoid Z := {
   idn_l := _; idn_r := _;
 }.
 Proof.
-  all: cbv [Classes.opr Z_AddOpr Classes.idn Z_AddIdn].
+  all: cbv [opr idn].
+  all: cbv [Z_AddOpr Z_AddIdn].
   - intros x. rewrite add_0_l. reflexivity.
   - intros x. rewrite add_0_r. reflexivity. Qed.
 
@@ -152,7 +154,8 @@ Instance Z_AddGroup : Group Z := {
   inv_l := _; inv_r := _;
 }.
 Proof.
-  all: cbv [Classes.opr Z_AddOpr Classes.idn Z_AddIdn Classes.inv Z_AddInv].
+  all: cbv [opr idn inv].
+  all: cbv [Z_AddOpr Z_AddIdn Z_AddInv].
   - intros x. rewrite add_opp_diag_l. reflexivity.
   - intros x. rewrite add_opp_diag_r. reflexivity. Qed.
 
@@ -162,7 +165,8 @@ Instance Z_MulSemigroup : Semigroup Z := {
   ass := _;
 }.
 Proof.
-  all: cbv [Classes.opr Z_MulOpr].
+  all: cbv [opr].
+  all: cbv [Z_MulOpr].
   - intros x y z. rewrite mul_assoc. reflexivity. Qed.
 
 Instance Z_MulIdn : Idn Z := 1.
@@ -171,7 +175,8 @@ Instance Z_MulMonoid : Monoid Z := {
   idn_l := _; idn_r := _;
 }.
 Proof.
-  all: cbv [Classes.opr Z_MulOpr Classes.idn Z_MulIdn].
+  all: cbv [opr idn].
+  all: cbv [Z_MulOpr Z_MulIdn].
   - intros x. rewrite mul_1_l. reflexivity.
   - intros x. rewrite mul_1_r. reflexivity. Qed.
 
@@ -186,8 +191,8 @@ Instance Z_Ring : Ring Z := {
   dis_l := _; dis_r := _;
 }.
 Proof.
-  all: cbv [Classes.add Z_Add Classes.zero Z_Zero Classes.neg Z_Neg
-    Classes.mul Z_Mul Classes.one Z_One].
+  all: cbv [add zero neg mul one].
+  all: cbv [Z_Add Z_Zero Z_Neg Z_Mul Z_One].
   all: cbv [Z_AddOpr Z_AddIdn Z_AddInv Z_MulOpr Z_MulIdn].
   - intros x y. rewrite add_comm. reflexivity.
   - intros x y z. rewrite mul_add_distr_l. reflexivity.
@@ -204,8 +209,8 @@ Import ZArith Z.
 Open Scope Z_scope.
 
 Definition meaning := 42.
-Definition luck := 7.
-Definition fortune := 13.
+Definition luck := 13.
+Definition fortune := 7.
 
 End Input.
 

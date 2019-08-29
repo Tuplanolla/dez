@@ -4,7 +4,7 @@ From Coq Require Extraction Setoid ZArith.
 
 Module Classes.
 
-Import Setoid Morphisms.
+Export Setoid Morphisms.
 
 (* Definition relation (A : Type) : Type :=
   A -> A -> Prop.
@@ -75,21 +75,21 @@ Import AdditiveNotations.
 Class Semigroup (A : Type) {eqv : Eqv A} {opr : Opr A} : Prop := {
   setoid :> Setoid A;
   opr_pro : opr ::> eqv ==> eqv ==> eqv;
-  ass : forall x y z : A, (x + y) + z = x + (y + z);
+  ass : forall x y z : A, (x + y) + z == x + (y + z);
 }.
 
 Class Monoid (A : Type) {eqv : Eqv A} {opr : Opr A} {idn : Idn A} : Prop := {
   semigroup :> Semigroup A;
-  idn_l : forall x : A, 0 + x = x;
-  idn_r : forall x : A, x + 0 = x;
+  idn_l : forall x : A, 0 + x == x;
+  idn_r : forall x : A, x + 0 == x;
 }.
 
 Class Group (A : Type) {eqv : Eqv A}
   {opr : Opr A} {idn : Idn A} {inv : Inv A} : Prop := {
   monoid :> Monoid A;
   inv_pro : inv ::> eqv ==> eqv;
-  inv_l : forall x : A, (- x) + x = 0;
-  inv_r : forall x : A, x + (- x) = 0;
+  inv_l : forall x : A, (- x) + x == 0;
+  inv_r : forall x : A, x + (- x) == 0;
 }.
 
 End Additive.
@@ -97,10 +97,10 @@ End Additive.
 Class Ring (A : Type) {eqv : Eqv A} {add : Add A} {zero : Zero A} {neg : Neg A}
   {mul : Mul A} {one : One A} : Prop := {
   add_group :> Group A (opr := add) (idn := zero) (inv := neg);
-  add_com : forall x y : A, x + y = y + x;
+  add_com : forall x y : A, x + y == y + x;
   mul_monoid :> Monoid A (opr := mul) (idn := one);
-  dis_l : forall x y z : A, x * (y + z) = x * y + x * z;
-  dis_r : forall x y z : A, (x + y) * z = x * z + y * z;
+  dis_l : forall x y z : A, x * (y + z) == x * y + x * z;
+  dis_r : forall x y z : A, (x + y) * z == x * z + y * z;
 }.
 
 Add Parametric Relation {A : Type} {eqv' : Eqv A}
@@ -215,7 +215,7 @@ End Properties.
 
 Module Instances.
 
-Import Classes ZArith Z.
+Import ZArith Z Classes.
 
 Open Scope Z_scope.
 
@@ -227,7 +227,8 @@ Instance Z_Setoid : Setoid Z := {
   tra := _;
 }.
 Proof.
-  all: cbv [Classes.eqv Z_Eqv].
+  all: cbv [eqv].
+  all: cbv [Z_Eqv].
   - apply eq_refl.
   - apply eq_sym.
   - apply eq_trans. Qed.
@@ -239,7 +240,8 @@ Instance Z_AddSemigroup : Semigroup Z := {
   ass := _;
 }.
 Proof.
-  all: cbv [Classes.opr Z_AddOpr].
+  all: cbv [eqv opr].
+  all: cbv [Z_Eqv Z_AddOpr].
   - apply add_wd.
   - intros x y z. rewrite add_assoc. reflexivity. Qed.
 
@@ -249,7 +251,8 @@ Instance Z_AddMonoid : Monoid Z := {
   idn_l := _; idn_r := _;
 }.
 Proof.
-  all: cbv [Classes.opr Z_AddOpr Classes.idn Z_AddIdn].
+  all: cbv [eqv opr idn].
+  all: cbv [Z_Eqv Z_AddOpr Z_AddIdn].
   - intros x. rewrite add_0_l. reflexivity.
   - intros x. rewrite add_0_r. reflexivity. Qed.
 
@@ -260,7 +263,8 @@ Instance Z_AddGroup : Group Z := {
   inv_l := _; inv_r := _;
 }.
 Proof.
-  all: cbv [Classes.opr Z_AddOpr Classes.idn Z_AddIdn Classes.inv Z_AddInv].
+  all: cbv [eqv opr idn inv].
+  all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv].
   - apply opp_wd.
   - intros x. rewrite add_opp_diag_l. reflexivity.
   - intros x. rewrite add_opp_diag_r. reflexivity. Qed.
@@ -272,7 +276,8 @@ Instance Z_MulSemigroup : Semigroup Z := {
   ass := _;
 }.
 Proof.
-  all: cbv [Classes.opr Z_MulOpr].
+  all: cbv [eqv opr].
+  all: cbv [Z_Eqv Z_MulOpr].
   - apply mul_wd.
   - intros x y z. rewrite mul_assoc. reflexivity. Qed.
 
@@ -282,7 +287,8 @@ Instance Z_MulMonoid : Monoid Z := {
   idn_l := _; idn_r := _;
 }.
 Proof.
-  all: cbv [Classes.opr Z_MulOpr Classes.idn Z_MulIdn].
+  all: cbv [eqv opr idn].
+  all: cbv [Z_Eqv Z_MulOpr Z_MulIdn].
   - intros x. rewrite mul_1_l. reflexivity.
   - intros x. rewrite mul_1_r. reflexivity. Qed.
 
@@ -297,8 +303,8 @@ Instance Z_Ring : Ring Z := {
   dis_l := _; dis_r := _;
 }.
 Proof.
-  all: cbv [Classes.add Z_Add Classes.zero Z_Zero Classes.neg Z_Neg
-    Classes.mul Z_Mul Classes.one Z_One].
+  all: cbv [eqv add zero neg mul one].
+  all: cbv [Z_Eqv Z_Add Z_Zero Z_Neg Z_Mul Z_One].
   all: cbv [Z_AddOpr Z_AddIdn Z_AddInv Z_MulOpr Z_MulIdn].
   - intros x y. rewrite add_comm. reflexivity.
   - intros x y z. rewrite mul_add_distr_l. reflexivity.
@@ -315,8 +321,8 @@ Import ZArith Z.
 Open Scope Z_scope.
 
 Definition meaning := 42.
-Definition luck := 7.
-Definition fortune := 13.
+Definition luck := 13.
+Definition fortune := 7.
 
 End Input.
 

@@ -4,7 +4,7 @@ From Coq Require Extraction Setoid ZArith.
 
 Module Classes.
 
-Import Setoid Morphisms.
+Export Setoid Morphisms.
 
 (* Definition relation (A : Type) : Type :=
   A -> A -> Prop.
@@ -43,21 +43,21 @@ Class Setoid (A : Type) {eqv : Eqv A} : Prop := {
 Class Semigroup (A : Type) {eqv : Eqv A} {opr : Opr A} : Prop := {
   setoid :> Setoid A;
   opr_pro : opr ::> eqv ==> eqv ==> eqv;
-  ass : forall x y z : A, (x + y) + z = x + (y + z);
+  ass : forall x y z : A, (x + y) + z == x + (y + z);
 }.
 
 Class Monoid (A : Type) {eqv : Eqv A} {opr : Opr A} {idn : Idn A} : Prop := {
   semigroup :> Semigroup A;
-  idn_l : forall x : A, 0 + x = x;
-  idn_r : forall x : A, x + 0 = x;
+  idn_l : forall x : A, 0 + x == x;
+  idn_r : forall x : A, x + 0 == x;
 }.
 
 Class Group (A : Type) {eqv : Eqv A}
   {opr : Opr A} {idn : Idn A} {inv : Inv A} : Prop := {
   monoid :> Monoid A;
   inv_pro : inv ::> eqv ==> eqv;
-  inv_l : forall x : A, (- x) + x = 0;
-  inv_r : forall x : A, x + (- x) = 0;
+  inv_l : forall x : A, (- x) + x == 0;
+  inv_r : forall x : A, x + (- x) == 0;
 }.
 
 Add Parametric Relation {A : Type} {eqv' : Eqv A}
@@ -138,7 +138,7 @@ End Properties.
 
 Module Instances.
 
-Import Classes ZArith Z.
+Import ZArith Z Classes.
 
 Open Scope Z_scope.
 
@@ -150,7 +150,8 @@ Instance Z_Setoid : Setoid Z := {
   tra := _;
 }.
 Proof.
-  all: cbv [Classes.eqv Z_Eqv].
+  all: cbv [eqv].
+  all: cbv [Z_Eqv].
   - apply eq_refl.
   - apply eq_sym.
   - apply eq_trans. Qed.
@@ -162,7 +163,8 @@ Instance Z_Semigroup : Semigroup Z := {
   ass := _;
 }.
 Proof.
-  all: cbv [Classes.opr Z_Opr].
+  all: cbv [eqv opr].
+  all: cbv [Z_Eqv Z_Opr].
   - apply add_wd.
   - intros x y z. rewrite add_assoc. reflexivity. Qed.
 
@@ -172,7 +174,8 @@ Instance Z_Monoid : Monoid Z := {
   idn_l := _; idn_r := _;
 }.
 Proof.
-  all: cbv [Classes.opr Z_Opr Classes.idn Z_Idn].
+  all: cbv [eqv opr idn].
+  all: cbv [Z_Eqv Z_Opr Z_Idn].
   - intros x. rewrite add_0_l. reflexivity.
   - intros x. rewrite add_0_r. reflexivity. Qed.
 
@@ -183,7 +186,8 @@ Instance Z_Group : Group Z := {
   inv_l := _; inv_r := _;
 }.
 Proof.
-  all: cbv [Classes.opr Z_Opr Classes.idn Z_Idn Classes.inv Z_Inv].
+  all: cbv [eqv opr idn inv].
+  all: cbv [Z_Eqv Z_Opr Z_Idn Z_Inv].
   - apply opp_wd.
   - intros x. rewrite add_opp_diag_l. reflexivity.
   - intros x. rewrite add_opp_diag_r. reflexivity. Qed.
@@ -199,7 +203,7 @@ Import ZArith Z.
 Open Scope Z_scope.
 
 Definition meaning := 42.
-Definition luck := 7.
+Definition luck := 13.
 
 End Input.
 
