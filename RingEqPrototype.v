@@ -205,6 +205,7 @@ Open Scope Z_scope.
 
 Definition meaning := 42.
 Definition luck := 7.
+Definition fortune := 13.
 
 End Input.
 
@@ -212,8 +213,7 @@ Section Output.
 
 Import Classes.
 
-Example fate := meaning + (- luck).
-Example nonsense := meaning * luck.
+Example fate := meaning * fortune - luck.
 
 End Output.
 

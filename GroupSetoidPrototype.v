@@ -42,7 +42,7 @@ Class Setoid (A : Type) {eqv : Eqv A} : Prop := {
 
 Class Semigroup (A : Type) {eqv : Eqv A} {opr : Opr A} : Prop := {
   setoid :> Setoid A;
-  pro_opr : opr ::> eqv ==> eqv ==> eqv;
+  opr_pro : opr ::> eqv ==> eqv ==> eqv;
   ass : forall x y z : A, (x + y) + z = x + (y + z);
 }.
 
@@ -55,7 +55,7 @@ Class Monoid (A : Type) {eqv : Eqv A} {opr : Opr A} {idn : Idn A} : Prop := {
 Class Group (A : Type) {eqv : Eqv A}
   {opr : Opr A} {idn : Idn A} {inv : Inv A} : Prop := {
   monoid :> Monoid A;
-  pro_inv : inv ::> eqv ==> eqv;
+  inv_pro : inv ::> eqv ==> eqv;
   inv_l : forall x : A, (- x) + x = 0;
   inv_r : forall x : A, x + (- x) = 0;
 }.
@@ -73,8 +73,8 @@ Add Parametric Morphism {A : Type} {eqv' : Eqv A}
   as eqv_opr_morphism.
 Proof.
   intros x y p z w q.
-  destruct sgr' as [ps ppo pa].
-  cbv in ppo. apply ppo.
+  destruct sgr' as [_ opr_pro _].
+  cbv in opr_pro. apply opr_pro.
   - apply p.
   - apply q. Qed.
 
@@ -84,8 +84,8 @@ Add Parametric Morphism {A : Type} {eqv' : Eqv A}
   as eqv_inv_morphism.
 Proof.
   intros x y p.
-  destruct grp' as [ps ppv pvl pvr].
-  cbv in ppv. apply ppv. apply p. Qed.
+  destruct grp' as [_ inv_pro _ _].
+  cbv in inv_pro. apply inv_pro. apply p. Qed.
 
 End Classes.
 
@@ -98,7 +98,7 @@ Theorem ivl : forall {A : Type} {eqv : Eqv A}
   forall x : A, - (- x) == x.
 Proof.
   intros A eqv opr idn inv grp x.
-  destruct grp as [[[ps ppo pa] pnl pnr] ppv pvl pvr] eqn : pg.
+  destruct grp as [[[ps pop pa] pnl pnr] pvp pvl pvr] eqn : pg.
   rewrite <- (pnr (- (- x))). rewrite <- (pvl x).
   rewrite <- (pa (- (- x)) (- x) x). rewrite (pvl (- x)). rewrite (pnl x).
   reflexivity. Qed.
@@ -108,7 +108,7 @@ Lemma inj_l : forall {A : Type} {eqv : Eqv A}
   forall x y z : A, z + x == z + y -> x == y.
 Proof.
   intros A eqv opr idn inv grp x y z p.
-  destruct grp as [[[ps ppo pa] pnl pnr] ppv pvl pvr] eqn : pg.
+  destruct grp as [[[ps pop pa] pnl pnr] pvp pvl pvr] eqn : pg.
   rewrite <- (pnl x). rewrite <- (pvl z). rewrite (pa (- z) z x).
   rewrite p. rewrite <- (pa (- z) z y). rewrite (pvl z). rewrite (pnl y).
   reflexivity. Qed.
@@ -118,7 +118,7 @@ Lemma inj_r : forall {A : Type} {eqv : Eqv A}
   forall x y z : A, x + z == y + z -> x == y.
 Proof.
   intros A eqv opr idn inv grp x y z p.
-  destruct grp as [[[ps ppo pa] pnl pnr] ppv pvl pvr] eqn : pg.
+  destruct grp as [[[ps pop pa] pnl pnr] pvp pvl pvr] eqn : pg.
   rewrite <- (pnr x). rewrite <- (pvr z). rewrite <- (pa x z (- z)).
   rewrite p. rewrite (pa y z (- z)). rewrite (pvr z). rewrite (pnr y).
   reflexivity. Qed.
@@ -129,7 +129,7 @@ Theorem dis : forall {A : Type} {eqv : Eqv A}
 Proof.
   intros A eqv opr idn inv grp x y.
   apply (inj_l (- (y + x)) ((- x) + (- y)) (y + x)).
-  destruct grp as [[[ps ppo pa] pnl pnr] ppv pvl pvr] eqn : pg.
+  destruct grp as [[[ps pop pa] pnl pnr] pvp pvl pvr] eqn : pg.
   rewrite (pvr (y + x)). rewrite <- (pa (y + x) (- x) (- y)).
   rewrite (pa y x (- x)). rewrite (pvr x). rewrite (pnr y). rewrite (pvr y).
   reflexivity. Qed.
@@ -158,7 +158,7 @@ Proof.
 Instance Z_Opr : Opr Z := fun x y : Z => x + y.
 
 Instance Z_Semigroup : Semigroup Z := {
-  pro_opr := _;
+  opr_pro := _;
   ass := _;
 }.
 Proof.
@@ -179,7 +179,7 @@ Proof.
 Instance Z_Inv : Inv Z := fun x => - x.
 
 Instance Z_Group : Group Z := {
-  pro_inv := _;
+  inv_pro := _;
   inv_l := _; inv_r := _;
 }.
 Proof.

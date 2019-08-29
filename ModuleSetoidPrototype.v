@@ -32,6 +32,8 @@ Class Neg (A : Type) : Type := neg : A -> A.
 Class Mul (A : Type) : Type := mul : A -> A -> A.
 Class One (A : Type) : Type := one : A.
 Class Recip (A : Type) : Type := recip : A -> A.
+Class LSMul (S A : Type) : Type := lsmul : S -> A -> A.
+Class RSMul (S A : Type) : Type := rsmul : S -> A -> A.
 
 Reserved Notation "x '==' y" (at level 70, no associativity).
 Notation "x '==' y" := (eqv x y).
@@ -43,6 +45,10 @@ Notation "x '*' y" := (mul x y).
 Notation "'1'" := one.
 Notation "'/' x" := (recip x).
 Notation "x '/' y" := (x * (/ y)).
+Reserved Notation "a '<*' x" (at level 45, left associativity).
+Notation "a '<*' x" := (lsmul a x).
+Reserved Notation "x '*>' a" (at level 45, left associativity).
+Notation "x '*>' a" := (rsmul a x).
 
 Module AdditiveNotations.
 
@@ -103,6 +109,46 @@ Class Ring (A : Type) {eqv : Eqv A} {add : Add A} {zero : Zero A} {neg : Neg A}
   dis_r : forall x y z : A, (x + y) * z = x * z + y * z;
 }.
 
+Module Left.
+
+Class LeftModule (S A : Type)
+  {seqv : Eqv S} {sadd : Add S} {szero : Zero S} {sneg : Neg S}
+  {smul : Mul S} {sone : One S}
+  {eqv : Eqv A} {add : Add A} {zero : Zero A} {neg : Neg A}
+  {lsmul : LSMul S A} : Prop := {
+  sring :> Ring S (add := sadd) (zero := szero) (neg := sneg)
+    (mul := smul) (one := sone);
+  group :> Group A (opr := add) (idn := zero) (inv := neg);
+  sadd_com : forall x y : A, x + y = y + x;
+  lsmul_pro : lsmul ::> seqv ==> eqv ==> eqv;
+  lsmul_smul_cpt : forall (a b : S) (x : A), (a * b) <* x = a <* (b <* x);
+  lsmul_idn : forall x : A, 1 <* x = x;
+  lsmul_add_dis : forall (a : S) (x y : A), a <* (x + y) = a <* x + a <* y;
+  lsmul_sadd_dis : forall (a b : S) (x : A), (a + b) <* x = a <* x + b <* x;
+}.
+
+End Left.
+
+Module Right.
+
+Class RightModule (S A : Type)
+  {seqv : Eqv S} {sadd : Add S} {szero : Zero S} {sneg : Neg S}
+  {smul : Mul S} {sone : One S}
+  {eqv : Eqv A} {add : Add A} {zero : Zero A} {neg : Neg A}
+  {rsmul : RSMul S A} : Prop := {
+  sring :> Ring S (add := sadd) (zero := szero) (neg := sneg)
+    (mul := smul) (one := sone);
+  group :> Group A (opr := add) (idn := zero) (inv := neg);
+  sadd_com : forall x y : A, x + y = y + x;
+  rsmul_pro : rsmul ::> seqv ==> eqv ==> eqv;
+  rsmul_smul_cpt : forall (a b : S) (x : A), x *> (a * b) = (x *> a) *> b;
+  rsmul_idn : forall x : A, x *> 1 = x;
+  rsmul_add_dis : forall (a : S) (x y : A), (x + y) *> a = x *> a + y *> a;
+  rsmul_sadd_dis : forall (a b : S) (x : A), x *> (a + b) = x *> a + x *> b;
+}.
+
+End Right.
+
 Add Parametric Relation {A : Type} {eqv' : Eqv A}
   {std' : Setoid A} : A eqv
   reflexivity proved by ref
@@ -161,6 +207,38 @@ Proof.
   intros x y p z w q.
   destruct rng' as [_ _ [[_ mul_pro _] _ _] _ _].
   cbv in mul_pro. apply mul_pro.
+  - apply p.
+  - apply q. Qed.
+
+Import Left.
+
+Add Parametric Morphism {S A : Type}
+  {seqv' : Eqv S} {sadd' : Add S} {szero' : Zero S} {sneg' : Neg S}
+  {smul' : Mul S} {sone' : One S}
+  {eqv' : Eqv A} {add' : Add A} {zero' : Zero A} {neg' : Neg A}
+  {lsmul' : LSMul S A} {lmod' : LeftModule S A} : lsmul
+  with signature eqv ==> eqv ==> eqv
+  as eqv_lsmul_morphism.
+Proof.
+  intros x y p z w q.
+  destruct lmod' as [_ _ _ lsmul_pro _ _ _ _].
+  cbv in lsmul_pro. apply lsmul_pro.
+  - apply p.
+  - apply q. Qed.
+
+Import Right.
+
+Add Parametric Morphism {S A : Type}
+  {seqv' : Eqv S} {sadd' : Add S} {szero' : Zero S} {sneg' : Neg S}
+  {smul' : Mul S} {sone' : One S}
+  {eqv' : Eqv A} {add' : Add A} {zero' : Zero A} {neg' : Neg A}
+  {rsmul' : RSMul S A} {rmod' : RightModule S A} : rsmul
+  with signature eqv ==> eqv ==> eqv
+  as eqv_rsmul_morphism.
+Proof.
+  intros x y p z w q.
+  destruct rmod' as [_ _ _ rsmul_pro _ _ _ _].
+  cbv in rsmul_pro. apply rsmul_pro.
   - apply p.
   - apply q. Qed.
 
@@ -304,6 +382,32 @@ Proof.
   - intros x y z. rewrite mul_add_distr_l. reflexivity.
   - intros x y z. rewrite mul_add_distr_r. reflexivity. Qed.
 
+(** It would be more motivating to build a module over zip-lists. *)
+(* Import List. *)
+
+Instance Z_LSMul : LSMul Z Z := fun (a : Z) (x : Z) => a * x.
+
+Import Left.
+
+Instance Z_LeftModule : LeftModule Z Z := {
+  sadd_com := _;
+  lsmul_pro := _;
+  lsmul_smul_cpt := _;
+  lsmul_idn := _;
+  lsmul_add_dis := _;
+  lsmul_sadd_dis := _;
+}.
+Proof.
+  all: cbv [Classes.add Z_Add Classes.zero Z_Zero Classes.neg Z_Neg
+    Classes.mul Z_Mul Classes.one Z_One].
+  all: cbv [Z_AddOpr Z_AddIdn Z_AddInv Z_MulOpr Z_MulIdn].
+  - intros x y. rewrite add_comm. reflexivity.
+  - apply mul_wd.
+  - intros a b x. rewrite mul_assoc. reflexivity.
+  - intros x. rewrite mul_1_l. reflexivity.
+  - intros a x y. rewrite mul_add_distr_l. reflexivity.
+  - intros a b x. rewrite mul_add_distr_r. reflexivity. Qed.
+
 End Instances.
 
 Module Computations.
@@ -317,6 +421,7 @@ Open Scope Z_scope.
 Definition meaning := 42.
 Definition luck := 7.
 Definition fortune := 13.
+Definition hope := 69.
 
 End Input.
 
@@ -324,7 +429,7 @@ Section Output.
 
 Import Classes.
 
-Example fate := meaning * fortune - luck.
+Example fate := meaning * fortune - hope <* luck.
 
 End Output.
 
