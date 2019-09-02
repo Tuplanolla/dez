@@ -1,6 +1,6 @@
 Set Warnings "-notation-overridden".
 
-From Coq Require Extraction Setoid Vector ZArith.
+From Coq Require Eqdep_dec Extraction Setoid Vector ZArith.
 
 Module Classes.
 
@@ -133,11 +133,11 @@ Open Scope group_scope.
 Class LeftModule (S A : Type)
   {seqv : Eqv S} {sadd : Add S} {szero : Zero S} {sneg : Neg S}
   {smul : Mul S} {sone : One S}
-  {eqv : Eqv A} {add : Opr A} {zero : Idn A} {neg : Inv A}
+  {eqv : Eqv A} {opr : Opr A} {idn : Idn A} {inv : Inv A}
   {lsmul : LSMul S A} : Prop := {
   sring :> Ring S (add := sadd) (zero := szero) (neg := sneg)
     (mul := smul) (one := sone);
-  group :> Group A (opr := add) (idn := zero) (inv := neg);
+  group :> Group A (opr := opr) (idn := idn) (inv := inv);
   add_com : forall x y : A, x + y == y + x;
   lsmul_pro : lsmul ::> seqv ==> eqv ==> eqv;
   lsmul_smul_cpt : forall (a b : S) (x : A), (a * b) <* x == a <* (b <* x);
@@ -161,11 +161,11 @@ Open Scope group_scope.
 Class RightModule (S A : Type)
   {seqv : Eqv S} {sadd : Add S} {szero : Zero S} {sneg : Neg S}
   {smul : Mul S} {sone : One S}
-  {eqv : Eqv A} {add : Opr A} {zero : Idn A} {neg : Inv A}
+  {eqv : Eqv A} {opr : Opr A} {idn : Idn A} {inv : Inv A}
   {rsmul : RSMul S A} : Prop := {
   sring :> Ring S (add := sadd) (zero := szero) (neg := sneg)
     (mul := smul) (one := sone);
-  group :> Group A (opr := add) (idn := zero) (inv := neg);
+  group :> Group A (opr := opr) (idn := idn) (inv := inv);
   add_com : forall x y : A, x + y == y + x;
   rsmul_pro : rsmul ::> seqv ==> eqv ==> eqv;
   rsmul_smul_cpt : forall (a b : S) (x : A), x *> (a * b) == (x *> a) *> b;
@@ -243,7 +243,7 @@ Import Left.
 Add Parametric Morphism {S A : Type}
   {seqv' : Eqv S} {sadd' : Add S} {szero' : Zero S} {sneg' : Neg S}
   {smul' : Mul S} {sone' : One S}
-  {eqv' : Eqv A} {add' : Opr A} {zero' : Idn A} {neg' : Inv A}
+  {eqv' : Eqv A} {opr' : Opr A} {idn' : Idn A} {inv' : Inv A}
   {lsmul' : LSMul S A} {lmod' : LeftModule S A} : lsmul
   with signature eqv ==> eqv ==> eqv
   as eqv_lsmul_morphism.
@@ -259,7 +259,7 @@ Import Right.
 Add Parametric Morphism {S A : Type}
   {seqv' : Eqv S} {sadd' : Add S} {szero' : Zero S} {sneg' : Neg S}
   {smul' : Mul S} {sone' : One S}
-  {eqv' : Eqv A} {add' : Opr A} {zero' : Idn A} {neg' : Inv A}
+  {eqv' : Eqv A} {opr' : Opr A} {idn' : Idn A} {inv' : Inv A}
   {rsmul' : RSMul S A} {rmod' : RightModule S A} : rsmul
   with signature eqv ==> eqv ==> eqv
   as eqv_rsmul_morphism.
@@ -323,11 +323,7 @@ End Properties.
 
 Module Instances.
 
-(** TODO Make use of [Vector]. *)
-
-(* Import Vector VectorNotations ZArith Z Classes. *)
-
-Import List ListNotations ZArith Z Classes.
+Import ZArith Z Classes.
 
 Open Scope Z_scope.
 
@@ -344,8 +340,6 @@ Proof.
   - apply eq_refl.
   - apply eq_sym.
   - apply eq_trans. Qed.
-
-(** TODO Investigate why order matters here. *)
 
 Instance Z_MulOpr : Opr Z := fun x y : Z => x * y.
 
@@ -424,98 +418,231 @@ Proof.
   - intros x y z. rewrite mul_add_distr_l. reflexivity.
   - intros x y z. rewrite mul_add_distr_r. reflexivity. Qed.
 
-(** TODO Not interesting. *)
+Import Vector VectorNotations.
 
-Module Stupid.
+Section VectorLemmas.
 
-Instance Z_LSMul : LSMul Z Z := fun (a : Z) (x : Z) => a * x.
+Import Eqdep_dec PeanoNat.
 
-Import Left.
-
-Instance Z_LeftModule : LeftModule Z Z := {
-  add_com := _;
-  lsmul_pro := _;
-  lsmul_smul_cpt := _;
-  lsmul_idn := _;
-  lsmul_add_dis := _;
-  lsmul_sadd_dis := _;
-}.
+Lemma case_nil : forall {A : Type} (xs : t A O),
+  xs = [].
 Proof.
-  all: cbv [add Z_Add zero Z_Zero neg Z_Neg mul Z_Mul one Z_One].
-  all: cbv [Z_AddOpr Z_AddIdn Z_AddInv Z_MulOpr Z_MulIdn].
-  - intros x y. rewrite add_comm. reflexivity.
-  - apply mul_wd.
-  - intros a b x. rewrite mul_assoc. reflexivity.
-  - intros x. rewrite mul_1_l. reflexivity.
-  - intros a x y. rewrite mul_add_distr_l. reflexivity.
-  - intros a b x. rewrite mul_add_distr_r. reflexivity. Qed.
+  intros A xs. set (P (xs : t A O) := xs = []).
+  apply (case0 P). reflexivity. Qed.
 
-End Stupid.
+Lemma case_cons : forall {A : Type} {n : nat} (xs : t A (S n)),
+  exists (y : A) (ys : t A n), xs = y :: ys.
+Proof.
+  intros A n xs. set (P (n : nat) (xs : t A (S n)) :=
+    exists (y : A) (ys : t A n), xs = y :: ys).
+  apply (caseS P). intros y p ys. exists y, ys. reflexivity. Qed.
 
-Import List ListNotations.
+Lemma Forall2_inversion : forall {A B : Type} (f : A -> B -> Prop)
+  {n : nat} (x : A) (xs : t A n) (y : B) (ys : t B n),
+  Forall2 f (x :: xs) (y :: ys) -> f x y /\ Forall2 f xs ys.
+Proof.
+  intros A B f n x xs y ys p.
+  inversion p as [| n' x' y' xs' ys' phd ptl pn' [px' pxs'] [py' pys']].
+  apply (inj_pair2_eq_dec nat Nat.eq_dec) in pxs'.
+  apply (inj_pair2_eq_dec nat Nat.eq_dec) in pys'.
+  subst. split.
+  - apply phd.
+  - apply ptl. Qed.
 
-Instance Z_ListEqv : Eqv (list Z) := fun xs ys : list Z => xs = ys.
+End VectorLemmas.
 
-Instance Z_ListSetoid : Setoid (list Z) := {
+Instance Z_VectorEqv {n : nat} : Eqv (t Z n) :=
+  fun xs ys : t Z n => Forall2 (fun x y : Z => x == y) xs ys.
+
+Instance Z_VectorSetoid {n : nat} : Setoid (t Z n) := {
   ref := _;
   sym := _;
   tra := _;
 }.
 Proof.
   all: cbv [eqv].
-  all: cbv [Z_ListEqv].
-  - intros xs. reflexivity.
-  - intros xs ys p. symmetry. apply p.
-  - intros xs ys zs p q. transitivity ys.
-    + apply p.
-    + apply q. Qed.
+  all: cbv [Z_VectorEqv].
+  all: cbv [Z_Eqv].
+  all: set (P (x y : Z) := x == y).
+  - intros xs. induction n as [| n p].
+    + pose proof case_nil xs as pxs'.
+      subst. apply Forall2_nil.
+    + pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      subst; rename x' into x, xs' into xs. apply Forall2_cons.
+      * reflexivity.
+      * apply p.
+  - intros xs ys. induction n as [| n p].
+    + intros q.
+      pose proof case_nil xs as pxs'.
+      pose proof case_nil ys as pys'.
+      subst. apply Forall2_nil.
+    + intros q.
+      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      pose proof case_cons ys as pys'. destruct pys' as [y' [ys' pys']].
+      subst; rename x' into x, xs' into xs, y' into y, ys' into ys.
+      apply Forall2_inversion in q. destruct q as [qhd qtl].
+      apply Forall2_cons.
+      * symmetry. apply qhd.
+      * apply p. apply qtl.
+  - intros xs ys zs. induction n as [| n p].
+    + intros q r.
+      pose proof case_nil xs as pxs'.
+      pose proof case_nil ys as pys'.
+      pose proof case_nil zs as pzs'.
+      subst. apply Forall2_nil.
+    + intros q r.
+      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      pose proof case_cons ys as pys'. destruct pys' as [y' [ys' pys']].
+      pose proof case_cons zs as pzs'. destruct pzs' as [z' [zs' pzs']].
+      subst; rename x' into x, xs' into xs, y' into y, ys' into ys,
+        z' into z, zs' into zs.
+      apply Forall2_inversion in q. destruct q as [qhd qtl].
+      apply Forall2_inversion in r. destruct r as [rhd rtl].
+      apply Forall2_cons.
+      * etransitivity.
+        -- apply qhd.
+        -- apply rhd.
+      * eapply p.
+        -- apply qtl.
+        -- apply rtl. Qed.
 
-Instance Z_ListOpr : Opr (list Z) :=
-  fun xs ys : list Z => map (fun p : Z * Z => fst p + snd p) (combine xs ys).
+Instance Z_VectorOpr {n : nat} : Opr (t Z n) :=
+  fun xs ys : t Z n => map2 (fun x y : Z => x + y) xs ys.
 
-Instance Z_ListSemigroup : Semigroup (list Z) := {
+Instance Z_VectorSemigroup {n : nat} : Semigroup (t Z n) := {
   opr_pro := _;
   ass := _;
 }.
 Proof.
   all: cbv [eqv opr].
-  all: cbv [Z_ListEqv Z_ListOpr].
-  - intros xs ys [] zs ws []. reflexivity.
-  - intros xs ys zs. admit. Admitted.
+  all: cbv [Z_VectorEqv Z_VectorOpr].
+  all: cbv [Z_Eqv Z_AddOpr].
+  all: set (P (x y : Z) := x == y).
+  all: set (f (x y : Z) := x + y).
+  - induction n as [| n p].
+    + intros xs ys q zs ws r.
+      pose proof case_nil xs as pxs'.
+      pose proof case_nil ys as pys'.
+      pose proof case_nil zs as pzs'.
+      pose proof case_nil ws as pws'.
+      subst. apply Forall2_nil.
+    + intros xs ys q zs ws r.
+      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      pose proof case_cons ys as pys'. destruct pys' as [y' [ys' pys']].
+      pose proof case_cons zs as pzs'. destruct pzs' as [z' [zs' pzs']].
+      pose proof case_cons ws as pws'. destruct pws' as [w' [ws' pws']].
+      subst; rename x' into x, xs' into xs, y' into y, ys' into ys,
+        z' into z, zs' into zs, w' into w, ws' into ws.
+      apply Forall2_inversion in q. destruct q as [qhd qtl].
+      apply Forall2_inversion in r. destruct r as [rhd rtl].
+      cbn -[Z.add]. apply Forall2_cons.
+      * apply add_wd.
+        -- apply qhd.
+        -- apply rhd.
+      * apply p.
+        -- apply qtl.
+        -- apply rtl.
+  - induction n as [| n p].
+    + intros xs ys zs.
+      pose proof case_nil xs as pxs'.
+      pose proof case_nil ys as pys'.
+      pose proof case_nil zs as pzs'.
+      subst. apply Forall2_nil.
+    + intros xs ys zs.
+      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      pose proof case_cons ys as pys'. destruct pys' as [y' [ys' pys']].
+      pose proof case_cons zs as pzs'. destruct pzs' as [z' [zs' pzs']].
+      subst; rename x' into x, xs' into xs, y' into y, ys' into ys,
+        z' into z, zs' into zs.
+      cbn -[Z.add]. apply Forall2_cons.
+      * cbv -[Z.add]. rewrite add_assoc. reflexivity.
+      * apply p. Qed.
 
-(** TODO This should be infinite. *)
+Instance Z_VectorIdn {n : nat} : Idn (t Z n) := const 0 n.
 
-Instance Z_ListIdn : Idn (list Z) := [0].
-
-Instance Z_ListMonoid : Monoid (list Z) := {
+Instance Z_VectorMonoid {n : nat} : Monoid (t Z n) := {
   idn_l := _; idn_r := _;
 }.
 Proof.
   all: cbv [eqv opr idn].
-  all: cbv [Z_ListEqv Z_ListOpr Z_ListIdn].
-  - intros xs. admit.
-  - intros xs. admit. Admitted.
+  all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn].
+  all: cbv [Z_Eqv Z_AddOpr Z_AddIdn].
+  all: set (P (x y : Z) := x == y).
+  all: set (f (x y : Z) := x + y).
+  - induction n as [| n p].
+    + intros xs.
+      pose proof case_nil xs as pxs'.
+      subst. apply Forall2_nil.
+    + intros xs.
+      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      subst; rename x' into x, xs' into xs.
+      cbn -[Z.add Z.zero]. apply Forall2_cons.
+      * rewrite add_0_l. reflexivity.
+      * apply p.
+  - induction n as [| n p].
+    + intros xs.
+      pose proof case_nil xs as pxs'.
+      subst. apply Forall2_nil.
+    + intros xs.
+      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      subst; rename x' into x, xs' into xs.
+      cbn -[Z.add Z.zero]. apply Forall2_cons.
+      * rewrite add_0_r. reflexivity.
+      * apply p. Qed.
 
-Instance Z_ListInv : Inv (list Z) :=
-  fun xs : list Z => map (fun x : Z => - x) xs.
+Instance Z_VectorInv {n : nat} : Inv (t Z n) :=
+  fun xs : t Z n => map (fun x : Z => - x) xs.
 
-Instance Z_ListGroup : Group (list Z) := {
+Instance Z_VectorGroup {n : nat} : Group (t Z n) := {
   inv_pro := _;
   inv_l := _; inv_r := _;
 }.
 Proof.
   all: cbv [eqv opr idn inv].
-  all: cbv [Z_ListEqv Z_ListOpr Z_ListIdn Z_ListInv].
-  - intros xs ys []. reflexivity.
-  - intros xs. admit.
-  - intros xs. admit. Admitted.
+  all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv].
+  all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv].
+  all: set (P (x y : Z) := x == y).
+  all: set (f (x y : Z) := x + y).
+  - induction n as [| n p].
+    + intros xs ys q.
+      pose proof case_nil xs as pxs'.
+      pose proof case_nil ys as pys'.
+      subst. apply Forall2_nil.
+    + intros xs ys q.
+      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      pose proof case_cons ys as pys'. destruct pys' as [y' [ys' pys']].
+      subst; rename x' into x, xs' into xs, y' into y, ys' into ys.
+      apply Forall2_inversion in q. destruct q as [qhd qtl].
+      cbn -[Z.add Z.zero Z.opp]. apply Forall2_cons.
+      * apply opp_wd. apply qhd.
+      * apply p. apply qtl.
+  - induction n as [| n p].
+    + intros xs.
+      pose proof case_nil xs as pxs'.
+      subst. apply Forall2_nil.
+    + intros xs.
+      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      subst; rename x' into x, xs' into xs.
+      cbn -[Z.add Z.zero Z.opp]. apply Forall2_cons.
+      * cbv -[Z.add Z.zero Z.opp]. rewrite add_opp_diag_l. reflexivity.
+      * apply p.
+  - induction n as [| n p].
+    + intros xs.
+      pose proof case_nil xs as pxs'.
+      subst. apply Forall2_nil.
+    + intros xs.
+      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      subst; rename x' into x, xs' into xs.
+      cbn -[Z.add Z.zero Z.opp]. apply Forall2_cons.
+      * cbv -[Z.add Z.zero Z.opp]. rewrite add_opp_diag_r. reflexivity.
+      * apply p. Qed.
 
-Instance Z_LSMul : LSMul Z (list Z) :=
-  fun (a : Z) (xs : list Z) => map (fun x : Z => a * x) xs.
+Instance Z_LSMul {n : nat} : LSMul Z (t Z n) :=
+  fun (a : Z) (xs : t Z n) => map (fun x : Z => a * x) xs.
 
 Import Left.
 
-Instance Z_LeftModule : LeftModule Z (list Z) := {
+Instance Z_LeftModule {n : nat} : LeftModule Z (t Z n) := {
   add_com := _;
   lsmul_pro := _;
   lsmul_smul_cpt := _;
@@ -525,32 +652,84 @@ Instance Z_LeftModule : LeftModule Z (list Z) := {
 }.
 Proof.
   all: cbv [eqv opr idn inv lsmul].
-  all: cbv [Z_ListEqv Z_ListOpr Z_ListIdn Z_ListInv Z_LSMul].
-  - intros xs. induction xs as [| x xs p]; intros ys.
-    + destruct ys as [| y ys].
-      * reflexivity.
-      * reflexivity.
-    + destruct ys as [| y ys].
-      * reflexivity.
-      * cbn [map combine]. rewrite p. f_equal.
-        rewrite add_comm. reflexivity.
-  - intros x y [] xs ys []. reflexivity.
-  - intros a b xs. induction xs as [| x xs p].
-    + reflexivity.
-    + cbn [map]. rewrite p. f_equal. rewrite mul_assoc. reflexivity.
-  - intros xs. induction xs as [| x xs p].
-    + reflexivity.
-    + cbn [map]. rewrite p. f_equal. rewrite mul_1_l. reflexivity.
-  - intros a xs. induction xs as [| x xs p]; intros ys.
-    + reflexivity.
-    + destruct ys as [| y ys].
-      * reflexivity.
-      * cbn [map combine]. rewrite p. f_equal.
+  all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv Z_LSMul].
+  all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv].
+  all: set (P (x y : Z) := x == y).
+  all: set (f (x y : Z) := x + y).
+  all: set (g (a x : Z) := a * x).
+  - induction n as [| n p].
+    + intros xs ys.
+      pose proof case_nil xs as pxs'.
+      pose proof case_nil ys as pys'.
+      subst. apply Forall2_nil.
+    + intros xs ys.
+      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      pose proof case_cons ys as pys'. destruct pys' as [y' [ys' pys']].
+      subst; rename x' into x, xs' into xs, y' into y, ys' into ys.
+      cbn -[Z.add Z.zero Z.opp]. apply Forall2_cons.
+      * cbn -[Z.add Z.zero Z.opp]. rewrite add_comm. reflexivity.
+      * apply p.
+  - induction n as [| n p].
+    + intros a b q xs ys r.
+      pose proof case_nil xs as pxs'.
+      pose proof case_nil ys as pys'.
+      subst. apply Forall2_nil.
+    + intros a b q xs ys r.
+      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      pose proof case_cons ys as pys'. destruct pys' as [y' [ys' pys']].
+      subst; rename x' into x, xs' into xs, y' into y, ys' into ys.
+      apply Forall2_inversion in r. destruct r as [rhd rtl].
+      cbn -[Z.mul Z.one]. apply Forall2_cons.
+      * apply mul_wd.
+        -- reflexivity.
+        -- apply rhd.
+      * apply p.
+        -- reflexivity.
+        -- apply rtl.
+  - induction n as [| n p].
+    + intros a b xs.
+      pose proof case_nil xs as pxs'.
+      subst. apply Forall2_nil.
+    + intros a b xs.
+      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      subst; rename x' into x, xs' into xs.
+      cbn -[Z.mul Z.one]. apply Forall2_cons.
+      * cbv -[Z.mul Z.one]. rewrite mul_assoc. reflexivity.
+      * apply p.
+  - induction n as [| n p].
+    + intros xs.
+      pose proof case_nil xs as pxs'.
+      subst. apply Forall2_nil.
+    + intros xs.
+      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      subst; rename x' into x, xs' into xs.
+      cbn -[Z.mul Z.one]. apply Forall2_cons.
+      * cbv -[Z.mul Z.one]. rewrite mul_1_l. reflexivity.
+      * apply p.
+  - induction n as [| n p].
+    + intros a xs ys.
+      pose proof case_nil xs as pxs'.
+      pose proof case_nil ys as pys'.
+      subst. apply Forall2_nil.
+    + intros a xs ys.
+      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      pose proof case_cons ys as pys'. destruct pys' as [y' [ys' pys']].
+      subst; rename x' into x, xs' into xs, y' into y, ys' into ys.
+      cbn -[Z.add Z.zero Z.opp Z.mul Z.one]. apply Forall2_cons.
+      * cbn -[Z.add Z.zero Z.opp Z.mul Z.one].
         rewrite mul_add_distr_l. reflexivity.
-  - intros a b xs. induction xs as [| x xs p].
-    + reflexivity.
-    + cbn [map combine]. rewrite p. f_equal.
-      rewrite mul_add_distr_r. reflexivity. Qed.
+      * apply p.
+  - induction n as [| n p].
+    + intros a b xs.
+      pose proof case_nil xs as pxs'.
+      subst. apply Forall2_nil.
+    + intros a b xs.
+      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      subst; rename x' into x, xs' into xs.
+      cbn -[Z.add Z.zero Z.opp Z.mul Z.one]. apply Forall2_cons.
+      * cbn -[Z.add Z.zero Z.opp Z.mul Z.one].
+        rewrite mul_add_distr_r. reflexivity.
+      * apply p. Qed.
 
 End Instances.
 
@@ -558,7 +737,7 @@ Module Computations.
 
 Section Input.
 
-Import List ListNotations ZArith Z.
+Import Vector VectorNotations ZArith Z.
 
 Open Scope Z_scope.
 
@@ -583,11 +762,11 @@ End Output.
 
 Section Test.
 
-Import List ListNotations ZArith Z.
+Import Vector VectorNotations ZArith Z.
 
 Open Scope Z_scope.
 
-Compute if list_eq_dec eq_dec fate [20273; 28193] then true else false.
+Compute if Vector.eq_dec _ eqb _ _ fate [20273; 28193] then true else false.
 
 End Test.
 
