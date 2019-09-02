@@ -413,6 +413,7 @@ Instance Z_Ring : Ring Z := {
 Proof.
   all: cbv [eqv add zero neg mul one].
   all: cbv [Z_Eqv Z_Add Z_Zero Z_Neg Z_Mul Z_One].
+  all: cbv [eqv add zero neg mul one].
   all: cbv [Z_AddOpr Z_AddIdn Z_AddInv Z_MulOpr Z_MulIdn].
   - intros x y. rewrite add_comm. reflexivity.
   - intros x y z. rewrite mul_add_distr_l. reflexivity.
@@ -451,8 +452,7 @@ Proof.
 
 End VectorLemmas.
 
-Instance Z_VectorEqv {n : nat} : Eqv (t Z n) :=
-  fun xs ys : t Z n => Forall2 (fun x y : Z => x == y) xs ys.
+Instance Z_VectorEqv {n : nat} : Eqv (t Z n) := Forall2 eqv.
 
 Instance Z_VectorSetoid {n : nat} : Setoid (t Z n) := {
   ref := _;
@@ -506,8 +506,7 @@ Proof.
         -- apply qtl.
         -- apply rtl. Qed.
 
-Instance Z_VectorOpr {n : nat} : Opr (t Z n) :=
-  fun xs ys : t Z n => map2 (fun x y : Z => x + y) xs ys.
+Instance Z_VectorOpr {n : nat} : Opr (t Z n) := map2 Z_AddOpr.
 
 Instance Z_VectorSemigroup {n : nat} : Semigroup (t Z n) := {
   opr_pro := _;
@@ -518,7 +517,6 @@ Proof.
   all: cbv [Z_VectorEqv Z_VectorOpr].
   all: cbv [Z_Eqv Z_AddOpr].
   all: set (P (x y : Z) := x == y).
-  all: set (f (x y : Z) := x + y).
   - induction n as [| n p].
     + intros xs ys q zs ws r.
       pose proof case_nil xs as pxs'.
@@ -558,7 +556,7 @@ Proof.
       * cbv -[Z.add]. rewrite add_assoc. reflexivity.
       * apply p. Qed.
 
-Instance Z_VectorIdn {n : nat} : Idn (t Z n) := const 0 n.
+Instance Z_VectorIdn {n : nat} : Idn (t Z n) := const Z_AddIdn n.
 
 Instance Z_VectorMonoid {n : nat} : Monoid (t Z n) := {
   idn_l := _; idn_r := _;
@@ -568,7 +566,6 @@ Proof.
   all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn].
   all: cbv [Z_Eqv Z_AddOpr Z_AddIdn].
   all: set (P (x y : Z) := x == y).
-  all: set (f (x y : Z) := x + y).
   - induction n as [| n p].
     + intros xs.
       pose proof case_nil xs as pxs'.
@@ -590,8 +587,7 @@ Proof.
       * rewrite add_0_r. reflexivity.
       * apply p. Qed.
 
-Instance Z_VectorInv {n : nat} : Inv (t Z n) :=
-  fun xs : t Z n => map (fun x : Z => - x) xs.
+Instance Z_VectorInv {n : nat} : Inv (t Z n) := map Z_AddInv.
 
 Instance Z_VectorGroup {n : nat} : Group (t Z n) := {
   inv_pro := _;
@@ -602,7 +598,6 @@ Proof.
   all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv].
   all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv].
   all: set (P (x y : Z) := x == y).
-  all: set (f (x y : Z) := x + y).
   - induction n as [| n p].
     + intros xs ys q.
       pose proof case_nil xs as pxs'.
@@ -638,7 +633,7 @@ Proof.
       * apply p. Qed.
 
 Instance Z_LSMul {n : nat} : LSMul Z (t Z n) :=
-  fun (a : Z) (xs : t Z n) => map (fun x : Z => a * x) xs.
+  fun a : Z => map (fun x : Z => a * x).
 
 Import Left.
 
@@ -653,10 +648,9 @@ Instance Z_LeftModule {n : nat} : LeftModule Z (t Z n) := {
 Proof.
   all: cbv [eqv opr idn inv lsmul].
   all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv Z_LSMul].
-  all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv].
+  all: cbv [eqv opr idn inv].
+  all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv Z_MulOpr Z_MulIdn].
   all: set (P (x y : Z) := x == y).
-  all: set (f (x y : Z) := x + y).
-  all: set (g (a x : Z) := a * x).
   - induction n as [| n p].
     + intros xs ys.
       pose proof case_nil xs as pxs'.
