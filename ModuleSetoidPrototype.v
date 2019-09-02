@@ -17,10 +17,9 @@ Definition Proper {A : Type} (R : relation A) (x : A) : Prop :=
   R x x.
 
 Reserved Notation "R '==>' S" (at level 55, right associativity).
-Notation "R '==>' S" := (respectful R S). *)
-
+Notation "R '==>' S" := (respectful R S) : signature_scope. *)
 Reserved Notation "x '::>' R" (at level 60, right associativity).
-Notation "x '::>' R" := (Proper R x).
+Notation "x '::>' R" := (Proper R x) : signature_scope.
 
 Class Eqv (A : Type) : Type := eqv : A -> A -> Prop.
 Class Opr (A : Type) : Type := opr : A -> A -> A.
@@ -35,47 +34,40 @@ Class Recip (A : Type) : Type := recip : A -> A.
 Class LSMul (S A : Type) : Type := lsmul : S -> A -> A.
 Class RSMul (S A : Type) : Type := rsmul : S -> A -> A.
 
+Delimit Scope group_scope with group.
+Delimit Scope field_scope with field.
+Delimit Scope module_scope with module.
+
 Reserved Notation "x '==' y" (at level 70, no associativity).
-Notation "x '==' y" := (eqv x y).
-Notation "x '+' y" := (add x y).
-Notation "'0'" := zero.
-Notation "'-' x" := (neg x).
-Notation "x '-' y" := (x + (- y)).
-Notation "x '*' y" := (mul x y).
-Notation "'1'" := one.
-Notation "'/' x" := (recip x).
-Notation "x '/' y" := (x * (/ y)).
+Notation "x '==' y" := (eqv x y) : type_scope.
+Notation "x '+' y" := (add x y) : field_scope.
+Notation "'0'" := zero : field_scope.
+Notation "'-' x" := (neg x) : field_scope.
+Notation "x '-' y" := (add x (neg y)) : field_scope.
+Notation "x '*' y" := (mul x y) : field_scope.
+Notation "'1'" := one : field_scope.
+Notation "'/' x" := (recip x) : field_scope.
+Notation "x '/' y" := (mul x (recip y)) : field_scope.
 Reserved Notation "a '<*' x" (at level 45, left associativity).
-Notation "a '<*' x" := (lsmul a x).
+Notation "a '<*' x" := (lsmul a x) : module_scope.
 Reserved Notation "x '*>' a" (at level 45, left associativity).
-Notation "x '*>' a" := (rsmul a x).
-
-(** TODO Scope the notations to avoid having to define these or
-    define modules with its own operational classes again. *)
-
-Reserved Notation "x '(+)' y" (at level 50, left associativity).
-Notation "x '(+)' y" := (opr x y).
-Notation "'(0)'" := idn.
-Reserved Notation "'(-)' x" (at level 35, right associativity).
-Notation "'(-)' x" := (inv x).
-Reserved Notation "x '(-)' y" (at level 50, left associativity).
-Notation "x '(-)' y" := (x + (- y)).
+Notation "x '*>' a" := (rsmul a x) : module_scope.
 
 Module AdditiveNotations.
 
-Notation "x '+' y" := (opr x y).
-Notation "'0'" := idn.
-Notation "'-' x" := (inv x).
-Notation "x '-' y" := (x + (- y)).
+Notation "x '+' y" := (opr x y) : group_scope.
+Notation "'0'" := idn : group_scope.
+Notation "'-' x" := (inv x) : group_scope.
+Notation "x '-' y" := (opr x (inv y)) : group_scope.
 
 End AdditiveNotations.
 
 Module MultiplicativeNotations.
 
-Notation "x '*' y" := (opr x y).
-Notation "'1'" := idn.
-Notation "'/' x" := (inv x).
-Notation "x '/' y" := (x * (/ y)).
+Notation "x '*' y" := (opr x y) : group_scope.
+Notation "'1'" := idn : group_scope.
+Notation "'/' x" := (inv x) : group_scope.
+Notation "x '/' y" := (opr x (inv y)) : group_scope.
 
 End MultiplicativeNotations.
 
@@ -88,6 +80,9 @@ Class Setoid (A : Type) {eqv : Eqv A} : Prop := {
 Section Additive.
 
 Import AdditiveNotations.
+
+Open Scope signature_scope.
+Open Scope group_scope.
 
 Class Semigroup (A : Type) {eqv : Eqv A} {opr : Opr A} : Prop := {
   setoid :> Setoid A;
@@ -111,6 +106,10 @@ Class Group (A : Type) {eqv : Eqv A}
 
 End Additive.
 
+Section Arbitrary.
+
+Open Scope field_scope.
+
 Class Ring (A : Type) {eqv : Eqv A} {add : Add A} {zero : Zero A} {neg : Neg A}
   {mul : Mul A} {one : One A} : Prop := {
   add_group :> Group A (opr := add) (idn := zero) (inv := neg);
@@ -120,7 +119,16 @@ Class Ring (A : Type) {eqv : Eqv A} {add : Add A} {zero : Zero A} {neg : Neg A}
   dis_r : forall x y z : A, (x + y) * z == x * z + y * z;
 }.
 
+End Arbitrary.
+
 Module Left.
+
+Import AdditiveNotations.
+
+Open Scope signature_scope.
+Open Scope module_scope.
+Open Scope field_scope.
+Open Scope group_scope.
 
 Class LeftModule (S A : Type)
   {seqv : Eqv S} {sadd : Add S} {szero : Zero S} {sneg : Neg S}
@@ -130,17 +138,25 @@ Class LeftModule (S A : Type)
   sring :> Ring S (add := sadd) (zero := szero) (neg := sneg)
     (mul := smul) (one := sone);
   group :> Group A (opr := add) (idn := zero) (inv := neg);
-  add_com : forall x y : A, x (+) y == y (+) x;
+  add_com : forall x y : A, x + y == y + x;
   lsmul_pro : lsmul ::> seqv ==> eqv ==> eqv;
   lsmul_smul_cpt : forall (a b : S) (x : A), (a * b) <* x == a <* (b <* x);
   lsmul_idn : forall x : A, 1 <* x == x;
-  lsmul_add_dis : forall (a : S) (x y : A), a <* (x (+) y) == a <* x (+) a <* y;
-  lsmul_sadd_dis : forall (a b : S) (x : A), (a + b) <* x == a <* x (+) b <* x;
+  lsmul_add_dis : forall (a : S) (x y : A), a <* (x + y) == a <* x + a <* y;
+  lsmul_sadd_dis : forall (a b : S) (x : A),
+    (a + b)%field <* x == a <* x + b <* x;
 }.
 
 End Left.
 
 Module Right.
+
+Import AdditiveNotations.
+
+Open Scope signature_scope.
+Open Scope module_scope.
+Open Scope field_scope.
+Open Scope group_scope.
 
 Class RightModule (S A : Type)
   {seqv : Eqv S} {sadd : Add S} {szero : Zero S} {sneg : Neg S}
@@ -150,12 +166,13 @@ Class RightModule (S A : Type)
   sring :> Ring S (add := sadd) (zero := szero) (neg := sneg)
     (mul := smul) (one := sone);
   group :> Group A (opr := add) (idn := zero) (inv := neg);
-  add_com : forall x y : A, x (+) y == y (+) x;
+  add_com : forall x y : A, x + y == y + x;
   rsmul_pro : rsmul ::> seqv ==> eqv ==> eqv;
   rsmul_smul_cpt : forall (a b : S) (x : A), x *> (a * b) == (x *> a) *> b;
   rsmul_idn : forall x : A, x *> 1 == x;
-  rsmul_add_dis : forall (a : S) (x y : A), (x (+) y) *> a == x *> a (+) y *> a;
-  rsmul_sadd_dis : forall (a b : S) (x : A), x *> (a + b) == x *> a (+) x *> b;
+  rsmul_add_dis : forall (a : S) (x y : A), (x + y) *> a == x *> a + y *> a;
+  rsmul_sadd_dis : forall (a b : S) (x : A),
+    x *> (a + b)%field == x *> a + x *> b;
 }.
 
 End Right.
@@ -258,6 +275,8 @@ End Classes.
 Module Properties.
 
 Import Classes AdditiveNotations.
+
+Open Scope group_scope.
 
 Theorem ivl : forall {A : Type} {eqv : Eqv A}
   {opr : Opr A} {idn : Idn A} {inv : Inv A} {grp : Group A},
@@ -554,9 +573,23 @@ Section Output.
 
 Import Classes AdditiveNotations.
 
+Open Scope module_scope.
+Open Scope field_scope.
+Open Scope group_scope.
+
 Example fate := (meaning * fortune) <* hope - one <* luck.
 
 End Output.
+
+Section Test.
+
+Import List ListNotations ZArith Z.
+
+Open Scope Z_scope.
+
+Compute if list_eq_dec eq_dec fate [20273; 28193] then true else false.
+
+End Test.
 
 End Computations.
 

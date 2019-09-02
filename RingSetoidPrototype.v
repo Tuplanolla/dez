@@ -18,7 +18,6 @@ Definition Proper {A : Type} (R : relation A) (x : A) : Prop :=
 
 Reserved Notation "R '==>' S" (at level 55, right associativity).
 Notation "R '==>' S" := (respectful R S). *)
-
 Reserved Notation "x '::>' R" (at level 60, right associativity).
 Notation "x '::>' R" := (Proper R x).
 
@@ -333,6 +332,16 @@ Import Classes.
 Example fate := meaning * fortune - luck.
 
 End Output.
+
+Section Test.
+
+Import ZArith Z.
+
+Open Scope Z_scope.
+
+Compute if eq_dec fate 281 then true else false.
+
+End Test.
 
 End Computations.
 
