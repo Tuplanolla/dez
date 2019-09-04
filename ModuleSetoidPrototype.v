@@ -104,6 +104,12 @@ Class Group (A : Type) {eqv : Eqv A}
   inv_r : forall x : A, x + (- x) == 0;
 }.
 
+Class AbelianGroup (A : Type) {eqv : Eqv A}
+  {opr : Opr A} {idn : Idn A} {inv : Inv A} : Prop := {
+  group :> Group A;
+  add_com : forall x y : A, x + y == y + x;
+}.
+
 End Additive.
 
 Section Arbitrary.
@@ -112,8 +118,7 @@ Open Scope field_scope.
 
 Class Ring (A : Type) {eqv : Eqv A} {add : Add A} {zero : Zero A} {neg : Neg A}
   {mul : Mul A} {one : One A} : Prop := {
-  add_group :> Group A (opr := add) (idn := zero) (inv := neg);
-  add_com : forall x y : A, x + y == y + x;
+  add_agroup :> AbelianGroup A (opr := add) (idn := zero) (inv := neg);
   mul_monoid :> Monoid A (opr := mul) (idn := one);
   dis_l : forall x y z : A, x * (y + z) == x * y + x * z;
   dis_r : forall x y z : A, (x + y) * z == x * z + y * z;
@@ -121,7 +126,7 @@ Class Ring (A : Type) {eqv : Eqv A} {add : Add A} {zero : Zero A} {neg : Neg A}
 
 End Arbitrary.
 
-Module Left.
+Section Left.
 
 Import AdditiveNotations.
 
@@ -135,10 +140,9 @@ Class LeftModule (S A : Type)
   {smul : Mul S} {sone : One S}
   {eqv : Eqv A} {opr : Opr A} {idn : Idn A} {inv : Inv A}
   {lsmul : LSMul S A} : Prop := {
-  sring :> Ring S (add := sadd) (zero := szero) (neg := sneg)
+  lsring :> Ring S (add := sadd) (zero := szero) (neg := sneg)
     (mul := smul) (one := sone);
-  group :> Group A (opr := opr) (idn := idn) (inv := inv);
-  add_com : forall x y : A, x + y == y + x;
+  lagroup :> AbelianGroup A (opr := opr) (idn := idn) (inv := inv);
   lsmul_pro : lsmul ::> seqv ==> eqv ==> eqv;
   lsmul_smul_cpt : forall (a b : S) (x : A), (a * b) <* x == a <* (b <* x);
   lsmul_idn : forall x : A, 1 <* x == x;
@@ -149,7 +153,7 @@ Class LeftModule (S A : Type)
 
 End Left.
 
-Module Right.
+Section Right.
 
 Import AdditiveNotations.
 
@@ -163,10 +167,9 @@ Class RightModule (S A : Type)
   {smul : Mul S} {sone : One S}
   {eqv : Eqv A} {opr : Opr A} {idn : Idn A} {inv : Inv A}
   {rsmul : RSMul S A} : Prop := {
-  sring :> Ring S (add := sadd) (zero := szero) (neg := sneg)
+  rsring :> Ring S (add := sadd) (zero := szero) (neg := sneg)
     (mul := smul) (one := sone);
-  group :> Group A (opr := opr) (idn := idn) (inv := inv);
-  add_com : forall x y : A, x + y == y + x;
+  ragroup :> AbelianGroup A (opr := opr) (idn := idn) (inv := inv);
   rsmul_pro : rsmul ::> seqv ==> eqv ==> eqv;
   rsmul_smul_cpt : forall (a b : S) (x : A), x *> (a * b) == (x *> a) *> b;
   rsmul_idn : forall x : A, x *> 1 == x;
@@ -176,6 +179,37 @@ Class RightModule (S A : Type)
 }.
 
 End Right.
+
+Section Additive.
+
+Import AdditiveNotations.
+
+Open Scope signature_scope.
+Open Scope module_scope.
+Open Scope field_scope.
+Open Scope group_scope.
+
+Class Bimodule (LS RS A : Type)
+  {lseqv : Eqv LS} {lsadd : Add LS} {lszero : Zero LS} {lsneg : Neg LS}
+  {lsmul : Mul LS} {lsone : One LS}
+  {rseqv : Eqv RS} {rsadd : Add RS} {rszero : Zero RS} {rsneg : Neg RS}
+  {rsmul : Mul RS} {rsone : One RS}
+  {eqv : Eqv A} {opr : Opr A} {idn : Idn A} {inv : Inv A}
+  {lsmul : LSMul LS A} {rsmul : RSMul RS A} : Prop := {
+  lmodule :> LeftModule LS A;
+  rmodule :> RightModule RS A;
+  smul_cpt : forall (a : LS) (b : RS) (x : A), (a <* x) *> b == a <* (x *> b);
+}.
+
+Class HomogeneousBimodule (S A : Type)
+  {seqv : Eqv S} {sadd : Add S} {szero : Zero S} {sneg : Neg S}
+  {smul : Mul S} {sone : One S}
+  {eqv : Eqv A} {opr : Opr A} {idn : Idn A} {inv : Inv A}
+  {lsmul : LSMul S A} {lsmul : RSMul S A} : Prop := {
+  bimodule :> Bimodule S S A;
+}.
+
+End Additive.
 
 Add Parametric Relation {A : Type} {eqv' : Eqv A}
   {std' : Setoid A} : A eqv
@@ -211,7 +245,7 @@ Add Parametric Morphism {A : Type} {eqv' : Eqv A}
   as eqv_add_morphism.
 Proof.
   intros x y p z w q.
-  destruct rng' as [[[[_ add_pro _] _ _] _ _ _] _ _ _ _].
+  destruct rng' as [[[[[_ add_pro _] _ _] _ _ _] _] _ _ _].
   cbv in add_pro. apply add_pro.
   - apply p.
   - apply q. Qed.
@@ -223,7 +257,7 @@ Add Parametric Morphism {A : Type} {eqv' : Eqv A}
   as eqv_neg_morphism.
 Proof.
   intros x y p.
-  destruct rng' as [[[_ _ _] neg_pro _ _] _ _ _ _].
+  destruct rng' as [[[[_ _ _] neg_pro _ _] _] _ _ _].
   cbv in neg_pro. apply neg_pro. apply p. Qed.
 
 Add Parametric Morphism {A : Type} {eqv' : Eqv A}
@@ -233,12 +267,10 @@ Add Parametric Morphism {A : Type} {eqv' : Eqv A}
   as eqv_mul_morphism.
 Proof.
   intros x y p z w q.
-  destruct rng' as [_ _ [[_ mul_pro _] _ _] _ _].
+  destruct rng' as [_ [[_ mul_pro _] _ _] _ _].
   cbv in mul_pro. apply mul_pro.
   - apply p.
   - apply q. Qed.
-
-Import Left.
 
 Add Parametric Morphism {S A : Type}
   {seqv' : Eqv S} {sadd' : Add S} {szero' : Zero S} {sneg' : Neg S}
@@ -249,12 +281,10 @@ Add Parametric Morphism {S A : Type}
   as eqv_lsmul_morphism.
 Proof.
   intros x y p z w q.
-  destruct lmod' as [_ _ _ lsmul_pro _ _ _ _].
+  destruct lmod' as [_ _ lsmul_pro _ _ _ _].
   cbv in lsmul_pro. apply lsmul_pro.
   - apply p.
   - apply q. Qed.
-
-Import Right.
 
 Add Parametric Morphism {S A : Type}
   {seqv' : Eqv S} {sadd' : Add S} {szero' : Zero S} {sneg' : Neg S}
@@ -265,7 +295,7 @@ Add Parametric Morphism {S A : Type}
   as eqv_rsmul_morphism.
 Proof.
   intros x y p z w q.
-  destruct rmod' as [_ _ _ rsmul_pro _ _ _ _].
+  destruct rmod' as [_ _ rsmul_pro _ _ _ _].
   cbv in rsmul_pro. apply rsmul_pro.
   - apply p.
   - apply q. Qed.
@@ -400,6 +430,14 @@ Proof.
   - intros x. rewrite add_opp_diag_l. reflexivity.
   - intros x. rewrite add_opp_diag_r. reflexivity. Qed.
 
+Instance Z_AddAbelianGroup : AbelianGroup Z := {
+  add_com := _;
+}.
+Proof.
+  all: cbv [eqv opr idn inv].
+  all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv].
+  - intros x y. rewrite add_comm. reflexivity. Qed.
+
 Instance Z_Add : Add Z := Z_AddOpr.
 Instance Z_Zero : Zero Z := Z_AddIdn.
 Instance Z_Neg : Neg Z := Z_AddInv.
@@ -407,7 +445,6 @@ Instance Z_Mul : Mul Z := Z_MulOpr.
 Instance Z_One : One Z := Z_MulIdn.
 
 Instance Z_Ring : Ring Z := {
-  add_com := _;
   dis_l := _; dis_r := _;
 }.
 Proof.
@@ -415,7 +452,6 @@ Proof.
   all: cbv [Z_Eqv Z_Add Z_Zero Z_Neg Z_Mul Z_One].
   all: cbv [eqv add zero neg mul one].
   all: cbv [Z_AddOpr Z_AddIdn Z_AddInv Z_MulOpr Z_MulIdn].
-  - intros x y. rewrite add_comm. reflexivity.
   - intros x y z. rewrite mul_add_distr_l. reflexivity.
   - intros x y z. rewrite mul_add_distr_r. reflexivity. Qed.
 
@@ -454,6 +490,10 @@ End VectorLemmas.
 
 Instance Z_VectorEqv {n : nat} : Eqv (t Z n) := Forall2 eqv.
 
+(** There exists an easier way to carry out these proofs
+    by first showing that [Forall2 eq] is equivalent to [eq],
+    but we pretend this is not the case here. *)
+
 Instance Z_VectorSetoid {n : nat} : Setoid (t Z n) := {
   ref := _;
   sym := _;
@@ -463,7 +503,7 @@ Proof.
   all: cbv [eqv].
   all: cbv [Z_VectorEqv].
   all: cbv [Z_Eqv].
-  all: set (P (x y : Z) := x == y).
+  all: set (P (x y : Z) := x = y).
   - intros xs. induction n as [| n p].
     + pose proof case_nil xs as pxs'.
       subst. apply Forall2_nil.
@@ -516,7 +556,7 @@ Proof.
   all: cbv [eqv opr].
   all: cbv [Z_VectorEqv Z_VectorOpr].
   all: cbv [Z_Eqv Z_AddOpr].
-  all: set (P (x y : Z) := x == y).
+  all: set (P (x y : Z) := x = y).
   - induction n as [| n p].
     + intros xs ys q zs ws r.
       pose proof case_nil xs as pxs'.
@@ -565,7 +605,7 @@ Proof.
   all: cbv [eqv opr idn].
   all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn].
   all: cbv [Z_Eqv Z_AddOpr Z_AddIdn].
-  all: set (P (x y : Z) := x == y).
+  all: set (P (x y : Z) := x = y).
   - induction n as [| n p].
     + intros xs.
       pose proof case_nil xs as pxs'.
@@ -597,7 +637,7 @@ Proof.
   all: cbv [eqv opr idn inv].
   all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv].
   all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv].
-  all: set (P (x y : Z) := x == y).
+  all: set (P (x y : Z) := x = y).
   - induction n as [| n p].
     + intros xs ys q.
       pose proof case_nil xs as pxs'.
@@ -632,25 +672,15 @@ Proof.
       * cbv -[Z.add Z.zero Z.opp]. rewrite add_opp_diag_r. reflexivity.
       * apply p. Qed.
 
-Instance Z_LSMul {n : nat} : LSMul Z (t Z n) :=
-  fun a : Z => map (fun x : Z => a * x).
-
-Import Left.
-
-Instance Z_LeftModule {n : nat} : LeftModule Z (t Z n) := {
+Instance Z_VectorAbelianGroup {n : nat} : AbelianGroup (t Z n) := {
   add_com := _;
-  lsmul_pro := _;
-  lsmul_smul_cpt := _;
-  lsmul_idn := _;
-  lsmul_add_dis := _;
-  lsmul_sadd_dis := _;
 }.
 Proof.
-  all: cbv [eqv opr idn inv lsmul].
-  all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv Z_LSMul].
   all: cbv [eqv opr idn inv].
-  all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv Z_MulOpr Z_MulIdn].
-  all: set (P (x y : Z) := x == y).
+  all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv].
+  all: cbv [eqv opr idn inv].
+  all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv].
+  all: set (P (x y : Z) := x = y).
   - induction n as [| n p].
     + intros xs ys.
       pose proof case_nil xs as pxs'.
@@ -662,7 +692,24 @@ Proof.
       subst; rename x' into x, xs' into xs, y' into y, ys' into ys.
       cbn -[Z.add Z.zero Z.opp]. apply Forall2_cons.
       * cbn -[Z.add Z.zero Z.opp]. rewrite add_comm. reflexivity.
-      * apply p.
+      * apply p. Qed.
+
+Instance Z_LSMul {n : nat} : LSMul Z (t Z n) :=
+  fun a : Z => map (fun x : Z => a * x).
+
+Instance Z_LeftModule {n : nat} : LeftModule Z (t Z n) := {
+  lsmul_pro := _;
+  lsmul_smul_cpt := _;
+  lsmul_idn := _;
+  lsmul_add_dis := _;
+  lsmul_sadd_dis := _;
+}.
+Proof.
+  all: cbv [eqv opr idn inv lsmul].
+  all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv Z_LSMul].
+  all: cbv [eqv opr idn inv].
+  all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv Z_MulOpr Z_MulIdn].
+  all: set (P (x y : Z) := x = y).
   - induction n as [| n p].
     + intros a b q xs ys r.
       pose proof case_nil xs as pxs'.
@@ -675,10 +722,10 @@ Proof.
       apply Forall2_inversion in r. destruct r as [rhd rtl].
       cbn -[Z.mul Z.one]. apply Forall2_cons.
       * apply mul_wd.
-        -- reflexivity.
+        -- apply q.
         -- apply rhd.
       * apply p.
-        -- reflexivity.
+        -- apply q.
         -- apply rtl.
   - induction n as [| n p].
     + intros a b xs.
@@ -725,6 +772,106 @@ Proof.
         rewrite mul_add_distr_r. reflexivity.
       * apply p. Qed.
 
+Instance Z_RSMul {n : nat} : RSMul Z (t Z n) :=
+  fun a : Z => map (fun x : Z => x * a).
+
+Instance Z_RightModule {n : nat} : RightModule Z (t Z n) := {
+  rsmul_pro := _;
+  rsmul_smul_cpt := _;
+  rsmul_idn := _;
+  rsmul_add_dis := _;
+  rsmul_sadd_dis := _;
+}.
+Proof.
+  all: cbv [eqv opr idn inv rsmul].
+  all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv Z_RSMul].
+  all: cbv [eqv opr idn inv].
+  all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv Z_MulOpr Z_MulIdn].
+  all: set (P (x y : Z) := x = y).
+  - induction n as [| n p].
+    + intros a b q xs ys r.
+      pose proof case_nil xs as pxs'.
+      pose proof case_nil ys as pys'.
+      subst. apply Forall2_nil.
+    + intros a b q xs ys r.
+      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      pose proof case_cons ys as pys'. destruct pys' as [y' [ys' pys']].
+      subst; rename x' into x, xs' into xs, y' into y, ys' into ys.
+      apply Forall2_inversion in r. destruct r as [rhd rtl].
+      cbn -[Z.mul Z.one]. apply Forall2_cons.
+      * apply mul_wd.
+        -- apply rhd.
+        -- apply q.
+      * apply p.
+        -- apply q.
+        -- apply rtl.
+  - induction n as [| n p].
+    + intros a b xs.
+      pose proof case_nil xs as pxs'.
+      subst. apply Forall2_nil.
+    + intros a b xs.
+      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      subst; rename x' into x, xs' into xs.
+      cbn -[Z.mul Z.one]. apply Forall2_cons.
+      * cbv -[Z.mul Z.one]. rewrite mul_assoc. reflexivity.
+      * apply p.
+  - induction n as [| n p].
+    + intros xs.
+      pose proof case_nil xs as pxs'.
+      subst. apply Forall2_nil.
+    + intros xs.
+      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      subst; rename x' into x, xs' into xs.
+      cbn -[Z.mul Z.one]. apply Forall2_cons.
+      * cbv -[Z.mul Z.one]. rewrite mul_1_r. reflexivity.
+      * apply p.
+  - induction n as [| n p].
+    + intros a xs ys.
+      pose proof case_nil xs as pxs'.
+      pose proof case_nil ys as pys'.
+      subst. apply Forall2_nil.
+    + intros a xs ys.
+      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      pose proof case_cons ys as pys'. destruct pys' as [y' [ys' pys']].
+      subst; rename x' into x, xs' into xs, y' into y, ys' into ys.
+      cbn -[Z.add Z.zero Z.opp Z.mul Z.one]. apply Forall2_cons.
+      * cbn -[Z.add Z.zero Z.opp Z.mul Z.one].
+        rewrite mul_add_distr_r. reflexivity.
+      * apply p.
+  - induction n as [| n p].
+    + intros a b xs.
+      pose proof case_nil xs as pxs'.
+      subst. apply Forall2_nil.
+    + intros a b xs.
+      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      subst; rename x' into x, xs' into xs.
+      cbn -[Z.add Z.zero Z.opp Z.mul Z.one]. apply Forall2_cons.
+      * cbn -[Z.add Z.zero Z.opp Z.mul Z.one].
+        rewrite mul_add_distr_l. reflexivity.
+      * apply p. Qed.
+
+Instance Z_Bimodule {n : nat} : Bimodule Z Z (t Z n) := {
+  smul_cpt := _;
+}.
+Proof.
+  all: cbv [eqv opr idn inv lsmul rsmul].
+  all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv Z_LSMul Z_RSMul].
+  all: cbv [eqv opr idn inv].
+  all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv Z_MulOpr Z_MulIdn].
+  all: set (P (x y : Z) := x = y).
+  - induction n as [| n p].
+    + intros a b xs.
+      pose proof case_nil xs as pxs'.
+      subst. apply Forall2_nil.
+    + intros a b xs.
+      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      subst; rename x' into x, xs' into xs.
+      cbn -[Z.mul Z.one]. apply Forall2_cons.
+      * cbv -[Z.mul Z.one]. rewrite mul_assoc. reflexivity.
+      * apply p. Qed.
+
+Instance Z_HomogeneousBimodule {n : nat} : HomogeneousBimodule Z (t Z n) := {}.
+
 End Instances.
 
 Module Computations.
@@ -750,7 +897,7 @@ Open Scope module_scope.
 Open Scope field_scope.
 Open Scope group_scope.
 
-Example fate := (meaning * fortune) <* hope - one <* luck.
+Example fate := (meaning * fortune) <* hope - luck *> one.
 
 End Output.
 
