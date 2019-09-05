@@ -199,6 +199,13 @@ Class FiniteHomoBimodule (S A : Type)
   hbimodule :> HomoBimodule S A;
 }.
 
+Fixpoint fold {A B : Type} (f : A -> B -> B) (z : B)
+  {n : nat} (xs : Vector.t A n) : B :=
+  match xs with
+  | Vector.nil _ => z
+  | Vector.cons _ x p xs => f x (fold f z xs)
+  end.
+
 (** This is a freely generated finite-dimensional homogeneous bimodule. *)
 Class FreeFiniteHomoBimodule (S A : Type)
   {seqv : Eqv S} {sadd : Add S} {szero : Zero S} {sneg : Neg S}
@@ -207,15 +214,26 @@ Class FreeFiniteHomoBimodule (S A : Type)
   {lsmul : LSMul S A} {lsmul : RSMul S A} {dim : Dim A}
   {basis : Basis A} : Prop := {
   fhbimodule :> FiniteHomoBimodule S A;
+  (** We can only handle finite-dimensional things like this,
+      because there is no way to sum over the whole domain
+      of an arbitrary function, as in
+      [coeffs : D -> S, basis : D -> A |-
+        let comb : D -> A := fun d : D => coeffs d <* basis d in
+        x == ?fold (+) 0 comb].
+      With an integrating map, we could have
+      [coeffs : D -> S, basis : D -> A, integ : (D -> A) -> A |-
+        let comb (d : D) : A := coeffs d <* basis d in
+        x == integ comb].
+      But why? *)
   basis_span : forall x : A, exists cs : Vector.t S dim,
-    x == Vector.fold_left opr idn (Vector.map2 lsmul cs basis);
+    x == fold opr idn (Vector.map2 lsmul cs basis);
   (* forall x : A, exists cs : S ^ dim,
      x == 0 + cs_1 <* basis_1 + cs_2 <* basis_2 + ... + cs_dim <* basis_dim *)
   basis_lind : forall (x : A) (subdim : nat), subdim <= dim ->
     forall subbasis : Vector.t A subdim,
     (forall x : A, Vector.In x subbasis -> Vector.In x basis) ->
     forall cs : Vector.t S subdim,
-    Vector.fold_left opr idn (Vector.map2 lsmul cs subbasis) == idn ->
+    fold opr idn (Vector.map2 lsmul cs subbasis) == idn ->
     Vector.Forall (fun y : S => y == zero) cs;
   (* forall (x : A) (subbasis <: basis) (cs : S ^ subdim),
      0 + cs_1 <* basis_1 + cs_2 <* basis_2 + ... + cs_dim <* basis_dim = 0 ->
@@ -487,6 +505,17 @@ Proof.
     exists (y : A) (ys : t A n), xs = y :: ys).
   apply (caseS P). intros y p ys. exists y, ys. reflexivity. Qed.
 
+Lemma Forall_inversion : forall {A : Type} (f : A -> Prop)
+  {n : nat} (x : A) (xs : t A n),
+  Forall f (x :: xs) -> f x /\ Forall f xs.
+Proof.
+  intros A f n x xs p.
+  inversion p as [| n' x' xs' phd ptl pn' [px' pxs']].
+  apply (inj_pair2_eq_dec nat Nat.eq_dec) in pxs'.
+  subst. split.
+  - apply phd.
+  - apply ptl. Qed.
+
 Lemma Forall2_inversion : forall {A B : Type} (f : A -> B -> Prop)
   {n : nat} (x : A) (xs : t A n) (y : B) (ys : t B n),
   Forall2 f (x :: xs) (y :: ys) -> f x y /\ Forall2 f xs ys.
@@ -498,6 +527,184 @@ Proof.
   subst. split.
   - apply phd.
   - apply ptl. Qed.
+
+Lemma Forall_if : forall {A : Type} (P Q : A -> Prop)
+  {n : nat} (xs : t A n),
+  (forall x : A, P x -> Q x) -> (Forall P xs -> Forall Q xs).
+Proof.
+  intros A P Q n xs. induction n as [| n p].
+  - intros f q.
+    pose proof case_nil xs as pxs'.
+    subst. apply Forall_nil.
+  - intros f q.
+    pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+    subst; rename x' into x, xs' into xs.
+    apply Forall_inversion in q. destruct q as [qhd qtl].
+    apply Forall_cons.
+    + apply f. apply qhd.
+    + apply p.
+      * apply f.
+      * apply qtl. Qed.
+
+Lemma Forall_map : forall {A B : Type} (P : B -> Prop) (f : A -> B)
+  {n : nat} (xs : t A n),
+  Forall P (map f xs) <-> Forall (fun x : A => P (f x)) xs.
+Proof.
+  intros A B P f n xs. induction n as [| n p].
+  - pose proof case_nil xs as pxs'.
+    subst. split.
+    + intros q. apply Forall_nil.
+    + intros q. apply Forall_nil.
+  - pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+    subst; rename x' into x, xs' into xs. split.
+    + cbn. intros q.
+      apply Forall_inversion in q. destruct q as [qhd qtl].
+      apply Forall_cons.
+      * apply qhd.
+      * apply p. apply qtl.
+    + cbn. intros q.
+      apply Forall_inversion in q. destruct q as [qhd qtl].
+      apply Forall_cons.
+      * apply qhd.
+      * apply p. apply qtl. Qed.
+
+Lemma map_id : forall {A : Type} {n : nat} (xs : t A n),
+  map (fun x : A => x) xs = xs.
+Proof.
+  intros A n xs. induction n as [| n p].
+  - pose proof case_nil xs as pxs'.
+    subst. reflexivity.
+  - pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+    subst; rename x' into x, xs' into xs.
+    cbn. f_equal. apply p. Qed.
+
+Lemma map_map : forall {A B C : Type} (f : A -> B) (g : B -> C)
+  {n : nat} (xs : t A n),
+  map g (map f xs) = map (fun x : A => g (f x)) xs.
+Proof.
+  intros A B C f g n xs. induction n as [| n p].
+  - pose proof case_nil xs as pxs'.
+    subst. reflexivity.
+  - pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+    subst; rename x' into x, xs' into xs.
+    cbn. f_equal. apply p. Qed.
+
+Lemma fold_map : forall {A B C : Type} (f : A -> B) (g : B -> C -> C) (z : C)
+  {n : nat} (xs : t A n),
+  fold g z (map f xs) = fold (fun x : A => g (f x)) z xs.
+Proof.
+  intros A B C f g z n xs. induction n as [| n p].
+  - pose proof case_nil xs as pxs'.
+    subst. reflexivity.
+  - pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+    subst; rename x' into x, xs' into xs.
+    cbn. f_equal. apply p. Qed.
+
+Lemma fold_cons : forall {A B : Type} (f : A -> B -> B) (z : B)
+  {n : nat} (x : A) (xs : t A n),
+  fold f z (x :: xs) = f x (fold f z xs).
+Proof. intros A B f z n x xs. reflexivity. Qed.
+
+Lemma map2_id_0 : forall {A0 A1 B : Type}
+  {n : nat} (xs0 : t A0 n) (xs1 : t A1 n),
+  map2 (fun (x0 : A0) (x1 : A1) => x0) xs0 xs1 = xs0.
+Proof.
+  intros A0 A1 B n xs0 xs1. induction n as [| n p].
+  - pose proof case_nil xs0 as pxs0'.
+    pose proof case_nil xs1 as pxs1'.
+    subst. reflexivity.
+  - pose proof case_cons xs0 as pxs0'. destruct pxs0' as [x0' [xs0' pxs0']].
+    pose proof case_cons xs1 as pxs1'. destruct pxs1' as [x1' [xs1' pxs1']].
+    subst; rename x0' into x0, xs0' into xs0, x1' into x1, xs1' into xs1.
+    cbn. f_equal. apply p. Qed.
+
+Lemma map2_id_1 : forall {A0 A1 B : Type}
+  {n : nat} (xs0 : t A0 n) (xs1 : t A1 n),
+  map2 (fun (x0 : A0) (x1 : A1) => x1) xs0 xs1 = xs1.
+Proof.
+  intros A0 A1 B n xs0 xs1. induction n as [| n p].
+  - pose proof case_nil xs0 as pxs0'.
+    pose proof case_nil xs1 as pxs1'.
+    subst. reflexivity.
+  - pose proof case_cons xs0 as pxs0'. destruct pxs0' as [x0' [xs0' pxs0']].
+    pose proof case_cons xs1 as pxs1'. destruct pxs1' as [x1' [xs1' pxs1']].
+    subst; rename x0' into x0, xs0' into xs0, x1' into x1, xs1' into xs1.
+    cbn. f_equal. apply p. Qed.
+
+Lemma map2_fun_0 : forall {A0 A1 B : Type} (f0 : A0 -> B)
+  {n : nat} (xs0 : t A0 n) (xs1 : t A1 n),
+  map2 (fun (x0 : A0) (x1 : A1) => f0 x0) xs0 xs1 = map f0 xs0.
+Proof.
+  intros A0 A1 B f0 n xs0 xs1. induction n as [| n p].
+  - pose proof case_nil xs0 as pxs0'.
+    pose proof case_nil xs1 as pxs1'.
+    subst. reflexivity.
+  - pose proof case_cons xs0 as pxs0'. destruct pxs0' as [x0' [xs0' pxs0']].
+    pose proof case_cons xs1 as pxs1'. destruct pxs1' as [x1' [xs1' pxs1']].
+    subst; rename x0' into x0, xs0' into xs0, x1' into x1, xs1' into xs1.
+    cbn. f_equal. apply p. Qed.
+
+Lemma map2_fun_1 : forall {A0 A1 B : Type} (f1 : A1 -> B)
+  {n : nat} (xs0 : t A0 n) (xs1 : t A1 n),
+  map2 (fun (x0 : A0) (x1 : A1) => f1 x1) xs0 xs1 = map f1 xs1.
+Proof.
+  intros A0 A1 B f1 n xs0 xs1. induction n as [| n p].
+  - pose proof case_nil xs0 as pxs0'.
+    pose proof case_nil xs1 as pxs1'.
+    subst. reflexivity.
+  - pose proof case_cons xs0 as pxs0'. destruct pxs0' as [x0' [xs0' pxs0']].
+    pose proof case_cons xs1 as pxs1'. destruct pxs1' as [x1' [xs1' pxs1']].
+    subst; rename x0' into x0, xs0' into xs0, x1' into x1, xs1' into xs1.
+    cbn. f_equal. apply p. Qed.
+
+Lemma map2_map_0 : forall {A0 A1 B C : Type} (f0 : A0 -> B) (g : B -> A1 -> C)
+  {n : nat} (xs0 : t A0 n) (xs1 : t A1 n),
+  map2 g (map f0 xs0) xs1 =
+  map2 (fun (x0 : A0) (x1 : A1) => g (f0 x0) x1) xs0 xs1.
+Proof.
+  intros A0 A1 B C f0 g n xs0 xs1. induction n as [| n p].
+  - pose proof case_nil xs0 as pxs0'.
+    pose proof case_nil xs1 as pxs1'.
+    subst. reflexivity.
+  - pose proof case_cons xs0 as pxs0'. destruct pxs0' as [x0' [xs0' pxs0']].
+    pose proof case_cons xs1 as pxs1'. destruct pxs1' as [x1' [xs1' pxs1']].
+    subst; rename x0' into x0, xs0' into xs0, x1' into x1, xs1' into xs1.
+    cbn. f_equal. apply p. Qed.
+
+Lemma map2_map_1 : forall {A0 A1 B C : Type} (f1 : A1 -> B) (g : A0 -> B -> C)
+  {n : nat} (xs0 : t A0 n) (xs1 : t A1 n),
+  map2 g xs0 (map f1 xs1) =
+  map2 (fun (x0 : A0) (x1 : A1) => g x0 (f1 x1)) xs0 xs1.
+Proof.
+  intros A0 A1 B C f0 g n xs0 xs1. induction n as [| n p].
+  - pose proof case_nil xs0 as pxs0'.
+    pose proof case_nil xs1 as pxs1'.
+    subst. reflexivity.
+  - pose proof case_cons xs0 as pxs0'. destruct pxs0' as [x0' [xs0' pxs0']].
+    pose proof case_cons xs1 as pxs1'. destruct pxs1' as [x1' [xs1' pxs1']].
+    subst; rename x0' into x0, xs0' into xs0, x1' into x1, xs1' into xs1.
+    cbn. f_equal. apply p. Qed.
+
+Lemma map2_cons : forall {A0 A1 B : Type} (f : A0 -> A1 -> B)
+  {n : nat} (x0 : A0) (xs0 : t A0 n) (x1 : A1) (xs1 : t A1 n),
+  map2 f (x0 :: xs0) (x1 :: xs1) = f x0 x1 :: map2 f xs0 xs1.
+Proof. intros A0 A1 n x0 xs0 x1 xs1. reflexivity. Qed.
+
+Lemma fold_map2 : forall {A0 A1 B C : Type}
+  (f : A0 -> A1 -> B) (g : B -> C -> C) (z : C)
+  {n : nat} (xs0 : t A0 n) (xs1 : t A1 n),
+  fold g z (map2 f xs0 xs1) =
+  fold (fun p : A0 * A1 => g (f (fst p) (snd p))) z (map2 pair xs0 xs1).
+Proof.
+  intros A0 A1 B C f g z n xs0 xs1. induction n as [| n p].
+  - pose proof case_nil xs0 as pxs0'.
+    pose proof case_nil xs1 as pxs1'.
+    subst. reflexivity.
+  - pose proof case_cons xs0 as pxs0'. destruct pxs0' as [x0' [xs0' pxs0']].
+    pose proof case_cons xs1 as pxs1'. destruct pxs1' as [x1' [xs1' pxs1']].
+    subst; rename x0' into x0, xs0' into xs0, x1' into x1, xs1' into xs1.
+    cbn. f_equal. apply p. Qed.
+
 
 End VectorLemmas.
 
@@ -888,6 +1095,124 @@ Instance Z_HomoBimodule {n : nat} : HomoBimodule Z (t Z n) := {}.
 Instance Z_Dim {n : nat} : Dim (t Z n) := n.
 
 Instance Z_FiniteHomoBimodule {n : nat} : FiniteHomoBimodule Z (t Z n) := {}.
+
+Section NatLemmas.
+
+Import PeanoNat Nat.
+
+Open Scope nat_scope.
+
+Fixpoint range (n : nat) : Vector.t nat n :=
+  match n with
+  | O => []
+  | S p => 0 :: map succ (range p)
+  end.
+
+Lemma range_le : forall n : nat,
+  Forall (fun p : nat => p <= n) (range n).
+Proof.
+  intros n. induction n as [| n p].
+  - apply Forall_nil.
+  - cbn. apply Forall_cons.
+    + apply le_0_l.
+    + remember (range n) as ns eqn : pns'; clear pns'. apply Forall_map.
+      apply (Forall_if (fun p : nat => p <= n) (fun p : nat => S p <= S n)).
+      * intros q r. apply le_n_S. apply r.
+      * apply p. Qed.
+
+Fixpoint indicator (n i : nat) : Vector.t nat n :=
+  match n with
+  | O => []
+  | S p => match i with
+    | O => 1 :: const 0 p
+    | S j => 0 :: indicator p j
+    end
+  end.
+
+Lemma indicator_le : forall n i : nat,
+  Forall (fun p : nat => p <= 1) (indicator n i).
+Proof.
+  intros n. induction n as [| n p]; intros i.
+  - apply Forall_nil.
+  - induction i as [| i q].
+    + apply Forall_cons.
+      * apply le_n.
+      * clear p. induction n as [| n p].
+        -- apply Forall_nil.
+        -- cbn. apply Forall_cons.
+          ++ apply le_0_l.
+          ++ apply p.
+    + cbn. apply Forall_cons.
+      * apply le_0_l.
+      * apply p. Qed.
+
+End NatLemmas.
+
+Require Import FunctionalExtensionality.
+
+Instance Z_Basis {n : nat} : Basis (Vector.t Z n) :=
+  let ns := map (indicator n) (range n) in
+  map (map of_nat) ns.
+
+Instance Z_FreeFiniteHomoBimodule {n : nat} :
+  FreeFiniteHomoBimodule Z (t Z n) := {
+  basis_span := _;
+  basis_lind := _;
+}.
+Proof.
+  all: cbv [eqv opr idn inv lsmul rsmul dim basis].
+  all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv Z_LSMul Z_RSMul Z_Dim Z_Basis].
+  all: cbv [eqv opr idn inv].
+  all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv Z_MulOpr Z_MulIdn].
+  all: set (P (x y : Z) := x = y).
+  - intros xs. exists xs. induction n as [| n p].
+    + pose proof case_nil xs as pxs'.
+      subst. apply Forall2_nil.
+    + pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+      subst; rename x' into x, xs' into xs.
+      (* assert (
+      fold (map2 (fun x y : Z => x + y)) (@const (Idn Z) 0 (S n))
+        (map2 (fun a : Z => map (fun x : Z => x * a))
+          (x :: xs)
+          (map (map of_nat) (map (indicator (S n)) (range (S n)))))
+      =
+      fold (fun (xs ys : t Z (S n)) => map2 (fun x y : Z => x + y) xs ys)
+        (@const (Idn Z) 0 (S n))
+        (map2 (fun (a : Z) (p : nat) => map (fun q : nat => of_nat q * a) (indicator (S n) p))
+          (x :: xs) (range (S n)))) as G. *)
+      (* assert (fold (map2 (fun x y : Z => x + y)) (@const (Idn Z) 0 (S n))
+        (map2 (fun a : Z => map (fun x : Z => x * a))
+          (x :: xs)
+          (map (map of_nat) (map (indicator (S n)) (range (S n))))) =
+      fold (fun (p : Z * nat) => map2 (fun (q : nat) (y : Z) =>
+          of_nat q * fst p + y) (indicator (S n) (snd p)))
+        (@const (Idn Z) 0 (S n))
+        (map2 pair (x :: xs) (range (S n)))) as G.
+      { rewrite map_map. rewrite map2_map_1. rewrite fold_map2.
+        cbn [range]. rewrite map2_pair_cons.
+        f_equal. f_equal. extensionality q. extensionality ys.
+        rewrite map_map. rewrite map2_map_0. reflexivity. } *)
+      assert (fold (map2 (fun x y : Z => x + y)) (@const (Idn Z) 0 (S n))
+        (map2 (fun a : Z => map (fun x : Z => x * a))
+          (x :: xs)
+          (map (map of_nat) (map (indicator (S n)) (range (S n))))) =
+        map2 (fun (q : nat) (y : Z) => of_nat q * x + y) (1%nat :: const O n)
+        (fold (fun (p : Z * nat) => map2 (fun (q : nat) (y : Z) =>
+          of_nat q * fst p + y) (indicator (S n) (snd p)))
+        (@const (Idn Z) 0 (S n))
+        (map2 pair xs (map S (range n))))) as G.
+      { rewrite map_map. rewrite map2_map_1. rewrite fold_map2.
+        cbn [range]. rewrite map2_cons. rewrite fold_cons.
+        rewrite map_map. rewrite map2_map_0.
+        f_equal. f_equal. extensionality q. extensionality ys.
+        rewrite map_map. rewrite map2_map_0. reflexivity. }
+      rewrite G. clear G. induction n as [| n q].
+      * admit.
+      * pose proof case_cons xs as pxs'. destruct pxs' as [y' [ys' pys']].
+        subst; rename y' into y, ys' into ys.
+        cbn [range map]. rewrite map2_cons. rewrite fold_cons.
+        admit.
+  - intros xs subdim s subbasis p cs q. Admitted.
 
 End Instances.
 
