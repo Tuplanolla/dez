@@ -33,6 +33,10 @@ Class One (A : Type) : Type := one : A.
 Class Recip (A : Type) : Type := recip : A -> A.
 Class LSMul (S A : Type) : Type := lsmul : S -> A -> A.
 Class RSMul (S A : Type) : Type := rsmul : S -> A -> A.
+(** TODO Worry about the cardinality. *)
+Class Dim (A : Type) : Type := dim : nat.
+(** TODO Worry about the class constraint. *)
+Class Basis (A : Type) {dim : Dim A} : Type := basis : Vector.t A dim.
 
 Delimit Scope group_scope with group.
 Delimit Scope field_scope with field.
@@ -185,6 +189,37 @@ Class HomoBimodule (S A : Type)
   {eqv : Eqv A} {opr : Opr A} {idn : Idn A} {inv : Inv A}
   {lsmul : LSMul S A} {lsmul : RSMul S A} : Prop := {
   bimodule :> Bimodule S S A;
+}.
+
+Class FiniteHomoBimodule (S A : Type)
+  {seqv : Eqv S} {sadd : Add S} {szero : Zero S} {sneg : Neg S}
+  {smul : Mul S} {sone : One S}
+  {eqv : Eqv A} {opr : Opr A} {idn : Idn A} {inv : Inv A}
+  {lsmul : LSMul S A} {lsmul : RSMul S A} {dim : Dim A} : Prop := {
+  hbimodule :> HomoBimodule S A;
+}.
+
+(** This is a freely generated finite-dimensional homogeneous bimodule. *)
+Class FreeFiniteHomoBimodule (S A : Type)
+  {seqv : Eqv S} {sadd : Add S} {szero : Zero S} {sneg : Neg S}
+  {smul : Mul S} {sone : One S}
+  {eqv : Eqv A} {opr : Opr A} {idn : Idn A} {inv : Inv A}
+  {lsmul : LSMul S A} {lsmul : RSMul S A} {dim : Dim A}
+  {basis : Basis A} : Prop := {
+  fhbimodule :> FiniteHomoBimodule S A;
+  basis_span : forall x : A, exists cs : Vector.t S dim,
+    x == Vector.fold_left opr idn (Vector.map2 lsmul cs basis);
+  (* forall x : A, exists cs : S ^ dim,
+     x == 0 + cs_1 <* basis_1 + cs_2 <* basis_2 + ... + cs_dim <* basis_dim *)
+  basis_lind : forall (x : A) (subdim : nat), subdim <= dim ->
+    forall subbasis : Vector.t A subdim,
+    (forall x : A, Vector.In x subbasis -> Vector.In x basis) ->
+    forall cs : Vector.t S subdim,
+    Vector.fold_left opr idn (Vector.map2 lsmul cs subbasis) == idn ->
+    Vector.Forall (fun y : S => y == zero) cs;
+  (* forall (x : A) (subbasis <: basis) (cs : S ^ subdim),
+     0 + cs_1 <* basis_1 + cs_2 <* basis_2 + ... + cs_dim <* basis_dim = 0 ->
+     cs_1 = 0 /\ cs_2 = 0 /\ ... /\ cs_dim = 0 *)
 }.
 
 End Additive.
@@ -849,6 +884,10 @@ Proof.
       * apply p. Qed.
 
 Instance Z_HomoBimodule {n : nat} : HomoBimodule Z (t Z n) := {}.
+
+Instance Z_Dim {n : nat} : Dim (t Z n) := n.
+
+Instance Z_FiniteHomoBimodule {n : nat} : FiniteHomoBimodule Z (t Z n) := {}.
 
 End Instances.
 
