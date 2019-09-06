@@ -33,10 +33,8 @@ Class One (A : Type) : Type := one : A.
 Class Recip (A : Type) : Type := recip : A -> A.
 Class LSMul (S A : Type) : Type := lsmul : S -> A -> A.
 Class RSMul (S A : Type) : Type := rsmul : S -> A -> A.
-(** TODO Worry about the cardinality. *)
-Class Dim (A : Type) : Type := dim : nat.
-(** TODO Worry about the class constraint. *)
-Class Basis (A : Type) {dim : Dim A} : Type := basis : Vector.t A dim.
+Class Basis (D A : Type) : Type := basis : D -> A.
+Class Span (D A : Type) : Type := span : (D -> A) -> A.
 
 Delimit Scope group_scope with group.
 Delimit Scope field_scope with field.
@@ -191,53 +189,35 @@ Class HomoBimodule (S A : Type)
   bimodule :> Bimodule S S A;
 }.
 
-Class FiniteHomoBimodule (S A : Type)
+Class FreeLeftModule (D S A : Type)
   {seqv : Eqv S} {sadd : Add S} {szero : Zero S} {sneg : Neg S}
   {smul : Mul S} {sone : One S}
   {eqv : Eqv A} {opr : Opr A} {idn : Idn A} {inv : Inv A}
-  {lsmul : LSMul S A} {lsmul : RSMul S A} {dim : Dim A} : Prop := {
-  hbimodule :> HomoBimodule S A;
-}.
-
-Fixpoint fold {A B : Type} (f : A -> B -> B) (z : B)
-  {n : nat} (xs : Vector.t A n) : B :=
-  match xs with
-  | Vector.nil _ => z
-  | Vector.cons _ x p xs => f x (fold f z xs)
-  end.
-
-(** This is a freely generated finite-dimensional homogeneous bimodule. *)
-Class FreeFiniteHomoBimodule (S A : Type)
-  {seqv : Eqv S} {sadd : Add S} {szero : Zero S} {sneg : Neg S}
-  {smul : Mul S} {sone : One S}
-  {eqv : Eqv A} {opr : Opr A} {idn : Idn A} {inv : Inv A}
-  {lsmul : LSMul S A} {lsmul : RSMul S A} {dim : Dim A}
-  {basis : Basis A} : Prop := {
-  fhbimodule :> FiniteHomoBimodule S A;
-  (** We can only handle finite-dimensional things like this,
-      because there is no way to sum over the whole domain
-      of an arbitrary function, as in
-      [coeffs : D -> S, basis : D -> A |-
-        let comb : D -> A := fun d : D => coeffs d <* basis d in
-        x == ?fold (+) 0 comb].
-      With an integrating map, we could have
-      [coeffs : D -> S, basis : D -> A, integ : (D -> A) -> A |-
-        let comb (d : D) : A := coeffs d <* basis d in
-        x == integ comb].
-      But why? *)
-  basis_span : forall x : A, exists cs : Vector.t S dim,
-    x == fold opr idn (Vector.map2 lsmul cs basis);
-  (* forall x : A, exists cs : S ^ dim,
-     x == 0 + cs_1 <* basis_1 + cs_2 <* basis_2 + ... + cs_dim <* basis_dim *)
-  basis_lind : forall (x : A) (subdim : nat), subdim <= dim ->
-    forall subbasis : Vector.t A subdim,
-    (forall x : A, Vector.In x subbasis -> Vector.In x basis) ->
-    forall cs : Vector.t S subdim,
-    fold opr idn (Vector.map2 lsmul cs subbasis) == idn ->
-    Vector.Forall (fun y : S => y == zero) cs;
-  (* forall (x : A) (subbasis <: basis) (cs : S ^ subdim),
-     0 + cs_1 <* basis_1 + cs_2 <* basis_2 + ... + cs_dim <* basis_dim = 0 ->
-     cs_1 = 0 /\ cs_2 = 0 /\ ... /\ cs_dim = 0 *)
+  {lsmul : LSMul S A} {lsmul : RSMul S A}
+  {basis : Basis D A} {span : Span D A} : Prop := {
+  module :> LeftModule S A;
+  (** In words, this says "if you pick any point,
+      I can find coefficients for the basis,
+      such that the linear combination equals your point".
+      In pseudocode, this says
+      [forall x : A, exists cs : S ^ dim,
+      x == cs_1 <* basis_1 + cs_2 <* basis_2 + ... + cs_dim <* basis_dim]. *)
+  basis_span : forall x : A, exists cs : D -> S,
+    let ys (d : D) := cs d <* basis d in
+    span ys == x;
+  (** In words, this says "if you can find any coefficients
+      for any subset of the basis, such that the linear combination is zero,
+      I can prove that all your coefficients are zero".
+      In pseudocode, this says
+      [forall (subdim <= dim) (subbasis <: basis) (cs : S ^ subdim),
+      cs_1 <* basis_1 + cs_2 <* basis_2 + ... + cs_subdim <* basis_subdim = 0 ->
+      cs_1 = 0 /\ cs_2 = 0 /\ ... /\ cs_subdim = 0]. *)
+  (** TODO Fix this. *)
+  basis_lind : forall embed : D -> D,
+    let subbasis (d : D) : A := basis (embed d) in
+    forall cs : D -> S,
+    let ys (d : D) : A := cs d <* subbasis d in
+    span ys == 0 -> forall d : D, ys d == 0;
 }.
 
 End Additive.
@@ -505,6 +485,10 @@ Proof.
     exists (y : A) (ys : t A n), xs = y :: ys).
   apply (caseS P). intros y p ys. exists y, ys. reflexivity. Qed.
 
+Lemma const_cons : forall {A : Type} {n : nat} (x : A),
+  const x (S n) = x :: const x n.
+Proof. intros A n x. reflexivity. Qed.
+
 Lemma Forall_inversion : forall {A : Type} (f : A -> Prop)
   {n : nat} (x : A) (xs : t A n),
   Forall f (x :: xs) -> f x /\ Forall f xs.
@@ -568,6 +552,11 @@ Proof.
       * apply qhd.
       * apply p. apply qtl. Qed.
 
+Lemma map_cons : forall {A B : Type} (f : A -> B)
+  {n : nat} (x : A) (xs : t A n),
+  map f (x :: xs) = f x :: map f xs.
+Proof. intros A B f n x xs. reflexivity. Qed.
+
 Lemma map_id : forall {A : Type} {n : nat} (xs : t A n),
   map (fun x : A => x) xs = xs.
 Proof.
@@ -589,21 +578,10 @@ Proof.
     subst; rename x' into x, xs' into xs.
     cbn. f_equal. apply p. Qed.
 
-Lemma fold_map : forall {A B C : Type} (f : A -> B) (g : B -> C -> C) (z : C)
-  {n : nat} (xs : t A n),
-  fold g z (map f xs) = fold (fun x : A => g (f x)) z xs.
-Proof.
-  intros A B C f g z n xs. induction n as [| n p].
-  - pose proof case_nil xs as pxs'.
-    subst. reflexivity.
-  - pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
-    subst; rename x' into x, xs' into xs.
-    cbn. f_equal. apply p. Qed.
-
-Lemma fold_cons : forall {A B : Type} (f : A -> B -> B) (z : B)
-  {n : nat} (x : A) (xs : t A n),
-  fold f z (x :: xs) = f x (fold f z xs).
-Proof. intros A B f z n x xs. reflexivity. Qed.
+Lemma map2_cons : forall {A0 A1 B : Type} (f : A0 -> A1 -> B)
+  {n : nat} (x0 : A0) (xs0 : t A0 n) (x1 : A1) (xs1 : t A1 n),
+  map2 f (x0 :: xs0) (x1 :: xs1) = f x0 x1 :: map2 f xs0 xs1.
+Proof. intros A0 A1 n x0 xs0 x1 xs1. reflexivity. Qed.
 
 Lemma map2_id_0 : forall {A0 A1 B : Type}
   {n : nat} (xs0 : t A0 n) (xs1 : t A1 n),
@@ -685,10 +663,50 @@ Proof.
     subst; rename x0' into x0, xs0' into xs0, x1' into x1, xs1' into xs1.
     cbn. f_equal. apply p. Qed.
 
-Lemma map2_cons : forall {A0 A1 B : Type} (f : A0 -> A1 -> B)
-  {n : nat} (x0 : A0) (xs0 : t A0 n) (x1 : A1) (xs1 : t A1 n),
-  map2 f (x0 :: xs0) (x1 :: xs1) = f x0 x1 :: map2 f xs0 xs1.
-Proof. intros A0 A1 n x0 xs0 x1 xs1. reflexivity. Qed.
+Require Import Program.
+Obligation Tactic := idtac.
+Fixpoint nat_fold {A : Type} (f : nat -> A -> A) (z : A) (n : nat) : A :=
+  match n with
+  | O => z
+  | S p => f p (nat_fold f z p)
+  end.
+
+Fixpoint Fin_fold {A : Type} {n : nat} (f : Fin.t n -> A -> A) (z : A) {struct n} : A.
+destruct n as [| p]. apply z. apply f. apply (@Fin.of_nat_lt p). omega. apply (Fin_fold A p).
+  2: apply z. intros a x. apply f. 2: apply x.
+  set (q := Fin.to_nat a). destruct q as [q r]. apply lt_S in r.
+  pose proof (@Fin.of_nat_lt q (S p) r). apply H. Defined.
+
+Compute nat_fold (fun x y => List.cons x y) List.nil 5.
+Compute Fin_fold (n := 5) (fun x y => List.cons (proj1_sig (Fin.to_nat x)) y) List.nil.
+
+Lemma Fin_fold_cons : forall {A : Type}
+  {n : nat} (f : Fin.t n -> A -> A) (z : A),
+  Fin_fold f z = Fin_fold f z.
+Proof. intros A n f z. Abort.
+
+Fixpoint fold {A B : Type} (f : A -> B -> B) (z : B)
+  {n : nat} (xs : Vector.t A n) : B :=
+  match xs with
+  | @Vector.nil _ => z
+  | @Vector.cons _ x _ xs => f x (fold f z xs)
+  end.
+
+Lemma fold_cons : forall {A B : Type} (f : A -> B -> B) (z : B)
+  {n : nat} (x : A) (xs : t A n),
+  fold f z (x :: xs) = f x (fold f z xs).
+Proof. intros A B f z n x xs. reflexivity. Qed.
+
+Lemma fold_map : forall {A B C : Type} (f : A -> B) (g : B -> C -> C) (z : C)
+  {n : nat} (xs : t A n),
+  fold g z (map f xs) = fold (fun x : A => g (f x)) z xs.
+Proof.
+  intros A B C f g z n xs. induction n as [| n p].
+  - pose proof case_nil xs as pxs'.
+    subst. reflexivity.
+  - pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+    subst; rename x' into x, xs' into xs.
+    cbn. f_equal. apply p. Qed.
 
 Lemma fold_map2 : forall {A0 A1 B C : Type}
   (f : A0 -> A1 -> B) (g : B -> C -> C) (z : C)
@@ -1092,10 +1110,6 @@ Proof.
 
 Instance Z_HomoBimodule {n : nat} : HomoBimodule Z (t Z n) := {}.
 
-Instance Z_Dim {n : nat} : Dim (t Z n) := n.
-
-Instance Z_FiniteHomoBimodule {n : nat} : FiniteHomoBimodule Z (t Z n) := {}.
-
 Section NatLemmas.
 
 Import PeanoNat Nat.
@@ -1148,71 +1162,80 @@ Proof.
 
 End NatLemmas.
 
-Require Import FunctionalExtensionality.
+Instance Fin_Eqv {n : nat} : Eqv (Fin.t n) := fun x y : Fin.t n => x = y.
 
-Instance Z_Basis {n : nat} : Basis (Vector.t Z n) :=
+Instance Z_Basis {n : nat} : Basis (Fin.t n) (Vector.t Z n) :=
   let ns := map (indicator n) (range n) in
-  map (map of_nat) ns.
+  nth (map (map of_nat) ns).
 
-Instance Z_FreeFiniteHomoBimodule {n : nat} :
-  FreeFiniteHomoBimodule Z (t Z n) := {
+Compute basis Fin.F1 : t Z 3.
+Compute basis (Fin.FS Fin.F1) : t Z 3.
+Compute basis (Fin.FS (Fin.FS Fin.F1)) : t Z 3.
+
+Instance Z_Span {n : nat} : Span (Fin.t n) (t Z n) :=
+  fun (f : Fin.t n -> t Z n) =>
+  Fin_fold (fun (a : Fin.t n) (x : t Z n) => map2 add (f a) x) (const 0 n).
+
+Compute span basis : t Z 3.
+
+Instance Z_FreeLeftModule {n : nat} : FreeLeftModule (Fin.t n) Z (t Z n) := {
   basis_span := _;
   basis_lind := _;
 }.
 Proof.
-  all: cbv [eqv opr idn inv lsmul rsmul dim basis].
-  all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv Z_LSMul Z_RSMul Z_Dim Z_Basis].
+  all: cbv [eqv opr idn inv lsmul basis span].
+  all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv
+    Z_LSMul Z_Basis Z_Span].
   all: cbv [eqv opr idn inv].
   all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv Z_MulOpr Z_MulIdn].
   all: set (P (x y : Z) := x = y).
-  - intros xs. exists xs. induction n as [| n p].
+  - intros xs. exists (nth xs). induction n as [| n p].
     + pose proof case_nil xs as pxs'.
       subst. apply Forall2_nil.
     + pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
       subst; rename x' into x, xs' into xs.
-      (* assert (
-      fold (map2 (fun x y : Z => x + y)) (@const (Idn Z) 0 (S n))
-        (map2 (fun a : Z => map (fun x : Z => x * a))
-          (x :: xs)
-          (map (map of_nat) (map (indicator (S n)) (range (S n)))))
-      =
-      fold (fun (xs ys : t Z (S n)) => map2 (fun x y : Z => x + y) xs ys)
-        (@const (Idn Z) 0 (S n))
-        (map2 (fun (a : Z) (p : nat) => map (fun q : nat => of_nat q * a) (indicator (S n) p))
-          (x :: xs) (range (S n)))) as G. *)
-      (* assert (fold (map2 (fun x y : Z => x + y)) (@const (Idn Z) 0 (S n))
-        (map2 (fun a : Z => map (fun x : Z => x * a))
-          (x :: xs)
-          (map (map of_nat) (map (indicator (S n)) (range (S n))))) =
-      fold (fun (p : Z * nat) => map2 (fun (q : nat) (y : Z) =>
-          of_nat q * fst p + y) (indicator (S n) (snd p)))
-        (@const (Idn Z) 0 (S n))
-        (map2 pair (x :: xs) (range (S n)))) as G.
-      { rewrite map_map. rewrite map2_map_1. rewrite fold_map2.
-        cbn [range]. rewrite map2_pair_cons.
-        f_equal. f_equal. extensionality q. extensionality ys.
-        rewrite map_map. rewrite map2_map_0. reflexivity. } *)
-      assert (fold (map2 (fun x y : Z => x + y)) (@const (Idn Z) 0 (S n))
-        (map2 (fun a : Z => map (fun x : Z => x * a))
-          (x :: xs)
-          (map (map of_nat) (map (indicator (S n)) (range (S n))))) =
-        map2 (fun (q : nat) (y : Z) => of_nat q * x + y) (1%nat :: const O n)
-        (fold (fun (p : Z * nat) => map2 (fun (q : nat) (y : Z) =>
-          of_nat q * fst p + y) (indicator (S n) (snd p)))
-        (@const (Idn Z) 0 (S n))
-        (map2 pair xs (map S (range n))))) as G.
-      { rewrite map_map. rewrite map2_map_1. rewrite fold_map2.
-        cbn [range]. rewrite map2_cons. rewrite fold_cons.
-        rewrite map_map. rewrite map2_map_0.
-        f_equal. f_equal. extensionality q. extensionality ys.
-        rewrite map_map. rewrite map2_map_0. reflexivity. }
-      rewrite G. clear G. induction n as [| n q].
-      * admit.
-      * pose proof case_cons xs as pxs'. destruct pxs' as [y' [ys' pys']].
-        subst; rename y' into y, ys' into ys.
-        cbn [range map]. rewrite map2_cons. rewrite fold_cons.
-        admit.
-  - intros xs subdim s subbasis p cs q. Admitted.
+(*
+Forall2 P (Fin_fold
+  (fun (a : Fin.t (S n)) (ys : t Z (S n)) =>
+    map2 add (map (fun y : Z => (x :: xs)[@a] * y)
+      (map (map of_nat) (map (indicator (S n)) (range (S n))))[@a]) ys)
+  (const 0 (S n))) (x :: xs)
+
+Forall2 P (Fin_fold
+  (fun (a : Fin.t (S n)) (ys : t Z (S n)) =>
+    map2 (fun y z : Z => y + z)
+      (map (fun y : Z => (x :: xs)[@a] * y)
+        (map (fun p : nat => map (fun q : nat => of_nat q) p) (map
+          (fun i : nat => indicator (S n) i)
+          (range (S n))))[@a]) ys)
+  (const 0 (S n))) (x :: xs)
+
+Forall2 P (Fin_fold
+  (fun (a : Fin.t (S n)) (ys : t Z (S n)) =>
+    map2 (fun y z : Z => y + z)
+      (map (fun y : Z => (x :: xs)[@a] * y)
+        (map (fun p : nat => map (fun q : nat => of_nat q) p) (map
+          (fun i : nat =>
+            match i with
+            | O => S O :: const O n
+            | S j => O :: indicator n j
+            end)
+          (O :: map S (range n))))[@a]) ys)
+  (0 :: const 0 n)) (x :: xs)
+
+Forall2 P (Fin_fold
+  (fun (a : Fin.t (S n)) (ys : t Z (S n)) =>
+    map2 (fun (p : nat) (z : Z) => (x :: xs)[@a] * of_nat p + z) (
+      match nth (O :: map S (range n)) a with
+      | O => S O :: const O n
+      | S j => O :: indicator n j
+      end) ys)
+  (0 :: const 0 n)) (x :: xs)
+*)
+      admit.
+  - intros. induction n as [| n p].
+    + admit.
+    + admit. Admitted.
 
 End Instances.
 
