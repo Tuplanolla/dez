@@ -371,13 +371,50 @@ Class FinitelyFreeLeftModule (D S A : Type)
     List.Forall (fun a : S => a == 0%field) (List.map coeffs enum);
 }.
 
-Class CountablyFreeLeftModule (D S A : Type)
-  (** TODO Remove constraints on [D]. *)
-  {deqv : Eqv D} {denum : Enum D} {ddec : Dec D}
+Section Analysis.
+
+(*
+Definition ClassicalCauchy {A : Type} {d : Metric A} (x : nat -> A) : Prop :=
+  forall k : nat, exists n : nat,
+  forall p q : nat, n <= p -> n <= q ->
+  d (x p) (x q) <= 1 / 2 ^ k.
+
+Definition ConstructiveCauchy {A : Type} {d : Metric A} (x : nat -> A) : Prop :=
+  exists n : nat -> nat, forall k : nat,
+  forall p q : nat, n k <= p -> n k <= q ->
+  d (x p) (x q) <= 1 / 2 ^ k.
+*)
+
+Local Parameter embed : forall {S : Type}, nat -> S.
+Local Notation "'!' n" := (embed n) (at level 35, no associativity).
+Local Parameter power : forall {S : Type}, S -> nat -> S.
+Local Notation "x '^' n" := (power x n).
+Local Parameter division : forall {S : Type}, S -> S -> S.
+Local Notation "x '/' y" := (division x y).
+Local Parameter lessthanorequal : forall {S : Type}, S -> S -> Prop.
+Local Notation "x '<<' y" := (lessthanorequal x y) (at level 70, no associativity).
+Local Class Metric (S A : Type) : Type := d : A -> A -> S.
+
+Definition Subsequence {A : Type} (x : nat -> A) (n : nat) : Fin.t n -> A :=
+  fun a : Fin.t n => x (proj1_sig (Fin.to_nat a)).
+
+Definition Limit {S A : Type} {d : Metric S A} (x : nat -> A) (y : A) : Prop :=
+  forall k : nat, exists n : nat,
+  forall p : nat, n <= p ->
+  d (x p) y << !1 / !2 ^ k.
+
+Local Parameter FinSum : forall {A : Type} {n : nat} (x : Fin.t n -> A), A.
+
+Definition InfSum {S A : Type} {d : Metric S A} (x : nat -> A) (y : A) : Prop :=
+  Limit (fun n : nat => FinSum (Subsequence x n)) y.
+
+(** TODO Use operationally injective, propositionally countable [D]. *)
+Class CountablyFreeLeftModule (S A : Type)
+  {d : Metric S A}
   {seqv : Eqv S} {sadd : Add S} {szero : Zero S} {sneg : Neg S}
   {smul : Mul S} {sone : One S}
   {eqv : Eqv A} {opr : Opr A} {idn : Idn A} {inv : Inv A}
-  {lsmul : LSMul S A} {basis : Basis D A} : Prop := {
+  {lsmul : LSMul S A} {basis : Basis nat A} : Prop := {
   wmodule :> LeftModule S A;
   (** In words, this says "if you pick any point,
       I can find coefficients for the basis,
@@ -385,10 +422,10 @@ Class CountablyFreeLeftModule (D S A : Type)
       In pseudocode, this says
       [forall x : A, exists cs : S ^ omega,
       x == cs_1 <* basis_1 + cs_2 <* basis_2 + ...]. *)
-  (** TODO Use Cauchy sequences here. *)
-  wbasis_span : forall x : A, exists coeffs : D -> S,
+  wbasis_span : let D := nat in
+    forall x : A, exists coeffs : D -> S,
     let terms (d : D) := coeffs d <* basis d in
-    folding (List.map terms enum) == x;
+    InfSum terms x;
   (** In words, this says "if you can find any coefficients
       for any finite subset of the basis,
       such that the linear combination is zero,
@@ -397,8 +434,8 @@ Class CountablyFreeLeftModule (D S A : Type)
       [forall (subdim : nat) (subbasis <: basis) (cs : S ^ subdim),
       cs_1 <* basis_1 + cs_2 <* basis_2 + ... + cs_subdim <* basis_subdim = 0 ->
       cs_1 = 0 /\ cs_2 = 0 /\ ... /\ cs_subdim = 0]. *)
-  (** TODO Check this. *)
-  wbasis_lind : forall {F : Type} {P : D -> Prop}
+  wbasis_lind : let D := nat in
+    forall {deqv : Eqv D} {F : Type} {P : D -> Prop}
     {feqv : Eqv F} {fsubinj : SubInj F D} {fsubprop : SubProp F D P}
     {fstd : Setoidful.Subtype F D P}
     {fenum : Enum F} {fdec : Dec F} {ffin : Finite F},
@@ -408,6 +445,8 @@ Class CountablyFreeLeftModule (D S A : Type)
     folding (List.map subterms enum) == 0 ->
     List.Forall (fun a : S => a == 0%field) (List.map subcoeffs enum);
 }.
+
+End Analysis.
 
 End Additive.
 
@@ -1346,11 +1385,27 @@ End NatLemmas.
 
 Instance Fin_Eqv {n : nat} : Eqv (Fin.t n) := fun x y : Fin.t n => x = y.
 
-(** TODO Define [Fin_range]. *)
-Instance Fin_Enum {n : nat} : Enum (Fin.t n).
-hnf. induction n. apply List.nil. apply (List.map Fin.FS). apply IHn. Defined.
+Fixpoint Fin_range (n : nat) : list (Fin.t n) :=
+  match n with
+  | O => List.nil
+  | S p => List.cons Fin.F1 (List.map Fin.FS (Fin_range p))
+  end.
+
+Instance Fin_Enum {n : nat} : Enum (Fin.t n) := Fin_range n.
 
 Instance Fin_Dec {n : nat} : Dec (Fin.t n) := Fin.eq_dec.
+
+Instance Fin_Finite {n : nat} : Finite (Fin.t n) := {
+  fin := _
+}.
+Proof.
+  induction n as [| n p]; intros a.
+  - inversion a.
+  - apply (Fin.caseS' a).
+    + cbn. enough (S (count Fin.F1 (List.map Fin.FS (Fin_range n))) == 1%nat)
+        by admit.
+      admit.
+    + intros b. rewrite <- (p b). cbn. admit. Admitted.
 
 Instance Z_Basis {n : nat} : Basis (Fin.t n) (Vector.t Z n) :=
   let ns := map (indicator n) (range n) in
@@ -1360,7 +1415,6 @@ Compute basis Fin.F1 : t Z 3.
 Compute basis (Fin.FS Fin.F1) : t Z 3.
 Compute basis (Fin.FS (Fin.FS Fin.F1)) : t Z 3.
 
-(** TODO Why? *)
 Compute summation (add := Z_VectorOpr) (zero := Z_VectorIdn)
   (List.map basis enum) : t Z 3.
 
