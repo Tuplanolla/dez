@@ -1,6 +1,6 @@
 Set Warnings "-notation-overridden".
 
-From Coq Require Eqdep_dec Extraction Setoid Vector ZArith.
+From Coq Require Eqdep_dec Extraction List Setoid Vector ZArith.
 
 Module Classes.
 
@@ -22,6 +22,10 @@ Reserved Notation "x '::>' R" (at level 60, right associativity).
 Notation "x '::>' R" := (Proper R x) : signature_scope.
 
 Class Eqv (A : Type) : Type := eqv : A -> A -> Prop.
+Class Enum (A : Type) : Type := enum : list A.
+Class SubInj (A B : Type) : Type := subinj : A -> B.
+Class SubProp (A B : Type) (P : B -> Prop) : Type :=
+  subprop : forall x : B, P x -> A.
 Class Opr (A : Type) : Type := opr : A -> A -> A.
 Class Idn (A : Type) : Type := idn : A.
 Class Inv (A : Type) : Type := inv : A -> A.
@@ -34,7 +38,6 @@ Class Recip (A : Type) : Type := recip : A -> A.
 Class LSMul (S A : Type) : Type := lsmul : S -> A -> A.
 Class RSMul (S A : Type) : Type := rsmul : S -> A -> A.
 Class Basis (D A : Type) : Type := basis : D -> A.
-Class Span (D A : Type) : Type := span : (D -> A) -> A.
 
 Delimit Scope group_scope with group.
 Delimit Scope field_scope with field.
@@ -42,6 +45,8 @@ Delimit Scope module_scope with module.
 
 Reserved Notation "x '==' y" (at level 70, no associativity).
 Notation "x '==' y" := (eqv x y) : type_scope.
+(* Reserved Notation "x '<:' y" (at level 70, no associativity).
+Notation "x '<:' y" := (subinj x y) : type_scope. *)
 Notation "x '+' y" := (add x y) : field_scope.
 Notation "'0'" := zero : field_scope.
 Notation "'-' x" := (neg x) : field_scope.
@@ -54,6 +59,12 @@ Reserved Notation "a '<*' x" (at level 45, left associativity).
 Notation "a '<*' x" := (lsmul a x) : module_scope.
 Reserved Notation "x '*>' a" (at level 45, left associativity).
 Notation "x '*>' a" := (rsmul a x) : module_scope.
+
+Class Dec (A : Type) {eqv : Eqv A} : Type :=
+  dec : forall x y : A, {x == y} + {~ x == y}.
+
+Reserved Notation "x '==?' y" (at level 70, no associativity).
+Notation "x '==?' y" := (dec x y) : type_scope.
 
 Module AdditiveNotations.
 
@@ -77,6 +88,147 @@ Class Setoid (A : Type) {eqv : Eqv A} : Prop := {
   ref : forall x : A, x == x;
   sym : forall x y : A, x == y -> y == x;
   tra : forall x y z : A, x == y -> y == z -> x == z;
+}.
+
+Add Parametric Relation {A : Type} {eqv' : Eqv A}
+  {std' : Setoid A} : A eqv
+  reflexivity proved by ref
+  symmetry proved by sym
+  transitivity proved by tra
+  as eqv_relation.
+
+Module Setoidless.
+
+(** In essence, [A] is equivalent to [{x : B | P x}]. *)
+Class Subtype (A B : Type) (P : B -> Prop)
+  {subinj : SubInj A B} {subprop : SubProp A B P} : Prop := {
+  sub : forall (y : B) (p : P y), subinj (subprop y p) = y;
+  scrub : forall Q : A -> Prop,
+    (forall (y : B) (p : P y), Q (subprop y p)) -> forall x : A, Q x;
+}.
+
+Definition subprop_uncurried {A B : Type} {P : B -> Prop}
+  {subprop : SubProp A B P} (p : {x : B | P x}) : A :=
+  subprop (proj1_sig p) (proj2_sig p).
+
+Definition subinj_unprojected {A B : Type} {P : B -> Prop}
+  {subinj : SubInj A B} {subprop : SubProp A B P}
+  {subtype : Subtype A B P}
+  (x : A) : {x : B | P x} :=
+  exist P (subinj x)
+  match subtype with
+  | {| sub := sub; scrub := scrub |} => scrub
+    (fun x : A => P (subinj x)) (fun (y : B) (p : P y) =>
+      eq_ind y P p (subinj (subprop y p)) (eq_sym (sub y p))) x
+  end.
+(* Proof.
+  match goal with
+  | A' : Type,
+    B' : Type,
+    P' : ?B' -> Prop,
+    eqv' : Eqv ?B',
+    subinj' : SubInj ?A' ?B',
+    subprop' : SubProp ?A' ?B' ?P',
+    subtype' : Subtype ?A' ?B' ?P',
+    x' : ?A' |- _ => rename
+      A' into A, B' into B, P' into P,
+      eqv' into eqv, subinj' into subinj, subprop' into subprop,
+      subtype' into subtype, x' into x
+  end.
+  hnf in *. destruct subtype as [sub scrub].
+  exists (subinj x). generalize dependent x. eapply scrub.
+  intros y p. pose proof (sub y p) as q.
+  rewrite q. apply p. Defined. *)
+
+End Setoidless.
+
+Module Setoidful.
+
+Open Scope signature_scope.
+
+(** In essence, [A] is equivalent to [{x : B | P x}]. *)
+Class Subtype (A B : Type) (P : B -> Prop)
+  {eqv : Eqv B} {subinj : SubInj A B} {subprop : SubProp A B P} : Prop := {
+  subsetoid :> Setoid B;
+  sub_pro : P ::> eqv ==> Basics.flip Basics.impl;
+  sub : forall (y : B) (p : P y), subinj (subprop y p) == y;
+  scrub : forall Q : A -> Prop,
+    (forall (y : B) (p : P y), Q (subprop y p)) -> forall x : A, Q x;
+}.
+
+Definition subprop_uncurried {A B : Type} {P : B -> Prop}
+  {subprop : SubProp A B P} (p : {x : B | P x}) : A :=
+  subprop (proj1_sig p) (proj2_sig p).
+
+Definition subinj_unprojected {A B : Type} {P : B -> Prop}
+  {eqv : Eqv B} {subinj : SubInj A B} {subprop : SubProp A B P}
+  {subtype : Subtype A B P}
+  (x : A) : {x : B | P x} :=
+  exist (fun x : B => P x) (subinj x)
+  match subtype with
+  | {| sub_pro := pro; sub := sub; scrub := scrub |} => scrub
+    (fun x : A => P (subinj x)) (fun (y : B) (p : P y) =>
+      pro (subinj (subprop y p)) y (sub y p) p) x
+  end.
+(* Proof.
+  match goal with
+  | A' : Type,
+    B' : Type,
+    P' : ?B' -> Prop,
+    eqv' : Eqv ?B',
+    subinj' : SubInj ?A' ?B',
+    subprop' : SubProp ?A' ?B' ?P',
+    subtype' : Subtype ?A' ?B' ?P',
+    x' : ?A' |- _ => rename
+      A' into A, B' into B, P' into P,
+      eqv' into eqv, subinj' into subinj, subprop' into subprop,
+      subtype' into subtype, x' into x
+  end.
+  hnf in *. destruct subtype as [std pro sub scrub].
+  exists (subinj x). generalize dependent x. eapply scrub.
+  intros y p. pose proof (sub y p) as q.
+  rewrite q. apply p. Defined. *)
+
+End Setoidful.
+
+Section ListDefinitions.
+
+Import List PeanoNat.
+Import ListNotations Nat.
+
+Fixpoint count {A : Type} {eqv : Eqv A} {dec : Dec A}
+  (x : A) (xs : list A) : nat :=
+  match xs with
+  | [] => O
+  | y :: ys => if x ==? y then S (count x ys) else count x ys
+  end.
+
+Import AdditiveNotations.
+
+Open Scope signature_scope.
+Open Scope group_scope.
+
+Definition folding {A : Type} {eqv : Eqv A} {opr : Opr A} {idn : Idn A}
+  (xs : list A) : A := fold_right opr idn xs.
+
+Definition summation {A : Type}
+  {eqv : Eqv A} {add : Classes.Add A} {zero : Zero A} (xs : list A) : A :=
+  fold_right add zero xs.
+
+Definition product {A : Type}
+  {eqv : Eqv A} {mul : Classes.Mul A} {one : One A} (xs : list A) : A :=
+  fold_right mul one xs.
+
+Global Instance nat_Eqv : Eqv nat := eq.
+Global Instance nat_Dec : Dec nat := eq_dec.
+
+End ListDefinitions.
+
+(** Every finite set is discrete,
+    so you cannot have a finite set that is not also discrete,
+    which suggests that these constraints are reasonable. *)
+Class Finite (A : Type) {eqv : Eqv A} {dec : Dec A} {enum : Enum A} : Prop := {
+  fin : forall x : A, count x enum == 1;
 }.
 
 Section Additive.
@@ -189,12 +341,13 @@ Class HomoBimodule (S A : Type)
   bimodule :> Bimodule S S A;
 }.
 
-Class FreeLeftModule (D S A : Type)
+Class FinitelyFreeLeftModule (D S A : Type)
+  {deqv : Eqv D} {denum : Enum D} {ddec : Dec D}
   {seqv : Eqv S} {sadd : Add S} {szero : Zero S} {sneg : Neg S}
   {smul : Mul S} {sone : One S}
   {eqv : Eqv A} {opr : Opr A} {idn : Idn A} {inv : Inv A}
-  {lsmul : LSMul S A} {lsmul : RSMul S A}
-  {basis : Basis D A} {span : Span D A} : Prop := {
+  {lsmul : LSMul S A} {basis : Basis D A} : Prop := {
+  finite :> Finite D;
   module :> LeftModule S A;
   (** In words, this says "if you pick any point,
       I can find coefficients for the basis,
@@ -202,32 +355,61 @@ Class FreeLeftModule (D S A : Type)
       In pseudocode, this says
       [forall x : A, exists cs : S ^ dim,
       x == cs_1 <* basis_1 + cs_2 <* basis_2 + ... + cs_dim <* basis_dim]. *)
-  basis_span : forall x : A, exists cs : D -> S,
-    let ys (d : D) := cs d <* basis d in
-    span ys == x;
-  (** In words, this says "if you can find any coefficients
-      for any subset of the basis, such that the linear combination is zero,
+  basis_span : forall x : A, exists coeffs : D -> S,
+    let terms (d : D) := coeffs d <* basis d in
+    folding (List.map terms enum) == x;
+  (** In words, this says "if you can find any coefficients of the basis,
+      such that the linear combination is zero,
       I can prove that all your coefficients are zero".
       In pseudocode, this says
-      [forall (subdim <= dim) (subbasis <: basis) (cs : S ^ subdim),
+      [forall (cs : S ^ dim),
+      cs_1 <* basis_1 + cs_2 <* basis_2 + ... + cs_dim <* basis_dim = 0 ->
+      cs_1 = 0 /\ cs_2 = 0 /\ ... /\ cs_dim = 0]. *)
+  basis_lind : forall coeffs : D -> S,
+    let terms (d : D) := coeffs d <* basis d in
+    folding (List.map terms enum) == 0 ->
+    List.Forall (fun a : S => a == 0%field) (List.map coeffs enum);
+}.
+
+Class CountablyFreeLeftModule (D S A : Type)
+  (** TODO Remove constraints on [D]. *)
+  {deqv : Eqv D} {denum : Enum D} {ddec : Dec D}
+  {seqv : Eqv S} {sadd : Add S} {szero : Zero S} {sneg : Neg S}
+  {smul : Mul S} {sone : One S}
+  {eqv : Eqv A} {opr : Opr A} {idn : Idn A} {inv : Inv A}
+  {lsmul : LSMul S A} {basis : Basis D A} : Prop := {
+  wmodule :> LeftModule S A;
+  (** In words, this says "if you pick any point,
+      I can find coefficients for the basis,
+      such that the linear combination converges and equals your point".
+      In pseudocode, this says
+      [forall x : A, exists cs : S ^ omega,
+      x == cs_1 <* basis_1 + cs_2 <* basis_2 + ...]. *)
+  (** TODO Use Cauchy sequences here. *)
+  wbasis_span : forall x : A, exists coeffs : D -> S,
+    let terms (d : D) := coeffs d <* basis d in
+    folding (List.map terms enum) == x;
+  (** In words, this says "if you can find any coefficients
+      for any finite subset of the basis,
+      such that the linear combination is zero,
+      I can prove that all your coefficients are zero".
+      In pseudocode, this says
+      [forall (subdim : nat) (subbasis <: basis) (cs : S ^ subdim),
       cs_1 <* basis_1 + cs_2 <* basis_2 + ... + cs_subdim <* basis_subdim = 0 ->
       cs_1 = 0 /\ cs_2 = 0 /\ ... /\ cs_subdim = 0]. *)
-  (** TODO Fix this. *)
-  basis_lind : forall embed : D -> D,
-    let subbasis (d : D) : A := basis (embed d) in
-    forall cs : D -> S,
-    let ys (d : D) : A := cs d <* subbasis d in
-    span ys == 0 -> forall d : D, ys d == 0;
+  (** TODO Check this. *)
+  wbasis_lind : forall {F : Type} {P : D -> Prop}
+    {feqv : Eqv F} {fsubinj : SubInj F D} {fsubprop : SubProp F D P}
+    {fstd : Setoidful.Subtype F D P}
+    {fenum : Enum F} {fdec : Dec F} {ffin : Finite F},
+    let subbasis (d : F) := basis (subinj d) in
+    forall subcoeffs : F -> S,
+    let subterms (d : F) := subcoeffs d <* subbasis d in
+    folding (List.map subterms enum) == 0 ->
+    List.Forall (fun a : S => a == 0%field) (List.map subcoeffs enum);
 }.
 
 End Additive.
-
-Add Parametric Relation {A : Type} {eqv' : Eqv A}
-  {std' : Setoid A} : A eqv
-  reflexivity proved by ref
-  symmetry proved by sym
-  transitivity proved by tra
-  as eqv_relation.
 
 Add Parametric Morphism {A : Type} {eqv' : Eqv A}
   {opr' : Opr A} {sgr' : Semigroup A} : opr
@@ -1164,6 +1346,12 @@ End NatLemmas.
 
 Instance Fin_Eqv {n : nat} : Eqv (Fin.t n) := fun x y : Fin.t n => x = y.
 
+(** TODO Define [Fin_range]. *)
+Instance Fin_Enum {n : nat} : Enum (Fin.t n).
+hnf. induction n. apply List.nil. apply (List.map Fin.FS). apply IHn. Defined.
+
+Instance Fin_Dec {n : nat} : Dec (Fin.t n) := Fin.eq_dec.
+
 Instance Z_Basis {n : nat} : Basis (Fin.t n) (Vector.t Z n) :=
   let ns := map (indicator n) (range n) in
   nth (map (map of_nat) ns).
@@ -1172,20 +1360,18 @@ Compute basis Fin.F1 : t Z 3.
 Compute basis (Fin.FS Fin.F1) : t Z 3.
 Compute basis (Fin.FS (Fin.FS Fin.F1)) : t Z 3.
 
-Instance Z_Span {n : nat} : Span (Fin.t n) (t Z n) :=
-  fun (f : Fin.t n -> t Z n) =>
-  Fin_fold (fun (a : Fin.t n) (x : t Z n) => map2 add (f a) x) (const 0 n).
+(** TODO Why? *)
+Compute summation (add := Z_VectorOpr) (zero := Z_VectorIdn)
+  (List.map basis enum) : t Z 3.
 
-Compute span basis : t Z 3.
-
-Instance Z_FreeLeftModule {n : nat} : FreeLeftModule (Fin.t n) Z (t Z n) := {
+Instance Z_FinitelyFreeLeftModule {n : nat} :
+  FinitelyFreeLeftModule (Fin.t n) Z (t Z n) := {
   basis_span := _;
   basis_lind := _;
 }.
 Proof.
-  all: cbv [eqv opr idn inv lsmul basis span].
-  all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv
-    Z_LSMul Z_Basis Z_Span].
+  all: cbv [eqv opr idn inv lsmul basis].
+  all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv Z_LSMul Z_Basis].
   all: cbv [eqv opr idn inv].
   all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv Z_MulOpr Z_MulIdn].
   all: set (P (x y : Z) := x = y).
