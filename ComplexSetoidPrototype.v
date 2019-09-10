@@ -224,12 +224,69 @@ Global Instance nat_Dec : Dec nat := eq_dec.
 
 End ListDefinitions.
 
+Instance Fin_Eqv {n : nat} : Eqv (Fin.t n) := fun x y : Fin.t n => x = y.
+
+Fixpoint Fin_range (n : nat) : list (Fin.t n) :=
+  match n with
+  | O => List.nil
+  | S p => List.cons Fin.F1 (List.map Fin.FS (Fin_range p))
+  end.
+
+Import PeanoNat.
+
+Lemma Fin_inversion : forall x : Fin.t O,
+  False.
+Proof.
+  intros x. set (P (x : Fin.t O) := False).
+  apply (Fin.case0 P). apply x. Qed.
+
+Lemma Fin_inversion_F1 : forall x : Fin.t (S O),
+  x = Fin.F1.
+Proof.
+  intros x. set (P (x : Fin.t (S O)) := x = Fin.F1).
+  apply (Fin.caseS' x P).
+  - reflexivity.
+  - intros p. inversion p. Qed.
+
+Lemma Fin_inversion_FS : forall {n : nat} (x : Fin.t (S n)),
+  x = Fin.F1 \/ exists y : Fin.t n, x = Fin.FS y.
+Proof.
+  intros n x. set (P (x : Fin.t (S n)) := x = Fin.F1 \/
+    exists y : Fin.t n, x = Fin.FS y).
+  apply (Fin.caseS' x P).
+  - left. reflexivity.
+  - intros p. right. exists p. reflexivity. Qed.
+
+Instance Fin_Enum {n : nat} : Enum (Fin.t n) := Fin_range n.
+
+Instance Fin_Dec {n : nat} : Dec (Fin.t n) := Fin.eq_dec.
+
+Class FinCard (A : Type) : Type := fincard : nat.
+Class FinTo (A : Type) {fincard : FinCard A} : Type :=
+  finto : A -> Fin.t fincard.
+Class FinFrom (A : Type) {fincard : FinCard A} : Type :=
+  finfrom : Fin.t fincard -> A.
+Class FiniteBi (A : Type) {eqv : Eqv A}
+  {fincard : FinCard A} {finto : FinTo A} {finfrom : FinFrom A} : Prop := {
+  fins_here : forall x : A, finfrom (finto x) == x;
+  fins_there : forall a : Fin.t fincard, finto (finfrom a) = a;
+}.
+
+Class Finite' (A : Type) {eqv : Eqv A} {enum : Enum A} : Prop := {
+  fin'_in : forall x : A, List.In x enum;
+  fin'_nodup : List.NoDup enum;
+}.
+
 (** Every finite set is discrete,
     so you cannot have a finite set that is not also discrete,
     which suggests that these constraints are reasonable. *)
 Class Finite (A : Type) {eqv : Eqv A} {dec : Dec A} {enum : Enum A} : Prop := {
   fin : forall x : A, count x enum == 1;
 }.
+
+Definition card {A : Type}
+  {eqv : Eqv A} {dec : Dec A} {enum : Enum A} {fin : Finite A} : nat :=
+  length enum.
 
 Section Additive.
 
@@ -1383,29 +1440,24 @@ Proof.
 
 End NatLemmas.
 
-Instance Fin_Eqv {n : nat} : Eqv (Fin.t n) := fun x y : Fin.t n => x = y.
-
-Fixpoint Fin_range (n : nat) : list (Fin.t n) :=
-  match n with
-  | O => List.nil
-  | S p => List.cons Fin.F1 (List.map Fin.FS (Fin_range p))
-  end.
-
-Instance Fin_Enum {n : nat} : Enum (Fin.t n) := Fin_range n.
-
-Instance Fin_Dec {n : nat} : Dec (Fin.t n) := Fin.eq_dec.
-
 Instance Fin_Finite {n : nat} : Finite (Fin.t n) := {
   fin := _
 }.
 Proof.
-  induction n as [| n p]; intros a.
-  - inversion a.
-  - apply (Fin.caseS' a).
-    + cbn. enough (S (count Fin.F1 (List.map Fin.FS (Fin_range n))) == 1%nat)
-        by admit.
-      admit.
-    + intros b. rewrite <- (p b). cbn. admit. Admitted.
+  cbv [Fin_Enum].
+  induction n as [| n p]; intros x.
+  - inversion x.
+  - pose proof Fin_inversion_FS x as q. destruct q as [q | q]; subst.
+    + cbn. cbv [dec Fin_Dec]. destruct (Fin.eq_dec Fin.F1 Fin.F1) as [q | q]; subst.
+      * clear q. replace eqv with (@Logic.eq nat) in p by admit.
+        remember (Fin_range n) as xs eqn : e. clear e.
+        induction xs as [| y ys q].
+        -- reflexivity.
+        -- cbn. apply q. intros x. specialize (p x). cbn in p.
+          cbv [dec Fin_Dec] in p. destruct (Fin.eq_dec x y) as [r | r]; subst.
+          admit. admit.
+      * congruence.
+    + admit. Admitted.
 
 Instance Z_Basis {n : nat} : Basis (Fin.t n) (Vector.t Z n) :=
   let ns := map (indicator n) (range n) in
