@@ -307,6 +307,12 @@ Class Monoid (A : Type) {eqv : Eqv A} {opr : Opr A} {idn : Idn A} : Prop := {
   idn_r : forall x : A, x + 0 == x;
 }.
 
+Fixpoint monfold {A : Type} `{Monoid A} (x : A) (n : nat) : A :=
+  match n with
+  | O => 0
+  | S p => x + monfold x p
+  end.
+
 Class Group (A : Type) {eqv : Eqv A}
   {opr : Opr A} {idn : Idn A} {inv : Inv A} : Prop := {
   monoid :> Monoid A;
@@ -450,24 +456,41 @@ Local Parameter division : forall {S : Type}, S -> S -> S.
 Local Notation "x '/' y" := (division x y).
 Local Parameter lessthanorequal : forall {S : Type}, S -> S -> Prop.
 Local Notation "x '<<' y" := (lessthanorequal x y) (at level 70, no associativity).
-Local Class Metric (S A : Type) : Type := d : A -> A -> S.
+
+Class Cmp (A : Type) : Type := compare : A -> A -> Prop.
+Notation "x '<=' y" := (compare x y).
+Class Order (A : Type) {eqv : Eqv A} {cmp : Cmp A} : Prop := {
+  toanti : forall x y : A, x <= y -> y <= x -> x == y;
+  totrans : forall x y z : A, x <= y -> y <= z -> x <= z;
+  toconn : forall x y : A, x <= y \/ y <= x;
+}.
+Class Dist (S A : Type) : Type := dist : A -> A -> S.
+Class Metric (S A : Type) {seqv : Eqv S} {scmp : Cmp S} {sord : Order S}
+  {sopr : Opr S} {sidn : Idn S} {smon : Monoid S}
+  {eqv : Eqv A} {dist : Dist S A} : Prop := {
+  mind : forall x y : A, dist x y == 0 <-> x == y;
+  msym : forall x y : A, dist x y == dist y x;
+  mtri : forall x y z : A, dist x z <= dist x y + dist y z;
+}.
 
 Definition Subsequence {A : Type} (x : nat -> A) (n : nat) : Fin.t n -> A :=
   fun a : Fin.t n => x (proj1_sig (Fin.to_nat a)).
 
-Definition Limit {S A : Type} {d : Metric S A} (x : nat -> A) (y : A) : Prop :=
+Instance nat_Cmp : Cmp nat := Nat.le.
+
+Definition Limit {S A : Type} `{Metric S A} (x : nat -> A) (y : A) : Prop :=
   forall k : nat, exists n : nat,
   forall p : nat, n <= p ->
-  d (x p) y << !1 / !2 ^ k.
+  monfold (dist (x p) y) (2 ^ k) << !1.
 
-Local Parameter FinSum : forall {A : Type} {n : nat} (x : Fin.t n -> A), A.
+Parameter FinSum : forall {A : Type} {n : nat} (x : Fin.t n -> A), A.
 
-Definition InfSum {S A : Type} {d : Metric S A} (x : nat -> A) (y : A) : Prop :=
+Definition InfSum {S A : Type} `{Metric S A} (x : nat -> A) (y : A) : Prop :=
   Limit (fun n : nat => FinSum (Subsequence x n)) y.
 
 (** TODO Use operationally injective, propositionally countable [D]. *)
 Class CountablyFreeLeftModule (S A : Type)
-  {d : Metric S A}
+  `{Metric S A}
   {seqv : Eqv S} {sadd : Add S} {szero : Zero S} {sneg : Neg S}
   {smul : Mul S} {sone : One S}
   {eqv : Eqv A} {opr : Opr A} {idn : Idn A} {inv : Inv A}
