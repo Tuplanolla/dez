@@ -301,16 +301,21 @@ Class Semigroup (A : Type) {eqv : Eqv A} {opr : Opr A} : Prop := {
   ass : forall x y z : A, (x + y) + z == x + (y + z);
 }.
 
+Import ZArith.
+
+Fixpoint sgfold {A : Type} `{Semigroup A} (n : positive) (x : A) : A :=
+  Pos.iter_op opr n x.
+
 Class Monoid (A : Type) {eqv : Eqv A} {opr : Opr A} {idn : Idn A} : Prop := {
   semigroup :> Semigroup A;
   idn_l : forall x : A, 0 + x == x;
   idn_r : forall x : A, x + 0 == x;
 }.
 
-Fixpoint monfold {A : Type} `{Monoid A} (x : A) (n : nat) : A :=
+Fixpoint monfold {A : Type} `{Monoid A} (n : N) (x : A) : A :=
   match n with
-  | O => 0
-  | S p => x + monfold x p
+  | N0 => 0
+  | Npos p => sgfold p x
   end.
 
 Class Group (A : Type) {eqv : Eqv A}
@@ -321,6 +326,13 @@ Class Group (A : Type) {eqv : Eqv A}
   inv_r : forall x : A, x + (- x) == 0;
 }.
 
+Fixpoint grpfold {A : Type} `{Group A} (n : Z) (x : A) : A :=
+  match n with
+  | Z0 => 0
+  | Zpos p => sgfold p x
+  | Zneg p => sgfold p (- x)
+  end.
+
 Class AbelianGroup (A : Type) {eqv : Eqv A}
   {opr : Opr A} {idn : Idn A} {inv : Inv A} : Prop := {
   group :> Group A;
@@ -328,6 +340,36 @@ Class AbelianGroup (A : Type) {eqv : Eqv A}
 }.
 
 End Additive.
+
+Module AdditiveNotations'.
+
+Export AdditiveNotations.
+
+Reserved Notation "n 'P*' x" (at level 40, left associativity).
+Notation "n 'P*' x" := (sgfold n x) : group_scope.
+
+Reserved Notation "n 'N*' x" (at level 40, left associativity).
+Notation "n 'N*' x" := (monfold n x) : group_scope.
+
+Reserved Notation "n 'Z*' x" (at level 40, left associativity).
+Notation "n 'Z*' x" := (grpfold n x) : group_scope.
+
+End AdditiveNotations'.
+
+Module MultiplicativeNotations'.
+
+Export MultiplicativeNotations.
+
+Reserved Notation "x 'P^' n" (at level 40, left associativity).
+Notation "x 'P^' n" := (sgfold n x) : group_scope.
+
+Reserved Notation "x 'N^' n" (at level 40, left associativity).
+Notation "x 'N^' n" := (monfold n x) : group_scope.
+
+Reserved Notation "x 'Z^' n" (at level 40, left associativity).
+Notation "x 'Z^' n" := (grpfold n x) : group_scope.
+
+End MultiplicativeNotations'.
 
 Section Arbitrary.
 
@@ -339,6 +381,14 @@ Class Ring (A : Type) {eqv : Eqv A} {add : Add A} {zero : Zero A} {neg : Neg A}
   mul_monoid :> Monoid A (opr := mul) (idn := one);
   dis_l : forall x y z : A, x * (y + z) == x * y + x * z;
   dis_r : forall x y z : A, (x + y) * z == x * z + y * z;
+}.
+
+Class Field (A : Type) {eqv : Eqv A} {add : Add A} {zero : Zero A} {neg : Neg A}
+  {mul : Mul A} {one : One A} {recip : Recip A} : Prop := {
+  fadd_agroup :> AbelianGroup A (opr := add) (idn := zero) (inv := neg);
+  fmul_group :> Group A (opr := mul) (idn := one) (inv := recip);
+  fdis_l : forall x y z : A, x * (y + z) == x * y + x * z;
+  fdis_r : forall x y z : A, (x + y) * z == x * z + y * z;
 }.
 
 End Arbitrary.
@@ -419,7 +469,7 @@ Class FinitelyFreeLeftModule (D S A : Type)
       [forall x : A, exists cs : S ^ dim,
       x == cs_1 <* basis_1 + cs_2 <* basis_2 + ... + cs_dim <* basis_dim]. *)
   basis_span : forall x : A, exists coeffs : D -> S,
-    let terms (d : D) := coeffs d <* basis d in
+    let terms (d' : D) := coeffs d' <* basis d' in
     folding (List.map terms enum) == x;
   (** In words, this says "if you can find any coefficients of the basis,
       such that the linear combination is zero,
@@ -429,10 +479,33 @@ Class FinitelyFreeLeftModule (D S A : Type)
       cs_1 <* basis_1 + cs_2 <* basis_2 + ... + cs_dim <* basis_dim = 0 ->
       cs_1 = 0 /\ cs_2 = 0 /\ ... /\ cs_dim = 0]. *)
   basis_lind : forall coeffs : D -> S,
-    let terms (d : D) := coeffs d <* basis d in
+    let terms (d' : D) := coeffs d' <* basis d' in
     folding (List.map terms enum) == 0 ->
     List.Forall (fun a : S => a == 0%field) (List.map coeffs enum);
 }.
+
+Class FinitelyFreeGradedLeftModule (G D S A : Type)
+  {deqv : Eqv D} {denum : Enum D} {ddec : Dec D}
+  {seqv : Eqv S} {sadd : Add S} {szero : Zero S} {sneg : Neg S}
+  {smul : Mul S} {sone : One S}
+  {eqv : Eqv A} {opr : Opr A} {idn : Idn A} {inv : Inv A}
+  {lsmul : LSMul S A} {basis : Basis D A} : Prop := {
+  family : G -> FinitelyFreeLeftModule D S A;
+}.
+
+(** TODO Check this type. *)
+Class Diff (D S' A : Type) : Type :=
+  diff : forall n : nat, A -> A.
+
+Reserved Notation "'ddd' x" (at level 35, right associativity).
+Notation "'ddd' x" := (diff x) : module_scope.
+
+Class ChainComplex (D S' A : Type) `{Diff D S' A}
+  `{FinitelyFreeGradedLeftModule nat D S' A} : Prop := {
+  zero_square : forall (n : nat) (x : A), diff n (diff (S n) x) == 0;
+}.
+
+(** TODO Wedge product, simplices, reductions, homology. *)
 
 Section Analysis.
 
@@ -460,14 +533,16 @@ Local Notation "x '<<' y" := (lessthanorequal x y) (at level 70, no associativit
 Class Cmp (A : Type) : Type := compare : A -> A -> Prop.
 Notation "x '<=' y" := (compare x y).
 Class Order (A : Type) {eqv : Eqv A} {cmp : Cmp A} : Prop := {
+  toset :> Setoid A;
   toanti : forall x y : A, x <= y -> y <= x -> x == y;
   totrans : forall x y z : A, x <= y -> y <= z -> x <= z;
   toconn : forall x y : A, x <= y \/ y <= x;
 }.
 Class Dist (S A : Type) : Type := dist : A -> A -> S.
 Class Metric (S A : Type) {seqv : Eqv S} {scmp : Cmp S} {sord : Order S}
-  {sopr : Opr S} {sidn : Idn S} {smon : Monoid S}
-  {eqv : Eqv A} {dist : Dist S A} : Prop := {
+  {sopr : Opr S} {sidn : Idn S} {eqv : Eqv A} {dist : Dist S A} : Prop := {
+  smonoid :> Monoid S;
+  sorder :> Order S;
   mind : forall x y : A, dist x y == 0 <-> x == y;
   msym : forall x y : A, dist x y == dist y x;
   mtri : forall x y z : A, dist x z <= dist x y + dist y z;
@@ -478,10 +553,12 @@ Definition Subsequence {A : Type} (x : nat -> A) (n : nat) : Fin.t n -> A :=
 
 Instance nat_Cmp : Cmp nat := Nat.le.
 
+Import ZArith.
+
 Definition Limit {S A : Type} `{Metric S A} (x : nat -> A) (y : A) : Prop :=
   forall k : nat, exists n : nat,
   forall p : nat, n <= p ->
-  monfold (dist (x p) y) (2 ^ k) << !1.
+  monfold (N.of_nat (2 ^ k)) (dist (x p) y) << !1.
 
 Parameter FinSum : forall {A : Type} {n : nat} (x : Fin.t n -> A), A.
 
@@ -964,8 +1041,6 @@ Proof.
     subst; rename x0' into x0, xs0' into xs0, x1' into x1, xs1' into xs1.
     cbn. f_equal. apply p. Qed.
 
-Require Import Program.
-Obligation Tactic := idtac.
 Fixpoint nat_fold {A : Type} (f : nat -> A -> A) (z : A) (n : nat) : A :=
   match n with
   | O => z
@@ -1029,9 +1104,64 @@ End VectorLemmas.
 
 Instance Z_VectorEqv {n : nat} : Eqv (t Z n) := Forall2 eqv.
 
-(** There exists an easier way to carry out these proofs
-    by first showing that [Forall2 eq] is equivalent to [eq],
-    but we pretend this is not the case here. *)
+Lemma Forall2_eq : forall {A : Type} {n : nat} (xs ys : t A n),
+  Forall2 Logic.eq xs ys <-> Logic.eq xs ys.
+Proof.
+  intros A n xs ys. induction n as [| p q].
+  - pose proof case_nil xs as pxs.
+    pose proof case_nil ys as pys.
+    subst xs ys. split.
+    + intros r. reflexivity.
+    + intros r. apply Forall2_nil.
+  - rename xs into xxs, ys into yys.
+    pose proof case_cons xxs as pxxs. destruct pxxs as [x [xs pxs]].
+    pose proof case_cons yys as pyys. destruct pyys as [y [ys pys]].
+    subst xxs yys. split.
+    + intros r. apply Forall2_inversion in r. destruct r as [rhd rtl]. f_equal.
+      * apply rhd.
+      * apply q. apply rtl.
+    + intros r.
+      pose proof f_equal hd r as rhd. cbv in rhd.
+      pose proof f_equal tl r as rtl. cbv in rtl.
+      apply Forall2_cons.
+      * apply rhd.
+      * apply q. apply rtl. Qed.
+
+Open Scope signature_scope.
+
+Lemma s_equal : forall {A B : Type} `{Setoid A} `{Setoid B}
+  (f : A -> B) {p : f ::> eqv ==> eqv} (x y : A),
+  x == y -> f x == f y.
+Proof.
+  intros A B ? ? ? ? f ? x y p.
+  rewrite p. reflexivity. Qed.
+
+Lemma s_equal2 : forall {A0 A1 B : Type} `{Setoid A0} `{Setoid A1} `{Setoid B}
+  (f : A0 -> A1 -> B) {p : f ::> eqv ==> eqv ==> eqv}
+  (x0 y0 : A0) (x1 y1 : A1),
+  x0 == y0 -> x1 == y1 -> f x0 x1 == f y0 y1.
+Proof.
+  intros A0 A1 B ? ? ? ? ? ? f ? x0 y0 x1 y1 p q.
+  rewrite p, q. reflexivity. Qed.
+
+Lemma Forall2_eqv : forall {A : Type} {n : nat} `{Setoid A} `{Setoid (t A n)}
+  (xs ys : t A n),
+  Forall2 eqv xs ys <-> eqv xs ys.
+Proof.
+  intros A n eqv std eqvs stds xs ys. induction n as [| p q].
+  - pose proof case_nil xs as pxs.
+    pose proof case_nil ys as pys.
+    subst xs ys. split.
+    + intros r. reflexivity.
+    + intros r. apply Forall2_nil.
+  - rename xs into xxs, ys into yys.
+    pose proof case_cons xxs as pxxs. destruct pxxs as [x [xs pxs]].
+    pose proof case_cons yys as pyys. destruct pyys as [y [ys pys]].
+    subst xxs yys. split.
+    + intros r. apply Forall2_inversion in r. destruct r as [rhd rtl].
+      admit.
+    + intros r.
+      admit. Admitted.
 
 Instance Z_VectorSetoid {n : nat} : Setoid (t Z n) := {
   ref := _;
@@ -1041,49 +1171,18 @@ Instance Z_VectorSetoid {n : nat} : Setoid (t Z n) := {
 Proof.
   all: cbv [eqv].
   all: cbv [Z_VectorEqv].
+  all: cbv [eqv].
   all: cbv [Z_Eqv].
   all: set (P (x y : Z) := x = y).
-  - intros xs. induction n as [| n p].
-    + pose proof case_nil xs as pxs'.
-      subst. apply Forall2_nil.
-    + pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
-      subst; rename x' into x, xs' into xs. apply Forall2_cons.
-      * reflexivity.
-      * apply p.
-  - intros xs ys. induction n as [| n p].
-    + intros q.
-      pose proof case_nil xs as pxs'.
-      pose proof case_nil ys as pys'.
-      subst. apply Forall2_nil.
-    + intros q.
-      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
-      pose proof case_cons ys as pys'. destruct pys' as [y' [ys' pys']].
-      subst; rename x' into x, xs' into xs, y' into y, ys' into ys.
-      apply Forall2_inversion in q. destruct q as [qhd qtl].
-      apply Forall2_cons.
-      * symmetry. apply qhd.
-      * apply p. apply qtl.
-  - intros xs ys zs. induction n as [| n p].
-    + intros q r.
-      pose proof case_nil xs as pxs'.
-      pose proof case_nil ys as pys'.
-      pose proof case_nil zs as pzs'.
-      subst. apply Forall2_nil.
-    + intros q r.
-      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
-      pose proof case_cons ys as pys'. destruct pys' as [y' [ys' pys']].
-      pose proof case_cons zs as pzs'. destruct pzs' as [z' [zs' pzs']].
-      subst; rename x' into x, xs' into xs, y' into y, ys' into ys,
-        z' into z, zs' into zs.
-      apply Forall2_inversion in q. destruct q as [qhd qtl].
-      apply Forall2_inversion in r. destruct r as [rhd rtl].
-      apply Forall2_cons.
-      * etransitivity.
-        -- apply qhd.
-        -- apply rhd.
-      * eapply p.
-        -- apply qtl.
-        -- apply rtl. Qed.
+  - intros xs. apply Forall2_eq. reflexivity.
+  - intros xs ys p. apply Forall2_eq. symmetry. apply Forall2_eq. apply p.
+  - intros xs ys zs p q. apply Forall2_eq. transitivity ys.
+    + apply Forall2_eq. apply p.
+    + apply Forall2_eq. apply q. Qed.
+
+(** There exists an easier way to carry out these proofs
+    by first showing that [Forall2 eq] is equivalent to [eq],
+    as we just did, but we pretend this is not the case here. *)
 
 Instance Z_VectorOpr {n : nat} : Opr (t Z n) := map2 Z_AddOpr.
 
