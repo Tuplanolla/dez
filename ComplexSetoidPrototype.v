@@ -38,6 +38,7 @@ Class Recip (A : Type) : Type := recip : A -> A.
 Class LSMul (S A : Type) : Type := lsmul : S -> A -> A.
 Class RSMul (S A : Type) : Type := rsmul : S -> A -> A.
 Class Basis (D A : Type) : Type := basis : D -> A.
+Class Diff (D S' A : Type) : Type := diff : forall n : nat, A -> A.
 
 Delimit Scope group_scope with group.
 Delimit Scope field_scope with field.
@@ -59,6 +60,8 @@ Reserved Notation "a '<*' x" (at level 45, left associativity).
 Notation "a '<*' x" := (lsmul a x) : module_scope.
 Reserved Notation "x '*>' a" (at level 45, left associativity).
 Notation "x '*>' a" := (rsmul a x) : module_scope.
+Reserved Notation "'ddd' x" (at level 35, right associativity).
+Notation "'ddd' x" := (diff x) : module_scope.
 
 Class Dec (A : Type) {eqv : Eqv A} : Type :=
   dec : forall x y : A, {x == y} + {~ x == y}.
@@ -492,13 +495,6 @@ Class FinitelyFreeGradedLeftModule (G D S A : Type)
   {lsmul : LSMul S A} {basis : Basis D A} : Prop := {
   family : G -> FinitelyFreeLeftModule D S A;
 }.
-
-(** TODO Check this type. *)
-Class Diff (D S' A : Type) : Type :=
-  diff : forall n : nat, A -> A.
-
-Reserved Notation "'ddd' x" (at level 35, right associativity).
-Notation "'ddd' x" := (diff x) : module_scope.
 
 Class ChainComplex (D S' A : Type) `{Diff D S' A}
   `{FinitelyFreeGradedLeftModule nat D S' A} : Prop := {
