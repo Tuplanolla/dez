@@ -5,17 +5,20 @@ From Coq Require Extraction Setoid Morphisms Vector ZArith.
 Module Export SetoidClass.
 
 (** TODO Manage exports. *)
-Export Setoid Morphisms.
+Export Setoid.
+Import Morphisms.
 
-Open Scope signature_scope.
+Delimit Scope setoid_scope with setoid.
+
+Open Scope setoid_scope.
 
 Module Export ProperNotations.
 
 Reserved Notation "R '==>' S" (at level 55, right associativity).
-Notation "R '==>' S" := (respectful R S) : signature_scope.
+Notation "R '==>' S" := (respectful R S) : setoid_scope.
 
 Reserved Notation "x '::>' R" (at level 60, right associativity).
-Notation "x '::>' R" := (Proper R x) : signature_scope.
+Notation "x '::>' R" := (Proper R x) : setoid_scope.
 
 End ProperNotations.
 
@@ -25,19 +28,19 @@ End ProperNotations.
 Class Eqv (A : Type) : Type := eqv : A -> A -> Prop.
 
 Reserved Notation "x '==' y" (at level 70, no associativity).
-Notation "x '==' y" := (eqv x y) : type_scope.
+Notation "x '==' y" := (eqv x y) : setoid_scope.
 
 (** Setoid, equivalence relation.
     We do not use the standard library setoid,
     because it is not constrained by an operational class like [Eqv] and
-    is not itself a predicative class in [Prop]. *)
+    it is not itself a predicative class in [Prop]. *)
 Class Setoid (A : Type) {eqv : Eqv A} : Prop := {
   reflexive : forall x : A, x == x;
   symmetric : forall x y : A, x == y -> y == x;
   transitive : forall x y z : A, x == y -> y == z -> x == z;
 }.
 
-Add Parametric Relation {A : Type} `{std : Setoid A} : A eqv
+Add Parametric Relation {A : Type} `{setoid : Setoid A} : A eqv
   reflexivity proved by reflexive
   symmetry proved by symmetric
   transitivity proved by transitive
@@ -47,9 +50,9 @@ End SetoidClass.
 
 Module Export SemigroupClass.
 
-Delimit Scope group_scope with group.
+Delimit Scope semigroup_scope with semigroup.
 
-Open Scope group_scope.
+Open Scope semigroup_scope.
 
 (** Operation.
     We do not use the abbreviation [op],
@@ -58,13 +61,13 @@ Class Opr (A : Type) : Type := opr : A -> A -> A.
 
 Module AdditiveNotations.
 
-Notation "x '+' y" := (opr x y) : group_scope.
+Notation "x '+' y" := (opr x y) : semigroup_scope.
 
 End AdditiveNotations.
 
 Module MultiplicativeNotations.
 
-Notation "x '*' y" := (opr x y) : group_scope.
+Notation "x '*' y" := (opr x y) : semigroup_scope.
 
 End MultiplicativeNotations.
 
@@ -73,16 +76,15 @@ Import AdditiveNotations.
 (** Semigroup, associative operation. *)
 Class Semigroup (A : Type) {eqv : Eqv A} {opr : Opr A} : Prop := {
   setoid :> Setoid A;
-  opr_pro : opr ::> eqv ==> eqv ==> eqv;
-  ass : forall x y z : A, (x + y) + z == x + (y + z);
+  opr_proper : opr ::> eqv ==> eqv ==> eqv;
+  opr_associative : forall x y z : A, (x + y) + z == x + (y + z);
 }.
 
-Add Parametric Morphism {A : Type} `{sgr : Semigroup A} : opr
+Add Parametric Morphism {A : Type} `{semigroup : Semigroup A} : opr
   with signature eqv ==> eqv ==> eqv
   as eqv_opr_morphism.
 Proof.
-  intros x y p z w q. destruct sgr as [_ opr_pro _].
-  cbv in opr_pro. apply opr_pro.
+  intros x y p z w q. destruct semigroup as [_ r _]. apply r.
   - apply p.
   - apply q. Qed.
 
@@ -90,9 +92,9 @@ End SemigroupClass.
 
 Module Export MonoidClass.
 
-Delimit Scope group_scope with group.
+Delimit Scope monoid_scope with monoid.
 
-Open Scope group_scope.
+Open Scope monoid_scope.
 
 (** Identity.
     We do not use the abbreivation [id],
@@ -103,7 +105,7 @@ Module AdditiveNotations.
 
 Export SemigroupClass.AdditiveNotations.
 
-Notation "'0'" := idn : group_scope.
+Notation "'0'" := idn : monoid_scope.
 
 End AdditiveNotations.
 
@@ -111,7 +113,7 @@ Module MultiplicativeNotations.
 
 Export SemigroupClass.MultiplicativeNotations.
 
-Notation "'1'" := idn : group_scope.
+Notation "'1'" := idn : monoid_scope.
 
 End MultiplicativeNotations.
 
@@ -120,8 +122,8 @@ Import AdditiveNotations.
 (** Monoid, semigroup with identity. *)
 Class Monoid (A : Type) {eqv : Eqv A} {opr : Opr A} {idn : Idn A} : Prop := {
   semigroup :> Semigroup A;
-  idn_l : forall x : A, 0 + x == x;
-  idn_r : forall x : A, x + 0 == x;
+  left_identity : forall x : A, 0 + x == x;
+  right_identity : forall x : A, x + 0 == x;
 }.
 
 End MonoidClass.
@@ -159,23 +161,22 @@ Import AdditiveNotations.
 Class Group (A : Type) {eqv : Eqv A}
   {opr : Opr A} {idn : Idn A} {inv : Inv A} : Prop := {
   monoid :> Monoid A;
-  inv_pro : inv ::> eqv ==> eqv;
-  inv_l : forall x : A, (- x) + x == 0;
-  inv_r : forall x : A, x + (- x) == 0;
+  inv_proper : inv ::> eqv ==> eqv;
+  left_inverse : forall x : A, (- x) + x == 0;
+  right_inverse : forall x : A, x + (- x) == 0;
 }.
 
-Add Parametric Morphism {A : Type} `{grp : Group A} : inv
+Add Parametric Morphism {A : Type} `{group : Group A} : inv
   with signature eqv ==> eqv
   as eqv_inv_morphism.
 Proof.
-  intros x y p. destruct grp as [_ inv_pro _ _].
-  cbv in inv_pro. apply inv_pro. apply p. Qed.
+  intros x y p. destruct group as [_ q _ _]. apply q. apply p. Qed.
 
-(** Group, commutative monoid with inverse. *)
+(** Abelian group, commutative group. *)
 Class AbelianGroup (A : Type) {eqv : Eqv A}
   {opr : Opr A} {idn : Idn A} {inv : Inv A} : Prop := {
   group :> Group A;
-  add_com : forall x y : A, x + y == y + x;
+  opr_commutative : forall x y : A, x + y == y + x;
 }.
 
 End GroupClass.
@@ -187,66 +188,25 @@ Export GroupClass.
 (* start snippet generics *)
 Import AdditiveNotations ZArith Pos.
 
-Definition popr {A : Type} `{Semigroup A} (n : positive) (x : A) : A :=
+(** Positive repetition of operation. *)
+Definition popr {A : Type} `{semigroup : Semigroup A}
+  (n : positive) (x : A) : A :=
   iter_op opr n x.
 
-Definition nopr {A : Type} `{Monoid A} (n : N) (x : A) : A :=
+(** Natural repetition of operation. *)
+Definition nopr {A : Type} `{monoid : Monoid A} (n : N) (x : A) : A :=
   match n with
   | N0 => 0
   | Npos p => popr p x
   end.
 
-Definition zopr {A : Type} `{Group A} (n : Z) (x : A) : A :=
+(** Integer repetition of operation. *)
+Definition zopr {A : Type} `{group : Group A} (n : Z) (x : A) : A :=
   match n with
   | Z0 => 0
   | Zpos p => popr p x
   | Zneg p => popr p (- x)
   end.
-
-Theorem ivl : forall {A : Type} `{Group A},
-  forall x : A, - (- x) == x.
-Proof.
-  intros A ? ? ? ? grp x.
-  destruct grp as [[[ps pop pa] pnl pnr] pvp pvl pvr] eqn : pg.
-  rewrite <- (pnr (- (- x))). rewrite <- (pvl x).
-  rewrite <- (pa (- (- x)) (- x) x). rewrite (pvl (- x)). rewrite (pnl x).
-  reflexivity. Qed.
-
-Lemma inj_l : forall {A : Type} `{Group A},
-  forall x y z : A, z + x == z + y -> x == y.
-Proof.
-  intros A ? ? ? ? grp x y z p.
-  destruct grp as [[[ps pop pa] pnl pnr] pvp pvl pvr] eqn : pg.
-  rewrite <- (pnl x). rewrite <- (pvl z). rewrite (pa (- z) z x).
-  rewrite p. rewrite <- (pa (- z) z y). rewrite (pvl z). rewrite (pnl y).
-  reflexivity. Qed.
-
-Lemma inj_r : forall {A : Type} `{Group A},
-  forall x y z : A, x + z == y + z -> x == y.
-Proof.
-  intros A ? ? ? ? grp x y z p.
-  destruct grp as [[[ps pop pa] pnl pnr] pvp pvl pvr] eqn : pg.
-  rewrite <- (pnr x). rewrite <- (pvr z). rewrite <- (pa x z (- z)).
-  rewrite p. rewrite (pa y z (- z)). rewrite (pvr z). rewrite (pnr y).
-  reflexivity. Qed.
-
-Theorem dis : forall {A : Type} `{Group A},
-  forall x y : A, - (x + y) == (- y) + (- x).
-Proof.
-  intros A ? ? ? ? grp x y.
-  apply (inj_l (- (x + y)) ((- y) + (- x)) (x + y)).
-  destruct grp as [[[ps pop pa] pnl pnr] pvp pvl pvr] eqn : pg.
-  rewrite (pvr (x + y)). rewrite <- (pa (x + y) (- y) (- x)).
-  rewrite (pa x y (- y)). rewrite (pvr y). rewrite (pnr x). rewrite (pvr x).
-  reflexivity. Qed.
-
-Theorem inv_0 : forall {A : Type} `{Group A},
-  - 0 == 0.
-Proof.
-  intros A ? ? ? ? grp.
-  destruct grp as [[[ps pop pa] pnl pnr] pvp pvl pvr] eqn : pg.
-  rewrite <- (pnr (- 0)). rewrite (pvl 0).
-  reflexivity. Qed.
 
 Module AdditiveNotations.
 
@@ -277,19 +237,69 @@ Reserved Notation "x '^%Z' n" (at level 40, left associativity).
 Notation "x '^%Z' n" := (zopr n x) : group_scope.
 
 End MultiplicativeNotations.
-(* end snippet generics *)
 
 Import AdditiveNotations.
 
-Lemma iter_op_succ : forall {A : Type} `{Setoid A} (op : A -> A -> A),
+(** Inverse is involutive. *)
+Theorem ivl : forall {A : Type} `{group : Group A},
+  forall x : A, - (- x) == x.
+Proof.
+  intros A ? ? ? ? grp x.
+  destruct grp as [[[ps pop pa] pnl pnr] pvp pvl pvr] eqn : pg.
+  rewrite <- (pnr (- (- x))). rewrite <- (pvl x).
+  rewrite <- (pa (- (- x)) (- x) x). rewrite (pvl (- x)). rewrite (pnl x).
+  reflexivity. Qed.
+
+(** Operation with the left argument fixed is injective. *)
+Lemma inj_l : forall {A : Type} `{group : Group A},
+  forall x y z : A, z + x == z + y -> x == y.
+Proof.
+  intros A ? ? ? ? grp x y z p.
+  destruct grp as [[[ps pop pa] pnl pnr] pvp pvl pvr] eqn : pg.
+  rewrite <- (pnl x). rewrite <- (pvl z). rewrite (pa (- z) z x).
+  rewrite p. rewrite <- (pa (- z) z y). rewrite (pvl z). rewrite (pnl y).
+  reflexivity. Qed.
+
+(** Operation with the right argument fixed is injective. *)
+Lemma inj_r : forall {A : Type} `{group : Group A},
+  forall x y z : A, x + z == y + z -> x == y.
+Proof.
+  intros A ? ? ? ? grp x y z p.
+  destruct grp as [[[ps pop pa] pnl pnr] pvp pvl pvr] eqn : pg.
+  rewrite <- (pnr x). rewrite <- (pvr z). rewrite <- (pa x z (- z)).
+  rewrite p. rewrite (pa y z (- z)). rewrite (pvr z). rewrite (pnr y).
+  reflexivity. Qed.
+
+(** Inverse distributes over operation. *)
+Theorem dis : forall {A : Type} `{group : Group A},
+  forall x y : A, - (x + y) == (- y) + (- x).
+Proof.
+  intros A ? ? ? ? grp x y.
+  apply (inj_l (- (x + y)) ((- y) + (- x)) (x + y)).
+  destruct grp as [[[ps pop pa] pnl pnr] pvp pvl pvr] eqn : pg.
+  rewrite (pvr (x + y)). rewrite <- (pa (x + y) (- y) (- x)).
+  rewrite (pa x y (- y)). rewrite (pvr y). rewrite (pnr x). rewrite (pvr x).
+  reflexivity. Qed.
+
+(** Inverse is absorbed by identity. *)
+Theorem inv_0 : forall {A : Type} `{group : Group A},
+  - 0 == 0.
+Proof.
+  intros A ? ? ? ? grp.
+  destruct grp as [[[ps pop pa] pnl pnr] pvp pvl pvr] eqn : pg.
+  rewrite <- (pnr (- 0)). rewrite (pvl 0).
+  reflexivity. Qed.
+
+Lemma iter_op_succ : forall {A : Type} `{setoid : Setoid A} (op : A -> A -> A),
  (forall x y z, op x (op y z) == op (op x y) z) ->
  forall p a, iter_op op (succ p) a == op a (iter_op op p a).
 Proof.
   induction p; simpl; intros; try reflexivity.
-  rewrite H0. apply IHp. Qed.
+  rewrite H. apply IHp. Qed.
 
+(** Inverse distributes over integer repetition of operation. *)
 (** TODO Also true of nonabelian groups. *)
-Theorem zdis : forall {A : Type} `{AbelianGroup A},
+Theorem zdis : forall {A : Type} `{agroup : AbelianGroup A},
   forall (n : Z) (x : A), n *%Z (- x) == - (n *%Z x).
 Proof.
   intros A ? ? ? ? grp n x. induction n as [| p | p].
@@ -315,41 +325,35 @@ End GroupTheorems.
 
 Module Export RingClass.
 
-Delimit Scope field_scope with field.
+Delimit Scope ring_scope with ring.
 
-Open Scope field_scope.
+Open Scope ring_scope.
 
 (** Addition, additive operation. *)
 Class Add (A : Type) : Type := add : A -> A -> A.
 
-Notation "x '+' y" := (add x y) : field_scope.
+Notation "x '+' y" := (add x y) : ring_scope.
 
 (** Zero, additive identity. *)
 Class Zero (A : Type) : Type := zero : A.
 
-Notation "'0'" := zero : field_scope.
+Notation "'0'" := zero : ring_scope.
 
 (** Negation, additive inverse. *)
 Class Neg (A : Type) : Type := neg : A -> A.
 
-Notation "'-' x" := (neg x) : field_scope.
-Notation "x '-' y" := (add x (neg y)) : field_scope.
+Notation "'-' x" := (neg x) : ring_scope.
+Notation "x '-' y" := (add x (neg y)) : ring_scope.
 
 (** Multiplication, multiplicative operation. *)
 Class Mul (A : Type) : Type := mul : A -> A -> A.
 
-Notation "x '*' y" := (mul x y) : field_scope.
+Notation "x '*' y" := (mul x y) : ring_scope.
 
 (** One, multiplicative identity. *)
 Class One (A : Type) : Type := one : A.
 
-Notation "'1'" := one : field_scope.
-
-(** Reciprocal, multiplicative inverse. *)
-Class Recip (A : Type) : Type := recip : A -> A.
-
-Notation "'/' x" := (recip x) : field_scope.
-Notation "x '/' y" := (mul x (recip y)) : field_scope.
+Notation "'1'" := one : ring_scope.
 
 (** Ring, compatible abelian group and monoid. *)
 Class Ring (A : Type) {eqv : Eqv A}
@@ -357,16 +361,16 @@ Class Ring (A : Type) {eqv : Eqv A}
   {mul : Mul A} {one : One A} : Prop := {
   add_agroup :> AbelianGroup A (opr := add) (idn := zero) (inv := neg);
   mul_monoid :> Monoid A (opr := mul) (idn := one);
-  dis_l : forall x y z : A, x * (y + z) == x * y + x * z;
-  dis_r : forall x y z : A, (x + y) * z == x * z + y * z;
+  left_distributive : forall x y z : A, x * (y + z) == x * y + x * z;
+  right_distributive : forall x y z : A, (x + y) * z == x * z + y * z;
 }.
 
 Add Parametric Morphism {A : Type} `{ring : Ring A} : add
   with signature eqv ==> eqv ==> eqv
   as eqv_add_morphism.
 Proof.
-  intros x y p z w q. destruct ring as [[[[[_ add_pro _] _ _] _ _ _] _] _ _ _].
-  cbv in add_pro. apply add_pro.
+  intros x y p z w q. destruct ring as [[[[[_ r _] _ _] _ _ _] _] _ _ _].
+  apply r.
   - apply p.
   - apply q. Qed.
 
@@ -374,18 +378,30 @@ Add Parametric Morphism {A : Type} `{ring : Ring A} : neg
   with signature eqv ==> eqv
   as eqv_neg_morphism.
 Proof.
-  intros x y p. destruct ring as [[[[_ _ _] neg_pro _ _] _] _ _ _].
-  cbv in neg_pro. apply neg_pro. apply p. Qed.
+  intros x y p. destruct ring as [[[[_ _ _] q _ _] _] _ _ _].
+  apply q. apply p. Qed.
 
 Add Parametric Morphism {A : Type} `{ring : Ring A} : mul
   with signature eqv ==> eqv ==> eqv
   as eqv_mul_morphism.
 Proof.
-  intros x y p z w q.
-  destruct ring as [_ [[_ mul_pro _] _ _] _ _].
-  cbv in mul_pro. apply mul_pro.
+  intros x y p z w q. destruct ring as [_ [[_ r _] _ _] _ _]. apply r.
   - apply p.
   - apply q. Qed.
+
+End RingClass.
+
+Module Export FieldClass.
+
+Delimit Scope field_scope with field.
+
+Open Scope field_scope.
+
+(** Reciprocal, multiplicative inverse. *)
+Class Recip (A : Type) : Type := recip : A -> A.
+
+Notation "'/' x" := (recip x) : field_scope.
+Notation "x '/' y" := (mul x (recip y)) : field_scope.
 
 (** Field, ring with inverse. *)
 Class Field (A : Type) {eqv : Eqv A}
@@ -399,18 +415,15 @@ Add Parametric Morphism {A : Type} `{field : Field A} : recip
   with signature eqv ==> eqv
   as eqv_recip_morphism.
 Proof.
-  intros x y p. destruct field as [_ [_ inv_pro _ _]].
-  cbv in inv_pro. apply inv_pro. apply p. Qed.
+  intros x y p. destruct field as [_ [_ q _ _]]. apply q. apply p. Qed.
 
-End RingClass.
+End FieldClass.
 
 Module Export ModuleClass.
 
 Delimit Scope module_scope with module.
 
 Open Scope module_scope.
-Open Scope field_scope.
-Open Scope group_scope.
 
 (** Left scalar multiplication, mixed multiplicative operation. *)
 Class LSMul (S A : Type) : Type := lsmul : S -> A -> A.
@@ -432,23 +445,24 @@ Class LeftModule (S A : Type)
   {smul : Mul S} {sone : One S}
   {eqv : Eqv A} {opr : Opr A} {idn : Idn A} {inv : Inv A}
   {lsmul : LSMul S A} : Prop := {
-  lsring :> Ring S (add := sadd) (zero := szero) (neg := sneg)
+  left_sring :> Ring S (add := sadd) (zero := szero) (neg := sneg)
     (mul := smul) (one := sone);
-  lagroup :> AbelianGroup A (opr := opr) (idn := idn) (inv := inv);
-  lsmul_pro : lsmul ::> seqv ==> eqv ==> eqv;
-  lsmul_smul_cpt : forall (a b : S) (x : A), (a * b) <* x == a <* (b <* x);
-  lsmul_idn : forall x : A, 1 <* x == x;
-  lsmul_add_dis : forall (a : S) (x y : A), a <* (x + y) == a <* x + a <* y;
-  lsmul_sadd_dis : forall (a b : S) (x : A),
-    (a + b)%field <* x == a <* x + b <* x;
+  left_agroup :> AbelianGroup A (opr := opr) (idn := idn) (inv := inv);
+  lsmul_proper : lsmul ::> seqv ==> eqv ==> eqv;
+  lsmul_smul_compatible : forall (a b : S) (x : A),
+    (a * b) <* x == a <* (b <* x);
+  lsmul_identity : forall x : A, 1 <* x == x;
+  lsmul_add_distributive : forall (a : S) (x y : A),
+    a <* (x + y)%semigroup == (a <* x + a <* y)%semigroup;
+  lsmul_sadd_distributive : forall (a b : S) (x : A),
+    (a + b) <* x == (a <* x + b <* x)%semigroup;
 }.
 
 Add Parametric Morphism {S A : Type} `{lmod : LeftModule S A} : lsmul
   with signature eqv ==> eqv ==> eqv
   as eqv_lsmul_morphism.
 Proof.
-  intros x y p z w q. destruct lmod as [_ _ lsmul_pro _ _ _ _].
-  cbv in lsmul_pro. apply lsmul_pro.
+  intros x y p z w q. destruct lmod as [_ _ r _ _ _ _]. apply r.
   - apply p.
   - apply q. Qed.
 
@@ -458,23 +472,24 @@ Class RightModule (S A : Type)
   {smul : Mul S} {sone : One S}
   {eqv : Eqv A} {opr : Opr A} {idn : Idn A} {inv : Inv A}
   {rsmul : RSMul S A} : Prop := {
-  rsring :> Ring S (add := sadd) (zero := szero) (neg := sneg)
+  right_sring :> Ring S (add := sadd) (zero := szero) (neg := sneg)
     (mul := smul) (one := sone);
-  ragroup :> AbelianGroup A (opr := opr) (idn := idn) (inv := inv);
-  rsmul_pro : rsmul ::> seqv ==> eqv ==> eqv;
-  rsmul_smul_cpt : forall (a b : S) (x : A), x *> (a * b) == (x *> a) *> b;
-  rsmul_idn : forall x : A, x *> 1 == x;
-  rsmul_add_dis : forall (a : S) (x y : A), (x + y) *> a == x *> a + y *> a;
-  rsmul_sadd_dis : forall (a b : S) (x : A),
-    x *> (a + b)%field == x *> a + x *> b;
+  right_agroup :> AbelianGroup A (opr := opr) (idn := idn) (inv := inv);
+  rsmul_proper : rsmul ::> seqv ==> eqv ==> eqv;
+  rsmul_smul_compatible : forall (a b : S) (x : A),
+    x *> (a * b) == (x *> a) *> b;
+  rsmul_identity : forall x : A, x *> 1 == x;
+  rsmul_add_distributive : forall (a : S) (x y : A),
+    (x + y)%semigroup *> a == (x *> a + y *> a)%semigroup;
+  rsmul_sadd_distributive : forall (a b : S) (x : A),
+    x *> (a + b) == (x *> a + x *> b)%semigroup;
 }.
 
 Add Parametric Morphism {S A : Type} `{rmod : RightModule S A} : rsmul
   with signature eqv ==> eqv ==> eqv
   as eqv_rsmul_morphism.
 Proof.
-  intros x y p z w q. destruct rmod as [_ _ rsmul_pro _ _ _ _].
-  cbv in rsmul_pro. apply rsmul_pro.
+  intros x y p z w q. destruct rmod as [_ _ r _ _ _ _]. apply r.
   - apply p.
   - apply q. Qed.
 
@@ -486,9 +501,10 @@ Class Bimodule (LS RS A : Type)
   {rsmul : Mul RS} {rsone : One RS}
   {eqv : Eqv A} {opr : Opr A} {idn : Idn A} {inv : Inv A}
   {lsmul : LSMul LS A} {rsmul : RSMul RS A} : Prop := {
-  lmodule :> LeftModule LS A;
-  rmodule :> RightModule RS A;
-  smul_cpt : forall (a : LS) (b : RS) (x : A), (a <* x) *> b == a <* (x *> b);
+  left_module :> LeftModule LS A;
+  right_module :> RightModule RS A;
+  smul_compatible : forall (a : LS) (b : RS) (x : A),
+    (a <* x) *> b == a <* (x *> b);
 }.
 
 (** Homogeneous bimodule over a ring. *)
@@ -520,28 +536,6 @@ Fail Class FinitelyFreeLeftModule (D S A : Type)
 
 End ModuleClass.
 
-(* end snippet spacelikes *)
-
-(* start snippet ops *)
-Fail that.
-(* end snippet ops *)
-
-(* start snippet notations *)
-Fail everything.
-(* end snippet notations *)
-
-(* start snippet grouplikes *)
-Fail oh.
-(* end snippet grouplikes *)
-
-(* start snippet fieldlikes *)
-Fail this.
-(* end snippet fieldlikes *)
-
-(* start snippet spacelikes *)
-Fail urgh.
-(* end snippet spacelikes *)
-
 Module Instances.
 
 Import ZArith Z.
@@ -550,11 +544,7 @@ Open Scope Z_scope.
 
 Instance Z_Eqv : Eqv Z := fun x y : Z => x = y.
 
-Instance Z_Setoid : Setoid Z := {
-  reflexive := _;
-  symmetric := _;
-  transitive := _;
-}.
+Instance Z_Setoid : Setoid Z := {}.
 Proof.
   all: cbv [eqv].
   all: cbv [Z_Eqv].
@@ -564,10 +554,7 @@ Proof.
 
 Instance Z_MulOpr : Opr Z := fun x y : Z => x * y.
 
-Instance Z_MulSemigroup : Semigroup Z := {
-  opr_pro := _;
-  ass := _;
-}.
+Instance Z_MulSemigroup : Semigroup Z := {}.
 Proof.
   all: cbv [eqv opr].
   all: cbv [Z_Eqv Z_MulOpr].
@@ -576,9 +563,7 @@ Proof.
 
 Instance Z_MulIdn : Idn Z := 1.
 
-Instance Z_MulMonoid : Monoid Z := {
-  idn_l := _; idn_r := _;
-}.
+Instance Z_MulMonoid : Monoid Z := {}.
 Proof.
   all: cbv [eqv opr idn].
   all: cbv [Z_Eqv Z_MulOpr Z_MulIdn].
@@ -587,10 +572,7 @@ Proof.
 
 Instance Z_AddOpr : Opr Z := fun x y : Z => x + y.
 
-Instance Z_AddSemigroup : Semigroup Z := {
-  opr_pro := _;
-  ass := _;
-}.
+Instance Z_AddSemigroup : Semigroup Z := {}.
 Proof.
   all: cbv [eqv opr].
   all: cbv [Z_Eqv Z_AddOpr].
@@ -599,9 +581,7 @@ Proof.
 
 Instance Z_AddIdn : Idn Z := 0.
 
-Instance Z_AddMonoid : Monoid Z := {
-  idn_l := _; idn_r := _;
-}.
+Instance Z_AddMonoid : Monoid Z := {}.
 Proof.
   all: cbv [eqv opr idn].
   all: cbv [Z_Eqv Z_AddOpr Z_AddIdn].
@@ -610,10 +590,7 @@ Proof.
 
 Instance Z_AddInv : Inv Z := fun x => - x.
 
-Instance Z_AddGroup : Group Z := {
-  inv_pro := _;
-  inv_l := _; inv_r := _;
-}.
+Instance Z_AddGroup : Group Z := {}.
 Proof.
   all: cbv [eqv opr idn inv].
   all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv].
@@ -621,9 +598,7 @@ Proof.
   - intros x. rewrite add_opp_diag_l. reflexivity.
   - intros x. rewrite add_opp_diag_r. reflexivity. Qed.
 
-Instance Z_AddAbelianGroup : AbelianGroup Z := {
-  add_com := _;
-}.
+Instance Z_AddAbelianGroup : AbelianGroup Z := {}.
 Proof.
   all: cbv [eqv opr idn inv].
   all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv].
@@ -635,9 +610,7 @@ Instance Z_Neg : Neg Z := Z_AddInv.
 Instance Z_Mul : Mul Z := Z_MulOpr.
 Instance Z_One : One Z := Z_MulIdn.
 
-Instance Z_Ring : Ring Z := {
-  dis_l := _; dis_r := _;
-}.
+Instance Z_Ring : Ring Z := {}.
 Proof.
   - intros x y z. rewrite mul_add_distr_l. reflexivity.
   - intros x y z. rewrite mul_add_distr_r. reflexivity. Qed.
@@ -700,11 +673,7 @@ Proof.
       * apply rhd.
       * apply q. apply rtl. Qed.
 
-Instance Z_VectorSetoid {n : nat} : Setoid (t Z n) := {
-  reflexive := _;
-  symmetric := _;
-  transitive := _;
-}.
+Instance Z_VectorSetoid {n : nat} : Setoid (t Z n) := {}.
 Proof.
   all: cbv [eqv].
   all: cbv [Z_VectorEqv].
@@ -719,10 +688,7 @@ Proof.
 
 Instance Z_VectorOpr {n : nat} : Opr (t Z n) := map2 Z_AddOpr.
 
-Instance Z_VectorSemigroup {n : nat} : Semigroup (t Z n) := {
-  opr_pro := _;
-  ass := _;
-}.
+Instance Z_VectorSemigroup {n : nat} : Semigroup (t Z n) := {}.
 Proof.
   all: cbv [eqv opr].
   all: cbv [Z_VectorEqv Z_VectorOpr].
@@ -769,9 +735,7 @@ Proof.
 
 Instance Z_VectorIdn {n : nat} : Idn (t Z n) := const Z_AddIdn n.
 
-Instance Z_VectorMonoid {n : nat} : Monoid (t Z n) := {
-  idn_l := _; idn_r := _;
-}.
+Instance Z_VectorMonoid {n : nat} : Monoid (t Z n) := {}.
 Proof.
   all: cbv [eqv opr idn].
   all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn].
@@ -800,10 +764,7 @@ Proof.
 
 Instance Z_VectorInv {n : nat} : Inv (t Z n) := map Z_AddInv.
 
-Instance Z_VectorGroup {n : nat} : Group (t Z n) := {
-  inv_pro := _;
-  inv_l := _; inv_r := _;
-}.
+Instance Z_VectorGroup {n : nat} : Group (t Z n) := {}.
 Proof.
   all: cbv [eqv opr idn inv].
   all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv].
@@ -843,9 +804,7 @@ Proof.
       * cbv -[Z.add Z.zero Z.opp]. rewrite add_opp_diag_r. reflexivity.
       * apply p. Qed.
 
-Instance Z_VectorAbelianGroup {n : nat} : AbelianGroup (t Z n) := {
-  add_com := _;
-}.
+Instance Z_VectorAbelianGroup {n : nat} : AbelianGroup (t Z n) := {}.
 Proof.
   all: cbv [eqv opr idn inv].
   all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv].
@@ -868,13 +827,7 @@ Proof.
 Instance Z_LSMul {n : nat} : LSMul Z (t Z n) :=
   fun a : Z => map (fun x : Z => a * x).
 
-Instance Z_LeftModule {n : nat} : LeftModule Z (t Z n) := {
-  lsmul_pro := _;
-  lsmul_smul_cpt := _;
-  lsmul_idn := _;
-  lsmul_add_dis := _;
-  lsmul_sadd_dis := _;
-}.
+Instance Z_LeftModule {n : nat} : LeftModule Z (t Z n) := {}.
 Proof.
   all: cbv [eqv opr idn inv lsmul].
   all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv Z_LSMul].
@@ -946,13 +899,7 @@ Proof.
 Instance Z_RSMul {n : nat} : RSMul Z (t Z n) :=
   fun a : Z => map (fun x : Z => x * a).
 
-Instance Z_RightModule {n : nat} : RightModule Z (t Z n) := {
-  rsmul_pro := _;
-  rsmul_smul_cpt := _;
-  rsmul_idn := _;
-  rsmul_add_dis := _;
-  rsmul_sadd_dis := _;
-}.
+Instance Z_RightModule {n : nat} : RightModule Z (t Z n) := {}.
 Proof.
   all: cbv [eqv opr idn inv rsmul].
   all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv Z_RSMul].
@@ -1021,9 +968,7 @@ Proof.
         rewrite mul_add_distr_l. reflexivity.
       * apply p. Qed.
 
-Instance Z_Bimodule {n : nat} : Bimodule Z Z (t Z n) := {
-  smul_cpt := _;
-}.
+Instance Z_Bimodule {n : nat} : Bimodule Z Z (t Z n) := {}.
 Proof.
   all: cbv [eqv opr idn inv lsmul rsmul].
   all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv Z_LSMul Z_RSMul].
