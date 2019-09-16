@@ -1018,13 +1018,14 @@ End VectorLemmas.
 Lemma Forall2_eq : forall {A : Type} {n : nat} (xs ys : t A n),
   Forall2 (fun x y : A => x = y) xs ys <-> xs = ys.
 Proof.
-  intros A n xs ys. induction n as [| p q].
-  - pose proof case_nil xs as pxs.
+  intros A n. induction n as [| p q].
+  - intros xs ys.
+    pose proof case_nil xs as pxs.
     pose proof case_nil ys as pys.
     subst xs ys. split.
     + intros r. reflexivity.
     + intros r. apply Forall2_nil.
-  - rename xs into xxs, ys into yys.
+  - intros xxs yys.
     pose proof case_cons xxs as pxxs. destruct pxxs as [x [xs pxxs]].
     pose proof case_cons yys as pyys. destruct pyys as [y [ys pyys]].
     subst xxs yys. split.
@@ -1043,18 +1044,53 @@ Proof.
 Instance VectorEqv {A : Type} `{setoid : Setoid A} {n : nat} : Eqv (t A n) :=
   Forall2 (fun x y : A => x == y).
 
-Instance Z_VectorSetoid {n : nat} : Setoid (t Z n) := {}.
+Instance VectorSetoid {A : Type} `{setoid : Setoid A}
+  {n : nat} : Setoid (t A n) := {}.
 Proof.
   all: cbv [eqv].
   all: cbv [VectorEqv].
-  all: cbv [eqv].
-  all: cbv [Z_Eqv].
-  all: set (P (x y : Z) := x = y).
-  - intros xs. apply Forall2_eq. reflexivity.
-  - intros xs ys p. apply Forall2_eq. symmetry. apply Forall2_eq. apply p.
-  - intros xs ys zs p q. apply Forall2_eq. transitivity ys.
-    + apply Forall2_eq. apply p.
-    + apply Forall2_eq. apply q. Qed.
+  - induction n as [| p q].
+    + intros xs.
+      pose proof case_nil xs as pxs.
+      subst xs. apply Forall2_nil.
+    + intros xxs.
+      pose proof case_cons xxs as pxxs. destruct pxxs as [x [xs pxxs]].
+      subst xxs. apply Forall2_cons.
+      * reflexivity.
+      * apply q.
+  - induction n as [| p q].
+    + intros xs ys r.
+      pose proof case_nil xs as pxs.
+      pose proof case_nil ys as pys.
+      subst xs ys. apply Forall2_nil.
+    + intros xxs yys r.
+      pose proof case_cons xxs as pxxs. destruct pxxs as [x [xs pxxs]].
+      pose proof case_cons yys as pyys. destruct pyys as [y [ys pyys]].
+      subst xxs yys.
+      apply Forall2_inversion in r. destruct r as [rhd rtl].
+      apply Forall2_cons.
+      * symmetry. apply rhd.
+      * apply q. apply rtl.
+  - induction n as [| p q].
+    + intros xs ys zs r s.
+      pose proof case_nil xs as pxs.
+      pose proof case_nil ys as pys.
+      pose proof case_nil zs as pzs.
+      subst xs ys zs. apply Forall2_nil.
+    + intros xxs yys zzs r s.
+      pose proof case_cons xxs as pxxs. destruct pxxs as [x [xs pxxs]].
+      pose proof case_cons yys as pyys. destruct pyys as [y [ys pyys]].
+      pose proof case_cons zzs as pzzs. destruct pzzs as [z [zs pzzs]].
+      subst xxs yys zzs.
+      apply Forall2_inversion in r. destruct r as [rhd rtl].
+      apply Forall2_inversion in s. destruct s as [shd stl].
+      apply Forall2_cons.
+      * etransitivity.
+        -- apply rhd.
+        -- apply shd.
+      * eapply q.
+        -- apply rtl.
+        -- apply stl. Qed.
 
 Instance Z_VectorOpr {n : nat} : Opr (t Z n) := map2 Z_AddOpr.
 
@@ -1075,9 +1111,9 @@ Proof.
       pose proof case_nil zs as pzs.
       subst. reflexivity.
     + rename xs into xxs, ys into yys, zs into zzs.
-      pose proof case_cons xxs as pxxs. destruct pxxs as [x [xs px]].
-      pose proof case_cons yys as pyys. destruct pyys as [y [ys py]].
-      pose proof case_cons zzs as pzzs. destruct pzzs as [z [zs pz]].
+      pose proof case_cons xxs as pxxs. destruct pxxs as [x [xs pxxs]].
+      pose proof case_cons yys as pyys. destruct pyys as [y [ys pyys]].
+      pose proof case_cons zzs as pzzs. destruct pzzs as [z [zs pzzs]].
       subst. cbn -[add]. rewrite add_assoc. f_equal. apply q. Qed.
 
 Instance Z_VectorIdn {n : nat} : Idn (t Z n) := const Z_AddIdn n.
