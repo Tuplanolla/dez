@@ -22,6 +22,7 @@ Notation "x '::>' R" := (Proper R x) : setoid_scope.
 
 End ProperNotations.
 
+(* start snippet setoid *)
 (** Equivalence relation.
     We do not use the abbreviation [eq],
     because it is reserved for propositional equality. *)
@@ -39,6 +40,7 @@ Class Setoid (A : Type) {eqv : Eqv A} : Prop := {
   symmetric : forall x y : A, x == y -> y == x;
   transitive : forall x y z : A, x == y -> y == z -> x == z;
 }.
+(* end snippet setoid *)
 
 Add Parametric Relation {A : Type} `{setoid : Setoid A} : A eqv
   reflexivity proved by reflexive
@@ -54,6 +56,7 @@ Delimit Scope order_scope with order.
 
 Open Scope order_scope.
 
+(* start snippet order *)
 (** Total order relation. *)
 Class Ord (A : Type) : Type := ord : A -> A -> Prop.
 
@@ -66,6 +69,7 @@ Class Order (A : Type) {eqv : Eqv A} {ord : Ord A} : Prop := {
   transitive : forall x y z : A, x <= y -> y <= z -> x <= z;
   connex : forall x y : A, x <= y \/ y <= x;
 }.
+(* end snippet order *)
 
 End OrderClass.
 
@@ -141,6 +145,7 @@ Delimit Scope semigroup_scope with semigroup.
 
 Open Scope semigroup_scope.
 
+(* start snippet semigroup *)
 (** Operation.
     We do not use the abbreviation [op],
     because it is reserved for dual morphisms. *)
@@ -166,6 +171,7 @@ Class Semigroup (A : Type) {eqv : Eqv A} {opr : Opr A} : Prop := {
   opr_proper : opr ::> eqv ==> eqv ==> eqv;
   opr_associative : forall x y z : A, (x + y) + z == x + (y + z);
 }.
+(* end snippet semigroup *)
 
 Add Parametric Morphism {A : Type} `{semigroup : Semigroup A} : opr
   with signature eqv ==> eqv ==> eqv
@@ -183,6 +189,7 @@ Delimit Scope monoid_scope with monoid.
 
 Open Scope monoid_scope.
 
+(* start snippet monoid *)
 (** Identity.
     We do not use the abbreivation [id],
     because it is reserved for identity morphisms. *)
@@ -219,6 +226,7 @@ Class CommutativeMonoid (A : Type) {eqv : Eqv A}
   monoid :> Monoid A;
   opr_commutative : forall x y : A, x + y == y + x;
 }.
+(* end snippet monoid *)
 
 End MonoidClass.
 
@@ -293,12 +301,6 @@ Class Group (A : Type) {eqv : Eqv A}
   right_inverse : forall x : A, x + (- x) == 0;
 }.
 
-Add Parametric Morphism {A : Type} `{group : Group A} : inv
-  with signature eqv ==> eqv
-  as eqv_inv_morphism.
-Proof.
-  intros x y p. destruct group as [_ q _ _]. apply q. apply p. Qed.
-
 (** Abelian group, commutative group. *)
 Class AbelianGroup (A : Type) {eqv : Eqv A}
   {opr : Opr A} {idn : Idn A} {inv : Inv A} : Prop := {
@@ -306,13 +308,18 @@ Class AbelianGroup (A : Type) {eqv : Eqv A}
   opr_commutative : forall x y : A, x + y == y + x;
 }.
 
+Add Parametric Morphism {A : Type} `{group : Group A} : inv
+  with signature eqv ==> eqv
+  as eqv_inv_morphism.
+Proof.
+  intros x y p. destruct group as [_ q _ _]. apply q. apply p. Qed.
+
 End GroupClass.
 
 Module Export GroupTheorems.
 
 Export GroupClass.
 
-(* start snippet generics *)
 Import AdditiveNotations ZArith Pos.
 
 (** Positive repetition of operation. *)
@@ -367,6 +374,7 @@ End MultiplicativeNotations.
 
 Import AdditiveNotations.
 
+(* start snippet theorems *)
 (** Inverse is involutive. *)
 Theorem ivl : forall {A : Type} `{group : Group A},
   forall x : A, - (- x) == x.
@@ -416,6 +424,7 @@ Proof.
   destruct grp as [[[ps pop pa] pnl pnr] pvp pvl pvr] eqn : pg.
   rewrite <- (pnr (- 0)). rewrite (pvl 0).
   reflexivity. Qed.
+(* end snippet theorems *)
 
 Lemma iter_op_succ : forall {A : Type} `{setoid : Setoid A} (op : A -> A -> A),
  (forall x y z, op x (op y z) == op (op x y) z) ->
@@ -425,7 +434,7 @@ Proof.
   rewrite H. apply IHp. Qed.
 
 (** Inverse distributes over integer repetition of operation. *)
-(** TODO Also true of nonabelian groups. *)
+(** TODO Assuming nonabelian groups here should suffice; investigate. *)
 Theorem zdis : forall {A : Type} `{agroup : AbelianGroup A},
   forall (n : Z) (x : A), n *%Z (- x) == - (n *%Z x).
 Proof.
@@ -456,6 +465,7 @@ Delimit Scope ring_scope with ring.
 
 Open Scope ring_scope.
 
+(* start snippet ring *)
 (** Addition, additive operation. *)
 Class Add (A : Type) : Type := add : A -> A -> A.
 
@@ -491,6 +501,7 @@ Class Ring (A : Type) {eqv : Eqv A}
   left_distributive : forall x y z : A, x * (y + z) == x * y + x * z;
   right_distributive : forall x y z : A, (x + y) * z == x * z + y * z;
 }.
+(* end snippet ring *)
 
 Add Parametric Morphism {A : Type} `{ring : Ring A} : add
   with signature eqv ==> eqv ==> eqv
@@ -552,6 +563,7 @@ Delimit Scope module_scope with module.
 
 Open Scope module_scope.
 
+(* start snippet module *)
 (** Left scalar multiplication, mixed multiplicative operation. *)
 Class LSMul (S A : Type) : Type := lsmul : S -> A -> A.
 
@@ -585,14 +597,6 @@ Class LeftModule (S A : Type)
     (a + b) <* x == (a <* x + b <* x)%semigroup;
 }.
 
-Add Parametric Morphism {S A : Type} `{lmod : LeftModule S A} : lsmul
-  with signature eqv ==> eqv ==> eqv
-  as eqv_lsmul_morphism.
-Proof.
-  intros x y p z w q. destruct lmod as [_ _ r _ _ _ _]. apply r.
-  - apply p.
-  - apply q. Qed.
-
 (** Right module over a ring, some sort of space. *)
 Class RightModule (S A : Type)
   {seqv : Eqv S} {sadd : Add S} {szero : Zero S} {sneg : Neg S}
@@ -611,14 +615,6 @@ Class RightModule (S A : Type)
   rsmul_sadd_distributive : forall (a b : S) (x : A),
     x *> (a + b) == (x *> a + x *> b)%semigroup;
 }.
-
-Add Parametric Morphism {S A : Type} `{rmod : RightModule S A} : rsmul
-  with signature eqv ==> eqv ==> eqv
-  as eqv_rsmul_morphism.
-Proof.
-  intros x y p z w q. destruct rmod as [_ _ r _ _ _ _]. apply r.
-  - apply p.
-  - apply q. Qed.
 
 (** Heterogeneous bimodule over a ring. *)
 Class Bimodule (LS RS A : Type)
@@ -642,6 +638,23 @@ Class HomoBimodule (S A : Type)
   {lsmul : LSMul S A} {lsmul : RSMul S A} : Prop := {
   bimodule :> Bimodule S S A;
 }.
+(* end snippet module *)
+
+Add Parametric Morphism {S A : Type} `{lmod : LeftModule S A} : lsmul
+  with signature eqv ==> eqv ==> eqv
+  as eqv_lsmul_morphism.
+Proof.
+  intros x y p z w q. destruct lmod as [_ _ r _ _ _ _]. apply r.
+  - apply p.
+  - apply q. Qed.
+
+Add Parametric Morphism {S A : Type} `{rmod : RightModule S A} : rsmul
+  with signature eqv ==> eqv ==> eqv
+  as eqv_rsmul_morphism.
+Proof.
+  intros x y p z w q. destruct rmod as [_ _ r _ _ _ _]. apply r.
+  - apply p.
+  - apply q. Qed.
 
 End ModuleClass.
 
@@ -651,6 +664,7 @@ Delimit Scope ffmodule_scope with ffmodule.
 
 Open Scope ffmodule_scope.
 
+(* start snippet ffmodule *)
 (** Basis, spanning linearly-independent generators. *)
 Class Basis (D A : Type) : Type := basis : D -> A.
 
@@ -672,6 +686,7 @@ Class FinitelyFreeLeftModule (D S A : Type) {deqv : Eqv D} {denum : Enum D}
     List.fold_right opr idn (List.map terms enum) == 0%monoid ->
     List.Forall (fun a : S => a == 0) (List.map coeffs enum);
 }.
+(* end snippet ffmodule *)
 
 End FinitelyFreeLeftModuleClass.
 
@@ -681,6 +696,7 @@ Import ZArith Z.
 
 Open Scope Z_scope.
 
+(* start snippet z *)
 Instance Z_Eqv : Eqv Z := fun x y : Z => x = y.
 
 Instance Z_Setoid : Setoid Z := {}.
@@ -753,6 +769,7 @@ Instance Z_Ring : Ring Z := {}.
 Proof.
   - intros x y z. rewrite mul_add_distr_l. reflexivity.
   - intros x y z. rewrite mul_add_distr_r. reflexivity. Qed.
+(* end snippet z *)
 
 Import Vector VectorNotations.
 
@@ -1022,7 +1039,8 @@ Proof.
       * apply q. apply rtl. Qed.
 
 (** Vectors admit pointwise equivalence. *)
-Instance VectorEqv {A : Type} `{setoid : Setoid A} (n : nat) : Eqv (t A n) :=
+(* start snippet zs *)
+Instance VectorEqv {A : Type} `{setoid : Setoid A} {n : nat} : Eqv (t A n) :=
   Forall2 (fun x y : A => x == y).
 
 Instance Z_VectorSetoid {n : nat} : Setoid (t Z n) := {}.
@@ -1044,46 +1062,23 @@ Instance Z_VectorSemigroup {n : nat} : Semigroup (t Z n) := {}.
 Proof.
   all: cbv [eqv opr].
   all: cbv [VectorEqv Z_VectorOpr].
+  all: cbv [eqv opr].
   all: cbv [Z_Eqv Z_AddOpr].
   all: set (P (x y : Z) := x = y).
-  - induction n as [| n p].
-    + intros xs ys q zs ws r.
-      pose proof case_nil xs as pxs'.
-      pose proof case_nil ys as pys'.
-      pose proof case_nil zs as pzs'.
-      pose proof case_nil ws as pws'.
-      subst. apply Forall2_nil.
-    + intros xs ys q zs ws r.
-      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
-      pose proof case_cons ys as pys'. destruct pys' as [y' [ys' pys']].
-      pose proof case_cons zs as pzs'. destruct pzs' as [z' [zs' pzs']].
-      pose proof case_cons ws as pws'. destruct pws' as [w' [ws' pws']].
-      subst; rename x' into x, xs' into xs, y' into y, ys' into ys,
-        z' into z, zs' into zs, w' into w, ws' into ws.
-      apply Forall2_inversion in q. destruct q as [qhd qtl].
-      apply Forall2_inversion in r. destruct r as [rhd rtl].
-      cbn -[Z.add]. apply Forall2_cons.
-      * apply add_wd.
-        -- apply qhd.
-        -- apply rhd.
-      * apply p.
-        -- apply qtl.
-        -- apply rtl.
-  - induction n as [| n p].
-    + intros xs ys zs.
-      pose proof case_nil xs as pxs'.
-      pose proof case_nil ys as pys'.
-      pose proof case_nil zs as pzs'.
-      subst. apply Forall2_nil.
-    + intros xs ys zs.
-      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
-      pose proof case_cons ys as pys'. destruct pys' as [y' [ys' pys']].
-      pose proof case_cons zs as pzs'. destruct pzs' as [z' [zs' pzs']].
-      subst; rename x' into x, xs' into xs, y' into y, ys' into ys,
-        z' into z, zs' into zs.
-      cbn -[Z.add]. apply Forall2_cons.
-      * cbv -[Z.add]. rewrite add_assoc. reflexivity.
-      * apply p. Qed.
+  - intros xs ys p zs ws q.
+    apply Forall2_eq in p.
+    apply Forall2_eq in q.
+    subst. apply Forall2_eq. reflexivity.
+  - intros xs ys zs. apply Forall2_eq. induction n as [| p q].
+    + pose proof case_nil xs as pxs.
+      pose proof case_nil ys as pys.
+      pose proof case_nil zs as pzs.
+      subst. reflexivity.
+    + rename xs into xxs, ys into yys, zs into zzs.
+      pose proof case_cons xxs as pxxs. destruct pxxs as [x [xs px]].
+      pose proof case_cons yys as pyys. destruct pyys as [y [ys py]].
+      pose proof case_cons zzs as pzzs. destruct pzzs as [z [zs pz]].
+      subst. cbn -[add]. rewrite add_assoc. f_equal. apply q. Qed.
 
 Instance Z_VectorIdn {n : nat} : Idn (t Z n) := const Z_AddIdn n.
 
@@ -1091,28 +1086,22 @@ Instance Z_VectorMonoid {n : nat} : Monoid (t Z n) := {}.
 Proof.
   all: cbv [eqv opr idn].
   all: cbv [VectorEqv Z_VectorOpr Z_VectorIdn].
+  all: cbv [eqv opr idn].
   all: cbv [Z_Eqv Z_AddOpr Z_AddIdn].
   all: set (P (x y : Z) := x = y).
-  - induction n as [| n p].
-    + intros xs.
-      pose proof case_nil xs as pxs'.
-      subst. apply Forall2_nil.
-    + intros xs.
-      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
-      subst; rename x' into x, xs' into xs.
-      cbn -[Z.add Z.zero]. apply Forall2_cons.
-      * rewrite add_0_l. reflexivity.
-      * apply p.
-  - induction n as [| n p].
-    + intros xs.
-      pose proof case_nil xs as pxs'.
-      subst. apply Forall2_nil.
-    + intros xs.
-      pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
-      subst; rename x' into x, xs' into xs.
-      cbn -[Z.add Z.zero]. apply Forall2_cons.
-      * rewrite add_0_r. reflexivity.
-      * apply p. Qed.
+  - intros xs. apply Forall2_eq. induction n as [| p q].
+    + pose proof case_nil xs as pxs.
+      subst. reflexivity.
+    + rename xs into xxs.
+      pose proof case_cons xxs as pxxs. destruct pxxs as [x [xs px]].
+      subst. cbn -[add]. rewrite add_0_l. f_equal. apply q.
+  - intros xs. apply Forall2_eq. induction n as [| p q].
+    + pose proof case_nil xs as pxs.
+      subst. reflexivity.
+    + rename xs into xxs.
+      pose proof case_cons xxs as pxxs. destruct pxxs as [x [xs px]].
+      subst. cbn -[add]. rewrite add_0_r. f_equal. apply q. Qed.
+(* end snippet zs *)
 
 Instance Z_VectorInv {n : nat} : Inv (t Z n) := map Z_AddInv.
 
