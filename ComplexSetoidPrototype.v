@@ -1095,7 +1095,6 @@ Proof.
     subst; rename x0' into x0, xs0' into xs0, x1' into x1, xs1' into xs1.
     cbn. f_equal. apply p. Qed.
 
-
 End VectorLemmas.
 
 Instance Z_VectorEqv {n : nat} : Eqv (t Z n) := Forall2 eqv.

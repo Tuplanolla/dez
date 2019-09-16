@@ -48,6 +48,93 @@ Add Parametric Relation {A : Type} `{setoid : Setoid A} : A eqv
 
 End SetoidClass.
 
+Module Export OrderClass.
+
+Delimit Scope order_scope with order.
+
+Open Scope order_scope.
+
+(** Total order relation. *)
+Class Ord (A : Type) : Type := ord : A -> A -> Prop.
+
+Notation "x '<=' y" := (ord x y).
+
+(** Total order, less-than-or-equal relation. *)
+Class Order (A : Type) {eqv : Eqv A} {ord : Ord A} : Prop := {
+  setoid :> Setoid A;
+  antisymmetric : forall x y : A, x <= y -> y <= x -> x == y;
+  transitive : forall x y z : A, x <= y -> y <= z -> x <= z;
+  connex : forall x y : A, x <= y \/ y <= x;
+}.
+
+End OrderClass.
+
+Module Export DecEqvTypeClass.
+
+Delimit Scope eqdec_scope with eqdec.
+
+Open Scope eqdec_scope.
+
+(** Decidable equality, discreteness. *)
+Class DecEqv (A : Type) {eqv : Eqv A} : Type :=
+  deceqv : forall x y : A, {x == y} + {~ x == y}.
+
+Reserved Notation "x '==?' y" (at level 70, no associativity).
+Notation "x '==?' y" := (deceqv x y).
+
+(** Decidable equality. *)
+Class DecEqvType (A : Type) {eqv : Eqv A} {deceqv : DecEqv A} : Prop := {
+  setoid :> Setoid A;
+}.
+
+End DecEqvTypeClass.
+
+Module Export FiniteClass.
+
+Delimit Scope finite_scope with finite.
+
+Open Scope finite_scope.
+
+(** Size, finite cardinality. *)
+Class Size (A : Type) : Type := size : nat.
+
+(** To size, injection into finite type. *)
+Class ToSize (A : Type) {size : Size A} : Type := tosize : A -> Fin.t size.
+
+(** From size, projection out of finite type. *)
+Class FromSize (A : Type) {size : Size A} : Type := fromsize : Fin.t size -> A.
+
+Reserved Notation "'#' x" (at level 35, no associativity).
+Notation "'#' x" := (size x).
+
+(** Finite size, bijection with the canonical finite type. *)
+Class FiniteSize (A : Type) {eqv : Eqv A}
+  {size : Size A} {tosize : ToSize A} {fromsize : FromSize A} : Prop := {
+  setoid :> Setoid A;
+  to_from : forall x : A, fromsize (tosize x) == x;
+  from_to : forall a : Fin.t size, tosize (fromsize a) = a;
+}.
+
+End FiniteClass.
+
+Module Export FiniteClass'.
+
+Delimit Scope finite_scope with finite.
+
+Open Scope finite_scope.
+
+(** Enumeration, finite list. *)
+Class Enum (A : Type) : Type := enum : list A.
+
+(** Finite enumeration, finite list without duplicates. *)
+Class FiniteEnum (A : Type) {eqv : Eqv A} {enum : Enum A} : Prop := {
+  setoid :> Setoid A;
+  covering : forall x : A, List.Exists (fun y : A => x == y) enum;
+  disjoint : List.NoDup enum;
+}.
+
+End FiniteClass'.
+
 Module Export SemigroupClass.
 
 Delimit Scope semigroup_scope with semigroup.
@@ -73,7 +160,7 @@ End MultiplicativeNotations.
 
 Import AdditiveNotations.
 
-(** Semigroup, associative operation. *)
+(** Semigroup. *)
 Class Semigroup (A : Type) {eqv : Eqv A} {opr : Opr A} : Prop := {
   setoid :> Setoid A;
   opr_proper : opr ::> eqv ==> eqv ==> eqv;
@@ -126,7 +213,47 @@ Class Monoid (A : Type) {eqv : Eqv A} {opr : Opr A} {idn : Idn A} : Prop := {
   right_identity : forall x : A, x + 0 == x;
 }.
 
+(** Commutative monoid. *)
+Class CommutativeMonoid (A : Type) {eqv : Eqv A}
+  {opr : Opr A} {idn : Idn A} : Prop := {
+  monoid :> Monoid A;
+  opr_commutative : forall x y : A, x + y == y + x;
+}.
+
 End MonoidClass.
+
+Module Export MetricClass.
+
+Delimit Scope metric_scope with metric.
+
+Open Scope metric_scope.
+
+(** Distance. *)
+Class Dist (S A : Type) : Type := dist : A -> A -> S.
+
+Import AdditiveNotations.
+
+(** Metric space. *)
+Class Metric (S A : Type) {seqv : Eqv S} {sord : Ord S}
+  {sopr : Opr S} {sidn : Idn S}
+  {eqv : Eqv A} {dist : Dist S A} : Prop := {
+  sorder :> Order S;
+  scmonoid :> CommutativeMonoid S;
+  dist_proper : dist ::> eqv ==> eqv ==> seqv;
+  indiscernible : forall x y : A, dist x y == 0 <-> x == y;
+  symmetric : forall x y : A, dist x y == dist y x;
+  triangle : forall x y z : A, dist x z <= dist x y + dist y z;
+}.
+
+Add Parametric Morphism {S A : Type} `{metric : Metric S A} : dist
+  with signature eqv ==> eqv ==> eqv
+  as eqv_dist_morphism.
+Proof.
+  intros x y p z w q. destruct metric as [_ _ r _ _]. apply r.
+  - apply p.
+  - apply q. Qed.
+
+End MetricClass.
 
 Module Export GroupClass.
 
@@ -355,7 +482,7 @@ Class One (A : Type) : Type := one : A.
 
 Notation "'1'" := one : ring_scope.
 
-(** Ring, compatible abelian group and monoid. *)
+(** Ring, distributive additive abelian group and multiplicative monoid. *)
 Class Ring (A : Type) {eqv : Eqv A}
   {add : Add A} {zero : Zero A} {neg : Neg A}
   {mul : Mul A} {one : One A} : Prop := {
@@ -516,25 +643,37 @@ Class HomoBimodule (S A : Type)
   bimodule :> Bimodule S S A;
 }.
 
+End ModuleClass.
+
+Module Export FinitelyFreeLeftModuleClass.
+
+Delimit Scope ffmodule_scope with ffmodule.
+
+Open Scope ffmodule_scope.
+
+(** Basis, spanning linearly-independent generators. *)
+Class Basis (D A : Type) : Type := basis : D -> A.
+
+Import AdditiveNotations.
+
 (** Finitely generated left module over a ring, left module with a basis. *)
-Fail Class FinitelyFreeLeftModule (D S A : Type)
-  {deqv : Eqv D} {denum : Enum D} {ddec : Dec D}
+Class FinitelyFreeLeftModule (D S A : Type) {deqv : Eqv D} {denum : Enum D}
   {seqv : Eqv S} {sadd : Add S} {szero : Zero S} {sneg : Neg S}
   {smul : Mul S} {sone : One S}
   {eqv : Eqv A} {opr : Opr A} {idn : Idn A} {inv : Inv A}
-  {lsmul : LSMul S A} {basis : Basis D A} : Prop := {
-  finite :> Finite D;
-  module :> LeftModule S A;
-  basis_span : forall x : A, exists coeffs : D -> S,
+  {basis : Basis D A} {lsmul : LSMul S A} : Prop := {
+  finite :> FiniteEnum D;
+  lmodule :> LeftModule S A;
+  span : forall x : A, exists coeffs : D -> S,
     let terms (d' : D) := coeffs d' <* basis d' in
-    folding (List.map terms enum) == x;
-  basis_lind : forall coeffs : D -> S,
+    List.fold_right opr idn (List.map terms enum) == x;
+  lindep : forall coeffs : D -> S,
     let terms (d' : D) := coeffs d' <* basis d' in
-    folding (List.map terms enum) == 0 ->
-    List.Forall (fun a : S => a == 0%field) (List.map coeffs enum);
+    List.fold_right opr idn (List.map terms enum) == 0%monoid ->
+    List.Forall (fun a : S => a == 0) (List.map coeffs enum);
 }.
 
-End ModuleClass.
+End FinitelyFreeLeftModuleClass.
 
 Module Instances.
 
@@ -634,11 +773,26 @@ Proof.
     exists (y : A) (ys : t A n), xs = y :: ys).
   apply (caseS P). intros y p ys. exists y, ys. reflexivity. Qed.
 
-Lemma Forall2_inversion : forall {A B : Type} (P : A -> B -> Prop)
-  {n : nat} (x : A) (xs : t A n) (y : B) (ys : t B n),
-  Forall2 P (x :: xs) (y :: ys) -> P x y /\ Forall2 P xs ys.
+Lemma const_cons : forall {A : Type} {n : nat} (x : A),
+  const x (S n) = x :: const x n.
+Proof. intros A n x. reflexivity. Qed.
+
+Lemma Forall_inversion : forall {A : Type} (f : A -> Prop)
+  {n : nat} (x : A) (xs : t A n),
+  Forall f (x :: xs) -> f x /\ Forall f xs.
 Proof.
-  intros A B P n x xs y ys p.
+  intros A f n x xs p.
+  inversion p as [| n' x' xs' phd ptl pn' [px' pxs']].
+  apply (inj_pair2_eq_dec nat Nat.eq_dec) in pxs'.
+  subst. split.
+  - apply phd.
+  - apply ptl. Qed.
+
+Lemma Forall2_inversion : forall {A B : Type} (f : A -> B -> Prop)
+  {n : nat} (x : A) (xs : t A n) (y : B) (ys : t B n),
+  Forall2 f (x :: xs) (y :: ys) -> f x y /\ Forall2 f xs ys.
+Proof.
+  intros A B f n x xs y ys p.
   inversion p as [| n' x' y' xs' ys' phd ptl pn' [px' pxs'] [py' pys']].
   apply (inj_pair2_eq_dec nat Nat.eq_dec) in pxs'.
   apply (inj_pair2_eq_dec nat Nat.eq_dec) in pys'.
@@ -646,12 +800,206 @@ Proof.
   - apply phd.
   - apply ptl. Qed.
 
+Lemma Forall_if : forall {A : Type} (P Q : A -> Prop)
+  {n : nat} (xs : t A n),
+  (forall x : A, P x -> Q x) -> (Forall P xs -> Forall Q xs).
+Proof.
+  intros A P Q n xs. induction n as [| n p].
+  - intros f q.
+    pose proof case_nil xs as pxs'.
+    subst. apply Forall_nil.
+  - intros f q.
+    pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+    subst; rename x' into x, xs' into xs.
+    apply Forall_inversion in q. destruct q as [qhd qtl].
+    apply Forall_cons.
+    + apply f. apply qhd.
+    + apply p.
+      * apply f.
+      * apply qtl. Qed.
+
+Lemma Forall_map : forall {A B : Type} (P : B -> Prop) (f : A -> B)
+  {n : nat} (xs : t A n),
+  Forall P (map f xs) <-> Forall (fun x : A => P (f x)) xs.
+Proof.
+  intros A B P f n xs. induction n as [| n p].
+  - pose proof case_nil xs as pxs'.
+    subst. split.
+    + intros q. apply Forall_nil.
+    + intros q. apply Forall_nil.
+  - pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+    subst; rename x' into x, xs' into xs. split.
+    + cbn. intros q.
+      apply Forall_inversion in q. destruct q as [qhd qtl].
+      apply Forall_cons.
+      * apply qhd.
+      * apply p. apply qtl.
+    + cbn. intros q.
+      apply Forall_inversion in q. destruct q as [qhd qtl].
+      apply Forall_cons.
+      * apply qhd.
+      * apply p. apply qtl. Qed.
+
+Lemma map_cons : forall {A B : Type} (f : A -> B)
+  {n : nat} (x : A) (xs : t A n),
+  map f (x :: xs) = f x :: map f xs.
+Proof. intros A B f n x xs. reflexivity. Qed.
+
+Lemma map_id : forall {A : Type} {n : nat} (xs : t A n),
+  map (fun x : A => x) xs = xs.
+Proof.
+  intros A n xs. induction n as [| n p].
+  - pose proof case_nil xs as pxs'.
+    subst. reflexivity.
+  - pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+    subst; rename x' into x, xs' into xs.
+    cbn. f_equal. apply p. Qed.
+
+Lemma map_map : forall {A B C : Type} (f : A -> B) (g : B -> C)
+  {n : nat} (xs : t A n),
+  map g (map f xs) = map (fun x : A => g (f x)) xs.
+Proof.
+  intros A B C f g n xs. induction n as [| n p].
+  - pose proof case_nil xs as pxs'.
+    subst. reflexivity.
+  - pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+    subst; rename x' into x, xs' into xs.
+    cbn. f_equal. apply p. Qed.
+
+Lemma map2_cons : forall {A0 A1 B : Type} (f : A0 -> A1 -> B)
+  {n : nat} (x0 : A0) (xs0 : t A0 n) (x1 : A1) (xs1 : t A1 n),
+  map2 f (x0 :: xs0) (x1 :: xs1) = f x0 x1 :: map2 f xs0 xs1.
+Proof. intros A0 A1 n x0 xs0 x1 xs1. reflexivity. Qed.
+
+Lemma map2_id_0 : forall {A0 A1 B : Type}
+  {n : nat} (xs0 : t A0 n) (xs1 : t A1 n),
+  map2 (fun (x0 : A0) (x1 : A1) => x0) xs0 xs1 = xs0.
+Proof.
+  intros A0 A1 B n xs0 xs1. induction n as [| n p].
+  - pose proof case_nil xs0 as pxs0'.
+    pose proof case_nil xs1 as pxs1'.
+    subst. reflexivity.
+  - pose proof case_cons xs0 as pxs0'. destruct pxs0' as [x0' [xs0' pxs0']].
+    pose proof case_cons xs1 as pxs1'. destruct pxs1' as [x1' [xs1' pxs1']].
+    subst; rename x0' into x0, xs0' into xs0, x1' into x1, xs1' into xs1.
+    cbn. f_equal. apply p. Qed.
+
+Lemma map2_id_1 : forall {A0 A1 B : Type}
+  {n : nat} (xs0 : t A0 n) (xs1 : t A1 n),
+  map2 (fun (x0 : A0) (x1 : A1) => x1) xs0 xs1 = xs1.
+Proof.
+  intros A0 A1 B n xs0 xs1. induction n as [| n p].
+  - pose proof case_nil xs0 as pxs0'.
+    pose proof case_nil xs1 as pxs1'.
+    subst. reflexivity.
+  - pose proof case_cons xs0 as pxs0'. destruct pxs0' as [x0' [xs0' pxs0']].
+    pose proof case_cons xs1 as pxs1'. destruct pxs1' as [x1' [xs1' pxs1']].
+    subst; rename x0' into x0, xs0' into xs0, x1' into x1, xs1' into xs1.
+    cbn. f_equal. apply p. Qed.
+
+Lemma map2_fun_0 : forall {A0 A1 B : Type} (f0 : A0 -> B)
+  {n : nat} (xs0 : t A0 n) (xs1 : t A1 n),
+  map2 (fun (x0 : A0) (x1 : A1) => f0 x0) xs0 xs1 = map f0 xs0.
+Proof.
+  intros A0 A1 B f0 n xs0 xs1. induction n as [| n p].
+  - pose proof case_nil xs0 as pxs0'.
+    pose proof case_nil xs1 as pxs1'.
+    subst. reflexivity.
+  - pose proof case_cons xs0 as pxs0'. destruct pxs0' as [x0' [xs0' pxs0']].
+    pose proof case_cons xs1 as pxs1'. destruct pxs1' as [x1' [xs1' pxs1']].
+    subst; rename x0' into x0, xs0' into xs0, x1' into x1, xs1' into xs1.
+    cbn. f_equal. apply p. Qed.
+
+Lemma map2_fun_1 : forall {A0 A1 B : Type} (f1 : A1 -> B)
+  {n : nat} (xs0 : t A0 n) (xs1 : t A1 n),
+  map2 (fun (x0 : A0) (x1 : A1) => f1 x1) xs0 xs1 = map f1 xs1.
+Proof.
+  intros A0 A1 B f1 n xs0 xs1. induction n as [| n p].
+  - pose proof case_nil xs0 as pxs0'.
+    pose proof case_nil xs1 as pxs1'.
+    subst. reflexivity.
+  - pose proof case_cons xs0 as pxs0'. destruct pxs0' as [x0' [xs0' pxs0']].
+    pose proof case_cons xs1 as pxs1'. destruct pxs1' as [x1' [xs1' pxs1']].
+    subst; rename x0' into x0, xs0' into xs0, x1' into x1, xs1' into xs1.
+    cbn. f_equal. apply p. Qed.
+
+Lemma map2_map_0 : forall {A0 A1 B C : Type} (f0 : A0 -> B) (g : B -> A1 -> C)
+  {n : nat} (xs0 : t A0 n) (xs1 : t A1 n),
+  map2 g (map f0 xs0) xs1 =
+  map2 (fun (x0 : A0) (x1 : A1) => g (f0 x0) x1) xs0 xs1.
+Proof.
+  intros A0 A1 B C f0 g n xs0 xs1. induction n as [| n p].
+  - pose proof case_nil xs0 as pxs0'.
+    pose proof case_nil xs1 as pxs1'.
+    subst. reflexivity.
+  - pose proof case_cons xs0 as pxs0'. destruct pxs0' as [x0' [xs0' pxs0']].
+    pose proof case_cons xs1 as pxs1'. destruct pxs1' as [x1' [xs1' pxs1']].
+    subst; rename x0' into x0, xs0' into xs0, x1' into x1, xs1' into xs1.
+    cbn. f_equal. apply p. Qed.
+
+Lemma map2_map_1 : forall {A0 A1 B C : Type} (f1 : A1 -> B) (g : A0 -> B -> C)
+  {n : nat} (xs0 : t A0 n) (xs1 : t A1 n),
+  map2 g xs0 (map f1 xs1) =
+  map2 (fun (x0 : A0) (x1 : A1) => g x0 (f1 x1)) xs0 xs1.
+Proof.
+  intros A0 A1 B C f0 g n xs0 xs1. induction n as [| n p].
+  - pose proof case_nil xs0 as pxs0'.
+    pose proof case_nil xs1 as pxs1'.
+    subst. reflexivity.
+  - pose proof case_cons xs0 as pxs0'. destruct pxs0' as [x0' [xs0' pxs0']].
+    pose proof case_cons xs1 as pxs1'. destruct pxs1' as [x1' [xs1' pxs1']].
+    subst; rename x0' into x0, xs0' into xs0, x1' into x1, xs1' into xs1.
+    cbn. f_equal. apply p. Qed.
+
+Fixpoint nat_fold {A : Type} (f : nat -> A -> A) (z : A) (n : nat) : A :=
+  match n with
+  | O => z
+  | S p => f p (nat_fold f z p)
+  end.
+
+Fixpoint fold {A B : Type} (f : A -> B -> B) (z : B)
+  {n : nat} (xs : Vector.t A n) : B :=
+  match xs with
+  | @Vector.nil _ => z
+  | @Vector.cons _ x _ xs => f x (fold f z xs)
+  end.
+
+Lemma fold_cons : forall {A B : Type} (f : A -> B -> B) (z : B)
+  {n : nat} (x : A) (xs : t A n),
+  fold f z (x :: xs) = f x (fold f z xs).
+Proof. intros A B f z n x xs. reflexivity. Qed.
+
+Lemma fold_map : forall {A B C : Type} (f : A -> B) (g : B -> C -> C) (z : C)
+  {n : nat} (xs : t A n),
+  fold g z (map f xs) = fold (fun x : A => g (f x)) z xs.
+Proof.
+  intros A B C f g z n xs. induction n as [| n p].
+  - pose proof case_nil xs as pxs'.
+    subst. reflexivity.
+  - pose proof case_cons xs as pxs'. destruct pxs' as [x' [xs' pxs']].
+    subst; rename x' into x, xs' into xs.
+    cbn. f_equal. apply p. Qed.
+
+Lemma fold_map2 : forall {A0 A1 B C : Type}
+  (f : A0 -> A1 -> B) (g : B -> C -> C) (z : C)
+  {n : nat} (xs0 : t A0 n) (xs1 : t A1 n),
+  fold g z (map2 f xs0 xs1) =
+  fold (fun p : A0 * A1 => g (f (fst p) (snd p))) z (map2 pair xs0 xs1).
+Proof.
+  intros A0 A1 B C f g z n xs0 xs1. induction n as [| n p].
+  - pose proof case_nil xs0 as pxs0'.
+    pose proof case_nil xs1 as pxs1'.
+    subst. reflexivity.
+  - pose proof case_cons xs0 as pxs0'. destruct pxs0' as [x0' [xs0' pxs0']].
+    pose proof case_cons xs1 as pxs1'. destruct pxs1' as [x1' [xs1' pxs1']].
+    subst; rename x0' into x0, xs0' into xs0, x1' into x1, xs1' into xs1.
+    cbn. f_equal. apply p. Qed.
+
 End VectorLemmas.
 
-Instance Z_VectorEqv {n : nat} : Eqv (t Z n) := Forall2 eqv.
-
+(** Vectors admit pointwise equality. *)
 Lemma Forall2_eq : forall {A : Type} {n : nat} (xs ys : t A n),
-  Forall2 Logic.eq xs ys <-> Logic.eq xs ys.
+  Forall2 (fun x y : A => x = y) xs ys <-> xs = ys.
 Proof.
   intros A n xs ys. induction n as [| p q].
   - pose proof case_nil xs as pxs.
@@ -660,8 +1008,8 @@ Proof.
     + intros r. reflexivity.
     + intros r. apply Forall2_nil.
   - rename xs into xxs, ys into yys.
-    pose proof case_cons xxs as pxxs. destruct pxxs as [x [xs pxs]].
-    pose proof case_cons yys as pyys. destruct pyys as [y [ys pys]].
+    pose proof case_cons xxs as pxxs. destruct pxxs as [x [xs pxxs]].
+    pose proof case_cons yys as pyys. destruct pyys as [y [ys pyys]].
     subst xxs yys. split.
     + intros r. apply Forall2_inversion in r. destruct r as [rhd rtl]. f_equal.
       * apply rhd.
@@ -673,10 +1021,14 @@ Proof.
       * apply rhd.
       * apply q. apply rtl. Qed.
 
+(** Vectors admit pointwise equivalence. *)
+Instance VectorEqv {A : Type} `{setoid : Setoid A} (n : nat) : Eqv (t A n) :=
+  Forall2 (fun x y : A => x == y).
+
 Instance Z_VectorSetoid {n : nat} : Setoid (t Z n) := {}.
 Proof.
   all: cbv [eqv].
-  all: cbv [Z_VectorEqv].
+  all: cbv [VectorEqv].
   all: cbv [eqv].
   all: cbv [Z_Eqv].
   all: set (P (x y : Z) := x = y).
@@ -691,7 +1043,7 @@ Instance Z_VectorOpr {n : nat} : Opr (t Z n) := map2 Z_AddOpr.
 Instance Z_VectorSemigroup {n : nat} : Semigroup (t Z n) := {}.
 Proof.
   all: cbv [eqv opr].
-  all: cbv [Z_VectorEqv Z_VectorOpr].
+  all: cbv [VectorEqv Z_VectorOpr].
   all: cbv [Z_Eqv Z_AddOpr].
   all: set (P (x y : Z) := x = y).
   - induction n as [| n p].
@@ -738,7 +1090,7 @@ Instance Z_VectorIdn {n : nat} : Idn (t Z n) := const Z_AddIdn n.
 Instance Z_VectorMonoid {n : nat} : Monoid (t Z n) := {}.
 Proof.
   all: cbv [eqv opr idn].
-  all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn].
+  all: cbv [VectorEqv Z_VectorOpr Z_VectorIdn].
   all: cbv [Z_Eqv Z_AddOpr Z_AddIdn].
   all: set (P (x y : Z) := x = y).
   - induction n as [| n p].
@@ -767,7 +1119,7 @@ Instance Z_VectorInv {n : nat} : Inv (t Z n) := map Z_AddInv.
 Instance Z_VectorGroup {n : nat} : Group (t Z n) := {}.
 Proof.
   all: cbv [eqv opr idn inv].
-  all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv].
+  all: cbv [VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv].
   all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv].
   all: set (P (x y : Z) := x = y).
   - induction n as [| n p].
@@ -807,7 +1159,7 @@ Proof.
 Instance Z_VectorAbelianGroup {n : nat} : AbelianGroup (t Z n) := {}.
 Proof.
   all: cbv [eqv opr idn inv].
-  all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv].
+  all: cbv [VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv].
   all: cbv [eqv opr idn inv].
   all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv].
   all: set (P (x y : Z) := x = y).
@@ -830,7 +1182,7 @@ Instance Z_LSMul {n : nat} : LSMul Z (t Z n) :=
 Instance Z_LeftModule {n : nat} : LeftModule Z (t Z n) := {}.
 Proof.
   all: cbv [eqv opr idn inv lsmul].
-  all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv Z_LSMul].
+  all: cbv [VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv Z_LSMul].
   all: cbv [eqv opr idn inv].
   all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv Z_MulOpr Z_MulIdn].
   all: set (P (x y : Z) := x = y).
@@ -902,7 +1254,7 @@ Instance Z_RSMul {n : nat} : RSMul Z (t Z n) :=
 Instance Z_RightModule {n : nat} : RightModule Z (t Z n) := {}.
 Proof.
   all: cbv [eqv opr idn inv rsmul].
-  all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv Z_RSMul].
+  all: cbv [VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv Z_RSMul].
   all: cbv [eqv opr idn inv].
   all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv Z_MulOpr Z_MulIdn].
   all: set (P (x y : Z) := x = y).
@@ -971,7 +1323,7 @@ Proof.
 Instance Z_Bimodule {n : nat} : Bimodule Z Z (t Z n) := {}.
 Proof.
   all: cbv [eqv opr idn inv lsmul rsmul].
-  all: cbv [Z_VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv Z_LSMul Z_RSMul].
+  all: cbv [VectorEqv Z_VectorOpr Z_VectorIdn Z_VectorInv Z_LSMul Z_RSMul].
   all: cbv [eqv opr idn inv].
   all: cbv [Z_Eqv Z_AddOpr Z_AddIdn Z_AddInv Z_MulOpr Z_MulIdn].
   all: set (P (x y : Z) := x = y).
@@ -987,6 +1339,109 @@ Proof.
       * apply p. Qed.
 
 Instance Z_HomoBimodule {n : nat} : HomoBimodule Z (t Z n) := {}.
+
+Section NatLemmas.
+
+Import PeanoNat Nat.
+
+Open Scope nat_scope.
+
+Fixpoint range (n : nat) : Vector.t nat n :=
+  match n with
+  | O => []
+  | S p => 0 :: map succ (range p)
+  end.
+
+Lemma range_le : forall n : nat,
+  Forall (fun p : nat => p <= n) (range n).
+Proof.
+  intros n. induction n as [| n p].
+  - apply Forall_nil.
+  - cbn. apply Forall_cons.
+    + apply le_0_l.
+    + remember (range n) as ns eqn : pns'; clear pns'. apply Forall_map.
+      apply (Forall_if (fun p : nat => p <= n) (fun p : nat => S p <= S n)).
+      * intros q r. apply le_n_S. apply r.
+      * apply p. Qed.
+
+Fixpoint indicator (n i : nat) : Vector.t nat n :=
+  match n with
+  | O => []
+  | S p => match i with
+    | O => 1 :: const 0 p
+    | S j => 0 :: indicator p j
+    end
+  end.
+
+Lemma indicator_le : forall n i : nat,
+  Forall (fun p : nat => p <= 1) (indicator n i).
+Proof.
+  intros n. induction n as [| n p]; intros i.
+  - apply Forall_nil.
+  - induction i as [| i q].
+    + apply Forall_cons.
+      * apply le_n.
+      * clear p. induction n as [| n p].
+        -- apply Forall_nil.
+        -- cbn. apply Forall_cons.
+          ++ apply le_0_l.
+          ++ apply p.
+    + cbn. apply Forall_cons.
+      * apply le_0_l.
+      * apply p. Qed.
+
+End NatLemmas.
+
+Instance Fin_Eqv {n : nat} : Eqv (Fin.t n) := fun x y : Fin.t n => x = y.
+
+Fixpoint Fin_range (n : nat) : list (Fin.t n) :=
+  match n with
+  | O => List.nil
+  | S p => List.cons Fin.F1 (List.map Fin.FS (Fin_range p))
+  end.
+
+Import PeanoNat.
+
+Lemma Fin_inversion : forall x : Fin.t O,
+  False.
+Proof.
+  intros x. set (P (x : Fin.t O) := False).
+  apply (Fin.case0 P). apply x. Qed.
+
+Lemma Fin_inversion_F1 : forall x : Fin.t (S O),
+  x = Fin.F1.
+Proof.
+  intros x. set (P (x : Fin.t (S O)) := x = Fin.F1).
+  apply (Fin.caseS' x P).
+  - reflexivity.
+  - intros p. inversion p. Qed.
+
+Lemma Fin_inversion_FS : forall {n : nat} (x : Fin.t (S n)),
+  x = Fin.F1 \/ exists y : Fin.t n, x = Fin.FS y.
+Proof.
+  intros n x. set (P (x : Fin.t (S n)) := x = Fin.F1 \/
+    exists y : Fin.t n, x = Fin.FS y).
+  apply (Fin.caseS' x P).
+  - left. reflexivity.
+  - intros p. right. exists p. reflexivity. Qed.
+
+Instance Fin_Enum {n : nat} : Enum (Fin.t n) := Fin_range n.
+
+Instance Fin_FiniteEnum {n : nat} : FiniteEnum (Fin.t n) := {}.
+Proof. Admitted.
+
+Instance Z_Basis {n : nat} : Basis (Fin.t n) (Vector.t Z n) :=
+  let ns := map (indicator n) (range n) in
+  nth (map (map of_nat) ns).
+
+Compute basis Fin.F1 : t Z 3.
+Compute basis (Fin.FS Fin.F1) : t Z 3.
+Compute basis (Fin.FS (Fin.FS Fin.F1)) : t Z 3.
+
+Compute List.fold_right Z_VectorOpr Z_VectorIdn
+  (List.map basis enum) : t Z 3.
+(* Compute List.fold_right RingClass.add RingClass.zero
+  (List.map basis enum) : t Z 3. *)
 
 End Instances.
 
