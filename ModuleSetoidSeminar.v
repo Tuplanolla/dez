@@ -1470,6 +1470,7 @@ Compute List.fold_right Z_VectorOpr Z_VectorIdn
 
 End Instances.
 
+(* start snippet computations *)
 Module Computations.
 
 Section Input.
@@ -1490,7 +1491,7 @@ Section Output.
 Import AdditiveNotations.
 
 Open Scope module_scope.
-Open Scope field_scope.
+Open Scope ring_scope.
 Open Scope group_scope.
 
 Example fate := (meaning * fortune) <* hope - luck *> one.
@@ -1508,5 +1509,6 @@ Compute if Vector.eq_dec _ eqb _ _ fate [20273; 28193] then true else false.
 End Test.
 
 End Computations.
+(* end snippet computations *)
 
 Extraction "example.ml" Instances Computations.
