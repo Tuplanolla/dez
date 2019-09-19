@@ -346,14 +346,9 @@ Module AdditiveNotations.
 
 Export GroupClass.AdditiveNotations.
 
-Reserved Notation "n '*%positive' x" (at level 40, left associativity).
-Notation "n '*%positive' x" := (popr n x) : group_scope.
-
-Reserved Notation "n '*%N' x" (at level 40, left associativity).
-Notation "n '*%N' x" := (nopr n x) : group_scope.
-
-Reserved Notation "n '*%Z' x" (at level 40, left associativity).
-Notation "n '*%Z' x" := (zopr n x) : group_scope.
+Notation "n '*' x" := (popr n x) : positive_scope.
+Notation "n '*' x" := (nopr n x) : N_scope.
+Notation "n '*' x" := (zopr n x) : Z_scope.
 
 End AdditiveNotations.
 
@@ -361,14 +356,9 @@ Module MultiplicativeNotations.
 
 Export GroupClass.MultiplicativeNotations.
 
-Reserved Notation "x '^%positive' n" (at level 40, left associativity).
-Notation "x '^%positive' n" := (popr n x) : group_scope.
-
-Reserved Notation "x '^%N' n" (at level 40, left associativity).
-Notation "x '^%N' n" := (nopr n x) : group_scope.
-
-Reserved Notation "x '^%Z' n" (at level 40, left associativity).
-Notation "x '^%Z' n" := (zopr n x) : group_scope.
+Notation "x '^' n" := (popr n x) : positive_scope.
+Notation "x '^' n" := (nopr n x) : N_scope.
+Notation "x '^' n" := (zopr n x) : Z_scope.
 
 End MultiplicativeNotations.
 
@@ -436,7 +426,7 @@ Proof.
 (** Inverse distributes over integer repetition of operation. *)
 (** TODO Assuming nonabelian groups here should suffice; investigate. *)
 Theorem zdis : forall {A : Type} `{agroup : AbelianGroup A},
-  forall (n : Z) (x : A), n *%Z (- x) == - (n *%Z x).
+  forall (n : Z) (x : A), (n * (- x)%group)%Z == - (n * x)%Z.
 Proof.
   intros A ? ? ? ? grp n x. induction n as [| p | p].
   - cbn. rewrite inv_0. reflexivity.
@@ -526,6 +516,26 @@ Proof.
   intros x y p z w q. destruct ring as [_ [[_ r _] _ _] _ _]. apply r.
   - apply p.
   - apply q. Qed.
+
+(** Numeral notations do not work with type classes,
+    so we need to construct this explicit tree of additions. *)
+Definition two {A : Type} {add : Add A} {one : One A} : A := add one one.
+Definition three {A : Type} {add : Add A} {one : One A} : A := add two one.
+Definition four {A : Type} {add : Add A} {one : One A} : A := add two two.
+Definition five {A : Type} {add : Add A} {one : One A} : A := add four one.
+Definition six {A : Type} {add : Add A} {one : One A} : A := add four two.
+Definition seven {A : Type} {add : Add A} {one : One A} : A := add four three.
+Definition eight {A : Type} {add : Add A} {one : One A} : A := add four four.
+Definition nine {A : Type} {add : Add A} {one : One A} : A := add eight one.
+
+Notation "'2'" := two : ring_scope.
+Notation "'3'" := three : ring_scope.
+Notation "'4'" := four : ring_scope.
+Notation "'5'" := five : ring_scope.
+Notation "'6'" := six : ring_scope.
+Notation "'7'" := seven : ring_scope.
+Notation "'8'" := eight : ring_scope.
+Notation "'9'" := nine : ring_scope.
 
 End RingClass.
 
