@@ -518,7 +518,9 @@ Proof.
   - apply q. Qed.
 
 (** Numeral notations do not work with type classes,
-    so we need to construct this explicit tree of additions. *)
+    so we need to construct them from additions.
+    The following automatically generated construction
+    produces an optimal reduction tree (one of many). *)
 Definition two {A : Type} {add : Add A} {one : One A} : A := add one one.
 Definition three {A : Type} {add : Add A} {one : One A} : A := add two one.
 Definition four {A : Type} {add : Add A} {one : One A} : A := add two two.
