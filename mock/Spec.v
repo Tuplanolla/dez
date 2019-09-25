@@ -2,15 +2,13 @@
 
 Set Warnings "-extraction-logical-axiom".
 
-From Coq Require Extraction.
-From Coq Require ZArith.
+From Coq Require Extraction ZArith.
 From DEC Require ZTriangle.
 
 Module Dec.
 
-Import ZArith.
-Import Z.
-Import ZTriangle.
+Import ZArith Z ZTriangle.
+
 Open Scope Z_scope.
 
 Definition monkey_saddle (x y : Z) : Z := x * (x ^ 2 - 3 * y ^ 2).
@@ -24,14 +22,14 @@ Definition monkey_saddle_bound_2inf (x y : Z) : Z := 2 * max (|x|) (|y|) ^ 3.
 Lemma abs_le_nonneg : forall x y : Z,
   (|x|) <= y -> 0 <= y.
 Proof.
-  intros x y Hl. apply (le_trans _ (|x|) _).
+  intros x y Hl. transitivity (|x|).
   - apply abs_nonneg.
   - apply Hl. Qed.
 
 Lemma abs_nonneg_le : forall x y : Z,
   x <= 0 -> x <= (|y|).
 Proof.
-  intros x y Hl. apply (le_trans _ 0 _).
+  intros x y Hl. transitivity 0.
   - apply Hl.
   - apply abs_nonneg. Qed.
 
@@ -40,32 +38,33 @@ Lemma abs_le_abs : forall x y : Z,
 Proof.
   intros x y Hl. apply (le_stepr _ y _).
   - apply Hl.
-  - apply eq_sym. apply abs_eq. apply (abs_le_nonneg x _). apply Hl. Qed.
+  - symmetry. apply abs_eq. apply (abs_le_nonneg x y). apply Hl. Qed.
 
 Lemma abs_abs_le : forall x y : Z,
   (|x|) <= (|y|) -> x <= (|y|).
 Proof.
-  intros x y Hl. apply (le_trans _ (|x|) _).
+  intros x y Hl. transitivity (|x|).
   - apply abs_le. apply le_refl.
   - apply Hl. Qed.
 
 Fact Even_2 : Even 2.
-Proof. now exists 1. Qed.
+Proof. exists 1. reflexivity. Qed.
 
 Fact le_0_3 : 0 <= 3.
-Proof. intros He. inversion He. Qed.
+Proof. intros He. discriminate He. Qed.
 
 Theorem monkey_saddle_bounded_1 : forall a b x y : Z,
   (|x|) <= a -> (|y|) <= b ->
   (|monkey_saddle x y|) <= monkey_saddle_bound_1 a b.
 Proof with auto using Even_2, le_0_3.
-  unfold monkey_saddle, monkey_saddle_bound_1.
+  cbv [monkey_saddle monkey_saddle_bound_1].
   intros a b x y Hlxa Hlyb.
-  apply abs_le_abs in Hlxa. apply abs_le_abs in Hlyb.
+  apply abs_le_abs in Hlxa.
+  apply abs_le_abs in Hlyb.
   (** We work through the proof in a pedagogical manner. *)
   rewrite (abs_mul x _).
   (** We weaken the estimate by replacing [sub] with [add]. *)
-  apply (le_trans _ ((|x|) * (|x ^ 2 + 3 * y ^ 2|)) _).
+  transitivity ((|x|) * (|x ^ 2 + 3 * y ^ 2|)).
   { apply mul_le_mono_nonneg_l.
     - apply abs_nonneg.
     - rewrite (pow_even_abs x 2)...
@@ -74,7 +73,7 @@ Proof with auto using Even_2, le_0_3.
       rewrite <- (abs_pow y 2). rewrite <- (abs_mul 3 _).
       apply abs_rev_quadrangle_abs. }
   (** We weaken the estimate further by distributing [abs] over [add]. *)
-  apply (le_trans _ ((|x|) * ((|x ^ 2|) + (|3 * y ^ 2|))) _).
+  transitivity ((|x|) * ((|x ^ 2|) + (|3 * y ^ 2|))).
   { apply mul_le_mono_nonneg_l.
     - apply abs_nonneg.
     - apply abs_triangle. }
@@ -107,30 +106,27 @@ Proof with auto using Even_2, le_0_3.
   rewrite <- (abs_eq 3) at 1...
   rewrite <- (abs_pow a 2). rewrite <- (abs_mul 3 _).
   rewrite <- (abs_mul _ b). rewrite <- (abs_pow b 3).
-  { apply (le_trans _ (|(|3 * a ^ 2 * b|) + (|b ^ 3|)|) _).
+  { transitivity (|(|3 * a ^ 2 * b|) + (|b ^ 3|)|).
     - apply abs_nonneg.
     - apply abs_le_add_abs. } Qed.
 
-(** We omit most of this proof to demonstrate its effect on the extraction. *)
 Theorem monkey_saddle_bounded_2inf : forall a b x y : Z,
   (|x|) <= a -> (|y|) <= b ->
   (|monkey_saddle x y|) <= monkey_saddle_bound_2inf a b.
-Proof.
-  unfold monkey_saddle, monkey_saddle_bound_2inf.
+Proof with auto using Even_2, le_0_3.
+  cbv [monkey_saddle monkey_saddle_bound_2inf].
   intros a b x y Hlxa Hlyb.
-  apply abs_le_abs in Hlxa. apply abs_le_abs in Hlyb.
+  apply abs_le_abs in Hlxa.
+  apply abs_le_abs in Hlyb.
+  (** We omit most of this proof to show its effect on the extraction. *)
   destruct (max_spec (|a|) (|b|)) as [[Hlab He] | [Hlba He]];
   [apply lt_le_incl in Hlab |]; rewrite He; clear He.
   - assert (Hlxb : (|x|) <= (|b|)).
-    + apply (le_trans _ (|a|) _).
-      * apply Hlxa.
-      * apply Hlab.
-    + admit.
+    { transitivity (|a|)... }
+    admit.
   - assert (Hlya : (|y|) <= (|a|)).
-    + apply (le_trans _ (|b|) _).
-      * apply Hlyb.
-      * apply Hlba.
-    + admit. Admitted.
+    { transitivity (|b|)... }
+    admit. Admitted.
 
 End Dec.
 

@@ -19,8 +19,8 @@ static char const *const cam = "cannot allocate memory";
 CAMLprim value stub_monkey_saddle(value xv, value yv) {
   CAMLparam2(xv, yv);
 
-  size_t const nxb = Wosize_val(xv);
-  size_t const nyb = Wosize_val(yv);
+  size_t const nxb = caml_string_length(xv);
+  size_t const nyb = caml_string_length(yv);
   size_t const nzb = wrap_monkey_saddle_buffer_size(nxb, nyb);
 
   /** Instead of allocating separate blocks for all the buffers,
@@ -38,14 +38,14 @@ CAMLprim value stub_monkey_saddle(value xv, value yv) {
     caml_failwith(cam);
 
   for (size_t i = 0; i < nxb; ++i)
-    xb[i] = Int_val(Field(xv, i));
+    xb[i] = Byte_u(xv, i);
 
   unsigned char *const yb = malloc(nyb);
   if (yb == NULL)
     caml_failwith(cam);
 
   for (size_t i = 0; i < nyb; ++i)
-    yb[i] = Int_val(Field(yv, i));
+    yb[i] = Byte_u(yv, i);
 
   size_t nz;
   if (wrap_monkey_saddle(zb, &nz, nzb, xb, nxb, yb, nyb) != 0)
@@ -55,10 +55,10 @@ CAMLprim value stub_monkey_saddle(value xv, value yv) {
   free(xb);
 
   CAMLlocal1(zv);
-  zv = caml_alloc(nz, 0);
+  zv = caml_alloc_string(nz);
 
   for (size_t i = 0; i < nz; ++i)
-    Store_field(zv, i, Val_int(zb[i]));
+    Byte_u(zv, i) = zb[i];
 
   free(zb);
 
@@ -73,20 +73,20 @@ CAMLprim value stub_monkey_saddle(value xv, value yv) {
   unsigned char *const yb = &b[nzb + nxb];
 
   for (size_t i = 0; i < nxb; ++i)
-    xb[i] = Int_val(Field(xv, i));
+    xb[i] = Byte_u(xv, i);
 
   for (size_t i = 0; i < nyb; ++i)
-    yb[i] = Int_val(Field(yv, i));
+    yb[i] = Byte_u(yv, i);
 
   size_t nz;
   if (wrap_monkey_saddle(zb, &nz, nzb, xb, nxb, yb, nyb) != 0)
     caml_failwith(cam);
 
   CAMLlocal1(zv);
-  zv = caml_alloc(nz, 0);
+  zv = caml_alloc_string(nz);
 
   for (size_t i = 0; i < nz; ++i)
-    Store_field(zv, i, Val_int(zb[i]));
+    Byte_u(zv, i) = zb[i];
 
   free(b);
 

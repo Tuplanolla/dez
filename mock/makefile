@@ -1,4 +1,4 @@
-# # Jolly Coexistence of Coq and C++
+# # Jolly Coexistence of Coq and Other Languages
 #
 # ## Introduction
 #
@@ -13,7 +13,8 @@
 # we need a use case that is sufficiently complicated,
 # but still small enough to fit into a presentation.
 # Luckily, such a use case is easily found
-# from a recent mathematical publication [@peckham-2011].
+# from a recent mathematical publication [@peckham-2011],
+# which is surprisingly not a joke.
 # In particular, we focus on the evaluation of points on the monkey saddle,
 # which is a two-dimensional surface generated
 # by the function $(r, t) \mapsto r^3 \cos (3 t)$ in polar coordinates or
@@ -92,6 +93,44 @@ clean-jr3:
 	$(RM) jrmain.o
 	$(RM) jrmain
 
+# In a bigger project,
+# it would be smarter to generate the wrapper with some tool,
+# such as SWIG, Ctypes or Camlidl.
+# However, it is more instructive to write it by hand here.
+#
+# Suppose we have another numerical solver called SR,
+# which is written in some version of Python.
+# Since Python is interpreted,
+# we can run it directly as follows.
+
+build-sr1:
+	python3 srmain.py
+
+clean-sr1:
+	$(RM) srlib.pyc
+	$(RM) srmain.pyc
+
+# Linking a shared library that is written
+# in an interpreted and garbage-collected language
+# is usually extremely unpleasant,
+# so we do not even attempt to build one here.
+# Instead, we shall implement a server
+# that communicates with a client using a simple protocol.
+# The protocol can be transmitted over pipes or sockets.
+
+build-sr2:
+	python3 srmain.py
+
+clean-sr2:
+	$(RM) srlib.pyc
+	$(RM) srwrap.pyc
+	$(RM) srmain.pyc
+
+# As before,
+# it would be smarter to use an established serialization protocol,
+# such as Protocol Buffers, Cap'n Proto, XML or JSON.
+# It simply takes less effort to use a custom protocol here.
+#
 # ## Analytical Side
 #
 # Our dependencies are now in order,
@@ -134,16 +173,19 @@ clean-spec:
 # but doing it in OCaml is more convenient and
 # makes working with the extracted code much faster and easier.
 #
-# Third, we write an OCaml driver for JR and
-# integrate it into the executable.
+# Third, we write OCaml drivers for JR and SR and
+# integrate them into the executable.
 # This step also involves writing a C stub
 # that handles the memory management between C and OCaml.
 
-build-dec: build-jr3 build-spec
-	# This is the driver.
+build-dec: build-jr3 build-sr2 build-spec
+	# This is the driver for JR.
 	ocamlfind ocamlopt -c stubjr.c
 	ocamlfind ocamlopt -c driver_jr.mli
 	ocamlfind ocamlopt -c driver_jr.ml
+	# This is the driver for SR.
+	ocamlfind ocamlopt -c -package unix driver_sr.mli
+	ocamlfind ocamlopt -c -package unix driver_sr.ml
 	# This is the extracted code.
 	ocamlfind ocamlopt -c spec.mli
 	ocamlfind ocamlopt -c spec.ml
@@ -153,14 +195,15 @@ build-dec: build-jr3 build-spec
 	# This is the executable.
 	ocamlfind ocamlopt -c -package num main.ml
 	# All we have to do now is link them all together.
-	ocamlfind ocamlopt -linkpkg -o main -package num \
-	stubjr.o driver_jr.cmx spec.cmx adapter.cmx main.cmx \
+	ocamlfind ocamlopt -linkpkg -o main -package num -package unix \
+	stubjr.o driver_jr.cmx driver_sr.cmx spec.cmx adapter.cmx main.cmx \
 	-ccopt -L. -ccopt -Wl,-rpath=. -cclib -ljrlib -cclib -lgmpxx -cclib -lgmp
-	./jrmain
+	./main
 
-clean-dec: clean-spec clean-jr3
+clean-dec: clean-spec clean-jr3 clean-sr2
 	$(RM) stubjr.o
 	$(RM) driver_jr.cmi driver_jr.cmx driver_jr.o
+	$(RM) driver_sr.cmi driver_sr.cmx driver_sr.o
 	$(RM) spec.cmi spec.cmx spec.o
 	$(RM) adapter.cmi adapter.cmx adapter.o
 	$(RM) main.cmi main.cmx main.o

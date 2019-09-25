@@ -57,6 +57,14 @@ digraph flow {
     extraction [label = "Extraction.vo"]
     zarith [label = "ZArith.vo"]
   }
+
+  subgraph cluster_python {
+    label = "Python"
+
+    node [peripheries = 2, shape = box]
+
+    sys [label = "sys"]
+  }
   */
 
   subgraph cluster_dec {
@@ -68,6 +76,8 @@ digraph flow {
     stubjr_h [label = "stubjr.h"]
     driver_jr_ml [label = "driver_jr.ml"]
     driver_jr_mli [label = "driver_jr.mli"]
+    driver_sr_ml [label = "driver_sr.ml"]
+    driver_sr_mli [label = "driver_sr.mli"]
     ztriangle_v [label = "ZTriangle.v"]
     spec_v [label = "Spec.v"]
     adapter_ml [label = "adapter.ml"]
@@ -80,6 +90,9 @@ digraph flow {
     driver_jr_cmi [label = "driver_jr.cmi"]
     driver_jr_cmx [label = "driver_jr.cmx"]
     driver_jr_o [label = "driver_jr.o"]
+    driver_sr_cmi [label = "driver_sr.cmi"]
+    driver_sr_cmx [label = "driver_sr.cmx"]
+    driver_sr_o [label = "driver_sr.o"]
     ztriangle_vo [label = "ZTriangle.vo"]
     ztriangle_glob [label = "ZTriangle.glob"]
     spec_vo [label = "Spec.vo"]
@@ -115,7 +128,9 @@ digraph flow {
     ocamlopt_5 [label = "ocamlopt"]
     ocamlopt_6 [label = "ocamlopt"]
     ocamlopt_7 [label = "ocamlopt"]
-    ocamlopt_8 [label = "ocamlopt/ld"]
+    ocamlopt_8 [label = "ocamlopt"]
+    ocamlopt_9 [label = "ocamlopt"]
+    ocamlopt_10 [label = "ocamlopt/ld"]
   }
 
   subgraph cluster_jr {
@@ -149,6 +164,26 @@ digraph flow {
     gxx_4 [label = "g++/ld"]
   }
 
+  subgraph cluster_sr {
+    label = "SR"
+
+    node [peripheries = 2, shape = box]
+
+    srlib_py [label = "srlib.py"]
+    srwrap_py [label = "srwrap.py"]
+    srmain_py [label = "srmain.py"]
+
+    node [peripheries = 2]
+
+    srwrap [label = "python3 srwrap.py"]
+    srmain [label = "python3 srmain.py"]
+
+    node [peripheries = 1, shape = oval]
+
+    python_0 [label = "python3"]
+    python_1 [label = "python3"]
+  }
+
   edge [style = solid]
 
   jrlib_hxx -> gxx_0
@@ -171,6 +206,14 @@ digraph flow {
   libjrlib_so -> gxx_4
   jrmain_o -> gxx_4
   gxx_4 -> jrmain
+
+  srlib_py -> python_0
+  srwrap_py -> python_0
+  python_0 -> srwrap
+
+  srlib_py -> python_1
+  srmain_py -> python_1
+  python_1 -> srmain
 
   ztriangle_v -> coqc_0
   coqc_0 -> ztriangle_vo
@@ -200,38 +243,50 @@ digraph flow {
   ocamlopt_2 -> driver_jr_cmx
   ocamlopt_2 -> driver_jr_o
 
-  spec_mli -> ocamlopt_3
-  ocamlopt_3 -> spec_cmi
+  driver_sr_mli -> ocamlopt_3
+  ocamlopt_3 -> driver_sr_cmi
 
-  spec_cmi -> ocamlopt_4
-  spec_ml -> ocamlopt_4
-  ocamlopt_4 -> spec_cmx
-  ocamlopt_4 -> spec_o
+  driver_sr_cmi -> ocamlopt_4
+  driver_sr_ml -> ocamlopt_4
+  ocamlopt_4 -> driver_sr_cmx
+  ocamlopt_4 -> driver_sr_o
 
-  adapter_mli -> ocamlopt_5
-  ocamlopt_5 -> adapter_cmi
+  spec_mli -> ocamlopt_5
+  ocamlopt_5 -> spec_cmi
 
-  adapter_cmi -> ocamlopt_6
-  adapter_ml -> ocamlopt_6
-  ocamlopt_6 -> adapter_cmx
-  ocamlopt_6 -> adapter_o
+  spec_cmi -> ocamlopt_6
+  spec_ml -> ocamlopt_6
+  ocamlopt_6 -> spec_cmx
+  ocamlopt_6 -> spec_o
 
-  main_ml -> ocamlopt_7
-  ocamlopt_7 -> main_cmi
-  ocamlopt_7 -> main_cmx
-  ocamlopt_7 -> main_o
+  adapter_mli -> ocamlopt_7
+  ocamlopt_7 -> adapter_cmi
 
-  libjrlib_so -> ocamlopt_8
-  stubjr_o -> ocamlopt_8
-  driver_jr_cmx -> ocamlopt_8
-  driver_jr_o -> ocamlopt_8
-  spec_cmx -> ocamlopt_8
-  spec_o -> ocamlopt_8
-  adapter_cmx -> ocamlopt_8
-  adapter_o -> ocamlopt_8
-  main_cmx -> ocamlopt_8
-  main_o -> ocamlopt_8
-  ocamlopt_8 -> main
+  adapter_cmi -> ocamlopt_8
+  adapter_ml -> ocamlopt_8
+  ocamlopt_8 -> adapter_cmx
+  ocamlopt_8 -> adapter_o
+
+  main_ml -> ocamlopt_9
+  ocamlopt_9 -> main_cmi
+  ocamlopt_9 -> main_cmx
+  ocamlopt_9 -> main_o
+
+  libjrlib_so -> ocamlopt_10
+  stubjr_o -> ocamlopt_10
+  driver_jr_cmx -> ocamlopt_10
+  driver_jr_o -> ocamlopt_10
+  driver_sr_cmx -> ocamlopt_10
+  driver_sr_o -> ocamlopt_10
+  spec_cmx -> ocamlopt_10
+  spec_o -> ocamlopt_10
+  adapter_cmx -> ocamlopt_10
+  adapter_o -> ocamlopt_10
+  main_cmx -> ocamlopt_10
+  main_o -> ocamlopt_10
+  ocamlopt_10 -> main
+
+  srwrap -> main
 
   /*
   edge [style = dashed]
@@ -270,11 +325,13 @@ digraph flow {
   stddef_h -> ocamlopt_0
   stdlib_h -> ocamlopt_0
 
-  libc_so -> ocamlopt_8
-  libdl_so -> ocamlopt_8
-  libgmp_so -> ocamlopt_8
-  libgmpxx_so -> ocamlopt_8
-  libstdcxx_so -> ocamlopt_8
-  libm_so -> ocamlopt_8
+  libc_so -> ocamlopt_10
+  libdl_so -> ocamlopt_10
+  libgmp_so -> ocamlopt_10
+  libgmpxx_so -> ocamlopt_10
+  libstdcxx_so -> ocamlopt_10
+  libm_so -> ocamlopt_10
+
+  sys -> srwrap_py
   */
 }

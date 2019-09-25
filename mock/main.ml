@@ -14,4 +14,7 @@ let () =
       (Driver_jr.monkey_saddle_unsafe 42 13));
   print_endline "main -> jrlib";
   print_endline (string_of_big_int
-      (Driver_jr.monkey_saddle (big_int_of_int 42) (big_int_of_int 13)))
+      (Driver_jr.monkey_saddle (big_int_of_int 42) (big_int_of_int 13)));
+  print_endline "main -> srlib";
+  print_endline (string_of_big_int
+      (Driver_sr.monkey_saddle (big_int_of_int 42) (big_int_of_int 13)))

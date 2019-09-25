@@ -5,7 +5,7 @@ open Big_int
 val monkey_saddle_unsafe : int -> int -> int
 (** Call the corresponding C function directly. *)
 
-val monkey_saddle_buffer : char array -> char array -> char array
+val monkey_saddle_buffer : bytes -> bytes -> bytes
 (** Conservatively estimate the required memory usage and
     call the corresponding C function with it. *)
 

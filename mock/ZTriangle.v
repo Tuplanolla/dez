@@ -6,8 +6,7 @@ Module Export Inequalities.
 
 Set Warnings "-undo-batch-mode".
 
-Import ZArith.
-Import Z.
+Import ZArith Z.
 
 Open Scope Z_scope.
 
@@ -82,14 +81,14 @@ Proof.
     + destruct (abs_spec y) as [[_ Hey] | [_ Hey]].
       * rewrite Hey. apply add_le_mono_r. apply le_abs.
       * apply add_le_mono.
-        { apply le_abs. }
-        { apply le_abs. }
+        -- apply le_abs.
+        -- apply le_abs.
   - rewrite Hexy. destruct (abs_spec x) as [[_ Hex] | [_ Hex]].
     + destruct (abs_spec y) as [[_ Hey] | [_ Hey]].
       * rewrite (opp_add_distr x y). rewrite <- (abs_opp x), <- (abs_opp y).
         apply add_le_mono.
-        { apply le_abs. }
-        { apply le_abs. }
+        -- apply le_abs.
+        -- apply le_abs.
       * rewrite Hey. rewrite (opp_add_distr x y). rewrite <- (abs_opp x).
         apply add_le_mono_r. apply le_abs.
     + rewrite Hex. rewrite (opp_add_distr x y). rewrite <- (abs_opp y).
@@ -158,8 +157,7 @@ Theorem abs_quadrangle : forall x y : Z,
 Proof.
   intros x y. apply (le_trans _ (|x - y|) _).
   - apply abs_sub_triangle.
-  - apply abs_opp_triangle.
-    all: fail "not done". Restart.
+  - apply abs_opp_triangle. Restart.
   intros x y. apply (le_trans _ (|x + y|) _).
   - apply abs_opp_sub_triangle.
   - apply abs_triangle. Qed.
@@ -169,8 +167,7 @@ Theorem abs_rev_quadrangle : forall x y : Z,
 Proof.
   intros x y. apply (le_trans _ (|x - y|) _).
   - apply abs_rev_triangle.
-  - apply abs_opp_triangle.
-    all: fail "not done". Restart.
+  - apply abs_opp_triangle. Restart.
   intros x y. apply (le_trans _ (|x + y|) _).
   - apply abs_opp_rev_triangle.
   - apply abs_triangle. Qed.

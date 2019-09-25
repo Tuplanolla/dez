@@ -6,8 +6,10 @@
 *.so
 *.vo
 .*.aux
+__pycache__
 flow.png
 jrmain
 main
 spec.ml
 spec.mli
+srmain
