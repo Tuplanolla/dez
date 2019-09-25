@@ -107,6 +107,7 @@ build-sr1:
 	python3 srmain.py
 
 clean-sr1:
+	$(RM) -r __pycache__
 	$(RM) srlib.pyc
 	$(RM) srmain.pyc
 
@@ -122,6 +123,7 @@ build-sr2:
 	python3 srmain.py
 
 clean-sr2:
+	$(RM) -r __pycache__
 	$(RM) srlib.pyc
 	$(RM) srwrap.pyc
 	$(RM) srmain.pyc
