@@ -176,6 +176,41 @@ Class FiniteEnum (A : Type) {eqv : Eqv A} {enum : Enum A} : Prop := {
 
 End FiniteClass'.
 
+Module Export IsoClass.
+
+Delimit Scope iso_scope with iso.
+
+Open Scope iso_scope.
+
+(* start snippet iso *)
+Class Go (A B : Type) : Type := go : A -> B.
+Class Come (A B : Type) : Type := come : B -> A.
+
+Class Iso (A B : Type)
+  {aeqv : Eqv A} {beqv : Eqv B} {ago : Go A B} {acome : Come A B} : Prop := {
+  asetoid :> Setoid A;
+  bsetoid :> Setoid B;
+  go_proper : go ::> aeqv ==> beqv;
+  come_proper : come ::> beqv ==> aeqv;
+  ainverse : forall x : A, come (go x) == x;
+  binverse : forall y : B, go (come y) == y;
+}.
+(* end snippet iso *)
+
+Add Parametric Morphism {A B : Type} `{iso : Iso A B} : go
+  with signature aeqv ==> beqv
+  as eqv_go_morphism.
+Proof.
+  intros x y p. destruct iso as [_ _ q _ _ _]. apply q. apply p. Qed.
+
+Add Parametric Morphism {A B : Type} `{iso : Iso A B} : come
+  with signature beqv ==> aeqv
+  as eqv_come_morphism.
+Proof.
+  intros x y p. destruct iso as [_ _ _ q _ _]. apply q. apply p. Qed.
+
+End IsoClass.
+
 Module Export SemigroupClass.
 
 Delimit Scope semigroup_scope with semigroup.
