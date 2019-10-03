@@ -657,6 +657,31 @@ Proof.
     + intros x. reflexivity. Qed.
 (* end snippet digression *)
 
+Class Has (A B : Type) : Type := has : B -> A.
+
+Instance fst_Has {A B : Type} : Has A (A * B) := fst.
+Instance snd_Has {A B : Type} : Has B (A * B) := snd.
+
+Instance UIso_Eqv {A B C : Type}
+  `{astd : Setoid A} `{bstd : Setoid B}
+  `{ghas : Has (Go A B) C} `{chas : Has (Come A B) C} : Eqv C :=
+  fun f g : C =>
+  (forall x : A, has (Has := ghas) f x == has (Has := ghas) g x) /\
+  (forall x : B, has (Has := chas) f x == has (Has := chas) g x).
+
+Instance UIso_Setoid {A B C : Type}
+  `{astd : Setoid A} `{bstd : Setoid B}
+  `{ghas : Has (Go A B) C} `{chas : Has (Come A B) C} : Setoid C := {}.
+Proof.
+  - intros x. pose proof pair_Setoid (A := Go A B) (B := Come A B).
+    reflexivity.
+  - intros x y p. pose proof pair_Setoid (A := Go A B) (B := Come A B).
+    symmetry. apply p.
+  - intros x y z p q. pose proof pair_Setoid (A := Go A B) (B := Come A B).
+    etransitivity.
+    + apply p.
+    + apply q. Qed.
+
 End Instances.
 
 (* start snippet computations *)

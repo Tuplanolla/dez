@@ -13,33 +13,28 @@ Class Rel (A : Type) : Type := rel : A -> A -> Prop.
 Reserved Notation "x '~' y" (at level 70, no associativity).
 Notation "x '~' y" := (rel x y) : setoid_scope.
 
-Class Reflexive (A : Type) {rel : Rel A} : Prop := {
-  reflexive : forall x : A, x ~ x;
-}.
+Class Reflexive (A : Type) {rel : Rel A} : Prop :=
+  reflexive : forall x : A, x ~ x.
 
 End ReflexiveClass.
 
 Module Export SymmetricClass.
 
-Class Symmetric (A : Type) {rel : Rel A} : Prop := {
-  symmetric : forall x y : A, x ~ y -> y ~ x;
-}.
+Class Symmetric (A : Type) {rel : Rel A} : Prop :=
+  symmetric : forall x y : A, x ~ y -> y ~ x.
 
 End SymmetricClass.
 
 Module Export TransitiveClass.
 
-Class Transitive (A : Type) {rel : Rel A} : Prop := {
-  transitive : forall x y z : A, x ~ y -> y ~ z -> x ~ z;
-}.
+Class Transitive (A : Type) {rel : Rel A} : Prop :=
+  transitive : forall x y z : A, x ~ y -> y ~ z -> x ~ z.
 
 End TransitiveClass.
 
 Module Export SetoidClass.
 
-(** TODO Manage exports. *)
-Export Setoid.
-Import Morphisms.
+Export Setoid Morphisms.
 
 Delimit Scope setoid_scope with setoid.
 
@@ -411,7 +406,7 @@ Definition zopr {A : Type} `{group : Group A} (n : Z) (x : A) : A :=
   match n with
   | Z0 => 0
   | Zpos p => popr p x
-  | Zneg p => popr p (- x)
+  | Zneg p => - popr p x
   end.
 
 Module AdditiveNotations.
@@ -486,38 +481,66 @@ Proof.
   destruct grp as [[[ps pop pa] pnl pnr] pvp pvl pvr] eqn : pg.
   rewrite <- (pnr (- 0)). rewrite (pvl 0).
   reflexivity. Qed.
-(* end snippet theorems *)
 
+(** Setoid version of the standard library lemma [iter_op_succ]. *)
 Lemma iter_op_succ : forall {A : Type} `{setoid : Setoid A} (op : A -> A -> A),
- (forall x y z, op x (op y z) == op (op x y) z) ->
- forall p a, iter_op op (succ p) a == op a (iter_op op p a).
+  (forall x y z : A, op x (op y z) == op (op x y) z) ->
+  forall (n : positive) (x : A),
+  iter_op op (succ n) x == op x (iter_op op n x).
 Proof.
-  induction p; simpl; intros; try reflexivity.
-  rewrite H. apply IHp. Qed.
+  intros A ? ? op p n. induction n as [q r | q r |]; intros x.
+  - rewrite (p x x (iter_op op q (op x x))). rewrite (r (op x x)). reflexivity.
+  - reflexivity.
+  - reflexivity. Qed.
+
+(** Obvious corollary of [iter_op_succ]. *)
+Lemma iter_op_comm : forall {A : Type} `{setoid : Setoid A} (op : A -> A -> A),
+  (op ::> eqv ==> eqv ==> eqv) ->
+  (forall x y z : A, op x (op y z) == op (op x y) z) ->
+  forall (n : positive) (x : A),
+  op x (iter_op op n x) == op (iter_op op n x) x.
+Proof.
+  intros A ? ? op p q n x. induction n as [| r s] using peano_ind.
+  - reflexivity.
+  - rewrite (iter_op_succ op q r x). rewrite s.
+    rewrite (q x (iter_op op r x) x). rewrite <- s. reflexivity. Qed.
+
+(** Inverse distributes over positive repetition of operation. *)
+Theorem pdis : forall {A : Type} `{grp : Group A},
+  forall (n : positive) (x : A),
+  (n * (- x)%group)%positive == - (n * x)%positive.
+Proof.
+  intros A ? ? ? ? grp n x.
+  destruct grp as [[[ps pop pa] pnl pnr] pvp pvl pvr] eqn : pg.
+  - cbv [popr]. induction n as [| p q] using peano_ind.
+    + reflexivity.
+    + rewrite iter_op_succ by (intros ? ? ?; symmetry; apply pa).
+      rewrite iter_op_succ by (intros ? ? ?; symmetry; apply pa).
+      rewrite q. rewrite <- dis.
+      rewrite iter_op_comm by (apply pop || intros ? ? ?; symmetry; apply pa).
+      reflexivity. Qed.
+
+(** Inverse distributes over natural repetition of operation. *)
+Theorem ndis : forall {A : Type} `{grp : Group A},
+  forall (n : N) (x : A), (n * (- x)%group)%N == - (n * x)%N.
+Proof.
+  intros A ? ? ? ? grp n x.
+  destruct grp as [[[ps pop pa] pnl pnr] pvp pvl pvr] eqn : pg.
+  destruct n as [| p].
+  - cbv [nopr]. rewrite inv_0. reflexivity.
+  - cbv [nopr]. rewrite pdis. reflexivity. Qed.
 
 (** Inverse distributes over integer repetition of operation. *)
-(** TODO Assuming nonabelian groups here should suffice; investigate. *)
-Theorem zdis : forall {A : Type} `{agroup : AbelianGroup A},
+Theorem zdis : forall {A : Type} `{grp : Group A},
   forall (n : Z) (x : A), (n * (- x)%group)%Z == - (n * x)%Z.
 Proof.
-  intros A ? ? ? ? grp n x. induction n as [| p | p].
-  - cbn. rewrite inv_0. reflexivity.
-  - cbn. induction p as [| q r] using peano_ind.
-    + cbn. reflexivity.
-    + cbv [popr] in *.
-      destruct grp as [[[[ps pop pa] pnl pnr] pvp pvl pvr] pc] eqn : pg.
-      pose proof iter_op_succ opr as s. repeat rewrite s.
-      rewrite r. rewrite dis. rewrite pc. reflexivity.
-      intros y z w. rewrite pa. reflexivity.
-      intros y z w. rewrite pa. reflexivity.
-  - cbn. induction p as [| q r] using peano_ind.
-    + cbn. reflexivity.
-    + cbv [popr] in *.
-      destruct grp as [[[[ps pop pa] pnl pnr] pvp pvl pvr] pc] eqn : pg.
-      pose proof iter_op_succ opr as s. repeat rewrite s.
-      rewrite r. rewrite dis. repeat rewrite ivl. rewrite pc. reflexivity.
-      intros y z w. rewrite pa. reflexivity.
-      intros y z w. rewrite pa. reflexivity. Qed.
+  intros A ? ? ? ? grp n x.
+  destruct grp as [[[ps pop pa] pnl pnr] pvp pvl pvr] eqn : pg.
+  destruct n as [| p | p].
+  - cbv [zopr]. rewrite inv_0. reflexivity.
+  - cbv [zopr]. rewrite pdis. reflexivity.
+  - cbv [zopr]. rewrite ivl. rewrite pdis. rewrite ivl. reflexivity. Qed.
+(* end snippet theorems *)
 
 End GroupTheorems.
 
@@ -785,17 +808,14 @@ Instance Z_Eqv : Eqv Z := fun x y : Z => x = y.
 
 Instance Z_Reflexive : ReflexiveClass.Reflexive Z.
 Proof.
-  constructor.
   - apply eq_refl. Qed.
 
 Instance Z_Symmetric : SymmetricClass.Symmetric Z.
 Proof.
-  constructor.
   - apply eq_sym. Qed.
 
 Instance Z_Transitive : TransitiveClass.Transitive Z.
 Proof.
-  constructor.
   - apply eq_trans. Qed.
 
 Instance Z_Setoid : Setoid Z := {}.
@@ -1140,7 +1160,6 @@ Instance VectorEqv {A : Type} `{setoid : Setoid A} {n : nat} : Eqv (t A n) :=
 Instance Vector_Reflexive {A : Type} `{setoid : Setoid A}
   {n : nat} : ReflexiveClass.Reflexive (t A n).
 Proof.
-  constructor.
   - induction n as [| p q].
     + intros xs.
       pose proof case_nil xs as pxs.
@@ -1154,7 +1173,6 @@ Proof.
 Instance Vector_Symmetric {A : Type} `{setoid : Setoid A}
   {n : nat} : SymmetricClass.Symmetric (t A n).
 Proof.
-  constructor.
   - induction n as [| p q].
     + intros xs ys r.
       pose proof case_nil xs as pxs.
@@ -1172,7 +1190,6 @@ Proof.
 Instance Vector_Transitive {A : Type} `{setoid : Setoid A}
   {n : nat} : TransitiveClass.Transitive (t A n).
 Proof.
-  constructor.
   - induction n as [| p q].
     + intros xs ys zs r s.
       pose proof case_nil xs as pxs.
