@@ -634,7 +634,24 @@ Notation "'7'" := seven : ring_scope.
 Notation "'8'" := eight : ring_scope.
 Notation "'9'" := nine : ring_scope.
 
+Class CommutativeRing (A : Type) {eqv : Eqv A}
+  {add : Add A} {zero : Zero A} {neg : Neg A}
+  {mul : Mul A} {one : One A} : Prop := {
+  cadd_agroup :> AbelianGroup A (opr := add) (idn := zero) (inv := neg);
+  cmul_cmonoid :> CommutativeMonoid A (opr := mul) (idn := one);
+  cleft_distributive : forall x y z : A, x * (y + z) == x * y + x * z;
+  cright_distributive : forall x y z : A, (x + y) * z == x * z + y * z;
+}.
+
 End RingClass.
+
+(** TODO Ponder this hierarchy breaking. *)
+Instance Ring_CommutativeRing {A : Type}
+  `{crng : CommutativeRing A} : Ring A := {}.
+Proof.
+  - destruct crng as [? p ? ?]. destruct p as [p ?]. apply p.
+  - destruct crng as [? ? p ?]. apply p.
+  - destruct crng as [? ? ? p]. apply p. Qed.
 
 Module Export FieldClass.
 
@@ -765,6 +782,26 @@ Proof.
 
 End ModuleClass.
 
+(** TODO Investigate this symmetry breaking. *)
+Instance LSMul_RSMul {S A : Type} `{lmod : LeftModule S A} : RSMul S A :=
+  lsmul.
+
+(** TODO Investigate this performance problem. *)
+Instance LeftModule_RightModule {S A : Type}
+  {seqv : Eqv S} {sadd : Add S} {szero : Zero S} {sneg : Neg S}
+  {smul : Mul S} {sone : One S}
+  `{scrng : CommutativeMonoid S (eqv := seqv) (opr := smul) (idn := sone)}
+  `{lmod : LeftModule S A (seqv := seqv)
+    (sadd := sadd) (szero := szero) (sneg := sneg)
+    (smul := smul) (sone := sone)} : RightModule S A := {}.
+Proof.
+  all: cbv [rsmul LSMul_RSMul].
+  - intros a b x. Time rewrite (@MonoidClass.opr_commutative _ _ _ _ scrng).
+    rewrite lsmul_smul_compatible. reflexivity.
+  - intros x. rewrite lsmul_identity. reflexivity.
+  - intros a x y. rewrite lsmul_add_distributive. reflexivity.
+  - intros a b x. rewrite lsmul_sadd_distributive. reflexivity. Qed.
+
 Module Export FinitelyFreeLeftModuleClass.
 
 Delimit Scope ffmodule_scope with ffmodule.
@@ -806,15 +843,15 @@ Open Scope Z_scope.
 (* start snippet z *)
 Instance Z_Eqv : Eqv Z := fun x y : Z => x = y.
 
-Instance Z_Reflexive : ReflexiveClass.Reflexive Z.
+Instance Z_Reflexive : ReflexiveClass.Reflexive Z := {}.
 Proof.
   - apply eq_refl. Qed.
 
-Instance Z_Symmetric : SymmetricClass.Symmetric Z.
+Instance Z_Symmetric : SymmetricClass.Symmetric Z := {}.
 Proof.
   - apply eq_sym. Qed.
 
-Instance Z_Transitive : TransitiveClass.Transitive Z.
+Instance Z_Transitive : TransitiveClass.Transitive Z := {}.
 Proof.
   - apply eq_trans. Qed.
 
@@ -1158,7 +1195,7 @@ Instance VectorEqv {A : Type} `{setoid : Setoid A} {n : nat} : Eqv (t A n) :=
   Forall2 (fun x y : A => x == y).
 
 Instance Vector_Reflexive {A : Type} `{setoid : Setoid A}
-  {n : nat} : ReflexiveClass.Reflexive (t A n).
+  {n : nat} : ReflexiveClass.Reflexive (t A n) := {}.
 Proof.
   - induction n as [| p q].
     + intros xs.
@@ -1171,7 +1208,7 @@ Proof.
       * apply q. Qed.
 
 Instance Vector_Symmetric {A : Type} `{setoid : Setoid A}
-  {n : nat} : SymmetricClass.Symmetric (t A n).
+  {n : nat} : SymmetricClass.Symmetric (t A n) := {}.
 Proof.
   - induction n as [| p q].
     + intros xs ys r.
@@ -1188,7 +1225,7 @@ Proof.
       * apply q. apply rtl. Qed.
 
 Instance Vector_Transitive {A : Type} `{setoid : Setoid A}
-  {n : nat} : TransitiveClass.Transitive (t A n).
+  {n : nat} : TransitiveClass.Transitive (t A n) := {}.
 Proof.
   - induction n as [| p q].
     + intros xs ys zs r s.
