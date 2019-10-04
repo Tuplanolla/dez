@@ -1,6 +1,6 @@
 # Maniunfold
 
-This is a code repository for a research project that aims to
+This is a repository for a research project that aims to
 
 * develop a type-theoretical model of discrete exterior calculus,
 * formalize the model with the Coq proof assistant,
@@ -8,11 +8,15 @@ This is a code repository for a research project that aims to
 * link the extracted code with existing numerical solvers and
 * implement a user interface for the whole thing.
 
+The code in this repository is free software and, as such, licensed under
+
+* the GNU General Public License version 3 or later.
+
 The development of this project
 
 * started 2018-05-01,
-* continues as of 2019-09-01 and
-* is expected to reach a usable state before 2022-05-01.
+* continues as of 2019-10-01 and
+* is expected to reach a usable state by 2022-05-01.
 
 Currently, the sole author of this project is
 
@@ -30,6 +34,6 @@ relating the concepts of
 * differentiable manifolds,
   the main objects of study in differential geometry, and
 * anamorphisms,
-  the familiar recursion schemes from purely functional programming.
+  the generalizations of common recursion schemes from functional programming.
 
 Stay tuned for other equally useful facts about this project.
