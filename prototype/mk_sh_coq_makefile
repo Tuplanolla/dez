@@ -1,0 +1,18 @@
+#! /bin/sh
+
+# Create scripts that create or remove Coq's Make files.
+
+mk='mk_coq_makefile' && \
+rm='rm_coq_makefile' && \
+{ printf '%s\n\n%s\n\n%s \\\n' \
+  '#! /bin/sh' "# Create Coq's Make file." 'coq_makefile' && \
+  find . -name '*.v' | \
+  LC_ALL=C sort | \
+  sed 's/$/ \\/g' && \
+  printf '%s\n' \
+  '-f _CoqProject -o Makefile -opt' ; \
+} > "$mk" && \
+{ printf '%s\n\n%s\n\n%s \\\n' \
+  '#! /bin/sh' "# Remove Coq's Make file." 'rm -f Makefile Makefile.conf' ; \
+} > "$rm" && \
+chmod +x "$mk" "$rm"
