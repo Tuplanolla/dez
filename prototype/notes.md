@@ -6,7 +6,8 @@ These informal notes complement some papers and implementations.
 
 Regarding overlapping instances of operational classes (major issue),
 Spitters and van der Weegen claim that "the issue rarely arises".
-This seems dubious to a Haskell programmer.
+This seems dubious to a Haskell programmer,
+but I will trust their word and see what happens.
 
 > Because predicate classes only provide contextual information and
 > are insulated from the actual algebraic expressions,
@@ -28,7 +29,8 @@ Spitters and van der Weegen claim that
 "almost any generic predicate worth naming
 is worth representing as a predicate type class" and
 use hybrid operational-style predicative classes in the implementation.
-It is a bit strange not to mention the hybrid approach.
+It is a bit strange not to mention the hybrid approach,
+but I will follow suit and see what happens.
 
 > We use names for properties like distributivity and absorption,
 > because these are type classes as well
@@ -55,12 +57,15 @@ fail to account for this in the implementation.
 I have not found a solution to this problem either,
 but disallowing operational class sharing and
 using explicit operational class inheritance might work
-(or exacerbate the overlapping instance problem; I need to investigate).
+(or exacerbate the overlapping instance problem).
+I will try this and see what happens.
 
 Regarding the scope of operational classes (minor issue),
 Spitters and van der Weegen claim that
 "what we really need are canonical names" and
 have one module with all the operational classes in the implementation.
+This conflicts with explicit operational class inheritance,
+so I will ignore their advice and see what happens.
 
 > Because `e` and `op` are freshly introduced local names,
 > we cannot bind notations to them prior to this theorem.
@@ -75,6 +80,8 @@ between different structures (minor issue),
 Spitters and van der Weegen make no claims,
 but seem to share them as they see fit in the implementation.
 Whether sharing is required by canonical names or vice versa is unclear.
+I will let explicit operational class inheritance
+give rise to sharing and see what happens.
 
 Regarding conflicting or extensible notations (minor issue),
 Spitters and van der Weegen make no claims and
@@ -88,6 +95,8 @@ but use them with implicit generalization in the implementation.
 This must be too obvious to be mentioned,
 even though implicit generalization generates unpredictable names
 for the inferred arguments, making the code fragile.
+I will try to formulate a naming convention
+that produces predictable names and and see what happens.
 
 Regarding efficiency of extracted code (major issue),
 Spitters and van der Weegen make a related claim that
@@ -95,7 +104,7 @@ Spitters and van der Weegen make a related claim that
 I have also observed this,
 but based on the assumption that the OCaml compiler
 can inline identity, constant and projection functions
-across modules (this is likely to be true, but is not a given).
+across modules (this is likely to be true, but not a given).
 
 Regarding the universal usability (major issue),
 Spitters and van der Weegen claim that they could make
@@ -103,6 +112,7 @@ Spitters and van der Weegen claim that they could make
 I have found a simple counterexample,
 where trying to model higher groupoid structure is
 more tedious and unpleasant than it would be with plain records.
+However, I might not need to do that in practice.
 
 > There are really only two pending concerns that keeps us
 > from making an unequivocal endorsement of type classes
