@@ -2,6 +2,37 @@
 
 These informal notes complement some papers and implementations.
 
+## Personal Notes by Sampsa Kiiskinen
+
+### Coherence Conditions
+
+When defining classes,
+all the operational classes must be constraints and
+all the predicative classes must be coercible fields.
+
+### Naming Conventions
+
+Operative classes are prefixed with `Has` and predicative classes with `Is`.
+Operations themselves are abbreviated to less than six characters,
+while predicates are never abbreviated.
+
+Definitions and instances for a type are prefixed with its name.
+For example, we would have `Instance t_magic_lamp : MagicLamp t`.
+
+Coercible fields contain the verb `is`, while plain fields do not.
+For example, we would have `opr_is_associative : IsAssociative A` or
+`opr_associative : forall x y z : A, x + (y + z) == (x + y) + z`.
+
+Parametric relations and morphisms
+have the suffixes `relation` and `morphism` respectively.
+
+### Implicit Generalization
+
+When defining classes, implicit generalization must not be used.
+When declaring parametric relations or morphisms,
+implicit generalization should be used.
+When defining theorems, implicit generalization may be used.
+
 ## Type Classes for Mathematics in Type Theory by Spitters and van der Weegen
 
 Regarding overlapping instances of operational classes (major issue),

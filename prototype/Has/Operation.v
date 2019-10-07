@@ -1,6 +1,6 @@
-Delimit Scope semigroup_scope with semigroup.
+Delimit Scope operation_scope with operation.
 
-Open Scope semigroup_scope.
+Open Scope operation_scope.
 
 (** We do not use the abbreviation [op],
     because it is reserved for dual morphisms. *)
@@ -8,14 +8,12 @@ Class HasOpr (A : Type) : Type := opr : A -> A -> A.
 
 Module AdditiveNotations.
 
-Notation "x '+' y" := (opr x y) : semigroup_scope.
+Notation "x '+' y" := (opr x y) : operation_scope.
 
 End AdditiveNotations.
 
 Module MultiplicativeNotations.
 
-Notation "x '*' y" := (opr x y) : semigroup_scope.
+Notation "x '*' y" := (opr x y) : operation_scope.
 
 End MultiplicativeNotations.
-
-Import AdditiveNotations.

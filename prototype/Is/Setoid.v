@@ -3,7 +3,8 @@ From Maniunfold.Has Require Import EquivalenceRelation.
 From Maniunfold.Is Require Import Reflexive Symmetric Transitive.
 
 (** We need to perform this song and dance
-    to be compatible with the standard library setoid. *)
+    to be compatible with the standard library setoid,
+    because otherwise rewriting will not work. *)
 Export Basics Setoid Morphisms.
 
 Module Export ProperNotations.

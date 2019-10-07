@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Import EquivalenceRelation OrderRelation.
-From Maniunfold.Is Require Import Setoid Antisymmetric Transitive Connex.
+From Maniunfold.Is Require Import Antisymmetric Transitive Connex.
 
 Class IsTotalOrder (A : Type)
   {has_eqv : HasEqv A} {has_ord : HasOrd A} : Prop := {
