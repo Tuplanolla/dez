@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Import EquivalenceRelation
-  Operation Identity Inverse.
+  GroupOperation GroupIdentity GroupInverse.
 From Maniunfold.Is Require Import Group LeftIdentity RightIdentity.
 
 Class IsAbelianGroup (A : Type) {has_eqv : HasEqv A}

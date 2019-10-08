@@ -16,7 +16,15 @@ Operative classes are prefixed with `Has` and predicative classes with `Is`.
 Operations themselves are abbreviated to less than six characters,
 while predicates are never abbreviated.
 Some name options for derived operations and theorems are
-`Does`, `Might`, `Ought`, `Shall`, `Was` and `Would`.
+the modal verbs `Can`, `Could`, (`Has`, `Is`),
+`May`, `Might`, `Must`, `Ought`, `Shall`, `Should`, `Will` and `Would` and
+the other verbs `Contains`, `Does`, `Entails`, `Gives`, `Goes`, (`Has`, `Is`),
+`Justifies`, `Keeps`, `Knows`, `Lets`, `Makes`, `Matches`, `Means`,
+`Needs`, `Notes`, `Obeys`, `Observes`, `Offers`, `Orders`,
+`Passes`, `Pays`, `Picks`, `Plays`, `Points`, `Provides`, `Posits`,
+`Quantifies`, `Quotes`,
+`Raises`, `Reassures`, `Refines`, `Reflects`, `Represents`, `Resolves`,
+`Says`, `Serves`, `Supports` and `Was`.
 
 Definitions and instances for a type are prefixed with its name.
 For example, we would have `Instance t_magic_lamp : MagicLamp t`.

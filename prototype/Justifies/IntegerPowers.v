@@ -1,5 +1,7 @@
+Set Warnings "-notation-overridden".
+
 From Coq Require Import ZArith.
-From Maniunfold.Has Require Import Operation Identity Inverse.
+From Maniunfold.Has Require Import GroupOperation GroupIdentity GroupInverse.
 From Maniunfold.Is Require Import Semigroup Monoid Group.
 
 Import Pos.
@@ -23,22 +25,20 @@ Definition zopr {A : Type} `{is_group : IsGroup A} (n : Z) (x : A) : A :=
 
 Module AdditiveNotations.
 
-Export Inverse.AdditiveNotations.
+Export GroupInverse.AdditiveNotations.
 
-Reserved Notation "n '*^' x" (at level 40, left associativity).
-Notation "n '*^' x" := (popr n x) : positive_scope.
-Notation "n '*^' x" := (nopr n x) : N_scope.
-Notation "n '*^' x" := (zopr n x) : Z_scope.
+Notation "n '*' x" := (popr n x) : positive_scope.
+Notation "n '*' x" := (nopr n x) : N_scope.
+Notation "n '*' x" := (zopr n x) : Z_scope.
 
 End AdditiveNotations.
 
 Module MultiplicativeNotations.
 
-Export Inverse.MultiplicativeNotations.
+Export GroupInverse.MultiplicativeNotations.
 
-Reserved Notation "x '*^' n" (at level 30, right associativity).
-Notation "x '*^' n" := (popr n x) : positive_scope.
-Notation "x '*^' n" := (nopr n x) : N_scope.
-Notation "x '*^' n" := (zopr n x) : Z_scope.
+Notation "x '^' n" := (popr n x) : positive_scope.
+Notation "x '^' n" := (nopr n x) : N_scope.
+Notation "x '^' n" := (zopr n x) : Z_scope.
 
 End MultiplicativeNotations.

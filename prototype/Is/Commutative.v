@@ -1,4 +1,4 @@
-From Maniunfold.Has Require Import EquivalenceRelation Operation.
+From Maniunfold.Has Require Import EquivalenceRelation GroupOperation.
 From Maniunfold.Is Require Import Setoid.
 
 Import AdditiveNotations.

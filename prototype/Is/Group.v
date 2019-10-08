@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Import EquivalenceRelation
-  Operation Identity Inverse.
+  GroupOperation GroupIdentity GroupInverse.
 From Maniunfold.Is Require Import Setoid Monoid LeftInverse RightInverse.
 
 Import AdditiveNotations.
