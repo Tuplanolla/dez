@@ -15,6 +15,8 @@ all the predicative classes must be coercible fields.
 Operative classes are prefixed with `Has` and predicative classes with `Is`.
 Operations themselves are abbreviated to less than six characters,
 while predicates are never abbreviated.
+Some name options for derived operations and theorems are
+`Does`, `Might`, `Ought`, `Shall`, `Was` and `Would`.
 
 Definitions and instances for a type are prefixed with its name.
 For example, we would have `Instance t_magic_lamp : MagicLamp t`.
