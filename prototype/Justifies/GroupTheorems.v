@@ -1,7 +1,6 @@
 From Maniunfold.Has Require Import EquivalenceRelation
   GroupOperation GroupIdentity GroupInverse.
-From Maniunfold.Is Require Import Associative LeftIdentity RightIdentity
-  LeftInverse RightInverse Group.
+From Maniunfold.Is Require Import Associative Identity Inverse Group.
 
 Import AdditiveNotations.
 
