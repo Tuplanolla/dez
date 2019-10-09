@@ -3,8 +3,8 @@ From Maniunfold.Has Require Import EquivalenceRelation OrderRelation
   GroupOperation GroupIdentity GroupInverse
   FieldOperations FieldIdentities FieldInverses.
 From Maniunfold.Is Require Import Reflexive Symmetric Transitive
-  Antisymmetric Connex Associative Commutative Identity Inverse Distributive
-  Setoid PartialOrder TotalOrder
+  Antisymmetric Connex Associative Commutative Identifiable Invertible
+  Distributive Setoid PartialOrder TotalOrder
   Semigroup Monoid CommutativeMonoid Group AbelianGroup Semiring Ring.
 
 Module Equivalence.
@@ -52,13 +52,13 @@ Instance Z_is_semigroup : IsSemigroup Z := {}.
 
 Instance Z_has_idn : HasIdn Z := 0%Z.
 
-Instance Z_is_left_identity : IsLeftIdentity Z := {}.
+Instance Z_is_left_identifiable : IsLeftIdentifiable Z := {}.
 Proof. intros x. apply Z.add_0_l. Qed.
 
-Instance Z_is_right_identity : IsRightIdentity Z := {}.
+Instance Z_is_right_identifiable : IsRightIdentifiable Z := {}.
 Proof. intros x. apply Z.add_0_r. Qed.
 
-Instance Z_is_identity : IsIdentity Z := {}.
+Instance Z_is_identifiable : IsIdentifiable Z := {}.
 
 Instance Z_is_monoid : IsMonoid Z := {}.
 
@@ -69,13 +69,13 @@ Instance Z_is_commutative_monoid : IsCommutativeMonoid Z := {}.
 
 Instance Z_has_inv : HasInv Z := fun x : Z => (- x)%Z.
 
-Instance Z_is_left_inverse : IsLeftInverse Z := {}.
+Instance Z_is_left_invertible : IsLeftInvertible Z := {}.
 Proof. intros x. apply Z.add_opp_diag_l. Qed.
 
-Instance Z_is_right_inverse : IsRightInverse Z := {}.
+Instance Z_is_right_invertible : IsRightInvertible Z := {}.
 Proof. intros x. apply Z.add_opp_diag_r. Qed.
 
-Instance Z_is_inverse : IsInverse Z := {}.
+Instance Z_is_invertible : IsInvertible Z := {}.
 
 Instance Z_is_group : IsGroup Z := {}.
 
@@ -94,13 +94,13 @@ Instance Z_is_semigroup : IsSemigroup Z := {}.
 
 Instance Z_has_idn : HasIdn Z := 1%Z.
 
-Instance Z_is_left_identity : IsLeftIdentity Z := {}.
+Instance Z_is_left_identifiable : IsLeftIdentifiable Z := {}.
 Proof. intros x. apply Z.mul_1_l. Qed.
 
-Instance Z_is_right_identity : IsRightIdentity Z := {}.
+Instance Z_is_right_identifiable : IsRightIdentifiable Z := {}.
 Proof. intros x. apply Z.mul_1_r. Qed.
 
-Instance Z_is_identity : IsIdentity Z := {}.
+Instance Z_is_identifiable : IsIdentifiable Z := {}.
 
 Instance Z_is_monoid : IsMonoid Z := {}.
 

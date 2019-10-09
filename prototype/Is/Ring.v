@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Import EquivalenceRelation
   GroupOperation GroupIdentity GroupInverse
   FieldOperations FieldIdentities FieldInverses.
-From Maniunfold.Is Require Import Semiring Identity Inverse Involutive
+From Maniunfold.Is Require Import Semiring Identifiable Invertible Involutive
   Distributive Antidistributive Transitive Absorbing
   Setoid Semigroup Monoid Group AbelianGroup.
 
@@ -28,30 +28,30 @@ Proof.
 
 (** TODO Clean up these projection chains. *)
 
-Instance add_is_identity {A : Type} `{is_ring : IsRing A} :
-  IsIdentity A (has_opr := has_add) (has_idn := has_zero) :=
-  Monoid.opr_is_identity (IsMonoid := opr_is_monoid
+Instance add_is_identifiable {A : Type} `{is_ring : IsRing A} :
+  IsIdentifiable A (has_opr := has_add) (has_idn := has_zero) :=
+  Monoid.opr_is_identifiable (IsMonoid := opr_is_monoid
     (IsGroup := opr_is_group (IsAbelianGroup := add_is_abelian_group))).
 
-Instance add_is_left_identity {A : Type} `{is_ring : IsRing A} :
-  IsLeftIdentity A (has_opr := has_add) (has_idn := has_zero) :=
-  opr_is_left_identity (has_opr := has_add) (has_idn := has_zero).
+Instance add_is_left_identifiable {A : Type} `{is_ring : IsRing A} :
+  IsLeftIdentifiable A (has_opr := has_add) (has_idn := has_zero) :=
+  opr_is_left_identifiable (has_opr := has_add) (has_idn := has_zero).
 
-Instance add_is_right_identity {A : Type} `{is_ring : IsRing A} :
-  IsRightIdentity A (has_opr := has_add) (has_idn := has_zero) :=
-  opr_is_right_identity (has_opr := has_add) (has_idn := has_zero).
+Instance add_is_right_identifiable {A : Type} `{is_ring : IsRing A} :
+  IsRightIdentifiable A (has_opr := has_add) (has_idn := has_zero) :=
+  opr_is_right_identifiable (has_opr := has_add) (has_idn := has_zero).
 
-Instance mul_is_identity {A : Type} `{is_ring : IsRing A} :
-  IsIdentity A (has_opr := has_mul) (has_idn := has_one) :=
-  Monoid.opr_is_identity (has_opr := has_mul) (has_idn := has_one).
+Instance mul_is_identifiable {A : Type} `{is_ring : IsRing A} :
+  IsIdentifiable A (has_opr := has_mul) (has_idn := has_one) :=
+  Monoid.opr_is_identifiable (has_opr := has_mul) (has_idn := has_one).
 
-Instance mul_is_left_identity {A : Type} `{is_ring : IsRing A} :
-  IsLeftIdentity A (has_opr := has_mul) (has_idn := has_one) :=
-  opr_is_left_identity (has_opr := has_mul) (has_idn := has_one).
+Instance mul_is_left_identifiable {A : Type} `{is_ring : IsRing A} :
+  IsLeftIdentifiable A (has_opr := has_mul) (has_idn := has_one) :=
+  opr_is_left_identifiable (has_opr := has_mul) (has_idn := has_one).
 
-Instance mul_is_right_identity {A : Type} `{is_ring : IsRing A} :
-  IsRightIdentity A (has_opr := has_mul) (has_idn := has_one) :=
-  opr_is_right_identity (has_opr := has_mul) (has_idn := has_one).
+Instance mul_is_right_identifiable {A : Type} `{is_ring : IsRing A} :
+  IsRightIdentifiable A (has_opr := has_mul) (has_idn := has_one) :=
+  opr_is_right_identifiable (has_opr := has_mul) (has_idn := has_one).
 
 Instance neg_is_involutive {A : Type} `{is_ring : IsRing A} :
   IsInvolutive A (has_inv := has_neg) :=
@@ -81,21 +81,21 @@ Instance neg_add_is_antidistributive {A : Type} `{is_ring : IsRing A} :
 
 (** TODO Find a way to avoid explicitly lifting these. *)
 
-Theorem add_left_identity : forall {A : Type} `{is_ring : IsRing A},
+Theorem add_left_identifiable : forall {A : Type} `{is_ring : IsRing A},
   forall x : A, 0 + x == x.
-Proof. intros A ? ? ? ? ? ? ?. apply add_is_left_identity. Qed.
+Proof. intros A ? ? ? ? ? ? ?. apply add_is_left_identifiable. Qed.
 
-Theorem add_right_identity : forall {A : Type} `{is_ring : IsRing A},
+Theorem add_right_identifiable : forall {A : Type} `{is_ring : IsRing A},
   forall x : A, x + 0 == x.
-Proof. intros A ? ? ? ? ? ? ?. apply add_is_right_identity. Qed.
+Proof. intros A ? ? ? ? ? ? ?. apply add_is_right_identifiable. Qed.
 
-Theorem mul_left_identity : forall {A : Type} `{is_ring : IsRing A},
+Theorem mul_left_identifiable : forall {A : Type} `{is_ring : IsRing A},
   forall x : A, 1 * x == x.
-Proof. intros A ? ? ? ? ? ? ?. apply mul_is_left_identity. Qed.
+Proof. intros A ? ? ? ? ? ? ?. apply mul_is_left_identifiable. Qed.
 
-Theorem mul_right_identity : forall {A : Type} `{is_ring : IsRing A},
+Theorem mul_right_identifiable : forall {A : Type} `{is_ring : IsRing A},
   forall x : A, x * 1 == x.
-Proof. intros A ? ? ? ? ? ? ?. apply mul_is_right_identity. Qed.
+Proof. intros A ? ? ? ? ? ? ?. apply mul_is_right_identifiable. Qed.
 
 Theorem neg_involutive : forall {A : Type} `{is_ring : IsRing A},
   forall x : A, - (- x) == x.
@@ -108,20 +108,20 @@ Theorem zero_left_absorbing : forall {A : Type} `{is_ring : IsRing A},
 Proof.
   intros A ? ? ? ? ? ? ? x.
   apply (add_right_injective (0 * x) 0 x).
-  rewrite <- (mul_left_identity x) at 2.
+  rewrite <- (mul_left_identifiable x) at 2.
   rewrite <- (mul_add_right_distributive 0 1 x).
-  rewrite (add_left_identity 1). rewrite (add_left_identity x).
-  rewrite (mul_left_identity x). reflexivity. Qed.
+  rewrite (add_left_identifiable 1). rewrite (add_left_identifiable x).
+  rewrite (mul_left_identifiable x). reflexivity. Qed.
 
 Theorem zero_right_absorbing : forall {A : Type} `{is_ring : IsRing A},
   forall x : A, x * 0 == 0.
 Proof.
   intros A ? ? ? ? ? ? ? x.
   apply (add_left_injective (x * 0) 0 x).
-  rewrite <- (mul_right_identity x) at 1.
+  rewrite <- (mul_right_identifiable x) at 1.
   rewrite <- (mul_add_left_distributive x 1 0).
-  rewrite (add_right_identity 1). rewrite (add_right_identity x).
-  rewrite (mul_right_identity x). reflexivity. Qed.
+  rewrite (add_right_identifiable 1). rewrite (add_right_identifiable x).
+  rewrite (mul_right_identifiable x). reflexivity. Qed.
 
 Instance zero_is_left_absorbing {A : Type} `{is_ring : IsRing A} :
   IsLeftAbsorbing A := {}.

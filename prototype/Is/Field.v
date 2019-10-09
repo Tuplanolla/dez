@@ -1,6 +1,6 @@
 From Maniunfold.Has Require Import EquivalenceRelation
   FieldOperations FieldIdentities FieldInverses.
-From Maniunfold.Is Require Import Setoid Ring Inverse.
+From Maniunfold.Is Require Import Setoid Ring Invertible.
 
 Class IsField (A : Type) {has_eqv : HasEqv A}
   {has_add : HasAdd A} {has_zero : HasZero A} {has_neg : HasNeg A}
@@ -8,7 +8,7 @@ Class IsField (A : Type) {has_eqv : HasEqv A}
   Prop := {
   recip_proper : recip ::> eqv ==> eqv;
   add_mul_is_ring :> IsRing A;
-  add_is_inverse :> IsInverse A
+  add_is_invertible :> IsInvertible A
     (has_opr := has_mul) (has_idn := has_one) (has_inv := has_recip);
 }.
 

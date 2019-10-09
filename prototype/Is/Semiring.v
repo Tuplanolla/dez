@@ -1,6 +1,6 @@
 From Maniunfold.Has Require Import Relation EquivalenceRelation
   FieldOperations FieldIdentities.
-From Maniunfold.Is Require Import Identity Distributive Transitive
+From Maniunfold.Is Require Import Identifiable Distributive Transitive
   Setoid Semigroup Monoid CommutativeMonoid.
 
 Class IsSemiring (A : Type) {has_eqv : HasEqv A}
