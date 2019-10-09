@@ -1,10 +1,16 @@
-From Maniunfold.Has Require Import FieldOperations.
+From Maniunfold.Has Require Import GroupOperation GroupIdentity
+  FieldOperations.
 
 Class HasZero (A : Type) : Type := zero : A.
 Class HasOne (A : Type) : Type := one : A.
 
 Notation "'0'" := zero : field_scope.
 Notation "'1'" := one : field_scope.
+
+Instance zero_has_idn {A : Type} {has_zero : HasZero A} : HasIdn A :=
+  zero (HasZero := has_zero).
+Instance one_has_idn {A : Type} {has_one : HasOne A} : HasIdn A :=
+  one (HasOne := has_one).
 
 (** Numeral notations do not work with type classes,
     so we need to construct them from additions.

@@ -4,7 +4,7 @@ From Coq Require Import ZArith.
 From Maniunfold.Has Require Import EquivalenceRelation
   GroupOperation GroupIdentity GroupInverse.
 From Maniunfold.Is Require Import Associative Setoid Semigroup Monoid Group.
-From Maniunfold.Justifies Require Import GroupTheorems IntegerPowers.
+From Maniunfold.Justifies Require Import IntegerPowers.
 
 Import Pos AdditiveNotations.
 
@@ -48,7 +48,7 @@ Theorem nopr_inv_distributive : forall {A : Type} `{is_group : IsGroup A},
 Proof.
   intros A ? ? ? ? ? n x.
   destruct n as [| p].
-  - cbv [nopr]. rewrite idn_inv_absorbing. reflexivity.
+  - cbv [nopr]. rewrite idn_inv. reflexivity.
   - cbv [nopr]. rewrite (popr_inv_distributive p x). reflexivity. Qed.
 
 Theorem zopr_inv_distributive : forall {A : Type} `{is_group : IsGroup A},
@@ -56,7 +56,7 @@ Theorem zopr_inv_distributive : forall {A : Type} `{is_group : IsGroup A},
 Proof.
   intros A ? ? ? ? ? n x.
   destruct n as [| p | p].
-  - cbv [zopr]. rewrite idn_inv_absorbing. reflexivity.
+  - cbv [zopr]. rewrite idn_inv. reflexivity.
   - cbv [zopr]. rewrite (popr_inv_distributive p x). reflexivity.
   - cbv [zopr]. rewrite (inv_involutive (p * x)%positive).
     rewrite (popr_inv_distributive p x).

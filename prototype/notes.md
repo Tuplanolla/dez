@@ -116,6 +116,11 @@ so I will ignore their advice and see what happens.
 > containing one component each,
 > which we will call operational type classes.
 
+Regarding inheritance between operational classes (major issue),
+Spitters and van der Weegen make no claims,
+but seem to use the concept in the implementation.
+I will also make use of operational class inheritance.
+
 Regarding the sharing of operational classes
 between different structures (minor issue),
 Spitters and van der Weegen make no claims,
