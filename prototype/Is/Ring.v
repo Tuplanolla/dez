@@ -11,73 +11,52 @@ Class IsRing (A : Type) {has_eqv : HasEqv A}
   add_mul_is_semiring :> IsSemiring A;
   add_is_abelian_group :> IsAbelianGroup A
     (has_opr := has_add) (has_idn := has_zero) (has_inv := has_neg);
-  mul_is_monoid :> IsMonoid A
-    (has_opr := has_mul) (has_idn := has_one);
+  mul_is_monoid :> IsMonoid A (has_opr := has_mul) (has_idn := has_one);
 }.
+
+Instance ring_is_group {A : Type} `{is_ring : IsRing A} :
+  IsGroup A (has_opr := has_add) (has_idn := has_zero) (has_inv := has_neg) :=
+  opr_is_group.
 
 Add Parametric Morphism {A : Type} `{is_ring : IsRing A} : neg
   with signature eqv ==> eqv
   as eqv_neg_morphism.
 Proof.
   intros x y p.
-  pose proof add_is_abelian_group as add_is_abelian_group.
-  pose proof opr_is_group as add_is_group.
-  pose proof inv_proper as neg_proper.
-  apply neg_proper; auto. Qed.
+  apply (inv_proper (has_opr := has_add)
+    (has_idn := has_zero) (has_inv := has_neg)); auto. Qed.
 
-(** TODO Find a way to avoid explicitly lifting these. *)
+(** TODO Clean up these projection chains. *)
 
-Theorem add_left_identity : forall {A : Type} `{is_ring : IsRing A},
-  forall x : A, 0 + x == x.
-Proof.
-  intros A ? ? ? ? ? ? ? x.
-  pose proof add_is_abelian_group as add_is_abelian_group.
-  pose proof opr_is_group as add_is_group.
-  pose proof opr_is_monoid as add_is_monoid.
-  pose proof opr_is_identity as add_is_identity.
-  pose proof opr_is_left_identity as add_is_left_identity.
-  apply opr_left_identity. Qed.
+Instance add_is_identity {A : Type} `{is_ring : IsRing A} :
+  IsIdentity A (has_opr := has_add) (has_idn := has_zero) :=
+  Monoid.opr_is_identity (IsMonoid := opr_is_monoid
+    (IsGroup := opr_is_group (IsAbelianGroup := add_is_abelian_group))).
 
-Theorem add_right_identity : forall {A : Type} `{is_ring : IsRing A},
-  forall x : A, x + 0 == x.
-Proof.
-  intros A ? ? ? ? ? ? ? x.
-  pose proof add_is_abelian_group as add_is_abelian_group.
-  pose proof opr_is_group as add_is_group.
-  pose proof opr_is_monoid as add_is_monoid.
-  pose proof opr_is_identity as add_is_identity.
-  pose proof opr_is_right_identity as add_is_right_identity.
-  apply opr_right_identity. Qed.
+Instance add_is_left_identity {A : Type} `{is_ring : IsRing A} :
+  IsLeftIdentity A (has_opr := has_add) (has_idn := has_zero) :=
+  opr_is_left_identity (has_opr := has_add) (has_idn := has_zero).
 
-Theorem mul_left_identity : forall {A : Type} `{is_ring : IsRing A},
-  forall x : A, 1 * x == x.
-Proof.
-  intros A ? ? ? ? ? ? ? x.
-  pose proof mul_is_monoid as mul_is_monoid.
-  pose proof Monoid.opr_is_identity as mul_is_identity.
-  pose proof opr_is_left_identity as mul_is_left_identity.
-  apply opr_left_identity. Qed.
+Instance add_is_right_identity {A : Type} `{is_ring : IsRing A} :
+  IsRightIdentity A (has_opr := has_add) (has_idn := has_zero) :=
+  opr_is_right_identity (has_opr := has_add) (has_idn := has_zero).
 
-Theorem mul_right_identity : forall {A : Type} `{is_ring : IsRing A},
-  forall x : A, x * 1 == x.
-Proof.
-  intros A ? ? ? ? ? ? ? x.
-  pose proof mul_is_monoid as mul_is_monoid.
-  pose proof Monoid.opr_is_identity as mul_is_identity.
-  pose proof opr_is_right_identity as mul_is_right_identity.
-  apply opr_right_identity. Qed.
+Instance mul_is_identity {A : Type} `{is_ring : IsRing A} :
+  IsIdentity A (has_opr := has_mul) (has_idn := has_one) :=
+  Monoid.opr_is_identity (has_opr := has_mul) (has_idn := has_one).
 
-Theorem neg_involutive : forall {A : Type} `{is_ring : IsRing A},
-  forall x : A, - (- x) == x.
-Proof.
-  intros A ? ? ? ? ? ? ? x.
-  pose proof add_is_abelian_group as add_is_abelian_group.
-  pose proof opr_is_group as add_is_group.
-  apply inv_involutive. Qed.
+Instance mul_is_left_identity {A : Type} `{is_ring : IsRing A} :
+  IsLeftIdentity A (has_opr := has_mul) (has_idn := has_one) :=
+  opr_is_left_identity (has_opr := has_mul) (has_idn := has_one).
+
+Instance mul_is_right_identity {A : Type} `{is_ring : IsRing A} :
+  IsRightIdentity A (has_opr := has_mul) (has_idn := has_one) :=
+  opr_is_right_identity (has_opr := has_mul) (has_idn := has_one).
 
 Instance neg_is_involutive {A : Type} `{is_ring : IsRing A} :
-  IsInvolutive A := {}.
-Proof. apply neg_involutive. Qed.
+  IsInvolutive A (has_inv := has_neg) :=
+  inv_is_involutive (is_group := opr_is_group
+    (IsAbelianGroup := add_is_abelian_group)).
 
 Lemma add_left_injective : forall {A : Type} `{is_ring : IsRing A},
   forall x y z : A, z + x == z + y -> x == y.
@@ -95,17 +74,32 @@ Proof.
   pose proof opr_is_group as add_is_group.
   apply opr_right_injective. Qed.
 
-Theorem neg_add_antidistributive : forall {A : Type} `{is_ring : IsRing A},
-  forall x y : A, - (x + y) == (- y) + (- x).
-Proof.
-  intros A ? ? ? ? ? ? ?.
-  pose proof add_is_abelian_group as add_is_abelian_group.
-  pose proof opr_is_group as add_is_group.
-  apply inv_opr_antidistributive. Qed.
-
 Instance neg_add_is_antidistributive {A : Type} `{is_ring : IsRing A} :
-  IsAntidistributive A (has_opr := has_add) (has_inv := has_neg) := {}.
-Proof. apply neg_add_antidistributive. Qed.
+  IsAntidistributive A (has_opr := has_add) (has_inv := has_neg) :=
+  inv_opr_is_antidistributive (is_group := opr_is_group
+    (IsAbelianGroup := add_is_abelian_group)).
+
+(** TODO Find a way to avoid explicitly lifting these. *)
+
+Theorem add_left_identity : forall {A : Type} `{is_ring : IsRing A},
+  forall x : A, 0 + x == x.
+Proof. intros A ? ? ? ? ? ? ?. apply add_is_left_identity. Qed.
+
+Theorem add_right_identity : forall {A : Type} `{is_ring : IsRing A},
+  forall x : A, x + 0 == x.
+Proof. intros A ? ? ? ? ? ? ?. apply add_is_right_identity. Qed.
+
+Theorem mul_left_identity : forall {A : Type} `{is_ring : IsRing A},
+  forall x : A, 1 * x == x.
+Proof. intros A ? ? ? ? ? ? ?. apply mul_is_left_identity. Qed.
+
+Theorem mul_right_identity : forall {A : Type} `{is_ring : IsRing A},
+  forall x : A, x * 1 == x.
+Proof. intros A ? ? ? ? ? ? ?. apply mul_is_right_identity. Qed.
+
+Theorem neg_involutive : forall {A : Type} `{is_ring : IsRing A},
+  forall x : A, - (- x) == x.
+Proof. intros A ? ? ? ? ? ? ?. apply neg_is_involutive. Qed.
 
 (** TODO Work out the rest. *)
 
