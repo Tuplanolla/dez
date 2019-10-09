@@ -3,7 +3,8 @@ Set Warnings "-notation-overridden".
 From Coq Require Import ZArith.
 From Maniunfold.Has Require Import EquivalenceRelation
   GroupOperation GroupIdentity GroupInverse.
-From Maniunfold.Is Require Import Associative Setoid Semigroup Monoid Group.
+From Maniunfold.Is Require Import Associative
+  Setoid Semigroup Monoid Group.
 From Maniunfold.Justifies Require Import IntegerPowers.
 
 Import Pos AdditiveNotations.
@@ -39,7 +40,7 @@ Proof.
   - reflexivity.
   - rewrite (iter_op_succ opr opr_associative p (- x)),
       (iter_op_succ opr opr_associative p x).
-    rewrite q. rewrite <- (opr_inv_distributive (iter_op opr p x) x).
+    rewrite q. rewrite <- (inv_opr_antidistributive (iter_op opr p x) x).
     rewrite (iter_op_comm opr opr_proper opr_associative p x).
     reflexivity. Qed.
 
