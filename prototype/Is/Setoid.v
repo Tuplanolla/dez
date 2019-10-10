@@ -1,4 +1,4 @@
-From Coq Require Import Basics Setoid Morphisms.
+From Coq Require Basics Setoid Morphisms.
 From Maniunfold.Has Require Import EquivalenceRelation.
 From Maniunfold.Is Require Import Reflexive Symmetric Transitive.
 
@@ -6,6 +6,8 @@ From Maniunfold.Is Require Import Reflexive Symmetric Transitive.
     to be compatible with the standard library setoid,
     because otherwise rewriting will not work. *)
 Export Basics Setoid Morphisms.
+
+Typeclasses Transparent compose arrow impl const flip apply.
 
 Module Export ProperNotations.
 
