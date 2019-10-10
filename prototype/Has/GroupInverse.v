@@ -6,6 +6,8 @@ Open Scope group_scope.
 
 Class HasInv (A : Type) : Type := inv : A -> A.
 
+Typeclasses Transparent HasInv.
+
 Module AdditiveNotations.
 
 Export GroupIdentity.AdditiveNotations.

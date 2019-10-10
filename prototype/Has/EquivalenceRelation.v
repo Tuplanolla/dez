@@ -8,6 +8,8 @@ Open Scope equivalence_relation_scope.
     because it is reserved for propositional equality. *)
 Class HasEqv (A : Type) : Type := eqv : A -> A -> Prop.
 
+Typeclasses Transparent HasEqv.
+
 Reserved Notation "x '==' y" (at level 70, no associativity).
 Notation "x '==' y" := (eqv x y) : equivalence_relation_scope.
 

@@ -8,6 +8,8 @@ Open Scope group_scope.
     because it is reserved for identity morphisms. *)
 Class HasIdn (A : Type) : Type := idn : A.
 
+Typeclasses Transparent HasIdn.
+
 Module AdditiveNotations.
 
 Export GroupOperation.AdditiveNotations.

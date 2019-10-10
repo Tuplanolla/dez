@@ -16,20 +16,9 @@ Class IsSemiring (A : Type) {has_eqv : HasEqv A}
 Add Parametric Morphism {A : Type} `{is_semiring : IsSemiring A} : add
   with signature eqv ==> eqv ==> eqv
   as eqv_add_morphism.
-Proof.
-  intros x y p z w q.
-  pose proof add_is_commutative_monoid as add_is_commutative_monoid.
-  pose proof opr_is_monoid as add_is_monoid.
-  pose proof opr_is_semigroup as add_is_semigroup.
-  pose proof opr_proper as add_proper.
-  apply add_proper; auto. Qed.
+Proof. intros x y p z w q. apply opr_proper; auto. Qed.
 
 Add Parametric Morphism {A : Type} `{is_semiring : IsSemiring A} : mul
   with signature eqv ==> eqv ==> eqv
   as eqv_mul_morphism.
-Proof.
-  intros x y p z w q.
-  pose proof mul_is_monoid as mul_is_monoid.
-  pose proof opr_is_semigroup as mul_is_semigroup.
-  pose proof opr_proper as mul_proper.
-  apply mul_proper; auto. Qed.
+Proof. intros x y p z w q. apply opr_proper; auto. Qed.

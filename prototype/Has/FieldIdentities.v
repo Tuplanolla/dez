@@ -4,6 +4,8 @@ From Maniunfold.Has Require Import GroupOperation GroupIdentity
 Class HasZero (A : Type) : Type := zero : A.
 Class HasOne (A : Type) : Type := one : A.
 
+Typeclasses Transparent HasZero HasOne.
+
 Notation "'0'" := zero : field_scope.
 Notation "'1'" := one : field_scope.
 

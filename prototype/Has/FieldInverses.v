@@ -4,6 +4,8 @@ From Maniunfold.Has Require Import GroupOperation GroupIdentity GroupInverse
 Class HasNeg (A : Type) : Type := neg : A -> A.
 Class HasRecip (A : Type) : Type := recip : A -> A.
 
+Typeclasses Transparent HasNeg HasRecip.
+
 Notation "'-' x" := (neg x) : field_scope.
 Notation "x '-' y" := (add x (neg y)) : field_scope.
 Notation "'/' x" := (recip x) : field_scope.

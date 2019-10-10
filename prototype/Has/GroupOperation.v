@@ -6,6 +6,8 @@ Open Scope group_scope.
     because it is reserved for dual morphisms. *)
 Class HasOpr (A : Type) : Type := opr : A -> A -> A.
 
+Typeclasses Transparent HasOpr.
+
 Module AdditiveNotations.
 
 Notation "x '+' y" := (opr x y) : group_scope.

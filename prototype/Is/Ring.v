@@ -14,17 +14,10 @@ Class IsRing (A : Type) {has_eqv : HasEqv A}
   mul_is_monoid :> IsMonoid A (has_opr := has_mul) (has_idn := has_one);
 }.
 
-Instance ring_is_group {A : Type} `{is_ring : IsRing A} :
-  IsGroup A (has_opr := has_add) (has_idn := has_zero) (has_inv := has_neg) :=
-  opr_is_group.
-
 Add Parametric Morphism {A : Type} `{is_ring : IsRing A} : neg
   with signature eqv ==> eqv
   as eqv_neg_morphism.
-Proof.
-  intros x y p.
-  apply (inv_proper (has_opr := has_add)
-    (has_idn := has_zero) (has_inv := has_neg)); auto. Qed.
+Proof. intros x y p. apply inv_proper; auto. Qed.
 
 (** TODO Clean up these projection chains. *)
 
@@ -107,21 +100,25 @@ Theorem zero_left_absorbing : forall {A : Type} `{is_ring : IsRing A},
   forall x : A, 0 * x == 0.
 Proof.
   intros A ? ? ? ? ? ? ? x.
-  apply (add_right_injective (0 * x) 0 x).
-  rewrite <- (mul_left_identifiable x) at 2.
+  apply (opr_right_injective (0 * x) 0 x).
+  replace opr with add by reflexivity.
+  rewrite <- (opr_left_identifiable x) at 2.
+  assert (0 * x + 1 * x == 0 + x); auto.
   rewrite <- (mul_add_right_distributive 0 1 x).
-  rewrite (add_left_identifiable 1). rewrite (add_left_identifiable x).
-  rewrite (mul_left_identifiable x). reflexivity. Qed.
+  rewrite (opr_left_identifiable 1). rewrite (opr_left_identifiable x).
+  rewrite (opr_left_identifiable x). reflexivity. Qed.
 
 Theorem zero_right_absorbing : forall {A : Type} `{is_ring : IsRing A},
   forall x : A, x * 0 == 0.
 Proof.
   intros A ? ? ? ? ? ? ? x.
-  apply (add_left_injective (x * 0) 0 x).
-  rewrite <- (mul_right_identifiable x) at 1.
+  apply (opr_left_injective (x * 0) 0 x).
+  assert (x + x * 0 == x + 0); auto.
+  rewrite <- (opr_right_identifiable x) at 1.
+  assert (x * 1 + x * 0 == x + 0); auto.
   rewrite <- (mul_add_left_distributive x 1 0).
-  rewrite (add_right_identifiable 1). rewrite (add_right_identifiable x).
-  rewrite (mul_right_identifiable x). reflexivity. Qed.
+  rewrite (opr_right_identifiable 1). rewrite (opr_right_identifiable x).
+  rewrite (opr_right_identifiable x). reflexivity. Qed.
 
 Instance zero_is_left_absorbing {A : Type} `{is_ring : IsRing A} :
   IsLeftAbsorbing A := {}.
