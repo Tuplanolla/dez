@@ -6,16 +6,42 @@ These informal notes complement some papers and implementations.
 
 ### Coherence Conditions
 
-When defining classes,
-all the operational classes must be constraints and
-all the predicative classes must be coercible fields.
+When defining operational classes,
+they must be marked transparent.
+
+When defining predicative classes,
+all the operational classes must be constraints,
+all the predicative classes should be coercion or instance fields and
+all the other things, including propositions and
+properness conditions, should be ordinary fields.
+
+### Implicit Generalization
+
+When defining classes, implicit generalization must not be used.
+When declaring parametric relations or morphisms or proving theorems,
+implicit generalization should be used.
+
+### Imports and Exports
+
+When defining operational classes,
+all the constraining operational classes must be exported.
+However, it is not necessary to export superclasses,
+such as `Relation` with respect to `OrderRelation`.
+
+When defining predicative classes,
+all the constraining operational classes and
+constituent predicate classes must be exported.
+However, it is not necessary to export nonconstituent predicate classes,
+such as `IsSetoid` with respect to `IsGroup`.
 
 ### Naming Conventions
 
 Operative classes are prefixed with `Has` and predicative classes with `Is`.
 Operations themselves are abbreviated to less than six characters,
 while predicates are never abbreviated.
-Some name options for derived operations and theorems are
+
+Derived operations and theorems need not be prefixed,
+although some options would be
 the modal verbs `Can`, `Could`, (`Has`, `Is`),
 `May`, `Might`, `Must`, `Ought`, `Shall`, `Should`, `Will` and `Would` and
 the other verbs `Contains`, `Does`, `Entails`, `Gives`, `Goes`, (`Has`, `Is`),
@@ -26,22 +52,20 @@ the other verbs `Contains`, `Does`, `Entails`, `Gives`, `Goes`, (`Has`, `Is`),
 `Raises`, `Reassures`, `Refines`, `Reflects`, `Represents`, `Resolves`,
 `Says`, `Serves`, `Supports` and `Was`.
 
+Coercion or instance fields contain the verb `is`, while plain fields do not.
+For example, we would have `opr_is_associative : IsAssociative A` and
+`opr_associative : forall x y z : A, x + (y + z) == (x + y) + z`.
+
 Definitions and instances for a type are prefixed with its name.
 For example, we would have `Instance t_magic_lamp : MagicLamp t`.
 
-Coercible fields contain the verb `is`, while plain fields do not.
-For example, we would have `opr_is_associative : IsAssociative A` or
-`opr_associative : forall x y z : A, x + (y + z) == (x + y) + z`.
+Fields are prefixed with the most prominent subject.
+For example, we would have
+`add_left_invertible : forall x : A, (- x) + x == 0` and
+`mul_left_invertible : forall x : A, (/ x) * x == 1`.
 
 Parametric relations and morphisms
 have the suffixes `relation` and `morphism` respectively.
-
-### Implicit Generalization
-
-When defining classes, implicit generalization must not be used.
-When declaring parametric relations or morphisms,
-implicit generalization should be used.
-When defining theorems, implicit generalization may be used.
 
 ## Type Classes for Mathematics in Type Theory by Spitters and van der Weegen
 
