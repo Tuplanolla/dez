@@ -1,6 +1,7 @@
-From Maniunfold.Has Require Import EquivalenceRelation
-  GroupOperation GroupIdentity.
-From Maniunfold.Is Require Export LeftIdentifiable RightIdentifiable.
+From Maniunfold.Has Require Export
+  EquivalenceRelation GroupOperation GroupIdentity.
+From Maniunfold.Is Require Export
+  LeftIdentifiable RightIdentifiable.
 
 Import AdditiveNotations.
 

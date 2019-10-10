@@ -1,6 +1,8 @@
 From Coq Require Basics Setoid Morphisms.
-From Maniunfold.Has Require Export EquivalenceRelation.
-From Maniunfold.Is Require Export Reflexive Symmetric Transitive.
+From Maniunfold.Has Require Export
+  EquivalenceRelation.
+From Maniunfold.Is Require Export
+  Reflexive Symmetric Transitive.
 
 (** We need to perform this song and dance
     to be compatible with the standard library setoid,

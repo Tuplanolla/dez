@@ -1,6 +1,7 @@
-From Maniunfold.Has Require Import EquivalenceRelation
-  GroupOperation GroupInverse.
-From Maniunfold.Is Require Import Setoid.
+From Maniunfold.Has Require Export
+  EquivalenceRelation GroupOperation GroupInverse.
+From Maniunfold.Is Require Export
+  Setoid.
 
 Import AdditiveNotations.
 

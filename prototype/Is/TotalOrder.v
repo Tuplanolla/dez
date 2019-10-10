@@ -1,6 +1,9 @@
-From Maniunfold.Has Require Import Relation EquivalenceRelation OrderRelation.
-From Maniunfold.Is Require Import Reflexive Antisymmetric Transitive Connex
-  Setoid PartialOrder.
+From Maniunfold.Has Require Export
+  EquivalenceRelation OrderRelation.
+From Maniunfold.Is Require Export
+  Antisymmetric Transitive Connex.
+From Maniunfold.Is Require Import
+  PartialOrder.
 
 (** TODO This definition causes slow type checking; investigate. *)
 

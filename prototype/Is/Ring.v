@@ -1,9 +1,9 @@
-From Maniunfold.Has Require Import EquivalenceRelation
-  GroupOperation GroupIdentity GroupInverse
-  FieldOperations FieldIdentities FieldInverses.
-From Maniunfold.Is Require Import Semiring Identifiable Invertible Involutive
-  Distributive Antidistributive Transitive Absorbing
-  Setoid Semigroup Monoid Group AbelianGroup.
+From Maniunfold.Has Require Export
+  EquivalenceRelation FieldOperations FieldIdentities FieldInverses.
+From Maniunfold.Is Require Export
+  Semiring AbelianGroup Monoid.
+From Maniunfold.Is Require Import
+  LeftAbsorbing RightAbsorbing Absorbing.
 
 Class IsRing (A : Type) {has_eqv : HasEqv A}
   {has_add : HasAdd A} {has_zero : HasZero A} {has_neg : HasNeg A}

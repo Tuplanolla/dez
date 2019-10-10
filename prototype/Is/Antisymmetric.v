@@ -1,5 +1,7 @@
-From Maniunfold.Has Require Import Relation EquivalenceRelation.
-From Maniunfold.Is Require Import Setoid.
+From Maniunfold.Has Require Export
+  EquivalenceRelation Relation.
+From Maniunfold.Is Require Export
+  Setoid.
 
 Class IsAntisymmetric (A : Type)
   {has_eqv : HasEqv A} {has_rel : HasRel A} : Prop := {

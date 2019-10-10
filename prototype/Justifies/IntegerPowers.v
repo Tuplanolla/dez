@@ -1,8 +1,8 @@
 Set Warnings "-notation-overridden".
 
 From Coq Require Import ZArith.
-From Maniunfold.Has Require Import GroupOperation GroupIdentity GroupInverse.
-From Maniunfold.Is Require Import Semigroup Monoid Group.
+From Maniunfold.Is Require Import
+  Group.
 
 Import Pos.
 

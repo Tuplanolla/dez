@@ -1,5 +1,7 @@
-From Maniunfold.Has Require Import EquivalenceRelation FieldOperations.
-From Maniunfold.Is Require Import Setoid.
+From Maniunfold.Has Require Export
+  EquivalenceRelation FieldOperations.
+From Maniunfold.Is Require Export
+  Setoid.
 
 Class IsRightDistributive (A : Type) {has_eqv : HasEqv A}
   {has_add : HasAdd A} {has_mul : HasMul A} : Prop := {

@@ -1,6 +1,7 @@
-From Maniunfold.Has Require Import EquivalenceRelation
-  GroupOperation GroupIdentity GroupInverse.
-From Maniunfold.Is Require Export LeftInvertible RightInvertible.
+From Maniunfold.Has Require Export
+  EquivalenceRelation GroupOperation GroupIdentity GroupInverse.
+From Maniunfold.Is Require Export
+  LeftInvertible RightInvertible.
 
 Import AdditiveNotations.
 

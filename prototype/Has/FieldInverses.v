@@ -1,5 +1,5 @@
-From Maniunfold.Has Require Import GroupOperation GroupIdentity GroupInverse
-  FieldOperations FieldIdentities.
+From Maniunfold.Has Require Import
+  GroupOperation GroupIdentity GroupInverse FieldOperations FieldIdentities.
 
 Class HasNeg (A : Type) : Type := neg : A -> A.
 Class HasRecip (A : Type) : Type := recip : A -> A.

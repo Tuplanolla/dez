@@ -1,11 +1,10 @@
 Set Warnings "-notation-overridden".
 
 From Coq Require Import ZArith.
-From Maniunfold.Has Require Import EquivalenceRelation
-  GroupOperation GroupIdentity GroupInverse.
-From Maniunfold.Is Require Import Associative
-  Setoid Semigroup Monoid Group.
-From Maniunfold.Justifies Require Import IntegerPowers.
+From Maniunfold.Is Require Import
+  Group.
+From Maniunfold.Justifies Require Import
+  IntegerPowers.
 
 Import Pos AdditiveNotations.
 

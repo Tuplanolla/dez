@@ -1,4 +1,5 @@
-From Maniunfold.Has Require Import GroupOperation.
+From Maniunfold.Has Require Import
+  GroupOperation.
 
 Delimit Scope field_scope with field.
 

@@ -1,11 +1,6 @@
 From Coq Require Import ZArith.
-From Maniunfold.Has Require Import EquivalenceRelation OrderRelation
-  GroupOperation GroupIdentity GroupInverse
-  FieldOperations FieldIdentities FieldInverses.
-From Maniunfold.Is Require Import Reflexive Symmetric Transitive
-  Antisymmetric Connex Associative Commutative Identifiable Invertible
-  Distributive Setoid PartialOrder TotalOrder
-  Semigroup Monoid CommutativeMonoid Group AbelianGroup Semiring Ring.
+From Maniunfold.Is Require Import
+  TotalOrder Ring.
 
 Module Equivalence.
 

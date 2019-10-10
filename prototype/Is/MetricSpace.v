@@ -1,8 +1,7 @@
-From Maniunfold.Has Require Import EquivalenceRelation OrderRelation Distance
-  GroupOperation GroupIdentity GroupInverse.
-From Maniunfold.Is Require Import Associative Identifiable
-  Invertible Commutative
-  Setoid PartialOrder TotalOrder CommutativeMonoid.
+From Maniunfold.Has Require Export
+  EquivalenceRelation OrderRelation GroupOperation GroupIdentity Distance.
+From Maniunfold.Is Require Export
+  TotalOrder CommutativeMonoid.
 
 Import AdditiveNotations.
 

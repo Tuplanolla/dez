@@ -1,7 +1,9 @@
-From Maniunfold.Has Require Import EquivalenceRelation
-  GroupOperation GroupIdentity GroupInverse.
-From Maniunfold.Is Require Import Associative Identifiable Invertible Involutive
-  Antidistributive Setoid Monoid.
+From Maniunfold.Has Require Export
+  EquivalenceRelation GroupOperation GroupIdentity GroupInverse.
+From Maniunfold.Is Require Export
+  Monoid Invertible.
+From Maniunfold.Is Require Import
+  Involutive Antidistributive.
 
 Import AdditiveNotations.
 

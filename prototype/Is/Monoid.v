@@ -1,6 +1,7 @@
-From Maniunfold.Has Require Import EquivalenceRelation
-  GroupOperation GroupIdentity.
-From Maniunfold.Is Require Import Semigroup Identifiable.
+From Maniunfold.Has Require Export
+  EquivalenceRelation GroupOperation GroupIdentity.
+From Maniunfold.Is Require Export
+  Semigroup Identifiable.
 
 Class IsMonoid (A : Type)
   {has_eqv : HasEqv A} {has_opr : HasOpr A} {has_idn : HasIdn A} : Prop := {
