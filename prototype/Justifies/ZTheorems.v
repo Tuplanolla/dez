@@ -1,6 +1,6 @@
 From Coq Require Import ZArith.
 From Maniunfold.Is Require Import
-  TotalOrder Ring.
+  TotalOrder Ring MonoidHomomorphism.
 
 Module Equivalence.
 
@@ -125,3 +125,24 @@ Instance Z_is_semiring : IsSemiring Z := {}.
 Instance Z_has_neg : HasNeg Z := inv.
 
 Instance Z_is_ring : IsRing Z := {}.
+
+(** TODO This is actually only true for nonnegative [Z],
+    but let us pretend this is true for all [Z]
+    until [N] gets its own treatment. *)
+
+Instance Z_has_hom : HasHom Z Z := fun x : Z => (2 ^ x)%Z.
+
+Instance Z_is_setoid_homomorphism : IsSetoidHomomorphism Z Z := {}.
+
+Instance Z_is_semigroup_homomorphism : IsSemigroupHomomorphism Z Z
+  (A_has_opr := add) (B_has_opr := mul) := {}.
+Proof.
+  intros x y. cbv [opr hom Z_has_hom].
+  repeat rewrite <- two_p_equiv. apply two_p_is_exp.
+  - assert (0 <= x)%Z by admit; auto.
+  - assert (0 <= y)%Z by admit; auto. Admitted.
+
+Instance Z_is_monoid_homomorphism : IsMonoidHomomorphism Z Z
+  (A_has_opr := add) (A_has_idn := zero)
+  (B_has_opr := mul) (B_has_idn := one) := {}.
+Proof. cbv [idn]. reflexivity. Qed.
