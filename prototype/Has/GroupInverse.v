@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Import
-  GroupOperation GroupIdentity.
+  Endomorphism GroupOperation GroupIdentity.
 
 Delimit Scope group_scope with group.
 
@@ -26,3 +26,5 @@ Notation "'/' x" := (inv x) : group_scope.
 Notation "x '/' y" := (opr x (inv y)) : group_scope.
 
 End MultiplicativeNotations.
+
+Instance inv_has_endo {A : Type} {has_inv : HasInv A} : HasEndo A := inv.

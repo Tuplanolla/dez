@@ -122,7 +122,7 @@ Instance Z_is_distributive : IsDistributive Z := {}.
 
 Instance Z_is_semiring : IsSemiring Z := {}.
 
-Instance Z_has_neg : HasNeg Z := inv.
+Instance Z_has_neg : HasNeg Z := inv (HasInv := Additive.Z_has_inv).
 
 Instance Z_is_ring : IsRing Z := {}.
 

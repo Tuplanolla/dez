@@ -1,12 +1,10 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation GroupOperation GroupInverse.
+  EquivalenceRelation Endomorphism.
 From Maniunfold.Is Require Export
   Setoid.
 
-Import AdditiveNotations.
-
 Class IsInvolutive (A : Type)
-  {has_eqv : HasEqv A} {has_inv : HasInv A} : Prop := {
+  {has_eqv : HasEqv A} {has_endo : HasEndo A} : Prop := {
   eqv_is_setoid :> IsSetoid A;
-  inv_involutive : forall x : A, - (- x) == x;
+  inv_involutive : forall x : A, endo (endo x) == x;
 }.
