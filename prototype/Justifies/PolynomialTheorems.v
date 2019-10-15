@@ -1,49 +1,60 @@
-From Coq Require Import NArith.
+From Coq Require Import List NArith.
 From Maniunfold.Is Require Import
   Ring FinitelyEnumerable.
 From Maniunfold.Justifies Require Import
-  NTheorems FiniteTheorems.
+  OptionTheorems NTheorems FiniteTheorems.
+
+Import ListNotations.
+
+Inductive poly (A : Type) `{is_ring : IsRing A} : Type :=
+  | lift : forall xs : list A, ~ hd_error xs == Some 0 -> poly A.
 
 Section Suffering.
 
-(** TODO Use this nice thing more. *)
+Context {A : Type} `{is_ring : IsRing A}.
 
-Context {A : Type} `{is_setoid : IsSetoid A}.
+Global Instance poly_has_eqv : HasEqv (poly A) := fun xs ys : poly A =>
+  xs = ys.
 
-Global Instance list_has_eqv : HasEqv (list A) := fun xs ys : list A =>
-  List.Forall2 (fun x y : A => x == y) xs ys.
+Global Instance poly_is_reflexive : IsReflexive (poly A) := {}.
+Proof. intros xs. reflexivity. Qed.
 
-Global Instance list_is_reflexive : IsReflexive (list A) := {}.
+Global Instance poly_is_symmetric : IsSymmetric (poly A) := {}.
+Proof. intros xs ys H. symmetry; auto. Qed.
+
+Global Instance poly_is_transitive : IsTransitive (poly A) := {}.
+Proof. intros xs ys zs H0 H1. etransitivity; eauto. Qed.
+
+Global Instance poly_is_setoid : IsSetoid (poly A) := {}.
+
+Program Fixpoint poly_add (xs ys : poly A) : poly A :=
+  match xs, ys with
+  | lift _ xs _, lift _ ys _ =>
+    lift _ (map (fun p : A * A => add (fst p) (snd p)) (combine xs ys)) _
+  end.
+Next Obligation.
+  intros H. clear wildcard' wildcard'0.
+  induction xs as [| x xs IHxs]; destruct ys as [| y ys];
+    try (cbn in *; congruence). Admitted.
+
+Instance poly_has_add : HasAdd (poly A) :=
+  poly_add.
+
+Instance poly_has_zero : HasZero (poly A) :=
+  lift _ nil _.
+Proof. intros H. cbv in H. inversion H. Qed.
+
+Instance poly_has_neg : HasNeg (poly A) := {}.
 Proof. Admitted.
 
-Global Instance list_is_symmetric : IsSymmetric (list A) := {}.
+Instance poly_has_mul : HasMul (poly A) := {}.
 Proof. Admitted.
 
-Global Instance list_is_transitive : IsTransitive (list A) := {}.
+(** TODO In a trivial ring, we have [0 == 1] and his condition is unique. *)
+
+Instance poly_has_one : HasOne (poly A) :=
+  lift _ [one] _.
+Proof. cbn. intros H. idtac "uh oh". Admitted.
+
+Instance poly_is_ring : IsRing (poly A) := {}.
 Proof. Admitted.
-
-Global Instance list_is_setoid : IsSetoid (list A) := {}.
-
-End Suffering.
-
-Instance list_has_add {A : Type} `{is_ring : IsRing A} : HasAdd (list A) :=
-  fun xs ys : list A =>
-  List.map (fun p : A * A => add (fst p) (snd p)) (List.combine xs ys).
-
-Instance list_has_zero {A : Type} `{is_ring : IsRing A} : HasZero (list A) :=
-  nil.
-
-Instance list_has_neg {A : Type} `{is_ring : IsRing A} : HasNeg (list A) :=
-  fun xs : list A => List.map (fun x : A => neg x) xs.
-
-Instance list_has_mul {A : Type} `{is_ring : IsRing A} : HasMul (list A) :=
-  fun xs ys : list A =>
-  List.map (fun p : A * A => mul (fst p) (snd p)) (List.combine xs ys).
-
-(** TODO This is complete nonsense. *)
-
-Instance list_has_one {A : Type} `{is_ring : IsRing A} : HasOne (list A) :=
-  nil.
-
-Instance list_is_ring {A : Type} `{is_ring : IsRing A} : IsRing (list A) := {}.
-Proof. Abort.
