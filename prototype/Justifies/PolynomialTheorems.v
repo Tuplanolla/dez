@@ -1,19 +1,22 @@
-From Coq Require Import List NArith.
+From Coq Require Import
+  List NArith.
 From Maniunfold.Is Require Import
-  Ring FinitelyEnumerable.
+  NontrivialRing FinitelyEnumerable.
 From Maniunfold.Justifies Require Import
-  OptionTheorems NTheorems FiniteTheorems.
-
-(** TODO This whole thing is total and complete nonsense. *)
+  OptionTheorems ZTheorems FiniteTheorems.
 
 Import ListNotations.
 
-Inductive poly (A : Type) `{is_ring : IsRing A} : Type :=
-  | lift : forall xs : list A, ~ hd_error xs == Some 0 -> poly A.
+(** TODO This representation is garbage. *)
+
+Inductive poly {A : Type} `{is_nontrivial_ring : IsNontrivialRing A} : Type :=
+  | poly_list (xs : list A) (H : hd_error xs =/= Some 0) : poly.
+
+Arguments poly _ {_ _ _ _ _ _ _}.
 
 Section Suffering.
 
-Context {A : Type} `{is_ring : IsRing A}.
+Context {A : Type} `{is_nontrivial_ring : IsNontrivialRing A}.
 
 Global Instance poly_has_eqv : HasEqv (poly A) := fun xs ys : poly A =>
   xs = ys.
@@ -25,26 +28,26 @@ Global Instance poly_is_symmetric : IsSymmetric (poly A) := {}.
 Proof. intros xs ys H. symmetry; auto. Qed.
 
 Global Instance poly_is_transitive : IsTransitive (poly A) := {}.
-Proof. intros xs ys zs H0 H1. etransitivity; eauto. Qed.
+Proof. intros xs ys zs Hxy Hyz. etransitivity; eauto. Qed.
 
 Global Instance poly_is_setoid : IsSetoid (poly A) := {}.
 
-Program Fixpoint poly_add (xs ys : poly A) : poly A :=
-  match xs, ys with
-  | lift _ xs _, lift _ ys _ =>
-    lift _ (map (fun p : A * A => add (fst p) (snd p)) (combine xs ys)) _
-  end.
-Next Obligation.
-  intros H. clear wildcard' wildcard'0.
-  induction xs as [| x xs IHxs]; destruct ys as [| y ys];
-    try (cbn in *; congruence). Admitted.
+Program Definition poly_add (xs ys : poly A) : poly A.
+Proof.
+  destruct xs as [xs Hx], ys as [ys Hy].
+  induction xs as [| x xs IHx].
+  - apply (poly_list ys). apply Hy.
+  - induction ys as [| y ys IHy].
+    + apply (poly_list (x :: xs)). apply Hx.
+    + cbn in *. apply (poly_list ((x + y) :: xs)). cbn in *.
+      (** TODO This would require a decision procedure for zero. *) Admitted.
 
 Instance poly_has_add : HasAdd (poly A) :=
   poly_add.
 
 Instance poly_has_zero : HasZero (poly A) :=
-  lift _ nil _.
-Proof. intros H. cbv in H. inversion H. Qed.
+  poly_list nil _.
+Proof. intros []. Qed.
 
 Instance poly_has_neg : HasNeg (poly A) := {}.
 Proof. Admitted.
@@ -52,11 +55,12 @@ Proof. Admitted.
 Instance poly_has_mul : HasMul (poly A) := {}.
 Proof. Admitted.
 
-(** TODO In a trivial ring, we have [0 == 1] and this condition is unique. *)
+(** TODO It is impossible to construct a polynomial ring
+    over a trivial ring, so this does not hold. *)
 
 Instance poly_has_one : HasOne (poly A) :=
-  lift _ [one] _.
-Proof. cbn. intros H. idtac "uh oh". Admitted.
+  poly_list [one] _.
+Proof. cbn. apply nontrivial_ring_nontrivial. Qed.
 
 Instance poly_is_ring : IsRing (poly A) := {}.
 Proof. Admitted.

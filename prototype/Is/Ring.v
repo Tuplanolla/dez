@@ -41,6 +41,10 @@ Corollary add_right_invertible : forall {A : Type} `{is_ring : IsRing A},
   forall x : A, x + (- x) == 0.
 Proof. intros A ? ? ? ? ? ? ?. apply opr_is_right_invertible. Qed.
 
+Corollary add_commutative : forall {A : Type} `{is_ring : IsRing A},
+  forall x y : A, x + y == y + x.
+Proof. intros A ? ? ? ? ? ? ?. apply opr_is_commutative. Qed.
+
 Corollary mul_associative : forall {A : Type} `{is_ring : IsRing A},
   forall x y z : A, x * (y * z) == (x * y) * z.
 Proof. intros A ? ? ? ? ? ? ?. apply opr_is_associative. Qed.

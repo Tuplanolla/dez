@@ -1,6 +1,6 @@
 From Coq Require Import ZArith.
 From Maniunfold.Is Require Import
-  TotalOrder Ring MonoidHomomorphism.
+  TotalOrder NontrivialRing MonoidHomomorphism.
 
 Module Equivalence.
 
@@ -125,3 +125,6 @@ Instance Z_is_semiring : IsSemiring Z := {}.
 Instance Z_has_neg : HasNeg Z := inv (HasInv := Additive.Z_has_inv).
 
 Instance Z_is_ring : IsRing Z := {}.
+
+Instance Z_is_nontrivial_ring : IsNontrivialRing Z := {}.
+Proof. intros H. inversion H. Qed.

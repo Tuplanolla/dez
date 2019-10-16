@@ -1,4 +1,5 @@
-From Coq Require Import NArith.
+From Coq Require Import
+  NArith.
 From Maniunfold.Is Require Import
   TotalOrder Semiring MonoidHomomorphism.
 
