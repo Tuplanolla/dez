@@ -11,7 +11,7 @@ From Maniunfold.Is Require Export
 
 Class IsSetoidHomomorphism (A B : Type) {has_hom : HasHom A B}
   {A_has_eqv : HasEqv A} {B_has_eqv : HasEqv B} : Prop := {
-  hom_proper : hom ::> eqv ==> eqv;
+  hom_proper :> IsProper (eqv ==> eqv) hom;
   A_is_setoid :> IsSetoid A;
   B_is_setoid :> IsSetoid B;
 }.

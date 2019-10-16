@@ -1,6 +1,5 @@
-Set Warnings "-notation-overridden".
-
-From Coq Require Import ZArith.
+From Coq Require Import
+  ZArith.
 From Maniunfold.Is Require Import
   Group.
 

@@ -16,7 +16,7 @@ Class IsMetricSpace (S A : Type)
   S_opr_is_commutative_monoid :> IsCommutativeMonoid S;
   S_opr_left_positive : forall x y : S, y <= x + y;
   S_opr_left_monotone : forall x y z : S, x <= y -> z + x <= z + y;
-  dist_proper : dist ::> eqv ==> eqv ==> eqv;
+  dist_proper :> IsProper (eqv ==> eqv ==> eqv) dist;
   dist_indiscernible : forall x y : A, dist x y == 0 <-> x == y;
   dist_symmetric : forall x y : A, dist x y == dist y x;
   dist_triangle : forall x y z : A, dist x z <= dist x y + dist y z;
@@ -33,8 +33,6 @@ Theorem S_opr_right_positive : forall {S A : Type}
   forall x y : S, x <= x + y.
 Proof.
   intros S A ? ? ? ? ? ? ? x y.
-  assert (ord ::> eqv ==> eqv ==> flip impl)
-    by (apply ord_proper; reflexivity).
   rewrite (opr_commutative x y). apply S_opr_left_positive. Qed.
 
 Theorem S_opr_right_monotone : forall {S A : Type}
@@ -42,8 +40,6 @@ Theorem S_opr_right_monotone : forall {S A : Type}
   forall x y z : S, x <= y -> x + z <= y + z.
 Proof.
   intros S A ? ? ? ? ? ? ? x y z p.
-  assert (ord ::> eqv ==> eqv ==> flip impl)
-    by (apply ord_proper; reflexivity).
   rewrite (opr_commutative x z). rewrite (opr_commutative y z).
   apply S_opr_left_monotone. apply p. Qed.
 
@@ -60,6 +56,4 @@ Theorem S_ord_nonnegative : forall {S A : Type}
   forall x : S, 0 <= x.
 Proof.
   intros S A ? ? ? ? ? ? ? x.
-  assert (ord ::> eqv ==> eqv ==> flip impl)
-    by (apply ord_proper; reflexivity).
   rewrite <- (opr_right_identifiable x). apply S_opr_left_positive. Qed.

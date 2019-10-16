@@ -1,30 +1,14 @@
-From Coq Require Basics Setoid Morphisms.
+(** This module is a bit awkward,
+    because it tries to be compatible with the standard library setoid. *)
+
+From Coq Require Export
+  Setoid.
+From Maniunfold Require Export
+  Settings.
 From Maniunfold.Has Require Export
   EquivalenceRelation.
 From Maniunfold.Is Require Export
-  Reflexive Symmetric Transitive.
-
-(** We need to perform this song and dance
-    to be compatible with the standard library setoid,
-    which is necessary for rewriting. *)
-
-Module ProperNotations.
-
-Export Morphisms.ProperNotations.
-
-Open Scope signature_scope.
-
-Reserved Notation "R '==>' S" (at level 55, right associativity).
-(* Notation "R '==>' S" := (Morphisms.respectful R S) : signature_scope. *)
-
-Reserved Notation "x '::>' R" (at level 70, no associativity).
-Notation "x '::>' R" := (Morphisms.Proper R x) : signature_scope.
-
-End ProperNotations.
-
-Export Basics Setoid Morphisms ProperNotations.
-
-Typeclasses Transparent compose arrow impl const flip apply.
+  Proper Reflexive Symmetric Transitive.
 
 (** We do not use the standard library setoid directly, because
     - it is not a predicative class in [Prop] and

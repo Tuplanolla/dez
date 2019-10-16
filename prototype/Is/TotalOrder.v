@@ -9,7 +9,7 @@ From Maniunfold.Is Require Import
 
 Class IsTotalOrder (A : Type)
   {has_eqv : HasEqv A} {has_ord : HasOrd A} : Prop := {
-  ord_proper : ord ::> eqv ==> eqv ==> flip impl;
+  ord_proper :> IsProper (eqv ==> eqv ==> flip impl) ord;
   ord_is_antisymmetric :> IsAntisymmetric A;
   ord_is_transitive :> IsTransitive A;
   ord_is_connex :> IsConnex A;
@@ -39,4 +39,3 @@ Add Parametric Relation {A : Type} `{is_total_order : IsTotalOrder A} : A ord
 
 Instance total_order_is_partial_order {A : Type}
   `{is_total_order : IsTotalOrder A} : IsPartialOrder A := {}.
-Proof. intros x y p z w q. apply ord_proper; auto. Qed.

@@ -4,6 +4,8 @@ From Maniunfold.Is Require Import
 From Maniunfold.Justifies Require Import
   OptionTheorems NTheorems FiniteTheorems.
 
+(** TODO This whole thing is total and complete nonsense. *)
+
 Import ListNotations.
 
 Inductive poly (A : Type) `{is_ring : IsRing A} : Type :=
@@ -50,7 +52,7 @@ Proof. Admitted.
 Instance poly_has_mul : HasMul (poly A) := {}.
 Proof. Admitted.
 
-(** TODO In a trivial ring, we have [0 == 1] and his condition is unique. *)
+(** TODO In a trivial ring, we have [0 == 1] and this condition is unique. *)
 
 Instance poly_has_one : HasOne (poly A) :=
   lift _ [one] _.
@@ -58,3 +60,5 @@ Proof. cbn. intros H. idtac "uh oh". Admitted.
 
 Instance poly_is_ring : IsRing (poly A) := {}.
 Proof. Admitted.
+
+End Suffering.

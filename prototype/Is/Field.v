@@ -9,7 +9,7 @@ Class IsField (A : Type) {has_eqv : HasEqv A}
   {has_add : HasAdd A} {has_zero : HasZero A} {has_neg : HasNeg A}
   {has_mul : HasMul A} {has_one : HasOne A} {has_recip : HasRecip A} :
   Prop := {
-  recip_proper : recip ::> eqv ==> eqv;
+  recip_proper :> IsProper (eqv ==> eqv) recip;
   add_mul_is_ring :> IsRing A;
   mul_is_invertible :> IsInvertible A
     (has_opr := has_mul) (has_idn := has_one) (has_inv := has_recip);

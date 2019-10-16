@@ -13,7 +13,7 @@ Class IsRightModule (S A : Type) {S_has_eqv : HasEqv S}
   {has_rsmul : HasRSMul S A} : Prop := {
   S_add_mul_is_ring :> IsRing S;
   A_opr_is_abelian_group :> IsAbelianGroup A;
-  rsmul_proper : rsmul ::> eqv ==> eqv ==> eqv;
+  rsmul_proper :> IsProper (eqv ==> eqv ==> eqv) rsmul;
   rsmul_identity : forall x : A, x *> 1 == x;
   rsmul_mul_compatible : forall (a b : S) (x : A),
     x *> (a * b) == (x *> a) *> b;

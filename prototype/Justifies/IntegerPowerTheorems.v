@@ -21,7 +21,7 @@ Proof.
   - reflexivity. Qed.
 
 Corollary iter_op_comm : forall {A : Type} `{is_setoid : IsSetoid A}
-  (op : A -> A -> A), (op ::> eqv ==> eqv ==> eqv) ->
+  (op : A -> A -> A), (IsProper (eqv ==> eqv ==> eqv) op) ->
   (forall x y z : A, op x (op y z) == op (op x y) z) ->
   forall (n : positive) (x : A),
   op x (iter_op op n x) == op (iter_op op n x) x.

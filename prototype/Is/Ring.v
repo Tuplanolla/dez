@@ -107,3 +107,11 @@ Proof. apply zero_right_absorbing. Qed.
 
 Instance zero_is_absorbing {A : Type} `{is_ring : IsRing A} :
   IsAbsorbing A := {}.
+
+Theorem iff_ring_trivial : forall {A : Type} `{is_ring : IsRing A},
+  1 == 0 <-> forall x : A, x == 0.
+Proof.
+  intros A ? ? ? ? ? ? ?. split.
+  - intros H x. rewrite <- (mul_left_identifiable x). rewrite H.
+    rewrite (zero_left_absorbing x). reflexivity.
+  - intros H. apply H. Qed.

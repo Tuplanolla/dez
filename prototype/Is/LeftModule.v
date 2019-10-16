@@ -16,7 +16,7 @@ Class IsLeftModule (S A : Type) {S_has_eqv : HasEqv S}
   {has_lsmul : HasLSMul S A} : Prop := {
   S_add_mul_is_ring :> IsRing S;
   A_opr_is_abelian_group :> IsAbelianGroup A;
-  lsmul_proper : lsmul ::> eqv ==> eqv ==> eqv;
+  lsmul_proper :> IsProper (eqv ==> eqv ==> eqv) lsmul;
   lsmul_identity : forall x : A, 1 <* x == x;
   lsmul_mul_compatible : forall (a b : S) (x : A),
     (a * b) <* x == a <* (b <* x);

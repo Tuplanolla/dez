@@ -9,7 +9,7 @@ Import AdditiveNotations.
 
 Class IsGroup (A : Type) {has_eqv : HasEqv A}
   {has_opr : HasOpr A} {has_idn : HasIdn A} {has_inv : HasInv A} : Prop := {
-  inv_proper : inv ::> eqv ==> eqv;
+  inv_proper :> IsProper (eqv ==> eqv) inv;
   opr_is_monoid :> IsMonoid A;
   opr_is_invertible :> IsInvertible A;
 }.

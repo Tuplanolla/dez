@@ -5,7 +5,7 @@ From Maniunfold.Is Require Export
 
 Class IsPartialOrder (A : Type)
   {has_eqv : HasEqv A} {has_ord : HasOrd A} : Prop := {
-  ord_proper : ord ::> eqv ==> eqv ==> flip impl;
+  ord_proper :> IsProper (eqv ==> eqv ==> flip impl) ord;
   ord_is_reflexive :> IsReflexive A;
   ord_is_antisymmetric :> IsAntisymmetric A;
   ord_is_transitive :> IsTransitive A;

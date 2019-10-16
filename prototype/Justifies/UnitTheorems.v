@@ -73,3 +73,6 @@ Instance unit_is_semiring : IsSemiring unit := {}.
 Instance unit_has_neg : HasNeg unit := inv.
 
 Instance unit_is_ring : IsRing unit := {}.
+
+Theorem unit_ring_trivial : 1 == 0.
+Proof. reflexivity. Qed.

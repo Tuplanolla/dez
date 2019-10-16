@@ -18,7 +18,7 @@ Class IsFreeLeftModule (I S A : Type)
   {has_basis : HasBasis I A} : Prop := {
   I_enum_is_finitely_enumerable :> IsFinitelyEnumerable I;
   A_lsmul_is_left_module :> IsLeftModule S A;
-  basis_proper : basis ::> eqv ==> eqv;
+  basis_proper :> IsProper (eqv ==> eqv) basis;
   basis_spanning : forall x : A, exists coeffs : I -> S,
     let terms (i : I) := coeffs i <* basis i in
     fold_right opr idn (map terms enum) == x;
