@@ -5,6 +5,6 @@ From Maniunfold.Is Require Export
 
 Class IsInvolutive (A : Type)
   {has_eqv : HasEqv A} {has_endo : HasEndo A} : Prop := {
-  eqv_is_setoid :> IsSetoid A;
-  inv_involutive : forall x : A, endo (endo x) == x;
+  involutive_is_setoid :> IsSetoid A;
+  involutive : forall x : A, endo (endo x) == x;
 }.

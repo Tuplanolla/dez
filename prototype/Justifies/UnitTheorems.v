@@ -1,15 +1,17 @@
 From Maniunfold.Is Require Import
   Ring.
 
-Instance unit_has_eqv : HasEqv unit := fun x y : unit => True.
+Definition unit_eqv (x y : unit) : Prop := True.
 
-Instance unit_is_reflexive : IsReflexive unit := {}.
+Instance unit_has_eqv : HasEqv unit := unit_eqv.
+
+Instance unit_is_reflexive : IsReflexive unit_eqv := {}.
 Proof. intros x. constructor. Qed.
 
-Instance unit_is_symmetric : IsSymmetric unit := {}.
+Instance unit_is_symmetric : IsSymmetric unit_eqv := {}.
 Proof. intros x y p. constructor. Qed.
 
-Instance unit_is_transitive : IsTransitive unit := {}.
+Instance unit_is_transitive : IsTransitive unit_eqv := {}.
 Proof. intros x y z p q. constructor. Qed.
 
 Instance unit_is_setoid : IsSetoid unit := {}.

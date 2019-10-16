@@ -32,7 +32,8 @@ When defining predicative classes,
 all the constraining operational classes and
 constituent predicate classes must be exported.
 However, it is not necessary to export nonconstituent predicate classes,
-such as `IsSetoid` with respect to `IsGroup`.
+such as `IsSetoid` with respect to `IsGroup`,
+although it may be a good idea to do so anyway.
 
 ### Naming Conventions
 
@@ -52,17 +53,19 @@ the other verbs `Contains`, `Does`, `Entails`, `Gives`, `Goes`, (`Has`, `Is`),
 `Raises`, `Reassures`, `Refines`, `Reflects`, `Represents`, `Resolves`,
 `Says`, `Serves`, `Supports` and `Was`.
 
-Coercion or instance fields contain the verb `is`, while plain fields do not.
-For example, we would have `opr_is_associative : IsAssociative A` and
-`opr_associative : forall x y z : A, x + (y + z) == (x + y) + z`.
+Fields are prefixed with the name of the type class they belong to.
 
-Definitions and instances for a type are prefixed with its name.
-For example, we would have `Instance t_magic_lamp : MagicLamp t`.
+Coercion or instance fields contain the verb `is`, while plain fields do not.
+For example, we would have `group_is_associative :> IsAssociative A` and
+`group_associative : forall x y z : A, x + (y + z) == (x + y) + z`.
 
 Fields are prefixed with the most prominent subject.
 For example, we would have
-`add_left_invertible : forall x : A, (- x) + x == 0` and
-`mul_left_invertible : forall x : A, (/ x) * x == 1`.
+`field_add_left_invertible : forall x : A, (- x) + x == 0` and
+`field_mul_left_invertible : forall x : A, (/ x) * x == 1`.
+
+Definitions and instances for a certain type are prefixed with its name.
+For example, we would have `Instance t_magic_lamp : MagicLamp t`.
 
 Parametric relations and morphisms
 have the suffixes `relation` and `morphism` respectively.

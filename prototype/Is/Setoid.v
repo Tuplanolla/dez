@@ -15,13 +15,13 @@ From Maniunfold.Is Require Export
     - it is not constrained by an operational class like [Eqv]. *)
 
 Class IsSetoid (A : Type) {has_eqv : HasEqv A} : Prop := {
-  eqv_is_reflexive :> IsReflexive A;
-  eqv_is_symmetric :> IsSymmetric A;
-  eqv_is_transitive :> IsTransitive A;
+  setoid_is_reflexive :> IsReflexive eqv;
+  setoid_is_symmetric :> IsSymmetric eqv;
+  setoid_is_transitive :> IsTransitive eqv;
 }.
 
 Add Parametric Relation {A : Type} `{is_setoid : IsSetoid A} : A eqv
-  reflexivity proved by eqv_is_reflexive
-  symmetry proved by eqv_is_symmetric
-  transitivity proved by eqv_is_transitive
-  as eqv_relation.
+  reflexivity proved by setoid_is_reflexive
+  symmetry proved by setoid_is_symmetric
+  transitivity proved by setoid_is_transitive
+  as setoid_relation.

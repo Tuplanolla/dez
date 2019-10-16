@@ -7,6 +7,6 @@ Import AdditiveNotations.
 
 Class IsAntidistributive (A : Type)
   {has_eqv : HasEqv A} {has_opr : HasOpr A} {has_inv : HasInv A} : Prop := {
-  eqv_is_setoid :> IsSetoid A;
-  inv_opr_antidistributive : forall x y : A, - (x + y) == (- y) + (- x);
+  antidistributive_is_setoid :> IsSetoid A;
+  antidistributive : forall x y : A, - (x + y) == (- y) + (- x);
 }.

@@ -36,10 +36,10 @@ Theorem popr_inv_distributive : forall {A : Type} `{is_group : IsGroup A},
 Proof.
   intros A ? ? ? ? ? n x. cbv [popr]. induction n as [| p q] using peano_ind.
   - reflexivity.
-  - rewrite (iter_op_succ opr opr_associative p (- x)),
-      (iter_op_succ opr opr_associative p x).
-    rewrite q. rewrite <- (inv_opr_antidistributive (iter_op opr p x) x).
-    rewrite (iter_op_comm opr opr_proper opr_associative p x).
+  - rewrite (iter_op_succ opr associative p (- x)),
+      (iter_op_succ opr associative p x).
+    rewrite q. rewrite <- (antidistributive (iter_op opr p x) x).
+    rewrite (iter_op_comm opr proper associative p x).
     reflexivity. Qed.
 
 Theorem nopr_inv_distributive : forall {A : Type} `{is_group : IsGroup A},
@@ -57,6 +57,6 @@ Proof.
   destruct n as [| p | p].
   - cbv [zopr]. rewrite idn_inv. reflexivity.
   - cbv [zopr]. rewrite (popr_inv_distributive p x). reflexivity.
-  - cbv [zopr]. rewrite (inv_involutive (p * x)%positive).
+  - cbv [zopr]. rewrite (involutive (p * x)%positive).
     rewrite (popr_inv_distributive p x).
-    rewrite (inv_involutive (p * x)%positive). reflexivity. Qed.
+    rewrite (involutive (p * x)%positive). reflexivity. Qed.

@@ -1,18 +1,21 @@
-From Coq Require Import ZArith.
+From Coq Require Import
+  ZArith.
 From Maniunfold.Is Require Import
   TotalOrder NontrivialRing MonoidHomomorphism.
 
 Module Equivalence.
 
-Instance Z_has_eqv : HasEqv Z := fun x y : Z => x = y.
+Definition Z_eqv (x y : Z) : Prop := x = y.
 
-Instance Z_is_reflexive : IsReflexive Z := {}.
+Instance Z_has_eqv : HasEqv Z := Z_eqv.
+
+Instance Z_is_reflexive : IsReflexive Z_eqv := {}.
 Proof. intros x. reflexivity. Qed.
 
-Instance Z_is_symmetric : IsSymmetric Z := {}.
+Instance Z_is_symmetric : IsSymmetric Z_eqv := {}.
 Proof. intros x y p. symmetry; auto. Qed.
 
-Instance Z_is_transitive : IsTransitive Z := {}.
+Instance Z_is_transitive : IsTransitive Z_eqv := {}.
 Proof. intros x y z p q. transitivity y; auto. Qed.
 
 Instance Z_is_setoid : IsSetoid Z := {}.
@@ -21,15 +24,17 @@ End Equivalence.
 
 Module Order.
 
-Instance Z_has_ord : HasOrd Z := fun x y : Z => (x <= y)%Z.
+Definition Z_ord (x y : Z) : Prop := (x <= y)%Z.
 
-Instance Z_is_antisymmetric : IsAntisymmetric Z := {}.
+Instance Z_has_ord : HasOrd Z := Z_ord.
+
+Instance Z_is_antisymmetric : IsAntisymmetric Z_ord := {}.
 Proof. intros x y p q. apply Z.le_antisymm; auto. Qed.
 
-Instance Z_is_transitive : IsTransitive Z := {}.
+Instance Z_is_transitive : IsTransitive Z_ord := {}.
 Proof. intros x y z p q. transitivity y; auto. Qed.
 
-Instance Z_is_connex : IsConnex Z := {}.
+Instance Z_is_connex : IsConnex Z_ord := {}.
 Proof. intros x y. apply Z.le_ge_cases. Qed.
 
 Instance Z_is_total_order : IsTotalOrder Z := {}.

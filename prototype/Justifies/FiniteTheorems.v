@@ -1,4 +1,5 @@
-From Coq Require Import NArith.
+From Coq Require Import
+  NArith.
 From Maniunfold.Is Require Import
   Setoid TotalOrder Ring FinitelyEnumerable.
 From Maniunfold.Justifies Require Import
@@ -8,16 +9,20 @@ Definition F (p : positive) : Set := {n : N | (n < Npos p)%N}.
 
 Module Equivalence.
 
-Instance F_has_eqv {p : positive} : HasEqv (F p) := fun x y : F p =>
+Definition F_eqv {p : positive} (x y : F p) : Prop :=
   proj1_sig x = proj1_sig y.
 
-Instance F_is_reflexive {p : positive} : IsReflexive (F p) := {}.
+Instance F_has_eqv {p : positive} : HasEqv (F p) := F_eqv.
+
+(** TODO This implicit argument plumbing is annoying. *)
+
+Instance F_is_reflexive {p : positive} : IsReflexive (F_eqv (p := p)) := {}.
 Proof. intros [x ?]. apply (@N.eq_refl x). Qed.
 
-Instance F_is_symmetric {p : positive} : IsSymmetric (F p) := {}.
+Instance F_is_symmetric {p : positive} : IsSymmetric (F_eqv (p := p)) := {}.
 Proof. intros [x ?] [y ?] ?. apply (@N.eq_sym x y); auto. Qed.
 
-Instance F_is_transitive {p : positive} : IsTransitive (F p) := {}.
+Instance F_is_transitive {p : positive} : IsTransitive (F_eqv (p := p)) := {}.
 Proof. intros [x ?] [y ?] [z ?] ? ?. apply (@N.eq_trans x y z); auto. Qed.
 
 Instance F_is_setoid {p : positive} : IsSetoid (F p) := {}.
@@ -43,21 +48,23 @@ Proof. intros ? ? ? ? ?; constructor. Qed.
 
 Module Order.
 
-Instance F_has_ord {p : positive} : HasOrd (F p) := fun x y : F p =>
-  (proj1_sig x <= proj1_sig y)%N.
+Definition F_ord {p : positive} (x y : F p) : Prop :=
+  proj1_sig x <= proj1_sig y.
+
+Instance F_has_ord {p : positive} : HasOrd (F p) := F_ord.
 
 (** TODO Remove this. *)
 
-Ltac simp := cbv [eqv Equivalence.F_has_eqv
-  rel ord_has_rel ord F_has_ord] in *; cbn in *.
+Ltac simp := cbv [eqv Equivalence.F_has_eqv Equivalence.F_eqv
+  rel ord_has_rel ord F_has_ord F_ord] in *; cbn in *.
 
-Instance F_is_antisymmetric {p : positive} : IsAntisymmetric (F p) := {}.
+Instance F_is_antisymmetric {p : positive} : IsAntisymmetric (F_ord (p := p)) := {}.
 Proof. intros [x ?] [y ?] ? ?. apply (N.le_antisymm x y); auto. Qed.
 
-Instance F_is_transitive {p : positive} : IsTransitive (F p) := {}.
+Instance F_is_transitive {p : positive} : IsTransitive (F_ord (p := p)) := {}.
 Proof. intros [x ?] [y ?] [z ?] ? ?. apply (N.le_trans x y z); auto. Qed.
 
-Instance F_is_connex {p : positive} : IsConnex (F p) := {}.
+Instance F_is_connex {p : positive} : IsConnex (F_ord (p := p)) := {}.
 Proof. intros [x ?] [y ?]. apply (N.le_ge_cases x y). Qed.
 
 Instance F_is_total_order {p : positive} : IsTotalOrder (F p) := {}.

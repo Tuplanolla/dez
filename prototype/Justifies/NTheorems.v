@@ -5,15 +5,17 @@ From Maniunfold.Is Require Import
 
 Module Equivalence.
 
-Instance N_has_eqv : HasEqv N := fun x y : N => x = y.
+Definition N_eqv (x y : N) : Prop := x = y.
 
-Instance N_is_reflexive : IsReflexive N := {}.
+Instance N_has_eqv : HasEqv N := N_eqv.
+
+Instance N_is_reflexive : IsReflexive N_eqv := {}.
 Proof. intros x. reflexivity. Qed.
 
-Instance N_is_symmetric : IsSymmetric N := {}.
+Instance N_is_symmetric : IsSymmetric N_eqv := {}.
 Proof. intros x y p. symmetry; auto. Qed.
 
-Instance N_is_transitive : IsTransitive N := {}.
+Instance N_is_transitive : IsTransitive N_eqv := {}.
 Proof. intros x y z p q. transitivity y; auto. Qed.
 
 Instance N_is_setoid : IsSetoid N := {}.
@@ -22,15 +24,17 @@ End Equivalence.
 
 Module Order.
 
-Instance N_has_ord : HasOrd N := fun x y : N => (x <= y)%N.
+Definition N_ord (x y : N) : Prop := (x <= y)%N.
 
-Instance N_is_antisymmetric : IsAntisymmetric N := {}.
+Instance N_has_ord : HasOrd N := N_ord.
+
+Instance N_is_antisymmetric : IsAntisymmetric N_ord := {}.
 Proof. intros x y p q. apply N.le_antisymm; auto. Qed.
 
-Instance N_is_transitive : IsTransitive N := {}.
+Instance N_is_transitive : IsTransitive N_ord := {}.
 Proof. intros x y z p q. transitivity y; auto. Qed.
 
-Instance N_is_connex : IsConnex N := {}.
+Instance N_is_connex : IsConnex N_ord := {}.
 Proof. intros x y. apply N.le_ge_cases. Qed.
 
 Instance N_is_total_order : IsTotalOrder N := {}.

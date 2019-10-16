@@ -14,7 +14,8 @@ Open Scope signature_scope.
     - they come with many useful instances and
     - they have better performance characteristics for type inference. *)
 
-Notation "'IsProper'" := Proper.
-
 (* Class IsProper {A : Type} (has_rel : HasRel A) (x : A) : Prop :=
-  proper_reflexive : x ~ x. *)
+  proper : x ~ x. *)
+
+Notation "'IsProper'" := Proper.
+Notation "'proper'" := proper_prf.

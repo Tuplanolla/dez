@@ -5,6 +5,6 @@ From Maniunfold.Is Require Export
 
 Class IsLeftAbsorbing (A : Type)
   {has_eqv : HasEqv A} {has_mul : HasMul A} {has_zero : HasZero A} : Prop := {
-  eqv_is_setoid :> IsSetoid A;
-  opr_left_absorbing : forall x : A, 0 * x == 0;
+  left_absorbing_is_setoid :> IsSetoid A;
+  left_absorbing : forall x : A, 0 * x == 0;
 }.

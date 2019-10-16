@@ -18,16 +18,17 @@ Section Suffering.
 
 Context {A : Type} `{is_nontrivial_ring : IsNontrivialRing A}.
 
-Global Instance poly_has_eqv : HasEqv (poly A) := fun xs ys : poly A =>
-  xs = ys.
+Definition poly_eqv (xs ys : poly A) : Prop := xs = ys.
 
-Global Instance poly_is_reflexive : IsReflexive (poly A) := {}.
+Global Instance poly_has_eqv : HasEqv (poly A) := poly_eqv.
+
+Global Instance poly_is_reflexive : IsReflexive poly_eqv := {}.
 Proof. intros xs. reflexivity. Qed.
 
-Global Instance poly_is_symmetric : IsSymmetric (poly A) := {}.
+Global Instance poly_is_symmetric : IsSymmetric poly_eqv := {}.
 Proof. intros xs ys H. symmetry; auto. Qed.
 
-Global Instance poly_is_transitive : IsTransitive (poly A) := {}.
+Global Instance poly_is_transitive : IsTransitive poly_eqv := {}.
 Proof. intros xs ys zs Hxy Hyz. etransitivity; eauto. Qed.
 
 Global Instance poly_is_setoid : IsSetoid (poly A) := {}.

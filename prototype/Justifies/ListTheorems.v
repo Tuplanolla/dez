@@ -9,10 +9,12 @@ Section Suffering.
 
 Context {A : Type} `{is_setoid : IsSetoid A}.
 
-Global Instance list_has_eqv : HasEqv (list A) := fun xs ys : list A =>
+Definition list_eqv (xs ys : list A) : Prop :=
   Forall2 (fun x y : A => x == y) xs ys.
 
-Global Instance list_is_reflexive : IsReflexive (list A) := {}.
+Global Instance list_has_eqv : HasEqv (list A) := list_eqv.
+
+Global Instance list_is_reflexive : IsReflexive list_eqv := {}.
 Proof.
   intros xs. induction xs as [| x xs IH].
   - apply Forall2_nil.
@@ -20,7 +22,7 @@ Proof.
     + reflexivity.
     + apply IH. Qed.
 
-Global Instance list_is_symmetric : IsSymmetric (list A) := {}.
+Global Instance list_is_symmetric : IsSymmetric list_eqv := {}.
 Proof.
   intros xs. induction xs as [| x xs IH]; intros ys H.
   - destruct ys as [| y ys].
@@ -32,7 +34,7 @@ Proof.
       * symmetry. apply H'.
       * apply IH. apply Hs'. Qed.
 
-Global Instance list_is_transitive : IsTransitive (list A) := {}.
+Global Instance list_is_transitive : IsTransitive list_eqv := {}.
 Proof.
   intros xs. induction xs as [| x xs IH]; intros ys zs H0 H1.
   - destruct ys as [| y ys], zs as [| z zs].

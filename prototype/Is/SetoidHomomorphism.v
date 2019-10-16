@@ -11,13 +11,13 @@ From Maniunfold.Is Require Export
 
 Class IsSetoidHomomorphism (A B : Type) {has_hom : HasHom A B}
   {A_has_eqv : HasEqv A} {B_has_eqv : HasEqv B} : Prop := {
-  hom_proper :> IsProper (eqv ==> eqv) hom;
-  A_is_setoid :> IsSetoid A;
-  B_is_setoid :> IsSetoid B;
+  setoid_homomorphism_is_proper :> IsProper (eqv ==> eqv) hom;
+  setoid_homomorphism_A_is_setoid :> IsSetoid A;
+  setoid_homomorphism_B_is_setoid :> IsSetoid B;
 }.
 
 Add Parametric Morphism {A B : Type}
   `{is_setoid_homomorphism : IsSetoidHomomorphism A B} : hom
   with signature eqv ==> eqv
   as eqv_hom_morphism.
-Proof. intros x y p. apply hom_proper; auto. Qed.
+Proof. intros x y p. apply setoid_homomorphism_is_proper; auto. Qed.
