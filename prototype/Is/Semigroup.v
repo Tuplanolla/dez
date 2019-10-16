@@ -8,7 +8,7 @@ Import AdditiveNotations.
 Class IsSemigroup (A : Type)
   {has_eqv : HasEqv A} {has_opr : HasOpr A} : Prop := {
   semigroup_opr_is_proper :> IsProper (eqv ==> eqv ==> eqv) opr;
-  semigroup_is_associative :> IsAssociative A;
+  semigroup_opr_is_associative :> IsAssociative opr;
 }.
 
 Add Parametric Morphism {A : Type} `{is_semigroup : IsSemigroup A} : opr

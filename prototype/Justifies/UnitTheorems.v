@@ -16,9 +16,11 @@ Proof. intros x y z p q. constructor. Qed.
 
 Instance unit_is_setoid : IsSetoid unit := {}.
 
-Instance unit_has_opr : HasOpr unit := fun x y : unit => tt.
+Definition unit_opr (x y : unit) : unit := tt.
 
-Instance unit_is_associative : IsAssociative unit := {}.
+Instance unit_has_opr : HasOpr unit := unit_opr.
+
+Instance unit_is_associative : IsAssociative unit_opr := {}.
 Proof. intros x y z. constructor. Qed.
 
 Instance unit_is_semigroup : IsSemigroup unit := {}.

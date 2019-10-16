@@ -43,9 +43,11 @@ End Order.
 
 Module Additive.
 
-Instance N_has_opr : HasOpr N := fun x y : N => (x + y)%N.
+Definition N_opr (x y : N) : N := (x + y)%N.
 
-Instance N_is_associative : IsAssociative N := {}.
+Instance N_has_opr : HasOpr N := N_opr.
+
+Instance N_is_associative : IsAssociative N_opr := {}.
 Proof. intros x y z. apply N.add_assoc. Qed.
 
 Instance N_is_semigroup : IsSemigroup N := {}.
@@ -71,9 +73,11 @@ End Additive.
 
 Module Multiplicative.
 
-Instance N_has_opr : HasOpr N := fun x y : N => (x * y)%N.
+Definition N_opr (x y : N) : N := (x * y)%N.
 
-Instance N_is_associative : IsAssociative N := {}.
+Instance N_has_opr : HasOpr N := N_opr.
+
+Instance N_is_associative : IsAssociative N_opr := {}.
 Proof. intros x y z. apply N.mul_assoc. Qed.
 
 Instance N_is_semigroup : IsSemigroup N := {}.

@@ -82,7 +82,7 @@ Proof. intros p x y. apply N.mod_lt. intros H. inversion H. Qed.
 Instance F_has_opr {p : positive} : HasOpr (F p) := fun x y : F p =>
   exist _ (F_has_opr_transparent_part x y) F_has_opr_opaque_part.
 
-Instance F_is_associative {p : positive} : IsAssociative (F p) := {}.
+Instance F_is_associative {p : positive} : IsAssociative (F_has_opr (p := p)) := {}.
 Proof. Admitted.
 
 (** TODO Treat [Proper] like a predicative class as well. *)

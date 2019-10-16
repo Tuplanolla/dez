@@ -57,7 +57,7 @@ Instance poly_has_mul : HasMul (poly A) := {}.
 Proof. Admitted.
 
 (** TODO It is impossible to construct a polynomial ring
-    over a trivial ring, so this does not hold. *)
+    over a trivial ring, so this does not hold in general. *)
 
 Instance poly_has_one : HasOne (poly A) :=
   poly_list [one] _.
