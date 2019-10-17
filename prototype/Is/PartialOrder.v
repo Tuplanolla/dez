@@ -15,7 +15,7 @@ Add Parametric Morphism {S A : Type}
   `{is_partial_order : IsPartialOrder A} : ord
   with signature eqv ==> eqv ==> flip impl
   as eqv_ord_morphism.
-Proof. intros x y p z w q. apply partial_order_is_proper; auto. Qed.
+Proof. apply partial_order_is_proper; auto. Qed.
 
 Add Parametric Relation {A : Type}
   `{is_partial_order : IsPartialOrder A} : A ord

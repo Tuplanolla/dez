@@ -16,7 +16,7 @@ Class IsRing {A : Type} {has_eqv : HasEqv A}
 Add Parametric Morphism {A : Type} `{is_ring : IsRing A} : neg
   with signature eqv ==> eqv
   as eqv_neg_morphism.
-Proof. intros x y p. apply group_inv_is_proper; auto. Qed.
+Proof. apply group_inv_is_proper; auto. Qed.
 
 (** The following specializations help type inference. *)
 

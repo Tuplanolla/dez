@@ -21,4 +21,4 @@ Add Parametric Morphism {A B : Type}
   `{is_setoid_homomorphism : IsSetoidHomomorphism A B} : hom
   with signature eqv ==> eqv
   as eqv_hom_morphism.
-Proof. intros x y p. apply setoid_homomorphism_is_proper; auto. Qed.
+Proof. apply setoid_homomorphism_is_proper; auto. Qed.

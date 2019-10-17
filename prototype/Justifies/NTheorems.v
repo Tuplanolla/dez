@@ -95,11 +95,11 @@ Instance N_is_commutative_monoid : IsCommutativeMonoid N.mul N.one := {}.
 
 End Multiplicative.
 
-Instance N_has_add : HasAdd N := opr (HasOpr := Additive.N_has_opr).
-Instance N_has_mul : HasMul N := opr (HasOpr := Multiplicative.N_has_opr).
+Instance N_has_add : HasAdd N := N.add.
+Instance N_has_mul : HasMul N := N.mul.
 
-Instance N_has_zero : HasZero N := idn (HasIdn := Additive.N_has_idn).
-Instance N_has_one : HasOne N := idn (HasIdn := Multiplicative.N_has_idn).
+Instance N_has_zero : HasZero N := N.zero.
+Instance N_has_one : HasOne N := N.one.
 
 Instance N_is_left_distributive : IsLeftDistributive N.add N.mul := {}.
 Proof. intros x y z. apply N.mul_add_distr_l. Qed.
@@ -111,17 +111,20 @@ Instance N_is_distributive : IsDistributive N.add N.mul := {}.
 
 Instance N_is_semiring : IsSemiring N.add N.zero N.mul N.one := {}.
 
-Definition N_hom (x : N) : N := (2 ^ x)%N.
+Definition N_pow2 (x : N) : N := (2 ^ x)%N.
 
-Instance N_has_hom : HasHom N N := N_hom.
+(** TODO In cases like these,
+    it might make sense to declare [N_has_hom] local,
+    while [N_is_setoid_homomorphism] is global. *)
 
-Instance N_is_setoid_homomorphism : IsSetoidHomomorphism N_hom := {}.
+Instance N_has_hom : HasHom N N := N_pow2.
+
+Instance N_is_setoid_homomorphism : IsSetoidHomomorphism N_pow2 := {}.
 
 Instance N_is_semigroup_homomorphism :
-  IsSemigroupHomomorphism N.add N.mul N_hom := {}.
-Proof.
-  intros x y. cbv -[N.add N.mul N.pow]. rewrite N.pow_add_r. reflexivity. Qed.
+  IsSemigroupHomomorphism N.add N.mul N_pow2 := {}.
+Proof. intros x y. apply N.pow_add_r. Qed.
 
 Instance N_is_monoid_homomorphism :
-  IsMonoidHomomorphism N.add N.zero N.mul N.one N_hom := {}.
+  IsMonoidHomomorphism N.add N.zero N.mul N.one N_pow2 := {}.
 Proof. reflexivity. Qed.

@@ -26,4 +26,4 @@ Add Parametric Morphism {S A : Type}
   `{is_right_module : IsRightModule S A} : rsmul
   with signature eqv ==> eqv ==> eqv
   as eqv_rsmul_morphism.
-Proof. intros x y p z w q. apply right_module_rsmul_is_proper; auto. Qed.
+Proof. apply right_module_rsmul_is_proper; auto. Qed.

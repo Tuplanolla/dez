@@ -31,7 +31,7 @@ Add Parametric Morphism {S A : Type}
   `{is_metric_space : IsMetricSpace S A} : dist
   with signature eqv ==> eqv ==> eqv
   as eqv_dist_morphism.
-Proof. intros x y p z w q. apply metric_space_dist_is_proper; auto. Qed.
+Proof. apply metric_space_dist_is_proper; auto. Qed.
 
 Theorem metric_space_S_opr_right_positive : forall {S A : Type}
   `{is_metric_space : IsMetricSpace S A},

@@ -30,4 +30,4 @@ Add Parametric Morphism {I S A : Type}
   `{is_free_left_module : IsFreeLeftModule I S A} : basis
   with signature eqv ==> eqv
   as eqv_basis_morphism.
-Proof. intros x y p. apply free_left_module_basis_is_proper; auto. Qed.
+Proof. apply free_left_module_basis_is_proper; auto. Qed.

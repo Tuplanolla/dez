@@ -14,4 +14,4 @@ Class IsSemigroup {A : Type} {has_eqv : HasEqv A}
 Add Parametric Morphism {A : Type} `{is_semigroup : IsSemigroup A} : opr
   with signature eqv ==> eqv ==> eqv
   as eqv_opr_morphism.
-Proof. intros ? ? ? ? ? ?. apply semigroup_opr_is_proper; auto. Qed.
+Proof. apply semigroup_opr_is_proper; auto. Qed.

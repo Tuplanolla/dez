@@ -18,7 +18,7 @@ Class IsTotalOrder {A : Type} {has_eqv : HasEqv A}
 Add Parametric Morphism {S A : Type} `{is_total_order : IsTotalOrder A} : ord
   with signature eqv ==> eqv ==> flip impl
   as eqv_ord_morphism.
-Proof. intros x y p z w q. apply total_order_is_proper; auto. Qed.
+Proof. apply total_order_is_proper; auto. Qed.
 
 Theorem total_order_reflexive : forall {A : Type}
   `{is_total_order : IsTotalOrder A},

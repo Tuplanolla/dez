@@ -26,4 +26,4 @@ Add Parametric Morphism {S A : Type}
   `{is_left_module : IsLeftModule S A} : lsmul
   with signature eqv ==> eqv ==> eqv
   as eqv_lsmul_morphism.
-Proof. intros x y p z w q. apply left_module_lsmul_is_proper; auto. Qed.
+Proof. apply left_module_lsmul_is_proper; auto. Qed.

@@ -15,7 +15,7 @@ Class IsGroup {A : Type} {has_eqv : HasEqv A}
 Add Parametric Morphism {A : Type} `{is_group : IsGroup A} : inv
   with signature eqv ==> eqv
   as eqv_inv_morphism.
-Proof. intros x y p. apply group_inv_is_proper; auto. Qed.
+Proof. apply group_inv_is_proper; auto. Qed.
 
 Lemma idn_inv : forall {A : Type} `{is_group : IsGroup A},
   - 0 == 0.
