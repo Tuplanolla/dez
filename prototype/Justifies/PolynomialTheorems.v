@@ -47,7 +47,7 @@ Instance poly_has_add : HasAdd (poly A) :=
   poly_add.
 
 Instance poly_has_zero : HasZero (poly A) :=
-  poly_list nil _.
+  poly_list [] _.
 Proof. intros []. Qed.
 
 Instance poly_has_neg : HasNeg (poly A) := {}.
@@ -57,7 +57,7 @@ Instance poly_has_mul : HasMul (poly A) := {}.
 Proof. Admitted.
 
 (** TODO It is impossible to construct a polynomial ring
-    over a trivial ring, so this does not hold in general. *)
+    over a trivial ring, so this does not hold in this case. *)
 
 Instance poly_has_one : HasOne (poly A) :=
   poly_list [one] _.

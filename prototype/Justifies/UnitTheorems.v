@@ -16,6 +16,13 @@ Proof. intros x y z p q. constructor. Qed.
 
 Instance unit_is_setoid : IsSetoid unit := {}.
 
+Theorem unit_eqv_iff_eq : forall x y : unit,
+  x == y <-> x = y.
+Proof.
+  intros [] []. split.
+  - intros _. constructor.
+  - intros _. constructor. Qed.
+
 Definition unit_opr (x y : unit) : unit := tt.
 
 Instance unit_has_opr : HasOpr unit := unit_opr.

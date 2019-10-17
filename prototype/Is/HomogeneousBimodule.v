@@ -9,5 +9,5 @@ Class IsHomogeneousBimodule (S A : Type) {S_has_eqv : HasEqv S}
   {A_has_eqv : HasEqv A}
   {A_has_opr : HasOpr A} {A_has_idn : HasIdn A} {A_has_inv : HasInv A}
   {has_lsmul : HasLSMul S A} {has_rsmul : HasRSMul S A} : Prop := {
-  lsmul_rsmul_is_bimodule :> IsBimodule S S A;
+  homogeneous_bimodule_is_bimodule :> IsBimodule S S A;
 }.
