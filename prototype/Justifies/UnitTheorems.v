@@ -45,7 +45,7 @@ Instance unit_is_identifiable : IsIdentifiable unit := {}.
 
 Instance unit_is_monoid : IsMonoid unit := {}.
 
-Instance unit_is_commutative : IsCommutative unit := {}.
+Instance unit_is_commutative : IsCommutative unit_opr := {}.
 Proof. intros x y. constructor. Qed.
 
 Instance unit_is_commutative_monoid : IsCommutativeMonoid unit := {}.

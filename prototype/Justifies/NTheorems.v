@@ -64,7 +64,7 @@ Instance N_is_identifiable : IsIdentifiable N := {}.
 
 Instance N_is_monoid : IsMonoid N := {}.
 
-Instance N_is_commutative : IsCommutative N := {}.
+Instance N_is_commutative : IsCommutative N_opr := {}.
 Proof. intros x y. apply N.add_comm. Qed.
 
 Instance N_is_commutative_monoid : IsCommutativeMonoid N := {}.
@@ -94,7 +94,7 @@ Instance N_is_identifiable : IsIdentifiable N := {}.
 
 Instance N_is_monoid : IsMonoid N := {}.
 
-Instance N_is_commutative : IsCommutative N := {}.
+Instance N_is_commutative : IsCommutative N_opr := {}.
 Proof. intros x y. apply N.mul_comm. Qed.
 
 Instance N_is_commutative_monoid : IsCommutativeMonoid N := {}.

@@ -64,7 +64,7 @@ Instance Z_is_identifiable : IsIdentifiable Z := {}.
 
 Instance Z_is_monoid : IsMonoid Z := {}.
 
-Instance Z_is_commutative : IsCommutative Z := {}.
+Instance Z_is_commutative : IsCommutative Z_opr := {}.
 Proof. intros x y. apply Z.add_comm. Qed.
 
 Instance Z_is_commutative_monoid : IsCommutativeMonoid Z := {}.
@@ -108,7 +108,7 @@ Instance Z_is_identifiable : IsIdentifiable Z := {}.
 
 Instance Z_is_monoid : IsMonoid Z := {}.
 
-Instance Z_is_commutative : IsCommutative Z := {}.
+Instance Z_is_commutative : IsCommutative Z_opr := {}.
 Proof. intros x y. apply Z.mul_comm. Qed.
 
 Instance Z_is_commutative_monoid : IsCommutativeMonoid Z := {}.
