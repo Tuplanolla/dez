@@ -5,11 +5,11 @@ From Maniunfold.Is Require Export
 
 Import AdditiveNotations.
 
-Class IsGroup (A : Type) {has_eqv : HasEqv A}
-  {has_opr : HasOpr A} {has_idn : HasIdn A} {has_inv : HasInv A} : Prop := {
+Class IsGroup {A : Type} {has_eqv : HasEqv A}
+  (has_opr : HasOpr A) (has_idn : HasIdn A) (has_inv : HasInv A) : Prop := {
   group_inv_is_proper :> IsProper (eqv ==> eqv) inv;
-  group_is_monoid :> IsMonoid A;
-  group_is_invertible :> IsInvertible A;
+  group_is_monoid :> IsMonoid opr idn;
+  group_is_invertible :> IsInvertible opr idn inv;
 }.
 
 Add Parametric Morphism {A : Type} `{is_group : IsGroup A} : inv
@@ -63,7 +63,7 @@ Proof.
   reflexivity. Qed.
 
 Instance inv_is_involutive {A : Type} `{is_group : IsGroup A} :
-  IsInvolutive A := {}.
+  IsInvolutive inv := {}.
 Proof. apply inv_involutive. Qed.
 
 Theorem inv_antidistributive : forall {A : Type} `{is_group : IsGroup A},
@@ -80,5 +80,5 @@ Proof.
   reflexivity. Qed.
 
 Instance inv_is_antidistributive {A : Type} `{is_group : IsGroup A} :
-  IsAntidistributive A := {}.
+  IsAntidistributive opr inv := {}.
 Proof. apply inv_antidistributive. Qed.

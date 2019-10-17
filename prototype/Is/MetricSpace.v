@@ -8,12 +8,12 @@ Import AdditiveNotations.
 (** TODO Review literature on "generalized", "monoidal" or
     "semigroup-valued" metric spaces. *)
 
-Class IsMetricSpace (S A : Type)
+Class IsMetricSpace {S A : Type}
   {S_has_eqv : HasEqv S} {S_has_ord : HasOrd S}
-  {S_has_opr : HasOpr S} {S_has_idn : HasIdn S}
-  {A_has_eqv : HasEqv A} {has_dist : HasDist S A} : Prop := {
-  metric_space_S_ord_is_total_order :> IsTotalOrder S;
-  metric_space_S_opr_is_commutative_monoid :> IsCommutativeMonoid S;
+  (S_has_opr : HasOpr S) (S_has_idn : HasIdn S)
+  {A_has_eqv : HasEqv A} (has_dist : HasDist S A) : Prop := {
+  metric_space_S_ord_is_total_order :> IsTotalOrder ord;
+  metric_space_S_opr_is_commutative_monoid :> IsCommutativeMonoid opr idn;
   metric_space_S_opr_left_positive : forall x y : S,
     y <= x + y;
   metric_space_S_opr_left_monotone : forall x y z : S,

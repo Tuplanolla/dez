@@ -5,13 +5,12 @@ From Maniunfold.Is Require Export
 From Maniunfold.Is Require Import
   Involutive Antidistributive LeftAbsorbing RightAbsorbing Absorbing.
 
-Class IsRing (A : Type) {has_eqv : HasEqv A}
-  {has_add : HasAdd A} {has_zero : HasZero A} {has_neg : HasNeg A}
-  {has_mul : HasMul A} {has_one : HasOne A} : Prop := {
-  ring_is_semiring :> IsSemiring A;
-  ring_add_is_abelian_group :> IsAbelianGroup A
-    (has_opr := has_add) (has_idn := has_zero) (has_inv := has_neg);
-  ring_mul_is_monoid :> IsMonoid A (has_opr := has_mul) (has_idn := has_one);
+Class IsRing {A : Type} {has_eqv : HasEqv A}
+  (has_add : HasAdd A) (has_zero : HasZero A) (has_neg : HasNeg A)
+  (has_mul : HasMul A) (has_one : HasOne A) : Prop := {
+  ring_is_semiring :> IsSemiring add zero mul one;
+  ring_add_is_abelian_group :> IsAbelianGroup add zero neg;
+  ring_mul_is_monoid :> IsMonoid mul one;
 }.
 
 Add Parametric Morphism {A : Type} `{is_ring : IsRing A} : neg
@@ -90,7 +89,7 @@ Proof.
   reflexivity. Qed.
 
 Instance zero_is_left_absorbing {A : Type} `{is_ring : IsRing A} :
-  IsLeftAbsorbing A := {}.
+  IsLeftAbsorbing mul zero := {}.
 Proof. apply zero_left_absorbing. Qed.
 
 Theorem zero_right_absorbing : forall {A : Type} `{is_ring : IsRing A},
@@ -106,11 +105,11 @@ Proof.
   reflexivity. Qed.
 
 Instance zero_is_right_absorbing {A : Type} `{is_ring : IsRing A} :
-  IsRightAbsorbing A := {}.
+  IsRightAbsorbing mul zero := {}.
 Proof. apply zero_right_absorbing. Qed.
 
 Instance zero_is_absorbing {A : Type} `{is_ring : IsRing A} :
-  IsAbsorbing A := {}.
+  IsAbsorbing mul zero := {}.
 
 Theorem iff_ring_trivial : forall {A : Type} `{is_ring : IsRing A},
   1 == 0 <-> forall x : A, x == 0.

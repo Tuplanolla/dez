@@ -7,8 +7,8 @@ From Maniunfold.Is Require Import
 
 (** TODO This definition causes slow type checking; investigate. *)
 
-Class IsTotalOrder (A : Type)
-  {has_eqv : HasEqv A} {has_ord : HasOrd A} : Prop := {
+Class IsTotalOrder {A : Type} {has_eqv : HasEqv A}
+  (has_ord : HasOrd A) : Prop := {
   total_order_is_proper :> IsProper (eqv ==> eqv ==> flip impl) ord;
   total_order_is_antisymmetric :> IsAntisymmetric ord;
   total_order_is_transitive :> IsTransitive ord;

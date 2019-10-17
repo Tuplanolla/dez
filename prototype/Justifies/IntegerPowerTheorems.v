@@ -8,6 +8,7 @@ From Maniunfold.Justifies Require Import
 Import Pos AdditiveNotations.
 
 (** We need a setoid version of the standard library lemma [iter_op_succ]. *)
+
 Lemma iter_op_succ : forall {A : Type} `{is_setoid : IsSetoid A}
   (op : A -> A -> A),
   (forall x y z : A, op x (op y z) == op (op x y) z) ->
@@ -48,7 +49,7 @@ Proof.
   intros A ? ? ? ? ? n x.
   destruct n as [| p].
   - cbv [nopr]. rewrite idn_inv. reflexivity.
-  - cbv [nopr]. rewrite (popr_inv_distributive p x). reflexivity. Qed.
+  - cbv [nopr]. apply (popr_inv_distributive p x). Qed.
 
 Theorem zopr_inv_distributive : forall {A : Type} `{is_group : IsGroup A},
   forall (n : Z) (x : A), (n * (- x)%group)%Z == - (n * x)%Z.
@@ -56,7 +57,7 @@ Proof.
   intros A ? ? ? ? ? n x.
   destruct n as [| p | p].
   - cbv [zopr]. rewrite idn_inv. reflexivity.
-  - cbv [zopr]. rewrite (popr_inv_distributive p x). reflexivity.
+  - cbv [zopr]. apply (popr_inv_distributive p x).
   - cbv [zopr]. rewrite (involutive (p * x)%positive).
     rewrite (popr_inv_distributive p x).
     rewrite (involutive (p * x)%positive). reflexivity. Qed.

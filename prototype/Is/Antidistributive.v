@@ -5,8 +5,8 @@ From Maniunfold.Is Require Export
 
 Import AdditiveNotations.
 
-Class IsAntidistributive (A : Type)
-  {has_eqv : HasEqv A} {has_opr : HasOpr A} {has_inv : HasInv A} : Prop := {
-  antidistributive_is_setoid :> IsSetoid A;
+Class IsAntidistributive {A : Type} {has_eqv : HasEqv A}
+  (has_opr : HasOpr A) (has_inv : HasInv A) : Prop := {
+  antidistributive_is_setoid :> IsSetoid eqv;
   antidistributive : forall x y : A, - (x + y) == (- y) + (- x);
 }.

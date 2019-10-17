@@ -31,7 +31,7 @@ Proof. intros xs ys H. symmetry; auto. Qed.
 Global Instance poly_is_transitive : IsTransitive poly_eqv := {}.
 Proof. intros xs ys zs Hxy Hyz. etransitivity; eauto. Qed.
 
-Global Instance poly_is_setoid : IsSetoid (poly A) := {}.
+Global Instance poly_is_setoid : IsSetoid poly_eqv := {}.
 
 Program Definition poly_add (xs ys : poly A) : poly A.
 Proof.
@@ -46,24 +46,32 @@ Proof.
 Instance poly_has_add : HasAdd (poly A) :=
   poly_add.
 
-Instance poly_has_zero : HasZero (poly A) :=
+Program Definition poly_zero : poly A :=
   poly_list [] _.
-Proof. intros []. Qed.
 
-Instance poly_has_neg : HasNeg (poly A) := {}.
+Instance poly_has_zero : HasZero (poly A) := poly_zero.
+
+Definition poly_neg (x : poly A) : poly A.
 Proof. Admitted.
 
-Instance poly_has_mul : HasMul (poly A) := {}.
+Instance poly_has_neg : HasNeg (poly A) := poly_neg.
+
+Definition poly_mul (x y : poly A) : poly A.
 Proof. Admitted.
+
+Instance poly_has_mul : HasMul (poly A) := poly_mul.
 
 (** TODO It is impossible to construct a polynomial ring
     over a trivial ring, so this does not hold in this case. *)
 
-Instance poly_has_one : HasOne (poly A) :=
+Program Definition poly_one : poly A :=
   poly_list [one] _.
-Proof. cbn. apply nontrivial_ring_nontrivial. Qed.
+Next Obligation. cbn. apply nontrivial_ring_nontrivial. Qed.
 
-Instance poly_is_ring : IsRing (poly A) := {}.
+Instance poly_has_one : HasOne (poly A) := poly_one.
+
+Instance poly_is_ring :
+  IsRing poly_add poly_zero poly_neg poly_mul poly_zero := {}.
 Proof. Admitted.
 
 End Suffering.

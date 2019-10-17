@@ -27,6 +27,6 @@ Global Instance option_is_transitive : IsTransitive option_eqv := {}.
 Proof. intros [x |] [y |] [z |] Hxy Hyz; hnf. all: try etransitivity; eauto.
   all: inversion Hxy || inversion Hyz. Unshelve. apply x. Qed.
 
-Global Instance option_is_setoid : IsSetoid (option A) := {}.
+Global Instance option_is_setoid : IsSetoid option_eqv := {}.
 
 End Suffering.

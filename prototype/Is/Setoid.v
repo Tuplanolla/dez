@@ -14,7 +14,7 @@ From Maniunfold.Is Require Export
     - it is not a predicative class in [Prop] and
     - it is not constrained by an operational class like [Eqv]. *)
 
-Class IsSetoid (A : Type) {has_eqv : HasEqv A} : Prop := {
+Class IsSetoid {A : Type} (has_eqv : HasEqv A) : Prop := {
   setoid_is_reflexive :> IsReflexive eqv;
   setoid_is_symmetric :> IsSymmetric eqv;
   setoid_is_transitive :> IsTransitive eqv;

@@ -55,6 +55,6 @@ Proof.
         -- apply Hs0'.
         -- apply Hs1'. Qed.
 
-Global Instance list_is_setoid : IsSetoid (list A) := {}.
+Global Instance list_is_setoid : IsSetoid list_eqv := {}.
 
 End Suffering.

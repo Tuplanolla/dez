@@ -8,12 +8,12 @@ From Maniunfold.Is Require Export
     Still, this provides a rough idea of
     how the existence of real numbers can be postulated. *)
 
-Class IsReal (A : Type) {has_eqv : HasEqv A} {has_ord : HasOrd A}
-  {has_add : HasAdd A} {has_zero : HasZero A} {has_neg : HasNeg A}
-  {has_mul : HasMul A} {has_one : HasOne A} {has_recip : HasRecip A} :
+Class IsReal {A : Type} {has_eqv : HasEqv A} {has_ord : HasOrd A}
+  (has_add : HasAdd A) (has_zero : HasZero A) (has_neg : HasNeg A)
+  (has_mul : HasMul A) (has_one : HasOne A) (has_recip : HasRecip A) :
   Prop := {
-  real_ord_is_total_order :> IsTotalOrder A;
-  real_add_mul_is_field :> IsField A;
+  real_ord_is_total_order :> IsTotalOrder ord;
+  real_add_mul_is_field :> IsField add zero neg mul one recip;
   real_add_left_monotone : forall x y z : A, x <= y -> z + x <= z + y;
   real_mul_monotone : forall x y : A, 0 <= x -> 0 <= y -> 0 <= x * y;
   real_ord_complete : forall P Q : A -> Prop,

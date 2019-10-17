@@ -25,7 +25,7 @@ Proof. intros [x ?] [y ?] ?. apply (@N.eq_sym x y); auto. Qed.
 Instance F_is_transitive {p : positive} : IsTransitive (F_eqv (p := p)) := {}.
 Proof. intros [x ?] [y ?] [z ?] ? ?. apply (@N.eq_trans x y z); auto. Qed.
 
-Instance F_is_setoid {p : positive} : IsSetoid (F p) := {}.
+Instance F_is_setoid {p : positive} : IsSetoid (F_eqv (p := p)) := {}.
 
 End Equivalence.
 
@@ -67,7 +67,7 @@ Proof. intros [x ?] [y ?] [z ?] ? ?. apply (N.le_trans x y z); auto. Qed.
 Instance F_is_connex {p : positive} : IsConnex (F_ord (p := p)) := {}.
 Proof. intros [x ?] [y ?]. apply (N.le_ge_cases x y). Qed.
 
-Instance F_is_total_order {p : positive} : IsTotalOrder (F p) := {}.
+Instance F_is_total_order {p : positive} : IsTotalOrder (F_ord (p := p)) := {}.
 Proof. intros [x ?] [y ?] ? [z ?] [w ?] ? ?. simp. subst. auto. Qed.
 
 End Order.

@@ -5,14 +5,13 @@ From Maniunfold.Is Require Export
 
 Import AdditiveNotations.
 
-Class IsRightModule (S A : Type) {S_has_eqv : HasEqv S}
-  {S_has_add : HasAdd S} {S_has_zero : HasZero S} {S_has_neg : HasNeg S}
-  {S_has_mul : HasMul S} {S_has_one : HasOne S}
-  {A_has_eqv : HasEqv A}
-  {A_has_opr : HasOpr A} {A_has_idn : HasIdn A} {A_has_inv : HasInv A}
-  {has_rsmul : HasRSMul S A} : Prop := {
-  right_module_is_ring :> IsRing S;
-  right_module_is_abelian_group :> IsAbelianGroup A;
+Class IsRightModule {S A : Type} {S_has_eqv : HasEqv S}
+  (S_has_add : HasAdd S) (S_has_zero : HasZero S) (S_has_neg : HasNeg S)
+  (S_has_mul : HasMul S) (S_has_one : HasOne S) {A_has_eqv : HasEqv A}
+  (A_has_opr : HasOpr A) (A_has_idn : HasIdn A) (A_has_inv : HasInv A)
+  (has_rsmul : HasRSMul S A) : Prop := {
+  right_module_is_ring :> IsRing add zero neg mul one;
+  right_module_is_abelian_group :> IsAbelianGroup opr idn inv;
   right_module_rsmul_is_proper :> IsProper (eqv ==> eqv ==> eqv) rsmul;
   right_module_rsmul_identity : forall x : A, x *> 1 == x;
   right_module_rsmul_mul_compatible : forall (a b : S) (x : A),

@@ -5,17 +5,16 @@ From Maniunfold.Is Require Export
 
 (** TODO Remember division by zero. *)
 
-Class IsField (A : Type) {has_eqv : HasEqv A}
-  {has_add : HasAdd A} {has_zero : HasZero A} {has_neg : HasNeg A}
-  {has_mul : HasMul A} {has_one : HasOne A} {has_recip : HasRecip A} :
+Class IsField {A : Type} {has_eqv : HasEqv A}
+  (has_add : HasAdd A) (has_zero : HasZero A) (has_neg : HasNeg A)
+  (has_mul : HasMul A) (has_one : HasOne A) (has_recip : HasRecip A) :
   Prop := {
-  recip_proper :> IsProper (eqv ==> eqv) recip;
-  add_mul_is_ring :> IsRing A;
-  mul_is_invertible :> IsInvertible A
-    (has_opr := has_mul) (has_idn := has_one) (has_inv := has_recip);
+  field_recip_is_proper :> IsProper (eqv ==> eqv) recip;
+  field_is_ring :> IsRing add zero neg mul one;
+  field_mul_is_invertible :> IsInvertible mul one recip;
 }.
 
 Add Parametric Morphism {A : Type} `{is_field : IsField A} : recip
   with signature eqv ==> eqv
   as eqv_recip_morphism.
-Proof. intros x y p. apply recip_proper; auto. Qed.
+Proof. apply field_recip_is_proper; auto. Qed.
