@@ -1,11 +1,11 @@
 From Coq Require Import
   List.
 From Maniunfold.Is Require Import
-  Setoid.
+  Semigroup.
 
-Section Suffering.
+Import ListNotations.
 
-(** TODO Use this nice thing more. *)
+Section Context.
 
 Context {A : Type} `{is_setoid : IsSetoid A}.
 
@@ -57,4 +57,31 @@ Proof.
 
 Global Instance list_is_setoid : IsSetoid list_eqv := {}.
 
-End Suffering.
+End Context.
+
+Fixpoint map2 {A0 A1 B : Type}
+  (f : A0 -> A1 -> B) (xs0 : list A0) (xs1 : list A1) : list B :=
+  match xs0, xs1 with
+  | x0 :: xs0, x1 :: xs1 => f x0 x1 :: map2 f xs0 xs1
+  | _, _ => []
+  end.
+
+Section Context.
+
+Import AdditiveNotations.
+
+Context {A : Type} `{is_semigroup : IsSemigroup A}.
+
+Definition list_opr (xs ys : list A) : list A := map2 opr xs ys.
+
+Global Instance list_has_opr : HasOpr (list A) := list_opr.
+
+Instance list_is_proper : IsProper (eqv ==> eqv ==> eqv) list_opr := {}.
+Proof. intros xs ys H xs' ys' H'. cbv [list_opr]. Admitted.
+
+Instance list_is_associative : IsAssociative list_opr := {}.
+Proof. intros x y z. cbv [opr]; cbv [list_opr]. Admitted.
+
+Instance list_is_semigroup : IsSemigroup list_opr := {}.
+
+End Context.
