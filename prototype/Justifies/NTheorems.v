@@ -5,20 +5,18 @@ From Maniunfold.Is Require Import
 
 Module Equivalence.
 
-Definition N_eqv (x y : N) : Prop := x = y.
+Instance N_has_eqv : HasEqv N := N.eq.
 
-Instance N_has_eqv : HasEqv N := N_eqv.
-
-Instance N_is_reflexive : IsReflexive N_eqv := {}.
+Instance N_is_reflexive : IsReflexive N.eq := {}.
 Proof. intros x. reflexivity. Qed.
 
-Instance N_is_symmetric : IsSymmetric N_eqv := {}.
+Instance N_is_symmetric : IsSymmetric N.eq := {}.
 Proof. intros x y p. symmetry; auto. Qed.
 
-Instance N_is_transitive : IsTransitive N_eqv := {}.
+Instance N_is_transitive : IsTransitive N.eq := {}.
 Proof. intros x y z p q. transitivity y; auto. Qed.
 
-Instance N_is_setoid : IsSetoid N_eqv := {}.
+Instance N_is_setoid : IsSetoid N.eq := {}.
 
 End Equivalence.
 

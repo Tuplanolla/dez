@@ -1,5 +1,5 @@
 From Maniunfold.Is Require Import
-  Ring.
+  LeftModule.
 
 Definition unit_eqv (x y : unit) : Prop := True.
 
@@ -89,3 +89,17 @@ Instance unit_is_ring : IsRing tt2 tt tt1 tt2 tt := {}.
 
 Theorem unit_ring_trivial : 1 == 0.
 Proof. reflexivity. Qed.
+
+Section Context.
+
+Context {S : Type} `{is_ring : IsRing S}.
+
+Definition unit_lsmul (x : S) (y : unit) : unit := y.
+
+Global Instance unit_has_lsmul : HasLSMul S unit := unit_lsmul.
+
+Global Instance unit_is_left_module : IsLeftModule add zero neg mul one
+  tt2 tt tt1 unit_lsmul := {}.
+Proof. all: constructor. Qed.
+
+End Context.
