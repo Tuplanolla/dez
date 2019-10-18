@@ -17,4 +17,10 @@ Notation "x '==' y" := (eqv x y) : equivalence_relation_scope.
 Reserved Notation "x '=/=' y" (at level 70, no associativity).
 Notation "x '=/=' y" := (~ x == y) : equivalence_relation_scope.
 
-Instance eqv_has_rel {A : Type} {has_eqv : HasEqv A} : HasRel A := eqv.
+Section Context.
+
+Context {A : Type} {has_eqv : HasEqv A}.
+
+Global Instance : HasRel A := eqv.
+
+End Context.

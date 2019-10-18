@@ -11,7 +11,7 @@ Class IsPartialOrder (A : Type)
   partial_order_is_transitive :> IsTransitive ord;
 }.
 
-Add Parametric Morphism {S A : Type}
+Add Parametric Morphism {A : Type}
   `{is_partial_order : IsPartialOrder A} : ord
   with signature eqv ==> eqv ==> flip impl
   as eqv_ord_morphism.

@@ -9,8 +9,14 @@ Class HasOrd (A : Type) : Type := ord : A -> A -> Prop.
 
 Typeclasses Transparent HasOrd.
 
-Notation "x '<=' y" := (ord x y).
+Notation "x '<=' y" := (ord x y) : order_relation_scope.
 
-Notation "x '<' y" := (x <= y /\ x =/= y).
+Notation "x '<' y" := (x <= y /\ x =/= y) : order_relation_scope.
 
-Instance ord_has_rel {A : Type} {has_ord : HasOrd A} : HasRel A := ord.
+Section Context.
+
+Context {A : Type} {has_ord : HasOrd A}.
+
+Global Instance : HasRel A := ord.
+
+End Context.

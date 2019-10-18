@@ -5,122 +5,122 @@ From Maniunfold.Is Require Import
 
 Module Equivalence.
 
-Instance nat_has_eqv : HasEqv nat := Nat.eq.
+Global Instance : HasEqv nat := Nat.eq.
 
-Instance nat_is_reflexive : IsReflexive Nat.eq := {}.
+Global Instance : IsReflexive Nat.eq := {}.
 Proof. intros x. reflexivity. Qed.
 
-Instance nat_is_symmetric : IsSymmetric Nat.eq := {}.
+Global Instance : IsSymmetric Nat.eq := {}.
 Proof. intros x y p. symmetry; auto. Qed.
 
-Instance nat_is_transitive : IsTransitive Nat.eq := {}.
+Global Instance : IsTransitive Nat.eq := {}.
 Proof. intros x y z p q. transitivity y; auto. Qed.
 
-Instance nat_is_setoid : IsSetoid Nat.eq := {}.
+Global Instance : IsSetoid Nat.eq := {}.
 
 End Equivalence.
 
 Module Order.
 
-Instance nat_has_ord : HasOrd nat := Nat.le.
+Global Instance : HasOrd nat := Nat.le.
 
-Instance nat_is_antisymmetric : IsAntisymmetric Nat.le := {}.
+Global Instance : IsAntisymmetric Nat.le := {}.
 Proof. intros x y p q. apply Nat.le_antisymm; auto. Qed.
 
-Instance nat_is_transitive : IsTransitive Nat.le := {}.
+Global Instance : IsTransitive Nat.le := {}.
 Proof. intros x y z p q. transitivity y; auto. Qed.
 
-Instance nat_is_connex : IsConnex Nat.le := {}.
+Global Instance : IsConnex Nat.le := {}.
 Proof. intros x y. apply Nat.le_ge_cases. Qed.
 
-Instance nat_is_total_order : IsTotalOrder Nat.le := {}.
+Global Instance : IsTotalOrder Nat.le := {}.
 
 End Order.
 
 Module Additive.
 
-Instance nat_has_opr : HasOpr nat := Nat.add.
+Global Instance : HasOpr nat := Nat.add.
 
-Instance nat_is_associative : IsAssociative Nat.add := {}.
+Global Instance : IsAssociative Nat.add := {}.
 Proof. intros x y z. apply Nat.add_assoc. Qed.
 
-Instance nat_is_semigroup : IsSemigroup Nat.add := {}.
+Global Instance : IsSemigroup Nat.add := {}.
 
-Instance nat_has_idn : HasIdn nat := Nat.zero.
+Global Instance : HasIdn nat := Nat.zero.
 
-Instance nat_is_left_identifiable : IsLeftIdentifiable Nat.add Nat.zero := {}.
+Global Instance : IsLeftIdentifiable Nat.add Nat.zero := {}.
 Proof. intros x. apply Nat.add_0_l. Qed.
 
-Instance nat_is_right_identifiable :
+Global Instance :
   IsRightIdentifiable Nat.add Nat.zero := {}.
 Proof. intros x. apply Nat.add_0_r. Qed.
 
-Instance nat_is_identifiable : IsIdentifiable Nat.add Nat.zero := {}.
+Global Instance : IsIdentifiable Nat.add Nat.zero := {}.
 
-Instance nat_is_monoid : IsMonoid Nat.add Nat.zero := {}.
+Global Instance : IsMonoid Nat.add Nat.zero := {}.
 
-Instance nat_is_commutative : IsCommutative Nat.add := {}.
+Global Instance : IsCommutative Nat.add := {}.
 Proof. intros x y. apply Nat.add_comm. Qed.
 
-Instance nat_is_commutative_monoid :
+Global Instance :
   IsCommutativeMonoid Nat.add Nat.zero := {}.
 
 End Additive.
 
 Module Multiplicative.
 
-Instance nat_has_opr : HasOpr nat := Nat.mul.
+Global Instance : HasOpr nat := Nat.mul.
 
-Instance nat_is_associative : IsAssociative Nat.mul := {}.
+Global Instance : IsAssociative Nat.mul := {}.
 Proof. intros x y z. apply Nat.mul_assoc. Qed.
 
-Instance nat_is_semigroup : IsSemigroup Nat.mul := {}.
+Global Instance : IsSemigroup Nat.mul := {}.
 
-Instance nat_has_idn : HasIdn nat := Nat.one.
+Global Instance : HasIdn nat := Nat.one.
 
-Instance nat_is_left_identifiable : IsLeftIdentifiable Nat.mul Nat.one := {}.
+Global Instance : IsLeftIdentifiable Nat.mul Nat.one := {}.
 Proof. intros x. apply Nat.mul_1_l. Qed.
 
-Instance nat_is_right_identifiable : IsRightIdentifiable Nat.mul Nat.one := {}.
+Global Instance : IsRightIdentifiable Nat.mul Nat.one := {}.
 Proof. intros x. apply Nat.mul_1_r. Qed.
 
-Instance nat_is_identifiable : IsIdentifiable Nat.mul Nat.one := {}.
+Global Instance : IsIdentifiable Nat.mul Nat.one := {}.
 
-Instance nat_is_monoid : IsMonoid Nat.mul Nat.one := {}.
+Global Instance : IsMonoid Nat.mul Nat.one := {}.
 
-Instance nat_is_commutative : IsCommutative Nat.mul := {}.
+Global Instance : IsCommutative Nat.mul := {}.
 Proof. intros x y. apply Nat.mul_comm. Qed.
 
-Instance nat_is_commutative_monoid : IsCommutativeMonoid Nat.mul Nat.one := {}.
+Global Instance : IsCommutativeMonoid Nat.mul Nat.one := {}.
 
 End Multiplicative.
 
-Instance nat_has_add : HasAdd nat := Nat.add.
-Instance nat_has_mul : HasMul nat := Nat.mul.
+Global Instance : HasAdd nat := Nat.add.
+Global Instance : HasMul nat := Nat.mul.
 
-Instance nat_has_zero : HasZero nat := Nat.zero.
-Instance nat_has_one : HasOne nat := Nat.one.
+Global Instance : HasZero nat := Nat.zero.
+Global Instance : HasOne nat := Nat.one.
 
-Instance nat_is_left_distributive : IsLeftDistributive Nat.add Nat.mul := {}.
+Global Instance : IsLeftDistributive Nat.add Nat.mul := {}.
 Proof. intros x y z. apply Nat.mul_add_distr_l. Qed.
 
-Instance nat_is_right_distributive : IsRightDistributive Nat.add Nat.mul := {}.
+Global Instance : IsRightDistributive Nat.add Nat.mul := {}.
 Proof. intros x y z. apply Nat.mul_add_distr_r. Qed.
 
-Instance nat_is_distributive : IsDistributive Nat.add Nat.mul := {}.
+Global Instance : IsDistributive Nat.add Nat.mul := {}.
 
-Instance nat_is_semiring : IsSemiring Nat.add Nat.zero Nat.mul Nat.one := {}.
+Global Instance : IsSemiring Nat.add Nat.zero Nat.mul Nat.one := {}.
 
 Definition nat_pow2 (x : nat) : nat := 2 ^ x.
 
-Instance nat_has_hom : HasHom nat nat := nat_pow2.
+Global Instance : HasHom nat nat := nat_pow2.
 
-Instance nat_is_setoid_homomorphism : IsSetoidHomomorphism nat_pow2 := {}.
+Global Instance : IsSetoidHomomorphism nat_pow2 := {}.
 
-Instance nat_is_semigroup_homomorphism :
+Global Instance :
   IsSemigroupHomomorphism Nat.add Nat.mul nat_pow2 := {}.
 Proof. intros x y. apply Nat.pow_add_r. Qed.
 
-Instance nat_is_monoid_homomorphism :
+Global Instance :
   IsMonoidHomomorphism Nat.add Nat.zero Nat.mul Nat.one nat_pow2 := {}.
 Proof. reflexivity. Qed.

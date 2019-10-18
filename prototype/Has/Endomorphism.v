@@ -5,4 +5,10 @@ Class HasEndo (A : Type) : Type := endo : A -> A.
 
 Typeclasses Transparent HasEndo.
 
-Instance endo_has_hom {A : Type} {has_endo : HasEndo A} : HasHom A A := endo.
+Section Context.
+
+Context {A : Type} {has_endo : HasEndo A}.
+
+Global Instance : HasHom A A := endo.
+
+End Context.
