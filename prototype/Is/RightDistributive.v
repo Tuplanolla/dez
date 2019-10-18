@@ -5,6 +5,6 @@ From Maniunfold.Is Require Export
 
 Class IsRightDistributive {A : Type} {has_eqv : HasEqv A}
   (has_add : HasAdd A) (has_mul : HasMul A) : Prop := {
-  right_distributive_is_setoid :> IsSetoid eqv;
+  right_distributive_eqv_is_setoid :> IsSetoid eqv;
   right_distributive : forall x y z : A, (x + y) * z == x * z + y * z;
 }.

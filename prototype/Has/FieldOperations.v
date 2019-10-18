@@ -13,5 +13,5 @@ Typeclasses Transparent HasAdd HasMul.
 Notation "x '+' y" := (add x y) : field_scope.
 Notation "x '*' y" := (mul x y) : field_scope.
 
-Instance add_has_opr {A : Type} {has_add : HasAdd A} : HasOpr A := add.
-Instance mul_has_opr {A : Type} {has_mul : HasMul A} : HasOpr A := mul.
+Global Instance add_has_opr {A : Type} {has_add : HasAdd A} : HasOpr A := add.
+Global Instance mul_has_opr {A : Type} {has_mul : HasMul A} : HasOpr A := mul.

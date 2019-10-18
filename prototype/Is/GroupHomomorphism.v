@@ -11,10 +11,10 @@ Class IsGroupHomomorphism {A B : Type}
   {B_has_eqv : HasEqv B} (B_has_opr : HasOpr B)
   (B_has_idn : HasIdn B) (B_has_inv : HasInv B)
   (has_hom : HasHom A B) : Prop := {
-  group_homomorphism_is_monoid_homomorphism :>
+  group_homomorphism_A_B_opr_idn_opr_idn_hom_is_monoid_homomorphism :>
     IsMonoidHomomorphism (A := A) (B := B) opr idn opr idn hom;
-  group_homomorphism_A_is_group :> IsGroup (A := A) opr idn inv;
-  group_homomorphism_B_is_group :> IsGroup (A := B) opr idn inv;
+  group_homomorphism_A_opr_idn_inv_is_group :> IsGroup (A := A) opr idn inv;
+  group_homomorphism_B_opr_idn_inv_is_group :> IsGroup (A := B) opr idn inv;
 }.
 
 (** We can derive these theorems

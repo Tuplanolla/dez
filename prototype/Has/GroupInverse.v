@@ -27,4 +27,4 @@ Notation "x '/' y" := (opr x (inv y)) : group_scope.
 
 End MultiplicativeNotations.
 
-Instance inv_has_endo {A : Type} {has_inv : HasInv A} : HasEndo A := inv.
+Global Instance inv_has_endo {A : Type} {has_inv : HasInv A} : HasEndo A := inv.

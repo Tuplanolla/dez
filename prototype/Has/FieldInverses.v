@@ -11,5 +11,5 @@ Notation "x '-' y" := (add x (neg y)) : field_scope.
 Notation "'/' x" := (recip x) : field_scope.
 Notation "x '/' y" := (mul x (recip y)) : field_scope.
 
-Instance neg_has_inv {A : Type} {has_neg : HasNeg A} : HasInv A := neg.
-Instance recip_has_inv {A : Type} {has_recip : HasRecip A} : HasInv A := recip.
+Global Instance neg_has_inv {A : Type} {has_neg : HasNeg A} : HasInv A := neg.
+Global Instance recip_has_inv {A : Type} {has_recip : HasRecip A} : HasInv A := recip.

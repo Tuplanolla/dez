@@ -13,4 +13,4 @@ Notation "x '<=' y" := (ord x y) : order_relation_scope.
 
 Notation "x '<' y" := (x <= y /\ x =/= y) : order_relation_scope.
 
-Instance ord_has_rel {A : Type} {has_ord : HasOrd A} : HasRel A := ord.
+Global Instance ord_has_rel {A : Type} {has_ord : HasOrd A} : HasRel A := ord.

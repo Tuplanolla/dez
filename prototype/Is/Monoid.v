@@ -5,6 +5,6 @@ From Maniunfold.Is Require Export
 
 Class IsMonoid {A : Type} {has_eqv : HasEqv A}
   (has_opr : HasOpr A) (has_idn : HasIdn A) : Prop := {
-  monoid_is_semigroup :> IsSemigroup opr;
-  monoid_is_identifiable :> IsIdentifiable opr idn;
+  monoid_opr_is_semigroup :> IsSemigroup opr;
+  monoid_opr_idn_is_identifiable :> IsIdentifiable opr idn;
 }.

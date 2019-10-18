@@ -9,7 +9,7 @@ From Maniunfold.Is Require Export
 
 Class IsFinite (A : Type) {has_eqv : HasEqv A}
   {has_enum : HasEnum A} : Prop := {
-  eqv_is_setoid :> IsSetoid eqv;
-  enum_is_covering : forall x : A, Exists (fun y : A => x == y) enum;
-  enum_is_disjoint : NoDup enum;
+  finite_eqv_is_setoid :> IsSetoid eqv;
+  finite_covering : forall x : A, Exists (fun y : A => x == y) enum;
+  finite_disjoint : NoDup enum;
 }.

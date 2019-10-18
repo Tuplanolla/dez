@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.Is Require Export
   TotalOrder Field.
 
-(** TODO This is probably wrong,
+(** TODO This is probably wrong in many ways,
     as the existential quantifier might have to be constructive.
     Still, this provides a rough idea of
     how the existence of real numbers can be postulated. *)
@@ -13,10 +13,11 @@ Class IsReal {A : Type} {has_eqv : HasEqv A} {has_ord : HasOrd A}
   (has_mul : HasMul A) (has_one : HasOne A) (has_recip : HasRecip A) :
   Prop := {
   real_ord_is_total_order :> IsTotalOrder ord;
-  real_add_mul_is_field :> IsField add zero neg mul one recip;
-  real_add_left_monotone : forall x y z : A, x <= y -> z + x <= z + y;
-  real_mul_monotone : forall x y : A, 0 <= x -> 0 <= y -> 0 <= x * y;
-  real_ord_complete : forall P Q : A -> Prop,
+  real_add_zero_neg_mul_one_recip_is_field :>
+    IsField add zero neg mul one recip;
+  real_left_monotone : forall x y z : A, x <= y -> z + x <= z + y;
+  real_monotone : forall x y : A, 0 <= x -> 0 <= y -> 0 <= x * y;
+  real_complete : forall P Q : A -> Prop,
     (forall x y : A, P x -> Q y -> x < y) ->
     exists z : A, forall x y : A, P x -> Q y ->
     x =/= z -> y =/= z -> x < z /\ z < y;
