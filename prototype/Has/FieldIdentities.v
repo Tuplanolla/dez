@@ -9,21 +9,8 @@ Typeclasses Transparent HasZero HasOne.
 Notation "'0'" := zero : field_scope.
 Notation "'1'" := one : field_scope.
 
-Section Context.
-
-Context {A : Type} {has_zero : HasZero A}.
-
-Global Instance : HasIdn A := zero.
-
-End Context.
-
-Section Context.
-
-Context {A : Type} {has_one : HasOne A}.
-
-Global Instance : HasIdn A := one.
-
-End Context.
+Instance zero_has_idn {A : Type} {has_zero : HasZero A} : HasIdn A := zero.
+Instance one_has_idn {A : Type} {has_one : HasOne A} : HasIdn A := one.
 
 (** Numeral notations do not work with type classes,
     so we need to construct them from additions.

@@ -14,19 +14,19 @@ Definition option_eqv (xs ys : option A) : Prop :=
   | _, _ => False
   end.
 
-Global Instance : HasEqv (option A) := option_eqv.
+Global Instance option_has_eqv : HasEqv (option A) := option_eqv.
 
-Global Instance : IsReflexive option_eqv := {}.
+Global Instance option_is_reflexive : IsReflexive option_eqv := {}.
 Proof. intros [x |]. hnf. reflexivity. reflexivity. Qed.
 
-Global Instance : IsSymmetric option_eqv := {}.
+Global Instance option_is_symmetric : IsSymmetric option_eqv := {}.
 Proof. intros [x |] [y |] H; hnf. symmetry; auto.
   inversion H. inversion H. constructor. Qed.
 
-Global Instance : IsTransitive option_eqv := {}.
+Global Instance option_is_transitive : IsTransitive option_eqv := {}.
 Proof. intros [x |] [y |] [z |] Hxy Hyz; hnf. all: try etransitivity; eauto.
   all: inversion Hxy || inversion Hyz. Unshelve. apply x. Qed.
 
-Global Instance : IsSetoid option_eqv := {}.
+Global Instance option_is_setoid : IsSetoid option_eqv := {}.
 
 End Suffering.

@@ -13,10 +13,4 @@ Notation "x '<=' y" := (ord x y) : order_relation_scope.
 
 Notation "x '<' y" := (x <= y /\ x =/= y) : order_relation_scope.
 
-Section Context.
-
-Context {A : Type} {has_ord : HasOrd A}.
-
-Global Instance : HasRel A := ord.
-
-End Context.
+Instance ord_has_rel {A : Type} {has_ord : HasOrd A} : HasRel A := ord.

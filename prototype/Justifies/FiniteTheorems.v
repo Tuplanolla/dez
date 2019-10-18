@@ -56,7 +56,7 @@ Instance F_has_ord {p : positive} : HasOrd (F p) := F_ord.
 (** TODO Remove this. *)
 
 Ltac simp := cbv [eqv Equivalence.F_has_eqv Equivalence.F_eqv
-  rel ord F_has_ord F_ord] in *; cbn in *.
+  rel ord_has_rel ord F_has_ord F_ord] in *; cbn in *.
 
 Instance F_is_antisymmetric {p : positive} : IsAntisymmetric (F_ord (p := p)) := {}.
 Proof. intros [x ?] [y ?] ? ?. apply (N.le_antisymm x y); auto. Qed.

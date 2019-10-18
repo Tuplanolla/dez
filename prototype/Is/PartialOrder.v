@@ -3,22 +3,21 @@ From Maniunfold.Has Require Export
 From Maniunfold.Is Require Export
   Reflexive Antisymmetric Transitive.
 
-Class IsPartialOrder (A : Type)
-  {has_eqv : HasEqv A} {has_ord : HasOrd A} : Prop := {
-  partial_order_is_proper :> IsProper (eqv ==> eqv ==> flip impl) ord;
-  partial_order_is_reflexive :> IsReflexive ord;
-  partial_order_is_antisymmetric :> IsAntisymmetric ord;
-  partial_order_is_transitive :> IsTransitive ord;
+Class IsPartialOrder {A : Type} {has_eqv : HasEqv A}
+  (has_ord : HasOrd A) : Prop := {
+  partial_order_ord_is_proper :> IsProper (eqv ==> eqv ==> flip impl) ord;
+  partial_order_ord_is_reflexive :> IsReflexive ord;
+  partial_order_ord_is_antisymmetric :> IsAntisymmetric ord;
+  partial_order_ord_is_transitive :> IsTransitive ord;
 }.
 
-Add Parametric Morphism {A : Type}
-  `{is_partial_order : IsPartialOrder A} : ord
+Add Parametric Morphism {A : Type} `{is_partial_order : IsPartialOrder A} : ord
   with signature eqv ==> eqv ==> flip impl
-  as eqv_ord_morphism.
-Proof. apply partial_order_is_proper; auto. Qed.
+  as partial_order_ord_morphism.
+Proof. apply partial_order_ord_is_proper; auto. Qed.
 
 Add Parametric Relation {A : Type}
   `{is_partial_order : IsPartialOrder A} : A ord
-  reflexivity proved by partial_order_is_reflexive
-  transitivity proved by partial_order_is_transitive
+  reflexivity proved by partial_order_ord_is_reflexive
+  transitivity proved by partial_order_ord_is_transitive
   as partial_order_relation.

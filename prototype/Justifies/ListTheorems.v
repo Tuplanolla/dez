@@ -12,9 +12,9 @@ Context {A : Type} `{is_setoid : IsSetoid A}.
 Definition list_eqv (xs ys : list A) : Prop :=
   Forall2 (fun x y : A => x == y) xs ys.
 
-Global Instance : HasEqv (list A) := list_eqv.
+Global Instance list_has_eqv : HasEqv (list A) := list_eqv.
 
-Global Instance : IsReflexive list_eqv := {}.
+Global Instance list_is_reflexive : IsReflexive list_eqv := {}.
 Proof.
   intros xs. induction xs as [| x xs IH].
   - apply Forall2_nil.
@@ -22,7 +22,7 @@ Proof.
     + reflexivity.
     + apply IH. Qed.
 
-Global Instance : IsSymmetric list_eqv := {}.
+Global Instance list_is_symmetric : IsSymmetric list_eqv := {}.
 Proof.
   intros xs. induction xs as [| x xs IH]; intros ys H.
   - destruct ys as [| y ys].
@@ -34,7 +34,7 @@ Proof.
       * symmetry. apply H'.
       * apply IH. apply Hs'. Qed.
 
-Global Instance : IsTransitive list_eqv := {}.
+Global Instance list_is_transitive : IsTransitive list_eqv := {}.
 Proof.
   intros xs. induction xs as [| x xs IH]; intros ys zs H0 H1.
   - destruct ys as [| y ys], zs as [| z zs].
@@ -55,7 +55,7 @@ Proof.
         -- apply Hs0'.
         -- apply Hs1'. Qed.
 
-Global Instance : IsSetoid list_eqv := {}.
+Global Instance list_is_setoid : IsSetoid list_eqv := {}.
 
 End Context.
 
@@ -84,14 +84,14 @@ Context {A : Type} `{is_semigroup : IsSemigroup A}.
 
 Definition list_opr (xs ys : list A) : list A := map2 opr xs ys.
 
-Global Instance : HasOpr (list A) := list_opr.
+Global Instance list_has_opr : HasOpr (list A) := list_opr.
 
-Global Instance : IsProper (eqv ==> eqv ==> eqv) list_opr := {}.
+Global Instance list_is_proper : IsProper (eqv ==> eqv ==> eqv) list_opr := {}.
 Proof. intros xs ys H xs' ys' H'. cbv [list_opr]. Admitted.
 
-Global Instance : IsAssociative list_opr := {}.
+Global Instance list_is_associative : IsAssociative list_opr := {}.
 Proof. intros x y z. cbv [opr]; cbv [list_opr]. Admitted.
 
-Global Instance : IsSemigroup list_opr := {}.
+Global Instance list_is_semigroup : IsSemigroup list_opr := {}.
 
 End Context.
