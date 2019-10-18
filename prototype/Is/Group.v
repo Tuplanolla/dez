@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation GroupOperation GroupIdentity GroupInverse.
 From Maniunfold.Is Require Export
-  Monoid Invertible Involutive Antidistributive.
+  Proper Monoid Invertible Involutive Antidistributive.
 
 Import AdditiveNotations.
 
@@ -11,11 +11,6 @@ Class IsGroup {A : Type} {has_eqv : HasEqv A}
   group_is_monoid :> IsMonoid opr idn;
   group_is_invertible :> IsInvertible opr idn inv;
 }.
-
-Add Parametric Morphism {A : Type} `{is_group : IsGroup A} : inv
-  with signature eqv ==> eqv
-  as eqv_inv_morphism.
-Proof. apply group_inv_is_proper; auto. Qed.
 
 Lemma idn_inv : forall {A : Type} `{is_group : IsGroup A},
   - 0 == 0.

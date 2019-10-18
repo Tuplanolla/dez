@@ -34,6 +34,7 @@ Instance nat_is_connex : IsConnex Nat.le := {}.
 Proof. intros x y. apply Nat.le_ge_cases. Qed.
 
 Instance nat_is_total_order : IsTotalOrder Nat.le := {}.
+Proof. cbv -[Nat.le]. apply Nat.le_wd. Qed.
 
 End Order.
 
@@ -45,6 +46,7 @@ Instance nat_is_associative : IsAssociative Nat.add := {}.
 Proof. intros x y z. apply Nat.add_assoc. Qed.
 
 Instance nat_is_semigroup : IsSemigroup Nat.add := {}.
+Proof. cbv -[Nat.add]. apply Nat.add_wd. Qed.
 
 Instance nat_has_idn : HasIdn nat := Nat.zero.
 
@@ -75,6 +77,7 @@ Instance nat_is_associative : IsAssociative Nat.mul := {}.
 Proof. intros x y z. apply Nat.mul_assoc. Qed.
 
 Instance nat_is_semigroup : IsSemigroup Nat.mul := {}.
+Proof. cbv -[Nat.mul]. apply Nat.mul_wd. Qed.
 
 Instance nat_has_idn : HasIdn nat := Nat.one.
 
@@ -116,6 +119,7 @@ Definition nat_pow2 (x : nat) : nat := 2 ^ x.
 Instance nat_has_hom : HasHom nat nat := nat_pow2.
 
 Instance nat_is_setoid_homomorphism : IsSetoidHomomorphism nat_pow2 := {}.
+Proof. cbv -[Nat.pow]. apply Nat.pow_wd. reflexivity. Qed.
 
 Instance nat_is_semigroup_homomorphism :
   IsSemigroupHomomorphism Nat.add Nat.mul nat_pow2 := {}.

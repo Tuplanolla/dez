@@ -1,18 +1,16 @@
-(** This module is a bit awkward,
-    because it tries to be compatible with the standard library setoid. *)
+(** TODO Remove this after getting rid of [Add] commands. *)
 
 From Coq Require Export
   Setoid.
+
+From Coq Require Import
+  RelationClasses.
 From Maniunfold Require Export
-  Settings.
+  Init.
 From Maniunfold.Has Require Export
   EquivalenceRelation.
 From Maniunfold.Is Require Export
-  Proper Reflexive Symmetric Transitive.
-
-(** We do not use the standard library setoid directly, because
-    - it is not a predicative class in [Prop] and
-    - it is not constrained by an operational class like [Eqv]. *)
+  Reflexive Symmetric Transitive.
 
 Class IsSetoid {A : Type} (has_eqv : HasEqv A) : Prop := {
   setoid_is_reflexive :> IsReflexive eqv;
@@ -20,8 +18,10 @@ Class IsSetoid {A : Type} (has_eqv : HasEqv A) : Prop := {
   setoid_is_transitive :> IsTransitive eqv;
 }.
 
-Add Parametric Relation {A : Type} `{is_setoid : IsSetoid A} : A eqv
-  reflexivity proved by setoid_is_reflexive
-  symmetry proved by setoid_is_symmetric
-  transitivity proved by setoid_is_transitive
-  as setoid_relation.
+Section Context.
+
+Context {A : Type} `{is_setoid : IsSetoid A}.
+
+Global Instance setoid_is_equivalence : Equivalence eqv := {}.
+
+End Context.

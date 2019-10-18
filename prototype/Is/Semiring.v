@@ -10,13 +10,3 @@ Class IsSemiring {A : Type} {has_eqv : HasEqv A}
   semiring_mul_is_monoid :> IsMonoid mul one;
   semiring_is_distributive :> IsDistributive add mul;
 }.
-
-Add Parametric Morphism {A : Type} `{is_semiring : IsSemiring A} : add
-  with signature eqv ==> eqv ==> eqv
-  as eqv_add_morphism.
-Proof. apply semigroup_opr_is_proper; auto. Qed.
-
-Add Parametric Morphism {A : Type} `{is_semiring : IsSemiring A} : mul
-  with signature eqv ==> eqv ==> eqv
-  as eqv_mul_morphism.
-Proof. apply semigroup_opr_is_proper; auto. Qed.

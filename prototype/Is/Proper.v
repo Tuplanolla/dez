@@ -1,21 +1,19 @@
-(** This module is a bit awkward,
-    because it tries to be compatible with the standard library morphisms. *)
-
-From Coq Require Export
+From Coq Require Import
   Morphisms.
+From Maniunfold Require Export
+  Init.
 From Maniunfold.Has Require Export
-  Relation.
+  Relation Point.
 
-Delimit Scope signature_scope with signature.
+Class IsProper {A : Type} (has_rel : HasRel A) (has_pt : HasPt A) : Prop :=
+  proper : pt ~ pt.
 
-Open Scope signature_scope.
+Export ProperNotations.
 
-(** We use the standard library morphisms directly, because
-    - they come with many useful instances and
-    - they have better performance characteristics for type inference. *)
+Section Context.
 
-(* Class IsProper {A : Type} (has_rel : HasRel A) (x : A) : Prop :=
-  proper : x ~ x. *)
+Context {A : Type} `{is_proper : IsProper A}.
 
-Notation "'IsProper'" := Proper.
-Notation "'proper'" := proper_prf.
+Global Instance proper_is_proper : Proper rel pt | 0 := proper.
+
+End Context.

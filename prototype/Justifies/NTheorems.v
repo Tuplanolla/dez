@@ -1,5 +1,5 @@
 From Coq Require Import
-  NArith.
+  Morphisms NArith.
 From Maniunfold.Is Require Import
   TotalOrder Semiring MonoidHomomorphism.
 
@@ -34,6 +34,7 @@ Instance N_is_connex : IsConnex N.le := {}.
 Proof. intros x y. apply N.le_ge_cases. Qed.
 
 Instance N_is_total_order : IsTotalOrder N.le := {}.
+Proof. cbv -[N.le]. apply N.le_wd. Qed.
 
 End Order.
 
@@ -45,6 +46,7 @@ Instance N_is_associative : IsAssociative N.add := {}.
 Proof. intros x y z. apply N.add_assoc. Qed.
 
 Instance N_is_semigroup : IsSemigroup N.add := {}.
+Proof. cbv -[N.add]. apply N.add_wd. Qed.
 
 Instance N_has_idn : HasIdn N := N.zero.
 
@@ -73,6 +75,7 @@ Instance N_is_associative : IsAssociative N.mul := {}.
 Proof. intros x y z. apply N.mul_assoc. Qed.
 
 Instance N_is_semigroup : IsSemigroup N.mul := {}.
+Proof. cbv -[N.mul]. apply N.mul_wd. Qed.
 
 Instance N_has_idn : HasIdn N := N.one.
 
@@ -114,6 +117,7 @@ Definition N_pow2 (x : N) : N := (2 ^ x)%N.
 Instance N_has_hom : HasHom N N := N_pow2.
 
 Instance N_is_setoid_homomorphism : IsSetoidHomomorphism N_pow2 := {}.
+Proof. cbv -[N.pow]. apply N.pow_wd. reflexivity. Qed.
 
 Instance N_is_semigroup_homomorphism :
   IsSemigroupHomomorphism N.add N.mul N_pow2 := {}.

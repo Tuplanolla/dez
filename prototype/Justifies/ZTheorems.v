@@ -34,6 +34,7 @@ Instance Z_is_connex : IsConnex Z.le := {}.
 Proof. intros x y. apply Z.le_ge_cases. Qed.
 
 Instance Z_is_total_order : IsTotalOrder Z.le := {}.
+Proof. cbv -[Z.le]. apply Z.le_wd. Qed.
 
 End Order.
 
@@ -45,6 +46,7 @@ Instance Z_is_associative : IsAssociative Z.add := {}.
 Proof. intros x y z. apply Z.add_assoc. Qed.
 
 Instance Z_is_semigroup : IsSemigroup Z.add := {}.
+Proof. cbv -[Z.add]. apply Z.add_wd. Qed.
 
 Instance Z_has_idn : HasIdn Z := Z.zero.
 
@@ -74,6 +76,7 @@ Proof. intros x. apply Z.add_opp_diag_r. Qed.
 Instance Z_is_invertible : IsInvertible Z.add Z.zero Z.opp := {}.
 
 Instance Z_is_group : IsGroup Z.add Z.zero Z.opp := {}.
+Proof. cbv -[Z.opp]. apply Z.opp_wd. Qed.
 
 Instance Z_is_abelian_group : IsAbelianGroup Z.add Z.zero Z.opp := {}.
 
@@ -87,6 +90,7 @@ Instance Z_is_associative : IsAssociative Z.mul := {}.
 Proof. intros x y z. apply Z.mul_assoc. Qed.
 
 Instance Z_is_semigroup : IsSemigroup Z.mul := {}.
+Proof. cbv -[Z.mul]. apply Z.mul_wd. Qed.
 
 Instance Z_has_idn : HasIdn Z := Z.one.
 

@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation FieldOperations FieldIdentities FieldInverses.
 From Maniunfold.Is Require Export
-  Ring Invertible.
+  Proper Ring Invertible.
 
 (** TODO Remember division by zero. *)
 
@@ -13,8 +13,3 @@ Class IsField {A : Type} {has_eqv : HasEqv A}
   field_is_ring :> IsRing add zero neg mul one;
   field_mul_is_invertible :> IsInvertible mul one recip;
 }.
-
-Add Parametric Morphism {A : Type} `{is_field : IsField A} : recip
-  with signature eqv ==> eqv
-  as eqv_recip_morphism.
-Proof. apply field_recip_is_proper; auto. Qed.

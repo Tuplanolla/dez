@@ -1,3 +1,5 @@
+From Maniunfold Require Export
+  Init.
 From Maniunfold.Has Require Export
   EquivalenceRelation Relation.
 From Maniunfold.Is Require Export
@@ -5,6 +7,6 @@ From Maniunfold.Is Require Export
 
 Class IsAntisymmetric {A : Type} {has_eqv : HasEqv A}
   (has_rel : HasRel A) : Prop := {
-  eqv_is_setoid :> IsSetoid eqv;
-  rel_antisymmetric : forall x y : A, x ~ y -> y ~ x -> x == y;
+  antisymmetric_eqv_is_setoid :> IsSetoid eqv;
+  antisymmetric : forall x y : A, x ~ y -> y ~ x -> x == y;
 }.

@@ -10,8 +10,3 @@ Class IsSemigroup {A : Type} {has_eqv : HasEqv A}
   semigroup_opr_is_proper :> IsProper (eqv ==> eqv ==> eqv) opr;
   semigroup_opr_is_associative :> IsAssociative opr;
 }.
-
-Add Parametric Morphism {A : Type} `{is_semigroup : IsSemigroup A} : opr
-  with signature eqv ==> eqv ==> eqv
-  as eqv_opr_morphism.
-Proof. apply semigroup_opr_is_proper; auto. Qed.

@@ -21,6 +21,48 @@ When defining classes, implicit generalization must not be used.
 When declaring parametric relations or morphisms or proving theorems,
 implicit generalization should be used.
 
+### Compatibility
+
+The standard library has the follwing classes we want to be compatible with.
+
+* `DecidableClass`
+    * `Decidable`
+* `EquivDec`
+    * `DecidableEquivalence`
+    * `EqDec`
+* `Init`
+    * `Unconvertible`
+* `Morphisms`
+    * `IsProper -> Proper`
+    * `ProperProxy`
+    * `PartialApplication`
+    * `Params`
+    * `Normalizes`
+* `RelationClasses`
+    * `IsReflexive -> Reflexive`
+    * `Irreflexive`
+    * `IsSymmetric -> Symmetric`
+    * `Asymmetric`
+    * `IsTransitive -> Transitive`
+    * `PreOrder`
+    * `StrictOrder`
+    * `PER`
+    * `IsSetoid -> Equivalence`
+    * `Antisymmetric`
+    * `subrelation`
+    * `RewriteRelation`
+    * `PartialOrder`
+* `RelationPairs`
+    * `Measure`
+* `SetoidClass`
+    * `Setoid`
+    * `PartialSetoid`
+* `SetoidDec`
+    * `DecidableSetoid`
+    * `EqDec`
+* `SetoidTactics`
+    * `DefaultRelation`
+
 ### Imports and Exports
 
 When defining operational classes,
