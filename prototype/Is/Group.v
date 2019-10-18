@@ -16,13 +16,13 @@ Section Context.
 
 Context {A : Type} `{is_group : IsGroup A}.
 
-Lemma idn_inv : - 0 == 0.
+Lemma inv_absorbing : - 0 == 0.
 Proof.
   rewrite <- (right_identifiable (- 0)).
   rewrite (left_invertible 0).
   reflexivity. Qed.
 
-Lemma left_injective : forall x y z : A,
+Lemma opr_left_injective : forall x y z : A,
   z + x == z + y -> x == y.
 Proof.
   intros x y z p.
@@ -35,7 +35,7 @@ Proof.
   rewrite (left_identifiable y).
   reflexivity. Qed.
 
-Lemma right_injective : forall x y z : A,
+Lemma opr_right_injective : forall x y z : A,
   x + z == y + z -> x == y.
 Proof.
   intros x y z p.
@@ -59,14 +59,14 @@ Proof.
   rewrite (left_identifiable x).
   reflexivity. Qed.
 
-Global Instance inv_is_involutive : IsInvolutive inv := {}.
+Global Instance group_inv_is_involutive : IsInvolutive inv := {}.
 Proof. apply inv_involutive. Qed.
 
-Theorem inv_antidistributive : forall x y : A,
+Theorem opr_inv_antidistributive : forall x y : A,
   - (x + y) == (- y) + (- x).
 Proof.
   intros x y.
-  apply (left_injective (- (x + y)) ((- y) + (- x)) (x + y)).
+  apply (opr_left_injective (- (x + y)) ((- y) + (- x)) (x + y)).
   rewrite (right_invertible (x + y)).
   rewrite (associative (x + y) (- y) (- x)).
   rewrite <- (associative x y (- y)).
@@ -75,7 +75,8 @@ Proof.
   rewrite (right_invertible x).
   reflexivity. Qed.
 
-Global Instance inv_is_antidistributive : IsAntidistributive opr inv := {}.
-Proof. apply inv_antidistributive. Qed.
+Global Instance group_opr_inv_is_antidistributive :
+  IsAntidistributive opr inv := {}.
+Proof. apply opr_inv_antidistributive. Qed.
 
 End Context.

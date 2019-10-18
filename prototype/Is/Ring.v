@@ -8,9 +8,9 @@ From Maniunfold.Is Require Import
 Class IsRing {A : Type} {has_eqv : HasEqv A}
   (has_add : HasAdd A) (has_zero : HasZero A) (has_neg : HasNeg A)
   (has_mul : HasMul A) (has_one : HasOne A) : Prop := {
-  ring_is_semiring :> IsSemiring add zero mul one;
-  ring_add_is_abelian_group :> IsAbelianGroup add zero neg;
-  ring_mul_is_monoid :> IsMonoid mul one;
+  ring_add_zero_mul_one_is_semiring :> IsSemiring add zero mul one;
+  ring_add_zero_neg_is_abelian_group :> IsAbelianGroup add zero neg;
+  ring_mul_one_is_monoid :> IsMonoid mul one;
 }.
 
 Section Context.
@@ -55,16 +55,16 @@ Corollary mul_right_identifiable : forall x : A,
   x * 1 == x.
 Proof. apply right_identifiable. Qed.
 
-Corollary zero_neg : - 0 == 0.
-Proof. apply idn_inv. Qed.
+Corollary neg_absorbing : - 0 == 0.
+Proof. apply inv_absorbing. Qed.
 
 Corollary add_left_injective : forall x y z : A,
   z + x == z + y -> x == y.
-Proof. apply left_injective. Qed.
+Proof. apply opr_left_injective. Qed.
 
 Corollary add_right_injective : forall x y z : A,
   x + z == y + z -> x == y.
-Proof. apply right_injective. Qed.
+Proof. apply opr_right_injective. Qed.
 
 Corollary neg_involutive : forall x : A,
   - (- x) == x.
