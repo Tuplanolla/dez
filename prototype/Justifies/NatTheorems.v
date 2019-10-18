@@ -1,5 +1,7 @@
 From Coq Require Import
   PeanoNat.
+From Maniunfold Require Export
+  Init.
 From Maniunfold.Is Require Import
   TotalOrder Semiring MonoidHomomorphism.
 
@@ -114,17 +116,17 @@ Instance nat_is_distributive : IsDistributive Nat.add Nat.mul := {}.
 
 Instance nat_is_semiring : IsSemiring Nat.add Nat.zero Nat.mul Nat.one := {}.
 
-Definition nat_pow2 (x : nat) : nat := 2 ^ x.
+Definition natexp (x : nat) : nat := 2 ^ x.
 
-Instance nat_has_hom : HasHom nat nat := nat_pow2.
+Instance nat_has_hom : HasHom nat nat := natexp.
 
-Instance nat_is_setoid_homomorphism : IsSetoidHomomorphism nat_pow2 := {}.
+Instance nat_is_setoid_homomorphism : IsSetoidHomomorphism natexp := {}.
 Proof. cbv -[Nat.pow]. apply Nat.pow_wd. reflexivity. Qed.
 
 Instance nat_is_semigroup_homomorphism :
-  IsSemigroupHomomorphism Nat.add Nat.mul nat_pow2 := {}.
+  IsSemigroupHomomorphism Nat.add Nat.mul natexp := {}.
 Proof. intros x y. apply Nat.pow_add_r. Qed.
 
 Instance nat_is_monoid_homomorphism :
-  IsMonoidHomomorphism Nat.add Nat.zero Nat.mul Nat.one nat_pow2 := {}.
+  IsMonoidHomomorphism Nat.add Nat.zero Nat.mul Nat.one natexp := {}.
 Proof. reflexivity. Qed.

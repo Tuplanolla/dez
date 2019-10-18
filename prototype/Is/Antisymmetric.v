@@ -1,5 +1,3 @@
-From Maniunfold Require Export
-  Init.
 From Maniunfold.Has Require Export
   EquivalenceRelation Relation.
 From Maniunfold.Is Require Export

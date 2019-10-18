@@ -1,7 +1,5 @@
-From Coq Require Import
+From Coq Require Export
   Morphisms.
-From Maniunfold Require Export
-  Init.
 From Maniunfold.Has Require Export
   Relation Point.
 

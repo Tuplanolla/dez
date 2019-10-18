@@ -1,5 +1,7 @@
 From Coq Require Import
   Morphisms NArith.
+From Maniunfold Require Export
+  Init.
 From Maniunfold.Is Require Import
   TotalOrder Semiring MonoidHomomorphism.
 
@@ -33,8 +35,12 @@ Proof. intros x y z p q. transitivity y; auto. Qed.
 Instance N_is_connex : IsConnex N.le := {}.
 Proof. intros x y. apply N.le_ge_cases. Qed.
 
-Instance N_is_total_order : IsTotalOrder N.le := {}.
+(** TODO Write more instances like this. *)
+
+Instance N_is_proper : IsProper (eqv ==> eqv ==> flip impl) N.le := {}.
 Proof. cbv -[N.le]. apply N.le_wd. Qed.
+
+Instance N_is_total_order : IsTotalOrder N.le := {}.
 
 End Order.
 

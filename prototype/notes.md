@@ -67,15 +67,17 @@ The standard library has the follwing classes we want to be compatible with.
 
 When defining operational classes,
 all the constraining operational classes must be exported.
-However, it is not necessary to export superclasses,
-such as `Relation` with respect to `OrderRelation`.
+Superclasses, such as `Relation` with respect to `OrderRelation`,
+must also be exported.
 
 When defining predicative classes,
 all the constraining operational classes and
 constituent predicate classes must be exported.
-However, it is not necessary to export nonconstituent predicate classes,
+It is not necessary to export nonconstituent predicate classes,
 such as `IsSetoid` with respect to `IsGroup`,
-although it may be a good idea to do so anyway.
+although it may sometimes be a good idea to do so anyway.
+
+If nothing else is exported from `Maniunfold`, always export `Init`.
 
 ### Naming Conventions
 

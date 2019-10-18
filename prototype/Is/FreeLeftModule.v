@@ -1,4 +1,5 @@
-From Coq Require Import List.
+From Coq Require Import
+  List.
 From Maniunfold.Has Require Export
   Basis Enum.
 From Maniunfold.Is Require Export

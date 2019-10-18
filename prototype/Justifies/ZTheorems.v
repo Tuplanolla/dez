@@ -1,5 +1,7 @@
 From Coq Require Import
   ZArith.
+From Maniunfold Require Export
+  Init.
 From Maniunfold.Is Require Import
   TotalOrder NontrivialRing MonoidHomomorphism.
 

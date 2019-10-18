@@ -1,6 +1,7 @@
-From Coq Require Import List.
+From Coq Require Import
+  List.
 From Maniunfold.Has Require Export
-  Enum.
+  EquivalenceRelation Enum.
 From Maniunfold.Is Require Export
   Setoid.
 

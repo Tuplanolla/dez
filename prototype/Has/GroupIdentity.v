@@ -1,4 +1,4 @@
-From Maniunfold.Has Require Import
+From Maniunfold.Has Require Export
   GroupOperation.
 
 Delimit Scope group_scope with group.

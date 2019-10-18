@@ -1,5 +1,7 @@
 From Coq Require Import
   PeanoNat List.
+From Maniunfold Require Export
+  Init.
 From Maniunfold.Is Require Import
   Monoid.
 From Maniunfold.Justifies Require Import

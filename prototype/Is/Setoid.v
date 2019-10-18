@@ -1,12 +1,3 @@
-(** TODO Remove this after getting rid of [Add] commands. *)
-
-From Coq Require Export
-  Setoid.
-
-From Coq Require Import
-  RelationClasses.
-From Maniunfold Require Export
-  Init.
 From Maniunfold.Has Require Export
   EquivalenceRelation.
 From Maniunfold.Is Require Export
@@ -23,5 +14,6 @@ Section Context.
 Context {A : Type} `{is_setoid : IsSetoid A}.
 
 Global Instance setoid_is_equivalence : Equivalence eqv := {}.
+Global Instance setoid_is_rewrite_relation : RewriteRelation eqv := {}.
 
 End Context.

@@ -1,7 +1,5 @@
-From Coq Require Import
-  RelationClasses.
-From Maniunfold Require Export
-  Init.
+From Coq Require Export
+  Setoid.
 From Maniunfold.Has Require Export
   Relation.
 

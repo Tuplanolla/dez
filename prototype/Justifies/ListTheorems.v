@@ -1,5 +1,7 @@
 From Coq Require Import
   List.
+From Maniunfold Require Export
+  Init.
 From Maniunfold.Is Require Import
   Semigroup.
 

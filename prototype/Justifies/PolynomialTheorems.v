@@ -1,5 +1,7 @@
 From Coq Require Import
   List NArith.
+From Maniunfold Require Export
+  Init.
 From Maniunfold.Is Require Import
   NontrivialRing FinitelyEnumerable.
 From Maniunfold.Justifies Require Import

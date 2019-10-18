@@ -1,4 +1,4 @@
-From Maniunfold.Has Require Import
+From Maniunfold.Has Require Export
   GroupOperation GroupIdentity FieldOperations.
 
 Class HasZero (A : Type) : Type := zero : A.

@@ -1,5 +1,7 @@
 From Coq Require Import
   NArith.
+From Maniunfold Require Export
+  Init.
 From Maniunfold.Is Require Import
   Setoid TotalOrder Ring FinitelyEnumerable.
 From Maniunfold.Justifies Require Import

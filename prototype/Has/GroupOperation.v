@@ -1,3 +1,6 @@
+From Maniunfold Require Export
+  Init.
+
 Delimit Scope group_scope with group.
 
 Open Scope group_scope.

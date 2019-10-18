@@ -1,3 +1,6 @@
+From Maniunfold Require Export
+  Init.
+
 Delimit Scope relation_scope with relation.
 
 Open Scope relation_scope.

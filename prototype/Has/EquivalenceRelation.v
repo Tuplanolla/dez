@@ -1,4 +1,4 @@
-From Maniunfold.Has Require Import
+From Maniunfold.Has Require Export
   Relation.
 
 Delimit Scope equivalence_relation_scope with equivalence_relation.

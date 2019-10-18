@@ -1,4 +1,4 @@
-From Maniunfold.Has Require Import
+From Maniunfold.Has Require Export
   GroupOperation GroupIdentity GroupInverse FieldOperations FieldIdentities.
 
 Class HasNeg (A : Type) : Type := neg : A -> A.

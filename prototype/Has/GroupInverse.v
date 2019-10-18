@@ -1,4 +1,4 @@
-From Maniunfold.Has Require Import
+From Maniunfold.Has Require Export
   Endomorphism GroupOperation GroupIdentity.
 
 Delimit Scope group_scope with group.

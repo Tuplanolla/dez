@@ -1,3 +1,6 @@
+From Maniunfold Require Export
+  Init.
+
 Delimit Scope module_scope with module.
 
 Open Scope module_scope.
