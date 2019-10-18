@@ -111,10 +111,6 @@ Instance N_is_semiring : IsSemiring N.add N.zero N.mul N.one := {}.
 
 Definition N_pow2 (x : N) : N := (2 ^ x)%N.
 
-(** TODO In cases like these,
-    it might make sense to declare [N_has_hom] local,
-    while [N_is_setoid_homomorphism] is global. *)
-
 Instance N_has_hom : HasHom N N := N_pow2.
 
 Instance N_is_setoid_homomorphism : IsSetoidHomomorphism N_pow2 := {}.

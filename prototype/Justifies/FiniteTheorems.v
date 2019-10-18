@@ -107,8 +107,7 @@ Instance F_has_enum {p : positive} : HasEnum (F p) := F_seq.
 
 (* Compute List.map (@proj1_sig _ _) (enum : list (F 6%positive)). *)
 
-Instance F_is_finitely_enumerable {p : positive} :
-  IsFinitelyEnumerable (F p) := {}.
+Instance F_is_finite {p : positive} : IsFinite (F p) := {}.
 Proof.
   - intros x. apply List.Exists_exists. exists x. split.
     + exfalso; apply violence.
