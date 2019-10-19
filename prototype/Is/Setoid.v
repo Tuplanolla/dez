@@ -4,16 +4,15 @@ From Maniunfold.Is Require Export
   Reflexive Symmetric Transitive.
 
 Class IsSetoid {A : Type} (has_eqv : HasEqv A) : Prop := {
-  setoid_eqv_is_reflexive :> IsReflexive eqv;
-  setoid_eqv_is_symmetric :> IsSymmetric eqv;
-  setoid_eqv_is_transitive :> IsTransitive eqv;
+  eqv_is_reflexive :> IsReflexive eqv;
+  eqv_is_symmetric :> IsSymmetric eqv;
+  eqv_is_transitive :> IsTransitive eqv;
 }.
 
 Section Context.
 
 Context {A : Type} `{is_setoid : IsSetoid A}.
 
-Global Instance setoid_is_equivalence : Equivalence eqv := {}.
-Global Instance setoid_is_rewrite_relation : RewriteRelation eqv := {}.
+Global Instance eqv_equivalence : Equivalence eqv | 0 := {}.
 
 End Context.

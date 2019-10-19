@@ -1,15 +1,15 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation GroupOperation GroupIdentity GroupInverse.
 From Maniunfold.Is Require Export
-  Proper Monoid Invertible Involutive Antidistributive.
+  Proper Monoid Biinvertible Involutive Antidistributive.
 
 Import AdditiveNotations.
 
 Class IsGroup {A : Type} {has_eqv : HasEqv A}
   (has_opr : HasOpr A) (has_idn : HasIdn A) (has_inv : HasInv A) : Prop := {
-  group_inv_is_proper :> IsProper (eqv ==> eqv) inv;
-  group_opr_idn_is_monoid :> IsMonoid opr idn;
-  group_opr_idn_inv_is_invertible :> IsInvertible opr idn inv;
+  inv_is_proper :> IsProper (eqv ==> eqv) inv;
+  opr_idn_is_monoid :> IsMonoid opr idn;
+  opr_idn_inv_is_invertible :> IsBiinvertible opr idn inv;
 }.
 
 Section Context.
@@ -59,7 +59,7 @@ Proof.
   rewrite (left_identifiable x).
   reflexivity. Qed.
 
-Global Instance group_inv_is_involutive : IsInvolutive inv := {}.
+Global Instance inv_is_involutive : IsInvolutive inv := {}.
 Proof. apply inv_involutive. Qed.
 
 Theorem opr_inv_antidistributive : forall x y : A,
@@ -75,7 +75,7 @@ Proof.
   rewrite (right_invertible x).
   reflexivity. Qed.
 
-Global Instance group_opr_inv_is_antidistributive :
+Global Instance opr_inv_is_antidistributive :
   IsAntidistributive opr inv := {}.
 Proof. apply opr_inv_antidistributive. Qed.
 

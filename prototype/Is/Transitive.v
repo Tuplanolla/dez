@@ -10,6 +10,6 @@ Section Context.
 
 Context {A : Type} `{is_transitive : IsTransitive A}.
 
-Global Instance transitive_is_transitive : Transitive rel | 0 := transitive.
+Global Instance rel_transitive : Transitive rel | 0 := transitive.
 
 End Context.

@@ -43,7 +43,7 @@ Proof. intros x. constructor. Qed.
 Instance unit_is_right_identifiable : IsRightIdentifiable tt2 tt := {}.
 Proof. intros x. constructor. Qed.
 
-Instance unit_is_identifiable : IsIdentifiable tt2 tt := {}.
+Instance unit_is_identifiable : IsBiidentifiable tt2 tt := {}.
 
 Instance unit_is_monoid : IsMonoid tt2 tt := {}.
 
@@ -62,7 +62,7 @@ Proof. intros x. constructor. Qed.
 Instance unit_is_right_invertible : IsRightInvertible tt2 tt tt1 := {}.
 Proof. intros x. constructor. Qed.
 
-Instance unit_is_invertible : IsInvertible tt2 tt tt1 := {}.
+Instance unit_is_invertible : IsBiinvertible tt2 tt tt1 := {}.
 
 Instance unit_is_group : IsGroup tt2 tt tt1 := {}.
 Proof. intros x y p. constructor. Qed.
@@ -81,7 +81,7 @@ Proof. intros x y z. constructor. Qed.
 Instance unit_is_right_distributive : IsRightDistributive tt2 tt2 := {}.
 Proof. intros x y z. constructor. Qed.
 
-Instance unit_is_distributive : IsDistributive tt2 tt2 := {}.
+Instance unit_is_distributive : IsBidistributive tt2 tt2 := {}.
 
 Instance unit_is_semiring : IsSemiring tt2 tt tt2 tt := {}.
 

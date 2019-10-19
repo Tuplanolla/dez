@@ -7,6 +7,6 @@ Import AdditiveNotations.
 
 Class IsLeftIdentifiable {A : Type} {has_eqv : HasEqv A}
   (has_opr : HasOpr A) (has_idn : HasIdn A) : Prop := {
-  left_identifiable_eqv_is_setoid :> IsSetoid eqv;
+  eqv_is_setoid :> IsSetoid eqv;
   left_identifiable : forall x : A, 0 + x == x;
 }.

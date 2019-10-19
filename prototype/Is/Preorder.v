@@ -5,7 +5,15 @@ From Maniunfold.Is Require Export
 
 Class IsPreorder {A : Type} {has_eqv : HasEqv A}
   (has_ord : HasOrd A) : Prop := {
-  preorder_ord_is_proper :> IsProper (eqv ==> eqv ==> flip impl) ord;
-  preorder_ord_is_reflexive :> IsReflexive ord;
-  preorder_ord_is_transitive :> IsTransitive ord;
+  ord_is_proper :> IsProper (eqv ==> eqv ==> flip impl) ord;
+  ord_is_reflexive :> IsReflexive ord;
+  ord_is_transitive :> IsTransitive ord;
 }.
+
+Section Context.
+
+Context {A : Type} `{is_preorder : IsPreorder A}.
+
+Global Instance ord_pre_order : PreOrder ord | 0 := {}.
+
+End Context.

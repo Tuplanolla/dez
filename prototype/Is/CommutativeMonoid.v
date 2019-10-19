@@ -5,6 +5,6 @@ From Maniunfold.Is Require Export
 
 Class IsCommutativeMonoid {A : Type} {has_eqv : HasEqv A}
   (has_opr : HasOpr A) (has_idn : HasIdn A) : Prop := {
-  commutative_monoid_opr_idn_is_monoid :> IsMonoid opr idn;
-  commutative_monoid_opr_is_commutative :> IsCommutative opr;
+  opr_idn_is_monoid :> IsMonoid opr idn;
+  opr_is_commutative :> IsCommutative opr;
 }.

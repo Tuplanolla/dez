@@ -59,7 +59,7 @@ Instance nat_is_right_identifiable :
   IsRightIdentifiable Nat.add Nat.zero := {}.
 Proof. intros x. apply Nat.add_0_r. Qed.
 
-Instance nat_is_identifiable : IsIdentifiable Nat.add Nat.zero := {}.
+Instance nat_is_identifiable : IsBiidentifiable Nat.add Nat.zero := {}.
 
 Instance nat_is_monoid : IsMonoid Nat.add Nat.zero := {}.
 
@@ -89,7 +89,7 @@ Proof. intros x. apply Nat.mul_1_l. Qed.
 Instance nat_is_right_identifiable : IsRightIdentifiable Nat.mul Nat.one := {}.
 Proof. intros x. apply Nat.mul_1_r. Qed.
 
-Instance nat_is_identifiable : IsIdentifiable Nat.mul Nat.one := {}.
+Instance nat_is_identifiable : IsBiidentifiable Nat.mul Nat.one := {}.
 
 Instance nat_is_monoid : IsMonoid Nat.mul Nat.one := {}.
 
@@ -112,7 +112,7 @@ Proof. intros x y z. apply Nat.mul_add_distr_l. Qed.
 Instance nat_is_right_distributive : IsRightDistributive Nat.add Nat.mul := {}.
 Proof. intros x y z. apply Nat.mul_add_distr_r. Qed.
 
-Instance nat_is_distributive : IsDistributive Nat.add Nat.mul := {}.
+Instance nat_is_distributive : IsBidistributive Nat.add Nat.mul := {}.
 
 Instance nat_is_semiring : IsSemiring Nat.add Nat.zero Nat.mul Nat.one := {}.
 

@@ -23,7 +23,8 @@ implicit generalization should be used.
 
 ### Compatibility
 
-The standard library has the follwing classes we want to be compatible with.
+The standard library in version 8.10.0
+has the follwing classes we want to be compatible with.
 
 * `DecidableClass`
     * `Decidable`
@@ -44,14 +45,14 @@ The standard library has the follwing classes we want to be compatible with.
     * `IsSymmetric -> Symmetric`
     * `Asymmetric`
     * `IsTransitive -> Transitive`
-    * `PreOrder`
+    * `IsPreorder -> PreOrder`
     * `StrictOrder`
     * `PER`
     * `IsSetoid -> Equivalence`
-    * `Antisymmetric`
+    * `IsAntisymmetric -> Antisymmetric`
     * `subrelation`
     * `RewriteRelation`
-    * `PartialOrder`
+    * `IsPartialOrder -> PartialOrder`
 * `RelationPairs`
     * `Measure`
 * `SetoidClass`

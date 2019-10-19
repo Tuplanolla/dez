@@ -5,8 +5,8 @@ From Maniunfold.Is Require Export
 
 Import AdditiveNotations.
 
-Class IsInvertible {A : Type} {has_eqv : HasEqv A}
+Class IsBiinvertible {A : Type} {has_eqv : HasEqv A}
   (has_opr : HasOpr A) (has_idn : HasIdn A) (has_inv : HasInv A) : Prop := {
-  invertible_opr_idn_inv_is_left_invertible :> IsLeftInvertible opr idn inv;
-  invertible_opr_idn_inv_is_right_invertible :> IsRightInvertible opr idn inv;
+  opr_idn_inv_is_left_invertible :> IsLeftInvertible opr idn inv;
+  opr_idn_inv_is_right_invertible :> IsRightInvertible opr idn inv;
 }.

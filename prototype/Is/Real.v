@@ -12,12 +12,12 @@ Class IsReal {A : Type} {has_eqv : HasEqv A} {has_ord : HasOrd A}
   (has_add : HasAdd A) (has_zero : HasZero A) (has_neg : HasNeg A)
   (has_mul : HasMul A) (has_one : HasOne A) (has_recip : HasRecip A) :
   Prop := {
-  real_ord_is_total_order :> IsTotalOrder ord;
-  real_add_zero_neg_mul_one_recip_is_field :>
+  ord_is_total_order :> IsTotalOrder ord;
+  add_zero_neg_mul_one_recip_is_field :>
     IsField add zero neg mul one recip;
-  real_left_monotone : forall x y z : A, x <= y -> z + x <= z + y;
-  real_monotone : forall x y : A, 0 <= x -> 0 <= y -> 0 <= x * y;
-  real_complete : forall P Q : A -> Prop,
+  left_monotone : forall x y z : A, x <= y -> z + x <= z + y;
+  monotone : forall x y : A, 0 <= x -> 0 <= y -> 0 <= x * y;
+  complete : forall P Q : A -> Prop,
     (forall x y : A, P x -> Q y -> x < y) ->
     exists z : A, forall x y : A, P x -> Q y ->
     x =/= z -> y =/= z -> x < z /\ z < y;

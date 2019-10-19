@@ -14,14 +14,14 @@ Class IsFreeLeftModule {I S A : Type}
   (S_has_mul : HasMul S) (S_has_one : HasOne S) {A_has_eqv : HasEqv A}
   (A_has_opr : HasOpr A) (A_has_idn : HasIdn A) (A_has_inv : HasInv A)
   (has_lsmul : HasLSMul S A) (has_basis : HasBasis I A) : Prop := {
-  free_left_module_basis_is_proper :> IsProper (eqv ==> eqv) basis;
-  free_left_module_I_is_finite :> IsFinite I;
-  free_left_module_add_zero_neg_mul_one_opr_idn_inv_lsmul_is_left_module :>
+  basis_is_proper :> IsProper (eqv ==> eqv) basis;
+  I_is_finite :> IsFinite I;
+  add_zero_neg_mul_one_opr_idn_inv_lsmul_is_left_module :>
     IsLeftModule add zero neg mul one opr idn inv lsmul;
-  free_left_module_spanning : forall x : A, exists coeffs : I -> S,
+  spanning : forall x : A, exists coeffs : I -> S,
     let terms (i : I) := coeffs i <* basis i in
     fold_right opr idn (map terms enum) == x;
-  free_left_module_independent : forall coeffs : I -> S,
+  independent : forall coeffs : I -> S,
     let terms (i : I) := coeffs i <* basis i in
     fold_right opr idn (map terms enum) == idn ->
     Forall (fun a : S => a == 0) (map coeffs enum);

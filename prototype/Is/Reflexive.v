@@ -10,6 +10,6 @@ Section Context.
 
 Context {A : Type} `{is_reflexive : IsReflexive A}.
 
-Global Instance reflexive_is_reflexive : Reflexive rel | 0 := reflexive.
+Global Instance rel_reflexive : Reflexive rel | 0 := reflexive.
 
 End Context.

@@ -58,7 +58,7 @@ Proof. intros x. apply Z.add_0_l. Qed.
 Instance Z_is_right_identifiable : IsRightIdentifiable Z.add Z.zero := {}.
 Proof. intros x. apply Z.add_0_r. Qed.
 
-Instance Z_is_identifiable : IsIdentifiable Z.add Z.zero := {}.
+Instance Z_is_identifiable : IsBiidentifiable Z.add Z.zero := {}.
 
 Instance Z_is_monoid : IsMonoid Z.add Z.zero := {}.
 
@@ -75,7 +75,7 @@ Proof. intros x. apply Z.add_opp_diag_l. Qed.
 Instance Z_is_right_invertible : IsRightInvertible Z.add Z.zero Z.opp := {}.
 Proof. intros x. apply Z.add_opp_diag_r. Qed.
 
-Instance Z_is_invertible : IsInvertible Z.add Z.zero Z.opp := {}.
+Instance Z_is_invertible : IsBiinvertible Z.add Z.zero Z.opp := {}.
 
 Instance Z_is_group : IsGroup Z.add Z.zero Z.opp := {}.
 Proof. cbv -[Z.opp]. apply Z.opp_wd. Qed.
@@ -102,7 +102,7 @@ Proof. intros x. apply Z.mul_1_l. Qed.
 Instance Z_is_right_identifiable : IsRightIdentifiable Z.mul Z.one := {}.
 Proof. intros x. apply Z.mul_1_r. Qed.
 
-Instance Z_is_identifiable : IsIdentifiable Z.mul Z.one := {}.
+Instance Z_is_identifiable : IsBiidentifiable Z.mul Z.one := {}.
 
 Instance Z_is_monoid : IsMonoid Z.mul Z.one := {}.
 
@@ -125,7 +125,7 @@ Proof. intros x y z. apply Z.mul_add_distr_l. Qed.
 Instance Z_is_right_distributive : IsRightDistributive Z.add Z.mul := {}.
 Proof. intros x y z. apply Z.mul_add_distr_r. Qed.
 
-Instance Z_is_distributive : IsDistributive Z.add Z.mul := {}.
+Instance Z_is_distributive : IsBidistributive Z.add Z.mul := {}.
 
 Instance Z_is_semiring : IsSemiring Z.add Z.zero Z.mul Z.one := {}.
 

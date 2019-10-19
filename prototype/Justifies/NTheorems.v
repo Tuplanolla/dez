@@ -62,7 +62,7 @@ Proof. intros x. apply N.add_0_l. Qed.
 Instance N_is_right_identifiable : IsRightIdentifiable N.add N.zero := {}.
 Proof. intros x. apply N.add_0_r. Qed.
 
-Instance N_is_identifiable : IsIdentifiable N.add N.zero := {}.
+Instance N_is_identifiable : IsBiidentifiable N.add N.zero := {}.
 
 Instance N_is_monoid : IsMonoid N.add N.zero := {}.
 
@@ -91,7 +91,7 @@ Proof. intros x. apply N.mul_1_l. Qed.
 Instance N_is_right_identifiable : IsRightIdentifiable N.mul N.one := {}.
 Proof. intros x. apply N.mul_1_r. Qed.
 
-Instance N_is_identifiable : IsIdentifiable N.mul N.one := {}.
+Instance N_is_identifiable : IsBiidentifiable N.mul N.one := {}.
 
 Instance N_is_monoid : IsMonoid N.mul N.one := {}.
 
@@ -114,7 +114,7 @@ Proof. intros x y z. apply N.mul_add_distr_l. Qed.
 Instance N_is_right_distributive : IsRightDistributive N.add N.mul := {}.
 Proof. intros x y z. apply N.mul_add_distr_r. Qed.
 
-Instance N_is_distributive : IsDistributive N.add N.mul := {}.
+Instance N_is_distributive : IsBidistributive N.add N.mul := {}.
 
 Instance N_is_semiring : IsSemiring N.add N.zero N.mul N.one := {}.
 

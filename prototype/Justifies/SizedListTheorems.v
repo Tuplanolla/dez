@@ -88,7 +88,7 @@ Proof.
   hnf. cbn. Admitted.
 
 Global Instance sized_list_is_identifiable :
-  IsIdentifiable sized_list_opr sized_list_idn := {}.
+  IsBiidentifiable sized_list_opr sized_list_idn := {}.
 
 Global Instance sized_list_is_monoid :
   IsMonoid sized_list_opr sized_list_idn := {}.

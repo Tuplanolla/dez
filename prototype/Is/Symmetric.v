@@ -10,6 +10,6 @@ Section Context.
 
 Context {A : Type} `{is_symmetric : IsSymmetric A}.
 
-Global Instance symmetric_is_symmetric : Symmetric rel | 0 := symmetric.
+Global Instance rel_symmetric : Symmetric rel | 0 := symmetric.
 
 End Context.

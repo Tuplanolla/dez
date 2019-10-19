@@ -68,7 +68,7 @@ Instance poly_has_mul : HasMul (poly A) := poly_mul.
 
 Program Definition poly_one : poly A :=
   poly_list [one] _.
-Next Obligation. cbn. apply nontrivial_ring_nontrivial. Qed.
+Next Obligation. cbn. apply nontrivial. Qed.
 
 Instance poly_has_one : HasOne (poly A) := poly_one.
 

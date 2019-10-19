@@ -3,14 +3,14 @@ From Maniunfold.Has Require Export
 From Maniunfold.Is Require Export
   Semiring Group AbelianGroup Monoid.
 From Maniunfold.Is Require Import
-  Involutive Antidistributive LeftAbsorbing RightAbsorbing Absorbing.
+  Involutive Antidistributive LeftAbsorbing RightAbsorbing Biabsorbing.
 
 Class IsRing {A : Type} {has_eqv : HasEqv A}
   (has_add : HasAdd A) (has_zero : HasZero A) (has_neg : HasNeg A)
   (has_mul : HasMul A) (has_one : HasOne A) : Prop := {
-  ring_add_zero_mul_one_is_semiring :> IsSemiring add zero mul one;
-  ring_add_zero_neg_is_abelian_group :> IsAbelianGroup add zero neg;
-  ring_mul_one_is_monoid :> IsMonoid mul one;
+  add_zero_mul_one_is_semiring :> IsSemiring add zero mul one;
+  add_zero_neg_is_abelian_group :> IsAbelianGroup add zero neg;
+  mul_one_is_monoid :> IsMonoid mul one;
 }.
 
 Section Context.
@@ -104,7 +104,7 @@ Proof.
 Global Instance zero_is_right_absorbing : IsRightAbsorbing mul zero := {}.
 Proof. apply zero_right_absorbing. Qed.
 
-Global Instance zero_is_absorbing : IsAbsorbing mul zero := {}.
+Global Instance zero_is_absorbing : IsBiabsorbing mul zero := {}.
 
 Theorem iff_ring_trivial : 1 == 0 <-> forall x : A, x == 0.
 Proof.
