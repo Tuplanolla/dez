@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   ScalarMultiplication.
 From Maniunfold.Is Require Export
-  LeftModule RightModule.
+  LeftModule RightModule Heteroassociative.
 
 Class IsBimodule {LS RS A : Type} {LS_has_eqv : HasEqv LS}
   (LS_has_add : HasAdd LS) (LS_has_zero : HasZero LS) (LS_has_neg : HasNeg LS)
@@ -14,6 +14,5 @@ Class IsBimodule {LS RS A : Type} {LS_has_eqv : HasEqv LS}
     IsLeftModule add zero neg mul one opr idn inv lsmul;
   add_zero_neg_mul_one_opr_idn_inv_rsmul_is_right_module :>
     IsRightModule add zero neg mul one opr idn inv rsmul;
-  biassociative : forall (a : LS) (b : RS) (x : A),
-    (a <* x) *> b == a <* (x *> b);
+  lsmul_rsmul_is_heteroassociative : IsHeteroassociative lsmul rsmul;
 }.
