@@ -21,49 +21,6 @@ When defining classes, implicit generalization must not be used.
 When declaring parametric relations or morphisms or proving theorems,
 implicit generalization should be used.
 
-### Compatibility
-
-The standard library in version 8.10.0
-has the follwing classes we want to be compatible with.
-
-* `DecidableClass`
-    * `Decidable`
-* `EquivDec`
-    * `DecidableEquivalence`
-    * `EqDec`
-* `Init`
-    * `Unconvertible`
-* `Morphisms`
-    * `IsProper -> Proper`
-    * `ProperProxy`
-    * `PartialApplication`
-    * `Params`
-    * `Normalizes`
-* `RelationClasses`
-    * `IsReflexive -> Reflexive`
-    * `Irreflexive`
-    * `IsSymmetric -> Symmetric`
-    * `Asymmetric`
-    * `IsTransitive -> Transitive`
-    * `IsPreorder -> PreOrder`
-    * `StrictOrder`
-    * `PER`
-    * `IsSetoid -> Equivalence`
-    * `IsAntisymmetric -> Antisymmetric`
-    * `subrelation`
-    * `RewriteRelation`
-    * `IsPartialOrder -> PartialOrder`
-* `RelationPairs`
-    * `Measure`
-* `SetoidClass`
-    * `Setoid`
-    * `PartialSetoid`
-* `SetoidDec`
-    * `DecidableSetoid`
-    * `EqDec`
-* `SetoidTactics`
-    * `DefaultRelation`
-
 ### Imports and Exports
 
 When defining operational classes,
@@ -112,8 +69,108 @@ For example, we would have
 Definitions and instances for a certain type are prefixed with its name.
 For example, we would have `Instance t_magic_lamp : MagicLamp t`.
 
-Parametric relations and morphisms
-have the suffixes `relation` and `morphism` respectively.
+### Compatibility
+
+The standard library in version 8.10.0
+has the follwing classes we want to be compatible with.
+
+* `DecidableClass`
+    * `Decidable`
+* `EquivDec`
+    * `DecidableEquivalence`
+    * `EqDec`
+* `Init`
+    * `Unconvertible`
+* `Morphisms`
+    * `IsProper -> Proper`
+    * `ProperProxy`
+    * `PartialApplication`
+    * `Params`
+    * `Normalizes`
+* `RelationClasses`
+    * `IsReflexive -> Reflexive`
+    * `Irreflexive`
+    * `IsSymmetric -> Symmetric`
+    * `Asymmetric`
+    * `IsTransitive -> Transitive`
+    * `IsPreorder -> PreOrder`
+    * `StrictOrder`
+    * `PER`
+    * `IsSetoid -> Equivalence`
+    * `IsAntisymmetric -> Antisymmetric`
+    * `subrelation`
+    * `RewriteRelation`
+    * `IsPartialOrder -> PartialOrder`
+* `RelationPairs`
+    * `Measure`
+* `SetoidClass`
+    * `Setoid`
+    * `PartialSetoid`
+* `SetoidDec`
+    * `DecidableSetoid`
+    * `EqDec`
+* `SetoidTactics`
+    * `DefaultRelation`
+
+## Predicate Zoo
+
+Some predicates with their number of types involved T,
+number of bound variables V and number of constraining operational classes C.
+Names without their own classes are in quotation marks.
+
+| Name                   | T | V | C | Definition
+|:-----------------------|:--|:--|:--|:-----------
+| "trivial"              | 1 | 0 | 3 | `1 == 0`
+| "unary_absorbing"      | 1 | 0 | 3 | `- 0 == 0`
+| "preserves_identity"   | 1 | 0 | 3 | `hom 0 == 0`
+| "multiplicity"         | 1 | 1 | 3 | `forall x, (- 1) * x == - x`
+| `left_identifiable`    | 1 | 1 | 3 | `forall x, 0 + x == x`
+| `right_identifiable`   | 1 | 1 | 3 | `forall x, x + 0 == x`
+| `left_invertible`      | 1 | 1 | 4 | `forall x, (- x) + x == 0`
+| `right_invertible`     | 1 | 1 | 4 | `forall x, x + (- x) == 0`
+| `left_absorbing`       | 1 | 1 | 3 | `forall x, 0 * x == 0`
+| `right_absorbing`      | 1 | 1 | 3 | `forall x, x * 0 == 0`
+| `reflexive`            | 1 | 1 | 1 | `forall x, x ~ x`
+| `involutive`           | 1 | 1 | 2 | `forall x, endo (endo x) == x`
+| `idempotent`           | 1 | 1 | 2 | `forall x, endo (endo x) == endo x`
+| "roundtrip"            | 2 | 1 | 3 | `forall x, hom (hom x) == x`
+| "left_biidentifiable"  | 1 | 1 | 3 | `forall x, 1 <* x == x`
+| "preserves_inverse"    | 1 | 1 | 2 | `forall x, hom (- x) == - hom x`
+| "preserves_operation"  | 1 | 2 | 3 | `forall x y, hom (x + y) == hom x + hom y`
+| `antidistributive`     | 1 | 2 | 3 | `forall x y, - (x + y) == (- y) + (- x)`
+| `antisymmetric`        | 1 | 2 | 2 | `forall x y, x ~ y -> y ~ x -> x == y`
+| `commutative`          | 1 | 2 | 2 | `forall x y, x + y == y + x`
+| `heterocommutative`    | 2 | 2 | 2 | `forall x y, dist x y == dist y x`
+| `connex`               | 1 | 2 | 1 | `forall x y, x ~ y \/ y ~ x`
+| `symmetric`            | 1 | 2 | 1 | `forall x y, x ~ y -> y ~ x`
+| "symmetric"            | 1 | 2 | 1 | `forall x y, x ~ y <-> y ~ x`
+| "left_positive"        | 1 | 2 | 2 | `forall x y, y <= x + y`
+| "indiscernible"        | 1 | 2 | 3 | `forall x y, dist x y == 0 <-> x == y`
+| `associative`          | 1 | 3 | 2 | `forall x y z, x + (y + z) == (x + y) + z`
+| `heteroassociative`    | 2 | 3 | 3 | `forall a x b, a <+ (x +> b) == (a <+ x) +> b`
+| `left_distributive`    | 1 | 3 | 3 | `forall x y z, x * (y + z) == x * y + x * z`
+| `right_distributive`   | 1 | 3 | 3 | `forall x y z, (x + y) * z == x * z + y * z`
+| `transitive`           | 1 | 3 | 1 | `forall x y z, x ~ y -> y ~ z -> x ~ z`
+| "left_monotone"        | 1 | 3 | 2 | `forall x y z, x <= y -> z + x <= z + y`
+| "triangular"           | 1 | 3 | 3 | `forall x y z, dist x z <= dist x y + dist y z`
+| "left_injective"       | 1 | 3 | 2 | `forall x y z, z + x == z + y -> x == y`
+| "right_injective"      | 1 | 3 | 2 | `forall x y z, x + z == y + z -> x == y`
+| "left_cancellative"    | 1 | 3 | 2 | `forall x y z, x == y -> z + x == z + y`
+| "right_cancellative"   | 1 | 3 | 2 | `forall x y z, x == y -> x + z == y + z`
+| "left_bicompatible"    | 2 | 3 | 3 | `forall a b x, (a * b) <* x == a <* (b <* x)`
+| "Left_bidistributive"  | 2 | 3 | 3 | `forall a b x, (a + b) <* x == a <* x + b <* x`
+| "Right_bidistributive" | 2 | 3 | 3 | `forall a x y, a <* (x + y) == a <* x + a <* y`
+
+It would be easier to separate algebraic, relational,
+functional, order-theoretic, metric, etc properties from each other,
+but, alas, they are too intertwined for such a separation to be useful.
+
+## Simple Laws about Nonprominent Properties of Binary Relations by Jochen Burghardt
+
+Regarding common and less common binary relations,
+Burghardt defines a big list of them.
+Unary relations or predicates of other kinds are not discussed,
+but the search term "encyclopedic" might be of use.
 
 ## Type Classes for Mathematics in Type Theory by Spitters and van der Weegen
 

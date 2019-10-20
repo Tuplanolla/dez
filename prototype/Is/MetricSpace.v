@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation OrderRelation GroupOperation GroupIdentity Distance.
 From Maniunfold.Is Require Export
-  Proper TotalOrder CommutativeMonoid.
+  Proper TotalOrder CommutativeMonoid Heterocommutative.
 
 Import AdditiveNotations.
 
@@ -15,16 +15,11 @@ Class IsMetricSpace {S A : Type}
   dist_is_proper :> IsProper (eqv ==> eqv ==> eqv) dist;
   ord_is_total_order :> IsTotalOrder ord;
   opr_idn_is_commutative_monoid :> IsCommutativeMonoid opr idn;
-  left_positive : forall x y : S,
-    y <= x + y;
-  left_monotone : forall x y z : S,
-    x <= y -> z + x <= z + y;
-  indiscernible : forall x y : A,
-    dist x y == 0 <-> x == y;
-  symmetric : forall x y : A,
-    dist x y == dist y x;
-  triangular : forall x y z : A,
-    dist x z <= dist x y + dist y z;
+  dist_is_heterocommutative :> IsHeterocommutative dist;
+  left_positive : forall x y : S, y <= x + y;
+  left_monotone : forall x y z : S, x <= y -> z + x <= z + y;
+  indiscernible : forall x y : A, dist x y == 0 <-> x == y;
+  triangular : forall x y z : A, dist x z <= dist x y + dist y z;
 }.
 
 Section Context.
