@@ -11,6 +11,6 @@ Class IsGradedFreeLeftModule {G I S A : Type}
   (S_has_mul : HasMul S) (S_has_one : HasOne S) {A_has_eqv : HasEqv A}
   (A_has_opr : HasOpr A) (A_has_idn : HasIdn A) (A_has_inv : HasInv A)
   (has_lsmul : HasLSMul S A) (has_basis : HasBasis I A) : Prop := {
-  add_zero_neg_mul_one_opr_idn_inv_lsmul_basis_is_free_left_module :>
-    forall g : G, IsFreeLeftModule add zero neg mul one opr idn inv lsmul basis;
+  opr_idn_inv_add_zero_neg_mul_one_lsmul_basis_is_free_left_module :>
+    forall g : G, IsFreeLeftModule opr idn inv add zero neg mul one lsmul basis;
 }.

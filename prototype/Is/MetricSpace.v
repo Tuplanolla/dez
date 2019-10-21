@@ -8,10 +8,10 @@ Import AdditiveNotations.
 (** TODO Review literature on "generalized", "monoidal" or
     "semigroup-valued" metric spaces. *)
 
-Class IsMetricSpace {S A : Type}
+Class IsMetricSpace {A S : Type} {A_has_eqv : HasEqv A}
   {S_has_eqv : HasEqv S} {S_has_ord : HasOrd S}
   (S_has_opr : HasOpr S) (S_has_idn : HasIdn S)
-  {A_has_eqv : HasEqv A} (has_dist : HasDist S A) : Prop := {
+  (has_dist : HasDist A S) : Prop := {
   dist_is_proper :> IsProper (eqv ==> eqv ==> eqv) dist;
   ord_is_total_order :> IsTotalOrder ord;
   opr_idn_is_commutative_monoid :> IsCommutativeMonoid opr idn;
@@ -24,7 +24,7 @@ Class IsMetricSpace {S A : Type}
 
 Section Context.
 
-Context {S A : Type} `{is_metric_space : IsMetricSpace S A}.
+Context {A S : Type} `{is_metric_space : IsMetricSpace A S}.
 
 Theorem right_positive : forall x y : S,
   x <= x + y.

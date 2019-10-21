@@ -112,14 +112,34 @@ has the follwing classes we want to be compatible with.
 * `SetoidTactics`
     * `DefaultRelation`
 
+## Operation Zoo
+
+Some operations with their number of types involved T.
+Names without their own classes are in quotation marks.
+
+| Name                   | T | Definition | Notes
+|:-----------------------|:--|:-----------|:------
+| "prop"                 | 0 | `Prop`
+| "pred"                 | 1 | `forall A, A -> Prop`
+| `rel`                  | 1 | `forall A, A -> A -> Prop`
+| `opr`                  | 1 | `forall A, A -> A -> A`
+| `idn`                  | 1 | `forall A, A`
+| `inv`                  | 1 | `forall A, A -> A` | `endo`
+| `endo`                 | 1 | `forall A, A -> A` | `hom`
+| `hom`                  | 2 | `forall A B, A -> B`
+| `dist`                 | 2 | `forall A B, A -> A -> B`
+| `lsmul`                | 2 | `forall A B, A -> B -> B`
+| `rsmul`                | 2 | `forall A B, A -> B -> B`
+| "bihom"                | 3 | `forall A B C, A -> B -> C`
+
 ## Predicate Zoo
 
 Some predicates with their number of types involved T,
 number of bound variables V and number of constraining operational classes C.
 Names without their own classes are in quotation marks.
 
-| Name                   | T | V | C | Definition
-|:-----------------------|:--|:--|:--|:-----------
+| Name                   | T | V | C | Definition | Notes
+|:-----------------------|:--|:--|:--|:-----------|:------
 | "trivial"              | 1 | 0 | 3 | `1 == 0`
 | "unary_absorbing"      | 1 | 0 | 3 | `- 0 == 0`
 | "preserves_identity"   | 1 | 0 | 3 | `hom 0 == 0`
@@ -155,8 +175,9 @@ Names without their own classes are in quotation marks.
 | "triangular"           | 1 | 3 | 3 | `forall x y z, dist x z <= dist x y + dist y z`
 | "left_injective"       | 1 | 3 | 2 | `forall x y z, z + x == z + y -> x == y`
 | "right_injective"      | 1 | 3 | 2 | `forall x y z, x + z == y + z -> x == y`
-| "left_cancellative"    | 1 | 3 | 2 | `forall x y z, x == y -> z + x == z + y`
-| "right_cancellative"   | 1 | 3 | 2 | `forall x y z, x == y -> x + z == y + z`
+| "left_cancellative"    | 1 | 3 | 2 | `forall x y z, x == y -> z + x == z + y` | `proper`
+| "right_cancellative"   | 1 | 3 | 2 | `forall x y z, x == y -> x + z == y + z` | `proper`
+| "cancellative"         | 1 | 3 | 2 | `forall x y z w, x == y -> z == w -> x + z == y + w` | `proper`
 | "left_bicompatible"    | 2 | 3 | 3 | `forall a b x, (a * b) <* x == a <* (b <* x)`
 | "Left_bidistributive"  | 2 | 3 | 3 | `forall a b x, (a + b) <* x == a <* x + b <* x`
 | "Right_bidistributive" | 2 | 3 | 3 | `forall a x y, a <* (x + y) == a <* x + a <* y`

@@ -100,8 +100,8 @@ Definition unit_lsmul (x : S) (y : unit) : unit := y.
 
 Global Instance unit_has_lsmul : HasLSMul S unit := unit_lsmul.
 
-Global Instance unit_is_left_module : IsLeftModule add zero neg mul one
-  tt2 tt tt1 unit_lsmul := {}.
+Global Instance unit_is_left_module : IsLeftModule tt2 tt tt1
+  add zero neg mul one unit_lsmul := {}.
 Proof. all: constructor. Qed.
 
 End Context.
