@@ -4,6 +4,10 @@ These informal notes complement some papers and implementations.
 
 ## Personal Notes by Sampsa Kiiskinen
 
+### Build Automation
+
+Run `make -f Makefile.bootstrap` to be able to run `make` as usual.
+
 ### Coherence Conditions
 
 When defining operational classes,

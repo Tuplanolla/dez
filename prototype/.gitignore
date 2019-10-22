@@ -1,5 +1,7 @@
+*.aux
+*.glob
+*.vo
 .coqdeps.d
-Makefile
-Makefile.conf
-mk_coq_makefile
-rm_coq_makefile
+makefile
+makefile.conf
+makefile.local

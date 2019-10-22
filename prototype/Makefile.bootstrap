@@ -1,0 +1,16 @@
+all::
+	@ { printf '%s \\\n' 'coq_makefile' && \
+	find . -type f -name '*.v' | \
+	LC_ALL=C sort | \
+	sed 's/$$/ \\/g' && \
+	printf '%s\n' '-f _CoqProject -o makefile -opt' ; \
+	} | sh
+	@ { printf '%s::\n\t@ %s %s %s\n' 'clean' 'find . -type f' \
+	"'(' -name '*.aux' -o -name '*.glob' -o -name '*.vo' ')'" \
+	"-exec rm '{}' '+'" ; \
+	} > makefile.local
+.PHONY: all
+
+clean::
+	@ $(RM) makefile makefile.conf makefile.local
+.PHONY: clean
