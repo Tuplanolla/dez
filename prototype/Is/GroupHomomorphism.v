@@ -2,8 +2,8 @@ From Maniunfold.Has Require Export
   Homomorphism EquivalenceRelation GroupOperation GroupIdentity GroupInverse.
 From Maniunfold.Is Require Export
   MonoidHomomorphism Group.
-
-Import AdditiveNotations.
+From Maniunfold.Supports Require Import
+  AdditiveGroupNotations.
 
 Class IsGroupHomomorphism {A B : Type}
   {A_has_eqv : HasEqv A} (A_has_opr : HasOpr A)

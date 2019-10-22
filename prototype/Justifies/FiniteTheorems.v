@@ -6,6 +6,8 @@ From Maniunfold.Is Require Import
   Setoid TotalOrder Ring FinitelyEnumerable.
 From Maniunfold.Justifies Require Import
   NTheorems.
+From Maniunfold.Supports Require Import
+  OrderNotations FieldNotations.
 
 Definition F (p : positive) : Set := {n : N | (n < Npos p)%N}.
 

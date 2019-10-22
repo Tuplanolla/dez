@@ -2,6 +2,8 @@ From Coq Require Export
   Setoid.
 From Maniunfold.Has Require Export
   Relation.
+From Maniunfold.Supports Require Import
+  RelationNotations.
 
 Class IsTransitive {A : Type} (has_rel : HasRel A) : Prop :=
   transitive : forall x y z : A, x ~ y -> y ~ z -> x ~ z.

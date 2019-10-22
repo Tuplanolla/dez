@@ -2,6 +2,8 @@ From Maniunfold.Has Require Export
   EquivalenceRelation FieldOperations FieldIdentities FieldInverses.
 From Maniunfold.Is Require Export
   TotalOrder Field.
+From Maniunfold.Supports Require Import
+  OrderNotations FieldNotations.
 
 (** TODO This is probably wrong in many ways,
     as the existential quantifier might have to be constructive.

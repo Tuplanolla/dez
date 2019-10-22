@@ -6,12 +6,6 @@ Class HasOne (A : Type) : Type := one : A.
 
 Typeclasses Transparent HasZero HasOne.
 
-Notation "'0'" := zero : field_scope.
-Notation "'1'" := one : field_scope.
-
-Global Instance zero_has_idn {A : Type} {has_zero : HasZero A} : HasIdn A := zero.
-Global Instance one_has_idn {A : Type} {has_one : HasOne A} : HasIdn A := one.
-
 (** Numeral notations do not work with type classes,
     so we need to construct each notation from repeated additions.
     The following automatically generated construction
@@ -32,11 +26,5 @@ Definition nine : A := add eight one.
 
 End Context.
 
-Notation "'2'" := two : field_scope.
-Notation "'3'" := three : field_scope.
-Notation "'4'" := four : field_scope.
-Notation "'5'" := five : field_scope.
-Notation "'6'" := six : field_scope.
-Notation "'7'" := seven : field_scope.
-Notation "'8'" := eight : field_scope.
-Notation "'9'" := nine : field_scope.
+Global Instance zero_has_idn {A : Type} {has_zero : HasZero A} : HasIdn A := zero.
+Global Instance one_has_idn {A : Type} {has_one : HasOne A} : HasIdn A := one.

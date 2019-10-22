@@ -6,8 +6,16 @@ From Maniunfold.Is Require Import
   Group.
 From Maniunfold.Justifies Require Import
   IntegerPowers.
+From Maniunfold.Supports Require Import
+  OrderNotations AdditiveGroupNotations.
 
-Import Pos AdditiveNotations.
+Import Pos.
+
+(** TODO Remove these. *)
+
+Local Notation "n '*' x" := (popr n x) : positive_scope.
+Local Notation "n '*' x" := (nopr n x) : N_scope.
+Local Notation "n '*' x" := (zopr n x) : Z_scope.
 
 Section Context.
 

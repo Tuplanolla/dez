@@ -12,6 +12,8 @@ Class HasROpr (S A : Type) : Type := ropr : S -> A -> A.
 
 Typeclasses Transparent HasLOpr HasROpr.
 
+(** TODO Deprecate notation modules. *)
+
 Module AdditiveNotations.
 
 Reserved Notation "a '<+' x" (at level 50, left associativity).

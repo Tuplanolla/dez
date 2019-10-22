@@ -6,6 +6,8 @@ From Maniunfold.Is Require Import
   Monoid.
 From Maniunfold.Justifies Require Import
   NatTheorems ListTheorems.
+From Maniunfold.Supports Require Import
+  AdditiveGroupNotations.
 
 Import ListNotations.
 
@@ -36,8 +38,6 @@ End Context.
 
 Section Context.
 
-Import AdditiveNotations.
-
 Context {A : Type} {n : nat} `{is_semigroup : IsSemigroup A}.
 
 Program Definition sized_list_opr (xs ys : sized_list A n) : sized_list A n :=
@@ -61,8 +61,6 @@ Global Instance sized_list_is_semigroup : IsSemigroup sized_list_opr := {}.
 End Context.
 
 Section Context.
-
-Import AdditiveNotations.
 
 Context {A : Type} {n : nat} `{is_monoid : IsMonoid A}.
 

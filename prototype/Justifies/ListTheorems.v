@@ -4,6 +4,8 @@ From Maniunfold Require Export
   Init.
 From Maniunfold.Is Require Import
   Semigroup.
+From Maniunfold.Supports Require Import
+  AdditiveGroupNotations.
 
 Import ListNotations.
 
@@ -79,8 +81,6 @@ Proof.
     + cbn. rewrite (IH0 xs1). reflexivity. Qed.
 
 Section Context.
-
-Import AdditiveNotations.
 
 Context {A : Type} `{is_semigroup : IsSemigroup A}.
 

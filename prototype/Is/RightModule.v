@@ -2,8 +2,8 @@ From Maniunfold.Has Require Export
   ScalarMultiplication.
 From Maniunfold.Is Require Export
   Proper Ring AbelianGroup.
-
-Import AdditiveNotations.
+From Maniunfold.Supports Require Import
+  FieldNotations AdditiveGroupNotations ModuleNotations.
 
 Class IsRightModule {A S : Type} {A_has_eqv : HasEqv A}
   (A_has_opr : HasOpr A) (A_has_idn : HasIdn A) (A_has_inv : HasInv A)

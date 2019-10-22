@@ -37,6 +37,16 @@ although it may sometimes be a good idea to do so anyway.
 
 If nothing else is exported from `Maniunfold`, always export `Init`.
 
+There is an annoying problem, since
+
+* `Is.Group` requires `Supports.AdditiveGroupNotations`
+  to be able to easily write instances about groups,
+  such that said instances are indistinguishable from structural instances,
+* `Supports.AdditiveGroupNotations` requires `Justifies.IntegerPowers`
+  to be able to define notations for repetitions and
+* `Justifies.IntegerPowers` requires `Is.Group`
+  to be able to set the context appropriately.
+
 ### Naming Conventions
 
 Operative classes are prefixed with `Has` and predicative classes with `Is`.

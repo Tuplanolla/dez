@@ -2,6 +2,8 @@ From Maniunfold.Has Require Export
   EquivalenceRelation FieldOperations FieldIdentities FieldInverses.
 From Maniunfold.Is Require Export
   Ring.
+From Maniunfold.Supports Require Import
+  FieldNotations.
 
 Class IsNontrivialRing {A : Type} {has_eqv : HasEqv A}
   (has_add : HasAdd A) (has_zero : HasZero A) (has_neg : HasNeg A)

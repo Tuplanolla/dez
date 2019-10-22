@@ -2,6 +2,8 @@ From Maniunfold.Has Require Export
   EquivalenceRelation Endomorphism.
 From Maniunfold.Is Require Export
   Setoid.
+From Maniunfold.Supports Require Export
+  EquivalenceNotations.
 
 Class IsInvolutive {A : Type} {has_eqv : HasEqv A}
   (has_endo : HasEndo A) : Prop := {

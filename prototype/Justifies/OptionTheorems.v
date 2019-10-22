@@ -4,8 +4,10 @@ From Maniunfold Require Export
   Init.
 From Maniunfold.Is Require Import
   Setoid.
+From Maniunfold.Supports Require Import
+  EquivalenceNotations.
 
-Section Suffering.
+Section Context.
 
 Context {A : Type} `{is_setoid : IsSetoid A}.
 
@@ -31,4 +33,4 @@ Proof. intros [x |] [y |] [z |] Hxy Hyz; hnf. all: try etransitivity; eauto.
 
 Global Instance option_is_setoid : IsSetoid option_eqv := {}.
 
-End Suffering.
+End Context.

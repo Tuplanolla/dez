@@ -2,8 +2,8 @@ From Maniunfold.Has Require Export
   EquivalenceRelation OrderRelation GroupOperation GroupIdentity Distance.
 From Maniunfold.Is Require Export
   Proper TotalOrder CommutativeMonoid Heterocommutative.
-
-Import AdditiveNotations.
+From Maniunfold.Supports Require Import
+  OrderNotations AdditiveGroupNotations.
 
 (** TODO Review literature on "generalized", "monoidal" or
     "semigroup-valued" metric spaces. *)

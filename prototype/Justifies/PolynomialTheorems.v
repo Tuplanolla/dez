@@ -6,6 +6,8 @@ From Maniunfold.Is Require Import
   NontrivialRing FinitelyEnumerable.
 From Maniunfold.Justifies Require Import
   OptionTheorems ZTheorems FiniteTheorems.
+From Maniunfold.Supports Require Import
+  FieldNotations.
 
 Import ListNotations.
 
@@ -16,7 +18,7 @@ Inductive poly {A : Type} `{is_nontrivial_ring : IsNontrivialRing A} : Type :=
 
 Arguments poly _ {_ _ _ _ _ _ _}.
 
-Section Suffering.
+Section Context.
 
 Context {A : Type} `{is_nontrivial_ring : IsNontrivialRing A}.
 
@@ -76,4 +78,4 @@ Instance poly_is_ring :
   IsRing poly_add poly_zero poly_neg poly_mul poly_zero := {}.
 Proof. Admitted.
 
-End Suffering.
+End Context.

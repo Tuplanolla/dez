@@ -23,23 +23,3 @@ Definition zopr {A : Type} `{is_group : IsGroup A} (n : Z) (x : A) : A :=
   | Zpos p => popr p x
   | Zneg p => inv (popr p x)
   end.
-
-Module AdditiveNotations.
-
-Export GroupInverse.AdditiveNotations.
-
-Notation "n '*' x" := (popr n x) : positive_scope.
-Notation "n '*' x" := (nopr n x) : N_scope.
-Notation "n '*' x" := (zopr n x) : Z_scope.
-
-End AdditiveNotations.
-
-Module MultiplicativeNotations.
-
-Export GroupInverse.MultiplicativeNotations.
-
-Notation "x '^' n" := (popr n x) : positive_scope.
-Notation "x '^' n" := (nopr n x) : N_scope.
-Notation "x '^' n" := (zopr n x) : Z_scope.
-
-End MultiplicativeNotations.

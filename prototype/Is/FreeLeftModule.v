@@ -4,6 +4,8 @@ From Maniunfold.Has Require Export
   Basis Enum.
 From Maniunfold.Is Require Export
   Proper FinitelyEnumerable LeftModule.
+From Maniunfold.Supports Require Import
+  FieldNotations ModuleNotations.
 
 (** TODO Investigate whether the use of
     a nonconstructive existential quantifier is dubious. *)

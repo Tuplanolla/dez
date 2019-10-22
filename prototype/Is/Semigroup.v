@@ -2,8 +2,8 @@ From Maniunfold.Has Require Export
   EquivalenceRelation GroupOperation.
 From Maniunfold.Is Require Export
   Proper Setoid Associative.
-
-Import AdditiveNotations.
+From Maniunfold.Supports Require Import
+  AdditiveGroupNotations.
 
 Class IsSemigroup {A : Type} {has_eqv : HasEqv A}
   (has_opr : HasOpr A) : Prop := {

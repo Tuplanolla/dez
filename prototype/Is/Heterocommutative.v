@@ -2,6 +2,8 @@ From Maniunfold.Has Require Export
   EquivalenceRelation Distance.
 From Maniunfold.Is Require Export
   Setoid.
+From Maniunfold.Supports Require Import
+  EquivalenceNotations.
 
 Class IsHeterocommutative {A B : Type} {has_eqv : HasEqv B}
   (has_dist : HasDist A B) : Prop := {

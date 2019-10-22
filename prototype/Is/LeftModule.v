@@ -2,8 +2,10 @@ From Maniunfold.Has Require Export
   ScalarMultiplication.
 From Maniunfold.Is Require Export
   Proper Ring AbelianGroup.
+From Maniunfold.Supports Require Import
+  FieldNotations AdditiveGroupNotations ModuleNotations.
 
-Import AdditiveNotations.
+(** TODO It is a bit awkward to have to import subclass notations first. *)
 
 Class IsLeftModule {A S : Type} {A_has_eqv : HasEqv A}
   (A_has_opr : HasOpr A) (A_has_idn : HasIdn A) (A_has_inv : HasInv A)
@@ -12,7 +14,7 @@ Class IsLeftModule {A S : Type} {A_has_eqv : HasEqv A}
   (S_has_mul : HasMul S) (S_has_one : HasOne S)
   (has_lsmul : HasLSMul S A) : Prop := {
   lsmul_is_proper :> IsProper (eqv ==> eqv ==> eqv) lsmul;
-  add_zero_neg_mul_one_is_ring :> IsRing add zero neg mul one;
+  add_zero_neg_mul_one_is_ring :> IsRing (A := S) add zero neg mul one;
   opr_idn_inv_is_abelian_group :> IsAbelianGroup (A := A) opr idn inv;
   left_biidentifiable : forall x : A, 1 <* x == x;
   left_bicompatible : forall (a b : S) (x : A),

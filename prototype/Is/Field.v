@@ -1,7 +1,10 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation FieldOperations FieldIdentities FieldInverses.
+  EquivalenceRelation
+  FieldOperations FieldIdentities FieldInverses.
 From Maniunfold.Is Require Export
   Proper Ring Biinvertible.
+From Maniunfold.Supports Require Import
+  FieldNotations.
 
 (** TODO Remember division by zero.
     Also handle discrete and residue fields differently. *)

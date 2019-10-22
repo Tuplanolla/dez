@@ -4,6 +4,8 @@ From Maniunfold.Has Require Export
   EquivalenceRelation Enum.
 From Maniunfold.Is Require Export
   Setoid.
+From Maniunfold.Supports Require Import
+  EquivalenceNotations.
 
 (** TODO Prove that this is isomorphic to an initial segment of [N]. *)
 
