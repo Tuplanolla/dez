@@ -37,16 +37,6 @@ although it may sometimes be a good idea to do so anyway.
 
 If nothing else is exported from `Maniunfold`, always export `Init`.
 
-There is an annoying problem, since
-
-* `Is.Group` requires `Supports.AdditiveGroupNotations`
-  to be able to easily write instances about groups,
-  such that said instances are indistinguishable from structural instances,
-* `Supports.AdditiveGroupNotations` requires `Justifies.IntegerPowers`
-  to be able to define notations for repetitions and
-* `Justifies.IntegerPowers` requires `Is.Group`
-  to be able to set the context appropriately.
-
 ### Naming Conventions
 
 Operative classes are prefixed with `Has` and predicative classes with `Is`.
@@ -65,16 +55,16 @@ the other verbs `Contains`, `Does`, `Entails`, `Gives`, `Goes`, (`Has`, `Is`),
 `Raises`, `Reassures`, `Refines`, `Reflects`, `Represents`, `Resolves`,
 `Says`, `Serves`, `Supports` and `Was`.
 
-Fields are prefixed with the name of the type class they belong to.
+Fields are not prefixed with the name of the type class they belong to.
 
 Coercion or instance fields contain the verb `is`, while plain fields do not.
 For example, we would have `group_is_associative :> IsAssociative A` and
-`group_associative : forall x y z : A, x + (y + z) == (x + y) + z`.
+`associative : forall x y z : A, x + (y + z) == (x + y) + z`.
 
 Fields are prefixed with the most prominent subject.
 For example, we would have
-`field_add_left_invertible : forall x : A, (- x) + x == 0` and
-`field_mul_left_invertible : forall x : A, (/ x) * x == 1`.
+`add_left_invertible : forall x : A, (- x) + x == 0` and
+`mul_left_invertible : forall x : A, (/ x) * x == 1`.
 
 Definitions and instances for a certain type are prefixed with its name.
 For example, we would have `Instance t_magic_lamp : MagicLamp t`.

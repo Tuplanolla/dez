@@ -1,0 +1,29 @@
+digraph hierarchy {
+  rankdir = LR
+
+  subgraph operational {
+    rank = same
+
+    Has [label = "\N\nOperational Classes"]
+    Supports [label = "\N\nOperational Notations"]
+    Provides [label = "\N\nDerived Operational Definitions"]
+    Why [label = "\N\nDerived Operational Notations"]
+  }
+
+  subgraph predicative {
+    rank = same
+
+    Is [label = "\N\nPredicative Classes"]
+    What [label = "\N\nPredicative Notations"]
+    Justifies [label = "\N\nDerived Predicative Definitions"]
+    How [label = "\N\nDerived Predicative Notations"]
+  }
+
+  Has -> Supports
+  Supports -> Provides
+  Provides -> Why
+  Why -> Is
+  Is -> What
+  What -> Justifies
+  Justifies -> How
+}
