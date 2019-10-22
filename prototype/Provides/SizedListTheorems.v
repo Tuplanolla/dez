@@ -4,9 +4,9 @@ From Maniunfold Require Export
   Init.
 From Maniunfold.Is Require Import
   Monoid.
-From Maniunfold.Justifies Require Import
+From Maniunfold.Provides Require Import
   NatTheorems ListTheorems.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   AdditiveGroupNotations.
 
 Import ListNotations.

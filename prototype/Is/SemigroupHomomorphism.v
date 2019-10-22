@@ -2,7 +2,7 @@ From Maniunfold.Has Require Export
   Homomorphism EquivalenceRelation GroupOperation.
 From Maniunfold.Is Require Export
   SetoidHomomorphism Semigroup.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   AdditiveGroupNotations.
 
 (** TODO Rename [preserves_operation] and the like. *)

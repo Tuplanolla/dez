@@ -4,10 +4,12 @@ From Maniunfold Require Export
   Init.
 From Maniunfold.Is Require Import
   Group.
-From Maniunfold.Provides Require Import
+From Maniunfold.Offers Require Import
   PositivePowers NaturalPowers IntegerPowers.
-From Maniunfold.Supports Require Import
-  OrderNotations AdditiveGroupNotations.
+From Maniunfold.ShouldHave Require Import
+  OrderNotations.
+From Maniunfold.ShouldOffer Require Import
+  AdditiveGroupNotations.
 
 Section Context.
 

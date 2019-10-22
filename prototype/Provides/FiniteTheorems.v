@@ -4,9 +4,9 @@ From Maniunfold Require Export
   Init.
 From Maniunfold.Is Require Import
   Setoid TotalOrder Ring FinitelyEnumerable.
-From Maniunfold.Justifies Require Import
+From Maniunfold.Provides Require Import
   NTheorems.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   OrderNotations FieldNotations.
 
 Definition F (p : positive) : Set := {n : N | (n < Npos p)%N}.

@@ -4,7 +4,7 @@ From Maniunfold Require Export
   Init.
 From Maniunfold.Is Require Import
   Semigroup.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   AdditiveGroupNotations.
 
 Import ListNotations.

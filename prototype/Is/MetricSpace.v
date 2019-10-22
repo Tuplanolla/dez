@@ -2,7 +2,7 @@ From Maniunfold.Has Require Export
   EquivalenceRelation OrderRelation GroupOperation GroupIdentity Distance.
 From Maniunfold.Is Require Export
   Proper TotalOrder CommutativeMonoid Heterocommutative.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   OrderNotations AdditiveGroupNotations.
 
 (** TODO Review literature on "generalized", "monoidal" or

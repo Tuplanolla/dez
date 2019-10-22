@@ -2,7 +2,7 @@ From Maniunfold.Has Require Export
   EquivalenceRelation FieldOperations FieldIdentities.
 From Maniunfold.Is Require Export
   Setoid.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   FieldNotations.
 
 Class IsRightAbsorbing {A : Type} {has_eqv : HasEqv A}

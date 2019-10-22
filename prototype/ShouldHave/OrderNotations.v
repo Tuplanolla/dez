@@ -1,6 +1,6 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation OrderRelation.
-From Maniunfold.Supports Require Export
+From Maniunfold.ShouldHave Require Export
   EquivalenceNotations.
 
 Delimit Scope order_relation_scope with order_relation.

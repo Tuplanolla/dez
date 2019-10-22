@@ -44,16 +44,42 @@ Operations themselves are abbreviated to less than six characters,
 while predicates are never abbreviated.
 
 Derived operations and theorems need not be prefixed,
-although some options would be
-the modal verbs `Can`, `Could`, (`Has`, `Is`),
+although some prefix options are the modal verbs `Can`, `Could`,
 `May`, `Might`, `Must`, `Ought`, `Shall`, `Should`, `Will` and `Would` and
-the other verbs `Contains`, `Does`, `Entails`, `Gives`, `Goes`, (`Has`, `Is`),
-`Justifies`, `Keeps`, `Knows`, `Lets`, `Makes`, `Matches`, `Means`,
-`Needs`, `Notes`, `Obeys`, `Observes`, `Offers`, `Orders`,
-`Passes`, `Pays`, `Picks`, `Plays`, `Points`, `Provides`, `Posits`,
-`Quantifies`, `Quotes`,
-`Raises`, `Reassures`, `Refines`, `Reflects`, `Represents`, `Resolves`,
-`Says`, `Serves`, `Supports` and `Was`.
+the other verbs
+
+* `Advises`, `Affirms`, `Affords`, `Allows`, `Articulates`,
+  `Asserts`, `Assigns`, `Assumes`, `Attests`,
+* `Backs`, `Builds`,
+* `Certifies`, `Confirms`, `Conveys`, `Creates`, `Cultivates`,
+* `Declares`, `Defends`, `Defines`, `Delivers`,
+  `Demonstrates`, `Depicts`, `Describes`, `Designates`,
+  `Determines`, `Discerns`, `Displays`, `Distills`, `Distinguishes`,
+* `Embodies`, `Endorses`, `Entails`, `Establishes`,
+  `Evidences`, `Evinces`, `Exhibits`, `Exposes`, `Expresses`,
+* `Figures`, `Fixes`, `Fosters`, `Fulfills`,
+* `Gives`, `Goes`, `Grants`,
+* (`Has`), `Holds`,
+* `Implies`, `Incites`, `Indicates`, `Informs`, `Instigates`, (`Is`),
+* `Justifies`,
+* `Lets`,
+* `Maintains`, `Makes`, `Manifests`, `Means`, `Mentions`,
+* `Necessitates`, `Needs`,
+* `Obeys`, `Offers`,
+* `Permits`, `Points`, `Poses`, `Posits`,
+  `Postulates`, `Presents`, `Preserves`, `Presumes`, `Produces`, `Proposes`,
+* `Qualifies`, `Quantifies`,
+* `Raises`, `Reasserts`, `Recites`, `Reckons`,
+  `Recognizes`, `Records`, `Refers`, `Refines`,
+  `Reflects`, `Represents`, `Resolves`,
+* `Sanctions`, `Satisfies`, `Says`, `Serves`,
+  `Shows`, `Solves`, `Specifies`, `Speculates`,
+  `States`, `Stipulates`, `Suggests`, `Supplies`,
+  `Supports`, `Supposes`, `Sustains`,
+* `Tells`, `Thinks`,
+* `Upholds`,
+* `Works` and perhaps even `Was`,
+* `Yields`.
 
 Fields are not prefixed with the name of the type class they belong to.
 

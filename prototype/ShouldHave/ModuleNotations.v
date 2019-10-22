@@ -1,6 +1,6 @@
 From Maniunfold.Has Require Export
   ScalarMultiplication.
-From Maniunfold.Supports Require Export
+From Maniunfold.ShouldHave Require Export
   EquivalenceNotations.
 
 Delimit Scope module_scope with module.

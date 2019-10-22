@@ -4,9 +4,9 @@ From Maniunfold Require Export
   Init.
 From Maniunfold.Is Require Import
   NontrivialRing FinitelyEnumerable.
-From Maniunfold.Justifies Require Import
+From Maniunfold.Provides Require Import
   OptionTheorems ZTheorems FiniteTheorems.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   FieldNotations.
 
 Import ListNotations.

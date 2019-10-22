@@ -2,7 +2,7 @@ From Maniunfold.Has Require Export
   EquivalenceRelation GroupOperation GroupIdentity GroupInverse.
 From Maniunfold.Is Require Export
   Setoid.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   AdditiveGroupNotations.
 
 Class IsRightInvertible {A : Type} {has_eqv : HasEqv A}

@@ -2,7 +2,7 @@ From Maniunfold.Has Require Export
   EquivalenceRelation OrderRelation.
 From Maniunfold.Is Require Export
   Proper Antisymmetric Transitive Connex.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   OrderNotations.
 
 Class IsTotalOrder {A : Type} {has_eqv : HasEqv A}

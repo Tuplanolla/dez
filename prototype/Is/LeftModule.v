@@ -2,7 +2,7 @@ From Maniunfold.Has Require Export
   ScalarMultiplication.
 From Maniunfold.Is Require Export
   Proper Ring AbelianGroup.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   FieldNotations AdditiveGroupNotations ModuleNotations.
 
 (** TODO It is a bit awkward to have to import subclass notations first. *)

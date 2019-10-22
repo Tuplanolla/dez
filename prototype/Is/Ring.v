@@ -4,7 +4,7 @@ From Maniunfold.Is Require Export
   Semiring Group AbelianGroup Monoid.
 From Maniunfold.Is Require Import
   Involutive Antidistributive LeftAbsorbing RightAbsorbing Biabsorbing.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   AdditiveGroupNotations FieldNotations.
 
 Class IsRing {A : Type} {has_eqv : HasEqv A}

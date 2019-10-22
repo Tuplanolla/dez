@@ -2,7 +2,7 @@ From Maniunfold.Has Require Export
   EquivalenceRelation ScalarOperations.
 From Maniunfold.Is Require Export
   Setoid.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   EquivalenceNotations.
 
 Import AdditiveNotations.

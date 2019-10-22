@@ -4,7 +4,7 @@ From Maniunfold Require Export
   Init.
 From Maniunfold.Is Require Import
   Setoid.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   EquivalenceNotations.
 
 Section Context.

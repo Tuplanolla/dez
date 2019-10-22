@@ -2,7 +2,7 @@ From Coq Require Export
   Morphisms.
 From Maniunfold.Has Require Export
   Relation Point.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   RelationNotations.
 
 Class IsProper {A : Type} (has_rel : HasRel A) (has_pt : HasPt A) : Prop :=

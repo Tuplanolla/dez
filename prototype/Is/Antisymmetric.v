@@ -2,7 +2,7 @@ From Maniunfold.Has Require Export
   EquivalenceRelation Relation.
 From Maniunfold.Is Require Export
   Setoid.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   RelationNotations EquivalenceNotations.
 
 Class IsAntisymmetric {A : Type} {has_eqv : HasEqv A}

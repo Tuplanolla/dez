@@ -2,7 +2,7 @@ From Maniunfold Require Export
   Init.
 From Maniunfold.Is Require Import
   LeftModule.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   FieldNotations.
 
 Definition unit_eqv (x y : unit) : Prop := True.

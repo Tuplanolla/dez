@@ -2,7 +2,7 @@ From Maniunfold.Has Require Export
   EquivalenceRelation Endomorphism.
 From Maniunfold.Is Require Export
   Setoid.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   EquivalenceNotations.
 
 Class IsIdempotent {A : Type} {has_eqv : HasEqv A}

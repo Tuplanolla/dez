@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
   FieldOperations FieldIdentities FieldInverses.
 From Maniunfold.Is Require Export
   Proper Ring Biinvertible.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   FieldNotations.
 
 (** TODO Remember division by zero.

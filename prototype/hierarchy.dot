@@ -1,66 +1,78 @@
 digraph hierarchy {
-  // Ideally, the following list be in alphabetical order.
+  // Ideally, we would use the following alphabetical list.
 
   /*
   Does [label = "\N\nOperational Classes"]
-  Entails [label = "\N\nOperational Notations"]
-  Gives [label = "\N\nDerived Operational Definitions"]
-  Has [label = "\N\nDerived Operational Notations"]
+  Entails [label = "\N\nOperational Class Notations"]
+  Gives [label = "\N\nOperational Definitions"]
+  Has [label = "\N\nOperational Definition Notations"]
   Is [label = "\N\nPredicative Classes"]
-  Justifies [label = "\N\nPredicative Notations"]
-  Provides [label = "\N\nDerived Predicative Definitions"]
-  Supports [label = "\N\nDerived Predicative Notations"]
+  Justifies [label = "\N\nPredicative Class Notations"]
+  Provides [label = "\N\nPredicative Definitions"]
+  Supports [label = "\N\nPredicative Definition Notations"]
   */
 
-  // Less ideally, the following pairs would be in alphabetical order.
-
-  /*
-  Does [label = "\N\nOperational Classes"]
-  Is [label = "\N\nPredicative Classes"]
-
-  Entails [label = "\N\nOperational Notations"]
-  Justifies [label = "\N\nPredicative Notations"]
-
-  Gives [label = "\N\nDerived Operational Definitions"]
-  Provides [label = "\N\nDerived Predicative Definitions"]
-
-  Has [label = "\N\nDerived Operational Notations"]
-  Supports [label = "\N\nDerived Predicative Notations"]
-  */
-
-  // Currently, the assignment is the following.
+  // However, that would require giving up
+  // "has" for operational classes or "is" for predicative classes,
+  // which we do not want to do.
+  // Thus, we would rather use the following list of alphabetical pairs.
 
   /*
   Has [label = "\N\nOperational Classes"]
-  Provides [label = "\N\nDerived Operational Definitions"]
-  Supports [label = "\N\nDerived Operational Notations"]
+  a [label = "\N\nOperational Class Notations"]
+  b [label = "\N\nOperational Definitions"]
+  c [label = "\N\nOperational Definition Notations"]
   Is [label = "\N\nPredicative Classes"]
-  Justifies [label = "\N\nDerived Predicative Definitions"]
+  d [label = "\N\nPredicative Class Notations"]
+  e [label = "\N\nPredicative Definitions"]
+  f [label = "\N\nPredicative Definition Notations"]
   */
 
-  Does [label = "\N\nOperational Classes"]
-  Is [label = "\N\nPredicative Classes"]
-  Entails [label = "\N\nOperational Notations"]
-  Justifies [label = "\N\nPredicative Notations"]
-  Gives [label = "\N\nDerived Operational Definitions"]
-  Provides [label = "\N\nDerived Predicative Definitions"]
-  Has [label = "\N\nDerived Operational Notations"]
-  Supports [label = "\N\nDerived Predicative Notations"]
+  // Let us try to solve this lattice problem.
 
-  Does -> Entails
-  Entails -> Gives
-  Gives -> Has
-  Has -> Is
-  Is -> Justifies
-  Justifies -> Provides
-  Provides -> Supports
+  /*
+  constraints: H < a, a < b, b < c, I < d, d < e, e < f,
+               H < I, a < d, b < e, c < f,
+               I <> a, a <> b, b <> c, c <> d, d <> e, e <> f
+  derived: J <= a, K <= b, L <= c, K <= d, L <= e, O <= f,
+           a <= W, b <= X, c <= Y, d <= X, e <= Y, f <= Z
+  simplified: J <= a <= W, K <= b <= X, L <= c <= Y,
+              K <= d <= X, L <= e <= Y, O <= f <= Z
+  combined: J <= a <= W, a < min b d,
+            K <= b <= X, b < min c e,
+            L <= c <= Y, c < f, K <= d <= X, d < e,
+            L <= e <= Y, e < f, O <= f <= Z
+  vague: a "is like gives", b "is like implies", c "is like gives",
+         d "is like gives", e "is like implies", f "is like gives"
+  proposed: a = J(ustifies), b = M(anifests), c = O(ffers),
+            d = P(rovides), e = S(upports), f = Y(ields)
+  */
 
-  Does -> Does
-  Entails -> Entails
-  Gives -> Gives
-  Has -> Has
-  Is -> Is
-  Justifies -> Justifies
-  Provides -> Provides
-  Supports -> Supports
+  // Well, perhaps mnemonic names would work better.
+
+  OC [label = "Has\nOperational Classes"]
+  OCN [label = "ShouldHave\nOperational Class Notations"]
+  OD [label = "Offers\nOperational Definitions"]
+  ODN [label = "ShouldOffer\nOperational Definition Notations"]
+  PC [label = "Is\nPredicative Classes"]
+  PCN [label = "ShouldBe\nPredicative Class Notations"]
+  PD [label = "Provides\nPredicative Definitions"]
+  PDN [label = "ShouldProvide\nPredicative Definition Notations"]
+
+  OC -> OCN
+  OCN -> OD
+  OD -> ODN
+  ODN -> PC
+  PC -> PCN
+  PCN -> PD
+  PD -> PDN
+
+  OC -> OC
+  OCN -> OCN
+  OD -> OD
+  ODN -> ODN
+  PC -> PC
+  PCN -> PCN
+  PD -> PD
+  PDN -> PDN
 }

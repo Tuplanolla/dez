@@ -2,7 +2,7 @@ From Maniunfold.Has Require Export
   EquivalenceRelation GroupOperation GroupIdentity GroupInverse.
 From Maniunfold.Is Require Export
   Proper Monoid Biinvertible Involutive Antidistributive.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   AdditiveGroupNotations.
 
 Class IsGroup {A : Type} {has_eqv : HasEqv A}

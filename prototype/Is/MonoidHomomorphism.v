@@ -2,7 +2,7 @@ From Maniunfold.Has Require Export
   Homomorphism EquivalenceRelation GroupOperation GroupIdentity.
 From Maniunfold.Is Require Export
   SemigroupHomomorphism Monoid.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   AdditiveGroupNotations.
 
 Class IsMonoidHomomorphism {A B : Type} {A_has_eqv : HasEqv A}

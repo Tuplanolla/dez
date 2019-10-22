@@ -4,7 +4,7 @@ From Maniunfold.Has Require Export
   Basis Enum.
 From Maniunfold.Is Require Export
   Proper FinitelyEnumerable LeftModule.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   FieldNotations ModuleNotations.
 
 (** TODO Investigate whether the use of

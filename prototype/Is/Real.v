@@ -2,7 +2,7 @@ From Maniunfold.Has Require Export
   EquivalenceRelation FieldOperations FieldIdentities FieldInverses.
 From Maniunfold.Is Require Export
   TotalOrder Field.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   OrderNotations FieldNotations.
 
 (** TODO This is probably wrong in many ways,

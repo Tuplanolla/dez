@@ -2,7 +2,7 @@ From Maniunfold.Has Require Export
   EquivalenceRelation GroupOperation GroupInverse.
 From Maniunfold.Is Require Export
   Setoid.
-From Maniunfold.Supports Require Import
+From Maniunfold.ShouldHave Require Import
   AdditiveGroupNotations.
 
 Class IsAntidistributive {A : Type} {has_eqv : HasEqv A}
