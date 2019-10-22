@@ -1,29 +1,66 @@
 digraph hierarchy {
-  rankdir = LR
+  // Ideally, the following list be in alphabetical order.
 
-  subgraph operational {
-    rank = same
+  /*
+  Does [label = "\N\nOperational Classes"]
+  Entails [label = "\N\nOperational Notations"]
+  Gives [label = "\N\nDerived Operational Definitions"]
+  Has [label = "\N\nDerived Operational Notations"]
+  Is [label = "\N\nPredicative Classes"]
+  Justifies [label = "\N\nPredicative Notations"]
+  Provides [label = "\N\nDerived Predicative Definitions"]
+  Supports [label = "\N\nDerived Predicative Notations"]
+  */
 
-    Has [label = "\N\nOperational Classes"]
-    Supports [label = "\N\nOperational Notations"]
-    Provides [label = "\N\nDerived Operational Definitions"]
-    Why [label = "\N\nDerived Operational Notations"]
-  }
+  // Less ideally, the following pairs would be in alphabetical order.
 
-  subgraph predicative {
-    rank = same
+  /*
+  Does [label = "\N\nOperational Classes"]
+  Is [label = "\N\nPredicative Classes"]
 
-    Is [label = "\N\nPredicative Classes"]
-    What [label = "\N\nPredicative Notations"]
-    Justifies [label = "\N\nDerived Predicative Definitions"]
-    How [label = "\N\nDerived Predicative Notations"]
-  }
+  Entails [label = "\N\nOperational Notations"]
+  Justifies [label = "\N\nPredicative Notations"]
 
-  Has -> Supports
-  Supports -> Provides
-  Provides -> Why
-  Why -> Is
-  Is -> What
-  What -> Justifies
-  Justifies -> How
+  Gives [label = "\N\nDerived Operational Definitions"]
+  Provides [label = "\N\nDerived Predicative Definitions"]
+
+  Has [label = "\N\nDerived Operational Notations"]
+  Supports [label = "\N\nDerived Predicative Notations"]
+  */
+
+  // Currently, the assignment is the following.
+
+  /*
+  Has [label = "\N\nOperational Classes"]
+  Provides [label = "\N\nDerived Operational Definitions"]
+  Supports [label = "\N\nDerived Operational Notations"]
+  Is [label = "\N\nPredicative Classes"]
+  Justifies [label = "\N\nDerived Predicative Definitions"]
+  */
+
+  Does [label = "\N\nOperational Classes"]
+  Is [label = "\N\nPredicative Classes"]
+  Entails [label = "\N\nOperational Notations"]
+  Justifies [label = "\N\nPredicative Notations"]
+  Gives [label = "\N\nDerived Operational Definitions"]
+  Provides [label = "\N\nDerived Predicative Definitions"]
+  Has [label = "\N\nDerived Operational Notations"]
+  Supports [label = "\N\nDerived Predicative Notations"]
+
+  Does -> Entails
+  Entails -> Gives
+  Gives -> Has
+  Has -> Is
+  Is -> Justifies
+  Justifies -> Provides
+  Provides -> Supports
+
+  Does -> Does
+  Entails -> Entails
+  Gives -> Gives
+  Has -> Has
+  Is -> Is
+  Justifies -> Justifies
+  Provides -> Provides
+  Supports -> Supports
 }
