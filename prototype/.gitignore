@@ -4,4 +4,6 @@
 .coqdeps.d
 makefile
 makefile.conf
+makefile.coqproject
 makefile.local
+makefile.vfiles
