@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.Is Require Export
   Semiring LeftHeterodistributive RightHeteroabsorbing.
 
-Class IsExponentialSemiring {A : Type} {has_eqv : HasEqv A}
+Class IsPowerSemiring {A : Type} {has_eqv : HasEqv A}
   (has_add : HasAdd A) (has_zero : HasZero A)
   (has_mul : HasMul A) (has_one : HasOne A) (has_pow : HasPow A) : Prop := {
   add_zero_mul_one_is_semiring :> IsSemiring add zero mul one;
