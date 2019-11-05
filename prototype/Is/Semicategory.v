@@ -1,12 +1,13 @@
 From Maniunfold.Has Require Export
-  HigherEquivalenceRelation Composition.
+  EquivalenceRelation Composition.
 From Maniunfold.Is Require Export
-  Proper Setoidoid Associative.
+  Proper Setoid Associative.
 
 Class IsSemicategory {A : Type}
-  {has_arrow : HasArrow A} {has_hieqv : HasHiEqv arrow}
+  {has_arrow : HasArrow A} {has_eqv : forall x y : A, HasEqv (arrow x y)}
   (has_comp : HasComp arrow) : Prop := {
-  hieqv_is_setoidoid :> IsSetoidoid has_hieqv;
-  (* comp_is_proper :> IsProper (hieqv ==> hieqv ==> hieqv) comp; *)
-  (* comp_is_associative :> IsAssociative comp; *)
+  eqv_is_setoidoid :> forall x y : A, IsSetoid (A := arrow x y) eqv;
+  comp_is_proper :> forall x y z : A,
+    IsProper (eqv ==> eqv ==> eqv) (comp x y z);
+  (* comp_is_associative :> forall x y z : A, IsAssociative (comp x y z); *)
 }.
