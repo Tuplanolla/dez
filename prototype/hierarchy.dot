@@ -59,13 +59,7 @@ digraph hierarchy {
   PD [label = "Provides\nPredicative Definitions"]
   PDN [label = "ShouldProvide\nPredicative Definition Notations"]
 
-  OC -> OCN
-  OCN -> OD
-  OD -> ODN
-  ODN -> PC
-  PC -> PCN
-  PCN -> PD
-  PD -> PDN
+  // # Loops
 
   OC -> OC
   OCN -> OCN
@@ -75,4 +69,21 @@ digraph hierarchy {
   PCN -> PCN
   PD -> PD
   PDN -> PDN
+
+  // # Paths
+
+  OC -> OCN
+  OCN -> OD
+  OD -> ODN
+  ODN -> PC
+  PC -> PCN
+  PCN -> PD
+  PD -> PDN
+
+  // # Cycles
+
+  OCN -> OC
+  ODN -> OD
+  PCN -> PC
+  PDN -> PD
 }

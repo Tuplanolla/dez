@@ -1,7 +1,7 @@
 From Maniunfold Require Export
   Init.
 From Maniunfold.Is Require Import
-  Isomorphism CommutativeSemiring CommutativeExponentialSemiring.
+  Isomorphism CommutativeSemiring CommutativePowerSemiring.
 From Maniunfold.ShouldHave Require Import
   RelationNotations FieldNotations.
 
@@ -209,8 +209,8 @@ Instance Type_is_commutative_semiring :
   IsCommutativeSemiring sum Empty_set prod unit := {}.
 
 Instance Type_is_exponential_semiring :
-  IsExponentialSemiring sum Empty_set prod unit arrow := {}.
+  IsPowerSemiring sum Empty_set prod unit arrow := {}.
 Proof. Admitted.
 
 Instance Type_is_commutative_exponential_semiring :
-  IsCommutativeExponentialSemiring sum Empty_set prod unit arrow := {}.
+  IsCommutativePowerSemiring sum Empty_set prod unit arrow := {}.
