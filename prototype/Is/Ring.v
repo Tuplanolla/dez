@@ -80,12 +80,16 @@ Theorem zero_left_absorbing : forall x : A,
   0 * x == 0.
 Proof.
   intros x.
-  apply (add_right_injective (0 * x) 0 x).
-  rewrite <- (mul_left_identifiable x) at 2.
+  apply (add_left_injective (0 * x) 0 (1 * x)).
+  rewrite (add_right_identifiable (1 * x)).
+  rewrite <- (right_distributive 1 0 x).
+  rewrite (add_right_identifiable 1).
+  reflexivity. Restart.
+  intros x.
+  apply (add_right_injective (0 * x) 0 (1 * x)).
+  rewrite (add_left_identifiable (1 * x)).
   rewrite <- (right_distributive 0 1 x).
   rewrite (add_left_identifiable 1).
-  rewrite (mul_left_identifiable x).
-  rewrite (add_left_identifiable x).
   reflexivity. Qed.
 
 Global Instance zero_is_left_absorbing : IsLeftAbsorbing mul zero := {}.
@@ -95,12 +99,16 @@ Theorem zero_right_absorbing : forall x : A,
   x * 0 == 0.
 Proof.
   intros x.
-  apply (add_left_injective (x * 0) 0 x).
-  rewrite <- (mul_right_identifiable x) at 1.
+  apply (add_left_injective (x * 0) 0 (x * 1)).
+  rewrite (add_right_identifiable (x * 1)).
   rewrite <- (left_distributive x 1 0).
   rewrite (add_right_identifiable 1).
-  rewrite (mul_right_identifiable x).
-  rewrite (add_right_identifiable x).
+  reflexivity. Restart.
+  intros x.
+  apply (add_right_injective (x * 0) 0 (x * 1)).
+  rewrite (add_left_identifiable (x * 1)).
+  rewrite <- (left_distributive x 0 1).
+  rewrite (add_left_identifiable 1).
   reflexivity. Qed.
 
 Global Instance zero_is_right_absorbing : IsRightAbsorbing mul zero := {}.
