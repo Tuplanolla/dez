@@ -1,0 +1,30 @@
+name: review
+version: 0.0.0
+homepage: https://github.com/Tuplanolla/maniunfold
+license: GPL-3
+license-file: LICENSE
+author: Sampsa Kiiskinen
+maintainer: tuplanolla@gmail.com
+copyright: Copyright (C) 2020 Sampsa "Tuplanolla" Kiiskinen
+category: Education
+build-type: Simple
+cabal-version: >= 1.10
+extra-source-files: README.md
+
+executable review
+  hs-source-dirs: gen-hs, src
+  main-is: Main.hs
+  default-language: Haskell2010
+  build-depends:
+    base,
+    bytestring,
+    containers,
+    hashable,
+    QuickCheck,
+    text,
+    thrift,
+    unordered-containers,
+    vector
+  other-modules:
+    MonkeySaddle_Consts
+    MonkeySaddle_Types

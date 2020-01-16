@@ -5,6 +5,7 @@ all:
 	thrift -r --gen cpp MonkeySaddle.thrift
 	thrift -r --gen ocaml MonkeySaddle.thrift
 	thrift -r --gen hs MonkeySaddle.thrift
+	thrift -r --gen py MonkeySaddle.thrift
 
 clean:
 	rm -fr gen-*
