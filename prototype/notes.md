@@ -64,3 +64,24 @@ The operations unify to get
 ```
 
 as the most general type for associativity.
+
+Solve this equation
+
+```
+    C
+---------
+  B
+-----
+(- x) + x
+  ---  ---
+   A    A
+```
+
+to get
+
+```
+(-) : A -> B
+(+) : B * A -> C
+```
+
+as the most general type for bileftinvertibility.

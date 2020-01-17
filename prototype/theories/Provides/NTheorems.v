@@ -24,15 +24,10 @@ End Equivalence.
 
 Module Additive.
 
-Instance N_has_ex_bi_op : HasExBiOp N N := N.add.
-
-Instance N_has_bi_op : HasBiOp N := ex_bi_op.
-
-Instance N_is_externally_associative :
-  IsExternallyAssociative N.add (flip N.add) := {}.
-Proof. intros x y z. apply N.add_assoc. Qed.
+Instance N_has_bi_op : HasBiOp N := N.add.
 
 Instance N_is_associative : IsAssociative bi_op := {}.
+Proof. intros x y z. apply N.add_assoc. Qed.
 
 Instance N_is_semigroup : IsSemigroup N.add := {}.
 Proof. cbv -[N.add]. apply N.add_wd. Qed.
@@ -42,7 +37,7 @@ Instance N_has_un : HasUn N := N.zero.
 Instance N_is_left_unital : IsLeftUnital N.add N.zero := {}.
 Proof. intros x. apply N.add_0_l. Qed.
 
-Instance N_is_right_unital : IsRightUnital (flip N.add) N.zero := {}.
+Instance N_is_right_unital : IsRightUnital N.add N.zero := {}.
 Proof. intros x. apply N.add_0_r. Qed.
 
 Instance N_is_unital : IsUnital N.add N.zero := {}.
