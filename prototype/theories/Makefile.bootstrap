@@ -1,0 +1,17 @@
+CMD:=$(if $(VERBOSE),,@ )
+MSG:=$(if $(VERBOSE),@ true || ,@ )
+
+all::
+	$(CMD) find . -type f -name '*.v' | LC_ALL=C sort > makefile.vfiles
+	$(CMD) cat makefile.vfiles _CoqProject > makefile.coqproject
+	$(CMD) coq_makefile -f makefile.coqproject -o makefile -opt
+	$(CMD) printf '%s::\n\t@ %s %s %s\n' 'clean' 'find . -type f' \
+	"'(' -name '*.aux' -o -name '*.glob' -o -name '*.vo' ')'" \
+	"-exec rm '{}' '+'" > makefile.local
+	$(MSG) sed 's/^/STAT /' makefile.vfiles
+.PHONY: all
+
+clean::
+	$(CMD) $(RM) makefile.vfiles makefile.coqproject makefile.local
+	$(CMD) $(RM) makefile makefile.conf
+.PHONY: clean
