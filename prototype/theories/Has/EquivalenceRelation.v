@@ -9,6 +9,6 @@ Section Context.
 
 Context {A : Type} `{has_eq_rel : HasEqRel A}.
 
-Global Instance eq_rel_has_bi_rel : HasBinRel A := eq_rel.
+Global Instance eq_rel_has_bin_rel : HasBinRel A := eq_rel.
 
 End Context.

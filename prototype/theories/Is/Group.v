@@ -6,11 +6,11 @@ From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
 Class IsGroup {A : Type} {has_eq_rel : HasEqRel A}
-  (has_bi_op : HasBinOp A) (has_un : HasUn A)
+  (has_bin_op : HasBinOp A) (has_un : HasUn A)
   (has_endo_fn : HasEndoFn A) : Prop := {
   inv_is_proper :> IsProper (eq_rel ==> eq_rel) endo_fn;
-  opr_idn_is_monoid :> IsMonoid bi_op un;
-  opr_idn_inv_is_invertible :> IsInvertible bi_op un endo_fn;
+  opr_idn_is_monoid :> IsMonoid bin_op un;
+  opr_idn_inv_is_invertible :> IsInvertible bin_op un endo_fn;
 }.
 
 Section Context.
