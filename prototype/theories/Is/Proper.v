@@ -6,7 +6,7 @@ From Maniunfold.ShouldHave Require Import
   BinaryRelationNotations.
 
 Class IsProper {A : Type}
-  (has_bi_rel : HasBiRel A) (has_pt : HasPt A) : Prop :=
+  (has_bi_rel : HasBinRel A) (has_pt : HasPt A) : Prop :=
   proper : pt ~ pt.
 
 Section Context.

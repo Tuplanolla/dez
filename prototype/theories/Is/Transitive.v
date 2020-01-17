@@ -5,7 +5,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   BinaryRelationNotations.
 
-Class IsTransitive {A : Type} (has_bi_rel : HasBiRel A) : Prop :=
+Class IsTransitive {A : Type} (has_bi_rel : HasBinRel A) : Prop :=
   transitive : forall x y z : A, x ~ y -> y ~ z -> x ~ z.
 
 Section Context.

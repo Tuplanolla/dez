@@ -5,7 +5,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   BinaryRelationNotations.
 
-Class IsReflexive {A : Type} (has_bi_rel : HasBiRel A) : Prop :=
+Class IsReflexive {A : Type} (has_bi_rel : HasBinRel A) : Prop :=
   reflexive : forall x : A, x ~ x.
 
 Section Context.

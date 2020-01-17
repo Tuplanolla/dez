@@ -24,7 +24,7 @@ End Equivalence.
 
 Module Additive.
 
-Instance N_has_bi_op : HasBiOp N := N.add.
+Instance N_has_bi_op : HasBinOp N := N.add.
 
 Instance N_is_associative : IsAssociative bi_op := {}.
 Proof. intros x y z. apply N.add_assoc. Qed.

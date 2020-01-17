@@ -7,7 +7,7 @@ From Maniunfold.Offers Require Import
 From Maniunfold.ShouldHave Require Import
   AdditiveNotations.
 
-Definition nop {A : Type} {has_bi_op : HasBiOp A}
+Definition nop {A : Type} {has_bi_op : HasBinOp A}
   {has_un : HasUn A} (n : N) (x : A) : A :=
   match n with
   | N0 => 0

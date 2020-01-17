@@ -5,7 +5,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   BinaryRelationNotations.
 
-Class IsSymmetric {A : Type} (has_bi_rel : HasBiRel A) : Prop :=
+Class IsSymmetric {A : Type} (has_bi_rel : HasBinRel A) : Prop :=
   symmetric : forall x y : A, x ~ y -> y ~ x.
 
 Section Context.
