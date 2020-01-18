@@ -5,9 +5,9 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
-Class IsLeftInvertible {A B C : Type} {has_eq_rel : HasEqRel C}
+Class IsLeftExternallyInvertible {A B C : Type} {has_eq_rel : HasEqRel C}
   (has_bin_fn : HasBinFn B A C) (has_un : HasUn C)
   (has_fn : HasFn A B) : Prop := {
   eq_rel_is_setoid :> IsSetoid eq_rel;
-  left_invertible : forall x : A, (>-< x) >+< x == 0;
+  left_externally_invertible : forall x : A, >-< x >+< x == 0;
 }.

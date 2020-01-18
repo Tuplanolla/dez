@@ -4,7 +4,7 @@
 Global Unset Universe Polymorphism.
 
 (** We disable warnings about overriding notations,
-    because we replace many basic notations like [<=] and [+]. *)
+    because the plan is to replace many basic notations like [<=] and [+]. *)
 
 Global Set Warnings "-notation-overridden".
 
