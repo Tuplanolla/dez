@@ -2,11 +2,20 @@ Do these things.
 
 * Add adverb subdirectories to arrange different conceps with similar names.
 * Implement `Is/Algebraically/Group.v` and `Is/Algebraically/Associative.v`.
-* Shorten ridiculous class names like `IsLeftExternalInvertible` to `IsLExInv`.
+* Why is `Associative` specialized (to help rewriting), but `Reflexive` is not?
 * Organize modules coherently.
 * Set up a build system (perhaps Dune).
 * Integrate Thrift into the mess.
 * Monoidal categories now.
+
+Some rules.
+
+* Abbreviate
+    * Coq has: refl, sym, trans, assoc, comm, involutive, l (left), r (right)
+    * Coq reserves: fun, unit
+    * Categorical literature has: Mon, Grp, Top, op
+* Import
+    * Coq has refl, sym, trans, assoc, comm, involutive
 
 Wikipedia educates.
 

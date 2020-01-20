@@ -1,14 +1,14 @@
 From Maniunfold.Has Require Export
   BinaryFunction.
 
-Class HasInBinFn (A B : Type) : Type := in_bin_fn : A -> A -> B.
+Class HasIntBinFn (A B : Type) : Type := int_bin_fn : A -> A -> B.
 
-Typeclasses Transparent HasInBinFn.
+Typeclasses Transparent HasIntBinFn.
 
 Section Context.
 
-Context {A B : Type} `{has_in_bin_fn : HasInBinFn A B}.
+Context {A B : Type} `{has_int_bin_fn : HasIntBinFn A B}.
 
-Global Instance in_bin_fn_has_bin_fn : HasBinFn A A B := in_bin_fn.
+Global Instance int_bin_fn_has_bin_fn : HasBinFn A A B := int_bin_fn.
 
 End Context.

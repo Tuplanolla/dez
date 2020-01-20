@@ -3,8 +3,8 @@ From Maniunfold.Has Require Export
 From Maniunfold.Is Require Export
   Semigroup Unital.
 
-Class IsMonoid {A : Type} {has_eq_rel : HasEqRel A}
+Class IsMon {A : Type} {has_eq_rel : HasEqRel A}
   (has_bin_op : HasBinOp A) (has_un : HasUn A) : Prop := {
-  bin_op_is_semigroup :> IsSemigroup bin_op;
-  bin_op_un_is_unital :> IsUnital bin_op un;
+  bin_op_is_semigroup :> IsSGrp bin_op;
+  bin_op_un_is_unital :> IsUn bin_op un;
 }.

@@ -1,0 +1,32 @@
+digraph Has {
+  // Operational class hierarchy without internal homs.
+
+  node [fontname = monospace]
+
+  BinFn [label = "BinaryFunction\nA -> B -> C"]
+  BinOp [label = "BinaryOperation\nA -> A -> A"]
+  BinRel [label = "BinaryRelation\nA -> A -> Prop"]
+  UnOp [label = "UnaryOperation\nA -> A"]
+  EqRel [label = "EquivalenceRelation\nA -> A -> Prop"]
+  Fn [label = "Function\nA -> B"]
+  IntBinFn [label = "InternalBinaryFunction\nA -> A -> B"]
+  LExtBinOp [label = "LeftExternalBinaryOperation\nA -> B -> B"]
+  OrdRel [label = "OrderRelation\nA -> A -> Prop"]
+  Prop [label = "Proposition\nA -> Prop"]
+  RExtBinOp [label = "RightExternalBinaryOperation\nB -> A -> B"]
+  Un [label = "Unit\nA"]
+
+  Fn -> Prop
+  Fn -> UnOp
+
+  BinFn -> LExtBinOp
+  BinFn -> RExtBinOp
+  BinFn -> IntBinFn
+  LExtBinOp -> BinOp
+  RExtBinOp -> BinOp
+  IntBinFn -> BinOp
+  IntBinFn -> BinRel
+
+  BinRel -> EqRel
+  BinRel -> OrdRel
+}

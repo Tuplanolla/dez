@@ -1,12 +1,12 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation BinaryOperation.
 From Maniunfold.Is Require Export
-  Setoid.
+  Equivalence.
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
-Class IsAssociative {A : Type} {has_eq_rel : HasEqRel A}
+Class IsAssoc {A : Type} {has_eq_rel : HasEqRel A}
   (has_bin_op : HasBinOp A) : Prop := {
-  eq_rel_is_setoid :> IsSetoid eq_rel;
+  eq_rel_is_setoid :> IsEq eq_rel;
   associative : forall x y z : A, x + (y + z) == (x + y) + z;
 }.

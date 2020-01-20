@@ -1,21 +1,21 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation BinaryOperation Unit EndoFunction.
+  EquivalenceRelation BinaryOperation Unit UnaryOperation.
 From Maniunfold.Is Require Export
   Proper Monoid Invertible.
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
-Class IsGroup {A : Type} {has_eq_rel : HasEqRel A}
+Class IsGrp {A : Type} {has_eq_rel : HasEqRel A}
   (has_bin_op : HasBinOp A) (has_un : HasUn A)
-  (has_endo_fn : HasEndoFn A) : Prop := {
-  inv_is_proper :> IsProper (eq_rel ==> eq_rel) endo_fn;
-  opr_idn_is_monoid :> IsMonoid bin_op un;
-  opr_idn_inv_is_invertible :> IsInvertible bin_op un endo_fn;
+  (has_un_op : HasUnOp A) : Prop := {
+  inv_is_proper :> IsProper (eq_rel ==> eq_rel) un_op;
+  opr_idn_is_monoid :> IsMon bin_op un;
+  opr_idn_inv_is_invertible :> IsInv bin_op un un_op;
 }.
 
 Section Context.
 
-Context {A : Type} `{is_group : IsGroup A}.
+Context {A : Type} `{is_group : IsGrp A}.
 
 Theorem inv_absorbing : - 0 == 0.
 Proof.

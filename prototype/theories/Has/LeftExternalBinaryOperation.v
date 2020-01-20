@@ -1,14 +1,14 @@
 From Maniunfold.Has Require Export
   BinaryFunction.
 
-Class HasLExBinOp (A B : Type) : Type := l_ex_bin_op : A -> B -> B.
+Class HasLExtBinOp (A B : Type) : Type := l_ext_bin_op : A -> B -> B.
 
-Typeclasses Transparent HasLExBinOp.
+Typeclasses Transparent HasLExtBinOp.
 
 Section Context.
 
-Context {A B : Type} `{has_l_ex_bin_op : HasLExBinOp A B}.
+Context {A B : Type} `{has_l_ext_bin_op : HasLExtBinOp A B}.
 
-Global Instance l_ex_bin_op_has_bin_fn : HasBinFn A B B := l_ex_bin_op.
+Global Instance l_ext_bin_op_has_bin_fn : HasBinFn A B B := l_ext_bin_op.
 
 End Context.

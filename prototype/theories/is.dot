@@ -1,0 +1,57 @@
+digraph Is {
+  // Predicative class hierarchy without internal homs.
+
+  node [fontname = monospace]
+
+  Assoc [label = "Associative\nx + (y + z) == (x + y) + z"]
+  ExtAssoc [label = "ExternallyAssociative\nx +< (y >+ z) == (x +< y) >+ z"]
+  Grp [label = "Group"]
+  Inv [label = "Invertible"]
+  LExtInv [label = "LeftExternallyInvertible\n>-< x >+< x == 0"]
+  LExtUn [label = "LeftExternallyUnital\n0 +< x == x"]
+  LInv [label = "LeftInvertible\n- x + x == 0"]
+  LUn [label = "LeftUnital\n0 + x == x"]
+  Mon [label = "Monoid"]
+  Proper [label = "Proper\n??"]
+  Refl [label = "Reflexive\nx ~ x"]
+  ReflEq [label = "ReflexiveEquivalence\nx == x"]
+  RExtInv [label = "RightExternallyInvertible\nx >+< >-< x == 0"]
+  RExtUn [label = "RightExternallyUnital\nx >+ 0 == x"]
+  RInv [label = "RightInvertible\nx + - x == 0"]
+  RUn [label = "RightUnital\nx + 0 == x"]
+  SGrp [label = "Semigroup"]
+  EqRel [label = "EqRel"]
+  Sym [label = "Symmetric\nx ~ y -> y ~ x"]
+  SymEq [label = "SymmetricEquivalence\nx == y -> y == x"]
+  Trans [label = "Transitive\nx ~ y -> y ~ z -> x ~ z"]
+  TransEq [label = "TransitiveEquivalence\nx == y -> y == z -> x == z"]
+  Un [label = "Unital"]
+
+  Refl -> ReflEq
+  Sym -> SymEq
+  Trans -> TransEq
+
+  ReflEq -> EqRel
+  SymEq -> EqRel
+  TransEq -> EqRel
+
+  ExtAssoc -> Assoc
+  LExtUn -> LUn
+  RExtUn -> RUn
+  LExtInv -> LInv
+  RExtInv -> RInv
+
+  LUn -> Un
+  RUn -> Un
+
+  LInv -> Inv
+  RInv -> Inv
+
+  Assoc -> SGrp
+  Un -> Mon
+  Inv -> Grp
+
+  EqRel -> SGrp
+  SGrp -> Mon
+  Mon -> Grp
+}
