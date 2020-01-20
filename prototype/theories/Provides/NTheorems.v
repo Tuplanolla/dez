@@ -1,5 +1,5 @@
 From Coq Require Import
-  Morphisms NArith.
+  NArith.
 From Maniunfold.Is Require Import
   Equivalence Monoid.
 From Maniunfold.ShouldHave Require Import
@@ -29,7 +29,7 @@ Instance N_has_bin_op : HasBinOp N := N.add.
 Instance N_is_associative : IsAssoc bin_op := {}.
 Proof. intros x y z. apply N.add_assoc. Qed.
 
-Instance N_is_semigroup : IsSGrp N.add := {}.
+Instance N_is_semigroup : IsSgrp N.add := {}.
 Proof. cbv -[N.add]. apply N.add_wd. Qed.
 
 Instance N_has_un : HasUn N := N.zero.

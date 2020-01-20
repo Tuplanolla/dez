@@ -1,18 +1,18 @@
 From Coq Require Export
-  Morphisms.
+  Setoid Morphisms.
 From Maniunfold.Has Require Export
-  BinaryRelation Point.
+  BinaryRelation Unit.
 From Maniunfold.ShouldHave Require Import
   BinaryRelationNotations.
 
 Class IsProper {A : Type}
-  (has_bin_rel : HasBinRel A) (has_pt : HasPt A) : Prop :=
-  proper : pt ~ pt.
+  (has_bin_rel : HasBinRel A) (has_un : HasUn A) : Prop :=
+  proper : un ~~ un.
 
 Section Context.
 
 Context {A : Type} `{is_proper : IsProper A}.
 
-Global Instance proper_is_proper : Proper bin_rel pt | 0 := proper.
+Global Instance bin_rel_un_proper : Proper bin_rel un | 0 := proper.
 
 End Context.

@@ -9,6 +9,6 @@ Section Context.
 
 Context {A B : Type} `{has_l_ext_bin_op : HasLExtBinOp A B}.
 
-Global Instance l_ext_bin_op_has_bin_fn : HasBinFn A B B := l_ext_bin_op.
+Global Instance A_B_has_bin_fn : HasBinFn A B B := l_ext_bin_op.
 
 End Context.

@@ -11,7 +11,9 @@ Do these things.
 Some rules.
 
 * Abbreviate
-    * Coq has: refl, sym, trans, assoc, comm, involutive, l (left), r (right)
+    * Coq has: refl, sym, trans, assoc, comm, involutive, distr,
+      l (left), r (right), inj (injective)
+    * Maniunfold deviates with: absorb, invol
     * Coq reserves: fun, unit
     * Categorical literature has: Mon, Grp, Top, op
 * Import

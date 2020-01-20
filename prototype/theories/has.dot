@@ -15,6 +15,7 @@ digraph Has {
   Prop [label = "Proposition\nA -> Prop"]
   RExtBinOp [label = "RightExternalBinaryOperation\nB -> A -> B"]
   Un [label = "Unit\nA"]
+  Pt [label = "Point\n??"]
 
   Fn -> Prop
   Fn -> UnOp

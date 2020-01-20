@@ -9,6 +9,6 @@ Section Context.
 
 Context {A B : Type} `{has_int_bin_fn : HasIntBinFn A B}.
 
-Global Instance int_bin_fn_has_bin_fn : HasBinFn A A B := int_bin_fn.
+Global Instance A_B_has_bin_fn : HasBinFn A A B := int_bin_fn.
 
 End Context.

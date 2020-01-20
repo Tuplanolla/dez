@@ -1,17 +1,18 @@
 From Coq Require Export
-  Setoid.
+  Setoid Morphisms.
 From Maniunfold.Has Require Export
   BinaryRelation.
 From Maniunfold.ShouldHave Require Import
   BinaryRelationNotations.
 
 Class IsRefl {A : Type} (has_bin_rel : HasBinRel A) : Prop :=
-  reflexive : forall x : A, x ~ x.
+  refl : forall x : A, x ~~ x.
 
 Section Context.
 
-Context {A : Type} `{is_reflexive : IsRefl A}.
+Context {A : Type} `{is_refl : IsRefl A}.
 
-Global Instance bin_rel_reflexive : Reflexive bin_rel | 0 := reflexive.
+Global Instance bin_rel_reflexive : Reflexive bin_rel | 0 := {}.
+Proof. apply refl. Qed.
 
 End Context.

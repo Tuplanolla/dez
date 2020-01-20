@@ -1,17 +1,18 @@
 From Coq Require Export
-  Setoid.
+  Setoid Morphisms.
 From Maniunfold.Has Require Export
   BinaryRelation.
 From Maniunfold.ShouldHave Require Import
   BinaryRelationNotations.
 
 Class IsSym {A : Type} (has_bin_rel : HasBinRel A) : Prop :=
-  symmetric : forall x y : A, x ~ y -> y ~ x.
+  sym : forall x y : A, x ~~ y -> y ~~ x.
 
 Section Context.
 
-Context {A : Type} `{is_symmetric : IsSym A}.
+Context {A : Type} `{is_sym : IsSym A}.
 
-Global Instance bin_rel_symmetric : Symmetric bin_rel | 0 := symmetric.
+Global Instance bin_rel_symmetric : Symmetric bin_rel | 0 := {}.
+Proof. apply sym. Qed.
 
 End Context.

@@ -9,6 +9,6 @@ Section Context.
 
 Context {A : Type} `{has_prop : HasProp A}.
 
-Global Instance prop_has_fn : HasFn A Prop := prop.
+Global Instance A_prop_has_fn : HasFn A Prop := prop.
 
 End Context.

@@ -8,6 +8,6 @@ From Maniunfold.ShouldHave Require Import
 Class IsRInv {A : Type} {has_eq_rel : HasEqRel A}
   (has_bin_op : HasBinOp A) (has_un : HasUn A)
   (has_un_op : HasUnOp A) : Prop := {
-  eq_rel_is_setoid :> IsEq eq_rel;
-  right_invertible : forall x : A, x + - x == 0;
+  eq_rel_is_eq :> IsEq eq_rel;
+  r_inv : forall x : A, x + - x == 0;
 }.

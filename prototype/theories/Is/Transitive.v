@@ -1,17 +1,18 @@
 From Coq Require Export
-  Setoid.
+  Setoid Morphisms.
 From Maniunfold.Has Require Export
   BinaryRelation.
 From Maniunfold.ShouldHave Require Import
   BinaryRelationNotations.
 
 Class IsTrans {A : Type} (has_bin_rel : HasBinRel A) : Prop :=
-  transitive : forall x y z : A, x ~ y -> y ~ z -> x ~ z.
+  trans : forall x y z : A, x ~~ y -> y ~~ z -> x ~~ z.
 
 Section Context.
 
-Context {A : Type} `{is_transitive : IsTrans A}.
+Context {A : Type} `{is_trans : IsTrans A}.
 
-Global Instance bin_rel_transitive : Transitive bin_rel | 0 := transitive.
+Global Instance bin_rel_transitive : Transitive bin_rel | 0 := {}.
+Proof. apply trans. Qed.
 
 End Context.

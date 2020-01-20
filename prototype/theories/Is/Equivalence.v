@@ -1,3 +1,5 @@
+From Coq Require Export
+  Setoid Morphisms.
 From Maniunfold.Has Require Export
   EquivalenceRelation.
 From Maniunfold.Is Require Export
@@ -5,8 +7,8 @@ From Maniunfold.Is Require Export
 
 Class IsEq {A : Type} (has_eq_rel : HasEqRel A) : Prop := {
   eq_rel_is_refl_eq :> IsReflEq eq_rel;
-  eq_rel_is_symmetric_eq :> IsSymEq eq_rel;
-  eq_rel_is_transitive_eq :> IsTransEq eq_rel;
+  eq_rel_is_sym_eq :> IsSymEq eq_rel;
+  eq_rel_is_trans_eq :> IsTransEq eq_rel;
 }.
 
 Section Context.

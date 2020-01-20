@@ -1,5 +1,5 @@
 From Coq Require Export
-  Morphisms.
+  Setoid Morphisms.
 From Maniunfold.Is Require Export
   Proper.
 
@@ -7,5 +7,5 @@ Delimit Scope signature_scope with signature.
 
 Open Scope signature_scope.
 
-Notation "R '==>' S" := (respectful R S)
+Notation "x '==>' y" := (respectful x y)
   (right associativity, at level 55) : signature_scope.

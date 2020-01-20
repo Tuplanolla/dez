@@ -6,13 +6,13 @@ From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations.
 
 Class IsSymEq {A : Type} (has_eq_rel : HasEqRel A) : Prop :=
-  symmetric_equivalence : forall x y : A, x == y -> y == x.
+  sym_eq : forall x y : A, x == y -> y == x.
 
 Section Context.
 
 Context {A : Type} `{is_sym_eq : IsSymEq A}.
 
-Global Instance sym_eq_is_sym : IsSym eq_rel := {}.
-Proof. apply symmetric_equivalence. Qed.
+Global Instance eq_rel_is_sym : IsSym eq_rel := {}.
+Proof. apply sym_eq. Qed.
 
 End Context.

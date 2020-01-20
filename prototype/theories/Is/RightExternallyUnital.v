@@ -7,6 +7,6 @@ From Maniunfold.ShouldHave Require Import
 
 Class IsRExtUn {A B : Type} {has_eq_rel : HasEqRel B}
   (has_r_ext_bin_op : HasRExtBinOp A B) (has_un : HasUn A) : Prop := {
-  eq_rel_is_setoid :> IsEq eq_rel;
-  right_externally_unital : forall x : B, x >+ 0 == x;
+  eq_rel_is_eq :> IsEq eq_rel;
+  r_ext_un : forall x : B, x >+ 0 == x;
 }.
