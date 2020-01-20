@@ -27,31 +27,41 @@ digraph Is {
   TransEq [label = "TransitiveEquivalence\nx == y -> y == z -> x == z"]
   Un [label = "Unital"]
 
+  edge [style = solid]
+
   Assoc -> SGrp
+  Eq -> Assoc
   Eq -> ExtAssoc
   Eq -> LExtInv
   Eq -> LExtUn
+  Eq -> LInv
+  Eq -> LUn
   Eq -> RExtInv
   Eq -> RExtUn
-  ExtAssoc -> Assoc
+  Eq -> RInv
+  Eq -> RUn
   Inv -> Grp
-  LExtInv -> LInv
-  LExtUn -> LUn
   LInv -> Inv
   LUn -> Un
   Mon -> Grp
   Proper -> Grp
   Proper -> SGrp
-  RExtInv -> RInv
-  RExtUn -> RUn
   RInv -> Inv
   RUn -> Un
-  Refl -> ReflEq
   ReflEq -> Eq
   SGrp -> Mon
-  Sym -> SymEq
   SymEq -> Eq
-  Trans -> TransEq
   TransEq -> Eq
   Un -> Mon
+
+  edge [style = dashed]
+
+  ExtAssoc -> Assoc
+  LExtInv -> LInv
+  LExtUn -> LUn
+  RExtInv -> RInv
+  RExtUn -> RUn
+  Refl -> ReflEq
+  Sym -> SymEq
+  Trans -> TransEq
 }

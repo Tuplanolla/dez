@@ -16,6 +16,8 @@ digraph Has {
   Un [label = "Unit\nA"]
   UnOp [label = "UnaryOperation\nA -> A"]
 
+  edge [style = dashed]
+
   BinFn -> IntBinFn
   BinFn -> LExtBinOp
   BinFn -> RExtBinOp
