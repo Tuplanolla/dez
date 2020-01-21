@@ -15,7 +15,7 @@ Section Context.
 
 Context {A : Type} `{is_r_un : IsRUn A}.
 
-Global Instance r_ext_bin_op_un_is_r_ext_un : IsRExtUn r_ext_bin_op un := {}.
-Proof. apply r_un. Qed.
+Global Instance r_ext_bin_op_un_is_r_ext_un : IsRExtUn r_ext_bin_op un.
+Proof. constructor; try typeclasses eauto. intros x. apply r_un. Qed.
 
 End Context.

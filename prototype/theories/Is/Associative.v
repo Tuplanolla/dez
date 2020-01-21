@@ -15,7 +15,7 @@ Section Context.
 
 Context {A : Type} `{is_assoc : IsAssoc A}.
 
-Global Instance bin_op_is_ext_assoc : IsExtAssoc bin_op bin_op := {}.
-Proof. apply assoc. Qed.
+Global Instance bin_op_is_ext_assoc : IsExtAssoc bin_op bin_op.
+Proof. constructor; try typeclasses eauto. intros x y z. apply assoc. Qed.
 
 End Context.

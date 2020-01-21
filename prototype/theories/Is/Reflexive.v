@@ -12,7 +12,7 @@ Section Context.
 
 Context {A : Type} `{is_refl : IsRefl A}.
 
-Global Instance bin_rel_reflexive : Reflexive bin_rel | 0 := {}.
-Proof. apply refl. Qed.
+Global Instance bin_rel_reflexive : Reflexive bin_rel | 0.
+Proof. intros x. apply refl. Qed.
 
 End Context.

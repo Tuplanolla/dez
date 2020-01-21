@@ -12,7 +12,7 @@ Section Context.
 
 Context {A : Type} `{is_refl_eq : IsReflEq A}.
 
-Global Instance eq_rel_is_refl : IsRefl eq_rel := {}.
-Proof. apply refl_eq. Qed.
+Global Instance eq_rel_is_refl : IsRefl eq_rel.
+Proof. intros x. apply refl_eq. Qed.
 
 End Context.

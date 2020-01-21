@@ -12,7 +12,7 @@ Section Context.
 
 Context {A : Type} `{is_trans_eq : IsTransEq A}.
 
-Global Instance eq_rel_is_trans : IsTrans eq_rel := {}.
-Proof. apply trans_eq. Qed.
+Global Instance eq_rel_is_trans : IsTrans eq_rel.
+Proof. intros x y z. apply trans_eq. Qed.
 
 End Context.
