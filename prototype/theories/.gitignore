@@ -1,0 +1,9 @@
+*.aux
+*.glob
+*.vo
+.coqdeps.d
+make
+make.args
+make.conf
+make.local
+make.vfiles
