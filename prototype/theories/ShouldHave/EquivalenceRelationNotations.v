@@ -1,6 +1,8 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation.
 
+Declare Scope algebra_scope.
+
 Delimit Scope algebra_scope with algebra.
 
 Open Scope algebra_scope.

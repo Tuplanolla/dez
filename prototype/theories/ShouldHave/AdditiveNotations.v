@@ -1,7 +1,9 @@
 From Maniunfold.Has Require Export
   BinaryOperation Unit UnaryOperation
-  LeftExternalBinaryOperation RightExternalBinaryOperation Function
-  BinaryFunction.
+  BinaryFunction LeftExternalBinaryOperation RightExternalBinaryOperation
+  Function.
+
+Declare Scope algebra_scope.
 
 Delimit Scope algebra_scope with algebra.
 

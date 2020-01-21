@@ -1,6 +1,8 @@
 From Maniunfold.Has Require Export
   BinaryRelation.
 
+Declare Scope algebra_scope.
+
 Delimit Scope algebra_scope with algebra.
 
 Open Scope algebra_scope.
