@@ -20,7 +20,7 @@ digraph Is {
   RUn [label = "RightUnital\nx + 0 == x"]
   Refl [label = "Reflexive\nx ~~ x"]
   ReflEq [label = "ReflexiveEquivalence\nx == x"]
-  SGrp [label = "Semigroup"]
+  Sgrp [label = "Semigroup"]
   Sym [label = "Symmetric\nx ~~ y -> y ~~ x"]
   SymEq [label = "SymmetricEquivalence\nx == y -> y == x"]
   Trans [label = "Transitive\nx ~~ y -> y ~~ z -> x ~~ z"]
@@ -29,27 +29,18 @@ digraph Is {
 
   edge [style = solid]
 
-  Assoc -> SGrp
-  Eq -> Assoc
-  Eq -> ExtAssoc
-  Eq -> LExtInv
-  Eq -> LExtUn
-  Eq -> LInv
-  Eq -> LUn
-  Eq -> RExtInv
-  Eq -> RExtUn
-  Eq -> RInv
-  Eq -> RUn
+  Assoc -> Sgrp
+  Eq -> Sgrp
   Inv -> Grp
   LInv -> Inv
   LUn -> Un
   Mon -> Grp
   Proper -> Grp
-  Proper -> SGrp
+  Proper -> Sgrp
   RInv -> Inv
   RUn -> Un
   ReflEq -> Eq
-  SGrp -> Mon
+  Sgrp -> Mon
   SymEq -> Eq
   TransEq -> Eq
   Un -> Mon

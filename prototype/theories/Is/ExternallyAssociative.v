@@ -7,7 +7,5 @@ From Maniunfold.ShouldHave Require Import
 
 Class IsExtAssoc {A B C : Type} {has_eq_rel : HasEqRel C}
   (has_l_ext_bin_op : HasLExtBinOp A C)
-  (has_r_ext_bin_op : HasRExtBinOp B C) : Prop := {
-  eq_rel_is_eq :> IsEq eq_rel;
-  ext_assoc : forall (x : A) (y : C) (z : B), x +< (y >+ z) == (x +< y) >+ z;
-}.
+  (has_r_ext_bin_op : HasRExtBinOp B C) : Prop :=
+  ext_assoc : forall (x : A) (y : C) (z : B), x +< (y >+ z) == (x +< y) >+ z.

@@ -6,7 +6,5 @@ From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
 Class IsLExtUn {A B : Type} {has_eq_rel : HasEqRel B}
-  (has_l_ext_bin_op : HasLExtBinOp A B) (has_un : HasUn A) : Prop := {
-  eq_rel_is_eq :> IsEq eq_rel;
-  l_ext_un : forall x : B, 0 +< x == x;
-}.
+  (has_l_ext_bin_op : HasLExtBinOp A B) (has_un : HasUn A) : Prop :=
+  l_ext_un : forall x : B, 0 +< x == x.
