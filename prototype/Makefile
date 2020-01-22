@@ -22,13 +22,14 @@ extraction.mli:: _CoqMakefile
 	$(CMD) $(MAKE) -f _CoqMakefile -s all
 
 _CoqMakefile:: _CoqMakefile.args _CoqMakefile.local
-	$(CMD) coq_makefile -f $< -o $@ -opt
+	$(CMD) coq_makefile INSTALLDEFAULTROOT = . -f $< -o $@ -opt
 
 _CoqMakefile.args:: _CoqProject _CoqFiles
 	$(CMD) cat $^ > $@
 
 _CoqProject::
-	$(CMD) printf '%s %s %s\n' '-Q' 'theories' 'Maniunfold' > $@
+	$(CMD) printf '%s %s %s\n%s %s %s\n' \
+	'-Q' 'theories' 'Maniunfold' '-Q' 'extraction' 'Protofold' > $@
 
 _CoqFiles::
 	$(CMD) find . -type f -name 'Extraction.v' | LC_ALL=C sort > $@
@@ -49,3 +50,7 @@ main:: extraction.mli
 	$(CMD) ocamlfind ocamlopt -O2 -c -package num main.ml
 	$(CMD) ocamlfind ocamlopt -O2 -linkpkg -o main -package num \
 	extraction.cmx adapter.cmx main.cmx
+
+dune::
+	dune build @install
+.PHONY: dune

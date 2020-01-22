@@ -1,0 +1,3 @@
+(library
+  (name Serverfold)
+  (public_name maniunfold.Serverfold))

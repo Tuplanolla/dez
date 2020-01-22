@@ -1,5 +1,6 @@
 (coq.theory
   (name Maniunfold)
-  (public_name maniunfold.theory))
+  (public_name maniunfold.Maniunfold)
+  (synopsis "Proofs for Maniunfold."))
 
 (include_subdirs qualified)

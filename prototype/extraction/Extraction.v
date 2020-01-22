@@ -8,6 +8,8 @@ From Maniunfold.Provides Require Export
   ZTheorems.
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
+From Maniunfold.ShouldOffer Require Import
+  MoreAdditiveNotations.
 
 (** This works, but we want to do something complicated for its own sake. *)
 (* Definition monkey_saddle (x y : Z) : Z := x * (x ^ 2 - 3 * y ^ 2). *)
