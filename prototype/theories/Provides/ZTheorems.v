@@ -1,8 +1,8 @@
 From Coq Require Import
   ZArith.
-From Maniunfold.Is Require Import
-  Equivalence Group.
-From Maniunfold.ShouldHave Require Import
+From Maniunfold.Is Require Export
+  Equivalence Semigroup Monoid Group.
+From Maniunfold.ShouldHave Require Export
   EquivalenceRelationNotations AdditiveNotations.
 
 Global Instance Z_has_eq_rel : HasEqRel Z := Z.eq.

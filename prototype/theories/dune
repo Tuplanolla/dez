@@ -1,0 +1,5 @@
+(coq.theory
+  (name Maniunfold)
+  (public_name maniunfold.theory))
+
+(include_subdirs qualified)

@@ -1,19 +1,29 @@
 CMD:=$(if $(VERBOSE),,@ )
 MSG:=$(if $(VERBOSE),@ true || ,@ )
 
-all:: make
-	@ $(MAKE) -f make -s all
+all:: _CoqMakefile
+	$(CMD) $(MAKE) -f _CoqMakefile -s all
 .PHONY: all
 
 clean::
-	@ $(MAKE) -f make -s clean
-	$(CMD) $(RM) make make.args make.conf make.local make.vfiles
+	$(CMD) $(MAKE) -f _CoqMakefile -s clean
+	$(CMD) $(RM) _CoqProject _CoqFiles \
+	_CoqMakefile _CoqMakefile.args _CoqMakefile.conf _CoqMakefile.local
 .PHONY: clean
 
-make::
-	$(CMD) find . -type f -name '*.v' | LC_ALL=C sort > make.vfiles
-	$(CMD) cat make.vfiles _CoqProject > make.args
-	$(CMD) coq_makefile -f make.args -o make -opt
+_CoqMakefile:: _CoqMakefile.args _CoqMakefile.local
+	$(CMD) coq_makefile -f $< -o $@ -opt
+
+_CoqMakefile.args:: _CoqProject _CoqFiles
+	$(CMD) cat $^ > $@
+
+_CoqProject::
+	$(CMD) printf '%s %s %s\n' '-Q' '.' 'Maniunfold' > $@
+
+_CoqFiles::
+	$(CMD) find . -type f -name '*.v' | LC_ALL=C sort > $@
+
+_CoqMakefile.local::
 	$(CMD) printf '%s::\n\t@ %s %s %s\n' 'clean' 'find . -type f' \
 	"'(' -name '*.aux' -o -name '*.glob' -o -name '*.vo' ')'" \
-	"-exec rm '{}' '+'" > make.local
+	"-exec rm '{}' '+'" > $@

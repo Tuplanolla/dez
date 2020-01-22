@@ -12,6 +12,6 @@ Definition z_op {A : Type} {has_bin_op : HasBinOp A}
   (n : Z) (x : A) : A :=
   match n with
   | Z0 => 0
-  | Zpos p => p_op p x
-  | Zneg p => - p_op p x
+  | Zpos p => positive_op p x
+  | Zneg p => - positive_op p x
   end.
