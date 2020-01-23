@@ -1,0 +1,55 @@
+digraph arch {
+  // graph [layout = neato, ratio = 0.5]
+  graph [layout = dot, mindist = 1, overlap = false, root = body]
+
+  // graph [splines = curved]
+  // edge [headport = e, tailport = w]
+
+  node [shape = box]
+
+  label = "Package\nMonkey"
+
+  subgraph cluster_body {
+    label = "Library\nBody"
+
+    body [label = "Broker\nfor Message Passing\nin OCaml"]
+  }
+
+  subgraph cluster_face {
+    label = "Library\nFace"
+
+    face [label = "Client\nfor Graphical User Interface\nin Python 3"]
+    face_proxy [label = "Client Proxy\nfor Graphical User Interface\nin Python 3"]
+  }
+
+  subgraph cluster_arms {
+    label = "Library\nArms"
+
+    arms [label = "Server\nfor Symbolic Manipulator\nin OCaml"]
+    arms_proxy [label = "Server Proxy\nfor Symbolic Manipulator\nin OCaml"]
+  }
+
+  subgraph cluster_legs {
+    label = "Library\nLegs"
+
+    legs [label = "Server\nfor Numerical Solver\nin C++"]
+    legs_proxy [label = "Server Proxy\nfor Numerical Solver\nin C++"]
+  }
+
+  face -> face_proxy [label = "(1) Problem\nas a Python Object"]
+  face_proxy -> body [label = "(2) Problem\nas a Thrift Message"]
+  body -> arms_proxy [label = "(3) Problem\nas a Thrift Message"]
+  arms_proxy -> arms [label = "(4) Problem\nas an OCaml Object"]
+  arms -> arms_proxy [label = "(5) Simplified Problem\nas an OCaml Object"]
+  arms_proxy -> body [label = "(6) Simplified Problem\nas a Thrift Message"]
+  body -> legs_proxy [label = "(7) Simplified Problem\nas a Thrift Message"]
+  legs_proxy -> legs [label = "(8) Simplified Problem\nas a C++ Object"]
+  legs -> legs_proxy [label = "(9) Simplified Solution\nas a C++ Object"]
+  legs_proxy -> body [label = "(10) Simplified Solution\nas a Thrift Message"]
+  body -> arms_proxy [label = "(11) Simplified Solution\nas a Thrift Message"]
+  arms_proxy -> arms [label = "(12) Simplified Solution\nas an OCaml Object"]
+  arms -> arms_proxy [label = "(13) Solution\nas an OCaml Object"]
+  arms_proxy -> body [label = "(14) Solution\nas a Thrift Message"]
+  body -> face_proxy [label = "(15) Solution\nas a Thrift Message"]
+  face_proxy -> face [label = "(16) Solution\nas a Python Object"]
+}
