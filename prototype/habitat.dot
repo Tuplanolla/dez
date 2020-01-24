@@ -1,0 +1,140 @@
+#ifdef FIRST
+#ifdef SECOND
+#define BOTH
+#endif
+#endif
+
+#ifdef BOTH
+#define SUBGRAPH(x) uncluster_##x
+#else
+#define SUBGRAPH(x) cluster_##x
+#endif
+
+digraph habitat {
+  subgraph SUBGRAPH(maniunfold) {
+    label = "Project\nManiunfold"
+
+    subgraph SUBGRAPH(bird) {
+      label = "Component\nBird"
+
+      node [shape = box]
+
+      bird [label = "Coq Source\nfor Formal Specification"]
+    }
+
+    subgraph SUBGRAPH(plant) {
+      label = "Component\nPlant"
+
+      node [shape = box]
+
+      plant [label = "Thrift IDL Source\nfor Message Specification"]
+    }
+
+    subgraph SUBGRAPH(ungulate) {
+      label = "Component\nUngulate"
+
+      node [shape = box]
+
+      ungulate [label = "OCaml Source\nfor Symbolic Manipulation"]
+      ungulate_from_bird [label = "OCaml Source\nfor Formal Verification"]
+      ungulate_from_plant [label = "OCaml Source\nfor Message Transmission"]
+      ungulate_hair [label = "OCaml Source\nfor Message Interpretation"]
+
+      node [shape = oval]
+
+      ungulate_from_ungulate [label = "Server\nfor Verified Symbolic Manipulation"]
+      ungulate_hair_from_ungulate_hair [label = "Server Proxy\nfor Verified Symbolic Manipulation"]
+    }
+
+    subgraph SUBGRAPH(primate) {
+      label = "Component\nPrimate"
+
+      node [shape = box]
+
+      primate [label = "Haskell Source\nfor Message Interpretation"]
+      primate_from_plant [label = "Haskell Source\nfor Message Transmission"]
+
+      node [shape = oval]
+
+      primate_from_primate [label = "Broker\nfor Message Passing"]
+    }
+
+    subgraph SUBGRAPH(reptile) {
+      label = "Component\nReptile"
+
+      node [shape = box]
+
+      reptile [label = "Python Source\nfor Graphical User Interaction"]
+      reptile_from_plant [label = "Python Source\nfor Message Transmission"]
+
+      node [shape = oval]
+
+      reptile_from_reptile [label = "Client\nfor Graphical User Interaction"]
+      reptile_scales_from_reptile_scales [label = "Client Proxy\nfor Graphical User Interaction"]
+    }
+
+    subgraph SUBGRAPH(machine) {
+      label = "Component\nMachine"
+
+      node [shape = box]
+
+      machine_cogs [label = "C++ Source\nfor Message Interpretation"]
+      machine_from_plant [label = "C++ Source\nfor Message Transmission"]
+
+      node [shape = oval]
+
+      machine_cogs_from_machine_cogs [label = "Server Proxy\nfor Numerical Computation"]
+    }
+  }
+
+  subgraph SUBGRAPH(gfd) {
+    label = "Project\nGFD"
+
+    node [shape = box]
+
+    machine [label = "C++ Source\nfor Numerical Computation"]
+
+    node [shape = oval]
+
+    machine_from_machine [label = "Server\nfor Numerical Computation"]
+  }
+
+#ifdef FIRST
+  bird -> ungulate_from_bird [label = "(1) Code Extraction"]
+  plant -> ungulate_from_plant [label = "(1) Code Generation"]
+  ungulate -> ungulate_from_ungulate [label = "(2) Compilation"]
+  ungulate_from_bird -> ungulate_from_ungulate [label = "(2) Compilation"]
+  ungulate_from_plant -> ungulate_hair_from_ungulate_hair [label = "(2) Compilation"]
+  ungulate_hair -> ungulate_hair_from_ungulate_hair [label = "(2) Compilation"]
+  plant -> primate_from_plant [label = "(1) Code Generation"]
+  primate -> primate_from_primate [label = "(2) Compilation"]
+  primate_from_plant -> primate_from_primate [label = "(2) Compilation"]
+  plant -> reptile_from_plant [label = "(1) Code Generation"]
+  reptile -> reptile_from_reptile [label = "(3) Interpretation"]
+  reptile -> reptile_scales_from_reptile_scales [label = "(3) Interpretation"]
+  reptile_from_plant -> reptile_scales_from_reptile_scales [label = "(3) Interpretation"]
+  plant -> machine_from_plant [label = "(1) Code Generation"]
+  machine -> machine_from_machine [label = "(2) Compilation"]
+  machine_cogs -> machine_cogs_from_machine_cogs [label = "(2) Compilation"]
+  machine_from_plant -> machine_cogs_from_machine_cogs [label = "(2) Compilation"]
+#endif
+
+#ifdef SECOND
+  reptile_from_reptile -> reptile_scales_from_reptile_scales [label = "(4) Problem\nas Python Object"]
+  reptile_scales_from_reptile_scales -> primate_from_primate [label = "(5) Problem\nas Thrift Message"]
+  primate_from_primate -> ungulate_hair_from_ungulate_hair [label = "(6) Problem\nas Thrift Message"]
+  ungulate_hair_from_ungulate_hair -> ungulate_from_ungulate [label = "(7) Problem\nas OCaml Object"]
+  ungulate_from_ungulate -> ungulate_hair_from_ungulate_hair [label = "(8) Command\nas OCaml Object"]
+  ungulate_hair_from_ungulate_hair -> primate_from_primate [label = "(9) Command\nas Thrift Message"]
+  primate_from_primate -> machine_cogs_from_machine_cogs [label = "(10) Command\nas Thrift Message"]
+  machine_cogs_from_machine_cogs -> machine_from_machine [label = "(11) Command\nas C++ Object"]
+  machine_from_machine -> machine_cogs_from_machine_cogs [label = "(12) Result\nas C++ Object"]
+  machine_cogs_from_machine_cogs -> primate_from_primate [label = "(13) Result\nas Thrift Message"]
+  primate_from_primate -> ungulate_hair_from_ungulate_hair [label = "(14) Result\nas Thrift Message"]
+  ungulate_hair_from_ungulate_hair -> ungulate_from_ungulate [label = "(15) Result\nas OCaml Object"]
+  ungulate_from_ungulate -> ungulate_hair_from_ungulate_hair [label = "(16) Solution\nas OCaml Object"]
+  ungulate_hair_from_ungulate_hair -> primate_from_primate [label = "(17) Solution\nas Thrift Message"]
+  primate_from_primate -> reptile_scales_from_reptile_scales [label = "(18) Solution\nas Thrift Message"]
+  reptile_scales_from_reptile_scales -> reptile_from_reptile [label = "(19) Solution\nas Python Object"]
+#endif
+}

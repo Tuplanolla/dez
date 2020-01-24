@@ -54,3 +54,12 @@ main:: extraction.mli
 dune::
 	dune build @install
 .PHONY: dune
+
+habitat::
+	cpp -DFIRST -USECOND -o first.dot habitat.dot
+	cpp -UFIRST -DSECOND -o second.dot habitat.dot
+	cpp -DFIRST -DSECOND -o both.dot habitat.dot
+	for x in first second both ; \
+	do dot -Gfontname=sans -Efontname=sans -Nfontname=sans -Tsvg $$x.dot -o$$x.svg ; \
+	done
+.PHONY: habitat
