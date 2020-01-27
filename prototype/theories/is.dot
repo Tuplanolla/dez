@@ -6,6 +6,8 @@ digraph Is {
   Assoc [label = "Associative\nx + (y + z) == (x + y) + z"]
   Eq [label = "Equivalence"]
   ExtAssoc [label = "ExternallyAssociative\nx +< (y >+ z) ~~ (x +< y) >+ z"]
+  ExtInv [label = "ExternallyInvertible"]
+  ExtUn [label = "ExternallyUnital"]
   Grp [label = "Group"]
   Inv [label = "Invertible"]
   LExtInv [label = "LeftExternallyInvertible\n>-< x >+< x ~~ 0"]
@@ -32,11 +34,15 @@ digraph Is {
   Assoc -> Sgrp
   Eq -> Sgrp
   Inv -> Grp
+  LExtInv -> ExtInv
+  LExtUn -> ExtUn
   LInv -> Inv
   LUn -> Un
   Mon -> Grp
   Proper -> Grp
   Proper -> Sgrp
+  RExtInv -> ExtInv
+  RExtUn -> ExtUn
   RInv -> Inv
   RUn -> Un
   ReflEq -> Eq
