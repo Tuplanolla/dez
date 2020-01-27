@@ -6,9 +6,7 @@ all:: main
 	@ ./main test
 .PHONY: all
 
-clean::
-	$(CMD) $(MAKE) -C theories -s clean
-	$(CMD) $(MAKE) -f _CoqMakefile -s clean
+clean:: squeaky-clean
 	$(CMD) $(RM) _CoqProject _CoqFiles \
 	_CoqMakefile _CoqMakefile.args _CoqMakefile.conf _CoqMakefile.local
 	$(CMD) $(RM) extraction.ml extraction.mli
@@ -16,6 +14,11 @@ clean::
 	$(CMD) $(RM) adapter.cmi adapter.cmx adapter.o
 	$(CMD) $(RM) main.cmi main.cmx main.o main
 .PHONY: clean
+
+squeaky-clean::
+	$(CMD) test -e theories/Makefile && $(MAKE) -C theories -s clean || exit 0
+	$(CMD) test -e _CoqMakefile && $(MAKE) -f _CoqMakefile -s clean || exit 0
+.PHONY: squeaky-clean
 
 extraction.mli:: _CoqMakefile
 	$(CMD) $(MAKE) -C theories -s all

@@ -5,11 +5,14 @@ all:: _CoqMakefile
 	$(CMD) $(MAKE) -f _CoqMakefile -s all
 .PHONY: all
 
-clean::
-	$(CMD) $(MAKE) -f _CoqMakefile -s clean
+clean:: squeaky-clean
 	$(CMD) $(RM) _CoqProject _CoqFiles \
 	_CoqMakefile _CoqMakefile.args _CoqMakefile.conf _CoqMakefile.local
 .PHONY: clean
+
+squeaky-clean::
+	$(CMD) test -e _CoqMakefile && $(MAKE) -f _CoqMakefile -s clean || exit 0
+.PHONY: squeaky-clean
 
 _CoqMakefile:: _CoqMakefile.args _CoqMakefile.local
 	$(CMD) coq_makefile -f $< -o $@ -opt
