@@ -2,11 +2,19 @@
 
 This is a repository for a research project that aims to
 
-* develop a type-theoretical model of discrete exterior calculus,
-* formalize the model with the Coq proof assistant,
-* extract OCaml code from the proof-relevant parts of the formalization,
-* link the extracted code with existing numerical solvers and
-* implement a user interface for the whole thing.
+* develop a type-theoretical model of discrete exterior calculus
+  (see the related publications),
+* formalize the model with the Coq proof assistant
+  (see the `bird` subcomponent),
+* extract OCaml code from the proof-relevant parts of the formalization
+  (see the `ungulate` subcomponent),
+* link the extracted code with existing numerical solvers
+  (see the `fungus` submodule),
+* implement a user interface for the resulting system
+  (see the `reptile` subcomponent) and
+* define a protocol for distributing and extending it further
+  (see the `plant` subcomponent and the associated
+  `feathers`, `leaves`, `fur`, `scales`, `spores` and `hair` subcomponents).
 
 The code in this repository is free software and, as such, licensed under
 

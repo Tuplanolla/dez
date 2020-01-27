@@ -15,6 +15,10 @@ digraph habitat {
       bird [label = "Coq Source\nfor Formal Specification"]
     }
 
+    /* subgraph SUBGRAPH(feathers) {
+      label = "Component\nFeathers"
+    } */
+
     subgraph SUBGRAPH(plant) {
       label = "Component\nPlant"
 
@@ -22,6 +26,10 @@ digraph habitat {
 
       plant [label = "Thrift IDL Source\nfor Message Specification"]
     }
+
+    /* subgraph SUBGRAPH(leaves) {
+      label = "Component\nLeaves"
+    } */
 
     subgraph SUBGRAPH(ungulate) {
       label = "Component\nUngulate"
@@ -75,7 +83,7 @@ digraph habitat {
     }
 
     /* subgraph SUBGRAPH(fungus) {
-      label = "Component\nMachine"
+      label = "Component\nFungus"
     } */
 
     subgraph SUBGRAPH(spores) {

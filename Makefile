@@ -13,15 +13,16 @@ clean:: squeaky-clean
 	$(CMD) $(RM) extraction.cmi extraction.cmx extraction.o
 	$(CMD) $(RM) adapter.cmi adapter.cmx adapter.o
 	$(CMD) $(RM) main.cmi main.cmx main.o main
+	$(CMD) $(RM) first.dot first.svg second.dot second.svg both.dot both.svg
 .PHONY: clean
 
 squeaky-clean::
-	$(CMD) test -e theories/Makefile && $(MAKE) -C theories -s clean || exit 0
+	$(CMD) test -e bird/Makefile && $(MAKE) -C bird -s clean || exit 0
 	$(CMD) test -e _CoqMakefile && $(MAKE) -f _CoqMakefile -s clean || exit 0
 .PHONY: squeaky-clean
 
 extraction.mli:: _CoqMakefile
-	$(CMD) $(MAKE) -C theories -s all
+	$(CMD) $(MAKE) -C bird -s all
 	$(CMD) $(MAKE) -f _CoqMakefile -s all
 
 _CoqMakefile:: _CoqMakefile.args _CoqMakefile.local
@@ -32,7 +33,7 @@ _CoqMakefile.args:: _CoqProject _CoqFiles
 
 _CoqProject::
 	$(CMD) printf '%s %s %s\n%s %s %s\n' \
-	'-Q' 'theories' 'Maniunfold' '-Q' 'extraction' 'Protofold' > $@
+	'-Q' 'bird' 'Maniunfold' '-Q' 'ungulate' 'Maniunfold' > $@
 
 _CoqFiles::
 	$(CMD) find . -type f -name 'Extraction.v' | LC_ALL=C sort > $@

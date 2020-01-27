@@ -1,0 +1,6 @@
+[submodule "gfd"]
+	path = gfd
+	url = https://github.com/juolrabi/gfd
+[submodule "fungus"]
+	path = fungus
+	url = git@github.com:juolrabi/gfd

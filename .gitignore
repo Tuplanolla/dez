@@ -1,3 +1,9 @@
 *.aux
 *.glob
 *.vo
+both.dot
+both.svg
+first.dot
+first.svg
+second.dot
+second.svg
