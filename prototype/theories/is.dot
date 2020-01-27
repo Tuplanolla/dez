@@ -54,6 +54,8 @@ digraph Is {
   edge [style = dashed]
 
   ExtAssoc -> Assoc
+  ExtInv -> Inv
+  ExtUn -> Un
   LExtInv -> LInv
   LExtUn -> LUn
   RExtInv -> RInv

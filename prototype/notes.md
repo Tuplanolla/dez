@@ -103,6 +103,25 @@ to get
 
 as the most general type for bileftinvertibility.
 
+Solve this equation
+
+```
+   C     C
+------- ---
+ 0 + x = x
+--- --- ---
+ B   A   A
+```
+
+to get
+
+```
+0 : B
+(+) : B * A -> A
+```
+
+as the most general type for bileftunitality.
+
 ```
 % This is the first known publication of the broker pattern.
 % Surprisingly, the broker revisited pattern by the same authors ruin it all.
@@ -119,4 +138,47 @@ as the most general type for bileftinvertibility.
   pages = {99--122},
   publisher = {John Wiley \& Sons},
 }
+```
+
+```
+From Maniunfold.Has Require Export
+  EquivalenceRelation BinaryOperation Unit UnaryOperation.
+From Maniunfold.Is Require Export
+  Proper Monoid ExternallyInvertible.
+From Maniunfold.ShouldHave Require Import
+  EquivalenceRelationNotations AdditiveNotations.
+
+Class IsGrp {A : Type} {has_eq_rel : HasEqRel A}
+  (has_bin_op : HasBinOp A) (has_un : HasUn A)
+  (has_un_op : HasUnOp A) : Prop := {
+  un_op_is_proper :> IsProper (eq_rel ==> eq_rel) un_op;
+  bin_op_un_is_monoid :> IsMon bin_op un;
+  (** Changing [IsInv] to [IsExtInv] here... *)
+  bin_op_un_un_op_is_invertible :> IsExtInv bin_op un un_op;
+}.
+
+Section Context.
+
+Context {A : Type} `{is_grp : IsGrp A}.
+
+Theorem un_op_absorb : - 0 == 0.
+Proof.
+  rewrite <- (r_un (- 0)).
+  (** ...works here... *)
+  rewrite (l_ext_inv 0).
+  reflexivity. Qed.
+
+Theorem bin_op_l_inj : forall x y z : A,
+  z + x == z + y -> x == y.
+Proof.
+  intros x y z p.
+  rewrite <- (l_un x).
+  (** ...but breaks right here. *)
+  rewrite <- (l_ext_inv z).
+  rewrite <- (assoc (- z) z x).
+  rewrite p.
+  rewrite (assoc (- z) z y).
+  rewrite (l_ext_inv z).
+  rewrite (l_un y).
+  reflexivity. Qed.
 ```
