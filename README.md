@@ -22,22 +22,28 @@ The code in this repository is free software and, as such, licensed under
 
 The development of this project
 
-* started 2018-05-01,
+* started around 2018-05-01,
 * continues as of 2020-01-27 and
 * is expected to reach a usable state by 2022-05-01.
 
-Currently, the sole author of this project is
+Currently, the authors of this project are
 
-* Sampsa Kiiskinen, who works
+* Jukka Räbinä, who works on the `fungus` submodule
+  in the Faculty of Information Technology at the University of Jyväskylä, and
+* Sampsa Kiiskinen, who works on all the other parts
   in the Faculty of Information Technology at the University of Jyväskylä.
 
-This project is partially funded by
+Over the course of the project,
 
-* the Jane and Aatos Erkko Foundation (grant 170015).
+* Sampsa Kiiskinen has been partially funded by
+    * the Jane and Aatos Erkko Foundation grant 170015 and
+* Jukka Räbinä has been partially funded by
+    * the Academy of Finland grants 259925, 260076 and 295897 and
+    * the European Research Council advanced grant 320773.
 
-As one would expect,
+As is tradition,
 the name of this project is a distasteful play on words,
-relating the concepts of
+using a taxonomical theme to relate the concepts of
 
 * differentiable manifolds,
   the main objects of study in differential geometry, and
