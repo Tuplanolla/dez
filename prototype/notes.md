@@ -1,14 +1,7 @@
 Do these things.
 
 * Imagine a hub, where roosters, camels and sea thrifts grow.
-* Set up build automation, such that we
-    * build Coq files in `theories`,
-    * build Coq files and extract OCaml files in `oasis-hub`,
-    * build Thrift files and extract OCaml files in `oasis-hub`,
-    * build extracted OCaml files in `oasis-hub`,
-    * build C++ files in `gfd`,
-    * build Thrift files and extract C++ files in `gfd-spoke`,
-    * build extracted C++ files in `gfd-spoke`,
+* Set up build automation; see diagram `habitat.dot`.
 * Add adverb subdirectories to arrange different conceps with similar names.
 * Implement `Is/Algebraically/Group.v` and `Is/Algebraically/Associative.v`.
 * Integrate Thrift into the mess.
@@ -107,7 +100,7 @@ Solve this equation
 
 ```
    C     C
-------- ---
+ -----  ---
  0 + x = x
 --- --- ---
  B   A   A

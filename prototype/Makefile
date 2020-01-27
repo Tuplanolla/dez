@@ -56,9 +56,9 @@ dune::
 .PHONY: dune
 
 habitat::
-	cpp -P -DFIRST -USECOND -o first.dot habitat.dot
-	cpp -P -UFIRST -DSECOND -o second.dot habitat.dot
-	cpp -P -DFIRST -DSECOND -o both.dot habitat.dot
+	cpp -P -DCLUSTER -DCOMPILE -URUN -o first.dot habitat.dot
+	cpp -P -DCLUSTER -UCOMPILE -DRUN -o second.dot habitat.dot
+	cpp -P -DCLUSTER -DCOMPILE -DRUN -o both.dot habitat.dot
 	for x in first second both ; \
 	do dot -Gfontname=sans -Efontname=sans -Nfontname=sans -Tsvg $$x.dot -o$$x.svg ; \
 	done
