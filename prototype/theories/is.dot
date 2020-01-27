@@ -3,23 +3,27 @@ digraph Is {
 
   node [fontname = monospace]
 
+  Absorb [label = "Absorbing\n- 0 == 0"]
+  Antidistr [label = "Antidistributive\n- (x + y) == - y + - x"]
   Assoc [label = "Associative\nx + (y + z) == (x + y) + z"]
   Eq [label = "Equivalence"]
+  ExtAbsorb [label = "ExternallyAbsorbing\n>-< 0 ~~ 1"]
+  ExtAntidistr [label = "ExternallyAntidistributive\n>-< (x >+< y) ~~ >-< y >+< >-< x"]
   ExtAssoc [label = "ExternallyAssociative\nx +< (y >+ z) ~~ (x +< y) >+ z"]
   ExtInv [label = "ExternallyInvertible"]
-  ExtUn [label = "ExternallyUnital"]
+  ExtUnl [label = "ExternallyUnital"]
   Grp [label = "Group"]
   Inv [label = "Invertible"]
   LExtInv [label = "LeftExternallyInvertible\n>-< x >+< x ~~ 0"]
-  LExtUn [label = "LeftExternallyUnital\n0 +< x ~~ x"]
+  LExtUnl [label = "LeftExternallyUnital\n0 +< x ~~ x"]
   LInv [label = "LeftInvertible\n- x + x == 0"]
-  LUn [label = "LeftUnital\n0 + x == x"]
+  LUnl [label = "LeftUnital\n0 + x == x"]
   Mon [label = "Monoid"]
   Proper [label = "Proper"]
   RExtInv [label = "RightExternallyInvertible\nx >+< >-< x ~~ 0"]
-  RExtUn [label = "RightExternallyUnital\nx >+ 0 ~~ x"]
+  RExtUnl [label = "RightExternallyUnital\nx >+ 0 ~~ x"]
   RInv [label = "RightInvertible\nx + - x == 0"]
-  RUn [label = "RightUnital\nx + 0 == x"]
+  RUnl [label = "RightUnital\nx + 0 == x"]
   Refl [label = "Reflexive\nx ~~ x"]
   ReflEq [label = "ReflexiveEquivalence\nx == x"]
   Sgrp [label = "Semigroup"]
@@ -27,7 +31,7 @@ digraph Is {
   SymEq [label = "SymmetricEquivalence\nx == y -> y == x"]
   Trans [label = "Transitive\nx ~~ y -> y ~~ z -> x ~~ z"]
   TransEq [label = "TransitiveEquivalence\nx == y -> y == z -> x == z"]
-  Un [label = "Unital"]
+  Unl [label = "Unital"]
 
   edge [style = solid]
 
@@ -35,31 +39,35 @@ digraph Is {
   Eq -> Sgrp
   Inv -> Grp
   LExtInv -> ExtInv
-  LExtUn -> ExtUn
+  LExtUnl -> ExtUnl
   LInv -> Inv
-  LUn -> Un
+  LUnl -> Unl
   Mon -> Grp
   Proper -> Grp
   Proper -> Sgrp
   RExtInv -> ExtInv
-  RExtUn -> ExtUn
+  RExtUnl -> ExtUnl
   RInv -> Inv
-  RUn -> Un
+  RUnl -> Unl
   ReflEq -> Eq
   Sgrp -> Mon
   SymEq -> Eq
   TransEq -> Eq
-  Un -> Mon
+  Unl -> Mon
 
   edge [style = dashed]
 
+  Absorb -> Grp
+  Antidistr -> Grp
+  ExtAbsorb -> Absorb
+  ExtAntidistr -> Antidistr
   ExtAssoc -> Assoc
   ExtInv -> Inv
-  ExtUn -> Un
+  ExtUnl -> Unl
   LExtInv -> LInv
-  LExtUn -> LUn
+  LExtUnl -> LUnl
   RExtInv -> RInv
-  RExtUn -> RUn
+  RExtUnl -> RUnl
   Refl -> ReflEq
   Sym -> SymEq
   Trans -> TransEq

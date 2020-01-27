@@ -17,7 +17,7 @@ Context {A : Type} `{is_inv : IsInv A}.
 Global Instance bin_op_un_un_op_is_ext_inv : IsExtInv bin_op un un_op.
 Proof.
   constructor.
-  - intros x. apply l_inv.
-  - intros x. apply r_inv. Qed.
+  - destruct is_inv; typeclasses eauto.
+  - destruct is_inv; typeclasses eauto. Qed.
 
 End Context.

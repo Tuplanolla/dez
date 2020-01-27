@@ -17,7 +17,7 @@ Some rules.
 * Import
     * Coq has: refl, sym, trans, assoc, comm, distr,
       l (left), r (right), inj (injective)
-    * Maniunfold has: fn, un, invol, absorb
+    * Maniunfold has: fn (function), un (unit), unl (unital), invol, absorb
 
 Wikipedia educates.
 
@@ -65,7 +65,7 @@ to get
 (*) : B * C -> B
 ```
 
-as the most general type for biassociativity.
+as the most general type for associativity.
 The operations unify to get
 
 ```
@@ -73,7 +73,7 @@ The operations unify to get
 (*) : A * A -> A
 ```
 
-as the most general type for associativity.
+as the usual associativity.
 
 Solve this equation
 
@@ -94,12 +94,12 @@ to get
 (+) : B * A -> C
 ```
 
-as the most general type for bileftinvertibility.
+as the most general type for left invertibility.
 
 Solve this equation
 
 ```
-   C     C
+   C     D
  -----  ---
  0 + x = x
 --- --- ---
@@ -113,7 +113,31 @@ to get
 (+) : B * A -> A
 ```
 
-as the most general type for bileftunitality.
+as the most general type for left unitality.
+
+Solve this equation
+
+```
+    F             G
+---------   -------------
+     C        D       E
+  -------   -----   -----
+- (x + y) = (/ x) * (! y)
+  --- ---     ---     ---
+   A   B       A       B
+```
+
+to get
+
+```
+(-) : C -> F
+(/) : A -> D
+(!) : B -> E
+(+) : A * B -> C
+(*) : D * E -> G
+```
+
+as the most general type for antidistributivity.
 
 ```
 % This is the first known publication of the broker pattern.

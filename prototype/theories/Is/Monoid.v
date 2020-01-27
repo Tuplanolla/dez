@@ -6,5 +6,5 @@ From Maniunfold.Is Require Export
 Class IsMon {A : Type} {has_eq_rel : HasEqRel A}
   (has_bin_op : HasBinOp A) (has_un : HasUn A) : Prop := {
   bin_op_is_sgrp :> IsSgrp bin_op;
-  bin_op_un_is_un :> IsUn bin_op un;
+  bin_op_un_is_unl :> IsUnl bin_op un;
 }.

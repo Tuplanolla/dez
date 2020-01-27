@@ -1,19 +1,19 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation BinaryOperation.
+  EquivalenceRelation BinaryOperation Unit.
 From Maniunfold.Is Require Export
-  Equivalence LeftExternallyUnital.
+  LeftExternallyUnital.
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
-Class IsLUn {A : Type} {has_eq_rel : HasEqRel A}
+Class IsLUnl {A : Type} {has_eq_rel : HasEqRel A}
   (has_bin_op : HasBinOp A) (has_un : HasUn A) : Prop :=
-  l_un : forall x : A, 0 + x == x.
+  l_unl : forall x : A, 0 + x == x.
 
 Section Context.
 
-Context {A : Type} `{is_l_un : IsLUn A}.
+Context {A : Type} `{is_l_unl : IsLUnl A}.
 
-Global Instance l_ext_bin_op_un_is_l_ext_un : IsLExtUn l_ext_bin_op un.
-Proof. intros x. apply l_un. Qed.
+Global Instance bin_op_un_is_l_ext_unl : IsLExtUnl bin_op un.
+Proof. intros x. apply l_unl. Qed.
 
 End Context.

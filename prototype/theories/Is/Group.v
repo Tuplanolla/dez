@@ -19,7 +19,7 @@ Context {A : Type} `{is_grp : IsGrp A}.
 
 Theorem un_op_absorb : - 0 == 0.
 Proof.
-  rewrite <- (r_un (- 0)).
+  rewrite <- (r_unl (- 0)).
   rewrite (l_inv 0).
   reflexivity. Qed.
 
@@ -27,37 +27,37 @@ Theorem bin_op_l_inj : forall x y z : A,
   z + x == z + y -> x == y.
 Proof.
   intros x y z p.
-  rewrite <- (l_un x).
+  rewrite <- (l_unl x).
   rewrite <- (l_inv z).
   rewrite <- (assoc (- z) z x).
   rewrite p.
   rewrite (assoc (- z) z y).
   rewrite (l_inv z).
-  rewrite (l_un y).
+  rewrite (l_unl y).
   reflexivity. Qed.
 
 Theorem bin_op_r_inj : forall x y z : A,
   x + z == y + z -> x == y.
 Proof.
   intros x y z p.
-  rewrite <- (r_un x).
+  rewrite <- (r_unl x).
   rewrite <- (r_inv z).
   rewrite (assoc x z (- z)).
   rewrite p.
   rewrite <- (assoc y z (- z)).
   rewrite (r_inv z).
-  rewrite (r_un y).
+  rewrite (r_unl y).
   reflexivity. Qed.
 
 Theorem un_op_invol : forall x : A,
   - (- x) == x.
 Proof.
   intros x.
-  rewrite <- (r_un (- (- x))).
+  rewrite <- (r_unl (- (- x))).
   rewrite <- (l_inv x).
   rewrite (assoc (- (- x)) (- x) x).
   rewrite (l_inv (- x)).
-  rewrite (l_un x).
+  rewrite (l_unl x).
   reflexivity. Qed.
 
 Theorem bin_op_un_op_antidistr : forall x y : A,
@@ -69,7 +69,7 @@ Proof.
   rewrite (assoc (x + y) (- y) (- x)).
   rewrite <- (assoc x y (- y)).
   rewrite (r_inv y).
-  rewrite (r_un x).
+  rewrite (r_unl x).
   rewrite (r_inv x).
   reflexivity. Qed.
 

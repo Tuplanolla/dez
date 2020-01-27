@@ -33,13 +33,13 @@ Global Instance Z_add_is_sgrp : IsSgrp Z.add := {}.
 
 Global Instance Z_has_un : HasUn Z := Z.zero.
 
-Global Instance Z_add_zero_is_l_un : IsLUn Z.add Z.zero.
+Global Instance Z_add_zero_is_l_unl : IsLUnl Z.add Z.zero.
 Proof. intros x. apply Z.add_0_l. Qed.
 
-Global Instance Z_add_zero_is_r_un : IsRUn Z.add Z.zero.
+Global Instance Z_add_zero_is_r_unl : IsRUnl Z.add Z.zero.
 Proof. intros x. apply Z.add_0_r. Qed.
 
-Global Instance Z_add_zero_is_un : IsUn Z.add Z.zero := {}.
+Global Instance Z_add_zero_is_unl : IsUnl Z.add Z.zero := {}.
 
 Global Instance Z_add_zero_is_mon : IsMon Z.add Z.zero := {}.
 
@@ -75,13 +75,13 @@ Global Instance Z_mul_is_sgrp : IsSgrp Z.mul := {}.
 
 Global Instance Z_has_un : HasUn Z := Z.one.
 
-Global Instance Z_mul_one_is_l_un : IsLUn Z.mul Z.one.
+Global Instance Z_mul_one_is_l_unl : IsLUnl Z.mul Z.one.
 Proof. intros x. apply Z.mul_1_l. Qed.
 
-Global Instance Z_mul_one_is_r_un : IsRUn Z.mul Z.one.
+Global Instance Z_mul_one_is_r_unl : IsRUnl Z.mul Z.one.
 Proof. intros x. apply Z.mul_1_r. Qed.
 
-Global Instance Z_mul_one_is_un : IsUn Z.mul Z.one := {}.
+Global Instance Z_mul_one_is_unl : IsUnl Z.mul Z.one := {}.
 
 Global Instance Z_mul_one_is_mon : IsMon Z.mul Z.one := {}.
 
