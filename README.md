@@ -23,7 +23,7 @@ The code in this repository is free software and, as such, licensed under
 The development of this project
 
 * started 2018-05-01,
-* continues as of 2019-10-01 and
+* continues as of 2020-01-27 and
 * is expected to reach a usable state by 2022-05-01.
 
 Currently, the sole author of this project is
