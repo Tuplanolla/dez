@@ -5,4 +5,4 @@ From Maniunfold.ShouldHave Require Import
 
 Class IsExtAbsorb {A B : Type} {has_bin_rel : HasBinRel B}
   (A_has_un : HasUn A) (B_has_un : HasUn B) (has_fn : HasFn A B) : Prop :=
-  ext_absorb : >-< 0 ~~ 0.
+  ext_absorb : T- T0 ~~ T0.

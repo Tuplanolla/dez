@@ -10,11 +10,15 @@ digraph Has {
   Fn [label = "Function\nA -> B"]
   IntBinFn [label = "InternalBinaryFunction\nA -> A -> B"]
   LExtBinOp [label = "LeftExternalBinaryOperation\nA -> B -> B"]
+  LFn [label = "LeftFunction\nA -> B"]
   LUn [label = "LeftUnit\nA"]
+  LUnOp [label = "LeftUnaryOperation\nA -> A"]
   OrdRel [label = "OrderRelation\nA -> A -> Prop"]
   Prop [label = "Proposition\nA -> Prop"]
   RExtBinOp [label = "RightExternalBinaryOperation\nB -> A -> B"]
+  RFn [label = "RightFunction\nA -> B"]
   RUn [label = "RightUnit\nA"]
+  RUnOp [label = "RightUnaryOperation\nA -> A"]
   Un [label = "Unit\nA"]
   UnOp [label = "UnaryOperation\nA -> A"]
 
@@ -25,12 +29,18 @@ digraph Has {
   BinFn -> RExtBinOp
   BinRel -> EqRel
   BinRel -> OrdRel
+  Fn -> LFn
   Fn -> Prop
+  Fn -> RFn
   Fn -> UnOp
   IntBinFn -> BinOp
   IntBinFn -> BinRel
   LExtBinOp -> BinOp
+  LFn -> LUnOp
   RExtBinOp -> BinOp
+  RFn -> RUnOp
   Un -> LUn
   Un -> RUn
+  UnOp -> LUnOp
+  UnOp -> RUnOp
 }

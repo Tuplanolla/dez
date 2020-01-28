@@ -9,6 +9,6 @@ Section Context.
 
 Context {A : Type} `{has_r_un : HasRUn A}.
 
-Global Instance r_un_has_un : HasUn A := r_un.
+Global Instance A_has_un : HasUn A := r_un.
 
 End Context.
