@@ -7,21 +7,24 @@ digraph Is {
   Antidistr [label = "Antidistributive\n- (x + y) == - y + - x"]
   Assoc [label = "Associative\nx + (y + z) == (x + y) + z"]
   Eq [label = "Equivalence"]
-  ExtAbsorb [label = "ExternallyAbsorbing\n>-< 0 ~~ 1"]
-  ExtAntidistr [label = "ExternallyAntidistributive\n>-< (x >+< y) ~~ >-< y >+< >-< x"]
-  ExtAssoc [label = "ExternallyAssociative\nx +< (y >+ z) ~~ (x +< y) >+ z"]
+  ExtAbsorb [label = "ExternallyAbsorbing\nT- T0 ~~ T0"]
+  ExtAntidistr [label = "ExternallyAntidistributive\nT- (x T+ y) ~~ T- y T+ T- x"]
+  ExtAssoc [label = "ExternallyAssociative\nx L+ (y R+ z) ~~ (x L+ y) R+ z"]
   ExtInv [label = "ExternallyInvertible"]
   ExtUnl [label = "ExternallyUnital"]
   Grp [label = "Group"]
+  IntInv [label = "InternallyInvertible"]
   Inv [label = "Invertible"]
-  LExtInv [label = "LeftExternallyInvertible\n>-< x >+< x ~~ 0"]
-  LExtUnl [label = "LeftExternallyUnital\n0 +< x ~~ x"]
+  LExtInv [label = "LeftExternallyInvertible\nL- x L+ x ~~ L0"]
+  LExtUnl [label = "LeftExternallyUnital\n0 L+ x ~~ x"]
+  LIntInv [label = "LeftInternallyInvertible\nT- x T+ x ~~ T0"]
   LInv [label = "LeftInvertible\n- x + x == 0"]
   LUnl [label = "LeftUnital\n0 + x == x"]
   Mon [label = "Monoid"]
   Proper [label = "Proper"]
-  RExtInv [label = "RightExternallyInvertible\nx >+< >-< x ~~ 0"]
-  RExtUnl [label = "RightExternallyUnital\nx >+ 0 ~~ x"]
+  RExtInv [label = "RightExternallyInvertible\nx R+ R- x ~~ R0"]
+  RExtUnl [label = "RightExternallyUnital\nx R+ 0 ~~ x"]
+  RIntInv [label = "RightInternallyInvertible\nx T+ T- x ~~ T0"]
   RInv [label = "RightInvertible\nx + - x == 0"]
   RUnl [label = "RightUnital\nx + 0 == x"]
   Refl [label = "Reflexive\nx ~~ x"]
@@ -40,6 +43,7 @@ digraph Is {
   Inv -> Grp
   LExtInv -> ExtInv
   LExtUnl -> ExtUnl
+  LIntInv -> IntInv
   LInv -> Inv
   LUnl -> Unl
   Mon -> Grp
@@ -47,6 +51,7 @@ digraph Is {
   Proper -> Sgrp
   RExtInv -> ExtInv
   RExtUnl -> ExtUnl
+  RIntInv -> IntInv
   RInv -> Inv
   RUnl -> Unl
   ReflEq -> Eq
@@ -64,10 +69,13 @@ digraph Is {
   ExtAssoc -> Assoc
   ExtInv -> Inv
   ExtUnl -> Unl
+  IntInv -> ExtInv
   LExtInv -> LInv
   LExtUnl -> LUnl
+  LIntInv -> LExtInv
   RExtInv -> RInv
   RExtUnl -> RUnl
+  RIntInv -> RExtInv
   Refl -> ReflEq
   Sym -> SymEq
   Trans -> TransEq
