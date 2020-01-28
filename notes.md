@@ -1,8 +1,12 @@
+# Scattered Notes
+
 Do these things.
 
 * Imagine a hub, where roosters, camels and sea thrifts grow.
 * Set up build automation; see diagram `habitat.dot`.
 * Add adverb subdirectories to arrange different conceps with similar names.
+* Regular semigroups have two equivalent definitions;
+  try to implement them as an isomorphism.
 * Implement `Is/Algebraically/Group.v` and `Is/Algebraically/Associative.v`.
 * Integrate Thrift into the mess.
 * Monoidal categories now.
@@ -11,15 +15,19 @@ Some rules.
 
 * Abbreviate
     * Coq has: refl, sym, trans, assoc, comm, involutive, distr,
-      l (left), r (right), inj (injective)
+      l (left), r (right), inj (functionally injective),
+      reg (operationally regular), cancel (operationally cancellative)
     * Coq reserves: fun, unit
-    * Categorical literature has: Mon, Grp, Top, op
+    * Categorical literature has: Mag, Mon, Grp, Top, op
 * Import
     * Coq has: refl, sym, trans, assoc, comm, distr,
       l (left), r (right), inj (injective)
     * Maniunfold has: fn (function), un (unit), unl (unital), invol, absorb
 
-Wikipedia educates.
+Wikipedia has the following wild conjecture.
+It is not mentioned in literature, but appears to be very useful.
+Perhaps there is other terminology in many-sorted universal algebra.
+Investigate.
 
 * f : Q × R → S (binary function)
     Example: exponentiation
@@ -33,111 +41,8 @@ Wikipedia educates.
 * f : S × S → S (binary operation)
     Examples: addition, multiplication, permutations, and the cross product
 
-Every binary operation is
-
-* external binary operation
-* internal binary function
-
-and everyone of these is
-
-* binary function,
-
-forming a diamond.
-
-Solve this equation
-
-```
-    E
----------
-  D
------
-A + B * C
-    -----
-      F
----------
-    G
-```
-
-to get
-
-```
-(+) : A * B -> B
-(*) : B * C -> B
-```
-
-as the most general type for associativity.
-The operations unify to get
-
-```
-(+) : A * A -> A
-(*) : A * A -> A
-```
-
-as the usual associativity.
-
-Solve this equation
-
-```
-    C
----------
-  B
------
-(- x) + x
-  ---  ---
-   A    A
-```
-
-to get
-
-```
-(-) : A -> B
-(+) : B * A -> C
-```
-
-as the most general type for left invertibility.
-
-Solve this equation
-
-```
-   C     D
- -----  ---
- 0 + x = x
---- --- ---
- B   A   A
-```
-
-to get
-
-```
-0 : B
-(+) : B * A -> A
-```
-
-as the most general type for left unitality.
-
-Solve this equation
-
-```
-    F             G
----------   -------------
-     C        D       E
-  -------   -----   -----
-- (x + y) = (/ x) * (! y)
-  --- ---     ---     ---
-   A   B       A       B
-```
-
-to get
-
-```
-(-) : C -> F
-(/) : A -> D
-(!) : B -> E
-(+) : A * B -> C
-(*) : D * E -> G
-```
-
-as the most general type for antidistributivity.
+There are some most general types for various unification problems
+in `garbage/Unification.v`.
 
 ```
 % This is the first known publication of the broker pattern.

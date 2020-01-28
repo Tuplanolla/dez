@@ -31,12 +31,14 @@ Notation "'R0'" := r_un : algebra_scope.
 Notation "'L-' x" := (l_fn x) : algebra_scope.
 Notation "'R-' x" := (r_fn x) : algebra_scope.
 
-(** The [T] comes from the term two-sided. *)
+(** Using [T0] without restrictions would shadow [0],
+    so we make it apply to [only parsing].
+    The [T] itself comes from the term two-sided. *)
 
 Reserved Notation "x 'T+' y" (at level 50, left associativity).
 Reserved Notation "'T0'" (at level 0, no associativity).
 Reserved Notation "'T-' x" (at level 35, right associativity).
 
 Notation "x 'T+' y" := (bin_fn x y) : algebra_scope.
-Notation "'T0'" := un : algebra_scope.
+Notation "'T0'" := un (only parsing) : algebra_scope.
 Notation "'T-' x" := (fn x) : algebra_scope.
