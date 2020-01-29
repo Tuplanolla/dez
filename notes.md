@@ -14,9 +14,12 @@ Do these things.
 Some rules.
 
 * Abbreviate
-    * Coq has: refl, sym, trans, assoc, comm, involutive, distr,
+    * Coq has: refl, sym, trans, assoc, comm, involutive,
+      distr (binary-binary distributive),
       l (left), r (right), inj (functionally injective),
-      reg (operationally regular), cancel (operationally cancellative)
+      reg (operationally regular), cancel (operationally cancellative),
+      distr, swap, comm, extrusion,
+      extrusion (heterogeneous associativity)
     * Coq reserves: fun, unit
     * Categorical literature has: Mag, Mon, Grp, Top, op
 * Import

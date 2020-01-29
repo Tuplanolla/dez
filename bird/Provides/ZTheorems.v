@@ -2,7 +2,7 @@ From Coq Require Import
   ZArith.
 From Maniunfold.Is Require Export
   Equivalence Magma Semigroup Monoid Group.
-From Maniunfold.ShouldHave Require Export
+From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
 Global Instance Z_has_eq_rel : HasEqRel Z := Z.eq.

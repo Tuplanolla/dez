@@ -56,3 +56,8 @@ Check forall (e : ?[T] -> ?T -> Prop)
   (f : _ -> _ -> _) (g : _ -> _ -> _)
   (h : _ -> _ -> _) (k : _ -> _ -> _) (m : _ -> _ -> _) (x y z : _),
   e (f (g x y) z) (h (k x z) (m y z)).
+
+(* l_bin_comm *)
+Check forall (e : ?[T] -> ?T -> Prop)
+  (f : _ -> _ -> _) (h : _ -> _) (x y : _),
+  e (h (f x y)) (f (h x) y).
