@@ -24,23 +24,23 @@ digraph Has {
 
   edge [style = dashed]
 
-  BinFn -> IntBinFn
-  BinFn -> LExtBinOp
-  BinFn -> RExtBinOp
-  BinRel -> EqRel
-  BinRel -> OrdRel
-  Fn -> LFn
-  Fn -> Prop
-  Fn -> RFn
-  Fn -> UnOp
-  IntBinFn -> BinOp
-  IntBinFn -> BinRel
-  LExtBinOp -> BinOp
-  LFn -> LUnOp
-  RExtBinOp -> BinOp
-  RFn -> RUnOp
-  Un -> LUn
-  Un -> RUn
-  UnOp -> LUnOp
-  UnOp -> RUnOp
+  BinOp -> IntBinFn
+  BinOp -> LExtBinOp
+  BinOp -> RExtBinOp
+  BinRel -> IntBinFn
+  EqRel -> BinRel
+  IntBinFn -> BinFn
+  LExtBinOp -> BinFn
+  LFn -> Fn
+  LUn -> Un
+  LUnOp -> LFn
+  LUnOp -> UnOp
+  OrdRel -> BinRel
+  Prop -> Fn
+  RExtBinOp -> BinFn
+  RFn -> Fn
+  RUn -> Un
+  RUnOp -> RFn
+  RUnOp -> UnOp
+  UnOp -> Fn
 }
