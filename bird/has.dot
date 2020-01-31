@@ -3,24 +3,35 @@ digraph Has {
 
   node [fontname = monospace]
 
-  BinFn [label = "BinaryFunction\nA -> B -> C"]
-  BinOp [label = "BinaryOperation\nA -> A -> A"]
-  BinRel [label = "BinaryRelation\nA -> A -> Prop"]
-  EqRel [label = "EquivalenceRelation\nA -> A -> Prop"]
-  Fn [label = "Function\nA -> B"]
-  IntBinFn [label = "InternalBinaryFunction\nA -> A -> B"]
-  LExtBinOp [label = "LeftExternalBinaryOperation\nA -> B -> B"]
-  LFn [label = "LeftFunction\nA -> B"]
-  LUn [label = "LeftUnit\nA"]
-  LUnOp [label = "LeftUnaryOperation\nA -> A"]
-  OrdRel [label = "OrderRelation\nA -> A -> Prop"]
-  Prop [label = "Proposition\nA -> Prop"]
-  RExtBinOp [label = "RightExternalBinaryOperation\nB -> A -> B"]
-  RFn [label = "RightFunction\nA -> B"]
-  RUn [label = "RightUnit\nA"]
-  RUnOp [label = "RightUnaryOperation\nA -> A"]
-  Un [label = "Unit\nA"]
-  UnOp [label = "UnaryOperation\nA -> A"]
+  subgraph ManySorted {
+    label = "ManySorted"
+
+    node [peripheries = 2]
+
+    BinFn [label = "BinaryFunction\nA -> B -> C"]
+    Fn [label = "Function\nA -> B"]
+    IntBinFn [label = "InternalBinaryFunction\nA -> A -> B"]
+    LExtBinOp [label = "LeftExternalBinaryOperation\nA -> B -> B"]
+    LFn [label = "LeftFunction\nA -> B"]
+    RExtBinOp [label = "RightExternalBinaryOperation\nB -> A -> B"]
+    RFn [label = "RightFunction\nA -> B"]
+  }
+
+  subgraph OneSorted {
+    label = "OneSorted"
+
+    BinOp [label = "BinaryOperation\nA -> A -> A"]
+    BinRel [label = "BinaryRelation\nA -> A -> Prop"]
+    EqRel [label = "EquivalenceRelation\nA -> A -> Prop"]
+    LUn [label = "LeftUnit\nA"]
+    LUnOp [label = "LeftUnaryOperation\nA -> A"]
+    OrdRel [label = "OrderRelation\nA -> A -> Prop"]
+    Prop [label = "Proposition\nA -> Prop"]
+    RUn [label = "RightUnit\nA"]
+    RUnOp [label = "RightUnaryOperation\nA -> A"]
+    Un [label = "Unit\nA"]
+    UnOp [label = "UnaryOperation\nA -> A"]
+  }
 
   edge [style = dashed]
 

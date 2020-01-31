@@ -13,6 +13,6 @@ forall (e : F -> F -> Prop) (f : A -> B -> C) (g : D -> E -> F)
 >>
 *)
 
-Class IsExtAntidistr {A : Type} {has_bin_rel : HasBinRel A}
+Class IsExtUnaryAntidistr {A : Type} {has_bin_rel : HasBinRel A}
   (has_bin_op : HasBinOp A) (has_un_op : HasUnOp A) : Prop :=
-  ext_antidistr : forall x y : A, T- (x T+ y) ~~ T- y T+ T- x.
+  ext_un_antidistr : forall x y : A, T- (x T+ y) ~~ T- y T+ T- x.

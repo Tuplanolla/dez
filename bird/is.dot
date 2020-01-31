@@ -3,50 +3,65 @@ digraph Is {
 
   node [fontname = monospace]
 
-  Absorb [label = "Absorbing\n- 0 == 0"]
-  Antidistr [label = "Antidistributive\n- (x + y) == - y + - x"]
-  Assoc [label = "Associative\nx + (y + z) == (x + y) + z"]
-  BinComm [label = "BinaryCommutative?"]
-  Cancel [label = "Cancellative"]
-  Eq [label = "Equivalence"]
-  ExtAbsorb [label = "ExternallyAbsorbing?\nT- T0 ~~ T0"]
-  ExtAntidistr [label = "ExternallyAntidistributive?\nT- (x T+ y) ~~ T- y T+ T- x"]
-  ExtAssoc [label = "ExternallyAssociative?\nx L+ (y R+ z) ~~ (x L+ y) R+ z"]
-  ExtBinComm [label = "ExternallyBinaryCommutative?"]
-  ExtInv [label = "ExternallyInvertible?"]
-  ExtUnl [label = "ExternallyUnital?"]
-  Grp [label = "Group"]
-  Inj [label = "Injective\n- x == - y -> x == y"]
-  IntInv [label = "InternallyInvertible?"]
-  Inv [label = "Invertible"]
-  Invol [label = "Involutive\n- - x == x"]
-  LBinComm [label = "LeftBinaryCommutative?\n- (x + y) == - x + y"]
-  LCancel [label = "LeftCancellative\nz + x == z + y -> x == y"]
-  LExtBinComm [label = "LeftExternallyBinaryCommutative?\nL- (x R+ y) == L- x R+ y"]
-  LExtInv [label = "LeftExternallyInvertible?\nL- x L+ x ~~ L0"]
-  LExtUnl [label = "LeftExternallyUnital?\n0 L+ x ~~ x"]
-  LIntInv [label = "LeftInternallyInvertible?\nT- x T+ x ~~ T0"]
-  LInv [label = "LeftInvertible\n- x + x == 0"]
-  LUnl [label = "LeftUnital\n0 + x == x"]
-  Mag [label = "Magma"]
-  Mon [label = "Monoid"]
-  Proper [label = "Proper"]
-  RBinComm [label = "RightBinaryCommutative?\n- (x + y) == x + - y"]
-  RCancel [label = "RightCancellative\nx + z == y + z -> x == y"]
-  RExtBinComm [label = "RightExternallyBinaryCommutative?\nR- (x L+ y) == x L+ R- y"]
-  RExtInv [label = "RightExternallyInvertible?\nx R+ R- x ~~ R0"]
-  RExtUnl [label = "RightExternallyUnital?\nx R+ 0 ~~ x"]
-  RIntInv [label = "RightInternallyInvertible?\nx T+ T- x ~~ T0"]
-  RInv [label = "RightInvertible\nx + - x == 0"]
-  RUnl [label = "RightUnital\nx + 0 == x"]
-  Refl [label = "Reflexive\nx ~~ x"]
-  ReflEq [label = "ReflexiveEquivalence\nx == x"]
-  Sgrp [label = "Semigroup"]
-  Sym [label = "Symmetric\nx ~~ y -> y ~~ x"]
-  SymEq [label = "SymmetricEquivalence\nx == y -> y == x"]
-  Trans [label = "Transitive\nx ~~ y -> y ~~ z -> x ~~ z"]
-  TransEq [label = "TransitiveEquivalence\nx == y -> y == z -> x == z"]
-  Unl [label = "Unital"]
+  subgraph ManySorted {
+    label = "ManySorted"
+
+    node [peripheries = 2]
+
+    ExtAbsorb [label = "ExternallyAbsorbing?\nT- T0 ~~ T0"]
+    ExtAssoc [label = "ExternallyAssociative?\nx L+ (y R+ z) ~~ (x L+ y) R+ z"]
+    ExtBinComm [label = "ExternallyBinaryCommutative?"]
+    ExtInv [label = "ExternallyInvertible?"]
+    ExtUnAntidstr [label = "ExternallyUnaryAntidistributive?\nT- (x T+ y) ~~ T- y T+ T- x"]
+    ExtUnl [label = "ExternallyUnital?"]
+    LExtBinComm [label = "LeftExternallyBinaryCommutative?\nL- (x R+ y) == L- x R+ y"]
+    LExtInv [label = "LeftExternallyInvertible?\nL- x L+ x ~~ L0"]
+    LExtUnl [label = "LeftExternallyUnital?\n0 L+ x ~~ x"]
+    LIntInv [label = "LeftInternallyInvertible?\nT- x T+ x ~~ T0"]
+    RExtBinComm [label = "RightExternallyBinaryCommutative?\nR- (x L+ y) == x L+ R- y"]
+    RExtInv [label = "RightExternallyInvertible?\nx R+ R- x ~~ R0"]
+    RExtUnl [label = "RightExternallyUnital?\nx R+ 0 ~~ x"]
+    RIntInv [label = "RightInternallyInvertible?\nx T+ T- x ~~ T0"]
+    Refl [label = "Reflexive\nx ~~ x"]
+    Sym [label = "Symmetric\nx ~~ y -> y ~~ x"]
+    Trans [label = "Transitive\nx ~~ y -> y ~~ z -> x ~~ z"]
+  }
+
+  subgraph OneSorted {
+    label = "OneSorted"
+
+    Absorb [label = "Absorbing\n- 0 == 0"]
+    Assoc [label = "Associative\nx + (y + z) == (x + y) + z"]
+    BinComm [label = "BinaryCommutative?"]
+    Cancel [label = "Cancellative"]
+    Comm [label = "Commutative\nx + y == y + x"]
+    Distr [label = "Distributive"]
+    Eq [label = "Equivalence"]
+    Grp [label = "Group"]
+    Inj [label = "Injective\n- x == - y -> x == y"]
+    IntInv [label = "InternallyInvertible?"]
+    Inv [label = "Invertible"]
+    Invol [label = "Involutive\n- - x == x"]
+    LBinComm [label = "LeftBinaryCommutative?\n- (x + y) == - x + y"]
+    LCancel [label = "LeftCancellative\nz + x == z + y -> x == y"]
+    LDistr [label = "LeftDistributive\nx * (y + z) == x * y + x * z"]
+    LInv [label = "LeftInvertible\n- x + x == 0"]
+    LUnl [label = "LeftUnital\n0 + x == x"]
+    Mag [label = "Magma"]
+    Mon [label = "Monoid"]
+    Proper [label = "Proper"]
+    RBinComm [label = "RightBinaryCommutative?\n- (x + y) == x + - y"]
+    RCancel [label = "RightCancellative\nx + z == y + z -> x == y"]
+    RDistr [label = "RightDistributive\n(x + y) * z == x * z + y * z"]
+    RInv [label = "RightInvertible\nx + - x == 0"]
+    RUnl [label = "RightUnital\nx + 0 == x"]
+    ReflEq [label = "ReflexiveEquivalence\nx == x"]
+    Sgrp [label = "Semigroup"]
+    SymEq [label = "SymmetricEquivalence\nx == y -> y == x"]
+    TransEq [label = "TransitiveEquivalence\nx == y -> y == z -> x == z"]
+    UnAntidistr [label = "UnaryAntidistributive\n- (x + y) == - y + - x"]
+    Unl [label = "Unital"]
+  }
 
   edge [style = solid]
 
@@ -54,6 +69,8 @@ digraph Is {
   BinComm -> RBinComm
   Cancel -> LCancel
   Cancel -> RCancel
+  Distr -> LDistr
+  Distr -> RDistr
   Eq -> ReflEq
   Eq -> SymEq
   Eq -> TransEq
@@ -82,12 +99,12 @@ digraph Is {
   edge [style = dashed]
 
   Absorb -> ExtAbsorb
-  Antidistr -> ExtAntidistr
+  UnAntidistr -> ExtUnAntidstr
   Assoc -> ExtAssoc
   BinComm -> ExtBinComm
   ExtInv -> IntInv
   Grp -> Absorb
-  Grp -> Antidistr
+  Grp -> UnAntidistr
   Grp -> Cancel
   Grp -> Inj
   Grp -> Invol

@@ -5,9 +5,10 @@ Do these things.
 * Imagine a hub, where roosters, camels and sea thrifts grow.
 * Set up build automation; see diagram `habitat.dot`.
 * Add adverb subdirectories to arrange different conceps with similar names.
+  Read literature on "many-sorted" or "multi-sorted"
+  "equational logic" or "universal algebra".
 * Regular semigroups have two equivalent definitions;
   try to implement them as an isomorphism.
-* Implement `Is/Algebraically/Group.v` and `Is/Algebraically/Associative.v`.
 * Integrate Thrift into the mess.
 * Monoidal categories now.
 

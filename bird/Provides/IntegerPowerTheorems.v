@@ -92,7 +92,7 @@ Proof.
     reflexivity.
   - rewrite (iter_op_succ p (- x)).
     rewrite (iter_op_succ p x).
-    rewrite (antidistr x (Pos.iter_op bin_op p x)).
+    rewrite (un_antidistr x (Pos.iter_op bin_op p x)).
     rewrite IH.
     rewrite (iter_op_comm p (- x)).
     reflexivity. Qed.

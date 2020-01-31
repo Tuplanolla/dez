@@ -13,7 +13,6 @@ Open Scope algebra_scope.
 Notation "x '+' y" := (bin_op x y) : algebra_scope.
 Notation "'0'" := un : algebra_scope.
 Notation "'-' x" := (un_op x) : algebra_scope.
-Notation "x '-' y" := (bin_op x (un_op y)) : algebra_scope.
 
 (** Using [0L] would be a syntax error, which is why we use [L0]. *)
 

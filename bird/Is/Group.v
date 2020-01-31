@@ -2,7 +2,7 @@ From Maniunfold.Has Require Export
   EquivalenceRelation BinaryOperation Unit UnaryOperation.
 From Maniunfold.Is Require Export
   Proper Monoid Invertible LeftCancellative RightCancellative Cancellative
-  Antidistributive Injective Involutive Absorbing.
+  UnaryAntidistributive Injective Involutive Absorbing.
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
@@ -53,7 +53,7 @@ Proof. intros x y z. apply bin_op_r_cancel. Qed.
 Global Instance bin_op_is_cancel : IsCancel bin_op.
 Proof. constructor; typeclasses eauto. Qed.
 
-Theorem bin_op_un_op_antidistr : forall x y : A,
+Theorem bin_op_un_op_un_antidistr : forall x y : A,
   - (x + y) == - y + - x.
 Proof.
   intros x y.
@@ -66,8 +66,8 @@ Proof.
   rewrite (r_inv x).
   reflexivity. Qed.
 
-Global Instance bin_op_un_op_is_antidistr : IsAntidistr bin_op un_op.
-Proof. intros x y. apply bin_op_un_op_antidistr. Qed.
+Global Instance bin_op_un_op_is_un_antidistr : IsUnaryAntidistr bin_op un_op.
+Proof. intros x y. apply bin_op_un_op_un_antidistr. Qed.
 
 Theorem un_op_inj : forall x y : A,
   - x == - y -> x == y.
