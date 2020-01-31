@@ -3,8 +3,8 @@ digraph Is {
 
   node [fontname = monospace]
 
-  subgraph ManySorted {
-    label = "ManySorted"
+  subgraph ManySort {
+    label = "ManySortedly"
 
     node [peripheries = 2]
 
@@ -27,8 +27,8 @@ digraph Is {
     Trans [label = "Transitive\nx ~~ y -> y ~~ z -> x ~~ z"]
   }
 
-  subgraph OneSorted {
-    label = "OneSorted"
+  subgraph OneSort {
+    label = "OneSortedly"
 
     Absorb [label = "Absorbing\n- 0 == 0"]
     Assoc [label = "Associative\nx + (y + z) == (x + y) + z"]
