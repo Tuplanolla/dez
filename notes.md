@@ -36,6 +36,9 @@ Some rules.
       (such as `eq_rel` before `bin_op` before `un`).
     * Structural members explicitly dealing with operations in
       lexicographical order (such as `eq_rel_is_eq` before `bin_op_is_proper`).
+* Implicit
+    * Do not make operational class inferrable parameters implicit,
+      because unexpected maximal insertion breaks everything (pages of errors).
 
 Wikipedia has the following wild conjecture.
 It is not mentioned in literature, but appears to be very useful.

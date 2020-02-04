@@ -3,8 +3,6 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   CategoricalNotations.
 
-(** TODO Implicit or not? *)
-
 Class HasComp {A : Type} (has_hom : HasHom A) : Type :=
   comp : forall x y z : A, (x ~> y) -> (y ~> z) -> (x ~> z).
 

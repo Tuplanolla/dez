@@ -13,6 +13,7 @@ Class IsGrpd {A : Type} {has_hom : HasHom A}
   (has_inv : HasInv hom) : Prop := {
   comp_is_cat :> IsCat comp idt;
   comp_idt_inv_is_cat_inv :> IsCatInv comp idt inv;
+  inv_is_proper :> forall x y : A, IsProper (eq_rel ==> eq_rel) (inv x y);
 }.
 
 Section Context.
