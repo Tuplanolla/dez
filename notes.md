@@ -10,6 +10,10 @@ Do these things.
 * Regular semigroups have two equivalent definitions;
   try to implement them as an isomorphism.
 * Integrate Thrift into the mess.
+* Now that we have one-sorted algebra (abstract algebra)
+  generalized to many-sorted algebra (universal algebra) and
+  oidified to one-sorted partial algebra (category theory),
+  what happens if we go looking for many-sorted partial algebra?
 * Monoidal categories now.
 
 Some rules.
@@ -27,6 +31,11 @@ Some rules.
     * Coq has: refl, sym, trans, assoc, comm, distr,
       l (left), r (right), inj (injective)
     * Maniunfold has: fn (function), un (unit), unl (unital), invol, absorb
+* Order
+    * Most common properties first
+      (such as `eq_rel` before `bin_op` before `un`).
+    * Structural members explicitly dealing with operations in
+      lexicographical order (such as `eq_rel_is_eq` before `bin_op_is_proper`).
 
 Wikipedia has the following wild conjecture.
 It is not mentioned in literature, but appears to be very useful.

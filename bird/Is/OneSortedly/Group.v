@@ -1,7 +1,8 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation BinaryOperation Unit UnaryOperation.
 From Maniunfold.Is Require Export
-  Proper Monoid Invertible LeftCancellative RightCancellative Cancellative
+  Monoid Invertible Proper
+  LeftCancellative RightCancellative Cancellative
   UnaryAntidistributive Injective Involutive Absorbing.
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
@@ -9,9 +10,9 @@ From Maniunfold.ShouldHave Require Import
 Class IsGrp {A : Type} {has_eq_rel : HasEqRel A}
   (has_bin_op : HasBinOp A) (has_un : HasUn A)
   (has_un_op : HasUnOp A) : Prop := {
-  un_op_is_proper :> IsProper (eq_rel ==> eq_rel) un_op;
   bin_op_un_is_mon :> IsMon bin_op un;
   bin_op_un_un_op_is_inv :> IsInv bin_op un un_op;
+  un_op_is_proper :> IsProper (eq_rel ==> eq_rel) un_op;
 }.
 
 Section Context.

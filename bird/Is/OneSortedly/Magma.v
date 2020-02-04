@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation BinaryOperation.
 From Maniunfold.Is Require Export
-  Proper Equivalence.
+  Equivalence Proper.
 
 Class IsMag {A : Type} {has_eq_rel : HasEqRel A}
   (has_bin_op : HasBinOp A) : Prop := {
