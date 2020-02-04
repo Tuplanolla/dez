@@ -1,9 +1,7 @@
 From Maniunfold.Has Require Export
   Morphism EquivalenceRelation Composition.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations CategoricalNotations.
-From Maniunfold.ShouldOffer Require Import
-  MoreCategoricalNotations.
+  EquivalenceRelationNotations MoreCategoricalNotations.
 
 Class IsCatAssoc {A : Type} {has_hom : HasHom A}
   {has_eq_rel : forall x y : A, HasEqRel (x ~> y)}

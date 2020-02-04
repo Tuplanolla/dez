@@ -3,9 +3,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.Is Require Export
   Category CategoricallyInvertible Involutive.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations CategoricalNotations.
-From Maniunfold.ShouldOffer Require Import
-  MoreCategoricalNotations.
+  EquivalenceRelationNotations MoreCategoricalNotations.
 
 Class IsGrpd {A : Type} {has_hom : HasHom A}
   {has_eq_rel : forall x y : A, HasEqRel (x ~> y)}
