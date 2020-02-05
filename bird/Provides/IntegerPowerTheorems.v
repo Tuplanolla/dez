@@ -107,7 +107,7 @@ Proof.
   intros n x.
   destruct n as [| p].
   - cbv [n_op].
-    rewrite absorb.
+    rewrite un_absorb.
     reflexivity.
   - cbv [n_op].
     rewrite (positive_op_un_op_r_ext_bin_comm p x).
@@ -122,7 +122,7 @@ Proof.
   intros n x.
   destruct n as [| p | p].
   - cbv [z_op].
-    rewrite absorb.
+    rewrite un_absorb.
     reflexivity.
   - cbv [z_op].
     rewrite (positive_op_un_op_r_ext_bin_comm p x).

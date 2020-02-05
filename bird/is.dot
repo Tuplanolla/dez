@@ -8,10 +8,10 @@ digraph Is {
 
     node [peripheries = 2]
 
-    ExtAbsorb [label = "ExternallyAbsorbing?\nT- T0 ~~ T0"]
     ExtAssoc [label = "ExternallyAssociative?\nx L+ (y R+ z) ~~ (x L+ y) R+ z"]
     ExtBinComm [label = "ExternallyBinaryCommutative?"]
     ExtInv [label = "ExternallyInvertible?"]
+    ExtUnAbsorb [label = "ExternallyUnaryAbsorbing?\nT- T0 ~~ T0"]
     ExtUnAntidstr [label = "ExternallyUnaryAntidistributive?\nT- (x T+ y) ~~ T- y T+ T- x"]
     ExtUnl [label = "ExternallyUnital?"]
     LExtBinComm [label = "LeftExternallyBinaryCommutative?\nL- (x R+ y) == L- x R+ y"]
@@ -30,7 +30,7 @@ digraph Is {
   subgraph OneSort {
     label = "OneSortedly"
 
-    Absorb [label = "Absorbing\n- 0 == 0"]
+    Absorb [label = "Absorbing"]
     Assoc [label = "Associative\nx + (y + z) == (x + y) + z"]
     BinComm [label = "BinaryCommutative?"]
     Cancel [label = "Cancellative"]
@@ -42,6 +42,7 @@ digraph Is {
     IntInv [label = "InternallyInvertible?"]
     Inv [label = "Invertible"]
     Invol [label = "Involutive\n- - x == x"]
+    LAbsorb [label = "LeftAbsorbing\n0 * x == 0"]
     LBinComm [label = "LeftBinaryCommutative?\n- (x + y) == - x + y"]
     LCancel [label = "LeftCancellative\nz + x == z + y -> x == y"]
     LDistr [label = "LeftDistributive\nx * (y + z) == x * y + x * z"]
@@ -50,21 +51,27 @@ digraph Is {
     Mag [label = "Magma"]
     Mon [label = "Monoid"]
     Proper [label = "Proper"]
+    RAbsorb [label = "RightAbsorbing\nx * 0 == 0"]
     RBinComm [label = "RightBinaryCommutative?\n- (x + y) == x + - y"]
     RCancel [label = "RightCancellative\nx + z == y + z -> x == y"]
     RDistr [label = "RightDistributive\n(x + y) * z == x * z + y * z"]
     RInv [label = "RightInvertible\nx + - x == 0"]
     RUnl [label = "RightUnital\nx + 0 == x"]
     ReflEq [label = "ReflexiveEquivalence\nx == x"]
+    Ring [label = "Ring"]
     Sgrp [label = "Semigroup"]
+    Sring [label = "Semiring"]
     SymEq [label = "SymmetricEquivalence\nx == y -> y == x"]
     TransEq [label = "TransitiveEquivalence\nx == y -> y == z -> x == z"]
+    UnAbsorb [label = "UnaryAbsorbing\n- 0 == 0"]
     UnAntidistr [label = "UnaryAntidistributive\n- (x + y) == - y + - x"]
     Unl [label = "Unital"]
   }
 
   edge [style = solid]
 
+  Absorb -> LAbsorb
+  Absorb -> RAbsorb
   BinComm -> LBinComm
   BinComm -> RBinComm
   Cancel -> LCancel
@@ -96,14 +103,24 @@ digraph Is {
   Unl -> LUnl
   Unl -> RUnl
 
+  Sring -> Absorb
+  Ring -> Comm
+  Sring -> Comm
+  Ring -> Distr
+  Sring -> Distr
+  Ring -> Grp
+  Ring -> Mon
+  Sring -> Mon
+  Sring -> Mon
+
   edge [style = dashed]
 
-  Absorb -> ExtAbsorb
+  UnAbsorb -> ExtUnAbsorb
   UnAntidistr -> ExtUnAntidstr
   Assoc -> ExtAssoc
   BinComm -> ExtBinComm
   ExtInv -> IntInv
-  Grp -> Absorb
+  Grp -> UnAbsorb
   Grp -> UnAntidistr
   Grp -> Cancel
   Grp -> Inj
@@ -121,4 +138,7 @@ digraph Is {
   SymEq -> Sym
   TransEq -> Trans
   Unl -> ExtUnl
+
+  Ring -> Absorb
+  Ring -> Sring
 }

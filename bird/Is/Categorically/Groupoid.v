@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   Morphism EquivalenceRelation Composition Identity Inverse.
 From Maniunfold.Is Require Export
-  Category CategoricallyInvertible Involutive.
+  Category CategoricallyInvertible Proper Involutive.
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations MoreCategoricalNotations.
 

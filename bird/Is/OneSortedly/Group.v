@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.Is Require Export
   Monoid Invertible Proper
   LeftCancellative RightCancellative Cancellative
-  UnaryAntidistributive Injective Involutive Absorbing.
+  UnaryAntidistributive Injective Involutive UnaryAbsorbing.
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
@@ -99,13 +99,13 @@ Proof.
 Global Instance un_op_is_invol : IsInvol un_op.
 Proof. intros x. apply un_op_invol. Qed.
 
-Theorem un_un_op_absorb : - 0 == 0.
+Theorem un_un_op_un_absorb : - 0 == 0.
 Proof.
   rewrite <- (r_unl (- 0)).
   rewrite (l_inv 0).
   reflexivity. Qed.
 
-Global Instance un_un_op_is_absorb : IsAbsorb un un_op.
-Proof. apply un_un_op_absorb. Qed.
+Global Instance un_un_op_is_un_absorb : IsUnAbsorb un un_op.
+Proof. apply un_un_op_un_absorb. Qed.
 
 End Context.

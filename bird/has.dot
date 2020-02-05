@@ -31,6 +31,13 @@ digraph Has {
     RUnOp [label = "RightUnaryOperation\nA -> A"]
     Un [label = "Unit\nA"]
     UnOp [label = "UnaryOperation\nA -> A"]
+
+    Add [label = "Addition\nA -> A -> A"]
+    Zero [label = "Zero\nA"]
+    Neg [label = "Negation\nA -> A"]
+    Mul [label = "Multiplication\nA -> A -> A"]
+    One [label = "One\nA"]
+    Recip [label = "Reciprocation\nA -> A"]
   }
 
   edge [style = dashed]
@@ -54,4 +61,11 @@ digraph Has {
   RUnOp -> RFn
   RUnOp -> UnOp
   UnOp -> Fn
+
+  BinOp -> Add
+  BinOp -> Mul
+  Un -> Zero
+  Un -> One
+  UnOp -> Neg
+  UnOp -> Recip
 }
