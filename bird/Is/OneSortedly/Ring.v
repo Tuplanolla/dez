@@ -53,14 +53,31 @@ Proof. constructor; typeclasses eauto. Qed.
 
 (** TODO Name these properties. *)
 
+(** TODO Could we avoid this,
+    if we replaced the operational classes
+    in [l_cancel] or [r_inv] with mere terms?
+    Even if that worked in this case,
+    would it stop implicit generalization from working properly?
+    Investigate! *)
+
+Corollary add_l_cancel : forall x y z : A,
+  z + x == z + y -> x == y.
+Proof. intros x y z. apply l_cancel. Qed.
+
+Corollary add_r_inv : forall x : A,
+  x + - x == 0.
+Proof. intros x. apply r_inv. Qed.
+
 Theorem l_Unnamed_thm : forall x : A,
   - (1) * x == - x.
 Proof.
   intros x.
-  apply (l_cancel _ _ x).
-  replace bin_op with add by reflexivity.
-  rewrite (r_inv x).
-  replace (@un A (@Zero.A_has_un A has_zero)) with 0 by reflexivity.
+  apply (add_l_cancel (- (1) * x) (- x) x).
+  Fail progress
+    replace bin_op with add by reflexivity.
+  rewrite (add_r_inv x).
+  Fail progress
+    replace (@un A (@Zero.A_has_un A has_zero)) with 0 by reflexivity.
   rewrite <- (l_unl x) at 1.
   replace (bin_op un) with (mul 1) by reflexivity.
   rewrite <- (r_distr _ _ x).

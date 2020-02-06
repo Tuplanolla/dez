@@ -5,6 +5,8 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations.
 
+(** TODO Get rid of this. *)
+
 Class IsReflEq {A : Type} (has_eq_rel : HasEqRel A) : Prop :=
   refl_eq : forall x : A, x == x.
 
