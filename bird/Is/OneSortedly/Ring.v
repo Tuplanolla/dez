@@ -55,10 +55,21 @@ Proof. constructor; typeclasses eauto. Qed.
 
 (** TODO Could we avoid this,
     if we replaced the operational classes
-    in [l_cancel] or [r_inv] with mere terms?
+    in [l_cancel] or [r_inv] with bare types?
     Even if that worked in this case,
     would it stop implicit generalization from working properly?
-    Investigate! *)
+    Investigate!
+
+    Yes, we could avoid it, and no, we would not break implicit generalization,
+    but we would lose the ability to use notations
+    when defining predicative classes,
+    because notations are tied to operational classes.
+
+    Clearly, there is a conflict between
+    nice specialization versus nice notation.
+    So, could we make a compromise,
+    where implicit arguments are operative classes,
+    but explicit ones are bare types? *)
 
 Corollary add_l_cancel : forall x y z : A,
   z + x == z + y -> x == y.
@@ -75,12 +86,12 @@ Proof.
   apply (add_l_cancel (- (1) * x) (- x) x).
   Fail progress
     replace bin_op with add by reflexivity.
-  rewrite (add_r_inv x).
+  rewrite (r_inv (has_un := zero) x).
   Fail progress
     replace (@un A (@Zero.A_has_un A has_zero)) with 0 by reflexivity.
   rewrite <- (l_unl x) at 1.
   replace (bin_op un) with (mul 1) by reflexivity.
-  rewrite <- (r_distr _ _ x).
+  rewrite <- (r_distr 1 (- (1)) x).
   rewrite (r_inv 1).
   replace (@un A (@Zero.A_has_un A has_zero)) with 0 by reflexivity.
   rewrite (l_absorb x).
@@ -89,7 +100,7 @@ Proof.
 Theorem r_Unnamed_thm : forall x : A, x * - (1) == - x.
 Proof.
   intros x.
-  apply (l_cancel _ _ x).
+  apply (l_cancel (x * - (1)) (- x) x).
   replace bin_op with add by reflexivity.
   rewrite (r_inv x).
   replace (@un A (@Zero.A_has_un A has_zero)) with 0 by reflexivity.
