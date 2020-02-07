@@ -7,13 +7,13 @@ From Maniunfold.ShouldHave Require Import
 
 Global Instance Z_has_eq_rel : HasEqRel Z := Z.eq.
 
-Global Instance Z_eq_is_refl_eq : IsReflEq Z.eq.
+Global Instance Z_eq_is_refl : IsRefl Z.eq.
 Proof. intros x. reflexivity. Qed.
 
-Global Instance Z_eq_is_sym_eq : IsSymEq Z.eq.
+Global Instance Z_eq_is_sym : IsSym Z.eq.
 Proof. intros x y p. symmetry; auto. Qed.
 
-Global Instance Z_eq_is_trans_eq : IsTransEq Z.eq.
+Global Instance Z_eq_is_trans : IsTrans Z.eq.
 Proof. intros x y z p q. transitivity y; auto. Qed.
 
 Global Instance Z_eq_is_eq : IsEq Z.eq.

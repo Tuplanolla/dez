@@ -368,5 +368,18 @@ but sometimes leave operational classes out of
 the definitions of predicative classes to facilitate rewriting.
 Alas, this makes the use of associated notations impossible.
 
+With the `coq-ltac-iter` plugin, we could do the following,
+although this approach might be overkill.
+
+```
+Create HintDb group.
+
+Hint Extern 1 => change bin_op with add : group.
+Hint Extern 1 => change un with zero : group.
+Hint Extern 1 => change un_op with neg : group.
+
+Ltac change_group := let k x := x in foreach [db : group] k.
+```
+
 None of these issues prevent working on the system,
 but solving some of them would get rid of a lot of pointless busywork.

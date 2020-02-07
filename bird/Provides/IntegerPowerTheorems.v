@@ -98,7 +98,7 @@ Proof.
     reflexivity. Qed.
 
 Global Instance positive_op_un_op_is_r_ext_bin_comm :
-  IsRExtBinComm positive_op un_op.
+  IsRExtBinComm un_op positive_op.
 Proof. intros x y. apply positive_op_un_op_r_ext_bin_comm. Qed.
 
 Theorem n_op_un_op_r_ext_bin_comm : forall (n : N) (x : A),
@@ -113,7 +113,7 @@ Proof.
     rewrite (positive_op_un_op_r_ext_bin_comm p x).
     reflexivity. Qed.
 
-Global Instance n_op_un_op_is_r_ext_bin_comm : IsRExtBinComm n_op un_op.
+Global Instance n_op_un_op_is_r_ext_bin_comm : IsRExtBinComm un_op n_op.
 Proof. intros x y. apply n_op_un_op_r_ext_bin_comm. Qed.
 
 Theorem z_op_un_op_r_ext_bin_comm : forall (n : Z) (x : A),
@@ -131,7 +131,7 @@ Proof.
     rewrite (positive_op_un_op_r_ext_bin_comm p x).
     reflexivity. Qed.
 
-Global Instance z_op_un_op_is_r_ext_bin_comm : IsRExtBinComm z_op un_op.
+Global Instance z_op_un_op_is_r_ext_bin_comm : IsRExtBinComm un_op z_op.
 Proof. intros x y. apply z_op_un_op_r_ext_bin_comm. Qed.
 
 End Context.

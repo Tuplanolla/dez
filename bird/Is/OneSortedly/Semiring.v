@@ -14,3 +14,27 @@ Class IsSring {A : Type} {has_eq_rel : HasEqRel A}
   zero_mul_is_absorb :> IsAbsorb zero mul;
   mul_one_is_mon :> IsMon mul one;
 }.
+
+Ltac change_add_mon :=
+  change bin_op with add;
+  change un with zero.
+
+Ltac change_mul_mon :=
+  change bin_op with mul;
+  change un with one.
+
+Section Context.
+
+Context {A : Type} `{is_sring : IsSring A}.
+
+Goal 0 == 1 -> forall x y : A, x == y.
+Proof with change_add_mon || change_mul_mon.
+  intros H x y.
+  rewrite <- (l_unl x)...
+  rewrite <- (l_unl y)...
+  rewrite <- H.
+  rewrite (l_absorb x)...
+  rewrite (l_absorb y)...
+  reflexivity. Qed.
+
+End Context.

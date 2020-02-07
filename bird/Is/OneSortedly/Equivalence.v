@@ -3,12 +3,12 @@ From Coq Require Export
 From Maniunfold.Has Require Export
   EquivalenceRelation.
 From Maniunfold.Is Require Export
-  ReflexiveEquivalence SymmetricEquivalence TransitiveEquivalence.
+  Reflexive Symmetric Transitive.
 
 Class IsEq {A : Type} (has_eq_rel : HasEqRel A) : Prop := {
-  eq_rel_is_refl_eq :> IsReflEq eq_rel;
-  eq_rel_is_sym_eq :> IsSymEq eq_rel;
-  eq_rel_is_trans_eq :> IsTransEq eq_rel;
+  eq_rel_is_refl :> IsRefl eq_rel;
+  eq_rel_is_sym :> IsSym eq_rel;
+  eq_rel_is_trans :> IsTrans eq_rel;
 }.
 
 Section Context.

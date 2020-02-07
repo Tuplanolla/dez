@@ -3,6 +3,11 @@ digraph Is {
 
   node [fontname = monospace]
 
+  Proper [label = "Proper"]
+  Refl [label = "Reflexive\nx ~~ x"]
+  Sym [label = "Symmetric\nx ~~ y -> y ~~ x"]
+  Trans [label = "Transitive\nx ~~ y -> y ~~ z -> x ~~ z"]
+
   subgraph ManySort {
     label = "ManySortedly"
 
@@ -22,9 +27,6 @@ digraph Is {
     RExtInv [label = "RightExternallyInvertible?\nx R+ R- x ~~ R0"]
     RExtUnl [label = "RightExternallyUnital?\nx R+ 0 ~~ x"]
     RIntInv [label = "RightInternallyInvertible?\nx T+ T- x ~~ T0"]
-    Refl [label = "Reflexive\nx ~~ x"]
-    Sym [label = "Symmetric\nx ~~ y -> y ~~ x"]
-    Trans [label = "Transitive\nx ~~ y -> y ~~ z -> x ~~ z"]
   }
 
   subgraph OneSort {
@@ -50,19 +52,15 @@ digraph Is {
     LUnl [label = "LeftUnital\n0 + x == x"]
     Mag [label = "Magma"]
     Mon [label = "Monoid"]
-    Proper [label = "Proper"]
     RAbsorb [label = "RightAbsorbing\nx * 0 == 0"]
     RBinComm [label = "RightBinaryCommutative?\n- (x + y) == x + - y"]
     RCancel [label = "RightCancellative\nx + z == y + z -> x == y"]
     RDistr [label = "RightDistributive\n(x + y) * z == x * z + y * z"]
     RInv [label = "RightInvertible\nx + - x == 0"]
     RUnl [label = "RightUnital\nx + 0 == x"]
-    ReflEq [label = "ReflexiveEquivalence\nx == x"]
     Ring [label = "Ring"]
     Sgrp [label = "Semigroup"]
     Sring [label = "Semiring"]
-    SymEq [label = "SymmetricEquivalence\nx == y -> y == x"]
-    TransEq [label = "TransitiveEquivalence\nx == y -> y == z -> x == z"]
     UnAbsorb [label = "UnaryAbsorbing\n- 0 == 0"]
     UnAntidistr [label = "UnaryAntidistributive\n- (x + y) == - y + - x"]
     Unl [label = "Unital"]
@@ -78,9 +76,9 @@ digraph Is {
   Cancel -> RCancel
   Distr -> LDistr
   Distr -> RDistr
-  Eq -> ReflEq
-  Eq -> SymEq
-  Eq -> TransEq
+  Eq -> Refl
+  Eq -> Sym
+  Eq -> Trans
   ExtBinComm -> LExtBinComm
   ExtBinComm -> RExtBinComm
   ExtInv -> LExtInv
@@ -134,9 +132,6 @@ digraph Is {
   RExtInv -> RIntInv
   RInv -> RExtInv
   RUnl -> RExtUnl
-  ReflEq -> Refl
-  SymEq -> Sym
-  TransEq -> Trans
   Unl -> ExtUnl
 
   Ring -> Absorb

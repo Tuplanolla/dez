@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation Addition Negation Multiplication.
 From Maniunfold.Is Require Export
-  Commutative Group Monoid Distributive Absorbing Semiring.
+  Commutative Group Monoid Distributive Absorbing BinaryCommutative Semiring.
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations ArithmeticNotations.
 
@@ -16,14 +16,9 @@ Class IsRing {A : Type} {has_eq_rel : HasEqRel A}
 
 (** TODO Where do these belong? *)
 
-Ltac specialize_grp :=
-  change bin_op with add;
-  change un with zero;
+Ltac change_add_grp :=
+  change_add_mon;
   change un_op with neg.
-
-Ltac specialize_mon :=
-  change bin_op with mul;
-  change un with one.
 
 Section Context.
 
@@ -31,7 +26,7 @@ Context {A : Type} `{is_ring : IsRing A}.
 
 Theorem zero_mul_l_absorb : forall x : A,
   0 * x == 0.
-Proof with specialize_grp || specialize_mon.
+Proof with change_add_grp || change_mul_mon.
   intros x.
   apply (l_cancel (0 * x) 0 (1 * x))...
   rewrite (r_unl (1 * x))...
@@ -44,7 +39,7 @@ Proof. intros x. apply zero_mul_l_absorb. Qed.
 
 Theorem zero_mul_r_absorb : forall x : A,
   x * 0 == 0.
-Proof with specialize_grp || specialize_mon.
+Proof with change_add_grp || change_mul_mon.
   intros x.
   apply (l_cancel (x * 0) 0 (x * 1))...
   rewrite (r_unl (x * 1))...
@@ -60,9 +55,9 @@ Proof. constructor; typeclasses eauto. Qed.
 
 (** TODO What are these theorems? *)
 
-Theorem l_Unnamed_thm : forall x : A,
+Theorem l_wtf : forall x : A,
   - (1) * x == - x.
-Proof with specialize_grp || specialize_mon.
+Proof with change_add_grp || change_mul_mon.
   intros x.
   apply (l_cancel (- (1) * x) (- x) x)...
   rewrite (r_inv x)...
@@ -72,9 +67,11 @@ Proof with specialize_grp || specialize_mon.
   rewrite (l_absorb x)...
   reflexivity. Qed.
 
-Theorem r_Unnamed_thm : forall x : A,
+Fail Global Instance neg_mul_is_l_wtf : IsLWtf neg mul.
+
+Theorem r_wtf : forall x : A,
   x * - (1) == - x.
-Proof with specialize_grp || specialize_mon.
+Proof with change_add_grp || change_mul_mon.
   intros x.
   apply (l_cancel (x * - (1)) (- x) x)...
   rewrite (r_inv x)...
@@ -84,26 +81,40 @@ Proof with specialize_grp || specialize_mon.
   rewrite (r_absorb x)...
   reflexivity. Qed.
 
-Goal forall x y : A,
+Fail Global Instance neg_mul_is_r_wtf : IsRWtf neg mul.
+
+(* Global Instance neg_mul_is_wtf : IsWtf neg mul.
+Proof. constructor; typeclasses eauto. Qed. *)
+
+Theorem neg_mul_l_bin_comm : forall x y : A,
   - (x * y) == - x * y.
-Proof with specialize_grp || specialize_mon.
+Proof with change_add_grp || change_mul_mon.
   intros x y.
-  rewrite <- (l_Unnamed_thm (x * y)).
+  rewrite <- (l_wtf (x * y)).
   rewrite (assoc (- (1)) x y)...
-  rewrite l_Unnamed_thm.
+  rewrite l_wtf.
   reflexivity. Qed.
 
-Goal forall x y : A,
+Global Instance neg_mul_is_l_bin_comm : IsLBinComm neg mul.
+Proof. intros x y. apply neg_mul_l_bin_comm. Qed.
+
+Theorem neg_mul_r_bin_comm : forall x y : A,
   - (x * y) == x * - y.
-Proof with specialize_grp || specialize_mon.
+Proof with change_add_grp || change_mul_mon.
   intros x y.
-  rewrite <- (r_Unnamed_thm (x * y)).
+  rewrite <- (r_wtf (x * y)).
   rewrite <- (assoc x y (- (1)))...
-  rewrite r_Unnamed_thm.
+  rewrite r_wtf.
   reflexivity. Qed.
+
+Global Instance neg_mul_is_r_bin_comm : IsRBinComm neg mul.
+Proof. intros x y. apply neg_mul_r_bin_comm. Qed.
+
+Global Instance neg_mul_is_bin_comm : IsBinComm neg mul.
+Proof. constructor; typeclasses eauto. Qed.
 
 Goal 0 == 1 -> forall x y : A, x == y.
-Proof with specialize_grp || specialize_mon.
+Proof with change_add_grp || change_mul_mon.
   intros H x y.
   rewrite <- (l_unl x)...
   rewrite <- (l_unl y)...

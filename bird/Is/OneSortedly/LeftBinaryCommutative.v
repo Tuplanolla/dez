@@ -1,19 +1,19 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation BinaryOperation UnaryOperation.
+  EquivalenceRelation Negation Multiplication.
 From Maniunfold.Is Require Import
   LeftExternallyBinaryCommutative.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations.
+  EquivalenceRelationNotations ArithmeticNotations.
 
 Class IsLBinComm {A : Type} {has_eq_rel : HasEqRel A}
-  (has_bin_op : HasBinOp A) (has_un_op : HasUnOp A) : Prop :=
-  l_bin_comm : forall x y : A, - (x + y) == - x + y.
+  (has_neg : HasNeg A) (has_mul : HasMul A) : Prop :=
+  l_bin_comm : forall x y : A, - (x * y) == - x * y.
 
 Section Context.
 
 Context {A : Type} `{is_l_bin_comm : IsLBinComm A}.
 
-Global Instance bin_op_un_op_is_l_bin_comm : IsLExtBinComm bin_op un_op.
+Global Instance neg_mul_is_l_ext_bin_comm : IsLExtBinComm neg mul.
 Proof. intros x y. apply l_bin_comm. Qed.
 
 End Context.
