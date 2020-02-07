@@ -361,11 +361,12 @@ However, I might not need to do that in practice.
 > We emphasize that these efficiency problems only affect type checking;
 > efficiency of computation using type-checked terms is not affected.
 
+Regarding rewriting with lemmas that are
+more general than the goal (minor issue),
+Spitters and van der Weegen make no claims,
+but sometimes leave operational classes out of
+the definitions of predicative classes to facilitate rewriting.
+Alas, this makes the use of associated notations impossible.
+
 None of these issues prevent working on the system,
 but solving some of them would get rid of a lot of pointless busywork.
-
-Regarding rewriting with more general lemmas losing specificity (minor issue),
-Spitters and van der Weegen make no claims,
-but manually write specializations in the implementation.
-There might be a way to get around this with some tactics,
-but I have not bothered to look too deep into it.

@@ -97,26 +97,31 @@ Proof.
   rewrite (l_absorb x).
   reflexivity. Qed.
 
+(** Hold up! This might work. *)
+
+Create HintDb group.
+Hint Unfold bin_op un un_op : group.
+Hint Unfold Addition.A_has_bin_op Zero.A_has_un Negation.A_has_un_op : group.
+Hint Unfold Multiplication.A_has_bin_op One.A_has_un Reciprocation.A_has_un_op : group.
+
 Theorem r_Unnamed_thm : forall x : A, x * - (1) == - x.
-Proof.
+Proof with autounfold with group.
   intros x.
-  apply (l_cancel (x * - (1)) (- x) x).
-  replace bin_op with add by reflexivity.
-  rewrite (r_inv x).
-  replace (@un A (@Zero.A_has_un A has_zero)) with 0 by reflexivity.
-  rewrite <- (r_unl x) at 1.
-  replace (bin_op x un) with (x * 1) by reflexivity.
-  rewrite <- (l_distr x).
-  rewrite (r_inv 1).
-  replace (@un A (@Zero.A_has_un A has_zero)) with 0 by reflexivity.
-  rewrite (r_absorb x).
+  apply (l_cancel (x * - (1)) (- x) x)...
+  rewrite (r_inv x)...
+  rewrite <- (r_unl x) at 1...
+  rewrite <- (l_distr x)...
+  rewrite (r_inv 1)...
+  rewrite (r_absorb x)...
   reflexivity. Qed.
 
 Goal forall x y : A, - (x * y) == - x * y.
-Proof.
+Proof with autounfold with group.
   intros x y.
   rewrite <- (l_Unnamed_thm (x * y)).
-  rewrite (assoc (- (1)) x y).
+  rewrite (assoc (- (1)) x y)...
+  (** It does not work. *)
+  change has_mul with mul.
   rewrite l_Unnamed_thm.
   reflexivity. Qed.
 
