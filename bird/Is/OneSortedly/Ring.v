@@ -113,16 +113,6 @@ Proof. intros x y. apply neg_mul_r_bin_comm. Qed.
 Global Instance neg_mul_is_bin_comm : IsBinComm neg mul.
 Proof. constructor; typeclasses eauto. Qed.
 
-Goal 0 == 1 -> forall x y : A, x == y.
-Proof with change_add_grp || change_mul_mon.
-  intros H x y.
-  rewrite <- (l_unl x)...
-  rewrite <- (l_unl y)...
-  rewrite <- H.
-  rewrite (l_absorb x)...
-  rewrite (l_absorb y)...
-  reflexivity. Qed.
-
 Global Instance add_zero_mul_one_is_sring : IsSring add zero mul one.
 Proof. constructor; typeclasses eauto. Qed.
 

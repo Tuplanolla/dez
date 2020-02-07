@@ -135,5 +135,6 @@ digraph Is {
   Unl -> ExtUnl
 
   Ring -> Absorb
+  Ring -> BinComm
   Ring -> Sring
 }
