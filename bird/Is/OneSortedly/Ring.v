@@ -99,13 +99,18 @@ Proof.
 
 (** Hold up! This might work. *)
 
-Create HintDb group.
-Hint Unfold bin_op un un_op : group.
-Hint Unfold Addition.A_has_bin_op Zero.A_has_un Negation.A_has_un_op : group.
-Hint Unfold Multiplication.A_has_bin_op One.A_has_un Reciprocation.A_has_un_op : group.
+Ltac specialize_add :=
+  change bin_op with add;
+  change un with zero;
+  change un_op with neg.
+
+Ltac specialize_mul :=
+  change bin_op with mul;
+  change un with one;
+  change un_op with recip.
 
 Theorem r_Unnamed_thm : forall x : A, x * - (1) == - x.
-Proof with autounfold with group.
+Proof with specialize_add || specialize_mul.
   intros x.
   apply (l_cancel (x * - (1)) (- x) x)...
   rewrite (r_inv x)...
@@ -116,33 +121,32 @@ Proof with autounfold with group.
   reflexivity. Qed.
 
 Goal forall x y : A, - (x * y) == - x * y.
-Proof with autounfold with group.
+Proof with specialize_add || specialize_mul.
   intros x y.
   rewrite <- (l_Unnamed_thm (x * y)).
   rewrite (assoc (- (1)) x y)...
-  (** It does not work. *)
-  change has_mul with mul.
   rewrite l_Unnamed_thm.
   reflexivity. Qed.
 
 Goal forall x y : A, - (x * y) == x * - y.
-Proof.
+Proof with specialize_add || specialize_mul.
   intros x y.
   rewrite <- (r_Unnamed_thm (x * y)).
-  rewrite <- (assoc x y (- (1))).
+  rewrite <- (assoc x y (- (1)))...
   rewrite r_Unnamed_thm.
   reflexivity. Qed.
 
 Goal 0 == 1 -> forall x y : A, x == y.
-Proof.
+Proof with specialize_add || specialize_mul.
   intros H x y.
-  rewrite <- (l_unl x).
-  rewrite <- (l_unl y).
-  replace (bin_op un) with (mul 1) by reflexivity.
+  rewrite <- (l_unl x)...
+  rewrite <- (l_unl y)...
   rewrite <- H.
-  rewrite (l_absorb x).
-  rewrite (l_absorb y).
+  rewrite (l_absorb x)...
+  rewrite (l_absorb y)...
   reflexivity. Qed.
+
+(** Whoa! *)
 
 Global Instance add_zero_mul_one_is_sring : IsSring add zero mul one.
 Proof. constructor; typeclasses eauto. Qed.
