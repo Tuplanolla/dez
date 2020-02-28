@@ -3,18 +3,27 @@ digraph Has {
 
   node [fontname = monospace]
 
-  subgraph ManySort {
-    label = "ManySortedly"
+  subgraph ThreeSort {
+    label = "ThreeSortedly"
+
+    node [peripheries = 3]
+
+    BinFn [label = "BinaryFunction\nA -> B -> C"]
+  }
+
+  subgraph TwoSort {
+    label = "TwoSortedly"
 
     node [peripheries = 2]
 
-    BinFn [label = "BinaryFunction\nA -> B -> C"]
     Fn [label = "Function\nA -> B"]
-    IntBinFn [label = "InternalBinaryFunction\nA -> A -> B"]
-    LExtBinOp [label = "LeftExternalBinaryOperation\nA -> B -> B"]
+    LAct [label = "LeftAction\nA -> B -> B"]
     LFn [label = "LeftFunction\nA -> B"]
-    RExtBinOp [label = "RightExternalBinaryOperation\nB -> A -> B"]
+    LTor [label = "LeftTorsion\nA -> A -> B"]
+    RAct [label = "RightAction\nB -> A -> B"]
     RFn [label = "RightFunction\nA -> B"]
+    RTor [label = "RightTorsion\nA -> A -> B"]
+    Tor [label = "Torsion\nA -> A -> B"]
   }
 
   subgraph OneSort {
@@ -42,24 +51,27 @@ digraph Has {
 
   edge [style = dashed]
 
-  BinOp -> IntBinFn
-  BinOp -> LExtBinOp
-  BinOp -> RExtBinOp
-  BinRel -> IntBinFn
+  BinOp -> Tor
+  BinOp -> LAct
+  BinOp -> RAct
+  BinRel -> Tor
   EqRel -> BinRel
-  IntBinFn -> BinFn
-  LExtBinOp -> BinFn
+  LTor -> BinFn
+  LAct -> BinFn
   LFn -> Fn
   LUn -> Un
   LUnOp -> LFn
   LUnOp -> UnOp
   OrdRel -> BinRel
   Prop -> Fn
-  RExtBinOp -> BinFn
+  RTor -> BinFn
+  RAct -> BinFn
   RFn -> Fn
   RUn -> Un
   RUnOp -> RFn
   RUnOp -> UnOp
+  Tor -> LTor
+  Tor -> RTor
   UnOp -> Fn
 
   BinOp -> Add
