@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   BinaryOperation Unit UnaryOperation
   BinaryFunction LeftUnit RightUnit
-  LeftExternalBinaryOperation RightExternalBinaryOperation
+  LeftAction RightAction
   LeftFunction RightFunction BinaryFunction Function.
 
 Declare Scope algebra_scope.
@@ -23,8 +23,8 @@ Reserved Notation "'R0'" (at level 0, no associativity).
 Reserved Notation "'L-' x" (at level 35, right associativity).
 Reserved Notation "'R-' x" (at level 35, right associativity).
 
-Notation "x 'L+' y" := (l_ext_bin_op x y) : algebra_scope.
-Notation "x 'R+' y" := (r_ext_bin_op x y) : algebra_scope.
+Notation "x 'L+' y" := (l_act x y) : algebra_scope.
+Notation "x 'R+' y" := (r_act x y) : algebra_scope.
 Notation "'L0'" := l_un : algebra_scope.
 Notation "'R0'" := r_un : algebra_scope.
 Notation "'L-' x" := (l_fn x) : algebra_scope.

@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  BinaryRelation LeftExternalBinaryOperation RightExternalBinaryOperation.
+  BinaryRelation LeftAction RightAction.
 From Maniunfold.ShouldHave Require Import
   BinaryRelationNotations AdditiveNotations.
 
@@ -8,6 +8,6 @@ From Maniunfold.ShouldHave Require Import
     Others say that is called (semigroup) action compatibility. *)
 
 Class IsExtAssoc {A B C : Type} {has_bin_rel : HasBinRel C}
-  (has_l_ext_bin_op : HasLExtBinOp A C)
-  (has_r_ext_bin_op : HasRExtBinOp B C) : Prop :=
+  (has_l_act : HasLAct A C)
+  (has_r_act : HasRAct B C) : Prop :=
   ext_assoc : forall (x : A) (y : C) (z : B), x L+ (y R+ z) ~~ (x L+ y) R+ z.
