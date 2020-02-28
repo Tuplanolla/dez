@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  BinaryRelation BinaryFunction Unit Function.
+  OneSorted.BinaryRelation BinaryFunction Unit Function.
 From Maniunfold.ShouldHave Require Import
   BinaryRelationNotations AdditiveNotations.
 

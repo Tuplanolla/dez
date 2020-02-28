@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  BinaryRelation LeftAction RightAction.
+  OneSorted.BinaryRelation LeftAction RightAction.
 From Maniunfold.ShouldHave Require Import
   BinaryRelationNotations AdditiveNotations.
 

@@ -1,14 +1,6 @@
-From Maniunfold.Has Require Export
-  Function.
+From Maniunfold Require Export
+  Init.
 
 Class HasProp (A : Type) : Type := prop : A -> Prop.
 
 Typeclasses Transparent HasProp.
-
-Section Context.
-
-Context {A : Type} `{has_prop : HasProp A}.
-
-Global Instance A_Prop_has_fn : HasFn A Prop := prop.
-
-End Context.

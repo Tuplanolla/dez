@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  BinaryRelation.
+  OneSorted.BinaryRelation.
 
 Class HasEqRel (A : Type) : Type := eq_rel : A -> A -> Prop.
 

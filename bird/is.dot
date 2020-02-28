@@ -8,8 +8,14 @@ digraph Is {
   Sym [label = "Symmetric\nx ~~ y -> y ~~ x"]
   Trans [label = "Transitive\nx ~~ y -> y ~~ z -> x ~~ z"]
 
-  subgraph ManySort {
-    label = "ManySortedly"
+  subgraph ThreeSort {
+    label = "ThreeSortedly"
+
+    node [peripheries = 3]
+  }
+
+  subgraph TwoSort {
+    label = "TwoSortedly"
 
     node [peripheries = 2]
 

@@ -1,7 +1,7 @@
 From Coq Require Export
   Setoid Morphisms.
 From Maniunfold.Has Require Export
-  BinaryRelation.
+  OneSorted.BinaryRelation.
 From Maniunfold.ShouldHave Require Import
   BinaryRelationNotations.
 

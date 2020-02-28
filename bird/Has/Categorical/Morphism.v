@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  BinaryRelation.
+  OneSorted.BinaryRelation.
 
 Class HasHom (A : Type) : Type := hom : A -> A -> Prop.
 

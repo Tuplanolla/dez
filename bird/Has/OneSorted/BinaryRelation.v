@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  LeftTorsion.
+  TwoSorted.BinaryRelation.
 
 Class HasBinRel (A : Type) : Type := bin_rel : A -> A -> Prop.
 
@@ -9,6 +9,6 @@ Section Context.
 
 Context {A : Type} `{has_bin_rel : HasBinRel A}.
 
-Global Instance A_Prop_has_l_tor : HasLTor A Prop := bin_rel.
+Global Instance A_has_bin_rel_2 : HasBinRel2 A A := bin_rel.
 
 End Context.
