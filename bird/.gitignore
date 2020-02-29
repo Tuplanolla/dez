@@ -1,6 +1,6 @@
 *.aux
 *.glob
-*.vo
+*.vo*
 .coqdeps.d
 make
 make.args
