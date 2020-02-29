@@ -28,5 +28,5 @@ _CoqFiles::
 
 _CoqMakefile.local::
 	$(CMD) printf '%s::\n\t@ %s %s %s\n' 'clean' 'find . -type f' \
-	"'(' -name '*.aux' -o -name '*.glob' -o -name '*.vo' ')'" \
+	"'(' -name '*.aux' -o -name '*.glob' -o -name '*.vo*' ')'" \
 	"-exec rm '{}' '+'" > $@
