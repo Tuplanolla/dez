@@ -24,7 +24,7 @@ digraph Has {
     RAct [label = "RightAction\nB -> A -> B"]
     RFn [label = "RightFunction\nA -> B"]
     RTor [label = "RightTorsion\nA -> A -> B"]
-    Tor [label = "Torsion?\nA -> A -> B"]
+    Tor [label = "Torsion\nA -> A -> B"]
   }
 
   subgraph OneSort {
