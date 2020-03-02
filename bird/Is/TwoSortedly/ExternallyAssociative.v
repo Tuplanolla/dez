@@ -5,7 +5,8 @@ From Maniunfold.ShouldHave Require Import
 
 (** TODO In literature, external associativity may be different.
     Some say that it should be [(a × b) ⋅ x = a ⋅ (b ⋅ x)].
-    Others say that is called (semigroup) action compatibility. *)
+    Others say that is called (semigroup) action compatibility.
+    This will be addressed by [LeftCompatible] etc. *)
 
 Class IsExtAssoc {A B C : Type} {has_bin_rel : HasBinRel C}
   (has_l_act : HasLAct A C)

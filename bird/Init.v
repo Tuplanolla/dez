@@ -1,5 +1,5 @@
-(** We disable universe polymorphism,
-    because it is known to be inconsistent. *)
+(** We disable universe polymorphism until we really need it,
+    because it comes with a performance penalty. *)
 
 Global Unset Universe Polymorphism.
 

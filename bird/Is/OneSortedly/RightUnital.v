@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation BinaryOperation Unit.
 From Maniunfold.Is Require Export
-  RightExternallyUnital.
+  RightUnital.
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
@@ -13,7 +13,7 @@ Section Context.
 
 Context {A : Type} `{is_r_unl : IsRUnl A}.
 
-Global Instance bin_op_un_is_r_ext_unl : IsRExtUnl bin_op un.
+Global Instance un_bin_op_is_r_unl_2 : IsRUnl2 un bin_op.
 Proof. intros x. apply r_unl. Qed.
 
 End Context.

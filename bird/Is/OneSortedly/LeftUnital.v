@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation BinaryOperation Unit.
 From Maniunfold.Is Require Export
-  LeftExternallyUnital.
+  TwoSortedly.LeftUnital.
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
@@ -13,7 +13,7 @@ Section Context.
 
 Context {A : Type} `{is_l_unl : IsLUnl A}.
 
-Global Instance bin_op_un_is_l_ext_unl : IsLExtUnl bin_op un.
+Global Instance un_bin_op_is_l_unl_2 : IsLUnl2 un bin_op.
 Proof. intros x. apply l_unl. Qed.
 
 End Context.

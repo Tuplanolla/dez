@@ -1,14 +1,14 @@
 From Maniunfold.Has Require Export
-  BinaryRelation LeftAction LeftUnit LeftFunction.
+  EquivalenceRelation LeftAction LeftUnit LeftFunction.
 From Maniunfold.Is Require Export
   LeftInternallyInvertible.
 From Maniunfold.ShouldHave Require Import
-  BinaryRelationNotations AdditiveNotations.
+  EquivalenceRelationNotations AdditiveNotations.
 
-Class IsLExtInv {A B : Type} {has_bin_rel : HasBinRel B}
-  (has_l_act : HasLAct A B) (has_l_un : HasLUn B)
-  (has_l_fn : HasLFn B A) : Prop :=
-  l_ext_inv : forall x : B, L- x L+ x ~~ L0.
+Class IsLExtInv {A B : Type} {has_eq_rel : HasEqRel B}
+  (has_l_un : HasLUn B) (has_l_fn : HasLFn B A)
+  (has_l_act : HasLAct A B) : Prop :=
+  l_ext_inv : forall x : B, L- x L+ x == L0.
 
 Section Context.
 

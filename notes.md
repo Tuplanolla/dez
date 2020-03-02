@@ -14,6 +14,7 @@ Do these things.
   generalized to many-sorted algebra (universal algebra) and
   oidified to one-sorted partial algebra (category theory),
   what happens if we go looking for many-sorted partial algebra?
+* Lose external and internal invertibility; they make no sense.
 * Monoidal categories now.
 
 Some rules.
@@ -155,6 +156,24 @@ requiring both left and right actions to coincide.
 > 4. (g <-> h) === -(h <-> g) for all g, h in G.
 
 This makes sense, but is a bit too specific.
+
+Everything we have seen is of the following forms.
+
+```
+x
+- x
+- - x
+x + x
+- x + x
+x + - x
+- x + - x
+- (x + x)
+- (- x + x)
+- (x + - x)
+(x + x) + x
+x + (x + x)
+(x + x) + (x + x)
+```
 
 There are some most general types for various unification problems
 in `garbage/Unification.v`.

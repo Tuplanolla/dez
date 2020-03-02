@@ -24,15 +24,19 @@ digraph Is {
     ExtInv [label = "ExternallyInvertible?"]
     ExtUnAbsorb [label = "ExternallyUnaryAbsorbing?\nT- T0 ~~ T0"]
     ExtUnAntidstr [label = "ExternallyUnaryAntidistributive?\nT- (x T+ y) ~~ T- y T+ T- x"]
-    ExtUnl [label = "ExternallyUnital?"]
+    LCompat [label = "LeftCompatible\na L+ (b L+ x) == (a + b) L+ x"]
     LExtBinComm [label = "LeftExternallyBinaryCommutative?\nL- (x R+ y) == L- x R+ y"]
     LExtInv [label = "LeftExternallyInvertible?\nL- x L+ x ~~ L0"]
-    LExtUnl [label = "LeftExternallyUnital?\n0 L+ x ~~ x"]
     LIntInv [label = "LeftInternallyInvertible?\nT- x T+ x ~~ T0"]
+    LSgrpAct [label = "LeftSemigroupAction"]
+    LUnl2 [label = "LeftUnital\nL0 L+ x == x"]
+    RCompat [label = "RightCompatible\n(x R+ a) R+ b == x R+ (a + b)"]
     RExtBinComm [label = "RightExternallyBinaryCommutative?\nR- (x L+ y) == x L+ R- y"]
     RExtInv [label = "RightExternallyInvertible?\nx R+ R- x ~~ R0"]
-    RExtUnl [label = "RightExternallyUnital?\nx R+ 0 ~~ x"]
     RIntInv [label = "RightInternallyInvertible?\nx T+ T- x ~~ T0"]
+    RSgrpAct [label = "RightSemigroupAction"]
+    RUnl2 [label = "RightUnital\nx R+ R0 == x"]
+    Unl2 [label = "Unital"]
   }
 
   subgraph OneSort {
@@ -89,8 +93,6 @@ digraph Is {
   ExtBinComm -> RExtBinComm
   ExtInv -> LExtInv
   ExtInv -> RExtInv
-  ExtUnl -> LExtUnl
-  ExtUnl -> RExtUnl
   Grp -> Inv
   Grp -> Mon
   Grp -> Proper
@@ -98,14 +100,20 @@ digraph Is {
   IntInv -> RIntInv
   Inv -> LInv
   Inv -> RInv
+  LSgrpAct -> LCompat
+  LSgrpAct -> Sgrp
   Mag -> Eq
   Mag -> Proper
   Mon -> Sgrp
   Mon -> Unl
+  RSgrpAct -> RCompat
+  RSgrpAct -> Sgrp
   Sgrp -> Assoc
   Sgrp -> Mag
   Unl -> LUnl
   Unl -> RUnl
+  Unl2 -> LUnl2
+  Unl2 -> RUnl2
 
   Sring -> Absorb
   Ring -> Comm
@@ -123,7 +131,6 @@ digraph Is {
   UnAntidistr -> ExtUnAntidstr
   Assoc -> ExtAssoc
   BinComm -> ExtBinComm
-  ExtInv -> IntInv
   Grp -> UnAbsorb
   Grp -> UnAntidistr
   Grp -> Cancel
@@ -133,12 +140,12 @@ digraph Is {
   LBinComm -> LExtBinComm
   LExtInv -> LIntInv
   LInv -> LExtInv
-  LUnl -> LExtUnl
+  LUnl -> LUnl2
   RBinComm -> RExtBinComm
   RExtInv -> RIntInv
   RInv -> RExtInv
-  RUnl -> RExtUnl
-  Unl -> ExtUnl
+  RUnl -> RUnl2
+  Unl -> Unl2
 
   Ring -> Absorb
   Ring -> BinComm

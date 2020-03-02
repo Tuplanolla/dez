@@ -7,6 +7,18 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
+(** TODO What happens with
+    group (using [a b c ...]) actions over a type (using [x y z ...])?
+
+    - [(a + b) L+ x == a L+ (b L+ x)]
+    - [x R+ (a + b) == (x R+ a) R+ b]
+    - [0 L+ x == x]
+    - [x R+ 0 == x]
+    - [- a L+ x == y -> x == a L+ x]?
+    - [x R+ - a == y -> x == y R+ a]?
+    - [- a L+ x == x R+ a]?
+    - [x R+ - a == a L+ x]? *)
+
 Class IsGrp {A : Type} {has_eq_rel : HasEqRel A}
   (has_bin_op : HasBinOp A) (has_un : HasUn A)
   (has_un_op : HasUnOp A) : Prop := {

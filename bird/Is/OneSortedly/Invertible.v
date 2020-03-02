@@ -14,7 +14,8 @@ Section Context.
 
 Context {A : Type} `{is_inv : IsInv A}.
 
-Global Instance bin_op_un_un_op_is_ext_inv : IsExtInv bin_op un un_op.
+Global Instance bin_op_un_un_op_is_ext_inv :
+  IsExtInv un un un_op un_op bin_op bin_op.
 Proof.
   constructor.
   - destruct is_inv; typeclasses eauto.

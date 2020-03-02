@@ -1,23 +1,13 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation BinaryOperation Unit UnaryOperation.
+  EquivalenceRelation LeftAction RightAction
+  LeftUnit RightUnit LeftFunction RightFunction.
 From Maniunfold.Is Require Export
-  LeftExternallyInvertible RightExternallyInvertible InternallyInvertible.
+  LeftExternallyInvertible RightExternallyInvertible.
 
-Class IsExtInv {A : Type} {has_bin_rel : HasBinRel A}
-  (has_bin_op : HasBinOp A) (has_un : HasUn A)
-  (has_un_op : HasUnOp A) : Prop := {
-  bin_op_un_un_op_is_l_ext_inv :> IsLExtInv bin_op un un_op;
-  bin_op_un_un_op_is_r_ext_inv :> IsRExtInv bin_op un un_op;
+Class IsExtInv {A B : Type} {has_eq_rel : HasEqRel B}
+  (has_l_un : HasLUn B) (has_r_un : HasRUn B)
+  (has_l_fn : HasLFn B A) (has_r_fn : HasRFn B A)
+  (has_l_act : HasLAct A B) (has_r_act : HasRAct A B) : Prop := {
+  l_act_l_un_l_fn_is_l_ext_inv :> IsLExtInv l_un l_fn l_act;
+  r_act_r_un_r_fn_is_r_ext_inv :> IsRExtInv r_act r_un r_fn;
 }.
-
-Section Context.
-
-Context {A : Type} `{is_ext_inv : IsExtInv A}.
-
-Global Instance bin_op_un_un_op_is_int_inv : IsIntInv bin_op un un_op.
-Proof.
-  constructor.
-  - destruct is_ext_inv; typeclasses eauto.
-  - destruct is_ext_inv; typeclasses eauto. Qed.
-
-End Context.

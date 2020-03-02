@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation BinaryOperation Unit.
 From Maniunfold.Is Require Export
-  Semigroup Unital.
+  Semigroup OneSortedly.Unital.
 
 Class IsMon {A : Type} {has_eq_rel : HasEqRel A}
   (has_bin_op : HasBinOp A) (has_un : HasUn A) : Prop := {
