@@ -12,6 +12,8 @@ digraph Is {
     label = "ThreeSortedly"
 
     node [peripheries = 3]
+
+    Bicompat [label = "Bicompatible\nx L+ (y R+ z) == (x L+ y) R+ z"]
   }
 
   subgraph TwoSort {
@@ -19,21 +21,12 @@ digraph Is {
 
     node [peripheries = 2]
 
-    ExtAssoc [label = "ExternallyAssociative?\nx L+ (y R+ z) ~~ (x L+ y) R+ z"]
-    ExtBinComm [label = "ExternallyBinaryCommutative?"]
-    ExtInv [label = "ExternallyInvertible?"]
-    ExtUnAbsorb [label = "ExternallyUnaryAbsorbing?\nT- T0 ~~ T0"]
-    ExtUnAntidstr [label = "ExternallyUnaryAntidistributive?\nT- (x T+ y) ~~ T- y T+ T- x"]
-    LCompat [label = "LeftCompatible\na L+ (b L+ x) == (a + b) L+ x"]
+    LCompat [label = "LeftCompatible\n(a + b) L+ x == a L+ (b L+ x)"]
     LExtBinComm [label = "LeftExternallyBinaryCommutative?\nL- (x R+ y) == L- x R+ y"]
-    LExtInv [label = "LeftExternallyInvertible?\nL- x L+ x ~~ L0"]
-    LIntInv [label = "LeftInternallyInvertible?\nT- x T+ x ~~ T0"]
     LSgrpAct [label = "LeftSemigroupAction"]
     LUnl2 [label = "LeftUnital\nL0 L+ x == x"]
-    RCompat [label = "RightCompatible\n(x R+ a) R+ b == x R+ (a + b)"]
+    RCompat [label = "RightCompatible\nx R+ (a + b) == (x R+ a) R+ b"]
     RExtBinComm [label = "RightExternallyBinaryCommutative?\nR- (x L+ y) == x L+ R- y"]
-    RExtInv [label = "RightExternallyInvertible?\nx R+ R- x ~~ R0"]
-    RIntInv [label = "RightInternallyInvertible?\nx T+ T- x ~~ T0"]
     RSgrpAct [label = "RightSemigroupAction"]
     RUnl2 [label = "RightUnital\nx R+ R0 == x"]
     Unl2 [label = "Unital"]
@@ -51,7 +44,6 @@ digraph Is {
     Eq [label = "Equivalence"]
     Grp [label = "Group"]
     Inj [label = "Injective\n- x == - y -> x == y"]
-    IntInv [label = "InternallyInvertible?"]
     Inv [label = "Invertible"]
     Invol [label = "Involutive\n- - x == x"]
     LAbsorb [label = "LeftAbsorbing\n0 * x == 0"]
@@ -89,15 +81,9 @@ digraph Is {
   Eq -> Refl
   Eq -> Sym
   Eq -> Trans
-  ExtBinComm -> LExtBinComm
-  ExtBinComm -> RExtBinComm
-  ExtInv -> LExtInv
-  ExtInv -> RExtInv
   Grp -> Inv
   Grp -> Mon
   Grp -> Proper
-  IntInv -> LIntInv
-  IntInv -> RIntInv
   Inv -> LInv
   Inv -> RInv
   LSgrpAct -> LCompat
@@ -127,23 +113,15 @@ digraph Is {
 
   edge [style = dashed]
 
-  UnAbsorb -> ExtUnAbsorb
-  UnAntidistr -> ExtUnAntidstr
-  Assoc -> ExtAssoc
-  BinComm -> ExtBinComm
+  Assoc -> Bicompat
   Grp -> UnAbsorb
   Grp -> UnAntidistr
   Grp -> Cancel
   Grp -> Inj
   Grp -> Invol
-  Inv -> ExtInv
   LBinComm -> LExtBinComm
-  LExtInv -> LIntInv
-  LInv -> LExtInv
   LUnl -> LUnl2
   RBinComm -> RExtBinComm
-  RExtInv -> RIntInv
-  RInv -> RExtInv
   RUnl -> RUnl2
   Unl -> Unl2
 

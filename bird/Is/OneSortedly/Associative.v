@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation BinaryOperation.
 From Maniunfold.Is Require Export
-  ExternallyAssociative.
+  Bicompatible.
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
@@ -13,7 +13,7 @@ Section Context.
 
 Context {A : Type} `{is_assoc : IsAssoc A}.
 
-Global Instance bin_op_is_ext_assoc : IsExtAssoc bin_op bin_op.
+Global Instance bin_op_is_bicompatible : IsBicompat bin_op bin_op.
 Proof. intros x y z. apply assoc. Qed.
 
 End Context.

@@ -157,6 +157,22 @@ requiring both left and right actions to coincide.
 
 This makes sense, but is a bit too specific.
 
+We have injectivity `- x == - y -> x == y` and
+(left) cancellativity `z + x == z + y -> x == y`.
+
+We have something `- x == x` and
+something `z + x == x`.
+We have unary idempotency `- - x == - x` and
+something `z + z + x == z + x`.
+We have involutivity `- - x == x` and
+something `z + z + x == x`.
+We have unary absorption `- 0 == 0` and
+(right) absorption `z * 0 == 0`.
+We have unary distributivity `- (x + y) == - x + - y` and
+(left) distributivity `z * (x + y) == z * x + z * y`.
+We have unary distributivity `- x * - y == - x * - y` and
+something `z * (x + y) == z * x + z * y`.
+
 Everything we have seen is of the following forms.
 
 ```

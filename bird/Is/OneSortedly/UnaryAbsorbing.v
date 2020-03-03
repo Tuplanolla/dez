@@ -1,7 +1,5 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation Unit UnaryOperation.
-From Maniunfold.Is Require Export
-  ExternallyUnaryAbsorbing.
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 

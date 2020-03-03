@@ -13,7 +13,7 @@ Section Context.
 
 Context {A : Type} `{is_unl : IsUnl A}.
 
-Global Instance un_bin_op_is_unl_2 : IsUnl2 un un bin_op bin_op.
+Global Instance un_bin_op_is_two_unl_ : IsTwoUnl un un bin_op bin_op.
 Proof.
   constructor.
   - destruct is_unl; typeclasses eauto.
