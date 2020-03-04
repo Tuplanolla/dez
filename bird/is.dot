@@ -37,6 +37,8 @@ digraph Is {
 
     Absorb [label = "Absorbing"]
     Assoc [label = "Associative\nx + (y + z) == (x + y) + z"]
+    BinCrs [label = "BinaryCrossing?\n(- x) * y == x * (- y)"]
+    BinSptCancel [label = "BinarySplitCancellative?\n(- x) * (- y) == x * y"]
     BinComm [label = "BinaryCommutative?"]
     Cancel [label = "Cancellative"]
     Comm [label = "Commutative\nx + y == y + x"]
