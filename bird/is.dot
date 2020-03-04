@@ -49,6 +49,9 @@ digraph Is {
     Inv [label = "Invertible"]
     Invol [label = "Involutive\n- - x == x"]
     LAbsorb [label = "LeftAbsorbing\n0 * x == 0"]
+    SgnAbsorb [label = "SignedAbsorbing"]
+    LSgnAbsorb [label = "LeftSignedAbsorbing\n(- 1) * x == - x"]
+    RSgnAbsorb [label = "RightSignedAbsorbing\nx * (- 1) == - x"]
     LBinComm [label = "LeftBinaryCommutative?\n- (x * y) == - x * y"]
     LCancel [label = "LeftCancellative\nz + x == z + y -> x == y"]
     LDistr [label = "LeftDistributive\nx * (y + z) == x * y + x * z"]
@@ -98,6 +101,8 @@ digraph Is {
   RSgrpAct -> Sgrp
   Sgrp -> Assoc
   Sgrp -> Mag
+  SgnAbsorb -> LSgnAbsorb
+  SgnAbsorb -> RSgnAbsorb
   Unl -> LUnl
   Unl -> RUnl
   Unl2 -> LUnl2
@@ -130,4 +135,7 @@ digraph Is {
   Ring -> Absorb
   Ring -> BinComm
   Ring -> Sring
+  Ring -> SgnAbsorb
+  Ring -> BinCrs
+  Ring -> BinSptCancel
 }

@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation Addition Zero Multiplication.
+  EquivalenceRelation Zero Multiplication.
 From Maniunfold.Is Require Export
   LeftAbsorbing RightAbsorbing.
 

@@ -1,7 +1,9 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation Addition Negation Multiplication.
 From Maniunfold.Is Require Export
-  Commutative Group Monoid Distributive Absorbing BinaryCommutative Semiring.
+  Commutative Group Monoid Distributive Absorbing
+  SignedAbsorbing BinaryCommutative BinaryCrossing BinarySplitCancellative
+  Semiring.
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations ArithmeticNotations.
 
@@ -53,9 +55,7 @@ Proof. intros x. apply zero_mul_r_absorb. Qed.
 Global Instance zero_mul_is_absorb : IsAbsorb zero mul.
 Proof. constructor; typeclasses eauto. Qed.
 
-(** TODO What are these theorems? *)
-
-Theorem l_wtf : forall x : A,
+Theorem neg_mul_one_l_sgn_absorb : forall x : A,
   - (1) * x == - x.
 Proof with change_add_grp || change_mul_mon.
   intros x.
@@ -67,9 +67,10 @@ Proof with change_add_grp || change_mul_mon.
   rewrite (l_absorb x)...
   reflexivity. Qed.
 
-Fail Global Instance neg_mul_is_l_wtf : IsLWtf neg mul.
+Global Instance neg_mul_one_is_l_sgn_absorb : IsLSgnAbsorb neg mul one.
+Proof. intros x. apply neg_mul_one_l_sgn_absorb. Qed.
 
-Theorem r_wtf : forall x : A,
+Theorem neg_mul_one_r_sgn_absorb : forall x : A,
   x * - (1) == - x.
 Proof with change_add_grp || change_mul_mon.
   intros x.
@@ -81,18 +82,19 @@ Proof with change_add_grp || change_mul_mon.
   rewrite (r_absorb x)...
   reflexivity. Qed.
 
-Fail Global Instance neg_mul_is_r_wtf : IsRWtf neg mul.
+Global Instance neg_mul_one_is_r_sgn_absorb : IsRSgnAbsorb neg mul one.
+Proof. intros x. apply neg_mul_one_r_sgn_absorb. Qed.
 
-(* Global Instance neg_mul_is_wtf : IsWtf neg mul.
-Proof. constructor; typeclasses eauto. Qed. *)
+Global Instance neg_mul_one_is_sgn_absorb : IsSgnAbsorb neg mul one.
+Proof. constructor; typeclasses eauto. Qed.
 
 Theorem neg_mul_l_bin_comm : forall x y : A,
   - (x * y) == - x * y.
 Proof with change_add_grp || change_mul_mon.
   intros x y.
-  rewrite <- (l_wtf (x * y)).
+  rewrite <- (l_sgn_absorb (x * y)).
   rewrite (assoc (- (1)) x y)...
-  rewrite l_wtf.
+  rewrite l_sgn_absorb.
   reflexivity. Qed.
 
 Global Instance neg_mul_is_l_bin_comm : IsLBinComm neg mul.
@@ -102,9 +104,9 @@ Theorem neg_mul_r_bin_comm : forall x y : A,
   - (x * y) == x * - y.
 Proof with change_add_grp || change_mul_mon.
   intros x y.
-  rewrite <- (r_wtf (x * y)).
+  rewrite <- (r_sgn_absorb (x * y)).
   rewrite <- (assoc x y (- (1)))...
-  rewrite r_wtf.
+  rewrite r_sgn_absorb.
   reflexivity. Qed.
 
 Global Instance neg_mul_is_r_bin_comm : IsRBinComm neg mul.
@@ -112,6 +114,29 @@ Proof. intros x y. apply neg_mul_r_bin_comm. Qed.
 
 Global Instance neg_mul_is_bin_comm : IsBinComm neg mul.
 Proof. constructor; typeclasses eauto. Qed.
+
+Theorem neg_mul_bin_crs : forall x y : A,
+  (- x) * y == x * (- y).
+Proof with change_add_grp || change_mul_mon.
+  intros x y.
+  rewrite <- (l_bin_comm x y).
+  rewrite <- (r_bin_comm x y).
+  reflexivity. Qed.
+
+Global Instance neg_mul_is_bin_crs : IsBinCrs neg mul.
+Proof. intros x y. apply neg_mul_bin_crs. Qed.
+
+Theorem neg_mul_bin_spt_cancel : forall x y : A,
+  (- x) * (- y) == x * y.
+Proof with change_add_grp || change_mul_mon.
+  intros x y.
+  rewrite <- (l_bin_comm x (- y)).
+  rewrite <- (r_bin_comm x y).
+  rewrite (invol (x * y)).
+  reflexivity. Qed.
+
+Global Instance neg_mul_is_bin_spt_cancel : IsBinSptCancel neg mul.
+Proof. intros x y. apply neg_mul_bin_spt_cancel. Qed.
 
 Global Instance add_zero_mul_one_is_sring : IsSring add zero mul one.
 Proof. constructor; typeclasses eauto. Qed.
