@@ -1,12 +1,12 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation BinaryOperation LeftAction.
 From Maniunfold.Is Require Export
-  Semigroup LeftMagmaAction LeftCompatible.
+  Equivalence Magma Proper.
 
-Class IsLSgrpAct {A B : Type}
+Class IsLMagAct {A B : Type}
   {A_has_eq_rel : HasEqRel A} {B_has_eq_rel : HasEqRel B}
   (A_has_bin_op : HasBinOp A) (has_l_act : HasLAct A B) : Prop := {
-  bin_op_is_sgrp :> IsSgrp bin_op;
-  bin_op_l_act_is_l_sgrp_act :> IsLMagAct bin_op l_act;
-  bin_op_l_act_is_l_compat :> IsLCompat bin_op l_act;
+  eq_rel_is_eq :> IsEq (A := B) eq_rel;
+  bin_op_is_mag :> IsMag bin_op;
+  l_act_is_proper :> IsProper (eq_rel ==> eq_rel ==> eq_rel) l_act;
 }.

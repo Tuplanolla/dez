@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   Torsion.
 
-Class HasLTor (A B : Type) : Type := l_tor : A -> A -> B.
+Class HasLTor (A B : Type) : Type := l_tor : B -> B -> A.
 
 Typeclasses Transparent HasLTor.
 
