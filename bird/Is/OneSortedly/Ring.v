@@ -20,7 +20,7 @@ Class IsRing {A : Type} {has_eq_rel : HasEqRel A}
 
 Ltac change_add_grp :=
   change_add_mon;
-  change un_op with neg.
+  change un_op with neg in *.
 
 Section Context.
 

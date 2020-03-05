@@ -2,6 +2,7 @@
 *.glob
 *.vo*
 .coqdeps.d
+_Coq*
 make
 make.args
 make.conf

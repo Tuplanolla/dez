@@ -4,7 +4,9 @@ digraph Is {
   node [fontname = monospace]
 
   Proper [label = "Proper"]
+  Connex [label = "Connex\nx ~~ y \\/ y ~~ x"]
   Refl [label = "Reflexive\nx ~~ x"]
+  Antisym [label = "Antisymmetric\nx ~~ y -> y ~~ x -> x == y"]
   Sym [label = "Symmetric\nx ~~ y -> y ~~ x"]
   Trans [label = "Transitive\nx ~~ y -> y ~~ z -> x ~~ z"]
 
@@ -24,12 +26,17 @@ digraph Is {
     LCompat [label = "LeftCompatible\n(a + b) L+ x == a L+ (b L+ x)"]
     LExtBinComm [label = "LeftExternallyBinaryCommutative?\nL- (x R+ y) == L- x R+ y"]
     LSgrpAct [label = "LeftSemigroupAction"]
-    LUnl2 [label = "LeftUnital\nL0 L+ x == x"]
+    LMagAct [label = "LeftMagmaAction"]
+    LGrpAct [label = "LeftGroupAction"]
+    LMonAct [label = "LeftMonoidAction"]
+    LGrpTor [label = "LeftGroupTorsor"]
+    LUniq [label = "LeftUnique\n(y L- x) +L x == y"]
+    TwoLUnl [label = "LeftUnital\nL0 L+ x == x"]
     RCompat [label = "RightCompatible\nx R+ (a + b) == (x R+ a) R+ b"]
     RExtBinComm [label = "RightExternallyBinaryCommutative?\nR- (x L+ y) == x L+ R- y"]
     RSgrpAct [label = "RightSemigroupAction"]
-    RUnl2 [label = "RightUnital\nx R+ R0 == x"]
-    Unl2 [label = "Unital"]
+    TwoRUnl [label = "RightUnital\nx R+ R0 == x"]
+    TwoUnl [label = "Unital"]
   }
 
   subgraph OneSort {
@@ -71,6 +78,10 @@ digraph Is {
     UnAbsorb [label = "UnaryAbsorbing\n- 0 == 0"]
     UnAntidistr [label = "UnaryAntidistributive\n- (x + y) == - y + - x"]
     Unl [label = "Unital"]
+
+    PartOrd [label = "PartialOrder"]
+    Preord [label = "Preorder"]
+    TotOrd [label = "TotalOrder"]
   }
 
   edge [style = solid]
@@ -105,8 +116,19 @@ digraph Is {
   SgnAbsorb -> RSgnAbsorb
   Unl -> LUnl
   Unl -> RUnl
-  Unl2 -> LUnl2
-  Unl2 -> RUnl2
+  TwoUnl -> TwoLUnl
+  TwoUnl -> TwoRUnl
+
+  LGrpAct -> LInv
+  LGrpAct -> LMonAct
+  LGrpTor -> LGrpAct
+  LGrpTor -> LUniq
+  LMagAct -> Eq
+  LMagAct -> Mag
+  LMagAct -> Proper
+  LMonAct -> LSgrpAct
+  LMonAct -> TwoLUnl
+  LSgrpAct -> LMagAct
 
   Sring -> Absorb
   Ring -> Comm
@@ -118,7 +140,20 @@ digraph Is {
   Sring -> Mon
   Sring -> Mon
 
+  Antisym -> Eq
+  Antisym -> Proper
+  TotOrd -> Antisym
+  TotOrd -> Connex
+  TotOrd -> Trans
+  PartOrd -> Antisym
+  PartOrd -> Preord
+  Preord -> Refl
+  Preord -> Trans
+
   edge [style = dashed]
+
+  TotOrd -> Refl [label = "Pretty obvious in hindsight!"]
+  TotOrd -> PartOrd
 
   Assoc -> Bicompat
   Grp -> UnAbsorb
@@ -127,10 +162,10 @@ digraph Is {
   Grp -> Inj
   Grp -> Invol
   LBinComm -> LExtBinComm
-  LUnl -> LUnl2
+  LUnl -> TwoLUnl
   RBinComm -> RExtBinComm
-  RUnl -> RUnl2
-  Unl -> Unl2
+  RUnl -> TwoRUnl
+  Unl -> TwoUnl
 
   Ring -> Absorb
   Ring -> BinComm

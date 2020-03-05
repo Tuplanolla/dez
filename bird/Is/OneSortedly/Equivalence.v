@@ -1,7 +1,7 @@
 From Coq Require Export
   Setoid Morphisms.
 From Maniunfold.Has Require Export
-  EquivalenceRelation.
+  OneSorted.EquivalenceRelation.
 From Maniunfold.Is Require Export
   Reflexive Symmetric Transitive.
 
@@ -15,6 +15,7 @@ Section Context.
 
 Context {A : Type} `{is_eq : IsEq A}.
 
-Global Instance eq_rel_equivalence : Equivalence eq_rel | 0 := {}.
+Global Instance eq_rel_equivalence : Equivalence eq_rel | 0.
+Proof. constructor; typeclasses eauto. Qed.
 
 End Context.

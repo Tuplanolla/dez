@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation.
+  OneSorted.EquivalenceRelation.
 
 Declare Scope algebra_scope.
 

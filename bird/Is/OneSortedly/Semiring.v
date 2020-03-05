@@ -16,12 +16,12 @@ Class IsSring {A : Type} {has_eq_rel : HasEqRel A}
 }.
 
 Ltac change_add_mon :=
-  change bin_op with add;
-  change un with zero.
+  change bin_op with add in *;
+  change un with zero in *.
 
 Ltac change_mul_mon :=
-  change bin_op with mul;
-  change un with one.
+  change bin_op with mul in *;
+  change un with one in *.
 
 Section Context.
 

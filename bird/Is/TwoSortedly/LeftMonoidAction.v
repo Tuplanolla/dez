@@ -9,5 +9,5 @@ Class IsLMonAct {A B : Type}
   (has_l_act : HasLAct A B) : Prop := {
   bin_op_un_is_mon :> IsMon bin_op un;
   bin_op_l_act_is_l_sgrp_act :> IsLSgrpAct bin_op l_act;
-  un_l_act_is_two_l_unl_ :> IsTwoLUnl un l_act;
+  un_l_act_is_two_l_unl :> IsTwoLUnl un l_act;
 }.
