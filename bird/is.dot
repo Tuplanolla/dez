@@ -15,7 +15,7 @@ digraph Is {
 
     node [peripheries = 3]
 
-    Bicompat [label = "Bicompatible\nx L+ (y R+ z) == (x L+ y) R+ z"]
+    Bicompat [label = "Bicompatible\na L+ (x R+ b) == (a L+ x) R+ b"]
   }
 
   subgraph TwoSort {
@@ -37,11 +37,14 @@ digraph Is {
     RSgrpAct [label = "RightSemigroupAction"]
     TwoRUnl [label = "RightUnital\nx R+ R0 == x"]
     TwoUnl [label = "Unital"]
+    TwoLDistr [label = "LeftDistributive?\na L* (x + y) == a L* x + a L* y"]
+    TwoRDistr [label = "RightDistributive?\n(a + b) L* x == a L* x + b L* x"]
   }
 
   subgraph OneSort {
     label = "OneSortedly"
 
+    AbGrp [label = "AbelianGroup"]
     Absorb [label = "Absorbing"]
     Assoc [label = "Associative\nx + (y + z) == (x + y) + z"]
     BinCrs [label = "BinaryCrossing?\n(- x) * y == x * (- y)"]
@@ -56,9 +59,9 @@ digraph Is {
     Inv [label = "Invertible"]
     Invol [label = "Involutive\n- - x == x"]
     LAbsorb [label = "LeftAbsorbing\n0 * x == 0"]
-    SgnAbsorb [label = "SignedAbsorbing"]
-    LSgnAbsorb [label = "LeftSignedAbsorbing\n(- 1) * x == - x"]
-    RSgnAbsorb [label = "RightSignedAbsorbing\nx * (- 1) == - x"]
+    SgnAbsorb [label = "SignedAbsorbing?"]
+    LSgnAbsorb [label = "LeftSignedAbsorbing?\n(- 1) * x == - x"]
+    RSgnAbsorb [label = "RightSignedAbsorbing?\nx * (- 1) == - x"]
     LBinComm [label = "LeftBinaryCommutative?\n- (x * y) == - x * y"]
     LCancel [label = "LeftCancellative\nz + x == z + y -> x == y"]
     LDistr [label = "LeftDistributive\nx * (y + z) == x * y + x * z"]
@@ -92,6 +95,8 @@ digraph Is {
 
   edge [style = solid]
 
+  AbGrp -> Grp
+  AbGrp -> Comm
   Absorb -> LAbsorb
   Absorb -> RAbsorb
   BinComm -> LBinComm
@@ -169,6 +174,14 @@ digraph Is {
   BndLat -> Unl
   BndLat -> Unl
 
+  LMod -> Ring
+  LMod -> TwoRDistr
+  LMod -> LCompat
+  LMod -> AbGrp
+  LMod -> TwoLDistr
+  LMod -> TwoLUnl
+  LMod -> Proper
+
   edge [style = dashed]
 
   TotOrd -> Refl
@@ -192,4 +205,7 @@ digraph Is {
   Ring -> SgnAbsorb
   Ring -> BinCrs
   Ring -> BinSptCancel
+
+  BndLat -> BndSlat
+  BndLat -> BndSlat
 }
