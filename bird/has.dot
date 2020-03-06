@@ -48,6 +48,11 @@ digraph Has {
     Mul [label = "Multiplication\nA -> A -> A"]
     One [label = "One\nA"]
     Recip [label = "Reciprocation\nA -> A"]
+
+    Join [label = "Join\nA -> A -> A"]
+    Bot [label = "Bottom\nA"]
+    Meet [label = "Meet\nA -> A -> A"]
+    Top [label = "Top\nA"]
   }
 
   edge [style = dashed]
@@ -74,8 +79,12 @@ digraph Has {
 
   BinOp -> Add
   BinOp -> Mul
+  BinOp -> Join
+  BinOp -> Meet
   Un -> Zero
   Un -> One
+  Un -> Bot
+  Un -> Top
   UnOp -> Neg
   UnOp -> Recip
 }

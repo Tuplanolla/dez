@@ -82,6 +82,12 @@ digraph Is {
     PartOrd [label = "PartialOrder"]
     Preord [label = "Preorder"]
     TotOrd [label = "TotalOrder"]
+    BndLat [label = "BoundedLattice"]
+    BndSlat [label = "BoundedSemilattice"]
+    Idem [label = "Idempotent\nx + x == x"]
+    Lat [label = "Lattice"]
+    Slat [label = "Semilattice"]
+    Sorb [label = "Sorbing\nx \\/ (x /\\ y) == x"]
   }
 
   edge [style = solid]
@@ -150,9 +156,22 @@ digraph Is {
   Preord -> Refl
   Preord -> Trans
 
+  Lat -> Slat
+  Lat -> Slat
+  Lat -> Sorb
+  Lat -> Sorb
+  Slat -> Comm
+  Slat -> Idem
+  Slat -> Sgrp
+  BndSlat -> Slat
+  BndSlat -> Unl
+  BndLat -> Lat
+  BndLat -> Unl
+  BndLat -> Unl
+
   edge [style = dashed]
 
-  TotOrd -> Refl [label = "Pretty obvious in hindsight!"]
+  TotOrd -> Refl
   TotOrd -> PartOrd
 
   Assoc -> Bicompat
