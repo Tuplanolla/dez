@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation Addition Negation Multiplication.
 From Maniunfold.Is Require Export
-  Commutative Group Monoid Distributive Absorbing
+  Commutative AbelianGroup Monoid Distributive Absorbing
   SignedAbsorbing BinaryCommutative BinaryCrossing BinarySplitCancellative
   Semiring.
 From Maniunfold.ShouldHave Require Import
@@ -10,8 +10,7 @@ From Maniunfold.ShouldHave Require Import
 Class IsRing {A : Type} {has_eq_rel : HasEqRel A}
   (has_add : HasAdd A) (has_zero : HasZero A) (has_neg : HasNeg A)
   (has_mul : HasMul A) (has_one : HasOne A) : Prop := {
-  add_is_comm :> IsComm add;
-  add_zero_neg_is_grp :> IsGrp add zero neg;
+  add_zero_neg_is_ab_grp :> IsAbGrp add zero neg;
   add_mul_is_distr :> IsDistr add mul;
   mul_one_is_mon :> IsMon mul one;
 }.

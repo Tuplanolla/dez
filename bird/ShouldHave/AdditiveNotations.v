@@ -30,6 +30,20 @@ Notation "'R0'" := r_un : algebra_scope.
 Notation "'L-' x" := (l_fn x) : algebra_scope.
 Notation "'R-' x" := (r_fn x) : algebra_scope.
 
+Reserved Notation "x 'L*' y" (at level 40, left associativity).
+Reserved Notation "x 'R*' y" (at level 40, left associativity).
+Reserved Notation "'L1'" (at level 0, no associativity).
+Reserved Notation "'R1'" (at level 0, no associativity).
+Reserved Notation "'L/' x" (at level 35, right associativity).
+Reserved Notation "'R/' x" (at level 35, right associativity).
+
+Notation "x 'L*' y" := (l_act x y) : algebra_scope.
+Notation "x 'R*' y" := (r_act x y) : algebra_scope.
+Notation "'L1'" := l_un : algebra_scope.
+Notation "'R1'" := r_un : algebra_scope.
+Notation "'L/' x" := (l_fn x) : algebra_scope.
+Notation "'R/' x" := (r_fn x) : algebra_scope.
+
 (** This is motivated by torsors giving rise to elaborate cancellations. *)
 
 Reserved Notation "x 'L-' y" (at level 50, left associativity).
