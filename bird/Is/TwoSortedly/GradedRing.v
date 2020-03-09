@@ -1,3 +1,4 @@
+From Coq Require Logic. Import Logic.EqNotations.
 From Maniunfold.Has Require Export
   EquivalenceRelation BinaryOperation Unit LeftAction.
 From Maniunfold.Is Require Export
@@ -23,6 +24,7 @@ Notation "'1'" := (grd_one _) : algebra_scope.
 Class IsGrdRing {A : Type} {P : A -> Type}
   {A_has_eq_rel : HasEqRel A}
   (A_has_bin_op : HasBinOp A) (A_has_un : HasUn A)
+  (properly : forall x y : A, x == y -> P x -> P y)
   {P_has_eq_rel : forall i : A, HasEqRel (P i)}
   (P_has_add : forall i : A, HasAdd (P i))
   (P_has_zero : forall i : A, HasZero (P i))
@@ -41,9 +43,9 @@ Class IsGrdRing {A : Type} {P : A -> Type}
   (* x * (y * z) == (x * y) * z; *)
 
   (* grd_l_unl : forall (i : A) (x : P i),
-    P_has_eq_rel (0 + i ~ i)
-    (has_grd_mul 0 i (has_grd_one i) x)
-    x; *)
+    (rew [P] l_unl (IsLUnl := bin_op_un_is_l_unl
+      (IsUnl := bin_op_un_is_unl (IsMon := bin_op_is_mon))) i in
+    has_grd_mul 0 i (has_grd_one i) x) == x; *)
   (* 1 * x == x; *)
 
   (* grd_r_unl : _; *)
@@ -54,3 +56,12 @@ Class IsGrdRing {A : Type} {P : A -> Type}
   (* ??? *)
   (* mul_one_is_mon :> IsMon grd_mul grd_one; *)
 }.
+
+Section Context.
+
+Context {A : Type} {P : A -> Type} `{is_grd_ring : IsGrdRing A P}.
+
+Check forall (i : A) (x : P i),
+  properly (0 + i) i (l_unl i) (has_grd_mul 0 i (has_grd_one i) x) == x.
+
+End Context.
