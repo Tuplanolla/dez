@@ -79,7 +79,7 @@ Proof.
   rewrite (r_inv x).
   reflexivity. Qed.
 
-Global Instance bin_op_un_op_is_un_antidistr : IsUnaryAntidistr bin_op un_op.
+Global Instance bin_op_un_op_is_un_antidistr : IsUnAntidistr bin_op un_op.
 Proof. intros x y. apply bin_op_un_op_un_antidistr. Qed.
 
 Theorem un_op_inj : forall x y : A,

@@ -23,6 +23,7 @@ digraph Is {
 
     node [peripheries = 2]
 
+    LMod [label = "LeftModule"]
     LCompat [label = "LeftCompatible\n(a + b) L+ x == a L+ (b L+ x)"]
     LExtBinComm [label = "LeftExternallyBinaryCommutative?\nL- (x R+ y) == L- x R+ y"]
     LSgrpAct [label = "LeftSemigroupAction"]
@@ -80,6 +81,7 @@ digraph Is {
     Sring [label = "Semiring"]
     UnAbsorb [label = "UnaryAbsorbing\n- 0 == 0"]
     UnAntidistr [label = "UnaryAntidistributive\n- (x + y) == - y + - x"]
+    UnDistr [label = "UnaryDistributive\n- (x + y) == - x + - y"]
     Unl [label = "Unital"]
 
     PartOrd [label = "PartialOrder"]
@@ -198,6 +200,8 @@ digraph Is {
   RBinComm -> RExtBinComm
   RUnl -> TwoRUnl
   Unl -> TwoUnl
+
+  // AbGrp -> UnDistr
 
   Ring -> Absorb
   Ring -> BinComm
