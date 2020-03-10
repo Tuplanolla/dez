@@ -9,6 +9,11 @@ Class IsUnl {A : Type} {has_eq_rel : HasEqRel A}
   bin_op_un_is_r_unl :> IsRUnl bin_op un;
 }.
 
+Class IsUnlE {A : Type} (has_bin_op : HasBinOp A) (has_un : HasUn A) : Prop := {
+  bin_op_un_is_l_unlE :> IsLUnlE bin_op un;
+  bin_op_un_is_r_unlE :> IsRUnlE bin_op un;
+}.
+
 Section Context.
 
 Context {A : Type} `{is_unl : IsUnl A}.

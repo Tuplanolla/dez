@@ -9,6 +9,9 @@ Class IsRUnl {A : Type} {has_eq_rel : HasEqRel A}
   (has_bin_op : HasBinOp A) (has_un : HasUn A) : Prop :=
   r_unl : forall x : A, x + 0 == x.
 
+Class IsRUnlE {A : Type} (has_bin_op : HasBinOp A) (has_un : HasUn A) : Prop :=
+  r_unlE : forall x : A, x + 0 = x.
+
 Section Context.
 
 Context {A : Type} `{is_r_unl : IsRUnl A}.

@@ -9,6 +9,9 @@ Class IsAssoc {A : Type} {has_eq_rel : HasEqRel A}
   (has_bin_op : HasBinOp A) : Prop :=
   assoc : forall x y z : A, x + (y + z) == (x + y) + z.
 
+Class IsAssocE {A : Type} (has_bin_op : HasBinOp A) : Prop :=
+  assocE : forall x y z : A, x + (y + z) = (x + y) + z.
+
 Section Context.
 
 Context {A : Type} `{is_assoc : IsAssoc A}.

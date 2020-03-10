@@ -101,3 +101,43 @@ Global Instance Z_mul_one_is_mon : IsMon Z.mul Z.one.
 Proof. constructor; typeclasses eauto. Qed.
 
 End Multiplicative.
+
+Module AdditiveE.
+
+Global Instance Z_add_has_bin_op : HasBinOp Z := Z.add.
+
+Global Instance Z_add_is_assoc : IsAssocE Z.add.
+Proof. intros x y z. apply Z.add_assoc. Qed.
+
+Global Instance Z_add_is_sgrp : IsSgrpE Z.add.
+Proof. constructor; typeclasses eauto. Qed.
+
+Global Instance Z_has_un : HasUn Z := Z.zero.
+
+Global Instance Z_add_zero_is_l_unl : IsLUnlE Z.add Z.zero.
+Proof. intros x. apply Z.add_0_l. Qed.
+
+Global Instance Z_add_zero_is_r_unl : IsRUnlE Z.add Z.zero.
+Proof. intros x. apply Z.add_0_r. Qed.
+
+Global Instance Z_add_zero_is_unl : IsUnlE Z.add Z.zero.
+Proof. constructor; typeclasses eauto. Qed.
+
+Global Instance Z_add_zero_is_mon : IsMonE Z.add Z.zero.
+Proof. constructor; typeclasses eauto. Qed.
+
+Global Instance Z_has_un_op : HasUnOp Z := Z.opp.
+
+Global Instance Z_add_zero_opp_is_l_inv : IsLInvE Z.add Z.zero Z.opp.
+Proof. intros x. apply Z.add_opp_diag_l. Qed.
+
+Global Instance Z_add_zero_opp_is_r_inv : IsRInvE Z.add Z.zero Z.opp.
+Proof. intros x. apply Z.add_opp_diag_r. Qed.
+
+Global Instance Z_add_zero_opp_is_inv : IsInvE Z.add Z.zero Z.opp.
+Proof. constructor; typeclasses eauto. Qed.
+
+Global Instance Z_add_zero_opp_is_grp : IsGrpE Z.add Z.zero Z.opp.
+Proof. constructor; typeclasses eauto. Qed.
+
+End AdditiveE.

@@ -8,3 +8,7 @@ Class IsSgrp {A : Type} {has_eq_rel : HasEqRel A}
   bin_op_is_mag :> IsMag bin_op;
   bin_op_is_assoc :> IsAssoc bin_op;
 }.
+
+Class IsSgrpE {A : Type} (has_bin_op : HasBinOp A) : Prop := {
+  bin_op_is_assocE :> IsAssocE bin_op;
+}.
