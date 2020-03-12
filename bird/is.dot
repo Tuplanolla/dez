@@ -56,6 +56,8 @@ digraph Is {
     Distr [label = "Distributive"]
     Eq [label = "Equivalence"]
     Grp [label = "Group"]
+    GrdRing [label = "GradedRing"]
+    GrdMon [label = "GradedMonoid"]
     Inj [label = "Injective\n- x == - y -> x == y"]
     Inv [label = "Invertible"]
     Invol [label = "Involutive\n- - x == x"]
@@ -150,8 +152,7 @@ digraph Is {
   Sring -> Distr
   Ring -> Grp
   Ring -> Mon
-  Sring -> Mon
-  Sring -> Mon
+  Sring -> Mon [label = "2"]
 
   Antisym -> Eq
   Antisym -> Proper
@@ -163,18 +164,15 @@ digraph Is {
   Preord -> Refl
   Preord -> Trans
 
-  Lat -> Slat
-  Lat -> Slat
-  Lat -> Sorb
-  Lat -> Sorb
+  Lat -> Slat [label = "2"]
+  Lat -> Sorb [label = "2"]
   Slat -> Comm
   Slat -> Idem
   Slat -> Sgrp
   BndSlat -> Slat
   BndSlat -> Unl
   BndLat -> Lat
-  BndLat -> Unl
-  BndLat -> Unl
+  BndLat -> Unl [label = "2"]
 
   LMod -> Ring
   LMod -> TwoRDistr
@@ -183,6 +181,10 @@ digraph Is {
   LMod -> TwoLDistr
   LMod -> TwoLUnl
   LMod -> Proper
+
+  GrdMon -> Mon
+  GrdRing -> GrdMon
+  GrdRing -> AbGrp [label = "w"]
 
   edge [style = dashed]
 
@@ -210,6 +212,5 @@ digraph Is {
   Ring -> BinCrs
   Ring -> BinSptCancel
 
-  BndLat -> BndSlat
-  BndLat -> BndSlat
+  BndLat -> BndSlat [label = "2"]
 }

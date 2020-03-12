@@ -2,7 +2,7 @@ From Coq Require Logic. Import Logic.EqNotations.
 From Maniunfold.Has Require Export
   EquivalenceRelation BinaryOperation Unit LeftAction.
 From Maniunfold.Is Require Export
-  Ring.
+  GradedMonoid AbelianGroup.
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations ArithmeticNotations AdditiveNotations.
 
@@ -18,8 +18,11 @@ Class HasGrdOne (A : Type) (P : A -> Type) {has_un : HasUn A} : Type :=
 
 Typeclasses Transparent HasGrdOne.
 
-Notation "x '*' y" := (grd_mul _ _ x y) : algebra_scope.
-Notation "'1'" := grd_one : algebra_scope.
+Reserved Notation "x 'G*' y" (at level 40, left associativity).
+Reserved Notation "'G1'" (at level 0, no associativity).
+
+Notation "x 'G*' y" := (grd_mul _ _ x y) : algebra_scope.
+Notation "'G1'" := grd_one : algebra_scope.
 
 Class IsGrdRingE {A : Type} {P : A -> Type}
   (A_has_bin_op : HasBinOp A) (A_has_un : HasUn A)
@@ -27,37 +30,15 @@ Class IsGrdRingE {A : Type} {P : A -> Type}
   (P_has_zero : forall i : A, HasZero (P i))
   (P_has_neg : forall i : A, HasNeg (P i))
   (has_grd_mul : HasGrdMul A P) (has_grd_one : HasGrdOne A P) : Prop := {
-  bin_op_un_is_monE :> IsMonE (A := A) bin_op un;
+  bin_op_un_grd_mul_grd_one_is_grd_monE :> IsGrdMonE bin_op un grd_mul grd_one;
   add_zero_neg_is_ab_grpE :> forall i : A, IsAbGrpE (A := P i) add zero neg;
-
   (** TODO Uninline the following, use operational notations and
-      check whether to unify the index types. *)
+      check whether to unify the index types (guess: no). *)
   (* add_grd_mul_is_distr :> IsDistrFiber add grd_mul; *)
-
   grd_l_distr : forall (i j : A) (x : P i) (y : P j) (z : P j),
-    grd_mul _ _ x (add y z) = add (grd_mul _ _ x y) (grd_mul _ _ x z);
-  (* x * (y + z) = x * y + x * z; *)
-
+    x G* (y + z) = x G* y + x G* z;
   grd_r_distr : forall (i j : A) (x : P i) (y : P i) (z : P j),
-    grd_mul _ _ (add x y) z = add (grd_mul _ _ x z) (grd_mul _ _ y z);
-  (* (x + y) * z == x * z + y * z; *)
-
-  (** TODO Do the same here. *)
-  (* grd_mul_grd_one_is_mon :> IsMonFiber grd_mul grd_one; *)
-
-  grd_assoc : forall (i j k : A) (x : P i) (y : P j) (z : P k),
-    rew assocE i j k in
-    grd_mul i (j + k) x (grd_mul j k y z) =
-    grd_mul (i + j) k (grd_mul i j x y) z;
-  (* x * (y * z) = (x * y) * z; *)
-
-  grd_l_unl : forall (i : A) (x : P i),
-    rew l_unlE i in grd_mul 0 i grd_one x = x;
-  (* 1 * x = x; *)
-
-  grd_r_unl : forall (i : A) (x : P i),
-    rew r_unlE i in grd_mul i 0 x grd_one = x;
-  (* x * 1 = x; *)
+    (x + y) G* z = x G* z + y G* z;
 }.
 
 Section Context.
@@ -65,6 +46,6 @@ Section Context.
 Context {A : Type} {P : A -> Type} `{is_grd_ringE : IsGrdRingE A P}.
 
 Check ?[IsDistrFiber] add grd_mul : Prop.
-Check ?[IsMonFiber] grd_mul grd_one : Prop.
+Check forall x y z, rew [P] _ in (x G* (y + z)) = x G* y + x G* z.
 
 End Context.
