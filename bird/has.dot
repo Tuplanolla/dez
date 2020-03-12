@@ -16,7 +16,7 @@ digraph Has {
 
     node [peripheries = 2]
 
-    TwoSorted_BinRel [label = "BinaryRelation\nA -> B -> Prop"]
+    TwoBinRel [label = "BinaryRelation\nA -> B -> Prop"]
     Fn [label = "Function\nA -> B"]
     LAct [label = "LeftAction\nA -> B -> B"]
     LFn [label = "LeftFunction\nA -> B"]
@@ -30,8 +30,12 @@ digraph Has {
   subgraph OneSort {
     label = "OneSorted"
 
+    GrdBinOp [label = "BinaryOperation\nP i -> P j -> P (i + j)"]
+    GrdUn [label = "Unit\nP 0"]
+    GrdUnOp [label = "UnaryOperation\nP i -> P (- i)"]
+
     BinOp [label = "BinaryOperation\nA -> A -> A"]
-    OneSorted_BinRel [label = "BinaryRelation\nA -> A -> Prop"]
+    BinRel [label = "BinaryRelation\nA -> A -> Prop"]
     EqRel [label = "EquivalenceRelation\nA -> A -> Prop"]
     LUn [label = "LeftUnit\nA"]
     LUnOp [label = "LeftUnaryOperation\nA -> A"]
@@ -55,19 +59,23 @@ digraph Has {
     Top [label = "Top\nA"]
   }
 
+  GrdBinOp -> BinOp
+  GrdUn -> Un
+  GrdUnOp -> UnOp
+
   edge [style = dashed]
 
-  OneSorted_BinRel -> TwoSorted_BinRel
+  BinRel -> TwoBinRel
   BinOp -> Tor
   BinOp -> LAct
   BinOp -> RAct
-  EqRel -> OneSorted_BinRel
+  EqRel -> BinRel
   LAct -> BinFn
   LFn -> Fn
   LUn -> Un
   LUnOp -> LFn
   LUnOp -> UnOp
-  OrdRel -> OneSorted_BinRel
+  OrdRel -> BinRel
   RAct -> BinFn
   RFn -> Fn
   RUn -> Un

@@ -1,10 +1,4 @@
 *.aux
 *.glob
 *.vo*
-.coqdeps.d
-_Coq*
-make
-make.args
-make.conf
-make.local
-make.vfiles
+*_Coq*

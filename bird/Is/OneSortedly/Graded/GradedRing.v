@@ -1,12 +1,14 @@
 From Coq Require Logic. Import Logic.EqNotations.
 From Maniunfold.Has Require Export
-  EquivalenceRelation BinaryOperation Unit LeftAction.
+  BinaryOperation Unit GradedBinaryOperation GradedUnit.
 From Maniunfold.Is Require Export
   GradedMonoid AbelianGroup.
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations ArithmeticNotations AdditiveNotations.
+From Maniunfold.ShouldOffer Require Import
+  MoreAdditiveNotations.
 
-(** TODO Move these. *)
+(** TODO Move these once the notations are settled. *)
 
 Class HasGrdMul (A : Type) (P : A -> Type) {has_bin_op : HasBinOp A} : Type :=
   grd_mul : forall i j : A, P i -> P j -> P (i + j).
@@ -21,8 +23,8 @@ Typeclasses Transparent HasGrdOne.
 Reserved Notation "x 'G*' y" (at level 40, left associativity).
 Reserved Notation "'G1'" (at level 0, no associativity).
 
-Notation "x 'G*' y" := (grd_mul _ _ x y) : algebra_scope.
-Notation "'G1'" := grd_one : algebra_scope.
+Local Notation "x 'G*' y" := (grd_mul _ _ x y) : algebra_scope.
+Local Notation "'G1'" := grd_one : algebra_scope.
 
 Class IsGrdRingE {A : Type} {P : A -> Type}
   (A_has_bin_op : HasBinOp A) (A_has_un : HasUn A)
@@ -40,12 +42,3 @@ Class IsGrdRingE {A : Type} {P : A -> Type}
   grd_r_distr : forall (i j : A) (x : P i) (y : P i) (z : P j),
     (x + y) G* z = x G* z + y G* z;
 }.
-
-Section Context.
-
-Context {A : Type} {P : A -> Type} `{is_grd_ringE : IsGrdRingE A P}.
-
-Check ?[IsDistrFiber] add grd_mul : Prop.
-Check forall x y z, rew [P] _ in (x G* (y + z)) = x G* y + x G* z.
-
-End Context.

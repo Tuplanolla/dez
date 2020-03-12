@@ -2,19 +2,18 @@
 
 Do these things.
 
-* Imagine a hub, where roosters, camels and sea thrifts grow.
-* Set up build automation; see diagram `habitat.dot`.
+* Lose setoids and embrace the univalence.
 * Add adverb subdirectories to arrange different conceps with similar names.
   Read literature on "many-sorted" or "multi-sorted"
   "equational logic" or "universal algebra".
 * Regular semigroups have two equivalent definitions;
   try to implement them as an isomorphism.
+* Set up build automation; see diagram `habitat.dot`.
 * Integrate Thrift into the mess.
 * Now that we have one-sorted algebra (abstract algebra)
   generalized to many-sorted algebra (universal algebra) and
   oidified to one-sorted partial algebra (category theory),
   what happens if we go looking for many-sorted partial algebra?
-* Lose external and internal invertibility; they make no sense.
 * Monoidal categories now.
 
 Some rules.
@@ -41,22 +40,10 @@ Some rules.
     * Do not make operational class inferrable parameters implicit,
       because unexpected maximal insertion breaks everything (pages of errors).
 
-Wikipedia has the following wild conjecture.
-It is not mentioned in literature, but appears to be very useful.
+Wikipedia has the wild conjecture on "externality".
+It is not mentioned in literature, but appears to be useful.
 Perhaps there is other terminology in many-sorted universal algebra.
 Investigate.
-
-* f : Q × R → S (binary function)
-    Example: exponentiation
-    Example: set membership
-    Examples: matrix multiplication, the tensor product, and the Cartesian product
-* f : R × R → S (internal binary function)
-    Example: internal binary relations
-    Examples: the dot product, the inner product, and metrics
-* f : R × S → S (external binary operation)
-    Examples: dynamical system flows, group actions, projection maps, and scalar multiplication
-* f : S × S → S (binary operation)
-    Examples: addition, multiplication, permutations, and the cross product
 
 After investigation, we can conclude that, indeed,
 universal algebra does not talk about external things.
@@ -190,6 +177,9 @@ x + - x
 x + (x + x)
 (x + x) + (x + x)
 ```
+
+There is an exhaustive generator for all possible free terms and
+equational theories in `../garbage/GroupThyGen.hs` etc.
 
 There are some most general types for various unification problems
 in `garbage/Unification.v`.

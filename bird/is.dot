@@ -45,6 +45,12 @@ digraph Is {
   subgraph OneSort {
     label = "OneSortedly"
 
+    GrdAssoc [label = "GradedAssociative?\na _* (x G+ (y G+ z)) = (x G+ y) G+ z"]
+    GrdLUnl [label = "GradedRightUnital?\nl _* (G0 G+ x) = x"]
+    GrdRUnl [label = "GradedRightUnital?\nr _* (x G+ G0) = x"]
+    GrdLDistr [label = "GradedLeftDistributive?\nx G* (y + z) = x G* y + x G* z"]
+    GrdRDistr [label = "GradedRightDistributive?\n(x + y) G* z = x G* z + y G* z"]
+
     AbGrp [label = "AbelianGroup"]
     Absorb [label = "Absorbing"]
     Assoc [label = "Associative\nx + (y + z) == (x + y) + z"]
@@ -203,7 +209,7 @@ digraph Is {
   RUnl -> TwoRUnl
   Unl -> TwoUnl
 
-  // AbGrp -> UnDistr
+  AbGrp -> UnDistr
 
   Ring -> Absorb
   Ring -> BinComm

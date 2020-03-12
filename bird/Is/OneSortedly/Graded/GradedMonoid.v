@@ -4,25 +4,9 @@ From Maniunfold.Has Require Export
 From Maniunfold.Is Require Export
   Monoid.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations.
-
-(** TODO Move these. *)
-
-Class HasGrdBinOp (A : Type) (P : A -> Type) {has_bin_op : HasBinOp A} : Type :=
-  grd_bin_op : forall i j : A, P i -> P j -> P (i + j).
-
-Typeclasses Transparent HasGrdBinOp.
-
-Class HasGrdUn (A : Type) (P : A -> Type) {has_un : HasUn A} : Type :=
-  grd_un : P 0.
-
-Typeclasses Transparent HasGrdUn.
-
-Reserved Notation "x 'G+' y" (at level 50, left associativity).
-Reserved Notation "'G0'" (at level 0, no associativity).
-
-Notation "x 'G+' y" := (grd_bin_op _ _ x y) : algebra_scope.
-Notation "'G0'" := grd_un : algebra_scope.
+  EquivalenceRelationNotations.
+From Maniunfold.ShouldOffer Require Import
+  MoreAdditiveNotations.
 
 Class IsGrdMonE {A : Type} {P : A -> Type}
   (A_has_bin_op : HasBinOp A) (A_has_un : HasUn A)
