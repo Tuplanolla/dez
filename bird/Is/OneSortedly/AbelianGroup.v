@@ -12,6 +12,13 @@ Class IsAbGrp {A : Type} {has_eq_rel : HasEqRel A}
   bin_op_un_un_op_is_grp :> IsGrp bin_op un un_op;
 }.
 
+Class IsAbGrpE {A : Type}
+  (has_bin_op : HasBinOp A) (has_un : HasUn A)
+  (has_un_op : HasUnOp A) : Prop := {
+  bin_op_is_commE :> IsCommE bin_op;
+  bin_op_un_un_op_is_grpE :> IsGrpE bin_op un un_op;
+}.
+
 Section Context.
 
 Context {A : Type} `{is_ab_grp : IsAbGrp A}.
