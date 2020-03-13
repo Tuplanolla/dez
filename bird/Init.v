@@ -1,5 +1,5 @@
 (** We disable universe polymorphism until we really need it,
-    because it comes with a performance penalty. *)
+    because it is experimental and comes with a performance penalty. *)
 
 Global Unset Universe Polymorphism.
 
@@ -8,18 +8,21 @@ Global Unset Universe Polymorphism.
 
 Global Set Warnings "-notation-overridden".
 
-(** We export [Basics] to make its utility functions available everywhere and
-    import [Morphisms] to gain access to [signature_scope]. *)
+(** We export [Basics] to make its utility functions available everywhere,
+    import [Morphisms] to gain access to [signature_scope] and
+    import [Setoid] to strengthen the [rewrite] tactic. *)
 
 From Coq Require Export
-  Basics.
+  Program.Basics.
 From Coq Require Import
-  Morphisms.
+  Classes.Morphisms Classes.CMorphisms.
+From Coq Require Import
+  Setoids.Setoid.
 
 (** We mark the utility functions from [Basics] transparent for unification. *)
 
 Typeclasses Transparent compose arrow impl const flip apply.
 
-(** We open [signature_scope] to be able to use [==>] anywhere. *)
+(** We open [signature_scope] to be able to use [=>] anywhere. *)
 
 Open Scope signature_scope.

@@ -3,6 +3,6 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations OrderlyNotations.
 
-Class IsSorb {A : Type} {has_eq_rel : HasEqRel A}
+Class IsSorb {A : Type}
   (has_join : HasJoin A) (has_meet : HasMeet A) : Prop :=
-  l_sorb : forall x y : A, x \_/ (x /^\ y) == x.
+  l_sorb : forall x y : A, x \_/ (x /^\ y) = x.

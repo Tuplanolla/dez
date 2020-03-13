@@ -3,6 +3,6 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations ArithmeticNotations.
 
-Class IsLAbsorb {A : Type} {has_eq_rel : HasEqRel A}
+Class IsLAbsorb {A : Type}
   (has_zero : HasZero A) (has_mul : HasMul A) : Prop :=
-  l_absorb : forall x : A, 0 * x == 0.
+  l_absorb : forall x : A, 0 * x = 0.

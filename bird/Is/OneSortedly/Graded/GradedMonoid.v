@@ -8,15 +8,15 @@ From Maniunfold.ShouldHave Require Import
 From Maniunfold.ShouldOffer Require Import
   MoreAdditiveNotations.
 
-Class IsGrdMonE {A : Type} {P : A -> Type}
+Class IsGrdMon {A : Type} {P : A -> Type}
   (A_has_bin_op : HasBinOp A) (A_has_un : HasUn A)
   (has_grd_bin_op : HasGrdBinOp A P) (has_grd_un : HasGrdUn A P) : Prop := {
-  bin_op_un_is_monE :> IsMonE (A := A) bin_op un;
+  bin_op_un_is_mon :> IsMon (A := A) bin_op un;
   (** TODO Uninline the following. *)
-  grd_assocE : forall (i j k : A) (x : P i) (y : P j) (z : P k),
-    rew assocE i j k in (x G+ (y G+ z)) = (x G+ y) G+ z;
-  grd_l_unlE : forall (i : A) (x : P i),
-    rew l_unlE i in (G0 G+ x) = x;
-  grd_r_unlE : forall (i : A) (x : P i),
-    rew r_unlE i in (x G+ G0) = x;
+  grd_assoc : forall (i j k : A) (x : P i) (y : P j) (z : P k),
+    rew assoc i j k in (x G+ (y G+ z)) = (x G+ y) G+ z;
+  grd_l_unl : forall (i : A) (x : P i),
+    rew l_unl i in (G0 G+ x) = x;
+  grd_r_unl : forall (i : A) (x : P i),
+    rew r_unl i in (x G+ G0) = x;
 }.

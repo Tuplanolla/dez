@@ -5,7 +5,7 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations ArithmeticNotations.
 
-Class IsDistrLat {A : Type} {has_eq_rel : HasEqRel A}
+Class IsDistrLat {A : Type}
   (has_join : HasJoin A) (has_bot : HasBot A)
   (has_meet : HasMeet A) (has_top : HasTop A) : Prop := {
   join_meet_is_lat :> IsLat join meet;

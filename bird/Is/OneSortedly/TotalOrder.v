@@ -1,4 +1,4 @@
-From Coq Require Export
+From Coq Require Import
   Setoid Morphisms.
 From Maniunfold.Has Require Export
   OneSorted.EquivalenceRelation OneSorted.OrderRelation.
@@ -8,7 +8,7 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations OrderRelationNotations.
 
-Class IsTotOrd {A : Type} {has_eq_rel : HasEqRel A}
+Class IsTotOrd {A : Type}
   (has_ord_rel : HasOrdRel A) : Prop := {
   ord_is_antisym :> IsAntisym ord_rel;
   ord_is_connex :> IsConnex ord_rel;

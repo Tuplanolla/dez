@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.Is Require Export
   OneSortedly.Commutative OneSortedly.Idempotent OneSortedly.Semigroup.
 
-Class IsSlat {A : Type} {has_eq_rel : HasEqRel A}
+Class IsSlat {A : Type}
   (has_bin_op : HasBinOp A) : Prop := {
   bin_op_is_comm :> IsComm bin_op;
   bin_op_is_idem :> IsIdem bin_op;

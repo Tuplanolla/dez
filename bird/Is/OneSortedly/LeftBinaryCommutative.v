@@ -5,9 +5,9 @@ From Maniunfold.Is Require Import
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations ArithmeticNotations.
 
-Class IsLBinComm {A : Type} {has_eq_rel : HasEqRel A}
+Class IsLBinComm {A : Type}
   (has_neg : HasNeg A) (has_mul : HasMul A) : Prop :=
-  l_bin_comm : forall x y : A, - (x * y) == - x * y.
+  l_bin_comm : forall x y : A, - (x * y) = - x * y.
 
 Section Context.
 

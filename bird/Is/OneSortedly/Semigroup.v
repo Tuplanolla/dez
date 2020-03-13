@@ -1,14 +1,9 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation BinaryOperation.
 From Maniunfold.Is Require Export
-  Magma Associative.
+  Associative Magma.
 
-Class IsSgrp {A : Type} {has_eq_rel : HasEqRel A}
-  (has_bin_op : HasBinOp A) : Prop := {
-  bin_op_is_mag :> IsMag bin_op;
+Class IsSgrp {A : Type} (has_bin_op : HasBinOp A) : Prop := {
   bin_op_is_assoc :> IsAssoc bin_op;
-}.
-
-Class IsSgrpE {A : Type} (has_bin_op : HasBinOp A) : Prop := {
-  bin_op_is_assocE :> IsAssocE bin_op;
+  bin_op_is_mag :> IsMag bin_op;
 }.

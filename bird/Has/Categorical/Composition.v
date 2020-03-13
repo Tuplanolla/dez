@@ -1,9 +1,9 @@
 From Maniunfold.Has Require Export
-  Morphism.
+  Categorical.Morphism.
 From Maniunfold.ShouldHave Require Import
-  CategoricalNotations.
+  Categorical.TypeNotations.
 
 Class HasComp {A : Type} (has_hom : HasHom A) : Type :=
-  comp : forall x y z : A, (x ~> y) -> (y ~> z) -> (x ~> z).
+  comp : forall x y z : A, (x --> y) -> (y --> z) -> (x --> z).
 
 Typeclasses Transparent HasComp.

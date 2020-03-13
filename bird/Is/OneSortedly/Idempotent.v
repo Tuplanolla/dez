@@ -3,6 +3,6 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
-Class IsIdem {A : Type} {has_eq_rel : HasEqRel A}
+Class IsIdem {A : Type}
   (has_bin_op : HasBinOp A) : Prop :=
-  idem : forall x y : A, x + x == x.
+  idem : forall x y : A, x + x = x.

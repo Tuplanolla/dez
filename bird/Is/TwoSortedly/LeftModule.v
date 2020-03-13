@@ -3,8 +3,7 @@ From Maniunfold.Has Require Export
   BinaryOperation Unit UnaryOperation LeftAction.
 From Maniunfold.Is Require Export
   OneSortedly.Ring TwoSortedly.RightDistributive TwoSortedly.LeftCompatible
-  OneSortedly.AbelianGroup TwoSortedly.LeftDistributive TwoSortedly.LeftUnital
-  Proper.
+  OneSortedly.AbelianGroup TwoSortedly.LeftDistributive TwoSortedly.LeftUnital.
 
 Class IsLMod {A B : Type}
   {A_has_eq_rel : HasEqRel A} {B_has_eq_rel : HasEqRel B}
@@ -18,5 +17,4 @@ Class IsLMod {A B : Type}
   bin_op_un_un_op_is_ab_grp :> IsAbGrp (A := B) bin_op un un_op;
   bin_op_l_act_is_two_l_distr :> IsTwoLDistr (A := A) (B := B) bin_op l_act;
   un_l_act_is_two_l_unl :> IsTwoLUnl (A := A) (B := B) un l_act;
-  l_act_is_proper :> IsProper (eq_rel ==> eq_rel ==> eq_rel) l_act;
 }.

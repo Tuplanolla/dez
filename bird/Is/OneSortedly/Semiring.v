@@ -5,7 +5,7 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations ArithmeticNotations.
 
-Class IsSring {A : Type} {has_eq_rel : HasEqRel A}
+Class IsSring {A : Type}
   (has_add : HasAdd A) (has_zero : HasZero A)
   (has_mul : HasMul A) (has_one : HasOne A) : Prop := {
   add_is_comm :> IsComm add;
@@ -27,7 +27,7 @@ Section Context.
 
 Context {A : Type} `{is_sring : IsSring A}.
 
-Goal 0 == 1 -> forall x y : A, x == y.
+Goal 0 = 1 -> forall x y : A, x = y.
 Proof with change_add_mon || change_mul_mon.
   intros H x y.
   rewrite <- (l_unl x)...

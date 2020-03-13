@@ -1,9 +1,9 @@
 From Maniunfold.Has Require Export
-  Morphism.
+  Categorical.Morphism.
 From Maniunfold.ShouldHave Require Import
-  CategoricalNotations.
+  Categorical.TypeNotations.
 
 Class HasIdt {A : Type} (has_hom : HasHom A) : Type :=
-  idt : forall x : A, x ~> x.
+  idt : forall x : A, x --> x.
 
 Typeclasses Transparent HasIdt.

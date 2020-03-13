@@ -1,5 +1,5 @@
-From Coq Require Export
-  Setoid Morphisms.
+From Coq Require Import
+  Classes.RelationClasses.
 From Maniunfold.Has Require Export
   OneSorted.BinaryRelation.
 From Maniunfold.ShouldHave Require Import

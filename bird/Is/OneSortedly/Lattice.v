@@ -7,7 +7,7 @@ From Maniunfold.ShouldHave Require Import
 
 (** Remember that join [\_/] is "addition" and bottom [_|_] is "zero". *)
 
-Class IsLat {A : Type} {has_eq_rel : HasEqRel A}
+Class IsLat {A : Type}
   (has_join : HasJoin A) (has_meet : HasMeet A) : Prop := {
   join_is_slat :> IsSlat join;
   meet_is_slat :> IsSlat meet;

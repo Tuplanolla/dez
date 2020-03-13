@@ -3,6 +3,6 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
-Class IsLCancel {A : Type} {has_eq_rel : HasEqRel A}
+Class IsLCancel {A : Type}
   (has_bin_op : HasBinOp A) : Prop :=
-  l_cancel : forall x y z : A, z + x == z + y -> x == y.
+  l_cancel : forall x y z : A, z + x = z + y -> x = y.

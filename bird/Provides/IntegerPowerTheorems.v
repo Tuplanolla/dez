@@ -25,15 +25,15 @@ Section Context.
 Context {A : Type} `{is_mag : IsMag A}.
 
 Fact iter_op_xI : forall (n : positive) (x : A),
-  Pos.iter_op bin_op (xI n) x == x + Pos.iter_op bin_op n (x + x).
+  Pos.iter_op bin_op (xI n) x = x + Pos.iter_op bin_op n (x + x).
 Proof. intros n x. reflexivity. Qed.
 
 Fact iter_op_xO : forall (n : positive) (x : A),
-  Pos.iter_op bin_op (xO n) x == Pos.iter_op bin_op n (x + x).
+  Pos.iter_op bin_op (xO n) x = Pos.iter_op bin_op n (x + x).
 Proof. intros n x. reflexivity. Qed.
 
 Fact iter_op_xH : forall x : A,
-  Pos.iter_op bin_op xH x == x.
+  Pos.iter_op bin_op xH x = x.
 Proof. intros x. reflexivity. Qed.
 
 End Context.
@@ -43,7 +43,7 @@ Section Context.
 Context {A : Type} `{is_sgrp : IsSgrp A}.
 
 Lemma iter_op_succ : forall (n : positive) (x : A),
-  Pos.iter_op bin_op (Pos.succ n) x == x + Pos.iter_op bin_op n x.
+  Pos.iter_op bin_op (Pos.succ n) x = x + Pos.iter_op bin_op n x.
 Proof.
   intros n.
   induction n as [p IH | p IH |]; intros x.
@@ -60,15 +60,15 @@ Proof.
   - rewrite succ_xH.
     rewrite (iter_op_xO xH x).
     rewrite (iter_op_xH (x + x)).
-    rewrite (iter_op_xH x).
+    try rewrite (iter_op_xH x).
     reflexivity. Qed.
 
 Lemma iter_op_comm : forall (n : positive) (x : A),
-  x + Pos.iter_op bin_op n x == Pos.iter_op bin_op n x + x.
+  x + Pos.iter_op bin_op n x = Pos.iter_op bin_op n x + x.
 Proof.
   intros n x.
   induction n as [| p IH] using Pos.peano_ind.
-  - rewrite (iter_op_xH x).
+  - try rewrite (iter_op_xH x).
     reflexivity.
   - rewrite (iter_op_succ p x).
     rewrite IH at 1.
@@ -82,7 +82,7 @@ Section Context.
 Context {A : Type} `{is_grp : IsGrp A}.
 
 Theorem positive_op_un_op_r_ext_bin_comm : forall (n : positive) (x : A),
-  - (n * x)%positive == (n * - x)%positive.
+  - (n * x)%positive = (n * - x)%positive.
 Proof.
   intros n x.
   cbv [positive_op].
@@ -102,7 +102,7 @@ Global Instance positive_op_un_op_is_r_ext_bin_comm :
 Proof. intros x y. apply positive_op_un_op_r_ext_bin_comm. Qed.
 
 Theorem n_op_un_op_r_ext_bin_comm : forall (n : N) (x : A),
-  - (n * x)%N == (n * - x)%N.
+  - (n * x)%N = (n * - x)%N.
 Proof.
   intros n x.
   destruct n as [| p].
@@ -117,7 +117,7 @@ Global Instance n_op_un_op_is_r_ext_bin_comm : IsRExtBinComm un_op n_op.
 Proof. intros x y. apply n_op_un_op_r_ext_bin_comm. Qed.
 
 Theorem z_op_un_op_r_ext_bin_comm : forall (n : Z) (x : A),
-  - (n * x)%Z == (n * (- x)%algebra)%Z.
+  - (n * x)%Z = (n * (- x)%algebra)%Z.
 Proof.
   intros n x.
   destruct n as [| p | p].

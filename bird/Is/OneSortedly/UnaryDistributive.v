@@ -3,6 +3,6 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
-Class IsUnDistr {A : Type} {has_eq_rel : HasEqRel A}
+Class IsUnDistr {A : Type}
   (has_bin_op : HasBinOp A) (has_un_op : HasUnOp A) : Prop :=
-  un_distr : forall x y : A, - (x + y) == - x + - y.
+  un_distr : forall x y : A, - (x + y) = - x + - y.

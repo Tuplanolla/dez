@@ -5,9 +5,9 @@ From Maniunfold.Is Require Export
   SignedAbsorbing BinaryCommutative BinaryCrossing BinarySplitCancellative
   Semiring.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations ArithmeticNotations.
+  ArithmeticNotations.
 
-Class IsRing {A : Type} {has_eq_rel : HasEqRel A}
+Class IsRing {A : Type}
   (has_add : HasAdd A) (has_zero : HasZero A) (has_neg : HasNeg A)
   (has_mul : HasMul A) (has_one : HasOne A) : Prop := {
   add_zero_neg_is_ab_grp :> IsAbGrp add zero neg;
@@ -26,7 +26,7 @@ Section Context.
 Context {A : Type} `{is_ring : IsRing A}.
 
 Theorem zero_mul_l_absorb : forall x : A,
-  0 * x == 0.
+  0 * x = 0.
 Proof with change_add_grp || change_mul_mon.
   intros x.
   apply (l_cancel (0 * x) 0 (1 * x))...
@@ -39,7 +39,7 @@ Global Instance zero_mul_is_l_absorb : IsLAbsorb zero mul.
 Proof. intros x. apply zero_mul_l_absorb. Qed.
 
 Theorem zero_mul_r_absorb : forall x : A,
-  x * 0 == 0.
+  x * 0 = 0.
 Proof with change_add_grp || change_mul_mon.
   intros x.
   apply (l_cancel (x * 0) 0 (x * 1))...
@@ -55,7 +55,7 @@ Global Instance zero_mul_is_absorb : IsAbsorb zero mul.
 Proof. constructor; typeclasses eauto. Qed.
 
 Theorem neg_mul_one_l_sgn_absorb : forall x : A,
-  - (1) * x == - x.
+  - (1) * x = - x.
 Proof with change_add_grp || change_mul_mon.
   intros x.
   apply (l_cancel (- (1) * x) (- x) x)...
@@ -70,7 +70,7 @@ Global Instance neg_mul_one_is_l_sgn_absorb : IsLSgnAbsorb neg mul one.
 Proof. intros x. apply neg_mul_one_l_sgn_absorb. Qed.
 
 Theorem neg_mul_one_r_sgn_absorb : forall x : A,
-  x * - (1) == - x.
+  x * - (1) = - x.
 Proof with change_add_grp || change_mul_mon.
   intros x.
   apply (l_cancel (x * - (1)) (- x) x)...
@@ -88,7 +88,7 @@ Global Instance neg_mul_one_is_sgn_absorb : IsSgnAbsorb neg mul one.
 Proof. constructor; typeclasses eauto. Qed.
 
 Theorem neg_mul_l_bin_comm : forall x y : A,
-  - (x * y) == - x * y.
+  - (x * y) = - x * y.
 Proof with change_add_grp || change_mul_mon.
   intros x y.
   rewrite <- (l_sgn_absorb (x * y)).
@@ -100,7 +100,7 @@ Global Instance neg_mul_is_l_bin_comm : IsLBinComm neg mul.
 Proof. intros x y. apply neg_mul_l_bin_comm. Qed.
 
 Theorem neg_mul_r_bin_comm : forall x y : A,
-  - (x * y) == x * - y.
+  - (x * y) = x * - y.
 Proof with change_add_grp || change_mul_mon.
   intros x y.
   rewrite <- (r_sgn_absorb (x * y)).
@@ -115,7 +115,7 @@ Global Instance neg_mul_is_bin_comm : IsBinComm neg mul.
 Proof. constructor; typeclasses eauto. Qed.
 
 Theorem neg_mul_bin_crs : forall x y : A,
-  (- x) * y == x * (- y).
+  (- x) * y = x * (- y).
 Proof with change_add_grp || change_mul_mon.
   intros x y.
   rewrite <- (l_bin_comm x y).
@@ -126,7 +126,7 @@ Global Instance neg_mul_is_bin_crs : IsBinCrs neg mul.
 Proof. intros x y. apply neg_mul_bin_crs. Qed.
 
 Theorem neg_mul_bin_spt_cancel : forall x y : A,
-  (- x) * (- y) == x * y.
+  (- x) * (- y) = x * y.
 Proof with change_add_grp || change_mul_mon.
   intros x y.
   rewrite <- (l_bin_comm x (- y)).

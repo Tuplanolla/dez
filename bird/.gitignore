@@ -1,4 +1,7 @@
 *.aux
+*.css
+*.d
 *.glob
+*.html
 *.vo*
 *_Coq*

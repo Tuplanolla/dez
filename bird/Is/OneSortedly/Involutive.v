@@ -1,8 +1,7 @@
-From Maniunfold.Has Require Export
-  EquivalenceRelation UnaryOperation.
-From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations.
+From Maniunfold.Has.OneSorted Require Export
+  UnaryOperation.
+From Maniunfold.ShouldHave.OneSorted Require Import
+  AdditiveNotations.
 
-Class IsInvol {A : Type} {has_eq_rel : HasEqRel A}
-  (has_un_op : HasUnOp A) : Prop :=
-  invol : forall x : A, - - x == x.
+Class IsInvol {A : Type} (has_un_op : HasUnOp A) : Prop :=
+  invol : forall x : A, - (- x) = x.

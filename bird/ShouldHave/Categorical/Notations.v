@@ -1,13 +1,7 @@
 From Maniunfold.Has Require Export
-  Composition Identity Inverse.
+  Categorical.Composition Categorical.Identity Categorical.Inverse.
 From Maniunfold.ShouldHave Require Export
-  CategoricalNotations.
-
-Declare Scope category_scope.
-
-Delimit Scope category_scope with category.
-
-Open Scope category_scope.
+  Categorical.TypeNotations.
 
 Reserved Notation "g 'o' f" (at level 38, left associativity).
 Reserved Notation "'id'" (at level 0, no associativity).

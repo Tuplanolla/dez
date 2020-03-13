@@ -3,6 +3,6 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations ArithmeticNotations.
 
-Class IsRDistr {A : Type} {has_eq_rel : HasEqRel A}
+Class IsRDistr {A : Type}
   (has_add : HasAdd A) (has_mul : HasMul A) : Prop :=
-  r_distr : forall x y z : A, (x + y) * z == x * z + y * z.
+  r_distr : forall x y z : A, (x + y) * z = x * z + y * z.

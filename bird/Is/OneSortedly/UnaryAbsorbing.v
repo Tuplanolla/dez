@@ -3,6 +3,6 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
-Class IsUnAbsorb {A : Type} {has_eq_rel : HasEqRel A}
+Class IsUnAbsorb {A : Type}
   (has_un : HasUn A) (has_un_op : HasUnOp A) : Prop :=
-  un_absorb : - 0 == 0.
+  un_absorb : - 0 = 0.

@@ -1,22 +1,15 @@
-From Maniunfold.Has Require Export
-  EquivalenceRelation BinaryOperation Unit UnaryOperation.
-From Maniunfold.Is Require Export
+From Maniunfold.Has.OneSorted Require Export
+  BinaryOperation Unit UnaryOperation.
+From Maniunfold.Is.OneSortedly Require Export
   Commutative Group UnaryDistributive.
-From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations.
+From Maniunfold.ShouldHave.OneSorted Require Import
+  AdditiveNotations.
 
-Class IsAbGrp {A : Type} {has_eq_rel : HasEqRel A}
+Class IsAbGrp {A : Type}
   (has_bin_op : HasBinOp A) (has_un : HasUn A)
   (has_un_op : HasUnOp A) : Prop := {
   bin_op_is_comm :> IsComm bin_op;
   bin_op_un_un_op_is_grp :> IsGrp bin_op un un_op;
-}.
-
-Class IsAbGrpE {A : Type}
-  (has_bin_op : HasBinOp A) (has_un : HasUn A)
-  (has_un_op : HasUnOp A) : Prop := {
-  bin_op_is_commE :> IsCommE bin_op;
-  bin_op_un_un_op_is_grpE :> IsGrpE bin_op un un_op;
 }.
 
 Section Context.
@@ -24,7 +17,7 @@ Section Context.
 Context {A : Type} `{is_ab_grp : IsAbGrp A}.
 
 Theorem bin_op_un_op_un_distr : forall x y : A,
-  - (x + y) == - x + - y.
+  - (x + y) = - x + - y.
 Proof.
   intros x y.
   rewrite (comm x y).
