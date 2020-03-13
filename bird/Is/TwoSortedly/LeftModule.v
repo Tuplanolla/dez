@@ -6,7 +6,6 @@ From Maniunfold.Is Require Export
   OneSortedly.AbelianGroup TwoSortedly.LeftDistributive TwoSortedly.LeftUnital.
 
 Class IsLMod {A B : Type}
-  {A_has_eq_rel : HasEqRel A} {B_has_eq_rel : HasEqRel B}
   (A_has_add : HasAdd A) (A_has_zero : HasZero A) (A_has_neg : HasNeg A)
   (A_has_mul : HasMul A) (A_has_one : HasOne A)
   (B_has_bin_op : HasBinOp B) (B_has_un : HasUn B) (B_has_un_op : HasUnOp B)
