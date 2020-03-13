@@ -1,4 +1,3 @@
-From Coq Require Logic. Import Logic.EqNotations.
 From Maniunfold.Has Require Export
   EquivalenceRelation BinaryOperation Unit.
 From Maniunfold.Is Require Export

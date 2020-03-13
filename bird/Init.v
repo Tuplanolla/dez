@@ -9,13 +9,13 @@ Global Unset Universe Polymorphism.
 Global Set Warnings "-notation-overridden".
 
 (** We export [Basics] to make its utility functions available everywhere,
-    import [Morphisms] to gain access to [signature_scope] and
-    import [Setoid] to strengthen the [rewrite] tactic. *)
+    import [Logic] to gain access to the [EqNotations] submodule and
+    import [Setoid] to generalize the [rewrite] tactic. *)
 
 From Coq Require Export
   Program.Basics.
 From Coq Require Import
-  Classes.Morphisms Classes.CMorphisms.
+  Init.Logic.
 From Coq Require Import
   Setoids.Setoid.
 
@@ -23,6 +23,6 @@ From Coq Require Import
 
 Typeclasses Transparent compose arrow impl const flip apply.
 
-(** We open [signature_scope] to be able to use [=>] anywhere. *)
+(** We export the [rew] notations to use them like a transport lemma. *)
 
-Open Scope signature_scope.
+Export EqNotations.
