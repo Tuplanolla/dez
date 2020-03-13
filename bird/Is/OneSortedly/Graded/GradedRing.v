@@ -10,12 +10,12 @@ From Maniunfold.ShouldOffer Require Import
 
 (** TODO Move these once the notations are settled. *)
 
-Class HasGrdMul (A : Type) (P : A -> Type) {has_bin_op : HasBinOp A} : Type :=
+Class HasGrdMul {A : Type} (P : A -> Type) {has_bin_op : HasBinOp A} : Type :=
   grd_mul : forall i j : A, P i -> P j -> P (i + j).
 
 Typeclasses Transparent HasGrdMul.
 
-Class HasGrdOne (A : Type) (P : A -> Type) {has_un : HasUn A} : Type :=
+Class HasGrdOne {A : Type} (P : A -> Type) {has_un : HasUn A} : Type :=
   grd_one : P 0.
 
 Typeclasses Transparent HasGrdOne.
@@ -31,7 +31,7 @@ Class IsGrdRing {A : Type} {P : A -> Type}
   (P_has_add : forall i : A, HasAdd (P i))
   (P_has_zero : forall i : A, HasZero (P i))
   (P_has_neg : forall i : A, HasNeg (P i))
-  (has_grd_mul : HasGrdMul A P) (has_grd_one : HasGrdOne A P) : Prop := {
+  (P_has_grd_mul : HasGrdMul P) (P_has_grd_one : HasGrdOne P) : Prop := {
   bin_op_un_grd_mul_grd_one_is_grd_mon :> IsGrdMon bin_op un grd_mul grd_one;
   add_zero_neg_is_ab_grp :> forall i : A, IsAbGrp (A := P i) add zero neg;
   (** TODO Uninline the following, use operational notations and
