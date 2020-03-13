@@ -1,4 +1,3 @@
-From Coq Require Logic. Import Logic.EqNotations.
 From Maniunfold.Has Require Export
   BinaryOperation Unit GradedBinaryOperation GradedUnit.
 From Maniunfold.Is Require Export
@@ -23,8 +22,8 @@ Typeclasses Transparent HasGrdOne.
 Reserved Notation "x 'G*' y" (at level 40, left associativity).
 Reserved Notation "'G1'" (at level 0, no associativity).
 
-Local Notation "x 'G*' y" := (grd_mul _ _ x y) : algebra_scope.
-Local Notation "'G1'" := grd_one : algebra_scope.
+Notation "x 'G*' y" := (grd_mul _ _ x y) : algebra_scope.
+Notation "'G1'" := grd_one : algebra_scope.
 
 Class IsGrdRing {A : Type} {P : A -> Type}
   (A_has_bin_op : HasBinOp A) (A_has_un : HasUn A)
@@ -37,8 +36,8 @@ Class IsGrdRing {A : Type} {P : A -> Type}
   (** TODO Uninline the following, use operational notations and
       check whether to unify the index types (guess: no). *)
   (* add_grd_mul_is_distr :> IsDistrFiber add grd_mul; *)
-  grd_l_distr : forall (i j : A) (x : P i) (y : P j) (z : P j),
+  grd_l_distr : forall (i j : A) (x : P i) (y z : P j),
     x G* (y + z) = x G* y + x G* z;
-  grd_r_distr : forall (i j : A) (x : P i) (y : P i) (z : P j),
+  grd_r_distr : forall (i j : A) (x y : P i) (z : P j),
     (x + y) G* z = x G* z + y G* z;
 }.

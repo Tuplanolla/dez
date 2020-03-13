@@ -24,8 +24,11 @@ digraph Is {
 
     node [peripheries = 2]
 
+    GrdLAlg [label = "GradedLeftAlgebra"]
+    GrdLMod [label = "GradedLeftModule"]
+    LAlg [label = "LeftAlgebra"]
     LMod [label = "LeftModule"]
-    LCompat [label = "LeftCompatible\n(a + b) L+ x = a L+ (b L+ x)"]
+    LCompat [label = "LeftCompatible\na L+ (b L+ x) = (a + b) L+ x"]
     LExtBinComm [label = "LeftExternallyBinaryCommutative?\nL- (x R+ y) = L- x R+ y"]
     LSgrpAct [label = "LeftSemigroupAction"]
     LMagAct [label = "LeftMagmaAction"]
