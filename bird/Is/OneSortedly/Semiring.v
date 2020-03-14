@@ -5,6 +5,8 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations ArithmeticNotations.
 
+(** This is a unital semiring. *)
+
 Class IsSring {A : Type}
   (has_add : HasAdd A) (has_zero : HasZero A)
   (has_mul : HasMul A) (has_one : HasOne A) : Prop := {
