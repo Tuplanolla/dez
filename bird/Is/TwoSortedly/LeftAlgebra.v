@@ -5,6 +5,8 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations ArithmeticNotations.
 
+(** TODO There is some confusion about the operational requirements... *)
+
 Class IsLAlg {A B : Type}
   (A_has_add : HasAdd A) (A_has_zero : HasZero A) (A_has_neg : HasNeg A)
   (A_has_mul : HasMul A) (A_has_one : HasOne A)

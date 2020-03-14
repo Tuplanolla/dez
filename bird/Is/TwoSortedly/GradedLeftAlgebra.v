@@ -25,8 +25,10 @@ Proof.
 
 End Context.
 
+(** TODO There is some confusion about the operational requirements... *)
+
 Class IsGrdLAlg {A : Type} {P Q : A -> Type}
-  (A_has_bin_op : HasBinOp A) (A_has_un : HasUn A) (A_has_un_op : HasUnOp A)
+  (A_has_bin_op : HasBinOp A) (A_has_un : HasUn A)
   (P_has_add : forall i : A, HasAdd (P i))
   (P_has_zero : forall i : A, HasZero (P i))
   (P_has_neg : forall i : A, HasNeg (P i))
@@ -35,10 +37,10 @@ Class IsGrdLAlg {A : Type} {P Q : A -> Type}
   (Q_has_zero : forall i : A, HasZero (Q i))
   (Q_has_neg : forall i : A, HasNeg (Q i))
   (Q_has_mul : forall i : A, HasMul (Q i))
+  (Q_has_grd_mul : HasGrdMul Q)
   (P_Q_has_grd_l_act : HasGrdLAct P Q) : Prop := {
-  this_is_grd_l_mod :>
-    IsGrdLMod (P := P) (Q := Q)
-    bin_op un un_op P_has_add P_has_zero P_has_neg
+  this_is_grd_l_mod :> IsGrdLMod (P := P) (Q := Q)
+    bin_op un P_has_add P_has_zero P_has_neg
     grd_mul grd_one Q_has_add Q_has_zero Q_has_neg
     grd_l_act;
   (* z * (x + y) = z * x + z * y *)
@@ -49,11 +51,11 @@ Class IsGrdLAlg {A : Type} {P Q : A -> Type}
     (x + y) * z = x * z + y * z;
   the_weird_comm :> IsComm bin_op;
   (* a * (x * y) = (a * x) * y *)
-  (* the_l_wtf : forall (i j k : A) (a : P i) (x : Q j) (y : Q k),
+  the_l_wtf : forall (i j k : A) (a : P i) (x : Q j) (y : Q k),
     rew [Q] assoc i j k in (a GL* (x G* y)) = (a GL* x) G* y;
   (* x * (b * y) = b * (x * y) *)
   the_r_wtf : forall (i j k : A) (a : P i) (x : Q j) (y : Q k),
-    rew [Q] swappy i j k in (x G* (a GL* y)) = a GL* (x G* y); *)
+    rew [Q] swappy i j k in (x G* (a GL* y)) = a GL* (x G* y);
 }.
 
 Section Context.
@@ -71,7 +73,5 @@ Proof.
   eset (R := a GL* (x G* y)).
   eset (L' := rew swappy i j k in L).
   eset (E := L' = R). Abort.
-
-(** Why is this suddenly fine? *)
 
 End Context.

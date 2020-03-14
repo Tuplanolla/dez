@@ -19,8 +19,10 @@ Reserved Notation "x 'GL*' y" (at level 40, left associativity).
 Notation "x 'GL+' y" := (grd_l_act _ _ x y) : algebra_scope.
 Notation "x 'GL*' y" := (grd_l_act _ _ x y) : algebra_scope.
 
+(** TODO Dubious... *)
+
 Class IsGrdLMod {A : Type} {P Q : A -> Type}
-  (A_has_bin_op : HasBinOp A) (A_has_un : HasUn A) (A_has_un_op : HasUnOp A)
+  (A_has_bin_op : HasBinOp A) (A_has_un : HasUn A)
   (P_has_add : forall i : A, HasAdd (P i))
   (P_has_zero : forall i : A, HasZero (P i))
   (P_has_neg : forall i : A, HasNeg (P i))
@@ -52,9 +54,5 @@ Class IsGrdLMod {A : Type} {P Q : A -> Type}
 Section Context.
 
 Context {A : Type} {P Q : A -> Type} `{is_grd_l_mod : IsGrdLMod A P Q}.
-
-Goal forall (i j : A) (a : P i) (b : P i) (x : Q j), True.
-Proof. intros. set (L := (a + b) GL* x). set (R := a GL* x + b GL* x).
-try set (R' := rew comm i j in R). set (E := L = R). Abort.
 
 End Context.
