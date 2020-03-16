@@ -1,20 +1,20 @@
 CMD:=$(if $(VERBOSE),,@ )
 MSG:=$(if $(VERBOSE),@ true || ,@ )
 
-all:: _CoqMakefile
-	$(CMD) $(MAKE) -f _CoqMakefile -s all
-.PHONY: all
+DEFAULT:: _CoqMakefile
+	$(MSG) echo MAKE
+	$(CMD) make -f $< -s
+.PHONY: DEFAULT
 
-clean:: squeaky-clean
-	$(CMD) $(RM) _CoqProject _CoqFiles \
-	_CoqMakefile _CoqMakefile.args _CoqMakefile.conf _CoqMakefile.local
-.PHONY: clean
+Makefile::
+	@ true
 
-squeaky-clean::
-	$(CMD) test -e _CoqMakefile && $(MAKE) -f _CoqMakefile -s clean || exit 0
-.PHONY: squeaky-clean
+%:: _CoqMakefile .FORCE
+	$(MSG) echo MAKE $@
+	$(CMD) make -f $< -s $@
 
 _CoqMakefile:: _CoqMakefile.args _CoqMakefile.local
+	$(MSG) echo MAKE $@
 	$(CMD) coq_makefile -f $< -o $@ -opt
 
 _CoqMakefile.args:: _CoqProject _CoqFiles
@@ -27,6 +27,11 @@ _CoqFiles::
 	$(CMD) find . -type f -name '*.v' | LC_ALL=C sort > $@
 
 _CoqMakefile.local::
-	$(CMD) printf '%s::\n\t@ %s %s %s\n' 'clean' 'find . -type f' \
-	"'(' -name '*.aux' -o -name '*.glob' -o -name '*.vo*' ')'" \
-	"-exec rm '{}' '+'" > $@
+	$(CMD) printf 'clean::\n\t@ %s %s %s\n' \
+	"find . -type f '('" \
+	"-name '*_Coq*' -o -name '*.aux*' -o -name '*.glob*' -o -name '*.vo*'" \
+	"')' -exec rm '{}' '+'" > $@
+
+.FORCE::
+	@ true
+.PHONY: .FORCE
