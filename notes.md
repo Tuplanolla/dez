@@ -175,6 +175,7 @@ but, alas, they are too intertwined for such a separation to be useful.
 
 Do these things.
 
+* Get rid of subclass hierarchies for operational classes.
 * Add adverb subdirectories to arrange different conceps with similar names.
   Read literature on "many-sorted" or "multi-sorted"
   "equational logic" or "universal algebra".

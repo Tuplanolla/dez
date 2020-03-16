@@ -3,7 +3,7 @@ From Maniunfold.Has.OneSorted Require Export
 From Maniunfold.Is Require Export
   OneSortedly.LeftUnital OneSortedly.RightUnital TwoSortedly.Unital.
 
-Class IsUnl {A : Type} (has_bin_op : HasBinOp A) (has_un : HasNullOp A) : Prop := {
+Class IsUnl {A : Type} (has_bin_op : HasBinOp A) (has_null_op : HasNullOp A) : Prop := {
   bin_op_null_op_is_l_unl :> IsLUnl bin_op null_op;
   bin_op_null_op_is_r_unl :> IsRUnl bin_op null_op;
 }.

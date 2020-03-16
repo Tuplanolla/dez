@@ -37,11 +37,11 @@ digraph Has {
     BinOp [label = "BinaryOperation\nA -> A -> A"]
     BinRel [label = "BinaryRelation\nA -> A -> Prop"]
     EqRel [label = "EquivalenceRelation\nA -> A -> Prop"]
-    LUn [label = "LeftNullaryOperation\nA"]
+    LNullOp [label = "LeftNullaryOperation\nA"]
     LUnOp [label = "LeftUnaryOperation\nA -> A"]
     OrdRel [label = "OrderRelation\nA -> A -> Prop"]
     Prop [label = "Proposition\nA -> Prop"]
-    RUn [label = "RightNullaryOperation\nA"]
+    RNullOp [label = "RightNullaryOperation\nA"]
     RUnOp [label = "RightUnaryOperation\nA -> A"]
     NullOp [label = "NullaryOperation\nA"]
     UnOp [label = "UnaryOperation\nA -> A"]
@@ -60,7 +60,7 @@ digraph Has {
   }
 
   GrdBinOp -> BinOp
-  GrdNullOp -> Un
+  GrdNullOp -> NullOp
   GrdUnOp -> UnOp
 
   edge [style = dashed]
@@ -72,13 +72,13 @@ digraph Has {
   EqRel -> BinRel
   LAct -> BinFn
   LFn -> Fn
-  LUn -> Un
+  LNullOp -> NullOp
   LUnOp -> LFn
   LUnOp -> UnOp
   OrdRel -> BinRel
   RAct -> BinFn
   RFn -> Fn
-  RUn -> Un
+  RNullOp -> NullOp
   RUnOp -> RFn
   RUnOp -> UnOp
   LTor -> Tor

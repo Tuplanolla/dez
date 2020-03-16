@@ -6,7 +6,7 @@ From Maniunfold.Is Require Export
   OneSortedly.RightCancellative OneSortedly.Cancellative
   OneSortedly.UnaryAntidistributive OneSortedly.Injective
   OneSortedly.Involutive OneSortedly.UnaryAbsorbing.
-From Maniunfold.ShouldHave.OneSorted Require Import
+From Maniunfold.ShouldHave Require Import
   AdditiveNotations.
 
 (** TODO What happens with
@@ -22,7 +22,7 @@ From Maniunfold.ShouldHave.OneSorted Require Import
     - [x R+ - a = a L+ x]? *)
 
 Class IsGrp {A : Type} (has_bin_op : HasBinOp A)
-  (has_un : HasNullOp A) (has_un_op : HasUnOp A) : Prop := {
+  (has_null_op : HasNullOp A) (has_un_op : HasUnOp A) : Prop := {
   bin_op_null_op_is_mon :> IsMon bin_op null_op;
   bin_op_null_op_un_op_is_inv :> IsInv bin_op null_op un_op;
 }.

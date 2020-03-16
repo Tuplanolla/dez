@@ -14,7 +14,7 @@ Class HasGrdMul {A : Type} (P : A -> Type) {has_bin_op : HasBinOp A} : Type :=
 
 Typeclasses Transparent HasGrdMul.
 
-Class HasGrdOne {A : Type} (P : A -> Type) {has_un : HasNullOp A} : Type :=
+Class HasGrdOne {A : Type} (P : A -> Type) {has_null_op : HasNullOp A} : Type :=
   grd_one : P 0.
 
 Typeclasses Transparent HasGrdOne.

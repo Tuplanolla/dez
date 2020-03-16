@@ -4,5 +4,5 @@ From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
 Class IsUnAbsorb {A : Type}
-  (has_un : HasNullOp A) (has_un_op : HasUnOp A) : Prop :=
+  (has_null_op : HasNullOp A) (has_un_op : HasUnOp A) : Prop :=
   un_absorb : - 0 = 0.

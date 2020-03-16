@@ -5,7 +5,7 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
-Class IsRUnl {A : Type} (has_bin_op : HasBinOp A) (has_un : HasNullOp A) : Prop :=
+Class IsRUnl {A : Type} (has_bin_op : HasBinOp A) (has_null_op : HasNullOp A) : Prop :=
   r_unl : forall x : A, x + 0 = x.
 
 Section Context.

@@ -35,7 +35,7 @@ digraph Is {
     LGrpAct [label = "LeftGroupAction"]
     LMonAct [label = "LeftMonoidAction"]
     LGrpTor [label = "LeftGroupTorsor"]
-    LUniq [label = "LeftUnique\n(y L- x) +L x = y"]
+    LNullOpiq [label = "LeftUnique\n(y L- x) +L x = y"]
     TwoLUnl [label = "LeftUnital\nL0 L+ x = x"]
     RCompat [label = "RightCompatible\nx R+ (a + b) = (x R+ a) R+ b"]
     RExtBinComm [label = "RightExternallyBinaryCommutative?\nR- (x L+ y) = x L+ R- y"]
@@ -148,7 +148,7 @@ digraph Is {
   LGrpAct -> LInv
   LGrpAct -> LMonAct
   LGrpTor -> LGrpAct
-  LGrpTor -> LUniq
+  LGrpTor -> LNullOpiq
   LMagAct -> Eq
   LMagAct -> Mag
   LMonAct -> LSgrpAct
