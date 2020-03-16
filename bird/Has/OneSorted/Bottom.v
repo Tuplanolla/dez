@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  Unit.
+  NullaryOperation.
 
 Class HasBot (A : Type) : Type := bot : A.
 
@@ -9,6 +9,6 @@ Section Context.
 
 Context {A : Type} `{has_bot : HasBot A}.
 
-Global Instance A_has_un : HasUn A := bot.
+Global Instance A_has_un : HasNullOp A := bot.
 
 End Context.

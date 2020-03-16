@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  BinaryOperation Unit UnaryOperation
+  BinaryOperation NullaryOperation UnaryOperation
   BinaryFunction LeftUnit RightUnit
   LeftAction RightAction LeftTorsion RightTorsion
   LeftFunction RightFunction BinaryFunction Function.
@@ -11,7 +11,7 @@ Delimit Scope algebra_scope with algebra.
 Open Scope algebra_scope.
 
 Notation "x '+' y" := (bin_op x y) : algebra_scope.
-Notation "'0'" := un : algebra_scope.
+Notation "'0'" := null_op : algebra_scope.
 Notation "'-' x" := (un_op x) : algebra_scope.
 
 (** Using [0L] would be a syntax error, which is why we use [L0]. *)
@@ -61,5 +61,5 @@ Reserved Notation "'T0'" (at level 0, no associativity).
 Reserved Notation "'T-' x" (at level 35, right associativity).
 
 Notation "x 'T+' y" := (bin_fn x y) : algebra_scope.
-Notation "'T0'" := un (only parsing) : algebra_scope.
+Notation "'T0'" := null_op (only parsing) : algebra_scope.
 Notation "'T-' x" := (fn x) : algebra_scope.

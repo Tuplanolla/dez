@@ -1,15 +1,15 @@
 From Maniunfold.Has.OneSorted Require Export
-  BinaryOperation Unit UnaryOperation.
+  BinaryOperation NullaryOperation UnaryOperation.
 From Maniunfold.Is.OneSortedly Require Export
   Commutative Group UnaryDistributive.
 From Maniunfold.ShouldHave.OneSorted Require Import
   AdditiveNotations.
 
 Class IsAbGrp {A : Type}
-  (has_bin_op : HasBinOp A) (has_un : HasUn A)
+  (has_bin_op : HasBinOp A) (has_un : HasNullOp A)
   (has_un_op : HasUnOp A) : Prop := {
   bin_op_is_comm :> IsComm bin_op;
-  bin_op_un_un_op_is_grp :> IsGrp bin_op un un_op;
+  bin_op_null_op_un_op_is_grp :> IsGrp bin_op null_op un_op;
 }.
 
 Section Context.

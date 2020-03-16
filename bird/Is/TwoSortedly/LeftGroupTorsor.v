@@ -1,12 +1,12 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation BinaryOperation Unit UnaryOperation
+  EquivalenceRelation BinaryOperation NullaryOperation UnaryOperation
   LeftAction LeftTorsion.
 From Maniunfold.Is Require Export
   Group LeftGroupAction LeftUnique.
 
 Class IsLGrpTor {A B : Type}
-  (has_bin_op : HasBinOp A) (has_un : HasUn A) (has_un_op : HasUnOp A)
+  (has_bin_op : HasBinOp A) (has_un : HasNullOp A) (has_un_op : HasUnOp A)
   (has_l_act : HasLAct A B) (has_l_tor : HasLTor A B) : Prop := {
-  bin_op_un_un_op_l_act_is_l_grp_act :> IsLGrpAct bin_op un un_op l_act;
+  bin_op_null_op_un_op_l_act_is_l_grp_act :> IsLGrpAct bin_op null_op un_op l_act;
   l_act_l_tor_left_uniq :> IsLUniq l_act l_tor;
 }.

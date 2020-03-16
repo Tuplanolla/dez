@@ -31,19 +31,19 @@ digraph Has {
     label = "OneSorted"
 
     GrdBinOp [label = "BinaryOperation\nP i -> P j -> P (i + j)"]
-    GrdUn [label = "Unit\nP 0"]
+    GrdNullOp [label = "NullaryOperation\nP 0"]
     GrdUnOp [label = "UnaryOperation\nP i -> P (- i)"]
 
     BinOp [label = "BinaryOperation\nA -> A -> A"]
     BinRel [label = "BinaryRelation\nA -> A -> Prop"]
     EqRel [label = "EquivalenceRelation\nA -> A -> Prop"]
-    LUn [label = "LeftUnit\nA"]
+    LUn [label = "LeftNullaryOperation\nA"]
     LUnOp [label = "LeftUnaryOperation\nA -> A"]
     OrdRel [label = "OrderRelation\nA -> A -> Prop"]
     Prop [label = "Proposition\nA -> Prop"]
-    RUn [label = "RightUnit\nA"]
+    RUn [label = "RightNullaryOperation\nA"]
     RUnOp [label = "RightUnaryOperation\nA -> A"]
-    Un [label = "Unit\nA"]
+    NullOp [label = "NullaryOperation\nA"]
     UnOp [label = "UnaryOperation\nA -> A"]
 
     Add [label = "Addition\nA -> A -> A"]
@@ -60,7 +60,7 @@ digraph Has {
   }
 
   GrdBinOp -> BinOp
-  GrdUn -> Un
+  GrdNullOp -> Un
   GrdUnOp -> UnOp
 
   edge [style = dashed]
@@ -89,10 +89,10 @@ digraph Has {
   BinOp -> Mul
   BinOp -> Join
   BinOp -> Meet
-  Un -> Zero
-  Un -> One
-  Un -> Bot
-  Un -> Top
+  NullOp -> Zero
+  NullOp -> One
+  NullOp -> Bot
+  NullOp -> Top
   UnOp -> Neg
   UnOp -> Recip
 }

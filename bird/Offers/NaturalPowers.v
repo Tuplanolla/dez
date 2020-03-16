@@ -1,7 +1,7 @@
 From Coq Require Import
   NArith.
 From Maniunfold.Has Require Export
-  BinaryOperation Unit LeftAction.
+  BinaryOperation NullaryOperation LeftAction.
 From Maniunfold.Offers Require Import
   PositivePowers.
 From Maniunfold.ShouldHave Require Import
@@ -9,7 +9,7 @@ From Maniunfold.ShouldHave Require Import
 
 Section Context.
 
-Context {A : Type} `{has_bin_op : HasBinOp A} `{has_un : HasUn A}.
+Context {A : Type} `{has_bin_op : HasBinOp A} `{has_un : HasNullOp A}.
 
 Fixpoint nat_op (n : nat) (x : A) : A :=
   match n with

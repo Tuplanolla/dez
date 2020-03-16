@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  BinaryOperation Unit GradedBinaryOperation GradedUnit.
+  BinaryOperation NullaryOperation GradedBinaryOperation GradedNullaryOperation.
 From Maniunfold.Is Require Export
   GradedLeftModule AbelianGroup.
 From Maniunfold.ShouldHave Require Import
@@ -28,7 +28,7 @@ End Context.
 (** TODO There is some confusion about the operational requirements... *)
 
 Class IsGrdLAlg {A : Type} {P Q : A -> Type}
-  (A_has_bin_op : HasBinOp A) (A_has_un : HasUn A)
+  (A_has_bin_op : HasBinOp A) (A_has_un : HasNullOp A)
   (P_has_add : forall i : A, HasAdd (P i))
   (P_has_zero : forall i : A, HasZero (P i))
   (P_has_neg : forall i : A, HasNeg (P i))
@@ -40,7 +40,7 @@ Class IsGrdLAlg {A : Type} {P Q : A -> Type}
   (Q_has_grd_mul : HasGrdMul Q)
   (P_Q_has_grd_l_act : HasGrdLAct P Q) : Prop := {
   this_is_grd_l_mod :> IsGrdLMod (P := P) (Q := Q)
-    bin_op un P_has_add P_has_zero P_has_neg
+    bin_op null_op P_has_add P_has_zero P_has_neg
     grd_mul grd_one Q_has_add Q_has_zero Q_has_neg
     grd_l_act;
   (* z * (x + y) = z * x + z * y *)

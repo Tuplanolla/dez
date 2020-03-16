@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  Unit.
+  NullaryOperation.
 
 Class HasOne (A : Type) : Type := one : A.
 
@@ -9,6 +9,6 @@ Section Context.
 
 Context {A : Type} `{has_one : HasOne A}.
 
-Global Instance A_has_un : HasUn A := one.
+Global Instance A_has_un : HasNullOp A := one.
 
 End Context.

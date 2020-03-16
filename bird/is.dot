@@ -94,7 +94,7 @@ digraph Is {
     Sgrp [label = "Semigroup"]
     Sring [label = "Semiring"]
     UnAbsorb [label = "UnaryAbsorbing\n- 0 = 0"]
-    UnAntidistr [label = "UnaryAntidistributive\n- (x + y) = - y + - x"]
+    UnAntidistr [label = "UnAntidistributive\n- (x + y) = - y + - x"]
     UnDistr [label = "UnaryDistributive\n- (x + y) = - x + - y"]
     Unl [label = "Unital"]
 

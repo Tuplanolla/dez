@@ -1,6 +1,6 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation Addition Zero Negation Multiplication One
-  BinaryOperation Unit UnaryOperation LeftAction.
+  BinaryOperation NullaryOperation UnaryOperation LeftAction.
 From Maniunfold.Is Require Export
   OneSortedly.Ring TwoSortedly.RightDistributive TwoSortedly.LeftCompatible
   OneSortedly.AbelianGroup TwoSortedly.LeftDistributive TwoSortedly.LeftUnital.

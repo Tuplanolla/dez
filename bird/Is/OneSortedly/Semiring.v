@@ -19,11 +19,11 @@ Class IsSring {A : Type}
 
 Ltac change_add_mon :=
   change bin_op with add in *;
-  change un with zero in *.
+  change null_op with zero in *.
 
 Ltac change_mul_mon :=
   change bin_op with mul in *;
-  change un with one in *.
+  change null_op with one in *.
 
 Section Context.
 

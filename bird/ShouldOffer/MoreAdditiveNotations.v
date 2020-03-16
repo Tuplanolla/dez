@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  GradedBinaryOperation GradedUnit GradedUnaryOperation.
+  GradedBinaryOperation GradedNullaryOperation GradedUnaryOperation.
 From Maniunfold.Offers Require Export
   PositivePowers NaturalPowers IntegerPowers.
 From Maniunfold.ShouldHave Require Export

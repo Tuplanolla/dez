@@ -1,4 +1,4 @@
 From Maniunfold.Has Require Export
-  BinaryOperation.
+  OneSorted.BinaryOperation.
 
 Class IsMag {A : Type} (has_bin_op : HasBinOp A) : Prop := {}.

@@ -1,9 +1,11 @@
-From Maniunfold.Has.OneSorted Require Export
-  BinaryOperation Unit UnaryOperation.
-From Maniunfold.Is.OneSortedly Require Export
-  Monoid Invertible
-  LeftCancellative RightCancellative Cancellative
-  UnaryAntidistributive Injective Involutive UnaryAbsorbing.
+From Maniunfold.Has Require Export
+  OneSorted.BinaryOperation OneSorted.NullaryOperation
+  OneSorted.UnaryOperation.
+From Maniunfold.Is Require Export
+  OneSortedly.Monoid OneSortedly.Invertible OneSortedly.LeftCancellative
+  OneSortedly.RightCancellative OneSortedly.Cancellative
+  OneSortedly.UnaryAntidistributive OneSortedly.Injective
+  OneSortedly.Involutive OneSortedly.UnaryAbsorbing.
 From Maniunfold.ShouldHave.OneSorted Require Import
   AdditiveNotations.
 
@@ -20,9 +22,9 @@ From Maniunfold.ShouldHave.OneSorted Require Import
     - [x R+ - a = a L+ x]? *)
 
 Class IsGrp {A : Type} (has_bin_op : HasBinOp A)
-  (has_un : HasUn A) (has_un_op : HasUnOp A) : Prop := {
-  bin_op_un_is_mon :> IsMon bin_op un;
-  bin_op_un_un_op_is_inv :> IsInv bin_op un un_op;
+  (has_un : HasNullOp A) (has_un_op : HasUnOp A) : Prop := {
+  bin_op_null_op_is_mon :> IsMon bin_op null_op;
+  bin_op_null_op_un_op_is_inv :> IsInv bin_op null_op un_op;
 }.
 
 Section Context.
@@ -109,13 +111,13 @@ Proof.
 Global Instance un_op_is_invol : IsInvol un_op.
 Proof. intros x. apply un_op_invol. Qed.
 
-Theorem un_un_op_un_absorb : - 0 = 0.
+Theorem null_op_un_op_un_absorb : - 0 = 0.
 Proof.
   rewrite <- (r_unl (- 0)).
   rewrite (l_inv 0).
   reflexivity. Qed.
 
-Global Instance un_un_op_is_un_absorb : IsUnAbsorb un un_op.
-Proof. apply un_un_op_un_absorb. Qed.
+Global Instance null_op_un_op_is_un_absorb : IsUnAbsorb null_op un_op.
+Proof. apply null_op_un_op_un_absorb. Qed.
 
 End Context.

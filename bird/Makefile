@@ -1,17 +1,19 @@
 CMD:=$(if $(VERBOSE),,@ )
 MSG:=$(if $(VERBOSE),@ true || ,@ )
 
-DEFAULT:: _CoqMakefile
+DEFAULT::
 	$(MSG) echo MAKE
-	$(CMD) make -f $< -s
+	$(CMD) make -s _CoqMakefile
+	$(CMD) make -f _CoqMakefile -s
 .PHONY: DEFAULT
 
 Makefile::
 	@ true
 
-%:: _CoqMakefile .FORCE
+%:: .FORCE
 	$(MSG) echo MAKE $@
-	$(CMD) make -f $< -s $@
+	$(CMD) make -s _CoqMakefile
+	$(CMD) make -f _CoqMakefile -s $@
 
 _CoqMakefile:: _CoqMakefile.args _CoqMakefile.local
 	$(MSG) echo MAKE $@

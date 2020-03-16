@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation BinaryOperation.
+  OneSorted.BinaryOperation.
 From Maniunfold.Is Require Export
-  Associative Magma.
+  OneSortedly.Associative OneSortedly.Magma.
 
 Class IsSgrp {A : Type} (has_bin_op : HasBinOp A) : Prop := {
   bin_op_is_assoc :> IsAssoc bin_op;

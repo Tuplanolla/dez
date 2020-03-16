@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  Unit.
+  NullaryOperation.
 
 Class HasTop (A : Type) : Type := top : A.
 
@@ -9,6 +9,6 @@ Section Context.
 
 Context {A : Type} `{has_top : HasTop A}.
 
-Global Instance A_has_un : HasUn A := top.
+Global Instance A_has_un : HasNullOp A := top.
 
 End Context.

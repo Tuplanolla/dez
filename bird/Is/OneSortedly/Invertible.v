@@ -1,10 +1,10 @@
 From Maniunfold.Has.OneSorted Require Export
-  BinaryOperation Unit UnaryOperation.
+  BinaryOperation NullaryOperation UnaryOperation.
 From Maniunfold.Is.OneSortedly Require Export
   LeftInvertible RightInvertible.
 
 Class IsInv {A : Type} (has_bin_op : HasBinOp A)
-  (has_un : HasUn A) (has_un_op : HasUnOp A) : Prop := {
-  bin_op_un_un_op_is_l_inv :> IsLInv bin_op un un_op;
-  bin_op_un_un_op_is_r_inv :> IsRInv bin_op un un_op;
+  (has_un : HasNullOp A) (has_un_op : HasUnOp A) : Prop := {
+  bin_op_null_op_un_op_is_l_inv :> IsLInv bin_op null_op un_op;
+  bin_op_null_op_un_op_is_r_inv :> IsRInv bin_op null_op un_op;
 }.

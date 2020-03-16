@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation BinaryOperation Unit.
+  EquivalenceRelation BinaryOperation NullaryOperation.
 From Maniunfold.Is Require Export
   LeftUnital RightUnital.
 

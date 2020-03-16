@@ -1,7 +1,7 @@
 From Coq Require Import
   ZArith.
 From Maniunfold.Has Require Export
-  BinaryOperation Unit UnaryOperation LeftAction.
+  BinaryOperation NullaryOperation UnaryOperation LeftAction.
 From Maniunfold.Offers Require Import
   PositivePowers.
 From Maniunfold.ShouldHave Require Import
@@ -9,7 +9,7 @@ From Maniunfold.ShouldHave Require Import
 
 Section Context.
 
-Context {A : Type} `{has_bin_op : HasBinOp A} `{has_un : HasUn A}
+Context {A : Type} `{has_bin_op : HasBinOp A} `{has_un : HasNullOp A}
   `{has_un_op : HasUnOp A}.
 
 Definition z_op (n : Z) (x : A) : A :=

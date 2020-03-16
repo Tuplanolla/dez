@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  BinaryOperation Unit GradedBinaryOperation GradedUnit.
+  BinaryOperation NullaryOperation GradedBinaryOperation GradedNullaryOperation.
 From Maniunfold.Is Require Export
   LeftModule AbelianGroup RightCompatible CommutativeRing.
 From Maniunfold.ShouldHave Require Import
