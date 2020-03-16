@@ -21,8 +21,8 @@ From Maniunfold.ShouldHave Require Import
     - [- a L+ x = x R+ a]?
     - [x R+ - a = a L+ x]? *)
 
-Class IsGrp {A : Type} (has_bin_op : HasBinOp A)
-  (has_null_op : HasNullOp A) (has_un_op : HasUnOp A) : Prop := {
+Class IsGrp {A : Type} (A_has_bin_op : HasBinOp A)
+  (A_has_null_op : HasNullOp A) (A_has_un_op : HasUnOp A) : Prop := {
   bin_op_null_op_is_mon :> IsMon bin_op null_op;
   bin_op_null_op_un_op_is_inv :> IsInv bin_op null_op un_op;
 }.

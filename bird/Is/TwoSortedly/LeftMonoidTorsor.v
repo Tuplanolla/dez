@@ -10,5 +10,5 @@ Class IsLMonTor {A B : Type}
   (has_bin_op : HasBinOp A) (has_null_op : HasNullOp A)
   (has_l_act : HasLAct A B) (has_l_tor : HasLTor A B) : Prop := {
   bin_op_null_op_l_act_is_l_mon_act :> IsLMonAct bin_op null_op l_act;
-  l_act_l_tor_left_uniq :> IsLNullOpiq l_act l_tor;
+  l_act_l_tor_left_uniq :> IsLNullUniq l_act l_tor;
 }.

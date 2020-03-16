@@ -1,8 +1,8 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation BinaryOperation LeftAction.
+  OneSorted.BinaryOperation TwoSorted.LeftAction.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations.
+  AdditiveNotations.
 
 Class IsLCompat {A B : Type}
-  (has_bin_op : HasBinOp A) (has_l_act : HasLAct A B) : Prop :=
+  (A_has_bin_op : HasBinOp A) (A_B_has_l_act : HasLAct A B) : Prop :=
   l_compat : forall (a b : A) (x : B), a L+ (b L+ x) = (a + b) L+ x.

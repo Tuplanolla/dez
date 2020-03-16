@@ -1,11 +1,12 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation BinaryOperation NullaryOperation.
+  OneSorted.BinaryOperation OneSorted.NullaryOperation.
 From Maniunfold.Is Require Export
   TwoSortedly.RightUnital.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations.
+  AdditiveNotations.
 
-Class IsRUnl {A : Type} (has_bin_op : HasBinOp A) (has_null_op : HasNullOp A) : Prop :=
+Class IsRUnl {A : Type}
+  (A_has_bin_op : HasBinOp A) (A_has_null_op : HasNullOp A) : Prop :=
   r_unl : forall x : A, x + 0 = x.
 
 Section Context.

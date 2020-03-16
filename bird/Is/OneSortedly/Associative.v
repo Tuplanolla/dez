@@ -1,11 +1,11 @@
-From Maniunfold.Has.OneSorted Require Export
-  BinaryOperation.
-From Maniunfold.Is.ThreeSortedly Require Export
-  Bicompatible.
-From Maniunfold.ShouldHave.OneSorted Require Import
+From Maniunfold.Has Require Export
+  OneSorted.BinaryOperation.
+From Maniunfold.Is Require Export
+  ThreeSortedly.Bicompatible.
+From Maniunfold.ShouldHave Require Import
   AdditiveNotations.
 
-Class IsAssoc {A : Type} (has_bin_op : HasBinOp A) : Prop :=
+Class IsAssoc {A : Type} (A_has_bin_op : HasBinOp A) : Prop :=
   assoc : forall x y z : A, x + (y + z) = (x + y) + z.
 
 Section Context.

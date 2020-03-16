@@ -1,9 +1,10 @@
-From Maniunfold.Has.OneSorted Require Export
-  BinaryOperation NullaryOperation.
+From Maniunfold.Has Require Export
+  OneSorted.BinaryOperation OneSorted.NullaryOperation.
 From Maniunfold.Is Require Export
   OneSortedly.LeftUnital OneSortedly.RightUnital TwoSortedly.Unital.
 
-Class IsUnl {A : Type} (has_bin_op : HasBinOp A) (has_null_op : HasNullOp A) : Prop := {
+Class IsUnl {A : Type}
+  (A_has_bin_op : HasBinOp A) (A_has_null_op : HasNullOp A) : Prop := {
   bin_op_null_op_is_l_unl :> IsLUnl bin_op null_op;
   bin_op_null_op_is_r_unl :> IsRUnl bin_op null_op;
 }.

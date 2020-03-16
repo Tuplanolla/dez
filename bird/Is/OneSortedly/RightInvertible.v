@@ -1,8 +1,9 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation BinaryOperation NullaryOperation UnaryOperation.
+  OneSorted.BinaryOperation OneSorted.NullaryOperation
+  OneSorted.UnaryOperation.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations.
+  AdditiveNotations.
 
-Class IsRInv {A : Type} (has_bin_op : HasBinOp A)
-  (has_null_op : HasNullOp A) (has_un_op : HasUnOp A) : Prop :=
-  r_inv : forall x : A, x + - x = 0.
+Class IsRInv {A : Type} (A_has_bin_op : HasBinOp A)
+  (A_has_null_op : HasNullOp A) (A_has_un_op : HasUnOp A) : Prop :=
+  r_inv : forall x : A, x + (- x) = 0.
