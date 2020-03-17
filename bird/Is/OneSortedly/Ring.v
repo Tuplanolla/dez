@@ -22,8 +22,9 @@ Section Context.
 Context {A : Type} `{is_ring : IsRing A}.
 
 Ltac specializations :=
-  typeclasses specialize bin_op into add, null_op into zero, un_op into neg ||
-  typeclasses specialize bin_op into mul, null_op into one.
+  typeclasses specialize bin_op into add and
+  null_op into zero and un_op into neg or
+  bin_op into mul and null_op into one.
 
 Theorem zero_mul_l_absorb : forall x : A,
   0 * x = 0.
