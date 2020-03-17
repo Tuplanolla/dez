@@ -1,5 +1,3 @@
-From Coq Require Import
-  Setoid Morphisms.
 From Maniunfold.Has Require Export
   OneSorted.EquivalenceRelation OneSorted.OrderRelation.
 From Maniunfold.Is Require Export
@@ -19,9 +17,12 @@ Section Context.
 
 Context {A : Type} `{is_tot_ord : IsTotOrd A}.
 
+Ltac specializations :=
+  typeclasses specialize bin_rel into ord_rel.
+
 Theorem ord_rel_refl : forall x : A,
   x <= x.
-Proof with change_part_ord.
+Proof with specializations.
   intros x. destruct (connex x x) as [H | H]...
   - apply H.
   - apply H. Qed.

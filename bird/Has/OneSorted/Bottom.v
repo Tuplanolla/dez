@@ -9,6 +9,6 @@ Section Context.
 
 Context {A : Type} `{has_bot : HasBot A}.
 
-Global Instance A_has_un : HasNullOp A := bot.
+Global Instance A_has_null_op : HasNullOp A := bot.
 
 End Context.

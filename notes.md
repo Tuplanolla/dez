@@ -175,7 +175,6 @@ but, alas, they are too intertwined for such a separation to be useful.
 
 Do these things.
 
-* Get rid of subclass hierarchies for operational classes.
 * Add adverb subdirectories to arrange different conceps with similar names.
   Read literature on "many-sorted" or "multi-sorted"
   "equational logic" or "universal algebra".
@@ -212,6 +211,14 @@ Some rules.
 * Implicit
     * Do not make operational class inferrable parameters implicit,
       because unexpected maximal insertion breaks everything (pages of errors).
+
+Do not try these.
+
+* Do not get rid of subclass hierarchies for operational classes,
+  because they are needed to resolve subtypings like `HasAdd <: HasBinOp`.
+* Do not get rid of `Typeclasses Transparent` for operational classes,
+  because they are needed to reduce contexts like
+  `A : Type, has_zero : HasZero A |- HasZero (HasNullOp A)`.
 
 Wikipedia has the wild conjecture on "externality".
 It is not mentioned in literature, but appears to be useful.

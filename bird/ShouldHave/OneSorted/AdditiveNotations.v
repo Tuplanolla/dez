@@ -1,6 +1,7 @@
 From Maniunfold.Has Require Export
   BinaryOperation NullaryOperation UnaryOperation
   BinaryFunction LeftNullaryOperation RightNullaryOperation
+  LeftUnaryOperation RightUnaryOperation
   LeftAction RightAction LeftTorsion RightTorsion
   LeftFunction RightFunction BinaryFunction Function.
 
@@ -27,8 +28,8 @@ Notation "x 'L+' y" := (l_act x y) : algebra_scope.
 Notation "x 'R+' y" := (r_act x y) : algebra_scope.
 Notation "'L0'" := l_null_op : algebra_scope.
 Notation "'R0'" := r_null_op : algebra_scope.
-Notation "'L-' x" := (l_fn x) : algebra_scope.
-Notation "'R-' x" := (r_fn x) : algebra_scope.
+Notation "'L-' x" := (l_un_op x) : algebra_scope.
+Notation "'R-' x" := (r_un_op x) : algebra_scope.
 
 Reserved Notation "x 'L*' y" (at level 40, left associativity).
 Reserved Notation "x 'R*' y" (at level 40, left associativity).
@@ -41,8 +42,8 @@ Notation "x 'L*' y" := (l_act x y) : algebra_scope.
 Notation "x 'R*' y" := (r_act x y) : algebra_scope.
 Notation "'L1'" := l_null_op : algebra_scope.
 Notation "'R1'" := r_null_op : algebra_scope.
-Notation "'L/' x" := (l_fn x) : algebra_scope.
-Notation "'R/' x" := (r_fn x) : algebra_scope.
+Notation "'L/' x" := (l_un_op x) : algebra_scope.
+Notation "'R/' x" := (r_un_op x) : algebra_scope.
 
 (** This is motivated by torsors giving rise to elaborate cancellations. *)
 

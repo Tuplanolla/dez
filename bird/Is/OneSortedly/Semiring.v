@@ -17,20 +17,16 @@ Class IsSring {A : Type}
   mul_one_is_mon :> IsMon mul one;
 }.
 
-Ltac change_add_mon :=
-  change bin_op with add in *;
-  change null_op with zero in *.
-
-Ltac change_mul_mon :=
-  change bin_op with mul in *;
-  change null_op with one in *.
-
 Section Context.
 
 Context {A : Type} `{is_sring : IsSring A}.
 
+Ltac specializations :=
+  typeclasses specialize bin_op into add, null_op into zero ||
+  typeclasses specialize bin_op into mul, null_op into one.
+
 Goal 0 = 1 -> forall x y : A, x = y.
-Proof with change_add_mon || change_mul_mon.
+Proof with specializations.
   intros H x y.
   rewrite <- (l_unl x)...
   rewrite <- (l_unl y)...

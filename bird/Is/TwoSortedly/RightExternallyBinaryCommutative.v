@@ -1,8 +1,8 @@
 From Maniunfold.Has Require Export
-  OneSorted.EquivalenceRelation LeftAction RightUnaryOperation.
+  OneSorted.RightUnaryOperation TwoSorted.LeftAction.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations.
+  AdditiveNotations.
 
 Class IsRExtBinComm {A B : Type}
-  (has_r_un_op : HasRUnOp B) (has_l_act : HasLAct A B) : Prop :=
-  r_ext_bin_comm : forall (x : A) (y : B), R- (x L+ y) = x L+ R- y.
+  (B_has_r_un_op : HasRUnOp B) (A_B_has_l_act : HasLAct A B) : Prop :=
+  r_ext_bin_comm : forall (a : A) (x : B), R- (a L+ x) = a L+ (R- x).
