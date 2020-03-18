@@ -7,7 +7,7 @@ Typeclasses Transparent HasHom.
 
 Section Context.
 
-Context {A : Type} `{has_hom : HasHom A}.
+Context {A : Type} `{A_has_hom : HasHom A}.
 
 Global Instance A_has_bin_rel : HasBinRel A := hom.
 

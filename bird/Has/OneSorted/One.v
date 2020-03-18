@@ -7,8 +7,8 @@ Typeclasses Transparent HasOne.
 
 Section Context.
 
-Context {A : Type} `{has_one : HasOne A}.
+Context {A : Type} `{A_has_one : HasOne A}.
 
-Global Instance A_has_un : HasNullOp A := one.
+Global Instance A_has_null_op : HasNullOp A := one.
 
 End Context.

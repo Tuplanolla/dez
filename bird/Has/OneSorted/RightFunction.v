@@ -7,7 +7,7 @@ Typeclasses Transparent HasRFn.
 
 Section Context.
 
-Context {A B : Type} `{has_r_fn : HasRFn A B}.
+Context {A B : Type} `{A_B_has_r_fn : HasRFn A B}.
 
 Global Instance A_B_has_fn : HasFn A B := r_fn.
 

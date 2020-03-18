@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   Categorical.TypeNotations.
 
-Class HasComp {A : Type} (has_hom : HasHom A) : Type :=
+Class HasComp {A : Type} (A_has_hom : HasHom A) : Type :=
   comp : forall x y z : A, (x --> y) -> (y --> z) -> (x --> z).
 
 Typeclasses Transparent HasComp.

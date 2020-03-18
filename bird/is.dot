@@ -3,223 +3,234 @@ digraph Is {
 
   node [fontname = monospace]
 
-  Connex [label = "Connex\nx ~~ y \\/ y ~~ x"]
-  Refl [label = "Reflexive\nx ~~ x"]
   Antisym [label = "Antisymmetric\nx ~~ y -> y ~~ x -> x = y"]
   Asym [label = "Asymmetric\nx ~~ y -> ~ (y ~~ x)"]
+  Connex [label = "Connex\nx ~~ y \\/ y ~~ x"]
   Irrefl [label = "Irreflexive\n~ (x ~~ x)"]
+  Refl [label = "Reflexive\nx ~~ x"]
   Sym [label = "Symmetric\nx ~~ y -> y ~~ x"]
   Trans [label = "Transitive\nx ~~ y -> y ~~ z -> x ~~ z"]
 
-  subgraph ThreeSort {
-    label = "ThreeSortedly"
+  subgraph Three {
+    label = "ThreeSorted"
 
     node [peripheries = 3]
 
     Bicompat [label = "Bicompatible\na L+ (x R+ b) = (a L+ x) R+ b"]
   }
 
-  subgraph TwoSort {
-    label = "TwoSortedly"
+  subgraph Two {
+    label = "TwoSorted"
 
     node [peripheries = 2]
 
-    GrdLAlg [label = "GradedLeftAlgebra"]
-    GrdLMod [label = "GradedLeftModule"]
+    subgraph TwoGrd {
+      label = "Graded"
+
+      node [style = dashed]
+
+      GrdLAlg [label = "LeftAlgebra"]
+      GrdLMod [label = "LeftModule"]
+    }
+
     LAlg [label = "LeftAlgebra"]
-    LMod [label = "LeftModule"]
     LCompat [label = "LeftCompatible\na L+ (b L+ x) = (a + b) L+ x"]
     LExtBinComm [label = "LeftExternallyBinaryCommutative?\nL- (x R+ y) = L- x R+ y"]
-    LSgrpAct [label = "LeftSemigroupAction"]
-    LMagAct [label = "LeftMagmaAction"]
     LGrpAct [label = "LeftGroupAction"]
-    LMonAct [label = "LeftMonoidAction"]
     LGrpTor [label = "LeftGroupTorsor"]
+    LMagAct [label = "LeftMagmaAction"]
+    LMod [label = "LeftModule"]
+    LMonAct [label = "LeftMonoidAction"]
     LNullUniq [label = "LeftUnique\n(y L- x) +L x = y"]
-    TwoLUnl [label = "LeftUnital\nL0 L+ x = x"]
+    LSgrpAct [label = "LeftSemigroupAction"]
     RCompat [label = "RightCompatible\nx R+ (a + b) = (x R+ a) R+ b"]
     RExtBinComm [label = "RightExternallyBinaryCommutative?\nR- (x L+ y) = x L+ R- y"]
     RSgrpAct [label = "RightSemigroupAction"]
+    TwoLDistr [label = "LeftDistributive?\na L* (x + y) = a L* x + a L* y"]
+    TwoLUnl [label = "LeftUnital\nL0 L+ x = x"]
+    TwoRDistr [label = "RightDistributive?\n(a + b) L* x = a L* x + b L* x"]
     TwoRUnl [label = "RightUnital\nx R+ R0 = x"]
     TwoUnl [label = "Unital"]
-    TwoLDistr [label = "LeftDistributive?\na L* (x + y) = a L* x + a L* y"]
-    TwoRDistr [label = "RightDistributive?\n(a + b) L* x = a L* x + b L* x"]
   }
 
-  subgraph OneSort {
-    label = "OneSortedly"
+  subgraph One {
+    label = "OneSorted"
 
-    GrdAssoc [label = "GradedAssociative?\na _* (x G+ (y G+ z)) = (x G+ y) G+ z"]
-    GrdLUnl [label = "GradedRightUnital?\nl _* (G0 G+ x) = x"]
-    GrdRUnl [label = "GradedRightUnital?\nr _* (x G+ G0) = x"]
-    GrdLDistr [label = "GradedLeftDistributive?\nx G* (y + z) = x G* y + x G* z"]
-    GrdRDistr [label = "GradedRightDistributive?\n(x + y) G* z = x G* z + y G* z"]
+    subgraph OneGrd {
+      label = "Graded"
+
+      node [style = dashed]
+
+      GrdAssoc [label = "Associative\nx G+ (y G+ z) = (x G+ y) G+ z"]
+      GrdLDistr [label = "LeftDistributive?\nx G* (y + z) = x G* y + x G* z"]
+      GrdLUnl [label = "LeftUnital\nG0 G+ x = x"]
+      GrdMon [label = "Monoid"]
+      GrdRDistr [label = "RightDistributive?\n(x + y) G* z = x G* z + y G* z"]
+      GrdRUnl [label = "RightUnital\nx G+ G0 = x"]
+      GrdRing [label = "Ring"]
+      GrdUnl [label = "Unital"]
+    }
 
     AbGrp [label = "AbelianGroup"]
-    StrPartOrd [label = "StrictPartialOrder"]
     Absorb [label = "Absorbing"]
     Assoc [label = "Associative\nx + (y + z) = (x + y) + z"]
+    BinComm [label = "BinaryCommutative?"]
     BinCrs [label = "BinaryCrossing?\n(- x) * y = x * (- y)"]
     BinSptCancel [label = "BinarySplitCancellative?\n(- x) * (- y) = x * y"]
-    BinComm [label = "BinaryCommutative?"]
     Cancel [label = "Cancellative"]
     Comm [label = "Commutative\nx + y = y + x"]
     Distr [label = "Distributive"]
-    PartEq [label = "PartialEquivalence"]
     Eq [label = "Equivalence"]
     Grp [label = "Group"]
-    GrdRing [label = "GradedRing"]
-    GrdMon [label = "GradedMonoid"]
     Inj [label = "Injective\n- x = - y -> x = y"]
     Inv [label = "Invertible"]
     Invol [label = "Involutive\n- - x = x"]
     LAbsorb [label = "LeftAbsorbing\n0 * x = 0"]
-    SgnAbsorb [label = "SignedAbsorbing?"]
-    LSgnAbsorb [label = "LeftSignedAbsorbing?\n(- 1) * x = - x"]
-    RSgnAbsorb [label = "RightSignedAbsorbing?\nx * (- 1) = - x"]
     LBinComm [label = "LeftBinaryCommutative?\n- (x * y) = - x * y"]
     LCancel [label = "LeftCancellative\nz + x = z + y -> x = y"]
     LDistr [label = "LeftDistributive\nx * (y + z) = x * y + x * z"]
     LInv [label = "LeftInvertible\n- x + x = 0"]
+    LSgnAbsorb [label = "LeftSignedAbsorbing?\n(- 1) * x = - x"]
     LUnl [label = "LeftUnital\n0 + x = x"]
     Mag [label = "Magma"]
     Mon [label = "Monoid"]
+    PartEq [label = "PartialEquivalence"]
     RAbsorb [label = "RightAbsorbing\nx * 0 = 0"]
     RBinComm [label = "RightBinaryCommutative?\n- (x * y) = x * - y"]
     RCancel [label = "RightCancellative\nx + z = y + z -> x = y"]
     RDistr [label = "RightDistributive\n(x + y) * z = x * z + y * z"]
     RInv [label = "RightInvertible\nx + - x = 0"]
+    RSgnAbsorb [label = "RightSignedAbsorbing?\nx * (- 1) = - x"]
     RUnl [label = "RightUnital\nx + 0 = x"]
     Ring [label = "Ring"]
+    SgnAbsorb [label = "SignedAbsorbing?"]
     Sgrp [label = "Semigroup"]
     Sring [label = "Semiring"]
+    StrPartOrd [label = "StrictPartialOrder"]
     UnAbsorb [label = "UnaryAbsorbing\n- 0 = 0"]
     UnAntidistr [label = "UnAntidistributive\n- (x + y) = - y + - x"]
     UnDistr [label = "UnaryDistributive\n- (x + y) = - x + - y"]
     Unl [label = "Unital"]
 
-    PartOrd [label = "PartialOrder"]
-    Preord [label = "Preorder"]
-    TotOrd [label = "TotalOrder"]
     BndLat [label = "BoundedLattice"]
     BndSlat [label = "BoundedSemilattice"]
     Idem [label = "Idempotent\nx + x = x"]
     Lat [label = "Lattice"]
+    PartOrd [label = "PartialOrder"]
+    Preord [label = "Preorder"]
     Slat [label = "Semilattice"]
     Sorb [label = "Sorbing\nx \\/ (x /\\ y) = x"]
+    TotOrd [label = "TotalOrder"]
   }
 
   edge [style = solid]
 
-  AbGrp -> Grp
   AbGrp -> Comm
+  AbGrp -> Grp
   Absorb -> LAbsorb
   Absorb -> RAbsorb
+  Antisym -> Eq
   BinComm -> LBinComm
   BinComm -> RBinComm
+  BndLat -> Lat
+  BndLat -> Unl [label = "2"]
+  BndSlat -> Slat
+  BndSlat -> Unl
   Cancel -> LCancel
   Cancel -> RCancel
   Distr -> LDistr
   Distr -> RDistr
-  PartEq -> Sym
-  PartEq -> Trans
-  Eq -> Refl
   Eq -> PartEq
+  Eq -> Refl
+  GrdAssoc -> Assoc
+  GrdLUnl -> LUnl
+  GrdMon -> GrdAssoc
+  GrdMon -> GrdUnl
+  GrdMon -> Mon
+  GrdRUnl -> RUnl
+  GrdRing -> AbGrp [label = "w"]
+  GrdRing -> GrdMon
+  GrdUnl -> GrdLUnl
+  GrdUnl -> GrdRUnl
   Grp -> Inv
   Grp -> Mon
   Inv -> LInv
   Inv -> RInv
-  LSgrpAct -> LCompat
-  LSgrpAct -> Sgrp
-  Mon -> Sgrp
-  Mon -> Unl
-  RSgrpAct -> RCompat
-  RSgrpAct -> Sgrp
-  Sgrp -> Assoc
-  Sgrp -> Mag
-  SgnAbsorb -> LSgnAbsorb
-  SgnAbsorb -> RSgnAbsorb
-  Unl -> LUnl
-  Unl -> RUnl
-  TwoUnl -> TwoLUnl
-  TwoUnl -> TwoRUnl
-
   LGrpAct -> LInv
   LGrpAct -> LMonAct
   LGrpTor -> LGrpAct
   LGrpTor -> LNullUniq
   LMagAct -> Eq
   LMagAct -> Mag
+  LMod -> AbGrp
+  LMod -> LCompat
+  LMod -> Ring
+  LMod -> TwoLDistr
+  LMod -> TwoLUnl
+  LMod -> TwoRDistr
   LMonAct -> LSgrpAct
   LMonAct -> TwoLUnl
+  LSgrpAct -> LCompat
   LSgrpAct -> LMagAct
-
-  Sring -> Absorb
-  Ring -> Comm
-  Sring -> Comm
-  Ring -> Distr
-  Sring -> Distr
-  Ring -> Grp
-  Ring -> Mon
-  Sring -> Mon [label = "2"]
-
-  Antisym -> Eq
-  TotOrd -> Antisym
-  TotOrd -> Connex
-  TotOrd -> Trans
-  PartOrd -> Antisym
-  PartOrd -> Preord
-  StrPartOrd -> Irrefl
-  StrPartOrd -> Trans
-  Preord -> Refl
-  Preord -> Trans
-
+  LSgrpAct -> Sgrp
   Lat -> Slat [label = "2"]
   Lat -> Sorb [label = "2"]
+  Mon -> Sgrp
+  Mon -> Unl
+  PartEq -> Sym
+  PartEq -> Trans
+  PartOrd -> Antisym
+  PartOrd -> Preord
+  Preord -> Refl
+  Preord -> Trans
+  RSgrpAct -> RCompat
+  RSgrpAct -> Sgrp
+  Ring -> Comm
+  Ring -> Distr
+  Ring -> Grp
+  Ring -> Mon
+  SgnAbsorb -> LSgnAbsorb
+  SgnAbsorb -> RSgnAbsorb
+  Sgrp -> Assoc
+  Sgrp -> Mag
   Slat -> Comm
   Slat -> Idem
   Slat -> Sgrp
-  BndSlat -> Slat
-  BndSlat -> Unl
-  BndLat -> Lat
-  BndLat -> Unl [label = "2"]
-
-  LMod -> Ring
-  LMod -> TwoRDistr
-  LMod -> LCompat
-  LMod -> AbGrp
-  LMod -> TwoLDistr
-  LMod -> TwoLUnl
-
-  GrdMon -> Mon
-  GrdRing -> GrdMon
-  GrdRing -> AbGrp [label = "w"]
+  Sring -> Absorb
+  Sring -> Comm
+  Sring -> Distr
+  Sring -> Mon [label = "2"]
+  StrPartOrd -> Irrefl
+  StrPartOrd -> Trans
+  TotOrd -> Antisym
+  TotOrd -> Connex
+  TotOrd -> Trans
+  TwoUnl -> TwoLUnl
+  TwoUnl -> TwoRUnl
+  Unl -> LUnl
+  Unl -> RUnl
 
   edge [style = dashed]
 
-  TotOrd -> Refl
-  TotOrd -> PartOrd
-
+  AbGrp -> UnDistr
   Assoc -> Bicompat
-  Grp -> UnAbsorb
-  Grp -> UnAntidistr
+  BndLat -> BndSlat [label = "2"]
   Grp -> Cancel
   Grp -> Inj
   Grp -> Invol
+  Grp -> UnAbsorb
+  Grp -> UnAntidistr
   LBinComm -> LExtBinComm
   LUnl -> TwoLUnl
   RBinComm -> RExtBinComm
   RUnl -> TwoRUnl
-  Unl -> TwoUnl
-
-  AbGrp -> UnDistr
-
   Ring -> Absorb
   Ring -> BinComm
-  Ring -> Sring
-  Ring -> SgnAbsorb
   Ring -> BinCrs
   Ring -> BinSptCancel
-
-  BndLat -> BndSlat [label = "2"]
+  Ring -> SgnAbsorb
+  Ring -> Sring
+  TotOrd -> PartOrd
+  TotOrd -> Refl
+  Unl -> TwoUnl
 }

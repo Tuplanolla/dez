@@ -3,11 +3,11 @@ From Coq Require Import
 From Maniunfold.Has Require Export
   OneSorted.EquivalenceRelation OneSorted.BinaryRelation.
 From Maniunfold.Is Require Export
-  OneSortedly.Equivalence.
+  OneSorted.Equivalence.
 From Maniunfold.ShouldHave Require Import
   BinaryRelationNotations EquivalenceRelationNotations.
 
-Class IsAntisym {A : Type} (has_bin_rel : HasBinRel A) : Prop :=
+Class IsAntisym {A : Type} (A_has_bin_rel : HasBinRel A) : Prop :=
   antisym : forall x y : A, x ~~ y -> y ~~ x -> x = y.
 
 Section Context.

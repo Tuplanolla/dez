@@ -5,7 +5,7 @@ From Maniunfold.Is.Categorically Require Export
 From Maniunfold.ShouldHave.Categorical Require Import
   Notations.
 
-Class IsGrpd {A : Type} {has_hom : HasHom A}
+Class IsGrpd {A : Type} {A_has_hom : HasHom A}
   (has_comp : HasComp hom) (has_idt : HasIdt hom)
   (has_inv : HasInv hom) : Prop := {
   comp_idt_is_cat :> IsCat comp idt;

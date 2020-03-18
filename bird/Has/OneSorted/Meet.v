@@ -7,7 +7,7 @@ Typeclasses Transparent HasMeet.
 
 Section Context.
 
-Context {A : Type} `{has_meet : HasMeet A}.
+Context {A : Type} `{A_has_meet : HasMeet A}.
 
 Global Instance A_has_bin_op : HasBinOp A := meet.
 

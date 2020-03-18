@@ -7,7 +7,7 @@ Typeclasses Transparent HasLFn.
 
 Section Context.
 
-Context {A B : Type} `{has_l_fn : HasLFn A B}.
+Context {A B : Type} `{A_B_has_l_fn : HasLFn A B}.
 
 Global Instance A_B_has_fn : HasFn A B := l_fn.
 

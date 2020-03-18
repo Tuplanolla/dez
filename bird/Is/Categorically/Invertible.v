@@ -3,7 +3,7 @@ From Maniunfold.Has.Categorical Require Export
 From Maniunfold.Is.Categorically Require Export
   LeftInvertible RightInvertible.
 
-Class IsCatInv {A : Type} {has_hom : HasHom A}
+Class IsCatInv {A : Type} {A_has_hom : HasHom A}
   (has_comp : HasComp hom) (has_idt : HasIdt hom)
   (has_inv : HasInv hom) : Prop := {
   comp_idt_inv_is_cat_l_inv :> IsCatLInv comp idt inv;

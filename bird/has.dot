@@ -3,7 +3,7 @@ digraph Has {
 
   node [fontname = monospace]
 
-  subgraph ThreeSort {
+  subgraph Three {
     label = "ThreeSorted"
 
     node [peripheries = 3]
@@ -11,88 +11,98 @@ digraph Has {
     BinFn [label = "BinaryFunction\nA -> B -> C"]
   }
 
-  subgraph TwoSort {
+  subgraph Two {
     label = "TwoSorted"
 
     node [peripheries = 2]
 
-    TwoBinRel [label = "BinaryRelation\nA -> B -> Prop"]
+    subgraph TwoGrd {
+      label = "Graded"
+
+      node [style = dashed]
+
+      GrdLAct [label = "LeftAction\nP i -> Q j -> Q (i + j)"]
+      GrdRAct [label = "RightAction\nQ i -> P j -> Q (i + j)"]
+    }
+
     Fn [label = "Function\nA -> B"]
     LAct [label = "LeftAction\nA -> B -> B"]
-    LFn [label = "LeftFunction\nA -> B"]
     LTor [label = "LeftTorsion\nA -> A -> B"]
     RAct [label = "RightAction\nB -> A -> B"]
-    RFn [label = "RightFunction\nA -> B"]
     RTor [label = "RightTorsion\nA -> A -> B"]
     Tor [label = "Torsion\nA -> A -> B"]
+    TwoBinRel [label = "BinaryRelation\nA -> B -> Prop"]
   }
 
-  subgraph OneSort {
+  subgraph One {
     label = "OneSorted"
 
-    GrdBinOp [label = "BinaryOperation\nP i -> P j -> P (i + j)"]
-    GrdNullOp [label = "NullaryOperation\nP 0"]
-    GrdUnOp [label = "UnaryOperation\nP i -> P (- i)"]
+    subgraph OneGrd {
+      label = "Graded"
 
+      node [style = dashed]
+
+      GrdBinOp [label = "BinaryOperation\nP i -> P j -> P (i + j)"]
+      GrdNullOp [label = "NullaryOperation\nP 0"]
+      GrdUnOp [label = "UnaryOperation\nP i -> P (- i)"]
+    }
+
+    Add [label = "Addition\nA -> A -> A"]
     BinOp [label = "BinaryOperation\nA -> A -> A"]
     BinRel [label = "BinaryRelation\nA -> A -> Prop"]
+    Bot [label = "Bottom\nA"]
     EqRel [label = "EquivalenceRelation\nA -> A -> Prop"]
+    Join [label = "Join\nA -> A -> A"]
     LNullOp [label = "LeftNullaryOperation\nA"]
     LUnOp [label = "LeftUnaryOperation\nA -> A"]
+    Meet [label = "Meet\nA -> A -> A"]
+    Mul [label = "Multiplication\nA -> A -> A"]
+    Neg [label = "Negation\nA -> A"]
+    NullOp [label = "NullaryOperation\nA"]
+    One [label = "One\nA"]
     OrdRel [label = "OrderRelation\nA -> A -> Prop"]
     Prop [label = "Proposition\nA -> Prop"]
     RNullOp [label = "RightNullaryOperation\nA"]
     RUnOp [label = "RightUnaryOperation\nA -> A"]
-    NullOp [label = "NullaryOperation\nA"]
-    UnOp [label = "UnaryOperation\nA -> A"]
-
-    Add [label = "Addition\nA -> A -> A"]
-    Zero [label = "Zero\nA"]
-    Neg [label = "Negation\nA -> A"]
-    Mul [label = "Multiplication\nA -> A -> A"]
-    One [label = "One\nA"]
     Recip [label = "Reciprocation\nA -> A"]
-
-    Join [label = "Join\nA -> A -> A"]
-    Bot [label = "Bottom\nA"]
-    Meet [label = "Meet\nA -> A -> A"]
     Top [label = "Top\nA"]
+    UnOp [label = "UnaryOperation\nA -> A"]
+    Zero [label = "Zero\nA"]
   }
 
   GrdBinOp -> BinOp
+  GrdLAct -> BinOp
   GrdNullOp -> NullOp
+  GrdRAct -> BinOp
   GrdUnOp -> UnOp
 
   edge [style = dashed]
 
-  BinRel -> TwoBinRel
-  BinOp -> Tor
+  BinOp -> Add
+  BinOp -> Join
   BinOp -> LAct
+  BinOp -> Meet
+  BinOp -> Mul
   BinOp -> RAct
+  BinOp -> Tor
+  BinRel -> TwoBinRel
   EqRel -> BinRel
+  GrdBinOp -> GrdLAct
+  GrdBinOp -> GrdRAct
   LAct -> BinFn
-  LFn -> Fn
   LNullOp -> NullOp
-  LUnOp -> LFn
+  LTor -> Tor
   LUnOp -> UnOp
+  NullOp -> Bot
+  NullOp -> One
+  NullOp -> Top
+  NullOp -> Zero
   OrdRel -> BinRel
   RAct -> BinFn
-  RFn -> Fn
   RNullOp -> NullOp
-  RUnOp -> RFn
-  RUnOp -> UnOp
-  LTor -> Tor
   RTor -> Tor
+  RUnOp -> UnOp
   UnOp -> Fn
-
-  BinOp -> Add
-  BinOp -> Mul
-  BinOp -> Join
-  BinOp -> Meet
-  NullOp -> Zero
-  NullOp -> One
-  NullOp -> Bot
-  NullOp -> Top
   UnOp -> Neg
   UnOp -> Recip
 }

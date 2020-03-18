@@ -2,6 +2,8 @@ From Maniunfold.Has Require Export
   OneSorted.Graded.BinaryOperation OneSorted.Graded.NullaryOperation
   OneSorted.Graded.UnaryOperation.
 
+(** TODO Would it be better to overload [+] and friends in another scope? *)
+
 Declare Scope group_scope.
 
 Delimit Scope group_scope with group.

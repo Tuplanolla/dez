@@ -35,7 +35,7 @@ Proof. intros x y z. apply Z.add_assoc. Qed.
 Global Instance Z_add_is_sgrp : IsSgrp Z.add.
 Proof. constructor; typeclasses eauto. Qed.
 
-Global Instance Z_has_un : HasNullOp Z := Z.zero.
+Global Instance Z_has_null_op : HasNullOp Z := Z.zero.
 
 Global Instance Z_add_zero_is_l_unl : IsLUnl Z.add Z.zero.
 Proof. intros x. apply Z.add_0_l. Qed.
@@ -78,7 +78,7 @@ Proof. intros x y z. apply Z.mul_assoc. Qed.
 Global Instance Z_mul_is_sgrp : IsSgrp Z.mul.
 Proof. constructor; typeclasses eauto. Qed.
 
-Global Instance Z_has_un : HasNullOp Z := Z.one.
+Global Instance Z_has_null_op : HasNullOp Z := Z.one.
 
 Global Instance Z_mul_one_is_l_unl : IsLUnl Z.mul Z.one.
 Proof. intros x. apply Z.mul_1_l. Qed.
