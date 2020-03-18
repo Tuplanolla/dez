@@ -1,0 +1,36 @@
+digraph what {
+  layout = neato
+  overlap = false
+
+  node [shape = box]
+
+  OC [label = "Has\nOperational Classes", pos = "-1, 0!"]
+  OCN [label = "ShouldHave\nOperational Class Notations", pos = "-1, -2!"]
+  OD [label = "Offers\nOperational Instances", pos = "0, -1!"]
+  ODN [label = "ShouldOffer\nOperational Instance Notations", pos = "0, -3!"]
+  PC [label = "Is\nPredicative Classes", pos = "1, 0!"]
+  PCN [label = "ShouldBe\nPredicative Class Notations", pos = "1, -2!"]
+  PD [label = "Provides\nPredicative Instances", pos = "2, -1!"]
+  PDN [label = "ShouldProvide\nPredicative Instance Notations", pos = "2, -3!"]
+
+  edge [style = solid]
+
+  OC -> OCN
+  OD -> ODN
+  PC -> PCN
+  PD -> PDN
+
+  edge [style = dashed]
+
+  OC -> OD
+  OCN -> ODN
+  PC -> PD
+  PCN -> PDN
+
+  edge [style = dotted]
+
+  OC -> PC
+  OCN -> PCN
+  OD -> PD
+  ODN -> PDN
+}
