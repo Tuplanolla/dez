@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation Zero Multiplication.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations ArithmeticNotations.
+  ArithmeticNotations.
 
 Class IsLAbsorb {A : Type}
   (has_zero : HasZero A) (has_mul : HasMul A) : Prop :=

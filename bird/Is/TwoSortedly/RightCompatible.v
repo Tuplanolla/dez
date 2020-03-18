@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation BinaryOperation RightAction.
+  BinaryOperation RightAction.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations.
+  OneSorted.AdditiveNotations TwoSorted.AdditiveNotations.
 
 Class IsRCompat {A B : Type}
   (has_bin_op : HasBinOp A) (has_r_act : HasRAct A B) : Prop :=

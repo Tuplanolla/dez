@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation Addition Multiplication.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations ArithmeticNotations.
+  ArithmeticNotations.
 
 Class IsRDistr {A : Type}
   (has_add : HasAdd A) (has_mul : HasMul A) : Prop :=

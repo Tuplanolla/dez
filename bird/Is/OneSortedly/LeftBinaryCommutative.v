@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.Is Require Import
   LeftExternallyBinaryCommutative.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations ArithmeticNotations.
+  ArithmeticNotations.
 
 Class IsLBinComm {A : Type}
   (has_neg : HasNeg A) (has_mul : HasMul A) : Prop :=

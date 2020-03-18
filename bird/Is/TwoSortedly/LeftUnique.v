@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation LeftAction LeftTorsion.
+  LeftAction LeftTorsion.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations.
+  TwoSorted.AdditiveNotations.
 
 Class IsLNullUniq {A B : Type}
   (has_l_act : HasLAct A B) (has_l_tor : HasLTor A B) : Prop :=

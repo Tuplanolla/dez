@@ -1,11 +1,10 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation BinaryOperation NullaryOperation.
+  OneSorted.Graded.BinaryOperation NullaryOperation.
 From Maniunfold.Is Require Export
   Monoid.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations.
-From Maniunfold.ShouldOffer Require Import
-  MoreAdditiveNotations.
+  OneSorted.AdditiveNotations
+  OneSorted.Graded.AdditiveNotations.
 
 Class IsGrdMon {A : Type} {P : A -> Type}
   (A_has_bin_op : HasBinOp A) (A_has_un : HasNullOp A)

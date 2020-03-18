@@ -1,9 +1,9 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation Addition LeftAction.
+  OneSorted.Addition TwoSorted.LeftAction.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations ArithmeticNotations.
+  OneSorted.AdditiveNotations TwoSorted.MultiplicativeNotations.
 
 Class IsTwoRDistr {A B : Type}
   (A_has_add : HasAdd A) (B_has_add : HasAdd B)
-  (has_l_act : HasLAct A B) : Prop :=
+  (A_B_has_l_act : HasLAct A B) : Prop :=
   two_r_distr : forall (a b : A) (x : B), (a + b) L* x = a L* x + b L* x.

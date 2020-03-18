@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
-  BinaryOperation.
+  OneSorted.BinaryOperation.
 From Maniunfold.ShouldHave Require Import
-  AdditiveNotations.
+  OneSorted.AdditiveNotations.
 
 Class HasGrdBinOp {A : Type} (P : A -> Type)
   {has_bin_op : HasBinOp A} : Type :=

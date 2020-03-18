@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  BinaryOperation.
+  OneSorted.BinaryOperation.
 
 Class HasJoin (A : Type) : Type := join : A -> A -> A.
 

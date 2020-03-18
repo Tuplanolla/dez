@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation Zero Multiplication.
+  OneSorted.Zero OneSorted.Multiplication.
 From Maniunfold.Is Require Export
-  LeftAbsorbing RightAbsorbing.
+  OneSortedly.LeftAbsorbing OneSortedly.RightAbsorbing.
 
 Class IsAbsorb {A : Type}
   (has_zero : HasZero A) (has_mul : HasMul A) : Prop := {

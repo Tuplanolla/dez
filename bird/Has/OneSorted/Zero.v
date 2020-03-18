@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  NullaryOperation.
+  OneSorted.NullaryOperation.
 
 Class HasZero (A : Type) : Type := zero : A.
 

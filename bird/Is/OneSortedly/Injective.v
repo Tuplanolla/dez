@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation UnaryOperation.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations.
+  AdditiveNotations.
 
 Class IsInj {A : Type}
   (has_un_op : HasUnOp A) : Prop :=

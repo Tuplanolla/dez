@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  BinaryOperation.
+  OneSorted.BinaryOperation.
 
 Class HasMeet (A : Type) : Type := meet : A -> A -> A.
 

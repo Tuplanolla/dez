@@ -1,15 +1,26 @@
 From Maniunfold.Has Require Export
-  Addition Zero Negation Multiplication One Reciprocation.
+  OneSorted.Addition OneSorted.Zero OneSorted.Negation
+  OneSorted.Multiplication OneSorted.One OneSorted.Reciprocation.
 
-Declare Scope algebra_scope.
+Declare Scope ring_scope.
 
-Delimit Scope algebra_scope with algebra.
+Delimit Scope ring_scope with ring.
 
-Open Scope algebra_scope.
+Open Scope ring_scope.
 
-Notation "x '+' y" := (add x y) : algebra_scope.
-Notation "'0'" := zero : algebra_scope.
-Notation "'-' x" := (neg x) : algebra_scope.
-Notation "x '*' y" := (mul x y) : algebra_scope.
-Notation "'1'" := one : algebra_scope.
-Notation "'/' x" := (recip x) : algebra_scope.
+(** We can only assert these reserved notations,
+    because they are fixed by the standard library. *)
+
+Reserved Notation "x '+' y" (at level 50, left associativity).
+Reserved Notation "'0'" (at level 0, no associativity).
+Reserved Notation "'-' x" (at level 35, right associativity).
+Reserved Notation "x '*' y" (at level 40, left associativity).
+Reserved Notation "'1'" (at level 0, no associativity).
+Reserved Notation "'/' x" (at level 35, right associativity).
+
+Notation "x '+' y" := (add x y) : ring_scope.
+Notation "'0'" := zero : ring_scope.
+Notation "'-' x" := (neg x) : ring_scope.
+Notation "x '*' y" := (mul x y) : ring_scope.
+Notation "'1'" := one : ring_scope.
+Notation "'/' x" := (recip x) : ring_scope.

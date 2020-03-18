@@ -1,29 +1,12 @@
 From Maniunfold.Has Require Export
-  BinaryOperation NullaryOperation GradedBinaryOperation GradedNullaryOperation.
+  BinaryOperation NullaryOperation
+  Graded.BinaryOperation Graded.NullaryOperation
+  Graded.Multiplication Graded.One.
 From Maniunfold.Is Require Export
   GradedMonoid AbelianGroup.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations ArithmeticNotations AdditiveNotations.
-From Maniunfold.ShouldOffer Require Import
-  MoreAdditiveNotations.
-
-(** TODO Move these once the notations are settled. *)
-
-Class HasGrdMul {A : Type} (P : A -> Type) {has_bin_op : HasBinOp A} : Type :=
-  grd_mul : forall i j : A, P i -> P j -> P (i + j).
-
-Typeclasses Transparent HasGrdMul.
-
-Class HasGrdOne {A : Type} (P : A -> Type) {has_null_op : HasNullOp A} : Type :=
-  grd_one : P 0.
-
-Typeclasses Transparent HasGrdOne.
-
-Reserved Notation "x 'G*' y" (at level 40, left associativity).
-Reserved Notation "'G1'" (at level 0, no associativity).
-
-Notation "x 'G*' y" := (grd_mul _ _ x y) : algebra_scope.
-Notation "'G1'" := grd_one : algebra_scope.
+  OneSorted.ArithmeticNotations OneSorted.AdditiveNotations
+  OneSorted.Graded.MultiplicativeNotations.
 
 Class IsGrdRing {A : Type} {P : A -> Type}
   (A_has_bin_op : HasBinOp A) (A_has_un : HasNullOp A)

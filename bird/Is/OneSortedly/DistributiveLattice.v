@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.Is Require Export
   OneSortedly.Lattice OneSortedly.Unital OneSortedly.Distributive.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations ArithmeticNotations.
+  ArithmeticNotations.
 
 Class IsDistrLat {A : Type}
   (has_join : HasJoin A) (has_bot : HasBot A)

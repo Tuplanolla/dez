@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  BinaryOperation.
+  OneSorted.BinaryOperation.
 
 Class HasMul (A : Type) : Type := mul : A -> A -> A.
 

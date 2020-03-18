@@ -1,12 +1,16 @@
 From Maniunfold.Has Require Export
-  BinaryOperation NullaryOperation GradedBinaryOperation GradedNullaryOperation.
+  BinaryOperation NullaryOperation
+  Graded.BinaryOperation Graded.NullaryOperation.
 From Maniunfold.Is Require Export
   GradedLeftModule AbelianGroup.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations ArithmeticNotations.
+  OneSorted.ArithmeticNotations OneSorted.AdditiveNotations
+  OneSorted.Graded.MultiplicativeNotations
+  TwoSorted.Graded.MultiplicativeNotations.
 
 (** TODO Do we really need commutativity and
-    all these acrobatics on the index type? *)
+    all these acrobatics on the index type?
+    The answer involves bimodules. *)
 
 Section Context.
 

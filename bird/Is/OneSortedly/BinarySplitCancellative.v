@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation Negation Multiplication.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations ArithmeticNotations.
+  ArithmeticNotations.
 
 Class IsBinSptCancel {A : Type}
   (has_neg : HasNeg A) (has_mul : HasMul A) : Prop :=

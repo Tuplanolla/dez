@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   OneSorted.RightUnaryOperation TwoSorted.LeftAction.
 From Maniunfold.ShouldHave Require Import
-  AdditiveNotations.
+  TwoSorted.AdditiveNotations.
 
 Class IsRExtBinComm {A B : Type}
   (B_has_r_un_op : HasRUnOp B) (A_B_has_l_act : HasLAct A B) : Prop :=

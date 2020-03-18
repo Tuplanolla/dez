@@ -1,66 +1,20 @@
 From Maniunfold.Has Require Export
-  BinaryOperation NullaryOperation UnaryOperation
-  BinaryFunction LeftNullaryOperation RightNullaryOperation
-  LeftUnaryOperation RightUnaryOperation
-  LeftAction RightAction LeftTorsion RightTorsion
-  LeftFunction RightFunction BinaryFunction Function.
+  OneSorted.BinaryOperation OneSorted.NullaryOperation
+  OneSorted.UnaryOperation.
 
-Declare Scope algebra_scope.
+Declare Scope group_scope.
 
-Delimit Scope algebra_scope with algebra.
+Delimit Scope group_scope with group.
 
-Open Scope algebra_scope.
+Open Scope group_scope.
 
-Notation "x '+' y" := (bin_op x y) : algebra_scope.
-Notation "'0'" := null_op : algebra_scope.
-Notation "'-' x" := (un_op x) : algebra_scope.
+(** We can only assert these reserved notations,
+    because they are fixed by the standard library. *)
 
-(** Using [0L] would be a syntax error, which is why we use [L0]. *)
+Reserved Notation "x '+' y" (at level 50, left associativity).
+Reserved Notation "'0'" (at level 0, no associativity).
+Reserved Notation "'-' x" (at level 35, right associativity).
 
-Reserved Notation "x 'L+' y" (at level 50, left associativity).
-Reserved Notation "x 'R+' y" (at level 50, left associativity).
-Reserved Notation "'L0'" (at level 0, no associativity).
-Reserved Notation "'R0'" (at level 0, no associativity).
-Reserved Notation "'L-' x" (at level 35, right associativity).
-Reserved Notation "'R-' x" (at level 35, right associativity).
-
-Notation "x 'L+' y" := (l_act x y) : algebra_scope.
-Notation "x 'R+' y" := (r_act x y) : algebra_scope.
-Notation "'L0'" := l_null_op : algebra_scope.
-Notation "'R0'" := r_null_op : algebra_scope.
-Notation "'L-' x" := (l_un_op x) : algebra_scope.
-Notation "'R-' x" := (r_un_op x) : algebra_scope.
-
-Reserved Notation "x 'L*' y" (at level 40, left associativity).
-Reserved Notation "x 'R*' y" (at level 40, left associativity).
-Reserved Notation "'L1'" (at level 0, no associativity).
-Reserved Notation "'R1'" (at level 0, no associativity).
-Reserved Notation "'L/' x" (at level 35, right associativity).
-Reserved Notation "'R/' x" (at level 35, right associativity).
-
-Notation "x 'L*' y" := (l_act x y) : algebra_scope.
-Notation "x 'R*' y" := (r_act x y) : algebra_scope.
-Notation "'L1'" := l_null_op : algebra_scope.
-Notation "'R1'" := r_null_op : algebra_scope.
-Notation "'L/' x" := (l_un_op x) : algebra_scope.
-Notation "'R/' x" := (r_un_op x) : algebra_scope.
-
-(** This is motivated by torsors giving rise to elaborate cancellations. *)
-
-Reserved Notation "x 'L-' y" (at level 50, left associativity).
-Reserved Notation "x 'R-' y" (at level 50, left associativity).
-
-Notation "x 'L-' y" := (l_tor x y) : algebra_scope.
-Notation "x 'R-' y" := (r_tor x y) : algebra_scope.
-
-(** Using [T0] without restrictions would shadow [0],
-    so we make it apply to [only parsing].
-    The [T] itself comes from the term two-sided. *)
-
-Reserved Notation "x 'T+' y" (at level 50, left associativity).
-Reserved Notation "'T0'" (at level 0, no associativity).
-Reserved Notation "'T-' x" (at level 35, right associativity).
-
-Notation "x 'T+' y" := (bin_fn x y) : algebra_scope.
-Notation "'T0'" := null_op (only parsing) : algebra_scope.
-Notation "'T-' x" := (fn x) : algebra_scope.
+Notation "x '+' y" := (bin_op x y) : group_scope.
+Notation "'0'" := null_op : group_scope.
+Notation "'-' x" := (un_op x) : group_scope.

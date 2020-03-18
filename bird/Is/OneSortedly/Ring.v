@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation Addition Negation Multiplication.
+  Addition Negation Multiplication.
 From Maniunfold.Is Require Export
   Commutative AbelianGroup Monoid Distributive Absorbing
   SignedAbsorbing BinaryCommutative BinaryCrossing BinarySplitCancellative
@@ -14,8 +14,6 @@ Class IsRing {A : Type}
   add_mul_is_distr :> IsDistr add mul;
   mul_one_is_mon :> IsMon mul one;
 }.
-
-(** TODO Where do these belong? *)
 
 Section Context.
 

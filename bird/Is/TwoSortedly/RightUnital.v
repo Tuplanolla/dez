@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation BinaryOperation RightAction RightNullaryOperation.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations.
+  TwoSorted.AdditiveNotations.
 
 Class IsTwoRUnl {A B : Type}
   (has_r_null_op : HasRNullOp A) (has_r_act : HasRAct A B) : Prop :=

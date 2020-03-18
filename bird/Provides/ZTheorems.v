@@ -3,7 +3,7 @@ From Coq Require Import
 From Maniunfold.Is Require Export
   Equivalence Magma Semigroup Monoid Group.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations.
+  AdditiveNotations.
 
 Global Instance Z_has_eq_rel : HasEqRel Z := Z.eq.
 

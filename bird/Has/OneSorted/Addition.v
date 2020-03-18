@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  BinaryOperation.
+  OneSorted.BinaryOperation.
 
 Class HasAdd (A : Type) : Type := add : A -> A -> A.
 

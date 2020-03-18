@@ -5,12 +5,12 @@ From Maniunfold.Has Require Export
 From Maniunfold.Offers Require Import
   PositivePowers.
 From Maniunfold.ShouldHave Require Import
-  AdditiveNotations.
+  OneSorted.AdditiveNotations.
 
 Section Context.
 
-Context {A : Type} `{has_bin_op : HasBinOp A} `{has_null_op : HasNullOp A}
-  `{has_un_op : HasUnOp A}.
+Context {A : Type} {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}
+  {A_has_un_op : HasUnOp A}.
 
 Definition z_op (n : Z) (x : A) : A :=
   match n with

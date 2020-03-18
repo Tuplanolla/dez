@@ -2,6 +2,8 @@
 
 The purpose of these informal notes is
 to remind the writer of their own stupidity.
+There are many conventions that need to be followed,
+because otherwise things break in surprising ways.
 
 ## Personal Notes by Sampsa Kiiskinen
 
@@ -65,6 +67,16 @@ For example, we would have `bin_op_un_is_mon :> IsMon bin_op un`.
 Instance fields contain the verb `is`, while plain fields do not.
 For example, we would have `bin_op_is_assoc :> IsAssoc bin_op` and
 `bin_op_assoc : forall x y z : A, x + (y + z) = (x + y) + z`.
+
+### Class Duality
+
+When defining things in `Offers`,
+use a context with only `Has` things in it,
+without implicit generalization.
+
+When defining things in `Provides`,
+use a context with only `Is` things in it,
+with implicit generalization.
 
 ### Name Playground
 

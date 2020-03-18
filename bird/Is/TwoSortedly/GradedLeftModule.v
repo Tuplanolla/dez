@@ -1,23 +1,12 @@
 From Maniunfold.Has Require Export
-  BinaryOperation NullaryOperation GradedBinaryOperation GradedNullaryOperation.
+  BinaryOperation NullaryOperation
+  Graded.BinaryOperation Graded.NullaryOperation TwoSorted.Graded.LeftAction.
 From Maniunfold.Is Require Export
   GradedRing AbelianGroup.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations ArithmeticNotations AdditiveNotations.
-
-(** TODO Move these once the notations are settled. *)
-
-Class HasGrdLAct {A : Type} (P Q : A -> Type)
-  {has_bin_op : HasBinOp A} : Type :=
-  grd_l_act : forall i j : A, P i -> Q j -> Q (i + j).
-
-Typeclasses Transparent HasGrdLAct.
-
-Reserved Notation "x 'GL+' y" (at level 50, left associativity).
-Reserved Notation "x 'GL*' y" (at level 40, left associativity).
-
-Notation "x 'GL+' y" := (grd_l_act _ _ x y) : algebra_scope.
-Notation "x 'GL*' y" := (grd_l_act _ _ x y) : algebra_scope.
+  OneSorted.ArithmeticNotations OneSorted.AdditiveNotations
+  OneSorted.Graded.MultiplicativeNotations
+  TwoSorted.Graded.MultiplicativeNotations.
 
 (** TODO Dubious... *)
 

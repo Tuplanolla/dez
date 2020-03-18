@@ -5,9 +5,9 @@ From Maniunfold.Is Require Export
 From Maniunfold.Offers Require Export
   PositivePowers NaturalPowers IntegerPowers.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations.
+  OneSorted.AdditiveNotations.
 From Maniunfold.ShouldOffer Require Import
-  MoreAdditiveNotations.
+  IntegerPowerNotations.
 
 Fact succ_xI : forall n : positive,
   Pos.succ (xI n) = xO (Pos.succ n).
@@ -117,7 +117,7 @@ Global Instance n_op_un_op_is_r_ext_bin_comm : IsRExtBinComm un_op n_op.
 Proof. intros x y. apply n_op_un_op_r_ext_bin_comm. Qed.
 
 Theorem z_op_un_op_r_ext_bin_comm : forall (n : Z) (x : A),
-  - (n * x)%Z = (n * (- x)%algebra)%Z.
+  - (n * x)%Z = (n * (- x)%group)%Z.
 Proof.
   intros n x.
   destruct n as [| p | p].

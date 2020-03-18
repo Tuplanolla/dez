@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.Is Require Export
   OneSortedly.Semilattice OneSortedly.Sorbing.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations ArithmeticNotations.
+  ArithmeticNotations.
 
 (** Remember that join [\_/] is "addition" and bottom [_|_] is "zero". *)
 

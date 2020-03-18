@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation NullaryOperation UnaryOperation.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations.
+  AdditiveNotations.
 
 Class IsUnAbsorb {A : Type}
   (has_null_op : HasNullOp A) (has_un_op : HasUnOp A) : Prop :=

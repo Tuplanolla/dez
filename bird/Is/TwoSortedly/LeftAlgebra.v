@@ -1,9 +1,9 @@
 From Maniunfold.Has Require Export
-  BinaryOperation NullaryOperation GradedBinaryOperation GradedNullaryOperation.
+  BinaryOperation NullaryOperation.
 From Maniunfold.Is Require Export
   LeftModule AbelianGroup RightCompatible CommutativeRing.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations ArithmeticNotations.
+  AdditiveNotations ArithmeticNotations.
 
 (** This is a unital associative left algebra over a commutative ring. *)
 

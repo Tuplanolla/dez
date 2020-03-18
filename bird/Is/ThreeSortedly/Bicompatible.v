@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
-  OneSorted.EquivalenceRelation LeftAction RightAction.
+  TwoSorted.LeftAction TwoSorted.RightAction.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations.
+  TwoSorted.AdditiveNotations.
 
 Class IsBicompat {A B C : Type}
   (has_l_act : HasLAct A C) (has_r_act : HasRAct B C) : Prop :=

@@ -4,7 +4,7 @@ From Maniunfold.Is Require Export
   Antisymmetric Connex Transitive Reflexive
   OneSortedly.PartialOrder.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations OrderRelationNotations.
+  OrderRelationNotations.
 
 Class IsTotOrd {A : Type}
   (has_ord_rel : HasOrdRel A) : Prop := {
@@ -21,7 +21,7 @@ Ltac specializations := typeclasses specialize
   bin_rel into ord_rel.
 
 Theorem ord_rel_refl : forall x : A,
-  x <= x.
+  x <== x.
 Proof with specializations.
   intros x. destruct (connex x x) as [H | H]...
   - apply H.

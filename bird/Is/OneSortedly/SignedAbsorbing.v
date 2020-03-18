@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation Negation Multiplication One.
+  OneSorted.Negation OneSorted.Multiplication OneSorted.One.
 From Maniunfold.Is Require Export
-  LeftSignedAbsorbing RightSignedAbsorbing.
+  OneSortedly.LeftSignedAbsorbing OneSortedly.RightSignedAbsorbing.
 
 Class IsSgnAbsorb {A : Type}
   (has_neg : HasNeg A) (has_mul : HasMul A) (has_one : HasOne A) : Prop := {

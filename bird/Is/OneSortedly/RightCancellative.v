@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation BinaryOperation.
 From Maniunfold.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations.
+  AdditiveNotations.
 
 Class IsRCancel {A : Type}
   (has_bin_op : HasBinOp A) : Prop :=

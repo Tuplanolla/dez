@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation Addition Multiplication.
+  OneSorted.Addition OneSorted.Multiplication.
 From Maniunfold.Is Require Export
   OneSortedly.LeftDistributive OneSortedly.RightDistributive.
 
