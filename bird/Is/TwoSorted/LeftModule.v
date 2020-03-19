@@ -15,7 +15,7 @@ Class IsLMod {A B : Type}
   add_zero_neg_mul_one_is_ring :> IsRing (A := A) add zero neg mul one;
   add_zero_neg_is_ab_grp :> IsAbGrp (A := B) add zero neg;
   add_add_l_act_is_two_r_distr :> IsTwoRDistr (A := A) (B := B) add add l_act;
-  add_l_act_is_two_l_distr :> IsTwoLDistr (A := A) (B := B) add l_act;
-  zero_l_act_is_two_l_unl :> IsTwoLUnl (A := A) (B := B) zero l_act;
   mul_l_act_is_l_compat :> IsLCompat (A := A) (B := B) mul l_act;
+  zero_l_act_is_two_l_unl :> IsTwoLUnl (A := A) (B := B) zero l_act;
+  add_l_act_is_two_l_distr :> IsTwoLDistr (A := A) (B := B) add l_act;
 }.
