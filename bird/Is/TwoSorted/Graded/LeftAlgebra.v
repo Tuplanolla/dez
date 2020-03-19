@@ -2,7 +2,7 @@ From Maniunfold.Has Require Export
   BinaryOperation NullaryOperation
   Graded.BinaryOperation Graded.NullaryOperation.
 From Maniunfold.Is Require Export
-  GradedLeftModule AbelianGroup.
+  Graded.LeftModule AbelianGroup.
 From Maniunfold.ShouldHave Require Import
   OneSorted.ArithmeticNotations OneSorted.AdditiveNotations
   OneSorted.Graded.MultiplicativeNotations

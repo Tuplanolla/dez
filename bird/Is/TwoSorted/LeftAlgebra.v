@@ -1,7 +1,8 @@
 From Maniunfold.Has Require Export
   BinaryOperation NullaryOperation.
 From Maniunfold.Is Require Export
-  LeftModule AbelianGroup RightCompatible CommutativeRing.
+  TwoSorted.LeftModule OneSorted.AbelianGroup
+  TwoSorted.RightCompatible OneSorted.CommutativeRing.
 From Maniunfold.ShouldHave Require Import
   AdditiveNotations ArithmeticNotations.
 
