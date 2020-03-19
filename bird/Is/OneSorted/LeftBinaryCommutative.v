@@ -1,12 +1,12 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation Negation Multiplication.
+  OneSorted.Negation OneSorted.Multiplication.
 From Maniunfold.Is Require Import
   LeftExternallyBinaryCommutative.
 From Maniunfold.ShouldHave Require Import
-  ArithmeticNotations.
+  OneSorted.ArithmeticNotations.
 
 Class IsLBinComm {A : Type}
-  (A_has_neg : HasNeg A) (has_mul : HasMul A) : Prop :=
+  (A_has_neg : HasNeg A) (A_has_mul : HasMul A) : Prop :=
   l_bin_comm : forall x y : A, - (x * y) = - x * y.
 
 Section Context.

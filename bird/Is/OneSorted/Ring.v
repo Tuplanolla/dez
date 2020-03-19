@@ -1,11 +1,13 @@
 From Maniunfold.Has Require Export
-  Addition Negation Multiplication.
+  OneSorted.Addition OneSorted.Zero OneSorted.Negation OneSorted.Multiplication
+  OneSorted.One.
 From Maniunfold.Is Require Export
-  Commutative AbelianGroup Monoid Distributive Absorbing
-  SignedAbsorbing BinaryCommutative BinaryCrossing BinarySplitCancellative
-  Semiring.
+  OneSorted.AbelianGroup OneSorted.Distributive OneSorted.Monoid
+  OneSorted.Absorbing OneSorted.SignedAbsorbing OneSorted.BinaryCommutative
+  OneSorted.BinaryCrossing OneSorted.BinarySplitCancellative
+  OneSorted.Semiring.
 From Maniunfold.ShouldHave Require Import
-  ArithmeticNotations.
+  OneSorted.ArithmeticNotations.
 
 Class IsRing {A : Type}
   (A_has_add : HasAdd A) (has_zero : HasZero A) (has_neg : HasNeg A)

@@ -20,8 +20,8 @@ Class IsGrdLMod {A : Type} {P Q : A -> Type}
   (Q_has_null_op : forall i : A, HasNullOp (Q i))
   (Q_has_un_op : forall i : A, HasUnOp (Q i))
   (P_Q_has_grd_l_act : HasGrdLAct P Q) : Prop := {
-  bin_op_null_op_add_zero_neg_grd_mul_grd_one_is_grd_ring :>
-    IsGrdRing (A := A) (P := P) bin_op null_op
+  add_zero_neg_grd_mul_grd_one_is_grd_ring :>
+    IsGrdRing (A := A) (P := P)
     (* add zero neg *) _ _ _
     grd_mul grd_one;
   (* add_l_act_is_two_r_distr :> IsTwoRDistr (A := P) (B := Q) add bin_op l_act; *)

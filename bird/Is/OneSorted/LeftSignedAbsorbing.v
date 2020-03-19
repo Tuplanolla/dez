@@ -1,8 +1,9 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation Negation Multiplication One.
+  OneSorted.Negation OneSorted.Multiplication OneSorted.One.
 From Maniunfold.ShouldHave Require Import
-  ArithmeticNotations.
+  OneSorted.ArithmeticNotations.
 
 Class IsLSgnAbsorb {A : Type}
-  (A_has_neg : HasNeg A) (has_mul : HasMul A) (has_one : HasOne A) : Prop :=
+  (A_has_neg : HasNeg A) (A_has_mul : HasMul A)
+  (A_has_one : HasOne A) : Prop :=
   l_sgn_absorb : forall x : A, (- (1)) * x = - x.

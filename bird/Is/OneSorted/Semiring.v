@@ -1,9 +1,10 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation Addition Multiplication.
+  OneSorted.Addition OneSorted.Zero OneSorted.Multiplication OneSorted.One.
 From Maniunfold.Is Require Export
-  Commutative Monoid Distributive Absorbing.
+  OneSorted.Commutative OneSorted.Monoid OneSorted.Distributive
+  OneSorted.Absorbing.
 From Maniunfold.ShouldHave Require Import
-  ArithmeticNotations.
+  OneSorted.ArithmeticNotations.
 
 (** This is a unital semiring. *)
 

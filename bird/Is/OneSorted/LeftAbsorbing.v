@@ -1,8 +1,8 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation Zero Multiplication.
+  OneSorted.Zero OneSorted.Multiplication.
 From Maniunfold.ShouldHave Require Import
-  ArithmeticNotations.
+  OneSorted.ArithmeticNotations.
 
 Class IsLAbsorb {A : Type}
-  (A_has_zero : HasZero A) (has_mul : HasMul A) : Prop :=
+  (A_has_zero : HasZero A) (A_has_mul : HasMul A) : Prop :=
   l_absorb : forall x : A, 0 * x = 0.

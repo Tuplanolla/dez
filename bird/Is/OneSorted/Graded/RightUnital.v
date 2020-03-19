@@ -11,6 +11,6 @@ Class IsGrdRUnl {A : Type} {P : A -> Type}
   (P_has_grd_bin_op : HasGrdBinOp P)
   (P_has_grd_null_op : HasGrdNullOp P) : Prop := {
   bin_op_null_op_is_r_unl :> IsRUnl bin_op null_op;
-  grd_r_unl : forall (i : A) (x : P i),
+  grd_r_unl : forall {i : A} (x : P i),
     rew r_unl i in (x G+ G0) = x;
 }.
