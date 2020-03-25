@@ -2,10 +2,8 @@ From Maniunfold.Has Require Export
   BinaryOperation NullaryOperation.
 From Maniunfold.Is Require Export
   OneSorted.CommutativeRing TwoSorted.LeftModule TwoSorted.LeftBilinear.
-From Maniunfold.ShouldHave Require Import
-  AdditiveNotations ArithmeticNotations.
 
-(** This is a unital associative left algebra over a commutative ring. *)
+(** This is a nonunital nonassociative left algebra over a commutative ring. *)
 
 Class IsLAlg {A B : Type}
   (A_has_add : HasAdd A) (A_has_zero : HasZero A) (A_has_neg : HasNeg A)
@@ -17,7 +15,10 @@ Class IsLAlg {A B : Type}
     IsCommRing (A := B) add zero neg mul one;
   add_zero_neg_mul_one_add_zero_neg_l_act_is_l_mod :>
     IsLMod (A := A) (B := B) add zero neg mul one add zero neg l_act;
+  (** TODO The leftness of the action is coincidental.
+      Bilinearity should be more general. *)
   add_add_l_act_is_l_bilin :> IsLBilin add add l_act;
+  (** TODO Put associativity and unitality conditions here or elsewhere. *)
 }.
 
 (** TODO Figure out which formulation is better.

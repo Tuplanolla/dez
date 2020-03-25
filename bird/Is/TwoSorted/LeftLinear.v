@@ -3,6 +3,10 @@ From Maniunfold.Has Require Export
 From Maniunfold.Is Require Import
   OneSorted.UnaryDistributive TwoSorted.RightBinaryCommutative.
 
+(** TODO This is supposed to be a homomorphism between vector spaces,
+    not the property characterizing some subcomponents as such.
+    Naming strikes again. *)
+
 Class IsLLin {A B : Type}
   (A_has_un_op : HasUnOp A) (A_has_add : HasAdd A)
   (A_B_has_l_act : HasLAct A B) : Prop := {
