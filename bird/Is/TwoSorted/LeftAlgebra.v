@@ -1,8 +1,7 @@
 From Maniunfold.Has Require Export
   BinaryOperation NullaryOperation.
 From Maniunfold.Is Require Export
-  TwoSorted.LeftModule OneSorted.AbelianGroup
-  TwoSorted.RightCompatible OneSorted.CommutativeRing.
+  OneSorted.CommutativeRing TwoSorted.LeftModule TwoSorted.LeftBilinear.
 From Maniunfold.ShouldHave Require Import
   AdditiveNotations ArithmeticNotations.
 
@@ -18,17 +17,17 @@ Class IsLAlg {A B : Type}
     IsCommRing (A := B) add zero neg mul one;
   add_zero_neg_mul_one_add_zero_neg_l_act_is_l_mod :>
     IsLMod (A := A) (B := B) add zero neg mul one add zero neg l_act;
-  (* _is_bilin :> IsBilin _ _ l_act; *)
+  add_add_l_act_is_l_bilin :> IsLBilin add add l_act;
 }.
 
-(** TODO IsLin iff
-    - hom f |-
-    - f (x + y) = f (x) + f (y)
-    - f (a L* x) = a L* f (x).
-    IsBilin iff
-    - IsLin (fun x => x + y)
-    - IsLin (fun y => x + y).
-    Equivalently iff
-    - IsDistr add l_act
-    - IsBicompat add l_act
-    - IsBicompat l_act add. *)
+(** TODO Figure out which formulation is better.
+
+<<
+IsBilin iff
+- IsLin (fun x => x + y)
+- IsLin (fun y => x + y).
+IsBilin iff
+- IsTwoLDistr add l_act
+- IsBicompat add l_act
+- IsBicompat l_act add.
+>> *)

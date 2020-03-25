@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation BinaryOperation UnaryOperation.
+  OneSorted.UnaryOperation OneSorted.BinaryOperation.
 From Maniunfold.Is Require Export
-  LeftBinaryCommutative RightBinaryCommutative.
+  OneSorted.LeftBinaryCommutative OneSorted.RightBinaryCommutative.
 
 (** TODO This is nonsense and should be called some sort of distributivity. *)
 

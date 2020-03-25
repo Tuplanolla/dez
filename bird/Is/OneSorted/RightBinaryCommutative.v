@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   OneSorted.Negation OneSorted.Multiplication.
 From Maniunfold.Is Require Import
-  RightExternallyBinaryCommutative.
+  TwoSorted.RightBinaryCommutative.
 From Maniunfold.ShouldHave Require Import
   OneSorted.ArithmeticNotations.
 
@@ -13,7 +13,7 @@ Section Context.
 
 Context {A : Type} `{is_r_bin_comm : IsRBinComm A}.
 
-Global Instance neg_mul_is_r_ext_bin_comm : IsRExtBinComm neg mul.
+Global Instance neg_mul_is_two_r_bin_comm : IsTwoRBinComm neg mul.
 Proof. intros x y. apply r_bin_comm. Qed.
 
 End Context.

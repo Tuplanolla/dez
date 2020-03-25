@@ -35,7 +35,7 @@ digraph Is {
 
     LAlg [label = "LeftAlgebra"]
     LCompat [label = "LeftCompatible\na L+ (b L+ x) = (a + b) L+ x"]
-    LExtBinComm [label = "LeftExternallyBinaryCommutative?\nL- (x R+ y) = L- x R+ y"]
+    TwoLBinComm [label = "LeftBinaryCommutative?\nL- (x R+ y) = L- x R+ y"]
     LGrpAct [label = "LeftGroupAction"]
     LGrpTor [label = "LeftGroupTorsor"]
     LMagAct [label = "LeftMagmaAction"]
@@ -44,7 +44,7 @@ digraph Is {
     LNullUniq [label = "LeftUnique\n(y L- x) +L x = y"]
     LSgrpAct [label = "LeftSemigroupAction"]
     RCompat [label = "RightCompatible\nx R+ (a + b) = (x R+ a) R+ b"]
-    RExtBinComm [label = "RightExternallyBinaryCommutative?\nR- (x L+ y) = x L+ R- y"]
+    TwoRBinComm [label = "RightBinaryCommutative?\nR- (x L+ y) = x L+ R- y"]
     RSgrpAct [label = "RightSemigroupAction"]
     TwoLDistr [label = "LeftDistributive?\na L* (x + y) = a L* x + a L* y"]
     TwoLUnl [label = "LeftUnital\nL0 L+ x = x"]
@@ -108,7 +108,7 @@ digraph Is {
     Sring [label = "Semiring"]
     StrPartOrd [label = "StrictPartialOrder"]
     UnAbsorb [label = "UnaryAbsorbing\n- 0 = 0"]
-    UnAntidistr [label = "UnAntidistributive\n- (x + y) = - y + - x"]
+    UnAntidistr [label = "UnaryAntidistributive\n- (x + y) = - y + - x"]
     UnDistr [label = "UnaryDistributive\n- (x + y) = - x + - y"]
     Unl [label = "Unital"]
 
@@ -220,9 +220,9 @@ digraph Is {
   Grp -> Invol
   Grp -> UnAbsorb
   Grp -> UnAntidistr
-  LBinComm -> LExtBinComm
+  LBinComm -> TwoLBinComm
   LUnl -> TwoLUnl
-  RBinComm -> RExtBinComm
+  RBinComm -> TwoRBinComm
   RUnl -> TwoRUnl
   Ring -> Absorb
   Ring -> BinComm

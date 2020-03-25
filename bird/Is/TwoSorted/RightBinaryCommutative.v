@@ -3,6 +3,6 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   TwoSorted.AdditiveNotations.
 
-Class IsRExtBinComm {A B : Type}
+Class IsTwoRBinComm {A B : Type}
   (B_has_r_un_op : HasRUnOp B) (A_B_has_l_act : HasLAct A B) : Prop :=
-  r_ext_bin_comm : forall (a : A) (x : B), R- (a L+ x) = a L+ (R- x).
+  two_r_bin_comm : forall (a : A) (x : B), R- (a L+ x) = a L+ (R- x).
