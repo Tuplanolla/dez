@@ -4,32 +4,32 @@ digraph what {
   node [shape = box]
 
   OC [label = "Has\nOperational Classes", pos = "-1, 0!"]
-  OCN [label = "ShouldHave\nOperational Class Notations", pos = "-1, -2!"]
+  OCN [label = "Should Have\nOperational Class Notations", pos = "-1, -2!"]
   OD [label = "Offers\nOperational Definitions", pos = "0, -1!"]
-  ODN [label = "ShouldOffer\nOperational Definition Notations", pos = "0, -3!"]
+  ODN [label = "Should Offer\nOperational Definition Notations", pos = "0, -3!"]
   PC [label = "Is\nPredicative Classes", pos = "1, 0!"]
-  PCN [label = "ShouldBe\nPredicative Class Notations", pos = "1, -2!"]
+  PCN [label = "Should Be\nPredicative Class Notations", pos = "1, -2!"]
   PD [label = "Provides\nPredicative Definitions", pos = "2, -1!"]
-  PDN [label = "ShouldProvide\nPredicative Definition Notations", pos = "2, -3!"]
+  PDN [label = "Should Provide\nPredicative Definition Notations", pos = "2, -3!"]
 
-  edge [style = solid]
+  edge [label = "Notations"]
 
   OC -> OCN
   OD -> ODN
-  PC -> PCN
+  PC -> PCN [style = dashed]
   PD -> PDN
 
-  edge [style = dashed]
+  edge [label = "Derivations"]
 
   OC -> OD
   OCN -> ODN
   PC -> PD
   PCN -> PDN
 
-  edge [style = dotted]
+  edge [label = "Roles"]
 
   OC -> PC
-  OCN -> PCN
+  OCN -> PCN [style = dashed]
   OD -> PD
   ODN -> PDN
 }

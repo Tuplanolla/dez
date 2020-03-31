@@ -198,6 +198,7 @@ Do these things.
   generalized to many-sorted algebra (universal algebra) and
   oidified to one-sorted partial algebra (category theory),
   what happens if we go looking for many-sorted partial algebra?
+* Perhaps call the maps involved in an equivalence section and retraction.
 * Monoidal categories now.
 
 Some rules.
