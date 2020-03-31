@@ -1,9 +1,9 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation Addition Zero Negation Multiplication One
-  BinaryOperation NullaryOperation UnaryOperation LeftAction.
+  OneSorted.Addition OneSorted.Zero OneSorted.Negation OneSorted.Multiplication
+  OneSorted.One TwoSorted.LeftAction.
 From Maniunfold.Is Require Export
-  OneSorted.Ring TwoSorted.LeftRightDistributive TwoSorted.LeftCompatible
-  OneSorted.AbelianGroup TwoSorted.LeftLeftDistributive TwoSorted.LeftUnital.
+  OneSorted.Ring OneSorted.AbelianGroup TwoSorted.LeftRightDistributive
+  TwoSorted.LeftCompatible TwoSorted.LeftUnital TwoSorted.LeftLeftDistributive.
 
 (** This is a unital left module. *)
 
