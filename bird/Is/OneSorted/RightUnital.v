@@ -13,7 +13,7 @@ Section Context.
 
 Context {A : Type} `{is_r_unl : IsRUnl A}.
 
-Global Instance null_op_bin_op_is_two_r_unl : IsTwoRUnl null_op bin_op.
+Global Instance A_A_null_op_bin_op_is_two_r_unl : IsTwoRUnl A A null_op bin_op.
 Proof. intros x. apply r_unl. Qed.
 
 End Context.

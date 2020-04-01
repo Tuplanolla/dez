@@ -11,9 +11,9 @@ Class IsLBinComm {A : Type}
 
 Section Context.
 
-Context {A : Type} `{is_l_bin_comm : IsLBinComm A}.
+Context {A : Type} `{A_is_l_bin_comm : IsLBinComm A}.
 
-Global Instance neg_mul_is_two_l_bin_comm : IsTwoLBinComm neg mul.
+Global Instance A_A_neg_mul_is_two_l_bin_comm : IsTwoLBinComm A A neg mul.
 Proof. intros x y. apply l_bin_comm. Qed.
 
 End Context.
