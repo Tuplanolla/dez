@@ -6,7 +6,8 @@ From Maniunfold.Has Require Export
 From Maniunfold.Is Require Export
   TwoSorted.LeftDistributive ThreeSorted.Bicompatible TwoSorted.LeftLinear
   OneSorted.CommutativeRing TwoSorted.LeftModule TwoSorted.RightModule
-  ThreeSorted.Bimodule.
+  ThreeSorted.Bimodule
+  TwoSorted.Unital.
 From Maniunfold.ShouldHave Require Import
   OneSorted.ArithmeticNotations TwoSorted.MultiplicativeNotations.
 
@@ -20,27 +21,13 @@ Class IsLBilin {A B : Type}
   l_act_add_is_bicompat :> IsBicompat l_act add;
 }.
 
-(** TODO This is a more verbatim translation of literature. *)
-
-Class IsBilinMapComm {A B C D : Type}
-  (A_has_add : HasAdd A) (A_has_zero : HasZero A) (A_has_neg : HasNeg A)
-  (A_has_mul : HasMul A) (A_has_one : HasOne A)
-  (B_has_add : HasAdd B) (B_has_zero : HasZero B) (B_has_neg : HasNeg B)
-  (A_B_has_l_act : HasLAct A B)
-  (C_has_add : HasAdd C) (C_has_zero : HasZero C) (C_has_neg : HasNeg C)
-  (A_C_has_l_act : HasLAct A C)
-  (D_has_add : HasAdd D) (D_has_zero : HasZero D) (D_has_neg : HasNeg D)
-  (A_D_has_l_act : HasLAct A D) : Prop := {
-  A_add_zero_neg_mul_one_is_comm_ring :>
-    IsCommRing (A := A) add zero neg mul one;
-  A_B_add_zero_neg_mul_one_add_zero_neg_l_act_is_l_mod :>
-    IsLMod (A := A) (B := B) add zero neg mul one add zero neg l_act;
-  A_C_add_zero_neg_mul_one_add_zero_neg_l_act_is_l_mod :>
-    IsLMod (A := A) (B := C) add zero neg mul one add zero neg l_act;
-  A_D_add_zero_neg_mul_one_add_zero_neg_l_act_is_l_mod :>
-    IsLMod (A := A) (B := D) add zero neg mul one add zero neg l_act;
-  (** Linearity goes here. *)
-}.
+(* BothBihomogeneous *)
+Class IsBBihomogen {A B C D : Type}
+  (A_B_has_l_act : HasLAct A B) (A_C_has_r_act : HasRAct A C)
+  (A_D_has_l_act : HasLAct A D) (A_D_has_r_act : HasRAct A D)
+  (B_C_D_has_bin_fn : HasBinFn B C D) : Prop :=
+  b_bihomogen : forall a b x y,
+    bin_fn (a L* x) (y R* b) = a L* bin_fn x y R* b.
 
 (* LeftBihomogeneous *)
 Class IsLBihomogen {A B C D : Type}
@@ -60,9 +47,12 @@ Class IsRBihomogen {A B C D : Type}
 Class IsBihomogen {A B C D : Type}
   (A_B_has_l_act : HasLAct A B) (A_C_has_r_act : HasRAct A C)
   (A_D_has_l_act : HasLAct A D) (A_D_has_r_act : HasRAct A D)
-  (B_C_D_has_bin_fn : HasBinFn B C D) : Prop :=
-  bihomogen : forall a b x y,
-    bin_fn (a L* x) (y R* b) = a L* bin_fn x y R* b.
+  (B_C_D_has_bin_fn : HasBinFn B C D) : Prop := {
+  l_act_l_act_fn_is_l_bihomogen :>
+    IsLBihomogen (A := A) (B := B) (C := C) (D := D) l_act l_act bin_fn;
+  r_act_r_act_fn_is_r_bihomogen :>
+    IsRBihomogen (A := A) (B := B) (C := C) (D := D) r_act r_act bin_fn;
+}.
 
 (* LeftBiadditive *)
 Class IsLBiadditive {A B C : Type}
@@ -75,6 +65,14 @@ Class IsRBiadditive {A B C : Type}
   (B_has_add : HasAdd B) (C_has_add : HasAdd C)
   (A_B_C_has_bin_fn : HasBinFn A B C) : Prop :=
   r_biadditive : forall x y z, bin_fn x (y + z) = bin_fn x y + bin_fn x z.
+
+(* Biadditive *)
+Class IsBiadditive {A B C : Type}
+  (A_has_add : HasAdd A) (B_has_add : HasAdd B) (C_has_add : HasAdd C)
+  (A_B_C_has_bin_fn : HasBinFn A B C) : Prop := {
+  l_act_l_act_fn_is_l_biadditive :> IsLBiadditive add add bin_fn;
+  r_act_r_act_fn_is_r_biadditive :> IsRBiadditive add add bin_fn;
+}.
 
 (* BilinearMap *)
 Class IsBilinMap {A B C D E : Type}
@@ -94,14 +92,9 @@ Class IsBilinMap {A B C D E : Type}
     IsRMod (A := B) (B := D) add zero neg mul one add zero neg r_act;
   A_B_E_etc_is_bimod :> IsBimod (A := A) (B := B) (C := E)
     add zero neg mul one add zero neg mul one add zero neg l_act r_act;
-  l_act_l_act_fn_is_l_bihomogen :>
-    IsLBihomogen l_act l_act bin_fn;
-  r_act_r_act_fn_is_r_bihomogen :>
-    IsRBihomogen r_act r_act bin_fn;
-  add_add_fn_is_l_biadditive :>
-    IsLBiadditive add add bin_fn;
-  add_add_fn_is_r_biadditive :>
-    IsRBiadditive add add bin_fn;
+  l_act_l_act_fn_is_bihomogen :>
+    IsBihomogen l_act r_act l_act r_act bin_fn;
+  add_add_fn_is_biadditive :> IsBiadditive add add add bin_fn;
 }.
 
 (** TODO Bilinear forms are symmetric bilinear maps, so why not say so. *)
@@ -114,6 +107,48 @@ Class IsLBilin' {A B : Type}
   flip_add_is_l_lin :> forall x : _, IsLLin add (fun y => x + y) l_act;
 }.
 *)
+
+(** TODO This might be a good idea. *)
+
+Class HasIso (A B : Type) : Type := iso : (A -> B) * (B -> A).
+
+Typeclasses Transparent HasIso.
+
+Definition sect {A B : Type} {A_B_has_iso : HasIso A B} := fst iso.
+Definition retr {A B : Type} {A_B_has_iso : HasIso A B} := snd iso.
+
+(* Isomorphism *)
+Class IsIso {A B : Type} (A_B_has_iso : HasIso A B) : Prop := {
+  retr_sect : forall x : A, retr (sect x) = x;
+  sect_retr : forall x : B, sect (retr x) = x;
+}.
+
+(** TODO These classes are not equivalent unless the actions are unital. *)
+
+Instance bihomogen_has_iso {A B C D : Type}
+  (A_B_has_l_act : HasLAct A B) (A_C_has_r_act : HasRAct A C)
+  (A_D_has_l_act : HasLAct A D) (A_D_has_r_act : HasRAct A D)
+  (B_C_D_has_bin_fn : HasBinFn B C D) : HasIso
+  (IsBihomogen l_act r_act l_act r_act bin_fn)
+  (IsBBihomogen l_act r_act l_act r_act bin_fn).
+Proof.
+  split.
+  - intros ? a b x y.
+    rewrite r_bihomogen. rewrite l_bihomogen.
+    reflexivity.
+  - intros ?. split.
+    + intros a b x.
+      erewrite <- (two_r_unl x).
+      rewrite b_bihomogen.
+      erewrite (two_r_unl x).
+      erewrite (two_r_unl (a L* bin_fn b x)).
+      reflexivity.
+    + intros a x y.
+      erewrite <- (two_l_unl x).
+      rewrite b_bihomogen.
+      erewrite (two_l_unl x).
+      erewrite (two_l_unl (bin_fn x y)).
+      reflexivity. Abort.
 
 (** TODO Figure out which formulation is better.
 
