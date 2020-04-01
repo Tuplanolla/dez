@@ -37,6 +37,13 @@ When writing definitions or proving theorems,
 implicit generalization should be used in the `Context` of a `Section`,
 which itself is usually named `Context`.
 
+Instances inside sections should always be marked `Global` or `Local`,
+never implicitly local.
+
+When defining multi-sorted classes,
+always supply implicit type arguments explicitly,
+because tracking down degeneration bugs is really annoying.
+
 ### Imports and Exports
 
 When defining operational classes,
