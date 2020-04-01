@@ -20,9 +20,9 @@ Context {A : Type} `{is_bnd_lat : IsBndLat A}.
 (** TODO Not sure if this is sensible... *)
 
 Global Instance join_bot_is_bnd_slat : IsBndSlat join bot.
-Proof. constructor; typeclasses eauto. Qed.
+Proof. split; typeclasses eauto. Qed.
 
 Global Instance meet_top_is_bnd_slat : IsBndSlat meet top.
-Proof. constructor; typeclasses eauto. Qed.
+Proof. split; typeclasses eauto. Qed.
 
 End Context.

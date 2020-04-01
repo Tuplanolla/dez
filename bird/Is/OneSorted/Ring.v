@@ -52,7 +52,7 @@ Global Instance zero_mul_is_r_absorb : IsRAbsorb zero mul.
 Proof. intros x. apply zero_mul_r_absorb. Qed.
 
 Global Instance zero_mul_is_absorb : IsAbsorb zero mul.
-Proof. constructor; typeclasses eauto. Qed.
+Proof. split; typeclasses eauto. Qed.
 
 Theorem neg_mul_one_l_sgn_absorb : forall x : A,
   - (1) * x = - x.
@@ -85,7 +85,7 @@ Global Instance neg_mul_one_is_r_sgn_absorb : IsRSgnAbsorb neg mul one.
 Proof. intros x. apply neg_mul_one_r_sgn_absorb. Qed.
 
 Global Instance neg_mul_one_is_sgn_absorb : IsSgnAbsorb neg mul one.
-Proof. constructor; typeclasses eauto. Qed.
+Proof. split; typeclasses eauto. Qed.
 
 Theorem neg_mul_l_bin_comm : forall x y : A,
   - (x * y) = - x * y.
@@ -112,7 +112,7 @@ Global Instance neg_mul_is_r_bin_comm : IsRBinComm neg mul.
 Proof. intros x y. apply neg_mul_r_bin_comm. Qed.
 
 Global Instance neg_mul_is_bin_comm : IsBinComm neg mul.
-Proof. constructor; typeclasses eauto. Qed.
+Proof. split; typeclasses eauto. Qed.
 
 Theorem neg_mul_bin_crs : forall x y : A,
   (- x) * y = x * (- y).
@@ -138,6 +138,6 @@ Global Instance neg_mul_is_bin_spt_cancel : IsBinSptCancel neg mul.
 Proof. intros x y. apply neg_mul_bin_spt_cancel. Qed.
 
 Global Instance add_zero_mul_one_is_sring : IsSring add zero mul one.
-Proof. constructor; typeclasses eauto. Qed.
+Proof. split; typeclasses eauto. Qed.
 
 End Context.

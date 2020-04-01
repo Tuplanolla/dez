@@ -31,6 +31,6 @@ Global Instance ord_rel_is_refl : IsRefl ord_rel.
 Proof. intros x. apply ord_rel_refl. Qed.
 
 Global Instance ord_rel_is_part_ord : IsPartOrd ord_rel.
-Proof. repeat (constructor; try typeclasses eauto). Qed.
+Proof. repeat (split; try typeclasses eauto). Qed.
 
 End Context.

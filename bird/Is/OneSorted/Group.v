@@ -64,7 +64,7 @@ Global Instance bin_op_is_r_cancel : IsRCancel bin_op.
 Proof. intros x y z. apply bin_op_r_cancel. Qed.
 
 Global Instance bin_op_is_cancel : IsCancel bin_op.
-Proof. constructor; typeclasses eauto. Qed.
+Proof. split; typeclasses eauto. Qed.
 
 Theorem bin_op_un_op_un_antidistr : forall x y : A,
   - (x + y) = - y + - x.

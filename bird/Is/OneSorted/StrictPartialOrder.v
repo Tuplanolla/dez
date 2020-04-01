@@ -17,6 +17,6 @@ Section Context.
 Context {A : Type} `{is_str_part_ord : IsStrPartOrd A}.
 
 Global Instance ord_rel_asymmetric : StrictOrder ord_rel | 0.
-Proof. constructor; typeclasses eauto. Qed.
+Proof. split; typeclasses eauto. Qed.
 
 End Context.

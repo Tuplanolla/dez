@@ -80,6 +80,9 @@ Class IsBiaddve {A B C : Type}
     IsRBiaddve (A := A) (B := B) (C := C) add add bin_fn;
 }.
 
+(** Here, [A] and [B] are rings, [C] and [D] are domain modules over each and
+    [E] is the range bimodule over both. *)
+
 (* BilinearMap *)
 Class IsBilinMap {A B C D E : Type}
   (A_has_add : HasAdd A) (A_has_zero : HasZero A) (A_has_neg : HasNeg A)
@@ -102,6 +105,17 @@ Class IsBilinMap {A B C D E : Type}
     IsBihomogen l_act r_act l_act r_act bin_fn;
   add_add_add_bin_fn_is_biaddve :> IsBiaddve add add add bin_fn;
 }.
+
+Class IsBilinOp {A B : Type}
+  (A_has_add : HasAdd A) (A_has_zero : HasZero A) (A_has_neg : HasNeg A)
+  (A_has_mul : HasMul A) (A_has_one : HasOne A)
+  (B_has_add : HasAdd B) (B_has_zero : HasZero B) (B_has_neg : HasNeg B)
+  (A_B_has_l_act : HasLAct A B) (A_B_has_r_act : HasRAct A B)
+  (B_has_bin_op : HasBinOp B) : Prop :=
+  etc_is_bilin_map :>
+    IsBilinMap (A := A) (B := A) (C := B) (D := B) (E := B)
+    add zero neg mul one add zero neg mul one
+    add zero neg add zero neg add zero neg l_act r_act l_act r_act bin_fn.
 
 (** TODO Bilinear forms are symmetric bilinear maps, so why not say so. *)
 
@@ -164,7 +178,7 @@ Global Instance bihomogen_is_iso {A B C D : Type}
   {A_D_l_null_op_r_act_is_two_r_unl :
     IsTwoRUnl (A := A) (B := D) r_null_op r_act} : IsIso bihomogen_has_iso.
 Proof.
-  constructor.
+  split.
   - intros x. apply proof_irrelevance.
   - intros x. apply proof_irrelevance. Qed.
 

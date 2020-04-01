@@ -15,6 +15,6 @@ Section Context.
 Context {A : Type} `{is_eq : IsEq A}.
 
 Global Instance eq_rel_equivalence : Equivalence eq_rel | 0.
-Proof. constructor; typeclasses eauto. Qed.
+Proof. split; typeclasses eauto. Qed.
 
 End Context.
