@@ -45,10 +45,10 @@ Definition Z_of_double_N (n : N) : Z :=
 
 Global Instance Z_N_has_iso : HasIso Z N := (Z_to_double_N, Z_of_double_N).
 
-Global Instance Z_N_is_iso : IsIso Z N Z_N_has_iso.
+Global Instance Z_N_is_iso : IsIso Z N iso.
 Proof.
   split.
-  - intros x. cbn. destruct x as [| p | p].
+  - intros x. destruct x as [| p | p].
     + reflexivity.
     + reflexivity.
     + destruct p as [q | q |].
