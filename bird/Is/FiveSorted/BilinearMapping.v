@@ -12,8 +12,6 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   OneSorted.ArithmeticNotations TwoSorted.MultiplicativeNotations.
 
-(** TODO Bilinear forms are symmetric bilinear maps, so why not say so. *)
-
 (** TODO Relocate this crap. *)
 
 (* LeftBihomogeneous *)

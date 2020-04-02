@@ -43,7 +43,7 @@ Class IsGrdLAlg {A : Type} {P Q : A -> Type}
   (Q_has_mul : forall i : A, HasMul (Q i))
   (Q_has_grd_mul : HasGrdMul Q)
   (P_Q_has_grd_l_act : HasGrdLAct P Q) : Prop := {
-  this_is_grd_l_mod :> IsGrdLMod (P := P) (Q := Q)
+  this_is_grd_l_mod :> IsGrdLMod P Q
     P_has_add P_has_zero P_has_neg
     grd_mul grd_one Q_has_add Q_has_zero Q_has_neg
     grd_l_act;

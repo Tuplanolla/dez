@@ -70,6 +70,8 @@ digraph Has {
     Zero [label = "Zero\nA"]
   }
 
+  node [fillcolor = violet, style = filled]
+
   GrdBinOp -> BinOp
   GrdLAct -> BinOp
   GrdNullOp -> NullOp

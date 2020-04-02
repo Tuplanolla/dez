@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  EquivalenceRelation BinaryOperation LeftAction LeftNullaryOperation.
+  OneSorted.LeftNullaryOperation TwoSorted.LeftAction.
 From Maniunfold.ShouldHave Require Import
   TwoSorted.AdditiveNotations.
 

@@ -16,7 +16,14 @@ digraph Is {
 
     node [peripheries = 3]
 
+    Biaddve [label = "Biadditive"]
     Bicompat [label = "Bicompatible\na L+ (x R+ b) = (a L+ x) R+ b"]
+    Bihomogen [label = "Bihomogeneous"]
+    LBiaddve [label = "LeftBiadditive\nbin_fn (x + y) z = bin_fn x z + bin_fn y z"]
+    LBihomogen [label = "LeftBihomogeneous\nbin_fn (a L* x) y = a L* bin_fn x y"]
+    RBiaddve [label = "RightBiadditive\nbin_fn x (y + z) = bin_fn x y + bin_fn x z"]
+    RBihomogen [label = "RightBihomogeneous\nbin_fn x (y R* a) = bin_fn x y R* a"]
+    ThreeBimod [label = "Bimodule"]
   }
 
   subgraph Two {
@@ -29,13 +36,19 @@ digraph Is {
 
       node [style = dashed]
 
-      GrdLAlg [label = "LeftAlgebra"]
+      GrdAlg [label = "Algebra"]
       GrdLMod [label = "LeftModule"]
+      GrdTwoLLDistr [label = "LeftLeftDistributive\na GL* (x + y) = a GL* x + a GL* y"]
+      GrdTwoLRDistr [label = "LeftRightDistributive\n(a + b) GL* x = a GL* x + b GL* x"]
+      GrdTwoLUnl [label = "LeftUnital\nG1 GL* x = x"]
+      GrdLCompat [label = "LeftCompatible\na GL* (b GL* x) = (a G* b) GL* x"]
     }
 
-    LAlg [label = "LeftAlgebra"]
+    Alg [label = "Algebra"]
+    BilinForm [label = "BilinearForm"]
+    BilinMap [label = "BilinearMapping"]
+    BilinOp [label = "BilinearOperator"]
     LCompat [label = "LeftCompatible\na L+ (b L+ x) = (a + b) L+ x"]
-    TwoLBinComm [label = "LeftBinaryCommutative?\nL- (x R+ y) = L- x R+ y"]
     LGrpAct [label = "LeftGroupAction"]
     LGrpTor [label = "LeftGroupTorsor"]
     LMagAct [label = "LeftMagmaAction"]
@@ -44,11 +57,17 @@ digraph Is {
     LNullUniq [label = "LeftUnique\n(y L- x) +L x = y"]
     LSgrpAct [label = "LeftSemigroupAction"]
     RCompat [label = "RightCompatible\nx R+ (a + b) = (x R+ a) R+ b"]
-    TwoRBinComm [label = "RightBinaryCommutative?\nR- (x L+ y) = x L+ R- y"]
+    RMod [label = "RightModule"]
     RSgrpAct [label = "RightSemigroupAction"]
-    TwoLDistr [label = "LeftDistributive?\na L* (x + y) = a L* x + a L* y"]
+    TwoBimod [label = "Bimodule"]
+    TwoLBinComm [label = "LeftBinaryCommutative?\nL- (x R+ y) = L- x R+ y"]
+    TwoLLDistr [label = "LeftLeftDistributive?\na L* (x + y) = a L* x + a L* y"]
+    TwoLRDistr [label = "LeftRightDistributive?\n(a + b) L* x = a L* x + b L* x"]
     TwoLUnl [label = "LeftUnital\nL0 L+ x = x"]
+    TwoRBinComm [label = "RightBinaryCommutative?\nR- (x L+ y) = x L+ R- y"]
     TwoRDistr [label = "RightDistributive?\n(a + b) L* x = a L* x + b L* x"]
+    TwoRLDistr [label = "RightLeftDistributive?\nx R* (a + b) = x R* a + x R* b"]
+    TwoRRDistr [label = "RightRightDistributive?\n(x + y) R* a = x R* a + y R* a"]
     TwoRUnl [label = "RightUnital\nx R+ R0 = x"]
     TwoUnl [label = "Unital"]
   }
@@ -123,13 +142,25 @@ digraph Is {
     TotOrd [label = "TotalOrder"]
   }
 
+  node [fillcolor = violet, style = filled]
+
   edge [style = solid]
 
   AbGrp -> Comm
   AbGrp -> Grp
   Absorb -> LAbsorb
   Absorb -> RAbsorb
+  Alg -> BilinOp
+  Alg -> Ring
+  Alg -> TwoBimod
   Antisym -> Eq
+  BilinForm -> BilinMap
+  BilinMap -> Biaddve
+  BilinMap -> Bihomogen
+  BilinMap -> LMod
+  BilinMap -> RMod
+  BilinMap -> ThreeBimod
+  BilinOp -> BilinMap
   BinComm -> LBinComm
   BinComm -> RBinComm
   BndLat -> Lat
@@ -143,6 +174,16 @@ digraph Is {
   Eq -> PartEq
   Eq -> Refl
   GrdAssoc -> Assoc
+  GrdLMod -> AbGrp [label = "w"]
+  GrdLMod -> GrdLCompat
+  Bihomogen -> LBihomogen
+  Bihomogen -> RBihomogen
+  Biaddve -> LBiaddve
+  Biaddve -> RBiaddve
+  GrdLMod -> GrdRing
+  GrdLMod -> GrdTwoLLDistr
+  GrdLMod -> GrdTwoLRDistr
+  GrdLMod -> GrdTwoLUnl
   GrdLUnl -> LUnl
   GrdMon -> GrdAssoc
   GrdMon -> GrdUnl
@@ -165,9 +206,9 @@ digraph Is {
   LMod -> AbGrp
   LMod -> LCompat
   LMod -> Ring
-  LMod -> TwoLDistr
+  LMod -> TwoLLDistr
+  LMod -> TwoLRDistr
   LMod -> TwoLUnl
-  LMod -> TwoRDistr
   LMonAct -> LSgrpAct
   LMonAct -> TwoLUnl
   LSgrpAct -> LCompat
@@ -183,6 +224,12 @@ digraph Is {
   PartOrd -> Preord
   Preord -> Refl
   Preord -> Trans
+  RMod -> AbGrp
+  RMod -> RCompat
+  RMod -> Ring
+  RMod -> TwoRLDistr
+  RMod -> TwoRRDistr
+  RMod -> TwoRUnl
   RSgrpAct -> RCompat
   RSgrpAct -> Sgrp
   Ring -> Comm
@@ -202,9 +249,13 @@ digraph Is {
   Sring -> Mon [label = "2"]
   StrPartOrd -> Irrefl
   StrPartOrd -> Trans
+  ThreeBimod -> Bicompat
+  ThreeBimod -> LMod
+  ThreeBimod -> RMod
   TotOrd -> Antisym
   TotOrd -> Connex
   TotOrd -> Trans
+  TwoBimod -> ThreeBimod
   TwoUnl -> TwoLUnl
   TwoUnl -> TwoRUnl
   Unl -> LUnl

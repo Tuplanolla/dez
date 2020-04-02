@@ -10,11 +10,11 @@ Class IsIso (A B : Type) (A_B_has_iso : HasIso A B) : Prop := {
 
 Section Context.
 
-Context {A B : Type} `{A_B_is_iso : IsIso A B}.
+Context {A B : Type} `{is_iso : IsIso A B}.
 
 Local Instance B_A_has_iso : HasIso B A := (retr, sect).
 
-Local Instance B_A_is_iso : IsIso B A B_A_has_iso.
+Local Instance B_A_iso_is_iso : IsIso B A iso.
 Proof.
   split.
   - intros x. apply (sect_retr x).

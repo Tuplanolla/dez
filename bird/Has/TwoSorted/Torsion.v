@@ -7,8 +7,8 @@ Typeclasses Transparent HasTor.
 
 Section Context.
 
-Context {A B : Type} `{A_has_tor : HasTor A B}.
+Context {A B : Type} `{A_B_has_tor : HasTor A B}.
 
-Global Instance A_B_has_bin_fn : HasBinFn B B A := tor.
+Global Instance B_B_A_has_bin_fn : HasBinFn B B A := tor.
 
 End Context.

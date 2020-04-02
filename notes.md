@@ -199,6 +199,8 @@ Do these things.
   "equational logic" or "universal algebra".
 * Regular semigroups have two equivalent definitions;
   try to implement them as an isomorphism.
+* Perhaps specialize actions to scalar multiplications and
+  functions to bilinear ops, maps and forms.
 * Set up build automation; see diagram `habitat.dot`.
 * Integrate Thrift into the mess.
 * Now that we have one-sorted algebra (abstract algebra)
