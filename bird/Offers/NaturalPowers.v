@@ -1,8 +1,8 @@
 From Coq Require Import
   NArith.
 From Maniunfold.Has Require Export
-  BinaryOperation NullaryOperation LeftAction.
-From Maniunfold.Offers Require Import
+  OneSorted.BinaryOperation OneSorted.NullaryOperation TwoSorted.LeftAction.
+From Maniunfold.Offers Require Export
   PositivePowers.
 From Maniunfold.ShouldHave Require Import
   OneSorted.AdditiveNotations.

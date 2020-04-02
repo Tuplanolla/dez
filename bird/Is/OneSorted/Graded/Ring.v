@@ -1,3 +1,4 @@
+(* good *)
 From Maniunfold.Has Require Export
   OneSorted.BinaryOperation OneSorted.NullaryOperation
   OneSorted.Addition OneSorted.Zero OneSorted.Negation

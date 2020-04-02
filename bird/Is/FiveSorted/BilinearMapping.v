@@ -1,5 +1,4 @@
-From Coq Require Import
-  Logic.ProofIrrelevance.
+(* bad *)
 From Maniunfold.Has Require Export
   OneSorted.UnaryOperation OneSorted.Addition TwoSorted.LeftAction
   OneSorted.Addition OneSorted.Zero OneSorted.Negation
@@ -13,13 +12,9 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   OneSorted.ArithmeticNotations TwoSorted.MultiplicativeNotations.
 
-(* BothBihomogeneous *)
-Class IsBBihomogen (A B C D E : Type)
-  (A_C_has_l_act : HasLAct A C) (B_D_has_r_act : HasRAct B D)
-  (A_E_has_l_act : HasLAct A E) (B_E_has_r_act : HasRAct B E)
-  (C_D_E_has_bin_fn : HasBinFn C D E) : Prop :=
-  b_bihomogen : forall (a : A) (b : B) (x : C) (y : D),
-    bin_fn (a L* x) (y R* b) = a L* bin_fn x y R* b.
+(** TODO Bilinear forms are symmetric bilinear maps, so why not say so. *)
+
+(** TODO Relocate this crap. *)
 
 (* LeftBihomogeneous *)
 Class IsLBihomogen (A B C D : Type)
@@ -70,10 +65,12 @@ Class IsBiaddve (A B C : Type)
     IsRBiaddve A B C add add bin_fn;
 }.
 
-(** Here, [A] and [B] are rings, [C] and [D] are domain modules over each and
-    [E] is the range bimodule over both. *)
+(** This is a bilinear mapping from two modules into a bimodule,
+    each of them defined over a noncommutative ring.
+    The rings are carried by [A] and [B], the modules by [C] and [D] and
+    the bimodule by [E].
+    The mapping itself is an arbitrary binary function. *)
 
-(* BilinearMapping *)
 Class IsBilinMap (A B C D E : Type)
   (A_has_add : HasAdd A) (A_has_zero : HasZero A) (A_has_neg : HasNeg A)
   (A_has_mul : HasMul A) (A_has_one : HasOne A)
@@ -82,9 +79,9 @@ Class IsBilinMap (A B C D E : Type)
   (C_has_add : HasAdd C) (C_has_zero : HasZero C) (C_has_neg : HasNeg C)
   (D_has_add : HasAdd D) (D_has_zero : HasZero D) (D_has_neg : HasNeg D)
   (E_has_add : HasAdd E) (E_has_zero : HasZero E) (E_has_neg : HasNeg E)
+  (C_D_E_has_bin_fn : HasBinFn C D E)
   (A_C_has_l_act : HasLAct A C) (B_D_has_r_act : HasRAct B D)
-  (A_E_has_l_act : HasLAct A E) (B_E_has_r_act : HasRAct B E)
-  (C_D_E_has_bin_fn : HasBinFn C D E) : Prop := {
+  (A_E_has_l_act : HasLAct A E) (B_E_has_r_act : HasRAct B E) : Prop := {
   A_C_add_zero_neg_mul_one_add_zero_neg_l_act_is_l_mod :>
     IsLMod A C add zero neg mul one add zero neg l_act;
   B_D_add_zero_neg_mul_one_add_zero_neg_r_act_is_r_mod :>
@@ -97,27 +94,18 @@ Class IsBilinMap (A B C D E : Type)
   C_D_E_add_add_add_bin_fn_is_biaddve :> IsBiaddve C D E add add add bin_fn;
 }.
 
-(* BilinearOperator *)
-Class IsBilinOp (A B : Type)
-  (A_has_add : HasAdd A) (A_has_zero : HasZero A) (A_has_neg : HasNeg A)
-  (A_has_mul : HasMul A) (A_has_one : HasOne A)
-  (B_has_add : HasAdd B) (B_has_zero : HasZero B) (B_has_neg : HasNeg B)
-  (A_B_has_l_act : HasLAct A B) (A_B_has_r_act : HasRAct A B)
-  (B_has_bin_op : HasBinOp B) : Prop :=
-  A_A_B_B_B_add_zero_neg_mul_one_add_zero_neg_mul_one_add_zero_neg_add_zero_neg_add_zero_neg_l_act_r_act_l_act_r_act_bin_fn_is_bilin_map
-    :> IsBilinMap A A B B B add zero neg mul one add zero neg mul one
-    add zero neg add zero neg add zero neg l_act r_act l_act r_act bin_fn.
+(** And now, a curious digression into a common mistake in literature. *)
 
-(** TODO Bilinear forms are symmetric bilinear maps, so why not say so. *)
+From Coq Require Import
+  Logic.ProofIrrelevance.
 
-(*
-Class IsLBilin' (A B : Type)
-  (A_has_add : HasAdd A) (B_has_add : HasAdd B)
-  (A_B_has_l_act : HasLAct A B) : Prop := {
-  add_is_l_lin :> forall y : _, IsLLin add (fun x => x + y) l_act;
-  flip_add_is_l_lin :> forall x : _, IsLLin add (fun y => x + y) l_act;
-}.
-*)
+(* BothBihomogeneous *)
+Class IsBBihomogen (A B C D E : Type)
+  (A_C_has_l_act : HasLAct A C) (B_D_has_r_act : HasRAct B D)
+  (A_E_has_l_act : HasLAct A E) (B_E_has_r_act : HasRAct B E)
+  (C_D_E_has_bin_fn : HasBinFn C D E) : Prop :=
+  b_bihomogen : forall (a : A) (b : B) (x : C) (y : D),
+    bin_fn (a L* x) (y R* b) = a L* bin_fn x y R* b.
 
 Global Instance bihomogen_has_iso {A B C D E : Type}
   {A_C_has_l_act : HasLAct A C} {B_D_has_r_act : HasRAct B D}
@@ -169,15 +157,3 @@ Proof.
   split.
   - intros x. apply proof_irrelevance.
   - intros x. apply proof_irrelevance. Qed.
-
-(** TODO Figure out which formulation is better.
-
-<<
-IsBilin iff
-- IsLin (fun x => x + y)
-- IsLin (fun y => x + y).
-IsBilin iff
-- IsTwoLDistr add l_act
-- IsBicompat add l_act
-- IsBicompat l_act add.
->> *)

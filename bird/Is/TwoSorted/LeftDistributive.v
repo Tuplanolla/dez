@@ -1,6 +1,6 @@
 From Maniunfold.Has Require Export
   OneSorted.Addition TwoSorted.LeftAction.
-From Maniunfold.Is Require Import
+From Maniunfold.Is Require Export
   TwoSorted.LeftLeftDistributive TwoSorted.LeftRightDistributive.
 
 Class IsTwoLDistr (A B : Type)

@@ -1,6 +1,6 @@
 From Maniunfold.Has Require Export
   OneSorted.Negation OneSorted.Multiplication.
-From Maniunfold.Is Require Import
+From Maniunfold.Is Require Export
   TwoSorted.LeftBinaryCommutative.
 From Maniunfold.ShouldHave Require Import
   OneSorted.ArithmeticNotations.

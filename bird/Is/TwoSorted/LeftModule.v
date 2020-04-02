@@ -1,6 +1,7 @@
 From Maniunfold.Has Require Export
-  OneSorted.Addition OneSorted.Zero OneSorted.Negation OneSorted.Multiplication
-  OneSorted.One TwoSorted.LeftAction.
+  OneSorted.Addition OneSorted.Zero OneSorted.Negation
+  OneSorted.Multiplication OneSorted.One
+  TwoSorted.LeftAction.
 From Maniunfold.Is Require Export
   OneSorted.Ring OneSorted.AbelianGroup TwoSorted.LeftRightDistributive
   TwoSorted.LeftCompatible TwoSorted.LeftUnital TwoSorted.LeftLeftDistributive.
