@@ -1,6 +1,8 @@
+(* bad *)
 From Maniunfold.Has Require Export
-  BinaryOperation NullaryOperation
-  Graded.BinaryOperation Graded.NullaryOperation.
+  OneSorted.BinaryOperation OneSorted.NullaryOperation
+  OneSorted.Graded.BinaryOperation OneSorted.Graded.NullaryOperation
+  TwoSorted.Graded.LeftAction TwoSorted.Graded.RightAction.
 From Maniunfold.Is Require Export
   Graded.LeftModule AbelianGroup.
 From Maniunfold.ShouldHave Require Import
@@ -10,7 +12,7 @@ From Maniunfold.ShouldHave Require Import
 
 (** TODO Do we really need commutativity and
     all these acrobatics on the index type?
-    The answer involves bimodules. *)
+    The answer is no and involves bimodules. *)
 
 Section Context.
 
@@ -29,10 +31,11 @@ Proof.
 
 End Context.
 
-(** TODO There is some confusion about the operational requirements... *)
+(** TODO There is some confusion about the operational requirements and
+    appropriate use of commutativity... *)
 
-Class IsGrdLAlg {A : Type} {P Q : A -> Type}
-  (A_has_bin_op : HasBinOp A) (A_has_null_op : HasNullOp A)
+Class IsGrdAlg' {A : Type} {P Q : A -> Type}
+  {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}
   (P_has_add : forall i : A, HasAdd (P i))
   (P_has_zero : forall i : A, HasZero (P i))
   (P_has_neg : forall i : A, HasNeg (P i))
@@ -40,31 +43,58 @@ Class IsGrdLAlg {A : Type} {P Q : A -> Type}
   (Q_has_add : forall i : A, HasAdd (Q i))
   (Q_has_zero : forall i : A, HasZero (Q i))
   (Q_has_neg : forall i : A, HasNeg (Q i))
-  (Q_has_mul : forall i : A, HasMul (Q i))
+  (** TODO ??? *) (Q_has_mul : forall i : A, HasMul (Q i))
   (Q_has_grd_mul : HasGrdMul Q)
-  (P_Q_has_grd_l_act : HasGrdLAct P Q) : Prop := {
+  (P_Q_has_grd_l_act : HasGrdLAct P Q)
+  (P_Q_has_grd_r_act : HasGrdRAct P Q) : Prop := {
   this_is_grd_l_mod :> IsGrdLMod P Q
     P_has_add P_has_zero P_has_neg
     grd_mul grd_one Q_has_add Q_has_zero Q_has_neg
     grd_l_act;
   (* z * (x + y) = z * x + z * y *)
   (* (x + y) * z = x * z + y * z *)
-  the_l_distr : forall (i : A) (x y z : Q i),
+  the_l_distr : forall {i : A} (x y z : Q i),
     z * (x + y) = z * x + z * y;
-  the_r_distr : forall (i : A) (x y z : Q i),
+  the_r_distr : forall {i : A} (x y z : Q i),
     (x + y) * z = x * z + y * z;
   the_weird_comm :> IsComm bin_op;
   (* a * (x * y) = (a * x) * y *)
-  the_l_wtf : forall (i j k : A) (a : P i) (x : Q j) (y : Q k),
+  the_l_wtf : forall {i j k : A} (a : P i) (x : Q j) (y : Q k),
     rew [Q] assoc i j k in (a GL* (x G* y)) = (a GL* x) G* y;
   (* x * (b * y) = b * (x * y) *)
-  the_r_wtf : forall (i j k : A) (a : P i) (x : Q j) (y : Q k),
+  the_r_wtf : forall {i j k : A} (a : P i) (x : Q j) (y : Q k),
     rew [Q] swappy i j k in (x G* (a GL* y)) = a GL* (x G* y);
+}.
+
+(** Worry not, just try again! *)
+
+Fail Class IsGrdAlg {A : Type} (P Q : A -> Type)
+  {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}
+  (P_has_add : forall i : A, HasAdd (P i))
+  (P_has_zero : forall i : A, HasZero (P i))
+  (P_has_neg : forall i : A, HasNeg (P i))
+  (P_has_grd_mul : HasGrdMul P) (P_has_grd_one : HasGrdOne P)
+  (Q_has_add : forall i : A, HasAdd (Q i))
+  (Q_has_zero : forall i : A, HasZero (Q i))
+  (Q_has_neg : forall i : A, HasNeg (Q i))
+  (Q_has_grd_mul : HasGrdMul Q)
+  (P_Q_has_grd_l_act : HasGrdLAct P Q)
+  (P_Q_has_grd_r_act : HasGrdRAct P Q) : Prop := {
+  add_zero_neg_grd_mul_grd_one_is_grd_ring :>
+    IsGrdRing (P := P) add zero neg grd_mul grd_one;
+  (** TODO Need this first. *)
+  P_Q_add_zero_neg_mul_one_add_zero_neg_l_act_r_act_is_two_bimod :>
+    IsTwoGrdBimod P Q add zero neg mul one add zero neg l_act r_act;
+  (** TODO Need this first too. *)
+  P_Q_add_zero_neg_mul_one_add_zero_neg_mul_l_act_r_act_is_bilin_op :>
+    IsGrdBilinOp P Q add zero neg mul one add zero neg mul l_act r_act;
 }.
 
 Section Context.
 
-Context {A : Type} {P Q : A -> Type} `{is_grd_l_alg : IsGrdLAlg A P Q}.
+Context {A : Type} {P Q : A -> Type} `{is_grd_alg : IsGrdAlg' A P Q}.
+
+Local Set Warnings "-undo-batch-mode".
 
 Goal forall (i j k : A) (a : P i) (x : Q j) (y : Q k), True.
 Proof.

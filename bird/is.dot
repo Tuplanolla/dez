@@ -38,9 +38,9 @@ digraph Is {
 
       GrdAlg [label = "Algebra"]
       GrdLMod [label = "LeftModule"]
-      GrdTwoLLDistr [label = "LeftLeftDistributive\na GL* (x + y) = a GL* x + a GL* y"]
-      GrdTwoLRDistr [label = "LeftRightDistributive\n(a + b) GL* x = a GL* x + b GL* x"]
-      GrdTwoLUnl [label = "LeftUnital\nG1 GL* x = x"]
+      TwoGrdLLDistr [label = "LeftLeftDistributive\na GL* (x + y) = a GL* x + a GL* y"]
+      TwoGrdLRDistr [label = "LeftRightDistributive\n(a + b) GL* x = a GL* x + b GL* x"]
+      TwoGrdLUnl [label = "LeftUnital\nG1 GL* x = x"]
       GrdLCompat [label = "LeftCompatible\na GL* (b GL* x) = (a G* b) GL* x"]
     }
 
@@ -181,9 +181,9 @@ digraph Is {
   Biaddve -> LBiaddve
   Biaddve -> RBiaddve
   GrdLMod -> GrdRing
-  GrdLMod -> GrdTwoLLDistr
-  GrdLMod -> GrdTwoLRDistr
-  GrdLMod -> GrdTwoLUnl
+  GrdLMod -> TwoGrdLLDistr
+  GrdLMod -> TwoGrdLRDistr
+  GrdLMod -> TwoGrdLUnl
   GrdLUnl -> LUnl
   GrdMon -> GrdAssoc
   GrdMon -> GrdUnl
