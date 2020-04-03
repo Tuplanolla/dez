@@ -25,7 +25,7 @@ Class IsLBihomogen (A B C D : Type)
 Class IsRBihomogen (A B C D : Type)
   (A_C_has_r_act : HasRAct A C) (A_D_has_r_act : HasRAct A D)
   (B_C_D_has_bin_fn : HasBinFn B C D) : Prop :=
-  r_bihomogen : forall (a : A) (x : B) (y : C),
+  r_bihomogen : forall (x : B) (y : C) (a : A),
     bin_fn x (y R* a) = bin_fn x y R* a.
 
 (* Bihomogeneous *)
@@ -57,10 +57,8 @@ Class IsRBiaddve (A B C : Type)
 Class IsBiaddve (A B C : Type)
   (A_has_add : HasAdd A) (B_has_add : HasAdd B) (C_has_add : HasAdd C)
   (A_B_C_has_bin_fn : HasBinFn A B C) : Prop := {
-  l_act_l_act_fn_is_l_biaddve :>
-    IsLBiaddve A B C add add bin_fn;
-  r_act_r_act_fn_is_r_biaddve :>
-    IsRBiaddve A B C add add bin_fn;
+  A_B_C_add_add_bin_fn_is_l_biaddve :> IsLBiaddve A B C add add bin_fn;
+  A_B_C_add_add_bin_fn_is_r_biaddve :> IsRBiaddve A B C add add bin_fn;
 }.
 
 (** This is a bilinear mapping from two modules into a bimodule,
@@ -102,7 +100,7 @@ Class IsBBihomogen (A B C D E : Type)
   (A_C_has_l_act : HasLAct A C) (B_D_has_r_act : HasRAct B D)
   (A_E_has_l_act : HasLAct A E) (B_E_has_r_act : HasRAct B E)
   (C_D_E_has_bin_fn : HasBinFn C D E) : Prop :=
-  b_bihomogen : forall (a : A) (b : B) (x : C) (y : D),
+  b_bihomogen : forall (a : A) (x : C) (y : D) (b : B),
     bin_fn (a L* x) (y R* b) = a L* bin_fn x y R* b.
 
 Global Instance bihomogen_has_iso {A B C D E : Type}
@@ -131,7 +129,7 @@ Proof.
       rewrite (two_r_unl x).
       rewrite (two_r_unl (a L* bin_fn b x)).
       reflexivity.
-    + intros a x y.
+    + intros x y a.
       rewrite <- (two_l_unl x).
       rewrite b_bihomogen.
       rewrite (two_l_unl x).

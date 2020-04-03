@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  BinaryFunction.
+  ThreeSorted.BinaryFunction.
 
 Class HasTor (A B : Type) : Type := tor : B -> B -> A.
 

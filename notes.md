@@ -186,6 +186,38 @@ Ltac change_group := let k x := x in foreach [db : group] k.
 None of these issues prevent working on the system,
 but solving some of them would get rid of a lot of pointless busywork.
 
+### Tidying
+
+Find long lines.
+
+```
+$ find . -name '*.v' | xargs grep -n '^.\{80,\}$'
+```
+
+Find trailing spaces.
+
+```
+$ find . -name '*.v' | xargs grep -n ' \+$'
+```
+
+Find double spacing.
+
+```
+$ find . -name '*.v' | xargs grep -n '[^ ]  \+'
+```
+
+Find loose parentheses.
+
+```
+$ find . -name '*.v' | xargs grep -n '\((\|\[\|{\) \| \()\|\]\|}\)'
+```
+
+Find loose type signatures.
+
+```
+find . -name '*.v' | xargs grep -n '[^ ]:\|:[^ =>]'
+```
+
 ### Piles of Things to Do
 
 It would be easier to separate algebraic, relational,

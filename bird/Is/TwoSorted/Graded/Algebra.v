@@ -77,19 +77,18 @@ Fail Class IsGrdAlg {A : Type} (P Q : A -> Type)
   (Q_has_add : forall i : A, HasAdd (Q i))
   (Q_has_zero : forall i : A, HasZero (Q i))
   (Q_has_neg : forall i : A, HasNeg (Q i))
-  (** TODO Is this to be graded? *)
   (Q_has_grd_mul : HasGrdMul Q)
   (P_Q_has_grd_l_act : HasGrdLAct P Q)
   (P_Q_has_grd_r_act : HasGrdRAct P Q) : Prop := {
   add_zero_neg_grd_mul_grd_one_is_grd_ring :>
     IsGrdRing (P := P) P_has_add P_has_zero P_has_neg grd_mul grd_one;
-  P_Q_add_zero_neg_grd_mul_grd_one_add_zero_neg_grd_l_act_grd_r_act_is_two_grd_bimod :>
-    IsTwoGrdBimod P Q P_has_add P_has_zero P_has_neg grd_mul grd_one
+  P_Q_add_zero_neg_grd_mul_grd_one_add_zero_neg_grd_l_act_grd_r_act_is_two_grd_bimod
+    :> IsTwoGrdBimod P Q P_has_add P_has_zero P_has_neg grd_mul grd_one
     Q_has_add Q_has_zero Q_has_neg grd_l_act grd_r_act;
   (** TODO Need this first. *)
-  P_Q_add_zero_neg_gdr_mul_gdr_one_add_zero_neg_WHAT_gdr_l_act_gdr_r_act_is_gdr_bilin_op :>
-    IsGrdBilinOp P Q P_has_add P_has_zero P_has_neg grd_mul grd_one
-    Q_has_add Q_has_zero Q_has_neg WHAT grd_l_act grd_r_act;
+  P_Q_add_zero_neg_grd_mul_grd_one_add_zero_neg_grd_mul_grd_l_act_grd_r_act_is_grd_bilin_op
+    :> IsGrdBilinOp P Q P_has_add P_has_zero P_has_neg grd_mul grd_one
+    Q_has_add Q_has_zero Q_has_neg grd_mul grd_l_act grd_r_act;
 }.
 
 Section Context.

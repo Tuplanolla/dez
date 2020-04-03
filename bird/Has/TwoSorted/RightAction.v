@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  BinaryFunction.
+  ThreeSorted.BinaryFunction.
 
 Class HasRAct (A B : Type) : Type := r_act : B -> A -> B.
 
