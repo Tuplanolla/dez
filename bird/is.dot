@@ -11,15 +11,6 @@ digraph Is {
   Sym [label = "Symmetric\nx ~~ y -> y ~~ x"]
   Trans [label = "Transitive\nx ~~ y -> y ~~ z -> x ~~ z"]
 
-  // TODO Relocate this crap.
-
-  GrdLBihomogen [label = "LeftBihomogeneous\na GL* grd_bin_fn _ _ x y = grd_bin_fn _ _ (a GL* x) y"]
-  GrdRBihomogen [label = "RightBihomogeneous\ngrd_bin_fn _ _ x (y GR* a) = grd_bin_fn _ _ x y GR* a"]
-  GrdBihomogen [label = "Bihomogeneous"]
-  GrdLBiaddve [label = "LeftBiadditive\ngrd_bin_fn _ _ (x + y) z = grd_bin_fn _ _ x z + grd_bin_fn _ _ y z"]
-  GrdRBiaddve [label = "RightBiadditive\ngrd_bin_fn _ _ x (y + z) = grd_bin_fn _ _ x y + grd_bin_fn _ _ x z"]
-  GrdBiaddve [label = "Biadditive"]
-
   subgraph Five {
     label = "FiveSorted"
 
@@ -30,10 +21,29 @@ digraph Is {
 
       node [style = dashed]
 
+      GrdBihomogen [label = "Bihomogeneous"]
       GrdBilinMap [label = "BilinearMapping"]
     }
 
     BilinMap [label = "BilinearMapping"]
+  }
+
+  subgraph Four {
+    label = "FourSorted"
+
+    node [peripheries = 5]
+
+    subgraph FourGrd {
+      label = "Graded"
+
+      node [style = dashed]
+
+      GrdLBihomogen [label = "LeftBihomogeneous\na GL* grd_bin_fn _ _ x y = grd_bin_fn _ _ (a GL* x) y"]
+      GrdRBihomogen [label = "RightBihomogeneous\ngrd_bin_fn _ _ x (y GR* a) = grd_bin_fn _ _ x y GR* a"]
+    }
+
+    LBihomogen [label = "LeftBihomogeneous\nbin_fn (a L* x) y = a L* bin_fn x y"]
+    RBihomogen [label = "RightBihomogeneous\nbin_fn x (y R* a) = bin_fn x y R* a"]
   }
 
   subgraph Three {
@@ -46,7 +56,10 @@ digraph Is {
 
       node [style = dashed]
 
+      GrdBiaddve [label = "Biadditive"]
       GrdBicompat [label = "Bicompatible"]
+      GrdLBiaddve [label = "LeftBiadditive\ngrd_bin_fn _ _ (x + y) z = grd_bin_fn _ _ x z + grd_bin_fn _ _ y z"]
+      GrdRBiaddve [label = "RightBiadditive\ngrd_bin_fn _ _ x (y + z) = grd_bin_fn _ _ x y + grd_bin_fn _ _ x z"]
       ThreeGrdBimod [label = "Bimodule"]
     }
 
@@ -54,9 +67,7 @@ digraph Is {
     Bicompat [label = "Bicompatible\na L+ (x R+ b) = (a L+ x) R+ b"]
     Bihomogen [label = "Bihomogeneous"]
     LBiaddve [label = "LeftBiadditive\nbin_fn (x + y) z = bin_fn x z + bin_fn y z"]
-    LBihomogen [label = "LeftBihomogeneous\nbin_fn (a L* x) y = a L* bin_fn x y"]
     RBiaddve [label = "RightBiadditive\nbin_fn x (y + z) = bin_fn x y + bin_fn x z"]
-    RBihomogen [label = "RightBihomogeneous\nbin_fn x (y R* a) = bin_fn x y R* a"]
     ThreeBimod [label = "Bimodule"]
   }
 
@@ -71,8 +82,8 @@ digraph Is {
       node [style = dashed]
 
       // BilinForm [label = "BilinearForm"]
-      GrdBilinOp [label = "BilinearOperator"]
       GrdAlg [label = "Algebra"]
+      GrdBilinOp [label = "BilinearOperator"]
       GrdLCompat [label = "LeftCompatible\na GL* (b GL* x) = (a G* b) GL* x"]
       GrdLMod [label = "LeftModule"]
       GrdRCompat [label = "RightCompatible\nx GR* (a G* b) = (x GR* a) GR* b"]
@@ -89,12 +100,12 @@ digraph Is {
     Alg [label = "Algebra"]
     BilinForm [label = "BilinearForm"]
     BilinOp [label = "BilinearOperator"]
+    Bimod [label = "Bimodule"]
     LCompat [label = "LeftCompatible\na L+ (b L+ x) = (a + b) L+ x"]
     LGrpAct [label = "LeftGroupAction"]
     LGrpTor [label = "LeftGroupTorsor"]
     LMagAct [label = "LeftMagmaAction"]
     LMod [label = "LeftModule"]
-    Bimod [label = "Bimodule"]
     LMonAct [label = "LeftMonoidAction"]
     LNullUniq [label = "LeftUnique\n(y L- x) +L x = y"]
     LSgrpAct [label = "LeftSemigroupAction"]
@@ -107,7 +118,6 @@ digraph Is {
     TwoLRDistr [label = "LeftRightDistributive?\n(a + b) L* x = a L* x + b L* x"]
     TwoLUnl [label = "LeftUnital\nL0 L+ x = x"]
     TwoRBinComm [label = "RightBinaryCommutative?\nR- (x L+ y) = x L+ R- y"]
-    TwoRDistr [label = "RightDistributive?\n(a + b) L* x = a L* x + b L* x"]
     TwoRLDistr [label = "RightLeftDistributive?\nx R* (a + b) = x R* a + x R* b"]
     TwoRRDistr [label = "RightRightDistributive?\n(x + y) R* a = x R* a + y R* a"]
     TwoRUnl [label = "RightUnital\nx R+ R0 = x"]
