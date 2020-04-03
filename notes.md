@@ -241,6 +241,8 @@ Do these things.
   what happens if we go looking for many-sorted partial algebra?
 * Perhaps call the maps involved in an equivalence section and retraction.
 * Monoidal categories now.
+* Have a look at Clifford Algebras and Dirac Operators
+  in Harmonic Analysis by Gilbert and Murray.
 
 Some rules.
 
