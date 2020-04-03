@@ -5,4 +5,4 @@ From Maniunfold.ShouldHave Require Import
 
 Class IsRCompat (A B : Type)
   (A_has_bin_op : HasBinOp A) (A_B_has_r_act : HasRAct A B) : Prop :=
-  r_compat : forall (a b : A) (x : B), x R+ (a + b) = (x R+ a) R+ b.
+  r_compat : forall (x : B) (a b : A), x R+ (a + b) = (x R+ a) R+ b.
