@@ -9,8 +9,6 @@ From Maniunfold.Offers Require Export
 
 Local Open Scope N_scope.
 
-Section Context.
-
 Global Instance bool_has_card : HasCard bool := 2.
 
 Global Instance bool_has_iso : HasIso bool {n : N | n < card bool}.
@@ -44,5 +42,3 @@ Proof.
         rewrite <- N.succ_lt_mono in F.
         rewrite N.lt_1_r in F.
         inversion F. Qed.
-
-End Context.

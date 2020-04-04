@@ -88,6 +88,11 @@ Instance fields contain the verb `is`, while plain fields do not.
 For example, we would have `bin_op_is_assoc :> IsAssoc bin_op` and
 `bin_op_assoc : forall x y z : A, x + (y + z) = (x + y) + z`.
 
+### Scopes
+
+Should probably say something about overloading notations here.
+Also, using `Import` and `Local Open Scope` for standard library scopes.
+
 ### Class Duality
 
 When defining things in `Offers`,
@@ -239,9 +244,7 @@ but, alas, they are too intertwined for such a separation to be useful.
 
 Do these things.
 
-* Add adverb subdirectories to arrange different conceps with similar names.
-  Read literature on "many-sorted" or "multi-sorted"
-  "equational logic" or "universal algebra".
+* Free modules (with an explicit basis) can now be built.
 * Regular semigroups have two equivalent definitions;
   try to implement them as an isomorphism.
 * Perhaps specialize actions to scalar multiplications and
@@ -252,10 +255,9 @@ Do these things.
   generalized to many-sorted algebra (universal algebra) and
   oidified to one-sorted partial algebra (category theory),
   what happens if we go looking for many-sorted partial algebra?
-* Perhaps call the maps involved in an equivalence section and retraction.
+* Had a look at Clifford Algebras and Dirac Operators
+  in Harmonic Analysis by Gilbert and Murray; it was terrible.
 * Monoidal categories now.
-* Have a look at Clifford Algebras and Dirac Operators
-  in Harmonic Analysis by Gilbert and Murray.
 
 Some rules.
 
