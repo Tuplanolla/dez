@@ -6,6 +6,8 @@ From Maniunfold.Has Require Export
 From Maniunfold.Is Require Export
   OneSorted.AbelianGroup OneSorted.Graded.Distributive OneSorted.Graded.Monoid.
 
+(** TODO Why so abelian? *)
+
 Class IsGrdRing {A : Type} {P : A -> Type}
   {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}
   (P_has_add : forall i : A, HasAdd (P i))

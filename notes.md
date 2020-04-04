@@ -69,7 +69,20 @@ Operative classes are prefixed with `Has` and predicative classes with `Is`.
 Abbreviations shorter than six characters are favored, whenever possible.
 
 Fields are prefixed with the nouns and then the verb.
-For example, we would have `bin_op_un_is_mon :> IsMon bin_op un`.
+For example, we would have `bin_op_null_op_is_mon :> IsMon bin_op null_op`.
+
+Explicit type arguments, as they appear in many-sorted structures,
+are included in the names, but implicit ones need not.
+For example, we would have
+`A_B_mul_l_act_is_l_compat :> IsLCompat A B mul l_act` and
+`add_zero_neg_is_ab_grp :> IsAbGrp (A := B) add zero neg`.
+
+The previous paragraph also applies to constraints,
+such as `{A_has_add : HasAdd A}`.
+Note that we make an exception with implicit generalization,
+where the explicitly provided implicit arguments are not to be mentioned.
+This happens, for example, with
+`Context {A : Type} `{is_grp : IsGrp A}`.
 
 Instance fields contain the verb `is`, while plain fields do not.
 For example, we would have `bin_op_is_assoc :> IsAssoc bin_op` and

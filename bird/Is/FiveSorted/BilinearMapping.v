@@ -8,58 +8,10 @@ From Maniunfold.Is Require Export
   TwoSorted.LeftDistributive ThreeSorted.Bicompatible TwoSorted.LeftLinear
   OneSorted.CommutativeRing TwoSorted.LeftModule TwoSorted.RightModule
   ThreeSorted.Bimodule
-  TwoSorted.Unital TwoSorted.Isomorphism.
+  TwoSorted.Unital TwoSorted.Isomorphism
+  ThreeSorted.Biadditive FiveSorted.Bihomogeneous.
 From Maniunfold.ShouldHave Require Import
   OneSorted.ArithmeticNotations TwoSorted.MultiplicativeNotations.
-
-(** TODO Relocate this crap. *)
-
-(* LeftBihomogeneous *)
-Class IsLBihomogen (A B C D : Type)
-  (A_B_has_l_act : HasLAct A B) (A_D_has_l_act : HasLAct A D)
-  (B_C_D_has_bin_fn : HasBinFn B C D) : Prop :=
-  l_bihomogen : forall (a : A) (x : B) (y : C),
-    a L* bin_fn x y = bin_fn (a L* x) y.
-
-(* RightBihomogeneous *)
-Class IsRBihomogen (A B C D : Type)
-  (A_C_has_r_act : HasRAct A C) (A_D_has_r_act : HasRAct A D)
-  (B_C_D_has_bin_fn : HasBinFn B C D) : Prop :=
-  r_bihomogen : forall (x : B) (y : C) (a : A),
-    bin_fn x (y R* a) = bin_fn x y R* a.
-
-(* Bihomogeneous *)
-Class IsBihomogen (A B C D E : Type)
-  (A_C_has_l_act : HasLAct A C) (B_D_has_r_act : HasRAct B D)
-  (A_E_has_l_act : HasLAct A E) (B_E_has_r_act : HasRAct B E)
-  (C_D_E_has_bin_fn : HasBinFn C D E) : Prop := {
-  A_C_D_E_l_act_l_act_bin_fn_is_l_bihomogen :>
-    IsLBihomogen A C D E l_act l_act bin_fn;
-  B_C_D_E_r_act_r_act_bin_fn_is_r_bihomogen :>
-    IsRBihomogen B C D E r_act r_act bin_fn;
-}.
-
-(* LeftBiadditive *)
-Class IsLBiaddve (A B C : Type)
-  (A_has_add : HasAdd A) (C_has_add : HasAdd C)
-  (A_B_C_has_bin_fn : HasBinFn A B C) : Prop :=
-  l_biaddve : forall (x y : A) (z : B),
-    bin_fn (x + y) z = bin_fn x z + bin_fn y z.
-
-(* RightBiadditive *)
-Class IsRBiaddve (A B C : Type)
-  (B_has_add : HasAdd B) (C_has_add : HasAdd C)
-  (A_B_C_has_bin_fn : HasBinFn A B C) : Prop :=
-  r_biaddve : forall (x : A) (y z : B),
-    bin_fn x (y + z) = bin_fn x y + bin_fn x z.
-
-(* Biadditive *)
-Class IsBiaddve (A B C : Type)
-  (A_has_add : HasAdd A) (B_has_add : HasAdd B) (C_has_add : HasAdd C)
-  (A_B_C_has_bin_fn : HasBinFn A B C) : Prop := {
-  A_B_C_add_add_bin_fn_is_l_biaddve :> IsLBiaddve A B C add add bin_fn;
-  A_B_C_add_add_bin_fn_is_r_biaddve :> IsRBiaddve A B C add add bin_fn;
-}.
 
 (** This is a bilinear mapping from two modules into a bimodule,
     each of them defined over a noncommutative ring.
