@@ -6,7 +6,8 @@ From Maniunfold.Is Require Export
   OneSorted.Ring OneSorted.AbelianGroup TwoSorted.LeftRightDistributive
   TwoSorted.LeftCompatible TwoSorted.LeftUnital TwoSorted.LeftLeftDistributive.
 
-(** This is a unital left module. *)
+(** This is a left module.
+    The underlying ring is carried by [A] and the module itself by [B]. *)
 
 Class IsLMod (A B : Type)
   (A_has_add : HasAdd A) (A_has_zero : HasZero A) (A_has_neg : HasNeg A)
