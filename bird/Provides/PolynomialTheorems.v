@@ -4,7 +4,8 @@ From Coq Require Import
 From Maniunfold.Has Require Export
   OneSorted.Enumeration OneSorted.Cardinality TwoSorted.Isomorphism.
 From Maniunfold.Is Require Export
-  OneSorted.Finite TwoSorted.Isomorphism OneSorted.Ring.
+  OneSorted.Finite TwoSorted.Isomorphism
+  OneSorted.Ring TwoSorted.UnitalAssociativeAlgebra TwoSorted.Graded.Algebra.
 From Maniunfold.Offers Require Export
   TwoSorted.IsomorphismMappings NaturalPowers.
 From Maniunfold.Provides Require Export
@@ -83,6 +84,12 @@ Definition Mul (p q : poly) : poly :=
 Definition One : poly :=
   Map.add N.zero one (Map.empty A).
 
+Definition LAct (a : A) (p : poly) : poly :=
+  Map.map (mul a) p.
+
+Definition RAct (p : poly) (a : A) : poly :=
+  Map.map (flip mul a) p.
+
 Global Instance poly_has_add : HasAdd poly := Add.
 
 Global Instance poly_has_zero : HasZero poly := Zero.
@@ -93,10 +100,23 @@ Global Instance poly_has_mul : HasMul poly := Mul.
 
 Global Instance poly_has_one : HasOne poly := One.
 
+Global Instance poly_has_l_act : HasLAct A poly := LAct.
+
+Global Instance poly_has_r_act : HasRAct A poly := RAct.
+
 Global Instance add_zero_neg_mul_one_is_ring : IsRing Add Zero Neg Mul One.
 Proof. repeat split. all: cbv -[Map.t Add Zero Neg Mul One]. Abort.
 
+Global Instance add_zero_neg_mul_one_is_ring :
+  IsUnlAssocAlg A poly Addition.add zero neg mul one
+  Add Zero Neg Mul One LAct RAct.
+Proof. repeat split. all: cbv -[Map.t Add Zero Neg Mul One LAct RAct]. Abort.
+
 End Context.
+
+(** TODO Wait, hold the fuck on.
+    Graded structures and structures with degrees are way different.
+    Time to rewrite everything! *)
 
 (** We would like these equalities to hold definitionally. *)
 
