@@ -1,9 +1,9 @@
 From Coq Require Import
-  ZArith.
+  ZArith.ZArith.
 From Maniunfold.Is Require Export
   OneSorted.Equivalence
   OneSorted.Magma OneSorted.Semigroup OneSorted.Monoid OneSorted.Group
-  TwoSorted.Isomorphism.
+  OneSorted.AbelianGroup OneSorted.Ring TwoSorted.Isomorphism.
 From Maniunfold.ShouldHave Require Import
   OneSorted.AdditiveNotations.
 
@@ -103,6 +103,12 @@ Proof. split; typeclasses eauto. Qed.
 Global Instance Z_add_zero_opp_is_grp : IsGrp Z.add Z.zero Z.opp.
 Proof. split; typeclasses eauto. Qed.
 
+Global Instance Z_add_is_comm : IsComm Z.add.
+Proof. intros x y. apply Z.add_comm. Qed.
+
+Global Instance Z_add_zero_opp_is_ab_grp : IsAbGrp Z.add Z.zero Z.opp.
+Proof. split; typeclasses eauto. Qed.
+
 End Additive.
 
 Module Multiplicative.
@@ -133,3 +139,26 @@ Global Instance Z_mul_one_is_mon : IsMon Z.mul Z.one.
 Proof. split; typeclasses eauto. Qed.
 
 End Multiplicative.
+
+Global Instance Z_has_add : HasAdd Z := Z.add.
+
+Global Instance Z_has_zero : HasZero Z := Z.zero.
+
+Global Instance Z_has_neg : HasNeg Z := Z.opp.
+
+Global Instance Z_has_mul : HasMul Z := Z.mul.
+
+Global Instance Z_has_one : HasOne Z := Z.one.
+
+Global Instance Z_add_mul_is_l_distr : IsLDistr Z.add Z.mul.
+Proof. intros x y z. apply Z.mul_add_distr_l. Qed.
+
+Global Instance Z_add_mul_is_r_distr : IsRDistr Z.add Z.mul.
+Proof. intros x y z. apply Z.mul_add_distr_r. Qed.
+
+Global Instance Z_add_mul_is_distr : IsDistr Z.add Z.mul.
+Proof. split; try typeclasses eauto. Qed.
+
+Global Instance Z_add_zero_opp_mul_one_is_ring :
+  IsRing Z.add Z.zero Z.opp Z.mul Z.one.
+Proof. split; try typeclasses eauto. Qed.

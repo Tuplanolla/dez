@@ -10,8 +10,8 @@ From Maniunfold.ShouldHave Require Import
   OneSorted.ArithmeticNotations.
 
 Class IsRing {A : Type}
-  (A_has_add : HasAdd A) (has_zero : HasZero A) (has_neg : HasNeg A)
-  (A_has_mul : HasMul A) (has_one : HasOne A) : Prop := {
+  (A_has_add : HasAdd A) (A_has_zero : HasZero A) (A_has_neg : HasNeg A)
+  (A_has_mul : HasMul A) (A_has_one : HasOne A) : Prop := {
   add_zero_neg_is_ab_grp :> IsAbGrp add zero neg;
   add_mul_is_distr :> IsDistr add mul;
   mul_one_is_mon :> IsMon mul one;
