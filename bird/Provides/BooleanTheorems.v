@@ -1,13 +1,31 @@
 From Coq Require Import
-  Logic.ProofIrrelevance NArith.NArith.
+  Lists.List Logic.ProofIrrelevance NArith.NArith.
 From Maniunfold.Has Require Export
-  OneSorted.Cardinality TwoSorted.Isomorphism.
+  OneSorted.Enumeration OneSorted.Cardinality TwoSorted.Isomorphism.
 From Maniunfold.Is Require Export
   OneSorted.Finite TwoSorted.Isomorphism.
 From Maniunfold.Offers Require Export
   TwoSorted.IsomorphismMappings.
 
 Local Open Scope N_scope.
+
+Import ListNotations.
+
+Global Instance bool_has_enum : HasEnum bool := [false; true].
+
+Global Instance bool_is_b_fin : IsBFin bool.
+Proof.
+  split.
+  - intros [].
+    + right. left. reflexivity.
+    + left. reflexivity.
+  - apply NoDup_cons.
+    + intros [H | H].
+      * inversion H.
+      * inversion H.
+    + apply NoDup_cons.
+      * intros H. inversion H.
+      * apply NoDup_nil. Qed.
 
 Global Instance bool_has_card : HasCard bool := 2.
 
