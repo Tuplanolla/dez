@@ -7,7 +7,7 @@ From Maniunfold.ShouldHave Require Import
   ArithmeticNotations.
 
 Class IsLat {A : Type}
-  (A_has_join : HasJoin A) (has_meet : HasMeet A) : Prop := {
+  (A_has_join : HasJoin A) (A_has_meet : HasMeet A) : Prop := {
   join_is_slat :> IsSlat join;
   meet_is_slat :> IsSlat meet;
   join_meet_is_sorb :> IsSorb join meet;

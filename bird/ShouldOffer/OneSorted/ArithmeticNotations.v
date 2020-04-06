@@ -1,14 +1,7 @@
-(* bad *)
 From Maniunfold.Offers Require Export
   OneSorted.Arithmetic.
 From Maniunfold.ShouldHave Require Export
   OneSorted.ArithmeticNotations.
-
-Declare Scope ring_scope.
-
-Delimit Scope ring_scope with ring.
-
-Open Scope ring_scope.
 
 (** We can only assert these reserved notations,
     because they are fixed by the standard library. *)

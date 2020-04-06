@@ -70,6 +70,8 @@ digraph Has {
     Meet [label = "Meet\nA -> A -> A"]
     Top [label = "Top\nA"]
 
+    Enum [label = "Enumeration\nlist A"]
+
     BinRel [label = "BinaryRelation\nA -> A -> Prop"]
     EqRel [label = "EquivalenceRelation\nA -> A -> Prop"]
     LNullOp [label = "LeftNullaryOperation\nA"]
@@ -83,18 +85,33 @@ digraph Has {
   node [fillcolor = violet, style = filled]
 
   GrdBinOp -> BinOp
-  GrdLAct -> BinOp
   GrdNullOp -> NullOp
-  GrdRAct -> BinOp
   GrdUnOp -> UnOp
+  GrdLAct -> BinOp
+  GrdRAct -> BinOp
 
   edge [style = dashed]
 
   BinOp -> Add
-  BinOp -> Join
-  BinOp -> LAct
-  BinOp -> Meet
+  NullOp -> Zero
+  UnOp -> Neg
   BinOp -> Mul
+  NullOp -> One
+  UnOp -> Recip
+
+  GrdBinOp -> GrdAdd
+  GrdNullOp -> GrdZero
+  // GrdUnOp -> GrdNeg
+  GrdBinOp -> GrdMul
+  GrdNullOp -> GrdOne
+  // GrdUnOp -> GrdRecip
+
+  BinOp -> Join
+  NullOp -> Bot
+  BinOp -> Meet
+  NullOp -> Top
+
+  BinOp -> LAct
   BinOp -> RAct
   BinOp -> Tor
   BinRel -> TwoBinRel
@@ -105,16 +122,10 @@ digraph Has {
   LNullOp -> NullOp
   LTor -> Tor
   LUnOp -> UnOp
-  NullOp -> Bot
-  NullOp -> One
-  NullOp -> Top
-  NullOp -> Zero
   OrdRel -> BinRel
   RAct -> BinFn
   RNullOp -> NullOp
   RTor -> Tor
   RUnOp -> UnOp
   UnOp -> Fn
-  UnOp -> Neg
-  UnOp -> Recip
 }

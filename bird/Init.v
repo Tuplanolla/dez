@@ -1,12 +1,12 @@
-(** We disable universe polymorphism until we really need it,
-    because it is experimental and comes with a performance penalty. *)
-
-Global Unset Universe Polymorphism.
-
 (** We disable warnings about overriding notations,
     because the plan is to replace many basic notations like [<=] and [+]. *)
 
 Global Set Warnings "-notation-overridden".
+
+(** We disable universe polymorphism until we really need it,
+    because it is experimental and comes with a performance penalty. *)
+
+Global Unset Universe Polymorphism.
 
 (** We export [Basics] to make its utility functions available everywhere,
     import [Logic] to gain access to the [EqNotations] submodule and
@@ -19,9 +19,18 @@ From Coq Require Import
 From Coq Require Import
   Setoids.Setoid.
 
-(** We mark the utility functions from [Basics] transparent for unification. *)
+(** We define some additional utility functions. *)
+
+Definition curry {A B C : Type} (f : A * B -> C) (x : A) (y : B) : C :=
+  f (x, y).
+
+Definition uncurry {A B C : Type} (f : A -> B -> C) (xy : A * B) : C :=
+  f (fst xy) (snd xy).
+
+(** We mark the utility functions transparent for unification. *)
 
 Typeclasses Transparent compose arrow impl const flip apply.
+Typeclasses Transparent curry uncurry.
 
 (** We export the [rew] notations to use them like a transport lemma. *)
 

@@ -11,8 +11,8 @@ Delimit Scope action_scope with action.
 
 Open Scope action_scope.
 
-(** Trying to use [0L] would cause a syntax error later,
-    which is why we adopt the prefix convention instead. *)
+(** The suffix notation [0L] would cause a syntax error at a later point,
+    which is why we adopt the prefix notation convention instead. *)
 
 Reserved Notation "a 'L+' x" (at level 50, left associativity).
 Reserved Notation "x 'R+' a" (at level 50, left associativity).

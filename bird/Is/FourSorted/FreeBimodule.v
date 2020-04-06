@@ -27,12 +27,6 @@ Typeclasses Transparent HasBasis.
 
 (** TODO Find a way to clean these properties up by refactoring stuff. *)
 
-Definition curry {A B C : Type} (f : A * B -> C) (x : A) (y : B) : C :=
-  f (x, y).
-
-Definition uncurry {A B C : Type} (f : A -> B -> C) (xy : A * B) : C :=
-  f (fst xy) (snd xy).
-
 Definition sum {A : Type}
   {A_has_add : HasAdd A} {A_has_zero : HasZero A} : list A -> A :=
   fold_right add zero.

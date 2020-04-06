@@ -1,4 +1,4 @@
-From Maniunfold Require Export
+From Maniunfold.Has Require Export
   TwoSorted.LeftAction TwoSorted.RightAction TwoSorted.Torsion.
 
 (** Binary operation, dyadic operation.

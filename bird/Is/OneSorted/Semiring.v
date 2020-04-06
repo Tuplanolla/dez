@@ -10,8 +10,8 @@ From Maniunfold.ShouldHave Require Import
 (** This is a unital semiring. *)
 
 Class IsSring {A : Type}
-  (A_has_add : HasAdd A) (has_zero : HasZero A)
-  (A_has_mul : HasMul A) (has_one : HasOne A) : Prop := {
+  (A_has_add : HasAdd A) (A_has_zero : HasZero A)
+  (A_has_mul : HasMul A) (A_has_one : HasOne A) : Prop := {
   add_is_comm :> IsComm add;
   add_zero_is_mon :> IsMon add zero;
   add_mul_is_distr :> IsDistr add mul;

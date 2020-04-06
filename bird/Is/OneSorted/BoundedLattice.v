@@ -7,8 +7,8 @@ From Maniunfold.ShouldHave Require Import
   ArithmeticNotations.
 
 Class IsBndLat {A : Type}
-  (A_has_join : HasJoin A) (has_bot : HasBot A)
-  (A_has_meet : HasMeet A) (has_top : HasTop A) : Prop := {
+  (A_has_join : HasJoin A) (A_has_bot : HasBot A)
+  (A_has_meet : HasMeet A) (A_has_top : HasTop A) : Prop := {
   join_meet_is_lat :> IsLat join meet;
   join_bot_is_unl :> IsUnl join bot;
   meet_top_is_unl :> IsUnl meet top;

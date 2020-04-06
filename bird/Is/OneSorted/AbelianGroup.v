@@ -8,7 +8,7 @@ From Maniunfold.ShouldHave Require Import
   OneSorted.AdditiveNotations.
 
 Class IsAbGrp {A : Type}
-  (A_has_bin_op : HasBinOp A) (has_null_op : HasNullOp A)
+  (A_has_bin_op : HasBinOp A) (A_has_null_op : HasNullOp A)
   (A_has_un_op : HasUnOp A) : Prop := {
   bin_op_is_comm :> IsComm bin_op;
   bin_op_null_op_un_op_is_grp :> IsGrp bin_op null_op un_op;
