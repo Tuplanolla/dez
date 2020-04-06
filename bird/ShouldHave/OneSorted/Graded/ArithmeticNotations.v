@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold.Has Require Export
   OneSorted.Graded.Addition OneSorted.Graded.Zero (*OneSorted.Graded.Negation*)
   OneSorted.Graded.Multiplication OneSorted.Graded.One

@@ -1,6 +1,9 @@
 From Maniunfold.Has Require Export
   OneSorted.BinaryOperation.
 
+(** Meet, infimum, greatest lower bound, lattice multiplication.
+    Commonly found in lattices. *)
+
 Class HasMeet (A : Type) : Type := meet : A -> A -> A.
 
 Typeclasses Transparent HasMeet.

@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold.Has Require Export
   OneSorted.RightUnaryOperation TwoSorted.LeftAction.
 From Maniunfold.ShouldHave Require Import

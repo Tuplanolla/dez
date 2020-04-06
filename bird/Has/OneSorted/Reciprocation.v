@@ -1,6 +1,9 @@
 From Maniunfold.Has Require Export
   OneSorted.UnaryOperation.
 
+(** Reciprocal, multiplicative inverse.
+    Commonly found in fields. *)
+
 Class HasRecip (A : Type) : Type := recip : A -> A.
 
 Typeclasses Transparent HasRecip.

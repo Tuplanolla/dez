@@ -1,5 +1,6 @@
+(* bad *)
 From Maniunfold.Has Require Export
-  BinaryFunction.
+  ThreeSorted.BinaryFunction.
 
 Class HasBinForm (A B : Type) : Type := bin_form : B -> B -> A.
 

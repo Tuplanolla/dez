@@ -1,6 +1,9 @@
 From Maniunfold.Has Require Export
   OneSorted.NullaryOperation.
 
+(** Zero, nil, additive identity.
+    Commonly found in semirings. *)
+
 Class HasZero (A : Type) : Type := zero : A.
 
 Typeclasses Transparent HasZero.

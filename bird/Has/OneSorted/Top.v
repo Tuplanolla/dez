@@ -1,6 +1,9 @@
 From Maniunfold.Has Require Export
   OneSorted.NullaryOperation.
 
+(** Top, maximum, greatest element, lattice one.
+    Commonly found in bounded lattices. *)
+
 Class HasTop (A : Type) : Type := top : A.
 
 Typeclasses Transparent HasTop.

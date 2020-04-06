@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold.Has.Categorical Require Export
   Morphism Composition.
 From Maniunfold.Is.Categorically Require Export

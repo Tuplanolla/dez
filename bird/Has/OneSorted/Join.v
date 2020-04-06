@@ -1,6 +1,9 @@
 From Maniunfold.Has Require Export
   OneSorted.BinaryOperation.
 
+(** Join, supremum, least upper bound, lattice addition.
+    Commonly found in lattices. *)
+
 Class HasJoin (A : Type) : Type := join : A -> A -> A.
 
 Typeclasses Transparent HasJoin.

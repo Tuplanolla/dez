@@ -1,6 +1,9 @@
 From Maniunfold.Has Require Export
   OneSorted.BinaryOperation.
 
+(** Multiplication, binary product, times.
+    Commonly found in semirings. *)
+
 Class HasMul (A : Type) : Type := mul : A -> A -> A.
 
 Typeclasses Transparent HasMul.

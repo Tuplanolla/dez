@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold.Offers Require Export
   OneSorted.Arithmetic.
 From Maniunfold.ShouldHave Require Export

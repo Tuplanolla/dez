@@ -1,7 +1,10 @@
 From Maniunfold.Has Require Export
-  OneSorted.BinaryOperation OneSorted.Graded.NullaryOperation.
+  OneSorted.Graded.NullaryOperation.
 From Maniunfold.ShouldHave Require Import
   OneSorted.AdditiveNotations.
+
+(** Graded zero.
+    See [Has.OneSorted.Zero]. *)
 
 Class HasGrdZero {A : Type} (P : A -> Type)
   {A_has_null_op : HasNullOp A} : Type :=

@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold.Has Require Export
   OneSorted.BinaryOperation OneSorted.NullaryOperation OneSorted.UnaryOperation
   TwoSorted.LeftAction TwoSorted.LeftTorsion.

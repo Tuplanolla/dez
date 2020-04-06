@@ -1,6 +1,9 @@
 From Maniunfold.Has Require Export
   OneSorted.NullaryOperation.
 
+(** Bottom, minimum, least element, lattice zero.
+    Commonly found in bounded lattices. *)
+
 Class HasBot (A : Type) : Type := bot : A.
 
 Typeclasses Transparent HasBot.

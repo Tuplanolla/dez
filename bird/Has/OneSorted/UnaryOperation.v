@@ -1,9 +1,14 @@
 From Maniunfold.Has Require Export
   Function.
 
+(** Unary operation, endofunction.
+    Commonly found in groups. *)
+
 Class HasUnOp (A : Type) : Type := un_op : A -> A.
 
 Typeclasses Transparent HasUnOp.
+
+(** TODO Check these superclasses. *)
 
 Section Context.
 

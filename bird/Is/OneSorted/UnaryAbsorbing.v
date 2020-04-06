@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold.Has Require Export
   OneSorted.NullaryOperation OneSorted.UnaryOperation.
 From Maniunfold.ShouldHave Require Import

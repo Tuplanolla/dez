@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold.Has Require Export
   Categorical.Composition Categorical.Identity Categorical.Inverse.
 From Maniunfold.ShouldHave Require Export

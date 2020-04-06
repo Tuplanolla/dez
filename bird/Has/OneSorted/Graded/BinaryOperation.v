@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold.Has Require Export
   OneSorted.BinaryOperation TwoSorted.Graded.LeftAction.
 From Maniunfold.ShouldHave Require Import

@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold.Has Require Export
   EquivalenceRelation Join Bottom Meet Top.
 From Maniunfold.Is Require Export

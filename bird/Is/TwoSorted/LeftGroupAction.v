@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold.Has Require Export
   BinaryOperation NullaryOperation UnaryOperation LeftAction.
 From Maniunfold.Is Require Export

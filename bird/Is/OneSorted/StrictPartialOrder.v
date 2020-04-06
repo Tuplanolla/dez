@@ -1,3 +1,4 @@
+(* bad *)
 From Coq Require Import
   Classes.RelationClasses.
 From Maniunfold.Has.OneSorted Require Export

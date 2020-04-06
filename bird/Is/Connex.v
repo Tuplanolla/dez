@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold.Has Require Export
   OneSorted.BinaryRelation.
 From Maniunfold.ShouldHave Require Import

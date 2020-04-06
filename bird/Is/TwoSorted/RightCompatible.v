@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold.Has Require Export
   BinaryOperation RightAction.
 From Maniunfold.ShouldHave Require Import

@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold.Has Require Export
   TwoSorted.Graded.LeftAction TwoSorted.Graded.RightAction.
 

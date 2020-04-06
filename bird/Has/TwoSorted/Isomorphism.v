@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold Require Export
   Init.
 

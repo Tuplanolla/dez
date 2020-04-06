@@ -1,6 +1,9 @@
 From Maniunfold.Has Require Export
   OneSorted.BinaryOperation.
 
+(** Addition, summation, plus.
+    Commonly found in semirings. *)
+
 Class HasAdd (A : Type) : Type := add : A -> A -> A.
 
 Typeclasses Transparent HasAdd.

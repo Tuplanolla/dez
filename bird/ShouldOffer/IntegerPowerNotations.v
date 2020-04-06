@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold.Offers Require Export
   PositivePowers NaturalPowers IntegerPowers.
 From Maniunfold.ShouldHave Require Export

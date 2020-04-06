@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold.Has Require Export
   OneSorted.Zero OneSorted.Multiplication.
 From Maniunfold.Is Require Export

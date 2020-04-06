@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold.Has Require Export
   Categorical.Morphism Categorical.Composition
   Categorical.Identity Categorical.Inverse.

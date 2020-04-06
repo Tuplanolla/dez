@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold.Has.OneSorted Require Export
   EquivalenceRelation OrderRelation.
 From Maniunfold.Is Require Export

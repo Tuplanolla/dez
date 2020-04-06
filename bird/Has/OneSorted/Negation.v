@@ -1,6 +1,9 @@
 From Maniunfold.Has Require Export
   OneSorted.UnaryOperation.
 
+(** Negation, opposite, additive inverse.
+    Commonly found in rings. *)
+
 Class HasNeg (A : Type) : Type := neg : A -> A.
 
 Typeclasses Transparent HasNeg.

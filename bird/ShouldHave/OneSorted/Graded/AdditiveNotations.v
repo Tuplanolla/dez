@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold.Has Require Export
   OneSorted.Graded.BinaryOperation OneSorted.Graded.NullaryOperation
   OneSorted.Graded.UnaryOperation.

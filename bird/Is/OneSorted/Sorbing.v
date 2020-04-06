@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold.Has Require Export
   EquivalenceRelation Join Meet.
 From Maniunfold.ShouldHave Require Import
