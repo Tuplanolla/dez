@@ -19,6 +19,9 @@ From Maniunfold.ShouldOffer Require Import
 
 Import ListNotations.
 
+Fixpoint Nseq (start len : N) : list N :=
+  map N.of_nat (seq (N.to_nat start) (N.to_nat len)).
+
 From Coq Require Import
   FSets.FMapAVL Structures.OrderedTypeEx.
 
@@ -112,11 +115,36 @@ Global Instance add_zero_neg_mul_one_is_ring :
   Add Zero Neg Mul One LAct RAct.
 Proof. repeat split. all: cbv -[Map.t Add Zero Neg Mul One LAct RAct]. Abort.
 
+Global Instance N_has_bin_op : HasBinOp N := N.add.
+
+Global Instance N_has_null_op : HasNullOp N := N.zero.
+
+Global Instance poly_is_grd_ring : IsGrdRing (A := N) (P := fun n : N => A)
+  (fun n : N => Addition.add) (fun n : N => zero) (fun n : N => neg)
+  (fun n p : N => mul) one.
+Proof. repeat split. Abort.
+
 End Context.
 
-(** TODO Wait, hold the fuck on.
-    Graded structures and structures with degrees are way different.
-    Time to rewrite everything! *)
+Module Simpler.
+
+Section Context.
+
+Context {A : Type} `{is_ring : IsRing A}.
+
+Record poly : Type := {
+  deg : N;
+  coeff : N -> A;
+  support : (forall n : N, deg <= n -> coeff n = 0)%N;
+}.
+
+Definition eval (p : poly) (x : A) : A :=
+  fold_right (fun (n : N) (a : A) => a + coeff p n * (x ^ n)%N) 0
+  (Nseq N.zero (N.succ (deg p))).
+
+End Context.
+
+End Simpler.
 
 (** We would like these equalities to hold definitionally. *)
 
