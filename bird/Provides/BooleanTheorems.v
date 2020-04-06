@@ -1,9 +1,9 @@
 From Coq Require Import
-  Lists.List Logic.ProofIrrelevance NArith.NArith.
+  Lists.List Logic.ProofIrrelevance NArith.NArith ZArith.ZArith.
 From Maniunfold.Has Require Export
   OneSorted.Enumeration OneSorted.Cardinality TwoSorted.Isomorphism.
 From Maniunfold.Is Require Export
-  OneSorted.Finite TwoSorted.Isomorphism.
+  OneSorted.Finite TwoSorted.Isomorphism TwoSorted.Graded.Algebra.
 From Maniunfold.Offers Require Export
   TwoSorted.IsomorphismMappings.
 
@@ -60,3 +60,99 @@ Proof.
         rewrite <- N.succ_lt_mono in F.
         rewrite N.lt_1_r in F.
         inversion F. Qed.
+
+(** Let us set up a simple yet nontrivial graded ring,
+    just to see what the dependent indexing gets us. *)
+
+Local Open Scope Z_scope.
+
+Global Instance bool_has_bin_op : HasBinOp bool := orb.
+
+Global Instance bool_has_null_op : HasNullOp bool := false.
+
+Global Instance Z_has_add : HasAdd Z := Z.add.
+
+Global Instance Z_has_zero : HasZero Z := Z.zero.
+
+Global Instance Z_has_neg : HasNeg Z := Z.opp.
+
+Global Instance unit_has_add : HasAdd unit := fun x y : unit => tt.
+
+Global Instance unit_has_zero : HasZero unit := tt.
+
+Global Instance unit_has_neg : HasNeg unit := fun x : unit => tt.
+
+Global Instance unit_Z_has_add (i : bool) :
+  HasAdd (if i then unit else Z).
+Proof. hnf. intros x y. destruct i. all: apply (add x y). Defined.
+
+Global Instance unit_Z_has_zero (i : bool) :
+  HasZero (if i then unit else Z).
+Proof. hnf. destruct i. all: apply zero. Defined.
+
+Global Instance unit_Z_has_neg (i : bool) :
+  HasNeg (if i then unit else Z).
+Proof. hnf. intros x. destruct i. all: apply (neg x). Defined.
+
+Global Instance this_has_grd_mul :
+  HasGrdMul (fun x : bool => if x then unit else Z).
+Proof.
+  hnf. intros i j x y. destruct i, j. all: cbv.
+  - apply tt.
+  - apply x.
+  - apply y.
+  - apply (x * y). Defined.
+
+Global Instance this_has_grd_one :
+  HasGrdOne (fun x : bool => if x then unit else Z).
+Proof. hnf. apply 1. Defined.
+
+Global Instance bool_bin_op_is_assoc : IsAssoc (A := bool) bin_op.
+Proof.
+  intros x y z. all: cbn; repeat match goal with
+  | x : bool |- _ => destruct x
+  | x : unit |- _ => destruct x
+  end; try reflexivity. Defined.
+
+Global Instance bool_bin_op_is_l_unl : IsLUnl (A := bool) bin_op null_op.
+Proof.
+  intros x. all: cbn; repeat match goal with
+  | x : bool |- _ => destruct x
+  | x : unit |- _ => destruct x
+  end; try reflexivity. Defined.
+
+Global Instance bool_bin_op_is_r_unl : IsRUnl (A := bool) bin_op null_op.
+Proof.
+  intros x. all: cbn; repeat match goal with
+  | x : bool |- _ => destruct x
+  | x : unit |- _ => destruct x
+  end; try reflexivity. Defined.
+
+(** TODO If we used [Qed] with these lemmas used in [rew],
+    reduction would get stuck due to the lack of axiom K or
+    its strict proposition equivalent. *)
+
+Ltac smash := repeat match goal with
+  | x : bool |- _ => destruct x
+  | x : unit |- _ => destruct x
+  end; try reflexivity.
+
+Global Instance Z_bool_is_grd_ring :
+  IsGrdRing (A := bool) (P := fun x : bool => if x then unit else Z)
+  unit_Z_has_add unit_Z_has_zero unit_Z_has_neg grd_mul grd_one.
+Proof.
+  repeat split.
+  1-6: shelve.
+  - intros i j x y z.
+    all: cbn; smash. apply Z.mul_add_distr_l.
+  - intros i j x y z.
+    all: cbn; smash. apply Z.mul_add_distr_r.
+  - intros x y z. all: cbn; smash.
+  - intros x. all: cbn; smash.
+  - intros x y z. all: cbn; smash.
+  - esplit.
+    intros i j k x y z. all: cbn; smash. apply Z.mul_assoc.
+  - esplit.
+    intros i x. all: cbn -[Z.mul]; smash. apply Z.mul_1_l.
+  - esplit.
+    intros i x. all: cbn -[Z.mul]; smash. apply Z.mul_1_r. Abort.
