@@ -10,6 +10,8 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   OneSorted.ArithmeticNotations.
 
+(** Noncommutative ring. *)
+
 Class IsRing {A : Type}
   (A_has_add : HasAdd A) (A_has_zero : HasZero A) (A_has_neg : HasNeg A)
   (A_has_mul : HasMul A) (A_has_one : HasOne A) : Prop := {

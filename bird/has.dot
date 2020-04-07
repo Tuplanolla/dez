@@ -126,7 +126,6 @@ digraph Has {
   GrdBinFn -> BinOp
   GrdFn -> UnOp
 
-  Hom -> BinRel
   Hom -> Comp
   Hom -> Idt
   Hom -> Inv
@@ -178,4 +177,6 @@ digraph Has {
   GrdUnOp -> GrdFn
 
   BinForm -> BinFn
+
+  Hom -> BinRel
 }

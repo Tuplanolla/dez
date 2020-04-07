@@ -1,4 +1,3 @@
-(* good *)
 From Maniunfold.Has Require Export
   OneSorted.Addition OneSorted.Zero OneSorted.Negation
   OneSorted.Multiplication OneSorted.One
@@ -6,9 +5,10 @@ From Maniunfold.Has Require Export
 From Maniunfold.Is Require Export
   OneSorted.Ring TwoSorted.Bimodule TwoSorted.BilinearOperator.
 
-(** This is a noncommutative nonunital nonassociative algebra
-    over a noncommutative ring, making it the magma of algebralikes.
-    The ring is carried by [A] and the algebra by [B]. *)
+(** Noncommutative nonunital nonassociative algebra
+    over a noncommutative ring.
+    The ring is carried by [A] and the algebra by [B].
+    Informally, this is the magma of algebralike structures. *)
 
 Class IsAlg (A B : Type)
   (A_has_add : HasAdd A) (A_has_zero : HasZero A) (A_has_neg : HasNeg A)
@@ -20,5 +20,5 @@ Class IsAlg (A B : Type)
   A_B_add_zero_neg_mul_one_add_zero_neg_l_act_r_act_is_two_bimod :>
     IsTwoBimod A B add zero neg mul one add zero neg l_act r_act;
   A_B_add_zero_neg_mul_one_add_zero_neg_mul_l_act_r_act_is_bilin_op :>
-    IsBilinOp A B add zero neg mul one add zero neg mul l_act r_act;
+    IsBilinOp A B add zero neg mul one add zero neg l_act r_act mul;
 }.

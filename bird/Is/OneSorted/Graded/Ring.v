@@ -1,4 +1,3 @@
-(* good *)
 From Maniunfold.Has Require Export
   OneSorted.BinaryOperation OneSorted.NullaryOperation
   OneSorted.Addition OneSorted.Zero OneSorted.Negation
@@ -6,7 +5,9 @@ From Maniunfold.Has Require Export
 From Maniunfold.Is Require Export
   OneSorted.AbelianGroup OneSorted.Graded.Distributive OneSorted.Graded.Monoid.
 
-(** TODO Why so abelian? *)
+(** Graded noncommutative ring.
+    The grading is carried by [A] and the ring by [P].
+    See [Is.OneSorted.Ring]. *)
 
 Class IsGrdRing {A : Type} {P : A -> Type}
   {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}

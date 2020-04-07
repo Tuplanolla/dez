@@ -1,4 +1,3 @@
-(* good *)
 From Maniunfold.Has Require Export
   OneSorted.BinaryOperation OneSorted.NullaryOperation
   OneSorted.Addition OneSorted.Zero OneSorted.Negation
@@ -7,6 +6,11 @@ From Maniunfold.Has Require Export
 From Maniunfold.Is Require Export
   OneSorted.Graded.Ring
   TwoSorted.Graded.Bimodule TwoSorted.Graded.BilinearOperator.
+
+(** Graded noncommutative nonunital nonassociative algebra
+    over a graded noncommutative ring.
+    The grading is carried by [A], the ring by [P] and the algebra by [Q].
+    See [Is.TwoSorted.Algebra]. *)
 
 Class IsGrdAlg {A : Type} (P Q : A -> Type)
   {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}
@@ -25,7 +29,7 @@ Class IsGrdAlg {A : Type} (P Q : A -> Type)
   P_Q_add_zero_neg_grd_mul_grd_one_add_zero_neg_grd_l_act_grd_r_act_is_two_grd_bimod
     :> IsTwoGrdBimod P Q P_has_add P_has_zero P_has_neg grd_mul grd_one
     Q_has_add Q_has_zero Q_has_neg grd_l_act grd_r_act;
-  P_Q_add_zero_neg_grd_mul_grd_one_add_zero_neg_grd_mul_grd_l_act_grd_r_act_is_grd_bilin_op
+  P_Q_add_zero_neg_grd_mul_grd_one_add_zero_neg_grd_l_act_grd_r_act_grd_mul_is_grd_bilin_op
     :> IsGrdBilinOp P Q P_has_add P_has_zero P_has_neg grd_mul grd_one
-    Q_has_add Q_has_zero Q_has_neg grd_mul grd_l_act grd_r_act;
+    Q_has_add Q_has_zero Q_has_neg grd_l_act grd_r_act grd_mul;
 }.

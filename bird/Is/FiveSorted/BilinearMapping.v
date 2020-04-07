@@ -1,23 +1,15 @@
-(* bad *)
 From Maniunfold.Has Require Export
-  OneSorted.UnaryOperation OneSorted.Addition TwoSorted.LeftAction
   OneSorted.Addition OneSorted.Zero OneSorted.Negation
   OneSorted.Multiplication OneSorted.One
-  ThreeSorted.BinaryFunction.
+  TwoSorted.LeftAction TwoSorted.RightAction ThreeSorted.BinaryFunction.
 From Maniunfold.Is Require Export
-  TwoSorted.LeftDistributive ThreeSorted.Bicompatible TwoSorted.LeftLinear
-  OneSorted.CommutativeRing TwoSorted.LeftModule TwoSorted.RightModule
-  ThreeSorted.Bimodule
-  TwoSorted.Unital TwoSorted.Isomorphism
-  ThreeSorted.Biadditive FiveSorted.Bihomogeneous.
-From Maniunfold.ShouldHave Require Import
-  OneSorted.ArithmeticNotations TwoSorted.MultiplicativeNotations.
+  TwoSorted.LeftModule TwoSorted.RightModule
+  ThreeSorted.Bimodule ThreeSorted.Biadditive FiveSorted.Bihomogeneous.
 
-(** This is a bilinear mapping from two modules into a bimodule,
-    each of them defined over a noncommutative ring.
-    The rings are carried by [A] and [B], the modules by [C] and [D] and
-    the bimodule by [E].
-    The mapping itself is an arbitrary binary function. *)
+(** Bilinear mapping from a left module and a right module into a bimodule,
+    where each module is defined over a noncommutative ring.
+    The rings are carried by [A] and [B],
+    the left module by [C], the right module by [D] and the bimodule by [E]. *)
 
 Class IsBilinMap (A B C D E : Type)
   (A_has_add : HasAdd A) (A_has_zero : HasZero A) (A_has_neg : HasNeg A)
@@ -27,9 +19,9 @@ Class IsBilinMap (A B C D E : Type)
   (C_has_add : HasAdd C) (C_has_zero : HasZero C) (C_has_neg : HasNeg C)
   (D_has_add : HasAdd D) (D_has_zero : HasZero D) (D_has_neg : HasNeg D)
   (E_has_add : HasAdd E) (E_has_zero : HasZero E) (E_has_neg : HasNeg E)
-  (C_D_E_has_bin_fn : HasBinFn C D E)
   (A_C_has_l_act : HasLAct A C) (B_D_has_r_act : HasRAct B D)
-  (A_E_has_l_act : HasLAct A E) (B_E_has_r_act : HasRAct B E) : Prop := {
+  (A_E_has_l_act : HasLAct A E) (B_E_has_r_act : HasRAct B E)
+  (C_D_E_has_bin_fn : HasBinFn C D E) : Prop := {
   A_C_add_zero_neg_mul_one_add_zero_neg_l_act_is_l_mod :>
     IsLMod A C add zero neg mul one add zero neg l_act;
   B_D_add_zero_neg_mul_one_add_zero_neg_r_act_is_r_mod :>
@@ -37,15 +29,23 @@ Class IsBilinMap (A B C D E : Type)
   A_B_E_add_zero_neg_mul_one_add_zero_neg_mul_one_add_zero_neg_l_act_r_act_is_three_bimod
     :> IsThreeBimod A B E
     add zero neg mul one add zero neg mul one add zero neg l_act r_act;
+  C_D_E_add_add_add_bin_fn_is_biaddve :> IsBiaddve C D E add add add bin_fn;
   A_B_C_D_E_l_act_r_act_l_act_r_act_bin_fn_is_bihomogen :>
     IsBihomogen A B C D E l_act r_act l_act r_act bin_fn;
-  C_D_E_add_add_add_bin_fn_is_biaddve :> IsBiaddve C D E add add add bin_fn;
 }.
+
+(** TODO Get rid of this once it has been addressed. *)
 
 (** And now, a curious digression into a common mistake in literature. *)
 
 From Coq Require Import
   Logic.ProofIrrelevance.
+From Maniunfold.Is Require Export
+  TwoSorted.Unital TwoSorted.Isomorphism
+  TwoSorted.LeftDistributive ThreeSorted.Bicompatible TwoSorted.LeftLinear
+  OneSorted.CommutativeRing.
+From Maniunfold.ShouldHave Require Import
+  OneSorted.ArithmeticNotations TwoSorted.MultiplicativeNotations.
 
 Section Context.
 
