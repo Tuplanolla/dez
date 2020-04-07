@@ -63,12 +63,11 @@ Local Instance bihomogen_has_iso {A B C D E : Type}
   {C_D_E_has_bin_fn : HasBinFn C D E}
   (** These classes are not equivalent unless the actions are unital.
       Otherwise [IsBBihomogen] is weaker than [IsBihomogen]. *)
-  {A_has_l_null_op : HasLNullOp A} {A_has_r_null_op : HasRNullOp A}
-  {B_has_l_null_op : HasLNullOp B} {B_has_r_null_op : HasRNullOp B}
-  {A_C_l_null_op_l_act_is_two_l_unl : IsTwoLUnl A C l_null_op l_act}
-  {A_E_l_null_op_l_act_is_two_l_unl : IsTwoLUnl A E l_null_op l_act}
-  {B_D_l_null_op_r_act_is_two_r_unl : IsTwoRUnl B D r_null_op r_act}
-  {B_E_l_null_op_r_act_is_two_r_unl : IsTwoRUnl B E r_null_op r_act} :
+  {A_has_null_op : HasNullOp A} {B_has_null_op : HasNullOp B}
+  {A_C_null_op_l_act_is_two_l_unl : IsTwoLUnl A C null_op l_act}
+  {A_E_null_op_l_act_is_two_l_unl : IsTwoLUnl A E null_op l_act}
+  {B_D_null_op_r_act_is_two_r_unl : IsTwoRUnl B D null_op r_act}
+  {B_E_null_op_r_act_is_two_r_unl : IsTwoRUnl B E null_op r_act} :
   HasIso (IsBihomogen A B C D E l_act r_act l_act r_act bin_fn)
   (IsBBihomogen A B C D E l_act r_act l_act r_act bin_fn).
 Proof.
@@ -96,12 +95,11 @@ Local Instance bihomogen_is_iso {A B C D E : Type}
   {A_C_has_l_act : HasLAct A C} {B_D_has_r_act : HasRAct B D}
   {A_E_has_l_act : HasLAct A E} {B_E_has_r_act : HasRAct B E}
   {C_D_E_has_bin_fn : HasBinFn C D E}
-  {A_has_l_null_op : HasLNullOp A} {A_has_r_null_op : HasRNullOp A}
-  {B_has_l_null_op : HasLNullOp B} {B_has_r_null_op : HasRNullOp B}
-  {A_C_l_null_op_l_act_is_two_l_unl : IsTwoLUnl A C l_null_op l_act}
-  {A_E_l_null_op_l_act_is_two_l_unl : IsTwoLUnl A E l_null_op l_act}
-  {B_D_l_null_op_r_act_is_two_r_unl : IsTwoRUnl B D r_null_op r_act}
-  {B_E_l_null_op_r_act_is_two_r_unl : IsTwoRUnl B E r_null_op r_act} :
+  {A_has_null_op : HasNullOp A} {B_has_null_op : HasNullOp B}
+  {A_C_null_op_l_act_is_two_l_unl : IsTwoLUnl A C null_op l_act}
+  {A_E_null_op_l_act_is_two_l_unl : IsTwoLUnl A E null_op l_act}
+  {B_D_null_op_r_act_is_two_r_unl : IsTwoRUnl B D null_op r_act}
+  {B_E_null_op_r_act_is_two_r_unl : IsTwoRUnl B E null_op r_act} :
   IsIso _ _ bihomogen_has_iso.
 Proof.
   split.
