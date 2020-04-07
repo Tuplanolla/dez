@@ -1,7 +1,7 @@
 From Maniunfold Require Export
   Init.
 
-(* Binary function. *)
+(** Binary function. *)
 
 Class HasBinFn (A B C : Type) : Type := bin_fn : A -> B -> C.
 

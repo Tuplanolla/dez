@@ -1,10 +1,14 @@
-(* bad *)
 From Maniunfold.Has Require Export
   ThreeSorted.BinaryFunction.
+
+(** Binary form.
+    Commonly found in bilinear forms. *)
 
 Class HasBinForm (A B : Type) : Type := bin_form : B -> B -> A.
 
 Typeclasses Transparent HasBinForm.
+
+(** TODO What should be the superclasses? *)
 
 Section Context.
 

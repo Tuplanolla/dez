@@ -8,6 +8,14 @@ digraph Has {
 
     node [peripheries = 3]
 
+    subgraph TwoGrd {
+      label = "Graded"
+
+      node [style = dashed]
+
+      GrdBinFn [label = "BinaryFunction\nP i -> Q j -> R (i + j)"]
+    }
+
     BinFn [label = "BinaryFunction\nA -> B -> C"]
   }
 
@@ -21,17 +29,23 @@ digraph Has {
 
       node [style = dashed]
 
+      GrdFn [label = "Function\nP i -> Q (- i)"]
+
       GrdLAct [label = "LeftAction\nP i -> Q j -> Q (i + j)"]
       GrdRAct [label = "RightAction\nQ i -> P j -> Q (i + j)"]
     }
 
     Fn [label = "Function\nA -> B"]
+
     LAct [label = "LeftAction\nA -> B -> B"]
-    LTor [label = "LeftTorsion\nA -> A -> B"]
     RAct [label = "RightAction\nB -> A -> B"]
+    LTor [label = "LeftTorsion\nA -> A -> B"]
     RTor [label = "RightTorsion\nA -> A -> B"]
     Tor [label = "Torsion\nA -> A -> B"]
+
     TwoBinRel [label = "BinaryRelation\nA -> B -> Prop"]
+
+    BinForm [label = "BinaryForm\nB -> B -> A"]
   }
 
   subgraph One {
@@ -48,10 +62,10 @@ digraph Has {
 
       GrdAdd [label = "Addition\nP i -> P j -> P (i + j)"]
       GrdZero [label = "Zero\nP 0"]
-      // GrdNeg [label = "Negation\nP i -> P (- i)"]
+      GrdNeg [label = "Negation\nP i -> P (- i)"]
       GrdMul [label = "Multiplication\nP i -> P j -> P (i + j)"]
       GrdOne [label = "One\nP 0"]
-      // GrdRecip [label = "Reciprocation\nP i -> P (- i)"]
+      GrdRecip [label = "Reciprocation\nP i -> P (- i)"]
     }
 
     BinOp [label = "BinaryOperation\nA -> A -> A"]
@@ -73,13 +87,24 @@ digraph Has {
     Enum [label = "Enumeration\nlist A"]
 
     BinRel [label = "BinaryRelation\nA -> A -> Prop"]
+
     EqRel [label = "EquivalenceRelation\nA -> A -> Prop"]
-    LNullOp [label = "LeftNullaryOperation\nA"]
-    LUnOp [label = "LeftUnaryOperation\nA -> A"]
     OrdRel [label = "OrderRelation\nA -> A -> Prop"]
-    Prop [label = "Proposition\nA -> Prop"]
-    RNullOp [label = "RightNullaryOperation\nA"]
-    RUnOp [label = "RightUnaryOperation\nA -> A"]
+
+    Pred [label = "Predicate\nA -> Prop"]
+
+    Iso [label = "Isomorphism\n(A -> B) * (B -> A)"]
+
+    Card [label = "Cardinality\nN"]
+  }
+
+  subgraph Cat {
+    label = "Categorical"
+
+    Hom [label = "Morphism\nA -> A -> Prop"]
+    Comp [label = "Composition\n(x --> y) -> (y --> z) -> (x --> z)"]
+    Idt [label = "Identity\nx --> x"]
+    Inv [label = "Inverse\n(x --> y) -> (y --> x)"]
   }
 
   node [fillcolor = violet, style = filled]
@@ -87,8 +112,24 @@ digraph Has {
   GrdBinOp -> BinOp
   GrdNullOp -> NullOp
   GrdUnOp -> UnOp
+
+  GrdAdd -> BinOp
+  GrdZero -> NullOp
+  GrdNeg -> UnOp
+  GrdMul -> BinOp
+  GrdOne -> NullOp
+  GrdRecip -> UnOp
+
   GrdLAct -> BinOp
   GrdRAct -> BinOp
+
+  GrdBinFn -> BinOp
+  GrdFn -> UnOp
+
+  Hom -> BinRel
+  Hom -> Comp
+  Hom -> Idt
+  Hom -> Inv
 
   edge [style = dashed]
 
@@ -101,10 +142,10 @@ digraph Has {
 
   GrdBinOp -> GrdAdd
   GrdNullOp -> GrdZero
-  // GrdUnOp -> GrdNeg
+  GrdUnOp -> GrdNeg
   GrdBinOp -> GrdMul
   GrdNullOp -> GrdOne
-  // GrdUnOp -> GrdRecip
+  GrdUnOp -> GrdRecip
 
   BinOp -> Join
   NullOp -> Bot
@@ -113,19 +154,28 @@ digraph Has {
 
   BinOp -> LAct
   BinOp -> RAct
-  BinOp -> Tor
+  BinOp -> LTor
+  BinOp -> RTor
+
   BinRel -> TwoBinRel
+
   EqRel -> BinRel
+  OrdRel -> BinRel
+
   GrdBinOp -> GrdLAct
   GrdBinOp -> GrdRAct
+
+  GrdLAct -> GrdBinFn
+  GrdRAct -> GrdBinFn
+
   LAct -> BinFn
-  LNullOp -> NullOp
-  LTor -> Tor
-  LUnOp -> UnOp
-  OrdRel -> BinRel
   RAct -> BinFn
-  RNullOp -> NullOp
+  LTor -> Tor
   RTor -> Tor
-  RUnOp -> UnOp
+
   UnOp -> Fn
+
+  GrdUnOp -> GrdFn
+
+  BinForm -> BinFn
 }

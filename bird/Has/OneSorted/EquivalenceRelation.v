@@ -1,6 +1,7 @@
-(* bad *)
 From Maniunfold.Has Require Export
   OneSorted.BinaryRelation.
+
+(** Equivalence relation, equality, similarity. *)
 
 Class HasEqRel (A : Type) : Type := eq_rel : A -> A -> Prop.
 

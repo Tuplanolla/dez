@@ -1,6 +1,7 @@
-(* bad *)
 From Maniunfold Require Export
   Init.
+
+(** Binary relation. *)
 
 Class HasTwoBinRel (A B : Type) : Type := two_bin_rel : A -> B -> Prop.
 

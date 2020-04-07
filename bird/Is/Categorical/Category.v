@@ -1,7 +1,7 @@
 (* bad *)
 From Maniunfold.Has.Categorical Require Export
   Morphism Composition Identity.
-From Maniunfold.Is.Categorically Require Export
+From Maniunfold.Is.Categorical Require Export
   Semicategory Unital.
 From Maniunfold.ShouldHave.Categorical Require Import
   Notations.

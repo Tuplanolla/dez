@@ -1,5 +1,6 @@
 From Maniunfold.Has Require Export
-  TwoSorted.LeftAction TwoSorted.RightAction TwoSorted.Torsion.
+  TwoSorted.LeftAction TwoSorted.RightAction
+  TwoSorted.LeftTorsion TwoSorted.RightTorsion.
 
 (** Binary operation, dyadic operation.
     Commonly found in semigroups. *)
@@ -41,8 +42,9 @@ Section Context.
 
 Context {A : Type} `{A_has_bin_op : HasBinOp A}.
 
-Global Instance A_has_l_act : HasLAct A A := bin_op.
-Global Instance A_has_r_act : HasRAct A A := bin_op.
-Global Instance A_has_tor : HasTor A A := bin_op.
+Global Instance A_A_has_l_act : HasLAct A A := bin_op.
+Global Instance A_A_has_r_act : HasRAct A A := bin_op.
+Global Instance A_A_has_l_tor : HasLTor A A := bin_op.
+Global Instance A_A_has_r_tor : HasRTor A A := bin_op.
 
 End Context.

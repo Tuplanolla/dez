@@ -16,6 +16,6 @@ Section Context.
 
 Context {A : Type} {P : A -> Type} `{P_has_grd_recip : HasGrdRecip A P}.
 
-Global Instance P_has_grd_bin_op : HasGrdUnOp P := grd_recip.
+Global Instance P_has_grd_un_op : HasGrdUnOp P := grd_recip.
 
 End Context.

@@ -1,8 +1,10 @@
-(* bad *)
 From Maniunfold.Has Require Export
   OneSorted.BinaryOperation.
 From Maniunfold.ShouldHave Require Import
   OneSorted.AdditiveNotations.
+
+(** Graded binary function.
+    See [Has.ThreeSorted.BinaryFunction]. *)
 
 Class HasGrdBinFn {A : Type} (P Q R : A -> Type)
   {A_has_bin_op : HasBinOp A} : Type :=

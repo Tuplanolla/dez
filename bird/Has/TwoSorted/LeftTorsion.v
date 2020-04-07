@@ -1,6 +1,8 @@
-(* bad *)
 From Maniunfold.Has Require Export
   Torsion.
+
+(** Torsion, the unique element associated with an action; left chirality.
+    Commonly found in torsors. *)
 
 Class HasLTor (A B : Type) : Type := l_tor : B -> B -> A.
 
@@ -8,7 +10,7 @@ Typeclasses Transparent HasLTor.
 
 Section Context.
 
-Context {A B : Type} `{A_has_l_tor : HasLTor A B}.
+Context {A B : Type} `{A_B_has_l_tor : HasLTor A B}.
 
 Global Instance A_B_has_tor : HasTor A B := l_tor.
 

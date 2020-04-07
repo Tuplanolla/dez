@@ -1,6 +1,7 @@
-(* bad *)
 From Maniunfold.Has Require Export
   ThreeSorted.BinaryFunction.
+
+(** TODO Does the concept of a nonchiral torsion even make sense? *)
 
 Class HasTor (A B : Type) : Type := tor : B -> B -> A.
 

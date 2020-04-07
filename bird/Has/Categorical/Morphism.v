@@ -1,6 +1,8 @@
-(* bad *)
 From Maniunfold.Has Require Export
   OneSorted.BinaryRelation.
+
+(** Morphism, arrow.
+    Commonly found in categories. *)
 
 Class HasHom (A : Type) : Type := hom : A -> A -> Prop.
 

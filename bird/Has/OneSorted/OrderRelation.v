@@ -1,6 +1,7 @@
-(* bad *)
 From Maniunfold.Has Require Export
   OneSorted.BinaryRelation.
+
+(** Order relation, less than or equality, precedence. *)
 
 Class HasOrdRel (A : Type) : Type := ord_rel : A -> A -> Prop.
 
