@@ -126,26 +126,6 @@ Proof. repeat split. Abort.
 
 End Context.
 
-Module Simpler.
-
-Section Context.
-
-Context {A : Type} `{is_ring : IsRing A}.
-
-Record poly : Type := {
-  deg : N;
-  coeff : N -> A;
-  support : (forall n : N, deg <= n -> coeff n = 0)%N;
-}.
-
-Definition eval (p : poly) (x : A) : A :=
-  fold_right (fun (n : N) (a : A) => a + coeff p n * (x ^ n)%N) 0
-  (Nseq N.zero (N.succ (deg p))).
-
-End Context.
-
-End Simpler.
-
 (** We would like these equalities to hold definitionally. *)
 
 (* 0 = 0 * x = 0 + 0 * x *)

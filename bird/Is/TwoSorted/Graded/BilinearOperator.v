@@ -22,7 +22,7 @@ Class IsGrdBilinOp {A : Type} (P Q : A -> Type)
   (P_Q_has_grd_l_act : HasGrdLAct P Q)
   (P_Q_has_grd_r_act : HasGrdRAct P Q)
   (Q_has_grd_mul : HasGrdMul Q) : Prop :=
-  P_P_Q_Q_Q_P_has_add_P_has_zero_P_has_neg_grd_mul_grd_one_P_has_add_P_has_zero_P_has_neg_grd_mul_grd_one_Q_has_add_Q_has_zero_Q_has_neg_Q_has_add_Q_has_zero_Q_has_neg_Q_has_add_Q_has_zero_Q_has_neg_grd_l_act_grd_r_act_grd_l_act_grd_r_act_grd_mul_is_bilin_map
+  P_P_Q_Q_Q_add_zero_neg_grd_mul_grd_one_add_zero_neg_grd_mul_grd_one_add_zero_neg_add_zero_neg_add_zero_neg_grd_l_act_grd_r_act_grd_l_act_grd_r_act_grd_mul_is_bilin_map
     :> IsGrdBilinMap P P Q Q Q
     P_has_add P_has_zero P_has_neg grd_mul grd_one
     P_has_add P_has_zero P_has_neg grd_mul grd_one
