@@ -88,13 +88,6 @@ Definition Add (p q : lensor) : lensor :=
       (combine xs ys) |}
   end.
 
-(* End Context.
-
-Compute Build_lensor 2 [[];
-  [(3, 5)];
-  [(0, 0); (0, 0)];
-  [(7, 11); (13, 17); (19, 23)]]. *)
-
 Definition Zero : lensor :=
   {| heady := 0; taily := [] |}.
 
@@ -116,18 +109,21 @@ Definition RAct (p : lensor) (a : A) : lensor :=
     {| heady := x; taily := map (map (flip r_act a)) xs |}
   end.
 
-(** TODO Just grab the vectors and concatenate them here. *)
+Arguments app {_}.
 
-Definition GrdBinFn (p q : lensor) : lensor.
-Proof. Admitted.
+(** TODO This product is wrong. *)
 
-(** TODO Just do it. *)
+Definition GrdBinFn (p q : lensor) : lensor :=
+  match p, q with
+  | {| heady := x; taily := xs |}, {| heady := y; taily := ys |} =>
+    {| heady := mul x y; taily := map (fun (xys : list B * list B) =>
+        uncurry app xys)
+      (combine xs ys) |}
+  end.
 
-Definition GrdMul (p q : A) : A.
-Proof. Admitted.
+Definition GrdMul (p q : A) : A := mul p q.
 
-Definition GrdOne : A.
-Proof. Admitted.
+Definition GrdOne : A := one.
 
 Global Instance N_has_bin_op : HasBinOp N := N.add.
 
@@ -154,3 +150,30 @@ Global Instance lensor_is_grd_alg :
 Proof. repeat split. Abort.
 
 End Context.
+
+Section Tests.
+
+Local Open Scope Z_scope.
+
+Let p := Build_lensor 2 [[];
+  [(0, 0, 0)];
+  [(1, 0, 0); (1, 0, 0)];
+  [(0, 0, 7); (0, 1, 0); (1, 0, 0)]].
+
+Let q := Build_lensor 2 [[];
+  [(2, 1, 0)];
+  [(0, 0, 0); (0, 0, 0)];
+  [(0, 1, 0); (0, 1, 0); (0, 0, 1)]].
+
+Let r := Build_lensor 2 [[];
+  [(0, 0, 0)];
+  [(0, 0, 0); (0, 0, 0)];
+  [(1, 0, 0); (1, 0, 0); (2, 1, 0)];
+  [(0, 0, 7); (0, 1, 0); (1, 0, 0); (2, 1, 0)];
+  [(1, 0, 0); (1, 0, 0); (0, 1, 0); (0, 1, 0); (0, 0, 1)];
+  [(0, 0, 7); (0, 1, 0); (1, 0, 0); (0, 1, 0); (0, 1, 0); (0, 0, 1)]].
+
+Compute GrdBinFn p q.
+Compute r.
+
+End Tests.
