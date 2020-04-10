@@ -1,25 +1,27 @@
-(* bad *)
 From Maniunfold.Has Require Export
-  OneSorted.Graded.Addition OneSorted.Graded.Zero (*OneSorted.Graded.Negation*)
+  OneSorted.Graded.Addition OneSorted.Graded.Zero OneSorted.Graded.Negation
   OneSorted.Graded.Multiplication OneSorted.Graded.One
-  (*OneSorted.Graded.Reciprocation*).
+  OneSorted.Graded.Reciprocation.
 
-Declare Scope ring_scope.
+(** We can only assert these reserved notations,
+    because they are fixed by the standard library. *)
 
-Delimit Scope ring_scope with ring.
+Reserved Notation "x '+' y" (at level 50, left associativity).
+Reserved Notation "'0'" (at level 0, no associativity).
+Reserved Notation "'-' x" (at level 35, right associativity).
+Reserved Notation "x '*' y" (at level 40, left associativity).
+Reserved Notation "'1'" (at level 0, no associativity).
+Reserved Notation "'/' x" (at level 35, right associativity).
 
-Open Scope ring_scope.
+Declare Scope grd_ring_scope.
 
-Reserved Notation "x 'G+' y" (at level 50, left associativity).
-Reserved Notation "'G0'" (at level 0, no associativity).
-Reserved Notation "'G-' x" (at level 35, right associativity).
-Reserved Notation "x 'G*' y" (at level 40, left associativity).
-Reserved Notation "'G1'" (at level 0, no associativity).
-Reserved Notation "'G/' x" (at level 35, right associativity).
+Delimit Scope grd_ring_scope with grd_ring.
 
-Notation "x 'G+' y" := (grd_add _ _ x y) : ring_scope.
-Notation "'G0'" := grd_zero : ring_scope.
-(*Notation "'G-' x" := (grd_neg _ x) : ring_scope.*)
-Notation "x 'G*' y" := (grd_mul _ _ x y) : ring_scope.
-Notation "'G1'" := grd_one : ring_scope.
-(*Notation "'G/' x" := (grd_recip _ x) : ring_scope.*)
+Open Scope grd_ring_scope.
+
+Notation "x '+' y" := (grd_add _ _ x y) : grd_ring_scope.
+Notation "'0'" := grd_zero : grd_ring_scope.
+Notation "'-' x" := (grd_neg _ x) : grd_ring_scope.
+Notation "x '*' y" := (grd_mul _ _ x y) : grd_ring_scope.
+Notation "'1'" := grd_one : grd_ring_scope.
+Notation "'/' x" := (grd_recip _ x) : grd_ring_scope.

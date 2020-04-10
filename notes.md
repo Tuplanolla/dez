@@ -93,6 +93,16 @@ For example, we would have `bin_op_is_assoc :> IsAssoc bin_op` and
 Should probably say something about overloading notations here.
 Also, using `Import` and `Local Open Scope` for standard library scopes.
 
+We have scopes based on the subfield classification.
+
+* group-like `grp_scope`
+* ring-like `ring_scope`
+* lattice-like `lat_scope`
+* module-like `mod_scope`
+* algebra-like `alg_scope`
+* category-like `cat_scope`
+* relation-like `rel_scope`
+
 ### Class Duality
 
 When defining things in `Offers`,

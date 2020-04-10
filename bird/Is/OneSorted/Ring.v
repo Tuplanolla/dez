@@ -91,24 +91,24 @@ Global Instance neg_mul_one_is_sgn_absorb : IsSgnAbsorb neg mul one.
 Proof. split; typeclasses eauto. Qed.
 
 Theorem neg_mul_l_bin_comm : forall x y : A,
-  - (x * y) = - x * y.
-Proof with specializations.
-  intros x y.
-  rewrite <- (l_sgn_absorb (x * y)).
-  rewrite (assoc (- (1)) x y)...
-  rewrite l_sgn_absorb.
-  reflexivity. Qed.
-
-Global Instance neg_mul_is_l_bin_comm : IsLBinComm neg mul.
-Proof. intros x y. apply neg_mul_l_bin_comm. Qed.
-
-Theorem neg_mul_r_bin_comm : forall x y : A,
   - (x * y) = x * - y.
 Proof with specializations.
   intros x y.
   rewrite <- (r_sgn_absorb (x * y)).
   rewrite <- (assoc x y (- (1)))...
   rewrite r_sgn_absorb.
+  reflexivity. Qed.
+
+Global Instance neg_mul_is_l_bin_comm : IsLBinComm neg mul.
+Proof. intros x y. apply neg_mul_l_bin_comm. Qed.
+
+Theorem neg_mul_r_bin_comm : forall x y : A,
+  - (x * y) = - x * y.
+Proof with specializations.
+  intros x y.
+  rewrite <- (l_sgn_absorb (x * y)).
+  rewrite (assoc (- (1)) x y)...
+  rewrite l_sgn_absorb.
   reflexivity. Qed.
 
 Global Instance neg_mul_is_r_bin_comm : IsRBinComm neg mul.
@@ -132,8 +132,8 @@ Theorem neg_mul_bin_spt_cancel : forall x y : A,
   (- x) * (- y) = x * y.
 Proof with specializations.
   intros x y.
-  rewrite <- (l_bin_comm x (- y)).
-  rewrite <- (r_bin_comm x y).
+  rewrite <- (r_bin_comm x (- y)).
+  rewrite <- (l_bin_comm x y).
   rewrite (invol (x * y)).
   reflexivity. Qed.
 

@@ -12,9 +12,7 @@ From Maniunfold.Is Require Export
   TwoSorted.Graded.Bimodule
   TwoSorted.Unital TwoSorted.Isomorphism.
 From Maniunfold.ShouldHave Require Import
-  OneSorted.ArithmeticNotations TwoSorted.MultiplicativeNotations
-  OneSorted.Graded.ArithmeticNotations
-  TwoSorted.Graded.MultiplicativeNotations.
+  OneSorted.ArithmeticNotations.
 
 Class IsGrdLBiaddve {A : Type} (P Q R : A -> Type)
   {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}

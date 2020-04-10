@@ -1,25 +1,40 @@
 From Maniunfold.Has Require Export
+  OneSorted.UnaryOperation
   TwoSorted.LeftAction TwoSorted.RightAction
   TwoSorted.LeftTorsion TwoSorted.RightTorsion.
 
-Declare Scope action_scope.
+(** We can only assert these reserved notations,
+    because they are fixed by the standard library. *)
 
-Delimit Scope action_scope with action.
+Reserved Notation "x '*' y" (at level 40, left associativity).
+Reserved Notation "x '/' y" (at level 40, left associativity).
 
-Open Scope action_scope.
+(** We do not open [l_act_scope] or [r_act_scope],
+    because we do not want to favor one over the other.
+    The same applies to [l_tor_scope] and [r_tor_scope]. *)
 
-(** See [ShouldHave.TwoSorted.AdditiveNotations]. *)
+Declare Scope l_act_scope.
 
-Reserved Notation "a 'L*' x" (at level 40, left associativity).
-Reserved Notation "x 'R*' a" (at level 40, left associativity).
-Reserved Notation "'L1'" (at level 0, no associativity).
-Reserved Notation "'R1'" (at level 0, no associativity).
-Reserved Notation "'L/' x" (at level 35, right associativity).
-Reserved Notation "'R/' x" (at level 35, right associativity).
-Reserved Notation "x 'L/' y" (at level 40, left associativity).
-Reserved Notation "x 'R/' y" (at level 40, left associativity).
+Delimit Scope l_act_scope with l_act.
 
-Notation "a 'L*' x" := (l_act a x) : action_scope.
-Notation "x 'R*' a" := (r_act x a) : action_scope.
-Notation "x 'L/' y" := (l_tor x y) : action_scope.
-Notation "x 'R/' y" := (r_tor x y) : action_scope.
+Notation "a '*' x" := (l_act a x) : l_act_scope.
+Notation "a '/' x" := (l_act a (un_op x)) : l_act_scope.
+
+Declare Scope r_act_scope.
+
+Delimit Scope r_act_scope with r_act.
+
+Notation "x '*' a" := (r_act x a) : r_act_scope.
+Notation "x '/' a" := (r_act x (un_op a)) : r_act_scope.
+
+Declare Scope l_tor_scope.
+
+Delimit Scope l_tor_scope with l_tor.
+
+Notation "x '/' y" := (l_tor x y) : l_tor_scope.
+
+Declare Scope r_tor_scope.
+
+Delimit Scope r_tor_scope with r_tor.
+
+Notation "x '/' y" := (r_tor x y) : r_tor_scope.

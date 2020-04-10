@@ -1,20 +1,20 @@
-(* bad *)
 From Maniunfold.Has Require Export
   OneSorted.Graded.BinaryOperation OneSorted.Graded.NullaryOperation
   OneSorted.Graded.UnaryOperation.
 
-(** TODO Would it be better to overload [+] and friends in another scope? *)
+(** We can only assert these reserved notations,
+    because they are fixed by the standard library. *)
 
-Declare Scope group_scope.
+Reserved Notation "x '+' y" (at level 50, left associativity).
+Reserved Notation "'0'" (at level 0, no associativity).
+Reserved Notation "'-' x" (at level 35, right associativity).
 
-Delimit Scope group_scope with group.
+Declare Scope grd_grp_scope.
 
-Open Scope group_scope.
+Delimit Scope grd_grp_scope with grd_grp.
 
-Reserved Notation "x 'G+' y" (at level 50, left associativity).
-Reserved Notation "'G0'" (at level 0, no associativity).
-Reserved Notation "'G-' x" (at level 35, right associativity).
+Open Scope grd_grp_scope.
 
-Notation "x 'G+' y" := (grd_bin_op _ _ x y) : group_scope.
-Notation "'G0'" := grd_null_op : group_scope.
-Notation "'G-' x" := (grd_un_op _ x) : group_scope.
+Notation "x '+' y" := (grd_bin_op _ _ x y) : grd_grp_scope.
+Notation "'0'" := grd_null_op : grd_grp_scope.
+Notation "'-' x" := (grd_un_op _ x) : grd_grp_scope.

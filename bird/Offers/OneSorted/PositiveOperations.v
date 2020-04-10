@@ -1,8 +1,7 @@
-(* bad *)
 From Coq Require Import
-  PArith.
+  PArith.PArith.
 From Maniunfold.Has Require Export
-  BinaryOperation LeftAction.
+  OneSorted.BinaryOperation TwoSorted.LeftAction.
 
 Section Context.
 

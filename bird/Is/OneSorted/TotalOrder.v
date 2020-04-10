@@ -22,7 +22,7 @@ Ltac specializations := typeclasses specialize
   bin_rel into ord_rel.
 
 Theorem ord_rel_refl : forall x : A,
-  x <== x.
+  x <= x.
 Proof with specializations.
   intros x. destruct (connex x x) as [H | H]...
   - apply H.

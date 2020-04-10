@@ -7,13 +7,15 @@ From Maniunfold.Is Require Export
   OneSorted.Finite TwoSorted.Isomorphism
   OneSorted.Ring TwoSorted.UnitalAssociativeAlgebra TwoSorted.Graded.Algebra.
 From Maniunfold.Offers Require Export
-  TwoSorted.IsomorphismMappings NaturalPowers.
+  TwoSorted.IsomorphismMappings
+  OneSorted.PositiveOperations OneSorted.NaturalOperations
+  OneSorted.IntegerOperations.
 From Maniunfold.Provides Require Export
   ZTheorems.
 From Maniunfold.ShouldHave Require Import
   OneSorted.ArithmeticNotations.
 From Maniunfold.ShouldOffer Require Import
-  IntegerPowerNotations.
+  OneSorted.MultiplicativeOperationNotations.
 
 (** TODO Use this mess for something, such as demonstrating graded algebras. *)
 

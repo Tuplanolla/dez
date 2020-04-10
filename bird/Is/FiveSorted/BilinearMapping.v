@@ -55,7 +55,7 @@ Class IsBBihomogen (A B C D E : Type)
   (A_E_has_l_act : HasLAct A E) (B_E_has_r_act : HasRAct B E)
   (C_D_E_has_bin_fn : HasBinFn C D E) : Prop :=
   b_bihomogen : forall (a : A) (x : C) (y : D) (b : B),
-    bin_fn (a L* x) (y R* b) = a L* bin_fn x y R* b.
+    bin_fn (a * x)%l_act (y * b)%r_act = ((a * bin_fn x y)%l_act * b)%r_act.
 
 Local Instance bihomogen_has_iso {A B C D E : Type}
   {A_C_has_l_act : HasLAct A C} {B_D_has_r_act : HasRAct B D}
@@ -80,7 +80,7 @@ Proof.
       rewrite <- (two_r_unl x).
       rewrite b_bihomogen.
       rewrite (two_r_unl x).
-      rewrite (two_r_unl (a L* bin_fn b x)).
+      rewrite (two_r_unl (a * bin_fn b x)%l_act).
       reflexivity.
     + intros x y a.
       rewrite <- (two_l_unl x).

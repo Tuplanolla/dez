@@ -16,11 +16,13 @@ From Maniunfold.ShouldHave Require Import
   OneSorted.Graded.ArithmeticNotations
   TwoSorted.Graded.MultiplicativeNotations.
 
+Local Open Scope grd_l_act_scope.
+
 Class IsGrdLBihomogen {A : Type} (P Q R S : A -> Type)
   {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}
   (P_Q_has_grd_l_act : HasGrdLAct P Q) (P_S_has_grd_l_act : HasGrdLAct P S)
   (Q_R_S_has_grd_bin_fn : HasGrdBinFn Q R S) : Prop := {
   bin_op_is_assoc :> IsAssoc bin_op;
   grd_l_bihomogen : forall {i j k : A} (a : P i) (x : Q j) (y : R k),
-    rew assoc i j k in (a GL* grd_bin_fn _ _ x y) = grd_bin_fn _ _ (a GL* x) y;
+    rew assoc i j k in (a * grd_bin_fn _ _ x y) = grd_bin_fn _ _ (a * x) y;
 }.

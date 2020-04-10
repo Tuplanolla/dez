@@ -2,13 +2,14 @@
 From Coq Require Import
   ZArith.
 From Maniunfold.Is Require Export
-  Equivalence Magma Semigroup Monoid Group TwoSorted.RightBinaryCommutative.
+  Magma Semigroup Monoid Group TwoSorted.LeftBinaryCommutative.
 From Maniunfold.Offers Require Export
-  PositivePowers NaturalPowers IntegerPowers.
+  OneSorted.PositiveOperations OneSorted.NaturalOperations
+  OneSorted.IntegerOperations.
 From Maniunfold.ShouldHave Require Import
   OneSorted.AdditiveNotations.
 From Maniunfold.ShouldOffer Require Import
-  IntegerPowerNotations.
+  OneSorted.AdditiveOperationNotations.
 
 Fact succ_xI : forall n : positive,
   Pos.succ (xI n) = xO (Pos.succ n).
@@ -82,7 +83,7 @@ Section Context.
 
 Context {A : Type} `{is_grp : IsGrp A}.
 
-Theorem positive_op_un_op_two_r_bin_comm : forall (n : positive) (x : A),
+Theorem positive_op_un_op_two_l_bin_comm : forall (n : positive) (x : A),
   - (n * x)%positive = (n * - x)%positive.
 Proof.
   intros n x.
@@ -98,11 +99,11 @@ Proof.
     rewrite (iter_op_comm p (- x)).
     reflexivity. Qed.
 
-Global Instance positive_op_un_op_is_two_r_bin_comm :
-  IsTwoRBinComm positive A un_op positive_op.
-Proof. intros x y. apply positive_op_un_op_two_r_bin_comm. Qed.
+Global Instance positive_op_un_op_is_two_l_bin_comm :
+  IsTwoLBinComm positive A un_op positive_op.
+Proof. intros x y. apply positive_op_un_op_two_l_bin_comm. Qed.
 
-Theorem n_op_un_op_two_r_bin_comm : forall (n : N) (x : A),
+Theorem n_op_un_op_two_l_bin_comm : forall (n : N) (x : A),
   - (n * x)%N = (n * - x)%N.
 Proof.
   intros n x.
@@ -111,14 +112,14 @@ Proof.
     rewrite un_absorb.
     reflexivity.
   - cbv [n_op].
-    rewrite (positive_op_un_op_two_r_bin_comm p x).
+    rewrite (positive_op_un_op_two_l_bin_comm p x).
     reflexivity. Qed.
 
-Global Instance n_op_un_op_is_two_r_bin_comm : IsTwoRBinComm N A un_op n_op.
-Proof. intros x y. apply n_op_un_op_two_r_bin_comm. Qed.
+Global Instance n_op_un_op_is_two_l_bin_comm : IsTwoLBinComm N A un_op n_op.
+Proof. intros x y. apply n_op_un_op_two_l_bin_comm. Qed.
 
-Theorem z_op_un_op_two_r_bin_comm : forall (n : Z) (x : A),
-  - (n * x)%Z = (n * (- x)%group)%Z.
+Theorem z_op_un_op_two_l_bin_comm : forall (n : Z) (x : A),
+  - (n * x)%Z = (n * (- x)%grp)%Z.
 Proof.
   intros n x.
   destruct n as [| p | p].
@@ -126,13 +127,13 @@ Proof.
     rewrite un_absorb.
     reflexivity.
   - cbv [z_op].
-    rewrite (positive_op_un_op_two_r_bin_comm p x).
+    rewrite (positive_op_un_op_two_l_bin_comm p x).
     reflexivity.
   - cbv [z_op].
-    rewrite (positive_op_un_op_two_r_bin_comm p x).
+    rewrite (positive_op_un_op_two_l_bin_comm p x).
     reflexivity. Qed.
 
-Global Instance z_op_un_op_is_two_r_bin_comm : IsTwoRBinComm Z A un_op z_op.
-Proof. intros x y. apply z_op_un_op_two_r_bin_comm. Qed.
+Global Instance z_op_un_op_is_two_l_bin_comm : IsTwoLBinComm Z A un_op z_op.
+Proof. intros x y. apply z_op_un_op_two_l_bin_comm. Qed.
 
 End Context.

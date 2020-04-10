@@ -1,10 +1,9 @@
-(* bad *)
 From Coq Require Import
-  ZArith.
+  ZArith.ZArith.
 From Maniunfold.Has Require Export
   OneSorted.BinaryOperation OneSorted.NullaryOperation TwoSorted.LeftAction.
 From Maniunfold.Offers Require Export
-  PositivePowers.
+  OneSorted.PositiveOperations.
 From Maniunfold.ShouldHave Require Import
   OneSorted.AdditiveNotations.
 

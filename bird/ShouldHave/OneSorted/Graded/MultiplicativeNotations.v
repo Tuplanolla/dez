@@ -1,18 +1,20 @@
-(* bad *)
 From Maniunfold.Has Require Export
   OneSorted.Graded.BinaryOperation OneSorted.Graded.NullaryOperation
   OneSorted.Graded.UnaryOperation.
 
-Declare Scope group_scope.
+(** We can only assert these reserved notations,
+    because they are fixed by the standard library. *)
 
-Delimit Scope group_scope with group.
+Reserved Notation "x '*' y" (at level 40, left associativity).
+Reserved Notation "'1'" (at level 0, no associativity).
+Reserved Notation "'/' x" (at level 35, right associativity).
 
-Open Scope group_scope.
+Declare Scope grd_grp_scope.
 
-Reserved Notation "x 'G*' y" (at level 40, left associativity).
-Reserved Notation "'G1'" (at level 0, no associativity).
-Reserved Notation "'G/' x" (at level 35, right associativity).
+Delimit Scope grd_grp_scope with grd_grp.
 
-Notation "x 'G*' y" := (grd_bin_op _ _ x y) : group_scope.
-Notation "'G1'" := grd_null_op : group_scope.
-Notation "'G/' x" := (grd_un_op _ x) : group_scope.
+Open Scope grd_grp_scope.
+
+Notation "x '*' y" := (grd_bin_op _ _ x y) : grd_grp_scope.
+Notation "'1'" := grd_null_op : grd_grp_scope.
+Notation "'/' x" := (grd_un_op _ x) : grd_grp_scope.

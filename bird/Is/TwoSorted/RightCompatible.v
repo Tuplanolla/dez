@@ -1,9 +1,11 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  BinaryOperation RightAction.
+  OneSorted.BinaryOperation TwoSorted.RightAction.
 From Maniunfold.ShouldHave Require Import
-  OneSorted.AdditiveNotations TwoSorted.AdditiveNotations.
+  TwoSorted.MultiplicativeNotations.
+
+Local Open Scope r_act_scope.
 
 Class IsRCompat (A B : Type)
   (A_has_bin_op : HasBinOp A) (A_B_has_r_act : HasRAct A B) : Prop :=
-  r_compat : forall (x : B) (a b : A), x R+ (a + b) = (x R+ a) R+ b.
+  r_compat : forall (x : B) (a b : A), x * (a * b) = (x * a) * b.

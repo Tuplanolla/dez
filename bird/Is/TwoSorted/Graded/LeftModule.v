@@ -11,13 +11,15 @@ From Maniunfold.ShouldHave Require Import
 
 (** TODO Relocate these classes. *)
 
+Local Open Scope grd_l_act_scope.
+
 Class IsTwoGrdLRDistr {A : Type} (P Q : A -> Type)
   {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}
   (P_has_add : forall i : A, HasAdd (P i))
   (Q_has_add : forall i : A, HasAdd (Q i))
   (P_Q_has_grd_l_act : HasGrdLAct P Q) : Prop :=
   grd_two_l_r_distr : forall {i j : A} (a b : P i) (x : Q j),
-    (a + b) GL* x = a GL* x + b GL* x.
+    (a + b) * x = a * x + b * x.
 
 Class IsGrdLCompat {A : Type} (P Q : A -> Type)
   {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}
@@ -25,7 +27,7 @@ Class IsGrdLCompat {A : Type} (P Q : A -> Type)
   (P_Q_has_grd_l_act : HasGrdLAct P Q) : Prop := {
   bin_op_is_assoc :> IsAssoc bin_op;
   grd_l_compat : forall {i j k : A} (a : P i) (b : P j) (x : Q k),
-    rew assoc i j k in (a GL* (b GL* x)) = (a G* b) GL* x;
+    rew assoc i j k in (a * (b * x)) = (a * b) * x;
 }.
 
 Class IsTwoGrdLUnl {A : Type} (P Q : A -> Type)
@@ -34,7 +36,7 @@ Class IsTwoGrdLUnl {A : Type} (P Q : A -> Type)
   (P_Q_has_grd_l_act : HasGrdLAct P Q) : Prop := {
   bin_op_null_op_is_l_unl :> IsLUnl bin_op null_op;
   grd_two_l_unl : forall {i : A} (x : Q i),
-    rew l_unl i in (G1 GL* x) = x;
+    rew l_unl i in (1 * x) = x;
 }.
 
 Class IsTwoGrdLLDistr {A : Type} (P Q : A -> Type)
@@ -42,7 +44,7 @@ Class IsTwoGrdLLDistr {A : Type} (P Q : A -> Type)
   (Q_has_add : forall i : A, HasAdd (Q i))
   (P_Q_has_grd_l_act : HasGrdLAct P Q) : Prop :=
   grd_two_l_l_distr : forall {i j : A} (a : P i) (x y : Q j),
-    a GL* (x + y) = a GL* x + a GL* y.
+    a * (x + y) = a * x + a * y.
 
 Class IsGrdLMod {A : Type} (P Q : A -> Type)
   {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}

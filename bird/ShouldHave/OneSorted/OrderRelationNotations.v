@@ -1,15 +1,14 @@
-(* bad *)
 From Maniunfold.Has Require Export
   OneSorted.OrderRelation.
 
-Declare Scope relation_scope.
+Reserved Notation "x '<=' y" (at level 70, no associativity).
+Reserved Notation "x '</=' y" (at level 70, no associativity).
 
-Delimit Scope relation_scope with relation.
+Declare Scope rel_scope.
 
-Open Scope relation_scope.
+Delimit Scope rel_scope with rel.
 
-Reserved Notation "x '<==' y" (at level 70, no associativity).
-Reserved Notation "x '<=/=' y" (at level 70, no associativity).
+Open Scope rel_scope.
 
-Notation "x '<==' y" := (ord_rel x y) : relation_scope.
-Notation "x '<=/=' y" := (not (ord_rel x y)) : relation_scope.
+Notation "x '<=' y" := (ord_rel x y) : rel_scope.
+Notation "x '</=' y" := (not (ord_rel x y)) : rel_scope.

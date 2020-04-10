@@ -17,11 +17,13 @@ From Maniunfold.ShouldHave Require Import
 
 (** A left linear map is a left module homomorphism. *)
 
+Local Open Scope l_act_scope.
+
 (* LeftHomogeneous *)
 Class IsLHomogen (A B C : Type)
   (A_B_has_l_act : HasLAct A B) (A_C_has_l_act : HasLAct A C)
   (B_C_has_fn : HasFn B C) : Prop :=
-  l_homogen : forall (a : A) (x : B), fn (a L* x) = a L* fn x.
+  l_homogen : forall (a : A) (x : B), fn (a * x) = a * fn x.
 
 (* Additive *)
 Class IsAddve (A B : Type)
@@ -49,11 +51,13 @@ Class IsLLinMap (A B C : Type)
 
 (** Here is the other chirality. *)
 
+Local Open Scope r_act_scope.
+
 (* RightHomogeneous *)
 Class IsRHomogen (A B C : Type)
   (A_B_has_r_act : HasRAct A B) (A_C_has_r_act : HasRAct A C)
   (B_C_has_fn : HasFn B C) : Prop :=
-  r_homogen : forall (a : A) (x : B), fn (x R* a) = fn x R* a.
+  r_homogen : forall (a : A) (x : B), fn (x * a) = fn x * a.
 
 (* RightLinearMap RightModuleHomomorphism *)
 Class IsRLinMap (A B C : Type)
