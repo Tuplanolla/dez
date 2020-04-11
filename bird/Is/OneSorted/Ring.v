@@ -58,7 +58,7 @@ Global Instance A_zero_mul_is_absorb : IsAbsorb A zero mul.
 Proof. split; typeclasses eauto. Defined.
 
 Theorem A_neg_mul_one_l_sgn_absorb : forall x : A,
-  - (1) * x = - x.
+  (- (1)) * x = - x.
 Proof with conversions.
   intros x.
   apply (l_cancel (- (1) * x) (- x) x)...
@@ -73,7 +73,7 @@ Global Instance A_neg_mul_one_is_l_sgn_absorb : IsLSgnAbsorb A neg mul one.
 Proof. intros x. apply A_neg_mul_one_l_sgn_absorb. Defined.
 
 Theorem A_neg_mul_one_r_sgn_absorb : forall x : A,
-  x * - (1) = - x.
+  x * (- (1)) = - x.
 Proof with conversions.
   intros x.
   apply (l_cancel (x * - (1)) (- x) x)...
@@ -91,7 +91,7 @@ Global Instance A_neg_mul_one_is_sgn_absorb : IsSgnAbsorb A neg mul one.
 Proof. split; typeclasses eauto. Defined.
 
 Theorem A_neg_mul_l_bin_comm : forall x y : A,
-  - (x * y) = x * - y.
+  - (x * y) = x * (- y).
 Proof with conversions.
   intros x y.
   rewrite <- (r_sgn_absorb (x * y)).
@@ -103,7 +103,7 @@ Global Instance A_neg_mul_is_l_bin_comm : IsLBinComm A neg mul.
 Proof. intros x y. apply A_neg_mul_l_bin_comm. Defined.
 
 Theorem A_neg_mul_r_bin_comm : forall x y : A,
-  - (x * y) = - x * y.
+  - (x * y) = (- x) * y.
 Proof with conversions.
   intros x y.
   rewrite <- (l_sgn_absorb (x * y)).

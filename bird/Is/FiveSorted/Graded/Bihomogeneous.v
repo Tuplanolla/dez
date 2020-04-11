@@ -1,21 +1,10 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  OneSorted.UnaryOperation OneSorted.Addition TwoSorted.LeftAction
-  OneSorted.Addition OneSorted.Zero OneSorted.Negation
-  OneSorted.Graded.Multiplication OneSorted.Graded.One
+  OneSorted.BinaryOperation OneSorted.NullaryOperation
+  TwoSorted.Graded.LeftAction TwoSorted.Graded.RightAction
   ThreeSorted.Graded.BinaryFunction.
 From Maniunfold.Is Require Export
-  TwoSorted.LeftDistributive ThreeSorted.Bicompatible
-  OneSorted.CommutativeRing TwoSorted.LeftModule TwoSorted.RightModule
-  TwoSorted.Graded.LeftModule TwoSorted.Graded.RightModule
-  ThreeSorted.Graded.Bimodule
-  TwoSorted.Graded.Bimodule
-  TwoSorted.Unital TwoSorted.Isomorphism
   FourSorted.Graded.LeftBihomogeneous FourSorted.Graded.RightBihomogeneous.
-From Maniunfold.ShouldHave Require Import
-  OneSorted.ArithmeticNotations TwoSorted.MultiplicativeNotations
-  OneSorted.Graded.ArithmeticNotations
-  TwoSorted.Graded.MultiplicativeNotations.
 
 Class IsGrdBihomogen {A : Type} (P Q R S T : A -> Type)
   {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}

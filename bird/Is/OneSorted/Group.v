@@ -56,10 +56,10 @@ Global Instance A_bin_op_is_cancel : IsCancel A bin_op.
 Proof. split; typeclasses eauto. Defined.
 
 Theorem A_bin_op_un_op_un_antidistr : forall x y : A,
-  - (x + y) = - y + - x.
+  - (x + y) = (- y) + (- x).
 Proof.
   intros x y.
-  apply (l_cancel (- (x + y)) (- y + - x) (x + y)).
+  apply (l_cancel (- (x + y)) ((- y) + (- x)) (x + y)).
   rewrite (r_inv (x + y)).
   rewrite (assoc (x + y) (- y) (- x)).
   rewrite <- (assoc x y (- y)).
@@ -90,9 +90,9 @@ Theorem A_un_op_invol : forall x : A,
   - - x = x.
 Proof.
   intros x.
-  rewrite <- (r_unl (- - x)).
+  rewrite <- (r_unl (- (- x))).
   rewrite <- (l_inv x).
-  rewrite (assoc (- - x) (- x) x).
+  rewrite (assoc (- (- x)) (- x) x).
   rewrite (l_inv (- x)).
   rewrite (l_unl x).
   reflexivity. Defined.

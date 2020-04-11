@@ -1,17 +1,8 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  OneSorted.UnaryOperation OneSorted.Addition TwoSorted.LeftAction
-  OneSorted.Addition OneSorted.Zero OneSorted.Negation
-  OneSorted.Multiplication OneSorted.One
-  ThreeSorted.BinaryFunction.
+  TwoSorted.LeftAction TwoSorted.RightAction ThreeSorted.BinaryFunction.
 From Maniunfold.Is Require Export
-  TwoSorted.LeftDistributive ThreeSorted.Bicompatible
-  OneSorted.CommutativeRing TwoSorted.LeftModule TwoSorted.RightModule
-  ThreeSorted.Bimodule
-  TwoSorted.Unital TwoSorted.Isomorphism
   FourSorted.LeftBihomogeneous FourSorted.RightBihomogeneous.
-From Maniunfold.ShouldHave Require Import
-  OneSorted.ArithmeticNotations TwoSorted.MultiplicativeNotations.
 
 Class IsBihomogen (A B C D E : Type)
   (A_C_has_l_act : HasLAct A C) (B_D_has_r_act : HasRAct B D)

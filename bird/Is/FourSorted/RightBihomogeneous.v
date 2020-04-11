@@ -1,16 +1,8 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  OneSorted.UnaryOperation OneSorted.Addition TwoSorted.LeftAction
-  OneSorted.Addition OneSorted.Zero OneSorted.Negation
-  OneSorted.Multiplication OneSorted.One
-  ThreeSorted.BinaryFunction.
-From Maniunfold.Is Require Export
-  TwoSorted.LeftDistributive ThreeSorted.Bicompatible
-  OneSorted.CommutativeRing TwoSorted.LeftModule TwoSorted.RightModule
-  ThreeSorted.Bimodule
-  TwoSorted.Unital TwoSorted.Isomorphism.
+  TwoSorted.RightAction ThreeSorted.BinaryFunction.
 From Maniunfold.ShouldHave Require Import
-  OneSorted.ArithmeticNotations TwoSorted.MultiplicativeNotations.
+  TwoSorted.MultiplicativeNotations.
 
 Local Open Scope r_mod_scope.
 

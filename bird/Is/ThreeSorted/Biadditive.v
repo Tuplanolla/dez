@@ -1,17 +1,8 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  OneSorted.UnaryOperation OneSorted.Addition TwoSorted.LeftAction
-  OneSorted.Addition OneSorted.Zero OneSorted.Negation
-  OneSorted.Multiplication OneSorted.One
-  ThreeSorted.BinaryFunction.
+  OneSorted.Addition ThreeSorted.BinaryFunction.
 From Maniunfold.Is Require Export
-  TwoSorted.LeftDistributive ThreeSorted.Bicompatible
-  OneSorted.CommutativeRing TwoSorted.LeftModule TwoSorted.RightModule
-  ThreeSorted.Bimodule
-  TwoSorted.Unital TwoSorted.Isomorphism
   ThreeSorted.LeftBiadditive ThreeSorted.RightBiadditive.
-From Maniunfold.ShouldHave Require Import
-  OneSorted.ArithmeticNotations TwoSorted.MultiplicativeNotations.
 
 Class IsBiaddve (A B C : Type)
   (A_has_add : HasAdd A) (B_has_add : HasAdd B) (C_has_add : HasAdd C)
