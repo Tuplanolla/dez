@@ -16,6 +16,6 @@ Section Context.
 Context {A : Type} `{is_antisym : IsAntisym A}.
 
 Global Instance bin_rel_antisymmetric : Antisymmetric A eq bin_rel | 0.
-Proof. intros x y. apply antisym. Qed.
+Proof. intros x y. apply antisym. Defined.
 
 End Context.

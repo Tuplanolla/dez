@@ -15,6 +15,6 @@ Section Context.
 Context {A : Type} `{is_r_bin_comm : IsRBinComm A}.
 
 Global Instance A_A_neg_mul_is_two_r_bin_comm : IsTwoRBinComm A A neg mul.
-Proof. intros x y. apply r_bin_comm. Qed.
+Proof. intros x y. apply r_bin_comm. Defined.
 
 End Context.

@@ -16,6 +16,6 @@ Section Context.
 Context {A : Type} `{is_preord : IsPreord A}.
 
 Global Instance ord_rel_pre_order : PreOrder ord_rel | 0.
-Proof. split; typeclasses eauto. Qed.
+Proof. split; typeclasses eauto. Defined.
 
 End Context.

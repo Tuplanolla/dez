@@ -14,6 +14,6 @@ Section Context.
 Context {A : Type} `{is_trans : IsTrans A}.
 
 Global Instance bin_rel_transitive : Transitive bin_rel | 0.
-Proof. intros x y z. apply trans. Qed.
+Proof. intros x y z. apply trans. Defined.
 
 End Context.

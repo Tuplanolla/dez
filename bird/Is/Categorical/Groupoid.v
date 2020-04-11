@@ -25,6 +25,6 @@ Proof.
   rewrite (cat_assoc ((f ^-1) ^-1) (f ^-1) f).
   rewrite (cat_l_inv (f ^-1)).
   rewrite (cat_l_unl f).
-  reflexivity. Qed.
+  reflexivity. Defined.
 
 End Context.

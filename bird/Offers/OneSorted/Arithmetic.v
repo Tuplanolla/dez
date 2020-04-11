@@ -18,7 +18,7 @@ Section Context.
 
 Context {A : Type} {A_has_mul : HasMul A} {A_has_recip : HasRecip A}.
 
-(** Division, ratio, solidus. *)
+(** Division, ratio, obelus. *)
 
 Definition div (x y : A) : A := x * (/ y).
 

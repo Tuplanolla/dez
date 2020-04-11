@@ -14,6 +14,6 @@ Section Context.
 Context {A : Type} `{is_refl : IsRefl A}.
 
 Global Instance bin_rel_reflexive : Reflexive bin_rel | 0.
-Proof. intros x. apply refl. Qed.
+Proof. intros x. apply refl. Defined.
 
 End Context.

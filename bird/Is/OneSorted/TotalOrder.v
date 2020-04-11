@@ -26,12 +26,12 @@ Theorem A_ord_rel_refl : forall x : A,
 Proof with conversions.
   intros x. destruct (connex x x) as [H | H]...
   - apply H.
-  - apply H. Qed.
+  - apply H. Defined.
 
 Global Instance A_ord_rel_is_refl : IsRefl A ord_rel.
-Proof. intros x. apply A_ord_rel_refl. Qed.
+Proof. intros x. apply A_ord_rel_refl. Defined.
 
 Global Instance A_ord_rel_is_part_ord : IsPartOrd A ord_rel.
-Proof. repeat (split; try typeclasses eauto). Qed.
+Proof. repeat (split; try typeclasses eauto). Defined.
 
 End Context.

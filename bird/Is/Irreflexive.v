@@ -14,6 +14,6 @@ Section Context.
 Context {A : Type} `{is_irrefl : IsIrrefl A}.
 
 Global Instance bin_rel_reflexive : Irreflexive bin_rel | 0.
-Proof. intros x. apply irrefl. Qed.
+Proof. intros x. apply irrefl. Defined.
 
 End Context.

@@ -105,6 +105,6 @@ Local Instance bihomogen_is_iso {A B C D E : Type}
 Proof.
   split.
   - intros x. apply proof_irrelevance.
-  - intros x. apply proof_irrelevance. Qed.
+  - intros x. apply proof_irrelevance. Defined.
 
 End Context.

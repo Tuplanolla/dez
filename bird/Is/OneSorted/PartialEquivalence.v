@@ -16,6 +16,6 @@ Section Context.
 Context {A : Type} `{is_part_eq : IsPartEq A}.
 
 Global Instance eq_rel_p_e_r : PER eq_rel | 0.
-Proof. split; typeclasses eauto. Qed.
+Proof. split; typeclasses eauto. Defined.
 
 End Context.

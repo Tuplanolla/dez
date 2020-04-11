@@ -6,7 +6,7 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   OneSorted.ArithmeticNotations.
 
-(** This is a unital semiring. *)
+(** Noncommutative semiring. *)
 
 Class IsSring (A : Type)
   (A_has_add : HasAdd A) (A_has_zero : HasZero A)
@@ -34,6 +34,6 @@ Proof with conversions.
   rewrite <- H.
   rewrite (l_absorb x).
   rewrite (l_absorb y).
-  reflexivity. Qed.
+  reflexivity. Defined.
 
 End Context.

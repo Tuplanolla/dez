@@ -13,14 +13,14 @@ Reserved Notation "x '-' y" (at level 50, left associativity).
 
 Declare Scope grd_l_mod_scope.
 
-Delimit Scope grd_l_mod_scope with grd_l_act.
+Delimit Scope grd_l_mod_scope with grd_l_mod.
 
 Notation "a '+' x" := (grd_l_act _ _ a x) : grd_l_mod_scope.
 Notation "a '-' x" := (grd_l_act _ _ a (grd_un_op _ x)) : grd_l_mod_scope.
 
 Declare Scope grd_r_mod_scope.
 
-Delimit Scope grd_r_mod_scope with grd_r_act.
+Delimit Scope grd_r_mod_scope with grd_r_mod.
 
 Notation "x '+' a" := (grd_r_act _ _ x a) : grd_r_mod_scope.
 Notation "x '-' a" := (grd_r_act _ _ x (grd_un_op _ a)) : grd_r_mod_scope.

@@ -17,6 +17,6 @@ Context {A : Type} `{is_unl : IsUnl A}.
 
 Global Instance A_A_bin_op_bin_op_null_op_is_two_unl :
   IsTwoUnl A A bin_op bin_op null_op.
-Proof. split; typeclasses eauto. Qed.
+Proof. split; typeclasses eauto. Defined.
 
 End Context.

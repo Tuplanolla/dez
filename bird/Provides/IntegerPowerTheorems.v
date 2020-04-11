@@ -13,14 +13,14 @@ From Maniunfold.ShouldOffer Require Import
 
 Fact succ_xI : forall n : positive,
   Pos.succ (xI n) = xO (Pos.succ n).
-Proof. intros n. reflexivity. Qed.
+Proof. intros n. reflexivity. Defined.
 
 Fact succ_xO : forall n : positive,
   Pos.succ (xO n) = xI n.
-Proof. intros n. reflexivity. Qed.
+Proof. intros n. reflexivity. Defined.
 
 Fact succ_xH : Pos.succ xH = xO xH.
-Proof. reflexivity. Qed.
+Proof. reflexivity. Defined.
 
 Section Context.
 
@@ -28,15 +28,15 @@ Context {A : Type} `{is_mag : IsMag A}.
 
 Fact iter_op_xI : forall (n : positive) (x : A),
   Pos.iter_op bin_op (xI n) x = x + Pos.iter_op bin_op n (x + x).
-Proof. intros n x. reflexivity. Qed.
+Proof. intros n x. reflexivity. Defined.
 
 Fact iter_op_xO : forall (n : positive) (x : A),
   Pos.iter_op bin_op (xO n) x = Pos.iter_op bin_op n (x + x).
-Proof. intros n x. reflexivity. Qed.
+Proof. intros n x. reflexivity. Defined.
 
 Fact iter_op_xH : forall x : A,
   Pos.iter_op bin_op xH x = x.
-Proof. intros x. reflexivity. Qed.
+Proof. intros x. reflexivity. Defined.
 
 End Context.
 
@@ -63,7 +63,7 @@ Proof.
     rewrite (iter_op_xO xH x).
     rewrite (iter_op_xH (x + x)).
     try rewrite (iter_op_xH x).
-    reflexivity. Qed.
+    reflexivity. Defined.
 
 Lemma iter_op_comm : forall (n : positive) (x : A),
   x + Pos.iter_op bin_op n x = Pos.iter_op bin_op n x + x.
@@ -75,7 +75,7 @@ Proof.
   - rewrite (iter_op_succ p x).
     rewrite IH at 1.
     rewrite (assoc x (Pos.iter_op bin_op p x) x).
-    reflexivity. Qed.
+    reflexivity. Defined.
 
 End Context.
 
@@ -97,11 +97,11 @@ Proof.
     rewrite (un_antidistr x (Pos.iter_op bin_op p x)).
     rewrite IH.
     rewrite (iter_op_comm p (- x)).
-    reflexivity. Qed.
+    reflexivity. Defined.
 
 Global Instance positive_op_un_op_is_two_l_bin_comm :
   IsTwoLBinComm positive A un_op positive_op.
-Proof. intros x y. apply positive_op_un_op_two_l_bin_comm. Qed.
+Proof. intros x y. apply positive_op_un_op_two_l_bin_comm. Defined.
 
 Theorem n_op_un_op_two_l_bin_comm : forall (n : N) (x : A),
   - (n * x)%N = (n * - x)%N.
@@ -113,10 +113,10 @@ Proof.
     reflexivity.
   - cbv [n_op].
     rewrite (positive_op_un_op_two_l_bin_comm p x).
-    reflexivity. Qed.
+    reflexivity. Defined.
 
 Global Instance n_op_un_op_is_two_l_bin_comm : IsTwoLBinComm N A un_op n_op.
-Proof. intros x y. apply n_op_un_op_two_l_bin_comm. Qed.
+Proof. intros x y. apply n_op_un_op_two_l_bin_comm. Defined.
 
 Theorem z_op_un_op_two_l_bin_comm : forall (n : Z) (x : A),
   - (n * x)%Z = (n * (- x)%grp)%Z.
@@ -131,9 +131,9 @@ Proof.
     reflexivity.
   - cbv [z_op].
     rewrite (positive_op_un_op_two_l_bin_comm p x).
-    reflexivity. Qed.
+    reflexivity. Defined.
 
 Global Instance z_op_un_op_is_two_l_bin_comm : IsTwoLBinComm Z A un_op z_op.
-Proof. intros x y. apply z_op_un_op_two_l_bin_comm. Qed.
+Proof. intros x y. apply z_op_un_op_two_l_bin_comm. Defined.
 
 End Context.

@@ -17,7 +17,7 @@ Class IsGrdBicompat {A : Type} (P Q R : A -> Type)
   A_bin_op_is_assoc :> IsAssoc A bin_op;
   grd_bicompat : forall {i j k : A} (a : P i) (x : R j) (b : Q k),
     rew assoc i j k in
-    (a * (x * b)%grd_r_act)%grd_l_act = ((a * x)%grd_l_act * b)%grd_r_act;
+    (a * (x * b)%grd_r_mod)%grd_l_mod = ((a * x)%grd_l_mod * b)%grd_r_mod;
 }.
 
 Class IsThreeGrdBimod {A : Type} (P Q R : A -> Type)

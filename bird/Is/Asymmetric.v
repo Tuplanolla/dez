@@ -14,6 +14,6 @@ Section Context.
 Context {A : Type} `{is_asym : IsAsym A}.
 
 Global Instance bin_rel_asymmetric : Asymmetric bin_rel | 0.
-Proof. intros x y. apply asym. Qed.
+Proof. intros x y. apply asym. Defined.
 
 End Context.

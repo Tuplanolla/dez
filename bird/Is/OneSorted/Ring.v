@@ -36,10 +36,10 @@ Proof with conversions.
   rewrite (r_unl (1 * x)).
   rewrite <- (r_distr 1 0 x).
   rewrite (r_unl 1).
-  reflexivity. Qed.
+  reflexivity. Defined.
 
 Global Instance A_zero_mul_is_l_absorb : IsLAbsorb A zero mul.
-Proof. intros x. apply A_zero_mul_l_absorb. Qed.
+Proof. intros x. apply A_zero_mul_l_absorb. Defined.
 
 Theorem A_zero_mul_r_absorb : forall x : A,
   x * 0 = 0.
@@ -49,13 +49,13 @@ Proof with conversions.
   rewrite (r_unl (x * 1)).
   rewrite <- (l_distr x 1 0).
   rewrite (r_unl 1).
-  reflexivity. Qed.
+  reflexivity. Defined.
 
 Global Instance A_zero_mul_is_r_absorb : IsRAbsorb A zero mul.
-Proof. intros x. apply A_zero_mul_r_absorb. Qed.
+Proof. intros x. apply A_zero_mul_r_absorb. Defined.
 
 Global Instance A_zero_mul_is_absorb : IsAbsorb A zero mul.
-Proof. split; typeclasses eauto. Qed.
+Proof. split; typeclasses eauto. Defined.
 
 Theorem A_neg_mul_one_l_sgn_absorb : forall x : A,
   - (1) * x = - x.
@@ -67,10 +67,10 @@ Proof with conversions.
   rewrite <- (r_distr 1 (- (1)) x).
   rewrite (r_inv 1)...
   rewrite (l_absorb x).
-  reflexivity. Qed.
+  reflexivity. Defined.
 
 Global Instance A_neg_mul_one_is_l_sgn_absorb : IsLSgnAbsorb A neg mul one.
-Proof. intros x. apply A_neg_mul_one_l_sgn_absorb. Qed.
+Proof. intros x. apply A_neg_mul_one_l_sgn_absorb. Defined.
 
 Theorem A_neg_mul_one_r_sgn_absorb : forall x : A,
   x * - (1) = - x.
@@ -82,13 +82,13 @@ Proof with conversions.
   rewrite <- (l_distr x).
   rewrite (r_inv 1)...
   rewrite (r_absorb x).
-  reflexivity. Qed.
+  reflexivity. Defined.
 
 Global Instance A_neg_mul_one_is_r_sgn_absorb : IsRSgnAbsorb A neg mul one.
-Proof. intros x. apply A_neg_mul_one_r_sgn_absorb. Qed.
+Proof. intros x. apply A_neg_mul_one_r_sgn_absorb. Defined.
 
 Global Instance A_neg_mul_one_is_sgn_absorb : IsSgnAbsorb A neg mul one.
-Proof. split; typeclasses eauto. Qed.
+Proof. split; typeclasses eauto. Defined.
 
 Theorem A_neg_mul_l_bin_comm : forall x y : A,
   - (x * y) = x * - y.
@@ -97,10 +97,10 @@ Proof with conversions.
   rewrite <- (r_sgn_absorb (x * y)).
   rewrite <- (assoc x y (- (1)))...
   rewrite r_sgn_absorb.
-  reflexivity. Qed.
+  reflexivity. Defined.
 
 Global Instance A_neg_mul_is_l_bin_comm : IsLBinComm A neg mul.
-Proof. intros x y. apply A_neg_mul_l_bin_comm. Qed.
+Proof. intros x y. apply A_neg_mul_l_bin_comm. Defined.
 
 Theorem A_neg_mul_r_bin_comm : forall x y : A,
   - (x * y) = - x * y.
@@ -109,13 +109,13 @@ Proof with conversions.
   rewrite <- (l_sgn_absorb (x * y)).
   rewrite (assoc (- (1)) x y)...
   rewrite l_sgn_absorb.
-  reflexivity. Qed.
+  reflexivity. Defined.
 
 Global Instance A_neg_mul_is_r_bin_comm : IsRBinComm A neg mul.
-Proof. intros x y. apply A_neg_mul_r_bin_comm. Qed.
+Proof. intros x y. apply A_neg_mul_r_bin_comm. Defined.
 
 Global Instance A_neg_mul_is_bin_comm : IsBinComm A neg mul.
-Proof. split; typeclasses eauto. Qed.
+Proof. split; typeclasses eauto. Defined.
 
 Theorem A_neg_mul_bin_crs : forall x y : A,
   (- x) * y = x * (- y).
@@ -123,10 +123,10 @@ Proof with conversions.
   intros x y.
   rewrite <- (l_bin_comm x y).
   rewrite <- (r_bin_comm x y).
-  reflexivity. Qed.
+  reflexivity. Defined.
 
 Global Instance A_neg_mul_is_bin_crs : IsBinCrs A neg mul.
-Proof. intros x y. apply A_neg_mul_bin_crs. Qed.
+Proof. intros x y. apply A_neg_mul_bin_crs. Defined.
 
 Theorem A_neg_mul_bin_spt_cancel : forall x y : A,
   (- x) * (- y) = x * y.
@@ -135,13 +135,13 @@ Proof with conversions.
   rewrite <- (r_bin_comm x (- y)).
   rewrite <- (l_bin_comm x y).
   rewrite (invol (x * y)).
-  reflexivity. Qed.
+  reflexivity. Defined.
 
 Global Instance A_neg_mul_is_bin_spt_cancel : IsBinSptCancel A neg mul.
-Proof. intros x y. apply A_neg_mul_bin_spt_cancel. Qed.
+Proof. intros x y. apply A_neg_mul_bin_spt_cancel. Defined.
 
 Global Instance A_add_zero_mul_one_is_sring : IsSring A add zero mul one.
-Proof. split; typeclasses eauto. Qed.
+Proof. split; typeclasses eauto. Defined.
 
 (** TODO Clean up. *)
 
@@ -186,6 +186,6 @@ Proof. repeat split. all: try typeclasses eauto.
   - apply r_distr.
   - esplit. intros [] [] [] x y z. cbv. apply assoc.
   - esplit. intros [] x. cbv. apply l_unl.
-  - esplit. intros [] x. cbv. apply r_unl. Qed.
+  - esplit. intros [] x. cbv. apply r_unl. Defined.
 
 End Context.

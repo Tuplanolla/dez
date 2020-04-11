@@ -8,6 +8,8 @@ From Maniunfold.Is Require Export
 From Maniunfold.Offers Require Export
   TwoSorted.IsomorphismMappings.
 
+(** Here is some crap. *)
+
 Local Open Scope N_scope.
 
 Import ListNotations.
@@ -26,7 +28,7 @@ Proof.
       * inversion H.
     + apply NoDup_cons.
       * intros H. inversion H.
-      * apply NoDup_nil. Qed.
+      * apply NoDup_nil. Defined.
 
 Global Instance bool_has_card : HasCard bool := 2.
 
@@ -60,42 +62,44 @@ Proof.
         rewrite N.two_succ in F.
         rewrite <- N.succ_lt_mono in F.
         rewrite N.lt_1_r in F.
-        inversion F. Qed.
+        inversion F. Defined.
+
+Section Stuff.
 
 (** Let us set up a simple yet nontrivial graded ring,
     just to see what the dependent indexing gets us. *)
 
 Local Open Scope Z_scope.
 
-Global Instance bool_has_bin_op : HasBinOp bool := orb.
+Local Instance bool_has_bin_op : HasBinOp bool := orb.
 
-Global Instance bool_has_null_op : HasNullOp bool := false.
+Local Instance bool_has_null_op : HasNullOp bool := false.
 
-Global Instance Z_has_add : HasAdd Z := Z.add.
+Local Instance Z_has_add : HasAdd Z := Z.add.
 
-Global Instance Z_has_zero : HasZero Z := Z.zero.
+Local Instance Z_has_zero : HasZero Z := Z.zero.
 
-Global Instance Z_has_neg : HasNeg Z := Z.opp.
+Local Instance Z_has_neg : HasNeg Z := Z.opp.
 
-Global Instance unit_has_add : HasAdd unit := fun x y : unit => tt.
+Local Instance unit_has_add : HasAdd unit := fun x y : unit => tt.
 
-Global Instance unit_has_zero : HasZero unit := tt.
+Local Instance unit_has_zero : HasZero unit := tt.
 
-Global Instance unit_has_neg : HasNeg unit := fun x : unit => tt.
+Local Instance unit_has_neg : HasNeg unit := fun x : unit => tt.
 
-Global Instance unit_Z_has_add (i : bool) :
+Local Instance unit_Z_has_add (i : bool) :
   HasAdd (if i then unit else Z).
 Proof. hnf. intros x y. destruct i. all: apply (add x y). Defined.
 
-Global Instance unit_Z_has_zero (i : bool) :
+Local Instance unit_Z_has_zero (i : bool) :
   HasZero (if i then unit else Z).
 Proof. hnf. destruct i. all: apply zero. Defined.
 
-Global Instance unit_Z_has_neg (i : bool) :
+Local Instance unit_Z_has_neg (i : bool) :
   HasNeg (if i then unit else Z).
 Proof. hnf. intros x. destruct i. all: apply (neg x). Defined.
 
-Global Instance this_has_grd_mul :
+Local Instance this_has_grd_mul :
   HasGrdMul (fun x : bool => if x then unit else Z).
 Proof.
   hnf. intros i j x y. destruct i, j. all: cbv.
@@ -104,25 +108,25 @@ Proof.
   - apply y.
   - apply (x * y). Defined.
 
-Global Instance this_has_grd_one :
+Local Instance this_has_grd_one :
   HasGrdOne (fun x : bool => if x then unit else Z).
 Proof. hnf. apply 1. Defined.
 
-Global Instance bool_bin_op_is_assoc : IsAssoc bool bin_op.
+Local Instance bool_bin_op_is_assoc : IsAssoc bool bin_op.
 Proof.
   intros x y z. all: cbn; repeat match goal with
   | x : bool |- _ => destruct x
   | x : unit |- _ => destruct x
   end; try reflexivity. Defined.
 
-Global Instance bool_bin_op_is_l_unl : IsLUnl bool bin_op null_op.
+Local Instance bool_bin_op_is_l_unl : IsLUnl bool bin_op null_op.
 Proof.
   intros x. all: cbn; repeat match goal with
   | x : bool |- _ => destruct x
   | x : unit |- _ => destruct x
   end; try reflexivity. Defined.
 
-Global Instance bool_bin_op_is_r_unl : IsRUnl bool bin_op null_op.
+Local Instance bool_bin_op_is_r_unl : IsRUnl bool bin_op null_op.
 Proof.
   intros x. all: cbn; repeat match goal with
   | x : bool |- _ => destruct x
@@ -138,7 +142,7 @@ Ltac smash := repeat match goal with
   | x : unit |- _ => destruct x
   end; try reflexivity.
 
-Global Instance Z_bool_is_grd_ring :
+Local Instance Z_bool_is_grd_ring :
   IsGrdRing (A := bool) (fun x : bool => if x then unit else Z)
   unit_Z_has_add unit_Z_has_zero unit_Z_has_neg grd_mul grd_one.
 Proof.
@@ -157,3 +161,5 @@ Proof.
     intros i x. all: cbn -[Z.mul]; smash. apply Z.mul_1_l.
   - esplit.
     intros i x. all: cbn -[Z.mul]; smash. apply Z.mul_1_r. Abort.
+
+End Stuff.

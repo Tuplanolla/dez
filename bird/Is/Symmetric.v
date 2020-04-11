@@ -14,6 +14,6 @@ Section Context.
 Context {A : Type} `{is_sym : IsSym A}.
 
 Global Instance bin_rel_symmetric : Symmetric bin_rel | 0.
-Proof. intros x y. apply sym. Qed.
+Proof. intros x y. apply sym. Defined.
 
 End Context.

@@ -31,10 +31,10 @@ Proof.
   rewrite (assoc (- z) z y).
   rewrite (l_inv z).
   rewrite (l_unl y).
-  reflexivity. Qed.
+  reflexivity. Defined.
 
 Global Instance A_bin_op_is_l_cancel : IsLCancel A bin_op.
-Proof. intros x y z. apply A_bin_op_l_cancel. Qed.
+Proof. intros x y z. apply A_bin_op_l_cancel. Defined.
 
 Theorem A_bin_op_r_cancel : forall x y z : A,
   x + z = y + z -> x = y.
@@ -47,13 +47,13 @@ Proof.
   rewrite <- (assoc y z (- z)).
   rewrite (r_inv z).
   rewrite (r_unl y).
-  reflexivity. Qed.
+  reflexivity. Defined.
 
 Global Instance A_bin_op_is_r_cancel : IsRCancel A bin_op.
-Proof. intros x y z. apply A_bin_op_r_cancel. Qed.
+Proof. intros x y z. apply A_bin_op_r_cancel. Defined.
 
 Global Instance A_bin_op_is_cancel : IsCancel A bin_op.
-Proof. split; typeclasses eauto. Qed.
+Proof. split; typeclasses eauto. Defined.
 
 Theorem A_bin_op_un_op_un_antidistr : forall x y : A,
   - (x + y) = - y + - x.
@@ -66,10 +66,10 @@ Proof.
   rewrite (r_inv y).
   rewrite (r_unl x).
   rewrite (r_inv x).
-  reflexivity. Qed.
+  reflexivity. Defined.
 
 Global Instance A_bin_op_un_op_is_un_antidistr : IsUnAntidistr A bin_op un_op.
-Proof. intros x y. apply A_bin_op_un_op_un_antidistr. Qed.
+Proof. intros x y. apply A_bin_op_un_op_un_antidistr. Defined.
 
 Theorem A_un_op_inj : forall x y : A,
   - x = - y -> x = y.
@@ -81,10 +81,10 @@ Proof.
   rewrite <- (assoc x (- y) y).
   rewrite (l_inv y).
   rewrite (r_unl x).
-  reflexivity. Qed.
+  reflexivity. Defined.
 
 Global Instance A_un_op_is_inj : IsInj A un_op.
-Proof. intros x y. apply A_un_op_inj. Qed.
+Proof. intros x y. apply A_un_op_inj. Defined.
 
 Theorem A_un_op_invol : forall x : A,
   - - x = x.
@@ -95,18 +95,18 @@ Proof.
   rewrite (assoc (- - x) (- x) x).
   rewrite (l_inv (- x)).
   rewrite (l_unl x).
-  reflexivity. Qed.
+  reflexivity. Defined.
 
 Global Instance A_un_op_is_invol : IsInvol A un_op.
-Proof. intros x. apply A_un_op_invol. Qed.
+Proof. intros x. apply A_un_op_invol. Defined.
 
 Theorem A_null_op_un_op_un_absorb : - 0 = 0.
 Proof.
   rewrite <- (r_unl (- 0)).
   rewrite (l_inv 0).
-  reflexivity. Qed.
+  reflexivity. Defined.
 
 Global Instance A_null_op_un_op_is_un_absorb : IsUnAbsorb A null_op un_op.
-Proof. apply A_null_op_un_op_un_absorb. Qed.
+Proof. apply A_null_op_un_op_un_absorb. Defined.
 
 End Context.

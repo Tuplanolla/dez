@@ -19,6 +19,6 @@ Local Instance B_A_iso_is_iso : IsIso B A iso.
 Proof.
   split.
   - intros x. apply (sect_retr x).
-  - intros x. apply (retr_sect x). Qed.
+  - intros x. apply (retr_sect x). Defined.
 
 End Context.
