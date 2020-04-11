@@ -4,7 +4,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   OneSorted.ArithmeticNotations OneSorted.Graded.ArithmeticNotations.
 
-Class IsGrdLDistr {A : Type} {P : A -> Type}
+Class IsGrdLDistr {A : Type} (P : A -> Type)
   {A_has_bin_op : HasBinOp A}
   (P_has_add : forall i : A, HasAdd (P i))
   (P_has_grd_mul : HasGrdMul P) : Prop :=

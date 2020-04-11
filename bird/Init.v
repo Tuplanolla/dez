@@ -97,27 +97,27 @@ Tactic Notation "typeclasses"
   xy4 || xy5 ||
   xy6 || xy7 || fail "Failed to specialize".
 
-Tactic Notation "spec"
+Tactic Notation "convert"
   uconstr(x0) "into" uconstr(y0) :=
   change x0 with y0 in *.
 
-Tactic Notation "spec"
+Tactic Notation "convert"
   uconstr(x0) "into" uconstr(y0) "and" uconstr(x1) "into" uconstr(y1) :=
   change x0 with y0 in *; change x1 with y1 in *.
 
-Tactic Notation "spec"
+Tactic Notation "convert"
   uconstr(x0) "into" uconstr(y0) "and" uconstr(x1) "into" uconstr(y1) "and"
   uconstr(x2) "into" uconstr(y2) :=
   change x0 with y0 in *; change x1 with y1 in *;
   change x2 with y2 in *.
 
-Tactic Notation "spec"
+Tactic Notation "convert"
   uconstr(x0) "into" uconstr(y0) "and" uconstr(x1) "into" uconstr(y1) "and"
   uconstr(x2) "into" uconstr(y2) "and" uconstr(x3) "into" uconstr(y3) :=
   change x0 with y0 in *; change x1 with y1 in *;
   change x2 with y2 in *; change x3 with y3 in *.
 
-Tactic Notation "spec"
+Tactic Notation "convert"
   uconstr(x0) "into" uconstr(y0) "and" uconstr(x1) "into" uconstr(y1) "and"
   uconstr(x2) "into" uconstr(y2) "and" uconstr(x3) "into" uconstr(y3) "and"
   uconstr(x4) "into" uconstr(y4) :=
@@ -125,7 +125,7 @@ Tactic Notation "spec"
   change x2 with y2 in *; change x3 with y3 in *;
   change x4 with y4 in *.
 
-Tactic Notation "spec"
+Tactic Notation "convert"
   uconstr(x0) "into" uconstr(y0) "and" uconstr(x1) "into" uconstr(y1) "and"
   uconstr(x2) "into" uconstr(y2) "and" uconstr(x3) "into" uconstr(y3) "and"
   uconstr(x4) "into" uconstr(y4) "and" uconstr(x5) "into" uconstr(y5) :=
@@ -133,7 +133,7 @@ Tactic Notation "spec"
   change x2 with y2 in *; change x3 with y3 in *;
   change x4 with y4 in *; change x5 with y5 in *.
 
-Tactic Notation "spec"
+Tactic Notation "convert"
   uconstr(x0) "into" uconstr(y0) "and" uconstr(x1) "into" uconstr(y1) "and"
   uconstr(x2) "into" uconstr(y2) "and" uconstr(x3) "into" uconstr(y3) "and"
   uconstr(x4) "into" uconstr(y4) "and" uconstr(x5) "into" uconstr(y5) "and"
@@ -143,7 +143,7 @@ Tactic Notation "spec"
   change x4 with y4 in *; change x5 with y5 in *;
   change x6 with y6 in *.
 
-Tactic Notation "spec"
+Tactic Notation "convert"
   uconstr(x0) "into" uconstr(y0) "and" uconstr(x1) "into" uconstr(y1) "and"
   uconstr(x2) "into" uconstr(y2) "and" uconstr(x3) "into" uconstr(y3) "and"
   uconstr(x4) "into" uconstr(y4) "and" uconstr(x5) "into" uconstr(y5) "and"

@@ -24,10 +24,13 @@ Import ListNotations.
 Fixpoint Nseq (start len : N) : list N :=
   map N.of_nat (seq (N.to_nat start) (N.to_nat len)).
 
-From Coq Require Import
+(* From Coq Require Import
   FSets.FMapAVL Structures.OrderedTypeEx.
+Module Import Map := FMapAVL.Make N_as_OT. *)
 
-Module Import Map := FMapAVL.Make N_as_OT.
+From Coq Require Import
+  FSets.FMapList Structures.OrderedTypeEx.
+Module Import Map := FMapList.Make N_as_OT.
 
 From Coq Require Import
   FSets.FMapFacts.
@@ -109,7 +112,8 @@ Global Instance poly_has_l_act : HasLAct A poly := LAct.
 
 Global Instance poly_has_r_act : HasRAct A poly := RAct.
 
-Global Instance add_zero_neg_mul_one_is_ring : IsRing Add Zero Neg Mul One.
+Global Instance add_zero_neg_mul_one_is_ring :
+  IsRing poly Add Zero Neg Mul One.
 Proof. repeat split. all: cbv -[Map.t Add Zero Neg Mul One]. Abort.
 
 Global Instance add_zero_neg_mul_one_is_ring :
@@ -121,7 +125,7 @@ Global Instance N_has_bin_op : HasBinOp N := N.add.
 
 Global Instance N_has_null_op : HasNullOp N := N.zero.
 
-Global Instance poly_is_grd_ring : IsGrdRing (A := N) (P := fun n : N => A)
+Global Instance poly_is_grd_ring : IsGrdRing (A := N) (fun n : N => A)
   (fun n : N => Addition.add) (fun n : N => zero) (fun n : N => neg)
   (fun n p : N => mul) one.
 Proof. repeat split. Abort.
@@ -139,7 +143,7 @@ Local Open Scope Z_scope.
 
 (** Here are some tests. *)
 
-(* Section Tests.
+Section Tests.
 
 (* 0 *)
 Compute Map.empty Z.
@@ -174,4 +178,4 @@ Compute eval (Add p q) 3.
 Compute eval (Mul p q) 0.
 Compute eval (Mul p q) 3.
 
-End Tests. *)
+End Tests.

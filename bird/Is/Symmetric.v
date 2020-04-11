@@ -6,7 +6,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   BinaryRelationNotations.
 
-Class IsSym {A : Type} (A_has_bin_rel : HasBinRel A) : Prop :=
+Class IsSym (A : Type) (A_has_bin_rel : HasBinRel A) : Prop :=
   sym : forall x y : A, x ~~ y -> y ~~ x.
 
 Section Context.

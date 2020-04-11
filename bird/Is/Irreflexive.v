@@ -6,7 +6,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   BinaryRelationNotations.
 
-Class IsIrrefl {A : Type} (A_has_bin_rel : HasBinRel A) : Prop :=
+Class IsIrrefl (A : Type) (A_has_bin_rel : HasBinRel A) : Prop :=
   irrefl : forall x : A, ~ (x ~~ x).
 
 Section Context.

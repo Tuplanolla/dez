@@ -108,21 +108,21 @@ Global Instance this_has_grd_one :
   HasGrdOne (fun x : bool => if x then unit else Z).
 Proof. hnf. apply 1. Defined.
 
-Global Instance bool_bin_op_is_assoc : IsAssoc (A := bool) bin_op.
+Global Instance bool_bin_op_is_assoc : IsAssoc bool bin_op.
 Proof.
   intros x y z. all: cbn; repeat match goal with
   | x : bool |- _ => destruct x
   | x : unit |- _ => destruct x
   end; try reflexivity. Defined.
 
-Global Instance bool_bin_op_is_l_unl : IsLUnl (A := bool) bin_op null_op.
+Global Instance bool_bin_op_is_l_unl : IsLUnl bool bin_op null_op.
 Proof.
   intros x. all: cbn; repeat match goal with
   | x : bool |- _ => destruct x
   | x : unit |- _ => destruct x
   end; try reflexivity. Defined.
 
-Global Instance bool_bin_op_is_r_unl : IsRUnl (A := bool) bin_op null_op.
+Global Instance bool_bin_op_is_r_unl : IsRUnl bool bin_op null_op.
 Proof.
   intros x. all: cbn; repeat match goal with
   | x : bool |- _ => destruct x
@@ -139,7 +139,7 @@ Ltac smash := repeat match goal with
   end; try reflexivity.
 
 Global Instance Z_bool_is_grd_ring :
-  IsGrdRing (A := bool) (P := fun x : bool => if x then unit else Z)
+  IsGrdRing (A := bool) (fun x : bool => if x then unit else Z)
   unit_Z_has_add unit_Z_has_zero unit_Z_has_neg grd_mul grd_one.
 Proof.
   repeat split.

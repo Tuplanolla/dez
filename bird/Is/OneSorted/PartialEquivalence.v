@@ -1,14 +1,14 @@
 (* bad *)
 From Coq Require Import
   Setoid Morphisms.
-From Maniunfold.Has.OneSorted Require Export
-  EquivalenceRelation.
+From Maniunfold.Has Require Export
+  OneSorted.EquivalenceRelation.
 From Maniunfold.Is Require Export
   Symmetric Transitive.
 
-Class IsPartEq {A : Type} (A_has_eq_rel : HasEqRel A) : Prop := {
-  eq_rel_is_sym :> IsSym eq_rel;
-  eq_rel_is_trans :> IsTrans eq_rel;
+Class IsPartEq (A : Type) (A_has_eq_rel : HasEqRel A) : Prop := {
+  A_eq_rel_is_sym :> IsSym A eq_rel;
+  A_eq_rel_is_trans :> IsTrans A eq_rel;
 }.
 
 Section Context.

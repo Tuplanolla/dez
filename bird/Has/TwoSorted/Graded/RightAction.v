@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   OneSorted.AdditiveNotations.
 
-(** Graded action; left chirality.
+(** Graded action; right chirality.
     See [Has.OneSorted.LeftAction]. *)
 
 Class HasGrdRAct {A : Type} (P Q : A -> Type)

@@ -6,7 +6,7 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   OneSorted.ArithmeticNotations.
 
-Class IsLBinComm {A : Type}
+Class IsLBinComm (A : Type)
   (A_has_neg : HasNeg A) (A_has_mul : HasMul A) : Prop :=
   l_bin_comm : forall x y : A, - (x * y) = x * - y.
 

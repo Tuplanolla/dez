@@ -1,24 +1,23 @@
-(* bad *)
-From Maniunfold.Has.Categorical Require Export
-  Morphism Composition Identity Inverse.
-From Maniunfold.Is.Categorical Require Export
-  Category Invertible Involutive.
-From Maniunfold.ShouldHave.Categorical Require Import
-  Notations.
+From Maniunfold.Has Require Export
+  Categorical.Morphism Categorical.Composition Categorical.Identity
+  Categorical.Inverse.
+From Maniunfold.Is Require Export
+  Categorical.Category Categorical.Invertible Categorical.Involutive.
+From Maniunfold.ShouldHave Require Import
+  Categorical.Notations.
 
-Class IsGrpd {A : Type} {A_has_hom : HasHom A}
-  (has_comp : HasComp hom) (has_idt : HasIdt hom)
-  (has_inv : HasInv hom) : Prop := {
-  comp_idt_is_cat :> IsCat comp idt;
-  comp_idt_inv_is_cat_inv :> IsCatInv comp idt inv;
+Class IsGrpd (A : Type) {A_has_hom : HasHom A}
+  (A_hom_has_comp : HasComp A hom) (A_hom_has_idt : HasIdt A hom)
+  (A_hom_has_inv : HasInv A hom) : Prop := {
+  A_comp_idt_is_cat :> IsCat A comp idt;
+  A_comp_idt_inv_is_cat_inv :> IsCatInv A comp idt inv;
 }.
 
 Section Context.
 
 Context {A : Type} `{is_grpd : IsGrpd A}.
 
-Theorem inv_cat_invol : forall {x y : A} (f : x --> y),
-  (f ^-1) ^-1 = f.
+Global Instance inv_is_cat_invol : IsCatInvol A inv.
 Proof.
   intros x y f.
   rewrite <- (cat_r_unl ((f ^-1) ^-1)).
@@ -27,8 +26,5 @@ Proof.
   rewrite (cat_l_inv (f ^-1)).
   rewrite (cat_l_unl f).
   reflexivity. Qed.
-
-Global Instance inv_is_cat_invol : IsCatInvol inv.
-Proof. intros x y f. apply inv_cat_invol. Qed.
 
 End Context.

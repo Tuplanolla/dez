@@ -1,11 +1,9 @@
-(* bad *)
 From Maniunfold.Has Require Export
-  EquivalenceRelation BinaryOperation.
+  OneSorted.BinaryOperation.
 From Maniunfold.Is Require Export
-  LeftCancellative RightCancellative.
+  OneSorted.LeftCancellative OneSorted.RightCancellative.
 
-Class IsCancel {A : Type}
-  (A_has_bin_op : HasBinOp A) : Prop := {
-  bin_op_is_l_reg :> IsLCancel bin_op;
-  bin_op_is_r_reg :> IsRCancel bin_op;
+Class IsCancel (A : Type) (A_has_bin_op : HasBinOp A) : Prop := {
+  A_bin_op_is_l_cancel :> IsLCancel A bin_op;
+  A_bin_op_is_r_cancel :> IsRCancel A bin_op;
 }.

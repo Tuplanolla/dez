@@ -4,5 +4,5 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   OneSorted.AdditiveNotations.
 
-Class IsInj {A : Type} (A_has_un_op : HasUnOp A) : Prop :=
+Class IsInj (A : Type) (A_has_un_op : HasUnOp A) : Prop :=
   inj : forall x y : A, - x = - y -> x = y.

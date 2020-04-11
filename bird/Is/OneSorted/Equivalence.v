@@ -1,14 +1,14 @@
 (* bad *)
 From Coq Require Import
   Setoid Morphisms.
-From Maniunfold.Has.OneSorted Require Export
-  EquivalenceRelation.
+From Maniunfold.Has Require Export
+  OneSorted.EquivalenceRelation.
 From Maniunfold.Is Require Export
   PartialEquivalence Reflexive.
 
-Class IsEq {A : Type} (A_has_eq_rel : HasEqRel A) : Prop := {
-  eq_rel_is_part_eq :> IsPartEq eq_rel;
-  eq_rel_is_refl :> IsRefl eq_rel;
+Class IsEq (A : Type) (A_has_eq_rel : HasEqRel A) : Prop := {
+  A_eq_rel_is_part_eq :> IsPartEq A eq_rel;
+  A_eq_rel_is_refl :> IsRefl A eq_rel;
 }.
 
 Section Context.

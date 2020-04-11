@@ -64,10 +64,10 @@ Local Instance bihomogen_has_iso {A B C D E : Type}
   (** These classes are not equivalent unless the actions are unital.
       Otherwise [IsBBihomogen] is weaker than [IsBihomogen]. *)
   {A_has_null_op : HasNullOp A} {B_has_null_op : HasNullOp B}
-  {A_C_null_op_l_act_is_two_l_unl : IsTwoLUnl A C null_op l_act}
-  {A_E_null_op_l_act_is_two_l_unl : IsTwoLUnl A E null_op l_act}
-  {B_D_null_op_r_act_is_two_r_unl : IsTwoRUnl B D null_op r_act}
-  {B_E_null_op_r_act_is_two_r_unl : IsTwoRUnl B E null_op r_act} :
+  {A_C_null_op_l_act_is_two_l_unl : IsTwoLUnl A C l_act null_op}
+  {A_E_null_op_l_act_is_two_l_unl : IsTwoLUnl A E l_act null_op}
+  {B_D_null_op_r_act_is_two_r_unl : IsTwoRUnl B D r_act null_op}
+  {B_E_null_op_r_act_is_two_r_unl : IsTwoRUnl B E r_act null_op} :
   HasIso (IsBihomogen A B C D E l_act r_act l_act r_act bin_fn)
   (IsBBihomogen A B C D E l_act r_act l_act r_act bin_fn).
 Proof.
@@ -96,11 +96,12 @@ Local Instance bihomogen_is_iso {A B C D E : Type}
   {A_E_has_l_act : HasLAct A E} {B_E_has_r_act : HasRAct B E}
   {C_D_E_has_bin_fn : HasBinFn C D E}
   {A_has_null_op : HasNullOp A} {B_has_null_op : HasNullOp B}
-  {A_C_null_op_l_act_is_two_l_unl : IsTwoLUnl A C null_op l_act}
-  {A_E_null_op_l_act_is_two_l_unl : IsTwoLUnl A E null_op l_act}
-  {B_D_null_op_r_act_is_two_r_unl : IsTwoRUnl B D null_op r_act}
-  {B_E_null_op_r_act_is_two_r_unl : IsTwoRUnl B E null_op r_act} :
-  IsIso _ _ bihomogen_has_iso.
+  {A_C_null_op_l_act_is_two_l_unl : IsTwoLUnl A C l_act null_op}
+  {A_E_null_op_l_act_is_two_l_unl : IsTwoLUnl A E l_act null_op}
+  {B_D_null_op_r_act_is_two_r_unl : IsTwoRUnl B D r_act null_op}
+  {B_E_null_op_r_act_is_two_r_unl : IsTwoRUnl B E r_act null_op} :
+  IsIso (IsBihomogen A B C D E l_act r_act l_act r_act bin_fn)
+  (IsBBihomogen A B C D E l_act r_act l_act r_act bin_fn) bihomogen_has_iso.
 Proof.
   split.
   - intros x. apply proof_irrelevance.

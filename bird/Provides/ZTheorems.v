@@ -2,27 +2,127 @@
 From Coq Require Import
   ZArith.ZArith.
 From Maniunfold.Is Require Export
+  OneSorted.Ring
   OneSorted.Equivalence
-  OneSorted.Magma OneSorted.Semigroup OneSorted.Monoid OneSorted.Group
-  OneSorted.AbelianGroup OneSorted.Ring TwoSorted.Isomorphism.
-From Maniunfold.ShouldHave Require Import
-  OneSorted.AdditiveNotations.
+  TwoSorted.Isomorphism.
+
+Module Additive.
+
+Global Instance Z_add_has_bin_op : HasBinOp Z := Z.add.
+
+Global Instance Z_add_is_mag : IsMag Z bin_op.
+Proof. Qed.
+
+Global Instance Z_add_is_assoc : IsAssoc Z bin_op.
+Proof. intros x y z. apply Z.add_assoc. Qed.
+
+Global Instance Z_add_is_sgrp : IsSgrp Z bin_op.
+Proof. split; typeclasses eauto. Qed.
+
+Global Instance Z_has_null_op : HasNullOp Z := Z.zero.
+
+Global Instance Z_add_zero_is_l_unl : IsLUnl Z bin_op null_op.
+Proof. intros x. apply Z.add_0_l. Qed.
+
+Global Instance Z_add_zero_is_r_unl : IsRUnl Z bin_op null_op.
+Proof. intros x. apply Z.add_0_r. Qed.
+
+Global Instance Z_add_zero_is_unl : IsUnl Z bin_op null_op.
+Proof. split; typeclasses eauto. Qed.
+
+Global Instance Z_add_zero_is_mon : IsMon Z bin_op null_op.
+Proof. split; typeclasses eauto. Qed.
+
+Global Instance Z_has_un_op : HasUnOp Z := Z.opp.
+
+Global Instance Z_add_zero_opp_is_l_inv : IsLInv Z bin_op null_op un_op.
+Proof. intros x. apply Z.add_opp_diag_l. Qed.
+
+Global Instance Z_add_zero_opp_is_r_inv : IsRInv Z bin_op null_op un_op.
+Proof. intros x. apply Z.add_opp_diag_r. Qed.
+
+Global Instance Z_add_zero_opp_is_inv : IsInv Z bin_op null_op un_op.
+Proof. split; typeclasses eauto. Qed.
+
+Global Instance Z_add_zero_opp_is_grp : IsGrp Z bin_op null_op un_op.
+Proof. split; typeclasses eauto. Qed.
+
+Global Instance Z_add_is_comm : IsComm Z bin_op.
+Proof. intros x y. apply Z.add_comm. Qed.
+
+Global Instance Z_add_zero_opp_is_ab_grp : IsAbGrp Z bin_op null_op un_op.
+Proof. split; typeclasses eauto. Qed.
+
+End Additive.
+
+Module Multiplicative.
+
+Global Instance Z_mul_has_bin_op : HasBinOp Z := Z.mul.
+
+Global Instance Z_mul_is_mag : IsMag Z bin_op.
+Proof. Qed.
+
+Global Instance Z_mul_is_assoc : IsAssoc Z bin_op.
+Proof. intros x y z. apply Z.mul_assoc. Qed.
+
+Global Instance Z_mul_is_sgrp : IsSgrp Z bin_op.
+Proof. split; typeclasses eauto. Qed.
+
+Global Instance Z_has_null_op : HasNullOp Z := Z.one.
+
+Global Instance Z_mul_one_is_l_unl : IsLUnl Z bin_op null_op.
+Proof. intros x. apply Z.mul_1_l. Qed.
+
+Global Instance Z_mul_one_is_r_unl : IsRUnl Z bin_op null_op.
+Proof. intros x. apply Z.mul_1_r. Qed.
+
+Global Instance Z_mul_one_is_unl : IsUnl Z bin_op null_op.
+Proof. split; typeclasses eauto. Qed.
+
+Global Instance Z_mul_one_is_mon : IsMon Z bin_op null_op.
+Proof. split; typeclasses eauto. Qed.
+
+End Multiplicative.
+
+Global Instance Z_has_add : HasAdd Z := Z.add.
+
+Global Instance Z_has_zero : HasZero Z := Z.zero.
+
+Global Instance Z_has_neg : HasNeg Z := Z.opp.
+
+Global Instance Z_has_mul : HasMul Z := Z.mul.
+
+Global Instance Z_has_one : HasOne Z := Z.one.
+
+Global Instance Z_add_mul_is_l_distr : IsLDistr Z add mul.
+Proof. intros x y z. apply Z.mul_add_distr_l. Qed.
+
+Global Instance Z_add_mul_is_r_distr : IsRDistr Z add mul.
+Proof. intros x y z. apply Z.mul_add_distr_r. Qed.
+
+Global Instance Z_add_mul_is_distr : IsDistr Z add mul.
+Proof. split; try typeclasses eauto. Qed.
+
+Global Instance Z_add_zero_opp_mul_one_is_ring : IsRing Z add zero neg mul one.
+Proof. split; try typeclasses eauto. Qed.
+
+(** TODO Organize the rest. *)
 
 Global Instance Z_has_eq_rel : HasEqRel Z := Z.eq.
 
-Global Instance Z_eq_is_refl : IsRefl Z.eq.
+Global Instance Z_eq_is_refl : IsRefl Z eq.
 Proof. intros x. reflexivity. Qed.
 
-Global Instance Z_eq_is_sym : IsSym Z.eq.
+Global Instance Z_eq_is_sym : IsSym Z eq.
 Proof. intros x y p. symmetry; auto. Qed.
 
-Global Instance Z_eq_is_trans : IsTrans Z.eq.
+Global Instance Z_eq_is_trans : IsTrans Z eq.
 Proof. intros x y z p q. transitivity y; auto. Qed.
 
-Global Instance Z_eq_is_part_eq : IsPartEq Z.eq.
+Global Instance Z_eq_is_part_eq : IsPartEq Z eq.
 Proof. split; typeclasses eauto. Qed.
 
-Global Instance Z_eq_is_eq : IsEq Z.eq.
+Global Instance Z_eq_is_eq : IsEq Z eq.
 Proof. split; typeclasses eauto. Qed.
 
 (** This is the sign--parity isomorphism. *)
@@ -62,104 +162,3 @@ Proof.
       * cbn. rewrite (Pos.pred_double_succ q). reflexivity.
       * reflexivity.
       * reflexivity. Qed.
-
-Module Additive.
-
-Global Instance Z_add_has_bin_op : HasBinOp Z := Z.add.
-
-Global Instance Z_add_is_mag : IsMag Z.add.
-Proof. Qed.
-
-Global Instance Z_add_is_assoc : IsAssoc Z.add.
-Proof. intros x y z. apply Z.add_assoc. Qed.
-
-Global Instance Z_add_is_sgrp : IsSgrp Z.add.
-Proof. split; typeclasses eauto. Qed.
-
-Global Instance Z_has_null_op : HasNullOp Z := Z.zero.
-
-Global Instance Z_add_zero_is_l_unl : IsLUnl Z.add Z.zero.
-Proof. intros x. apply Z.add_0_l. Qed.
-
-Global Instance Z_add_zero_is_r_unl : IsRUnl Z.add Z.zero.
-Proof. intros x. apply Z.add_0_r. Qed.
-
-Global Instance Z_add_zero_is_unl : IsUnl Z.add Z.zero.
-Proof. split; typeclasses eauto. Qed.
-
-Global Instance Z_add_zero_is_mon : IsMon Z.add Z.zero.
-Proof. split; typeclasses eauto. Qed.
-
-Global Instance Z_has_un_op : HasUnOp Z := Z.opp.
-
-Global Instance Z_add_zero_opp_is_l_inv : IsLInv Z.add Z.zero Z.opp.
-Proof. intros x. apply Z.add_opp_diag_l. Qed.
-
-Global Instance Z_add_zero_opp_is_r_inv : IsRInv Z.add Z.zero Z.opp.
-Proof. intros x. apply Z.add_opp_diag_r. Qed.
-
-Global Instance Z_add_zero_opp_is_inv : IsInv Z.add Z.zero Z.opp.
-Proof. split; typeclasses eauto. Qed.
-
-Global Instance Z_add_zero_opp_is_grp : IsGrp Z.add Z.zero Z.opp.
-Proof. split; typeclasses eauto. Qed.
-
-Global Instance Z_add_is_comm : IsComm Z.add.
-Proof. intros x y. apply Z.add_comm. Qed.
-
-Global Instance Z_add_zero_opp_is_ab_grp : IsAbGrp Z.add Z.zero Z.opp.
-Proof. split; typeclasses eauto. Qed.
-
-End Additive.
-
-Module Multiplicative.
-
-Global Instance Z_mul_has_bin_op : HasBinOp Z := Z.mul.
-
-Global Instance Z_mul_is_mag : IsMag Z.mul.
-Proof. Qed.
-
-Global Instance Z_mul_is_assoc : IsAssoc Z.mul.
-Proof. intros x y z. apply Z.mul_assoc. Qed.
-
-Global Instance Z_mul_is_sgrp : IsSgrp Z.mul.
-Proof. split; typeclasses eauto. Qed.
-
-Global Instance Z_has_null_op : HasNullOp Z := Z.one.
-
-Global Instance Z_mul_one_is_l_unl : IsLUnl Z.mul Z.one.
-Proof. intros x. apply Z.mul_1_l. Qed.
-
-Global Instance Z_mul_one_is_r_unl : IsRUnl Z.mul Z.one.
-Proof. intros x. apply Z.mul_1_r. Qed.
-
-Global Instance Z_mul_one_is_unl : IsUnl Z.mul Z.one.
-Proof. split; typeclasses eauto. Qed.
-
-Global Instance Z_mul_one_is_mon : IsMon Z.mul Z.one.
-Proof. split; typeclasses eauto. Qed.
-
-End Multiplicative.
-
-Global Instance Z_has_add : HasAdd Z := Z.add.
-
-Global Instance Z_has_zero : HasZero Z := Z.zero.
-
-Global Instance Z_has_neg : HasNeg Z := Z.opp.
-
-Global Instance Z_has_mul : HasMul Z := Z.mul.
-
-Global Instance Z_has_one : HasOne Z := Z.one.
-
-Global Instance Z_add_mul_is_l_distr : IsLDistr Z.add Z.mul.
-Proof. intros x y z. apply Z.mul_add_distr_l. Qed.
-
-Global Instance Z_add_mul_is_r_distr : IsRDistr Z.add Z.mul.
-Proof. intros x y z. apply Z.mul_add_distr_r. Qed.
-
-Global Instance Z_add_mul_is_distr : IsDistr Z.add Z.mul.
-Proof. split; try typeclasses eauto. Qed.
-
-Global Instance Z_add_zero_opp_mul_one_is_ring :
-  IsRing Z.add Z.zero Z.opp Z.mul Z.one.
-Proof. split; try typeclasses eauto. Qed.

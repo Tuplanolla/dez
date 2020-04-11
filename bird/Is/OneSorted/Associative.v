@@ -1,4 +1,3 @@
-(* bad *)
 From Maniunfold.Has Require Export
   OneSorted.BinaryOperation.
 From Maniunfold.Is Require Export
@@ -6,7 +5,9 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   OneSorted.AdditiveNotations.
 
-Class IsAssoc {A : Type} (A_has_bin_op : HasBinOp A) : Prop :=
+(** Associative binary operation. *)
+
+Class IsAssoc (A : Type) (A_has_bin_op : HasBinOp A) : Prop :=
   assoc : forall x y z : A, x + (y + z) = (x + y) + z.
 
 Section Context.
