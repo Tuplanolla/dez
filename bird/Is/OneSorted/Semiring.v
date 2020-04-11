@@ -23,9 +23,9 @@ Section Context.
 
 Context {A : Type} `{is_sring : IsSring A}.
 
-Ltac specializations := typeclasses specialize
-  bin_op into add and null_op into zero or
-  bin_op into mul and null_op into one.
+Ltac specializations := typeclasses
+  specialize (bin_op into add and null_op into zero) or
+  specialize (bin_op into mul and null_op into one).
 
 Goal 0 = 1 -> forall x y : A, x = y.
 Proof with specializations.

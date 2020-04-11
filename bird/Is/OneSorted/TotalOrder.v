@@ -18,8 +18,8 @@ Section Context.
 
 Context {A : Type} `{is_tot_ord : IsTotOrd A}.
 
-Ltac specializations := typeclasses specialize
-  bin_rel into ord_rel.
+Ltac specializations := typeclasses
+  specialize (bin_rel into ord_rel).
 
 Theorem ord_rel_refl : forall x : A,
   x <= x.

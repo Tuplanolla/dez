@@ -36,555 +36,119 @@ Typeclasses Transparent curry uncurry.
 
 Export EqNotations.
 
-(** We define the following to conveniently specialize into subclasses. *)
+(** We define the following tactic notations
+    to conveniently specialize superclasses into subclasses.
+    There are more principled ways to do this,
+    but they all require plugins or other more advanced mechanisms. *)
 
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0) "into" uconstr(y0) :=
+Tactic Notation "typeclasses"
+  tactic(xy0) :=
+  xy0 || fail "Failed to specialize".
+
+Tactic Notation "typeclasses"
+  tactic(xy0) "or" tactic(xy1) :=
+  xy0 || xy1 || fail "Failed to specialize".
+
+Tactic Notation "typeclasses"
+  tactic(xy0) "or" tactic(xy1) "or"
+  tactic(xy2) :=
+  xy0 || xy1 ||
+  xy2 || fail "Failed to specialize".
+
+Tactic Notation "typeclasses"
+  tactic(xy0) "or" tactic(xy1) "or"
+  tactic(xy2) "or" tactic(xy3) :=
+  xy0 || xy1 ||
+  xy2 || xy3 || fail "Failed to specialize".
+
+Tactic Notation "typeclasses"
+  tactic(xy0) "or" tactic(xy1) "or"
+  tactic(xy2) "or" tactic(xy3) "or"
+  tactic(xy4) :=
+  xy0 || xy1 ||
+  xy2 || xy3 ||
+  xy4 || fail "Failed to specialize".
+
+Tactic Notation "typeclasses"
+  tactic(xy0) "or" tactic(xy1) "or"
+  tactic(xy2) "or" tactic(xy3) "or"
+  tactic(xy4) "or" tactic(xy5) :=
+  xy0 || xy1 ||
+  xy2 || xy3 ||
+  xy4 || xy5 || fail "Failed to specialize".
+
+Tactic Notation "typeclasses"
+  tactic(xy0) "or" tactic(xy1) "or"
+  tactic(xy2) "or" tactic(xy3) "or"
+  tactic(xy4) "or" tactic(xy5) "or"
+  tactic(xy6) :=
+  xy0 || xy1 ||
+  xy2 || xy3 ||
+  xy4 || xy5 ||
+  xy6 || fail "Failed to specialize".
+
+Tactic Notation "typeclasses"
+  tactic(xy0) "or" tactic(xy1) "or"
+  tactic(xy2) "or" tactic(xy3) "or"
+  tactic(xy4) "or" tactic(xy5) "or"
+  tactic(xy6) "or" tactic(xy7) :=
+  xy0 || xy1 ||
+  xy2 || xy3 ||
+  xy4 || xy5 ||
+  xy6 || xy7 || fail "Failed to specialize".
+
+Tactic Notation "specialize" "("
+  uconstr(x0) "into" uconstr(y0) ")" :=
   change x0 with y0 in *.
 
-(** TODO There ought to be a better way to define this tactic recursively. *)
+Tactic Notation "specialize" "("
+  uconstr(x0) "into" uconstr(y0) "and" uconstr(x1) "into" uconstr(y1) ")" :=
+  change x0 with y0 in *; change x1 with y1 in *.
 
-(** These were generated with the following Haskell program.
+Tactic Notation "specialize" "("
+  uconstr(x0) "into" uconstr(y0) "and" uconstr(x1) "into" uconstr(y1) "and"
+  uconstr(x2) "into" uconstr(y2) ")" :=
+  change x0 with y0 in *; change x1 with y1 in *;
+  change x2 with y2 in *.
 
-<<
-import Control.Monad (replicateM)
-import Data.List (intersperse)
+Tactic Notation "specialize" "("
+  uconstr(x0) "into" uconstr(y0) "and" uconstr(x1) "into" uconstr(y1) "and"
+  uconstr(x2) "into" uconstr(y2) "and" uconstr(x3) "into" uconstr(y3) ")" :=
+  change x0 with y0 in *; change x1 with y1 in *;
+  change x2 with y2 in *; change x3 with y3 in *.
 
-f d cs = "Tactic Notation \"typeclasses\" \"specialize\"" <> mconcat
-  (intersperse " \"or\"" [mconcat
-    (intersperse " \"and\"" ["\n  uconstr(x" <> show i <> "x" <> show j <>
-      ") \"into\" uconstr(y" <> show i <> "y" <> show j <> ")" |
-      j <- [0 .. pred (cs !! i)]]) | i <- [0 .. pred d]]) <> " :=" <> mconcat
-  (intersperse "||" [" (" <> mconcat
-    (intersperse ";" ["\n  change x" <> show i <> "x" <> show j <>
-      " with y" <> show i <> "y" <> show j <> " in *" |
-      j <- [0 .. pred (cs !! i)]]) <> ") " | i <- [0 .. pred d]]) <>
-  "||\n  fail \"Failed to specialize\".\n"
-k n = putStr (mconcat (intersperse "\n" [mconcat (intersperse "\n" [f d cs |
-    cs <- replicateM d [1 .. n]]) | d <- [1 .. n]]))
->> *)
+Tactic Notation "specialize" "("
+  uconstr(x0) "into" uconstr(y0) "and" uconstr(x1) "into" uconstr(y1) "and"
+  uconstr(x2) "into" uconstr(y2) "and" uconstr(x3) "into" uconstr(y3) "and"
+  uconstr(x4) "into" uconstr(y4) ")" :=
+  change x0 with y0 in *; change x1 with y1 in *;
+  change x2 with y2 in *; change x3 with y3 in *;
+  change x4 with y4 in *.
 
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) := (
-  change x0x0 with y0y0 in *) ||
-  fail "Failed to specialize".
+Tactic Notation "specialize" "("
+  uconstr(x0) "into" uconstr(y0) "and" uconstr(x1) "into" uconstr(y1) "and"
+  uconstr(x2) "into" uconstr(y2) "and" uconstr(x3) "into" uconstr(y3) "and"
+  uconstr(x4) "into" uconstr(y4) "and" uconstr(x5) "into" uconstr(y5) ")" :=
+  change x0 with y0 in *; change x1 with y1 in *;
+  change x2 with y2 in *; change x3 with y3 in *;
+  change x4 with y4 in *; change x5 with y5 in *.
 
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *) ||
-  fail "Failed to specialize".
+Tactic Notation "specialize" "("
+  uconstr(x0) "into" uconstr(y0) "and" uconstr(x1) "into" uconstr(y1) "and"
+  uconstr(x2) "into" uconstr(y2) "and" uconstr(x3) "into" uconstr(y3) "and"
+  uconstr(x4) "into" uconstr(y4) "and" uconstr(x5) "into" uconstr(y5) "and"
+  uconstr(x6) "into" uconstr(y6) ")" :=
+  change x0 with y0 in *; change x1 with y1 in *;
+  change x2 with y2 in *; change x3 with y3 in *;
+  change x4 with y4 in *; change x5 with y5 in *;
+  change x6 with y6 in *.
 
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "and"
-  uconstr(x0x2) "into" uconstr(y0y2) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *;
-  change x0x2 with y0y2 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) := (
-  change x0x0 with y0y0 in *) || (
-  change x1x0 with y1y0 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) := (
-  change x0x0 with y0y0 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) "and"
-  uconstr(x1x2) "into" uconstr(y1y2) := (
-  change x0x0 with y0y0 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *;
-  change x1x2 with y1y2 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *) || (
-  change x1x0 with y1y0 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) "and"
-  uconstr(x1x2) "into" uconstr(y1y2) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *;
-  change x1x2 with y1y2 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "and"
-  uconstr(x0x2) "into" uconstr(y0y2) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *;
-  change x0x2 with y0y2 in *) || (
-  change x1x0 with y1y0 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "and"
-  uconstr(x0x2) "into" uconstr(y0y2) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *;
-  change x0x2 with y0y2 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "and"
-  uconstr(x0x2) "into" uconstr(y0y2) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) "and"
-  uconstr(x1x2) "into" uconstr(y1y2) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *;
-  change x0x2 with y0y2 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *;
-  change x1x2 with y1y2 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) := (
-  change x0x0 with y0y0 in *) || (
-  change x1x0 with y1y0 in *) || (
-  change x2x0 with y2y0 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) "and"
-  uconstr(x2x1) "into" uconstr(y2y1) := (
-  change x0x0 with y0y0 in *) || (
-  change x1x0 with y1y0 in *) || (
-  change x2x0 with y2y0 in *;
-  change x2x1 with y2y1 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) "and"
-  uconstr(x2x1) "into" uconstr(y2y1) "and"
-  uconstr(x2x2) "into" uconstr(y2y2) := (
-  change x0x0 with y0y0 in *) || (
-  change x1x0 with y1y0 in *) || (
-  change x2x0 with y2y0 in *;
-  change x2x1 with y2y1 in *;
-  change x2x2 with y2y2 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) := (
-  change x0x0 with y0y0 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *) || (
-  change x2x0 with y2y0 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) "and"
-  uconstr(x2x1) "into" uconstr(y2y1) := (
-  change x0x0 with y0y0 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *) || (
-  change x2x0 with y2y0 in *;
-  change x2x1 with y2y1 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) "and"
-  uconstr(x2x1) "into" uconstr(y2y1) "and"
-  uconstr(x2x2) "into" uconstr(y2y2) := (
-  change x0x0 with y0y0 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *) || (
-  change x2x0 with y2y0 in *;
-  change x2x1 with y2y1 in *;
-  change x2x2 with y2y2 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) "and"
-  uconstr(x1x2) "into" uconstr(y1y2) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) := (
-  change x0x0 with y0y0 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *;
-  change x1x2 with y1y2 in *) || (
-  change x2x0 with y2y0 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) "and"
-  uconstr(x1x2) "into" uconstr(y1y2) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) "and"
-  uconstr(x2x1) "into" uconstr(y2y1) := (
-  change x0x0 with y0y0 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *;
-  change x1x2 with y1y2 in *) || (
-  change x2x0 with y2y0 in *;
-  change x2x1 with y2y1 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) "and"
-  uconstr(x1x2) "into" uconstr(y1y2) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) "and"
-  uconstr(x2x1) "into" uconstr(y2y1) "and"
-  uconstr(x2x2) "into" uconstr(y2y2) := (
-  change x0x0 with y0y0 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *;
-  change x1x2 with y1y2 in *) || (
-  change x2x0 with y2y0 in *;
-  change x2x1 with y2y1 in *;
-  change x2x2 with y2y2 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *) || (
-  change x1x0 with y1y0 in *) || (
-  change x2x0 with y2y0 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) "and"
-  uconstr(x2x1) "into" uconstr(y2y1) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *) || (
-  change x1x0 with y1y0 in *) || (
-  change x2x0 with y2y0 in *;
-  change x2x1 with y2y1 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) "and"
-  uconstr(x2x1) "into" uconstr(y2y1) "and"
-  uconstr(x2x2) "into" uconstr(y2y2) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *) || (
-  change x1x0 with y1y0 in *) || (
-  change x2x0 with y2y0 in *;
-  change x2x1 with y2y1 in *;
-  change x2x2 with y2y2 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *) || (
-  change x2x0 with y2y0 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) "and"
-  uconstr(x2x1) "into" uconstr(y2y1) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *) || (
-  change x2x0 with y2y0 in *;
-  change x2x1 with y2y1 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) "and"
-  uconstr(x2x1) "into" uconstr(y2y1) "and"
-  uconstr(x2x2) "into" uconstr(y2y2) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *) || (
-  change x2x0 with y2y0 in *;
-  change x2x1 with y2y1 in *;
-  change x2x2 with y2y2 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) "and"
-  uconstr(x1x2) "into" uconstr(y1y2) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *;
-  change x1x2 with y1y2 in *) || (
-  change x2x0 with y2y0 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) "and"
-  uconstr(x1x2) "into" uconstr(y1y2) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) "and"
-  uconstr(x2x1) "into" uconstr(y2y1) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *;
-  change x1x2 with y1y2 in *) || (
-  change x2x0 with y2y0 in *;
-  change x2x1 with y2y1 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) "and"
-  uconstr(x1x2) "into" uconstr(y1y2) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) "and"
-  uconstr(x2x1) "into" uconstr(y2y1) "and"
-  uconstr(x2x2) "into" uconstr(y2y2) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *;
-  change x1x2 with y1y2 in *) || (
-  change x2x0 with y2y0 in *;
-  change x2x1 with y2y1 in *;
-  change x2x2 with y2y2 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "and"
-  uconstr(x0x2) "into" uconstr(y0y2) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *;
-  change x0x2 with y0y2 in *) || (
-  change x1x0 with y1y0 in *) || (
-  change x2x0 with y2y0 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "and"
-  uconstr(x0x2) "into" uconstr(y0y2) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) "and"
-  uconstr(x2x1) "into" uconstr(y2y1) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *;
-  change x0x2 with y0y2 in *) || (
-  change x1x0 with y1y0 in *) || (
-  change x2x0 with y2y0 in *;
-  change x2x1 with y2y1 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "and"
-  uconstr(x0x2) "into" uconstr(y0y2) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) "and"
-  uconstr(x2x1) "into" uconstr(y2y1) "and"
-  uconstr(x2x2) "into" uconstr(y2y2) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *;
-  change x0x2 with y0y2 in *) || (
-  change x1x0 with y1y0 in *) || (
-  change x2x0 with y2y0 in *;
-  change x2x1 with y2y1 in *;
-  change x2x2 with y2y2 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "and"
-  uconstr(x0x2) "into" uconstr(y0y2) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *;
-  change x0x2 with y0y2 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *) || (
-  change x2x0 with y2y0 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "and"
-  uconstr(x0x2) "into" uconstr(y0y2) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) "and"
-  uconstr(x2x1) "into" uconstr(y2y1) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *;
-  change x0x2 with y0y2 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *) || (
-  change x2x0 with y2y0 in *;
-  change x2x1 with y2y1 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "and"
-  uconstr(x0x2) "into" uconstr(y0y2) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) "and"
-  uconstr(x2x1) "into" uconstr(y2y1) "and"
-  uconstr(x2x2) "into" uconstr(y2y2) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *;
-  change x0x2 with y0y2 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *) || (
-  change x2x0 with y2y0 in *;
-  change x2x1 with y2y1 in *;
-  change x2x2 with y2y2 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "and"
-  uconstr(x0x2) "into" uconstr(y0y2) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) "and"
-  uconstr(x1x2) "into" uconstr(y1y2) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *;
-  change x0x2 with y0y2 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *;
-  change x1x2 with y1y2 in *) || (
-  change x2x0 with y2y0 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "and"
-  uconstr(x0x2) "into" uconstr(y0y2) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) "and"
-  uconstr(x1x2) "into" uconstr(y1y2) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) "and"
-  uconstr(x2x1) "into" uconstr(y2y1) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *;
-  change x0x2 with y0y2 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *;
-  change x1x2 with y1y2 in *) || (
-  change x2x0 with y2y0 in *;
-  change x2x1 with y2y1 in *) ||
-  fail "Failed to specialize".
-
-Tactic Notation "typeclasses" "specialize"
-  uconstr(x0x0) "into" uconstr(y0y0) "and"
-  uconstr(x0x1) "into" uconstr(y0y1) "and"
-  uconstr(x0x2) "into" uconstr(y0y2) "or"
-  uconstr(x1x0) "into" uconstr(y1y0) "and"
-  uconstr(x1x1) "into" uconstr(y1y1) "and"
-  uconstr(x1x2) "into" uconstr(y1y2) "or"
-  uconstr(x2x0) "into" uconstr(y2y0) "and"
-  uconstr(x2x1) "into" uconstr(y2y1) "and"
-  uconstr(x2x2) "into" uconstr(y2y2) := (
-  change x0x0 with y0y0 in *;
-  change x0x1 with y0y1 in *;
-  change x0x2 with y0y2 in *) || (
-  change x1x0 with y1y0 in *;
-  change x1x1 with y1y1 in *;
-  change x1x2 with y1y2 in *) || (
-  change x2x0 with y2y0 in *;
-  change x2x1 with y2y1 in *;
-  change x2x2 with y2y2 in *) ||
-  fail "Failed to specialize".
+Tactic Notation "specialize" "("
+  uconstr(x0) "into" uconstr(y0) "and" uconstr(x1) "into" uconstr(y1) "and"
+  uconstr(x2) "into" uconstr(y2) "and" uconstr(x3) "into" uconstr(y3) "and"
+  uconstr(x4) "into" uconstr(y4) "and" uconstr(x5) "into" uconstr(y5) "and"
+  uconstr(x6) "into" uconstr(y6) "and" uconstr(x7) "into" uconstr(y7) ")" :=
+  change x0 with y0 in *; change x1 with y1 in *;
+  change x2 with y2 in *; change x3 with y3 in *;
+  change x4 with y4 in *; change x5 with y5 in *;
+  change x6 with y6 in *; change x7 with y7 in *.
