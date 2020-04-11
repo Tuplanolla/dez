@@ -24,13 +24,13 @@ Section Context.
 
 Context {A : Type} `{is_ring : IsRing A}.
 
-Ltac specializations := typeclasses
-  specialize (bin_op into add and null_op into zero and un_op into neg) or
-  specialize (bin_op into mul and null_op into one).
+Ltac specs := typeclasses
+  spec bin_op into add and null_op into zero and un_op into neg or
+  spec bin_op into mul and null_op into one.
 
 Theorem zero_mul_l_absorb : forall x : A,
   0 * x = 0.
-Proof with specializations.
+Proof with specs.
   intros x.
   apply (l_cancel (0 * x) 0 (1 * x))...
   rewrite (r_unl (1 * x)).
@@ -43,7 +43,7 @@ Proof. intros x. apply zero_mul_l_absorb. Qed.
 
 Theorem zero_mul_r_absorb : forall x : A,
   x * 0 = 0.
-Proof with specializations.
+Proof with specs.
   intros x.
   apply (l_cancel (x * 0) 0 (x * 1))...
   rewrite (r_unl (x * 1)).
@@ -59,7 +59,7 @@ Proof. split; typeclasses eauto. Qed.
 
 Theorem neg_mul_one_l_sgn_absorb : forall x : A,
   - (1) * x = - x.
-Proof with specializations.
+Proof with specs.
   intros x.
   apply (l_cancel (- (1) * x) (- x) x)...
   rewrite (r_inv x)...
@@ -74,7 +74,7 @@ Proof. intros x. apply neg_mul_one_l_sgn_absorb. Qed.
 
 Theorem neg_mul_one_r_sgn_absorb : forall x : A,
   x * - (1) = - x.
-Proof with specializations.
+Proof with specs.
   intros x.
   apply (l_cancel (x * - (1)) (- x) x)...
   rewrite (r_inv x)...
@@ -92,7 +92,7 @@ Proof. split; typeclasses eauto. Qed.
 
 Theorem neg_mul_l_bin_comm : forall x y : A,
   - (x * y) = x * - y.
-Proof with specializations.
+Proof with specs.
   intros x y.
   rewrite <- (r_sgn_absorb (x * y)).
   rewrite <- (assoc x y (- (1)))...
@@ -104,7 +104,7 @@ Proof. intros x y. apply neg_mul_l_bin_comm. Qed.
 
 Theorem neg_mul_r_bin_comm : forall x y : A,
   - (x * y) = - x * y.
-Proof with specializations.
+Proof with specs.
   intros x y.
   rewrite <- (l_sgn_absorb (x * y)).
   rewrite (assoc (- (1)) x y)...
@@ -119,7 +119,7 @@ Proof. split; typeclasses eauto. Qed.
 
 Theorem neg_mul_bin_crs : forall x y : A,
   (- x) * y = x * (- y).
-Proof with specializations.
+Proof with specs.
   intros x y.
   rewrite <- (l_bin_comm x y).
   rewrite <- (r_bin_comm x y).
@@ -130,7 +130,7 @@ Proof. intros x y. apply neg_mul_bin_crs. Qed.
 
 Theorem neg_mul_bin_spt_cancel : forall x y : A,
   (- x) * (- y) = x * y.
-Proof with specializations.
+Proof with specs.
   intros x y.
   rewrite <- (r_bin_comm x (- y)).
   rewrite <- (l_bin_comm x y).

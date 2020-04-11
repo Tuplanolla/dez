@@ -23,12 +23,12 @@ Section Context.
 
 Context {A : Type} `{is_sring : IsSring A}.
 
-Ltac specializations := typeclasses
-  specialize (bin_op into add and null_op into zero) or
-  specialize (bin_op into mul and null_op into one).
+Ltac specs := typeclasses
+  spec bin_op into add and null_op into zero or
+  spec bin_op into mul and null_op into one.
 
 Goal 0 = 1 -> forall x y : A, x = y.
-Proof with specializations.
+Proof with specs.
   intros H x y.
   rewrite <- (l_unl (A_has_null_op := 1) x)...
   rewrite <- (l_unl (A_has_null_op := 1) y)...

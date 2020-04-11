@@ -18,12 +18,12 @@ Section Context.
 
 Context {A : Type} `{is_tot_ord : IsTotOrd A}.
 
-Ltac specializations := typeclasses
-  specialize (bin_rel into ord_rel).
+Ltac specs := typeclasses
+  spec bin_rel into ord_rel.
 
 Theorem ord_rel_refl : forall x : A,
   x <= x.
-Proof with specializations.
+Proof with specs.
   intros x. destruct (connex x x) as [H | H]...
   - apply H.
   - apply H. Qed.
