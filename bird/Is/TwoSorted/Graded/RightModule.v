@@ -1,50 +1,15 @@
-(* bad *)
 From Maniunfold.Has Require Export
   OneSorted.BinaryOperation OneSorted.NullaryOperation
-  Graded.BinaryOperation Graded.NullaryOperation TwoSorted.Graded.LeftAction.
+  OneSorted.Addition OneSorted.Zero OneSorted.Negation
+  OneSorted.Graded.Multiplication OneSorted.Graded.One
+  TwoSorted.Graded.RightAction.
 From Maniunfold.Is Require Export
-  Graded.Ring AbelianGroup.
-From Maniunfold.ShouldHave Require Import
-  OneSorted.ArithmeticNotations OneSorted.AdditiveNotations
-  OneSorted.Graded.MultiplicativeNotations
-  TwoSorted.Graded.MultiplicativeNotations.
+  OneSorted.Graded.Ring OneSorted.AbelianGroup
+  TwoSorted.Graded.RightLeftDistributive TwoSorted.Graded.RightCompatible
+  TwoSorted.Graded.RightUnital TwoSorted.Graded.RightRightDistributive.
 
-(** TODO Check ungraded argument order to be consistent. *)
-
-Local Open Scope grd_r_act_scope.
-
-Class IsTwoGrdRLDistr {A : Type} (P Q : A -> Type)
-  {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}
-  (P_has_add : forall i : A, HasAdd (P i))
-  (Q_has_add : forall i : A, HasAdd (Q i))
-  (P_Q_has_grd_r_act : HasGrdRAct P Q) : Prop :=
-  grd_two_r_l_distr : forall {i j : A} (x : Q i) (a b : P j),
-    x * (a + b) = x * a + x * b.
-
-Class IsGrdRCompat {A : Type} (P Q : A -> Type)
-  {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}
-  (P_has_grd_mul : HasGrdMul P)
-  (P_Q_has_grd_r_act : HasGrdRAct P Q) : Prop := {
-  bin_op_is_assoc :> IsAssoc bin_op;
-  grd_r_compat : forall {i j k : A} (x : Q i) (a : P j) (b : P k),
-    rew assoc i j k in (x * (a * b)) = (x * a) * b;
-}.
-
-Class IsTwoGrdRUnl {A : Type} (P Q : A -> Type)
-  {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}
-  (P_has_grd_one : HasGrdOne P)
-  (P_Q_has_grd_r_act : HasGrdRAct P Q) : Prop := {
-  bin_op_null_op_is_r_unl :> IsRUnl bin_op null_op;
-  grd_two_r_unl : forall {i : A} (x : Q i),
-    rew r_unl i in (x * 1) = x;
-}.
-
-Class IsTwoGrdRRDistr {A : Type} (P Q : A -> Type)
-  {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}
-  (Q_has_add : forall i : A, HasAdd (Q i))
-  (P_Q_has_grd_r_act : HasGrdRAct P Q) : Prop :=
-  grd_two_r_r_distr : forall {i j : A} (x y : Q i) (a : P j),
-    (x + y) * a = x * a + y * a.
+(** Graded module over a noncommutative ring; right chirality.
+    See [Is.TwoSorted.Graded.LeftModule]. *)
 
 Class IsGrdRMod {A : Type} (P Q : A -> Type)
   {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}

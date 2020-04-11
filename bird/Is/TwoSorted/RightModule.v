@@ -1,11 +1,14 @@
-(* bad *)
 From Maniunfold.Has Require Export
-  OneSorted.Addition OneSorted.Zero OneSorted.Negation OneSorted.Multiplication
-  OneSorted.One TwoSorted.RightAction.
+  OneSorted.Addition OneSorted.Zero OneSorted.Negation
+  OneSorted.Multiplication OneSorted.One
+  TwoSorted.RightAction.
 From Maniunfold.Is Require Export
-  OneSorted.Ring OneSorted.AbelianGroup TwoSorted.RightLeftDistributive
-  TwoSorted.RightCompatible TwoSorted.RightUnital
-  TwoSorted.RightRightDistributive.
+  OneSorted.Ring OneSorted.AbelianGroup
+  TwoSorted.RightLeftDistributive TwoSorted.RightCompatible
+  TwoSorted.RightUnital TwoSorted.RightRightDistributive.
+
+(** Module over a noncommutative ring; right chirality.
+    See [Is.TwoSorted.LeftModule]. *)
 
 Class IsRMod (A B : Type)
   (A_has_add : HasAdd A) (A_has_zero : HasZero A) (A_has_neg : HasNeg A)

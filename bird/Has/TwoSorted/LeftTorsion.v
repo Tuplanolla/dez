@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   Torsion.
 
-(** Torsion, the unique element associated with an action; left chirality.
+(** Torsion, principal homogeneous space action; left chirality.
     Commonly found in torsors. *)
 
 Class HasLTor (A B : Type) : Type := l_tor : B -> B -> A.

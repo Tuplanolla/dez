@@ -5,7 +5,7 @@ From Maniunfold.Has Require Export
   OneSorted.Graded.Multiplication OneSorted.Graded.One
   ThreeSorted.Graded.BinaryFunction.
 From Maniunfold.Is Require Export
-  TwoSorted.LeftDistributive ThreeSorted.Bicompatible TwoSorted.LeftLinear
+  TwoSorted.LeftDistributive ThreeSorted.Bicompatible
   OneSorted.CommutativeRing TwoSorted.LeftModule TwoSorted.RightModule
   TwoSorted.Graded.LeftModule TwoSorted.Graded.RightModule
   ThreeSorted.Graded.Bimodule

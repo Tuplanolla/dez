@@ -4,7 +4,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   TwoSorted.MultiplicativeNotations.
 
-Local Open Scope l_act_scope.
+Local Open Scope l_mod_scope.
 
 Class IsLCompat (A B : Type)
   (A_has_bin_op : HasBinOp A) (A_B_has_l_act : HasLAct A B) : Prop :=

@@ -4,7 +4,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   OneSorted.AdditiveNotations TwoSorted.MultiplicativeNotations.
 
-Local Open Scope r_act_scope.
+Local Open Scope r_mod_scope.
 
 Class IsTwoRRDistr (A B : Type)
   (B_has_add : HasAdd B) (A_B_has_r_act : HasRAct A B) : Prop :=

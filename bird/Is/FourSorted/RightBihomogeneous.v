@@ -5,14 +5,14 @@ From Maniunfold.Has Require Export
   OneSorted.Multiplication OneSorted.One
   ThreeSorted.BinaryFunction.
 From Maniunfold.Is Require Export
-  TwoSorted.LeftDistributive ThreeSorted.Bicompatible TwoSorted.LeftLinear
+  TwoSorted.LeftDistributive ThreeSorted.Bicompatible
   OneSorted.CommutativeRing TwoSorted.LeftModule TwoSorted.RightModule
   ThreeSorted.Bimodule
   TwoSorted.Unital TwoSorted.Isomorphism.
 From Maniunfold.ShouldHave Require Import
   OneSorted.ArithmeticNotations TwoSorted.MultiplicativeNotations.
 
-Local Open Scope r_act_scope.
+Local Open Scope r_mod_scope.
 
 Class IsRBihomogen (A B C D : Type)
   (A_C_has_r_act : HasRAct A C) (A_D_has_r_act : HasRAct A D)

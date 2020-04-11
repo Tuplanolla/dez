@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   OneSorted.AdditiveNotations TwoSorted.MultiplicativeNotations.
 
-Local Open Scope l_act_scope.
+Local Open Scope l_mod_scope.
 
 Class IsTwoLBinComm (A B : Type)
   (B_has_un_op : HasUnOp B) (A_B_has_l_act : HasLAct A B) : Prop :=

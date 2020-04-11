@@ -1,14 +1,14 @@
-(* bad *)
 From Maniunfold.Has Require Export
   OneSorted.Addition OneSorted.Zero OneSorted.Negation
   OneSorted.Multiplication OneSorted.One
   TwoSorted.LeftAction.
 From Maniunfold.Is Require Export
-  OneSorted.Ring OneSorted.AbelianGroup TwoSorted.LeftRightDistributive
-  TwoSorted.LeftCompatible TwoSorted.LeftUnital TwoSorted.LeftLeftDistributive.
+  OneSorted.Ring OneSorted.AbelianGroup
+  TwoSorted.LeftRightDistributive TwoSorted.LeftCompatible
+  TwoSorted.LeftUnital TwoSorted.LeftLeftDistributive.
 
-(** This is a left module.
-    The underlying ring is carried by [A] and the module itself by [B]. *)
+(** Module over a noncommutative ring; left chirality.
+    The ring is carried by [A] and the module by [B]. *)
 
 Class IsLMod (A B : Type)
   (A_has_add : HasAdd A) (A_has_zero : HasZero A) (A_has_neg : HasNeg A)

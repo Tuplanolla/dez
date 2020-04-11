@@ -5,7 +5,7 @@ From Maniunfold.Has Require Export
   OneSorted.Graded.Multiplication OneSorted.Graded.One
   ThreeSorted.Graded.BinaryFunction.
 From Maniunfold.Is Require Export
-  TwoSorted.LeftDistributive ThreeSorted.Bicompatible TwoSorted.LeftLinear
+  TwoSorted.LeftDistributive ThreeSorted.Bicompatible
   OneSorted.CommutativeRing TwoSorted.LeftModule TwoSorted.RightModule
   TwoSorted.Graded.LeftModule TwoSorted.Graded.RightModule
   ThreeSorted.Graded.Bimodule
@@ -16,7 +16,7 @@ From Maniunfold.ShouldHave Require Import
   OneSorted.Graded.ArithmeticNotations
   TwoSorted.Graded.MultiplicativeNotations.
 
-Local Open Scope grd_l_act_scope.
+Local Open Scope grd_l_mod_scope.
 
 Class IsGrdLBihomogen {A : Type} (P Q R S : A -> Type)
   {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}
