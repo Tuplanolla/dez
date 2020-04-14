@@ -18,21 +18,45 @@ From Maniunfold.Offers Require Export
   OneSorted.IntegerOperations.
 From Maniunfold.Provides Require Export
   NTheorems ZTheorems.
-From Maniunfold.ShouldHave Require Import
+From Maniunfold.ShouldHave Require
+  OneSorted.AdditiveNotations OneSorted.MultiplicativeNotations.
+From Maniunfold.ShouldHave Require
   OneSorted.ArithmeticNotations.
-From Maniunfold.ShouldOffer Require Import
+From Maniunfold.ShouldOffer Require
   OneSorted.ArithmeticOperationNotations.
-
-(** TODO Use this mess for something, such as demonstrating graded algebras. *)
 
 Section Context.
 
-Context {A : Type} `{is_ring : IsRing A}.
+Import OneSorted.ArithmeticNotations.
+Import OneSorted.ArithmeticOperationNotations.
+
+Context {A : Type} `{is_ring : IsRing A} `{eq_dec : EqDecision A}.
 
 Definition poly : Type := Nmap A.
 
+Ltac conversions := typeclasses
+  convert bin_op into (add (A := poly)) and
+    null_op into (zero (A := poly)) and
+    un_op into (neg (A := poly)) or
+  convert bin_op into (mul (A := poly)) and
+    null_op into (one (A := poly)) or
+  convert bin_op into (add (A := A)) and
+    null_op into (zero (A := A)) and
+    un_op into (neg (A := A)) or
+  convert bin_op into (mul (A := A)) and
+    null_op into (one (A := A)).
+
 Definition poly_eval (p : poly) (x : A) : A :=
   map_fold (fun (i : N) (a b : A) => b + a * (x ^ i)%N) 0 p.
+
+(** We cannot keep nonzero values in the map,
+    because they would break definitional equality. *)
+
+Definition nonzero (a : A) : option A :=
+  if decide (a = 0) then None else Some a.
+
+Lemma nonzero_zero : nonzero 0 = None.
+Proof. cbv [nonzero]. rewrite decide_True by reflexivity. reflexivity. Defined.
 
 (** Parallel sum.
     The terms of $p$, $q$ and $r$ in $r = p + q$ are related
@@ -40,7 +64,7 @@ Definition poly_eval (p : poly) (x : A) : A :=
 
 Definition poly_add (p q : poly) : poly :=
   merge (fun as' bs : option A =>
-    union_with (fun a b : A => Some (a + b)) as' bs) p q.
+    union_with (fun a b : A => nonzero (a + b)) as' bs) p q.
 
 Definition poly_zero : poly :=
   empty.
@@ -56,24 +80,27 @@ Definition poly_mul (p q : poly) : poly :=
   map_fold (fun (i : N) (a : A) (r : poly) =>
     map_fold (fun (j : N) (b : A) (s : poly) =>
       partial_alter (fun cs : option A =>
-        Some (a * b + default 0 cs)) (i + j) s) r q) empty p.
+        nonzero (a * b + default 0 cs)) (i + j) s) r q) empty p.
 
 Definition poly_one : poly :=
   singletonM 0 1.
 
 Definition poly_l_act (a : A) (p : poly) : poly :=
-  fmap (fun b : A => a * b) p.
+  omap (fun b : A => nonzero (a * b)) p.
 
 Definition poly_r_act (p : poly) (a : A) : poly :=
-  fmap (fun b : A => b * a) p.
+  omap (fun b : A => nonzero (b * a)) p.
 
 End Context.
 
 Module Additive.
 
+Import OneSorted.ArithmeticNotations.
+Import OneSorted.ArithmeticOperationNotations.
+
 Section Context.
 
-Context {A : Type} `{is_ring : IsRing A}.
+Context {A : Type} `{is_ring : IsRing A} `{eq_dec : EqDecision A}.
 
 Let poly := poly (A := A).
 
@@ -85,22 +112,74 @@ Global Instance poly_bin_op_is_mag : IsMag poly bin_op.
 Proof. Defined.
 
 Global Instance poly_bin_op_is_assoc : IsAssoc poly bin_op.
-Proof. intros x y z. Admitted.
+Proof.
+  intros x y z.
+  cbv [bin_op poly_has_bin_op]; cbv [poly_add].
+  apply merge_assoc'; try reflexivity.
+  intros [a |] [b |] [c |]; try reflexivity.
+  - cbv [union_with option_union_with].
+    shelve.
+  - cbv [union_with option_union_with].
+    destruct (nonzero (a + b)) as [d |]; reflexivity.
+  - cbv [union_with option_union_with].
+    destruct (nonzero (b + c)) as [e |]; reflexivity. Admitted.
 
 Global Instance poly_bin_op_is_sgrp : IsSgrp poly bin_op.
 Proof. split; typeclasses eauto. Defined.
 
+Local Open Scope ring_scope.
+
+Lemma l_whatever : forall b : A,
+  b <> zero ->
+  union_with (fun c d : A => nonzero (c + d)) (Some 0) (Some b) = Some b.
+Proof.
+  intros b Hb.
+  cbv [union_with option_union_with]. rewrite (l_unl b).
+  cbv [nonzero]. rewrite decide_False by assumption.
+  reflexivity. Defined.
+
+Lemma r_whatever : forall a : A,
+  a <> zero ->
+  union_with (fun c d : A => nonzero (c + d)) (Some a) (Some 0) = Some a.
+Proof.
+  intros a Ha.
+  cbv [union_with option_union_with]. rewrite (r_unl a).
+  cbv [nonzero]. rewrite decide_False by assumption.
+  reflexivity. Defined.
+
+Lemma b_whatever : forall a b : A,
+  a + b <> zero ->
+  union_with (fun c d : A => nonzero (c + d)) (Some a) (Some b) = Some (a + b).
+Proof.
+  intros a b Hab.
+  cbv [union_with option_union_with].
+  cbv [nonzero]. rewrite decide_False by assumption.
+  reflexivity. Defined.
+
 Global Instance poly_bin_op_is_comm : IsComm poly bin_op.
-Proof. intros x y. Admitted.
+Proof.
+  intros x y.
+  cbv [bin_op poly_has_bin_op]; cbv [poly_add].
+  apply merge_comm'; try reflexivity.
+  intros [a |] [b |]; try reflexivity.
+  cbv [union_with option_union_with]. rewrite comm. reflexivity. Defined.
 
 Global Instance poly_bin_op_is_comm_sgrp : IsCommSgrp poly bin_op.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_is_l_unl : IsLUnl poly bin_op null_op.
-Proof. intros x. Admitted.
+Proof.
+  intros x.
+  cbv [bin_op poly_has_bin_op]; cbv [poly_add].
+  cbv [null_op poly_has_null_op]; cbv [poly_zero].
+  apply (left_id_L empty _ x); try reflexivity. Defined.
 
 Global Instance poly_bin_op_null_op_is_r_unl : IsRUnl poly bin_op null_op.
-Proof. intros x. Admitted.
+Proof.
+  intros x.
+  cbv [bin_op poly_has_bin_op]; cbv [poly_add].
+  cbv [null_op poly_has_null_op]; cbv [poly_zero].
+  apply (right_id_L empty _ x); try reflexivity. Defined.
 
 Global Instance poly_bin_op_null_op_is_unl : IsUnl poly bin_op null_op.
 Proof. split; typeclasses eauto. Defined.
@@ -114,11 +193,19 @@ Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_un_op_is_l_inv :
   IsLInv poly bin_op null_op un_op.
-Proof. intros x. Admitted.
+Proof.
+  intros x.
+  cbv [bin_op poly_has_bin_op]; cbv [poly_add].
+  cbv [null_op poly_has_null_op]; cbv [poly_zero].
+  cbv [un_op poly_has_un_op]; cbv [poly_neg]. Admitted.
 
 Global Instance poly_bin_op_null_op_un_op_is_r_inv :
   IsRInv poly bin_op null_op un_op.
-Proof. intros x. Admitted.
+Proof.
+  intros x.
+  cbv [bin_op poly_has_bin_op]; cbv [poly_add].
+  cbv [null_op poly_has_null_op]; cbv [poly_zero].
+  cbv [un_op poly_has_un_op]; cbv [poly_neg]. Admitted.
 
 Global Instance poly_bin_op_null_op_un_op_is_inv :
   IsInv poly bin_op null_op un_op.
@@ -138,13 +225,16 @@ End Additive.
 
 Module Multiplicative.
 
+Import OneSorted.ArithmeticNotations.
+Import OneSorted.ArithmeticOperationNotations.
+
 Section Context.
 
-Context {A : Type} `{is_ring : IsRing A}.
+Context {A : Type} `{is_ring : IsRing A} `{eq_dec : EqDecision A}.
 
 Let poly := poly (A := A).
 
-Global Instance poly_bin_op_has_bin_op : HasBinOp poly := poly_mul.
+Global Instance poly_has_bin_op : HasBinOp poly := poly_mul.
 Global Instance poly_has_null_op : HasNullOp poly := poly_one.
 
 Global Instance poly_bin_op_is_mag : IsMag poly bin_op.
@@ -157,13 +247,20 @@ Global Instance poly_bin_op_is_sgrp : IsSgrp poly bin_op.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_is_comm : IsComm poly bin_op.
-Proof. intros x y. Admitted.
+Proof.
+  intros x y.
+  cbv [bin_op poly_has_bin_op]; cbv [poly_mul]. Admitted.
 
 Global Instance poly_bin_op_is_comm_sgrp : IsCommSgrp poly bin_op.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_is_l_unl : IsLUnl poly bin_op null_op.
-Proof. intros x. Admitted.
+Proof.
+  intros x.
+  cbv [bin_op poly_has_bin_op]; cbv [poly_mul].
+  cbv [null_op poly_has_null_op]; cbv [poly_one].
+  rewrite <- insert_empty.
+  rewrite (map_fold_insert_L _); try reflexivity. Admitted.
 
 Global Instance poly_bin_op_null_op_is_r_unl : IsRUnl poly bin_op null_op.
 Proof. intros x. Admitted.
@@ -182,9 +279,12 @@ End Context.
 
 End Multiplicative.
 
+Import OneSorted.ArithmeticNotations.
+Import OneSorted.ArithmeticOperationNotations.
+
 Section Context.
 
-Context {A : Type} `{is_ring : IsRing A}.
+Context {A : Type} `{is_ring : IsRing A} `{eq_dec : EqDecision A}.
 
 Let poly := poly (A := A).
 
@@ -261,9 +361,17 @@ Global Instance poly_is_grd_ring : IsGrdRing (fun i : N => A)
   (fun i j : N => mul) one.
 Proof. repeat split. Abort.
 
+Global Instance add_zero_neg_mul_one_is_alg :
+  IsAlg A poly add zero neg mul one add zero neg mul l_act r_act.
+Proof. split; try typeclasses eauto. Admitted.
+
+Global Instance add_zero_neg_mul_one_is_assoc_alg :
+  IsAssocAlg A poly add zero neg mul one add zero neg mul l_act r_act.
+Proof. split; typeclasses eauto. Defined.
+
 Global Instance add_zero_neg_mul_one_is_unl_assoc_alg :
   IsUnlAssocAlg A poly add zero neg mul one add zero neg mul one l_act r_act.
-Proof. repeat split. Abort.
+Proof. split; typeclasses eauto. Defined.
 
 End Context.
 
