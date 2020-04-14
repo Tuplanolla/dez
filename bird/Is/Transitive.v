@@ -4,7 +4,7 @@ From Coq Require Import
 From Maniunfold.Has Require Export
   OneSorted.BinaryRelation.
 From Maniunfold.ShouldHave Require Import
-  BinaryRelationNotations.
+  OneSorted.BinaryRelationNotations.
 
 Class IsTrans (A : Type) (A_has_bin_rel : HasBinRel A) : Prop :=
   trans : forall x y z : A, x ~~ y -> y ~~ z -> x ~~ z.
