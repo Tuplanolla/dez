@@ -1,0 +1,3 @@
+(library
+  (name primate)
+  (public_name maniunfold.primate))

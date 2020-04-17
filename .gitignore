@@ -1,5 +1,8 @@
 *.aux
+*.cmi
+*.cmx
 *.glob
+*.o
 *.vo
 both.dot
 both.svg

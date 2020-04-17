@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
   OneSorted.Multiplication OneSorted.One
   TwoSorted.RightAction TwoSorted.Function.
 From Maniunfold.Is Require Export
-  TwoSorted.RightModule TwoSorted.Additive TwoSorted.RightHomogeneous.
+  TwoSorted.RightModule TwoSorted.Additive ThreeSorted.RightHomogeneous.
 
 (** Linear mapping; right chirality.
     See [Is.TwoSorted.LeftLinearMapping]. *)

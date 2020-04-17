@@ -23,7 +23,7 @@ _CoqMakefile.args:: _CoqProject _CoqFiles
 	$(CMD) cat $^ > $@
 
 _CoqProject::
-	$(CMD) printf '%s %s %s\n' '-Q' '.' 'Maniunfold' > $@
+	$(CMD) printf '%s\n' "INSTALLDEFAULTROOT = . -Q . Maniunfold" > $@
 
 _CoqFiles::
 	$(CMD) find . -type f -name '*.v' | LC_ALL=C sort > $@

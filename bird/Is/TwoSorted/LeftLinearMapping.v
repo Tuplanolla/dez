@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
   OneSorted.Multiplication OneSorted.One
   TwoSorted.LeftAction TwoSorted.Function.
 From Maniunfold.Is Require Export
-  TwoSorted.LeftModule TwoSorted.Additive TwoSorted.LeftHomogeneous.
+  TwoSorted.LeftModule TwoSorted.Additive ThreeSorted.LeftHomogeneous.
 
 (** Linear mapping, homomorphism between two modules,
     where both modules are defined over a noncommutative ring; left chirality.

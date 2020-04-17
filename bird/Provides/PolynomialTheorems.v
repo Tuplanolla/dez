@@ -63,8 +63,7 @@ Proof. cbv [nonzero]. rewrite decide_True by reflexivity. reflexivity. Defined.
     by $r_k = p_k + q_k$. *)
 
 Definition poly_add (p q : poly) : poly :=
-  merge (fun as' bs : option A =>
-    union_with (fun a b : A => nonzero (a + b)) as' bs) p q.
+  merge (union_with (fun a b : A => nonzero (a + b))) p q.
 
 Definition poly_zero : poly :=
   empty.
@@ -104,6 +103,18 @@ Context {A : Type} `{is_ring : IsRing A} `{eq_dec : EqDecision A}.
 
 Let poly := poly (A := A).
 
+Ltac conversions := typeclasses
+  convert bin_op into (add (A := poly)) and
+    null_op into (zero (A := poly)) and
+    un_op into (neg (A := poly)) or
+  convert bin_op into (mul (A := poly)) and
+    null_op into (one (A := poly)) or
+  convert bin_op into (add (A := A)) and
+    null_op into (zero (A := A)) and
+    un_op into (neg (A := A)) or
+  convert bin_op into (mul (A := A)) and
+    null_op into (one (A := A)).
+
 Global Instance poly_has_bin_op : HasBinOp poly := poly_add.
 Global Instance poly_has_null_op : HasNullOp poly := poly_zero.
 Global Instance poly_has_un_op : HasUnOp poly := poly_neg.
@@ -111,14 +122,48 @@ Global Instance poly_has_un_op : HasUnOp poly := poly_neg.
 Global Instance poly_bin_op_is_mag : IsMag poly bin_op.
 Proof. Defined.
 
-Global Instance poly_bin_op_is_assoc : IsAssoc poly bin_op.
+Lemma zero_inversion : forall {a : A},
+  nonzero a = None -> a = 0.
 Proof.
-  intros x y z.
-  cbv [bin_op poly_has_bin_op]; cbv [poly_add].
+  intros a H. cbv [nonzero] in H. destruct (decide (a = 0)) as [Ha | Ha].
+  - apply Ha.
+  - inversion H. Defined.
+
+Lemma nonzero_inversion : forall {a b : A},
+  nonzero a = Some b -> a <> 0 /\ a = b.
+Proof.
+  intros a b H. split.
+  - cbv [nonzero] in H. destruct (decide (a = 0)) as [Ha | Ha].
+    + inversion H.
+    + assumption.
+  - cbv [nonzero] in H. destruct (decide (a = 0)) as [Ha | Ha].
+    + inversion H.
+    + inversion H as [H']. reflexivity. Defined.
+
+Global Instance poly_bin_op_is_assoc : IsAssoc poly bin_op.
+Proof with conversions.
+  intros x y z. cbv [bin_op poly_has_bin_op]; cbv [poly_add].
   apply merge_assoc'; try reflexivity.
   intros [a |] [b |] [c |]; try reflexivity.
   - cbv [union_with option_union_with].
-    shelve.
+    destruct (nonzero (a + b)) as [d |] eqn : Hd,
+      (nonzero (b + c)) as [e |] eqn : He.
+    + f_equal.
+      destruct (nonzero_inversion Hd) as [Hd0 Hd1]; clear Hd.
+      destruct (nonzero_inversion He) as [He0 He1]; clear He.
+      subst. rewrite <- assoc...
+      reflexivity.
+    + destruct (nonzero_inversion Hd) as [Hd0 Hd1]; clear Hd.
+      pose proof (zero_inversion He) as He0; clear He.
+      subst. rewrite <- assoc...
+      rewrite He0. rewrite r_unl.
+      destruct (nonzero a) as [f |] eqn : Hf.
+      * f_equal.
+        destruct (nonzero_inversion Hf) as [Hf0 Hf1]; clear Hf.
+        auto.
+      * exfalso. shelve.
+    + shelve.
+    + shelve.
   - cbv [union_with option_union_with].
     destruct (nonzero (a + b)) as [d |]; reflexivity.
   - cbv [union_with option_union_with].
