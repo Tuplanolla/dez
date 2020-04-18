@@ -1,12 +1,8 @@
-(coq.theory
-  (name Protofold)
-  (public_name maniunfold.Protofold)
-  (synopsis "OCaml extraction for Maniunfold.")
-  (flags -Q ../theories Maniunfold))
-
-(rule
-  (targets extraction.ml)
-  (deps (file theories/Init.vo) (file extraction/Extraction.vo))
-  (action (echo "Custom rule fired.")))
+(coq.extraction
+  (prelude Extraction)
+  (extracted_modules ZTheorems)
+  ; (libraries <ocaml_libraries>)
+  ; (flags <coq_flags>)
+  (theories Maniunfold))
 
 (include_subdirs qualified)

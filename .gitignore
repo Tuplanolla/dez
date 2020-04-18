@@ -4,6 +4,7 @@
 *.glob
 *.o
 *.vo
+_build
 both.dot
 both.svg
 first.dot

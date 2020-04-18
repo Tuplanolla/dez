@@ -1,6 +1,12 @@
 (coq.theory
   (name Maniunfold)
-  (public_name maniunfold.Maniunfold)
-  (synopsis "Proofs for Maniunfold."))
+  ; (package <package>)
+  ; (synopsis <text>)
+  ; (modules <ordered_set_lang>)
+  ; (libraries <ocaml_libraries>)
+  ; (flags <coq_flags>)
+  ; TODO Put the `coq` and `coq-stdpp` here once they are supported.
+  ; (theories <coq_theories>)
+  )
 
 (include_subdirs qualified)
