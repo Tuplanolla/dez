@@ -6,9 +6,8 @@ all:: main
 
 clean::
 	$(CMD) $(RM) .*.aux *.glob *.vo*
-	$(CMD) $(RM) extraction.ml extraction.mli
-	$(CMD) $(RM) extraction.cmi extraction.cmx extraction.o
-	$(CMD) $(RM) adapter.cmi adapter.cmx adapter.o
+	$(CMD) bash -c "echo *.{ml,mli,cmx,cmi,o} | tr ' ' '\n' | \
+	grep -v 'adapter.ml' | xargs rm -f"
 .PHONY: clean
 
 main:: extraction.mli

@@ -1,6 +1,6 @@
 (coq.extraction
   (prelude Extraction)
-  (extracted_modules ZTheorems)
+  (extracted_modules Extraction)
   ; (libraries <ocaml_libraries>)
   ; (flags <coq_flags>)
   (theories Maniunfold))
