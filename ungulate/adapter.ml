@@ -1,11 +1,6 @@
 open Big_int
 open Extraction
 
-let quomod_big_int_int x y =
-  let (q, m) = quomod_big_int x (big_int_of_int y) in
-  (q, int_of_big_int m)
-(** Calculate the Euclidean division of a big integer and a small integer. *)
-
 let big_int_of_pos x =
   let rec f x =
     match x with
@@ -24,10 +19,10 @@ let pos_of_big_int x =
   if lt_big_int x unit_big_int then
     raise (Invalid_argument "nonpositive integer") else
     let rec f x =
-      let (q, m) = quomod_big_int_int x 2 in
+      let (q, m) = quomod_big_int x (big_int_of_int 2) in
       if eq_big_int q zero_big_int then
         XH else
-        if m = 0 then
+        if eq_big_int m zero_big_int then
           XO (f q) else
           XI (f q) in
     f x
