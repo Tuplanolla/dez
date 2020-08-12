@@ -5,7 +5,7 @@ SUBCOMPONENTS:=bird ungulate fungus reptile plant fur spores scales primate
 
 DEFAULT::
 	$(CMD) for x in $(SUBCOMPONENTS) ; \
-	do make -C $$x ; \
+	do echo SUBMAKE $$x && make --no-print-directory -C $$x ; \
 	done
 .PHONY: DEFAULT
 
@@ -14,15 +14,14 @@ Makefile::
 
 clean::
 	$(CMD) for x in $(SUBCOMPONENTS) ; \
-	do make -C $$x -s $@ ; \
+	do echo SUBCLEAN $$x && make --no-print-directory -C $$x -s $@ ; \
 	done
 .PHONY: clean
 
 habitat::
-	cpp -P -DCLUSTER -DCOMPILE -URUN -o first.dot habitat.dot
-	cpp -P -DCLUSTER -UCOMPILE -DRUN -o second.dot habitat.dot
-	cpp -P -DCLUSTER -DCOMPILE -DRUN -o both.dot habitat.dot
-	for x in first second both ; \
+	cpp -P -DCLUSTER -DCOMPILE -URUN -o habitat.dot habitat.dot.h
+	cpp -P -DCLUSTER -DCOMPILE -DRUN -o habitat-with-example.dot habitat.dot.h
+	for x in habitat habitat-with-example ; \
 	do dot -Gfontname=sans -Efontname=sans -Nfontname=sans -Tsvg $$x.dot -o$$x.svg ; \
 	done
 .PHONY: habitat

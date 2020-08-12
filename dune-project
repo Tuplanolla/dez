@@ -1,4 +1,4 @@
-(lang dune 2.5)
+(lang dune 2.6)
 (name maniunfold)
 (version 0.0.0)
 
@@ -11,7 +11,7 @@
 (homepage http://users.jyu.fi/~sapekiis/maniunfold/)
 ; (documentation <url>)
 
-(using coq 0.2) ; 8.11.1
+(using coq 0.2) ; 8.12.0
 
 (package
   (name maniunfold)

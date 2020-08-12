@@ -4,10 +4,8 @@
 *.glob
 *.o
 *.vo
+/*.dot
+/*.svg
 _build
-both.dot
-both.svg
-first.dot
-first.svg
-second.dot
-second.svg
+gen-*
+primate/broker

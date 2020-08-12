@@ -11,7 +11,12 @@ because otherwise things break in surprising ways.
 
 Run `make` inside `bird` to build it with Make.
 Eventually running `make` at the root will work too.
-Even more eventually `dune` might work as well.
+Even more eventually `dune` might work as well,
+as follows.
+
+```
+$ inside .. dune exec -- coqide -Q _build/default/bird Maniunfold bird/Provides/PolynomialTheorems.v
+```
 
 ### Coherence Conditions
 

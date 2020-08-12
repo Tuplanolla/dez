@@ -19,5 +19,4 @@ main:: extraction.mli
 	$(CMD) ocamlfind ocamlopt -O2 -c -package num adapter.ml
 
 extraction.mli::
-	$(CMD) make -C ../bird
 	$(CMD) coqc -Q ../bird Maniunfold Extraction.v
