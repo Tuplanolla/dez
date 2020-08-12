@@ -16,7 +16,7 @@ gen-ocaml:: ../plant/messages.thrift
 	$(MSG) echo THRIFT primate
 	$(CMD) thrift --gen ocaml $<
 
-main::
+broker::
 	$(MSG) echo OCAMLOPT broker
 	$(CMD) ocamlfind ocamlopt -O2 -c -package num broker.ml
 	$(CMD) ocamlfind ocamlopt -O2 -linkpkg -o broker -package num \

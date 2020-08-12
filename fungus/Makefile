@@ -1,7 +1,7 @@
 CMD:=$(if $(VERBOSE),,@ )
 MSG:=$(if $(VERBOSE),@ true || ,@ )
 
-SUBCOMPONENTS:=LoadMsh MeshGeneration MeshSplitter RelativisticSchrodinger \
+SUBCOMPONENTS:=LoadMsh # MeshGeneration MeshSplitter RelativisticSchrodinger \
 RotatingCavity ShrinkingCavity UnitCubeTest WavePropagation
 
 DEFAULT::

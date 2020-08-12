@@ -6,7 +6,7 @@ gen-ocaml:: ../plant/messages.thrift
 	$(CMD) thrift --gen ocaml $<
 
 clean::
-	$(CMD) $(RM) gen-ocaml
+	$(CMD) $(RM) -r gen-ocaml
 	$(CMD) $(RM) *.cmi *.cmx *.o
 	$(CMD) $(RM) broker
 .PHONY: clean
