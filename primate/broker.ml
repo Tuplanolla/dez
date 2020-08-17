@@ -11,6 +11,14 @@ let () =
 open Thrift
 open Messages_types
 
+let bracket ~acquire work ~release =
+  let a = acquire () in
+  let w = try work a with
+    | e -> release a ;
+      raise e in
+  release a ;
+  w
+
 let t1 () =
   let trans : Transport.t = new TSocket.t "localhost" 9092 in
   let proto : Protocol.t = new TBinaryProtocol.t trans in
@@ -45,36 +53,45 @@ class custom_server_t port =
   end
 
 let main () =
-  (* let strans : Transport.server_t = new TServerSocket.t 9092 in *)
-  let strans : custom_server_t = new custom_server_t 9092 in
-  strans#listen ;
+  bracket
+    ~acquire:begin
+      fun () ->
+      (* let strans : Transport.server_t = new TServerSocket.t 9092 in *)
+      let strans : custom_server_t = new custom_server_t 9092 in
+      strans
+    end
+    ~release:begin
+      fun strans -> strans#close
+    end
+    begin fun strans ->
+      strans#listen ;
 
-  let cwd = Sys.getcwd () in
-  Sys.chdir "../scales" ;
-  (* let exitcode = Sys.command "python3 client-proxy.py" in *)
-  let py = "python3" in
-  let pid = Unix.create_process py [|py; "client-proxy.py"|]
-    Unix.stdin Unix.stdout Unix.stderr in
-  Sys.chdir cwd ;
+      let cwd = Sys.getcwd () in
+      Sys.chdir "../scales" ;
+      (* let exitcode = Sys.command "python3 client-proxy.py" in *)
+      let py = "python3" in
+      let pid = Unix.create_process py [|py; "client-proxy.py"|]
+        Unix.stdin Unix.stdout Unix.stderr in
+      Sys.chdir cwd ;
 
-  let trans = strans#accept in
-  let proto = new TBinaryProtocol.t trans in
-  let coeffs0 = proto#readI32 in
-  let coeffs1 = proto#readI32 in
-  let point = 7l in
-  let value = Int32.add coeffs0 (Int32.mul coeffs1 (Int32.mul point point)) in
-  proto#writeI32 value ;
-  proto#getTransport#flush ;
-  let req = read_request proto in
-  let value = Hashtbl.fold
-    (fun i a y -> y +. a *. req#grab_point ** Int32.to_float i)
-    req#grab_coeffs 0. in
-  let res = new response in
-  res#set_value value ;
-  res#write proto ;
-  proto#getTransport#flush ;
-  proto#getTransport#close ;
-  strans#close (* TODO Not exception-safe. *)
+      let trans = strans#accept in
+      let proto = new TBinaryProtocol.t trans in
+      let coeffs0 = proto#readI32 in
+      let coeffs1 = proto#readI32 in
+      let point = 7l in
+      let value = Int32.add coeffs0 (Int32.mul coeffs1 (Int32.mul point point)) in
+      proto#writeI32 value ;
+      proto#getTransport#flush ;
+      let req = read_request proto in
+      let value = Hashtbl.fold
+        (fun i a y -> y +. a *. req#grab_point ** Int32.to_float i)
+        req#grab_coeffs 0. in
+      let res = new response in
+      res#set_value value ;
+      res#write proto ;
+      proto#getTransport#flush ;
+      proto#getTransport#close
+    end
 
 let () =
   main ()
