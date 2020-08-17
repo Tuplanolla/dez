@@ -54,14 +54,13 @@ class custom_server_t port =
 
 let main () =
   bracket
-    ~acquire:begin
-      fun () ->
+    ~acquire:begin fun () ->
       (* let strans : Transport.server_t = new TServerSocket.t 9092 in *)
       let strans : custom_server_t = new custom_server_t 9092 in
       strans
     end
-    ~release:begin
-      fun strans -> strans#close
+    ~release:begin fun strans ->
+      strans#close
     end
     begin fun strans ->
       strans#listen ;
@@ -76,12 +75,6 @@ let main () =
 
       let trans = strans#accept in
       let proto = new TBinaryProtocol.t trans in
-      let coeffs0 = proto#readI32 in
-      let coeffs1 = proto#readI32 in
-      let point = 7l in
-      let value = Int32.add coeffs0 (Int32.mul coeffs1 (Int32.mul point point)) in
-      proto#writeI32 value ;
-      proto#getTransport#flush ;
       let req = read_request proto in
       let value = Hashtbl.fold
         (fun i a y -> y +. a *. req#grab_point ** Int32.to_float i)
