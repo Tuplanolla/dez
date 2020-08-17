@@ -3,7 +3,7 @@ MSG:=$(if $(VERBOSE),@ true || ,@ )
 
 all:: broker
 	$(MSG) echo BROKER test
-	@ ./broker test
+	$(CMD) ./broker test
 .PHONY: all
 
 clean::
@@ -15,9 +15,17 @@ clean::
 gen-ocaml:: ../plant/messages.thrift
 	$(MSG) echo THRIFT primate
 	$(CMD) thrift --gen ocaml $<
+	$(CMD) ocamlfind ocamlopt -I gen-ocaml -O2 -c \
+	-package num -package thrift -thread gen-ocaml/messages_types.mli
+	$(CMD) ocamlfind ocamlopt -I gen-ocaml -O2 -c \
+	-package num -package thrift -thread gen-ocaml/messages_types.ml
+	$(CMD) ocamlfind ocamlopt -I gen-ocaml -O2 -c \
+	-package num -package thrift -thread gen-ocaml/messages_consts.ml
 
-broker::
+broker:: gen-ocaml broker.ml
 	$(MSG) echo OCAMLOPT broker
-	$(CMD) ocamlfind ocamlopt -O2 -c -package num broker.ml
-	$(CMD) ocamlfind ocamlopt -O2 -linkpkg -o broker -package num \
-	broker.cmx
+	$(CMD) ocamlfind ocamlopt -I gen-ocaml -O2 -c \
+	-package num -package thrift -thread broker.ml
+	$(CMD) ocamlfind ocamlopt -I gen-ocaml -O2 -linkpkg -o broker \
+	-package num -package thrift -thread \
+	gen-ocaml/messages_types.cmx gen-ocaml/messages_consts.cmx broker.cmx

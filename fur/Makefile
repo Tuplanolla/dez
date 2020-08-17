@@ -11,7 +11,7 @@ clean::
 	$(CMD) $(RM) broker
 .PHONY: clean
 
-server-proxy::
+server-proxy:: gen-ocaml
 	$(MSG) echo OCAMLOPT fur
 	$(CMD) ocamlfind ocamlopt -I ../ungulate -O2 -c -package num server-proxy.ml
 	$(CMD) ocamlfind ocamlopt -I ../ungulate -O2 -linkpkg -o server-proxy -package num \
