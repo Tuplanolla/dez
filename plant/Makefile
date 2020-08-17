@@ -2,7 +2,7 @@ CMD:=$(if $(VERBOSE),,@ )
 MSG:=$(if $(VERBOSE),@ true || ,@ )
 
 # We generate a diagram just to check that the specification is valid.
-gen-gv:: messages.thrift
+gen-gv:: polynomial.thrift
 	$(MSG) echo THRIFT plant
 	$(CMD) thrift --gen gv $<
 

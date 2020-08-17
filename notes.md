@@ -528,6 +528,22 @@ Class IsGrdMon {A : Type} {P : A -> Type}
 }.
 ```
 
+## Workflow Things
+
+You can load generated OCaml code as follows.
+
+```
+# apt install thrift-compiler
+$ pip3 install --user thrift
+$ opam install thrift
+$ inside plant make
+$ inside primate make
+$ utop
+utop # #require "thrift" ;;
+utop # #mod_use "gen-ocaml/polynomial_types.ml" ;;
+utop # #use "broker.ml" ;;
+```
+
 ## Simple Laws about Nonprominent Properties of Binary Relations by Jochen Burghardt
 
 Regarding common and less common binary relations,

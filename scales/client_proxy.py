@@ -1,8 +1,8 @@
 import sys
 import thrift
 sys.path.append('gen-py')
-import messages
-from messages.ttypes import *
+import polynomial
+from polynomial.ttypes import *
 from thrift.protocol import TBinaryProtocol
 from thrift.transport import TTransport
 from thrift.transport import TSocket
