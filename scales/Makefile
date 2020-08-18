@@ -10,4 +10,4 @@ clean::
 .PHONY: clean
 
 run:: gen-py
-	$(CMD) python3 client_proxy.py
+	$(CMD) python3 main.py

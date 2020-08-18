@@ -1,15 +1,6 @@
 open Polynomial_types
 open Thrift
-
-(** Pretend we are writing Haskell. *)
-(* val bracket : acquire:(unit -> 'a) -> ('a -> 'b) -> release:('a -> unit) -> 'b *)
-let bracket ~acquire work ~release =
-  let a = acquire () in
-  let w = try work a with
-    | e -> release a ;
-      raise e in
-  release a ;
-  w
+open Util
 
 module TReusableServerSocket =
   struct
@@ -20,11 +11,28 @@ module TReusableServerSocket =
         method listen =
           let s = Unix.socket Unix.PF_INET Unix.SOCK_STREAM 0 in
           sock <- Some s ;
-          Unix.setsockopt s SO_REUSEADDR true ;
+          Unix.setsockopt s Unix.SO_REUSEADDR true ;
           Unix.bind s (Unix.ADDR_INET (Unix.inet_addr_any, port)) ;
           Unix.listen s 256
       end
   end
+
+(*
+let och = open_out "/tmp/primate.log" in
+let f = Format.formatter_of_out_channel och in
+Logs.set_reporter (Logs.format_reporter ~app:f ~dst:f ()) ;
+Logs.set_level (Some Logs.Debug)
+
+module Log = (val Logs.src_log (Logs.Src.create "primate"))
+Logs.debug (fun f -> f "Good!")
+
+close_out och
+*)
+
+exception Signal of int
+
+let raise_signal i =
+  raise (Signal i)
 
 (** Listen for connections,
     start `fur` process, accept connection from `fur`,
@@ -33,7 +41,11 @@ module TReusableServerSocket =
     forward message to `fur`, get message from `fur`,
     forward message to `scales`, repeat; or:
     stop processes, exit. *)
-let main () =
+let start () =
+  (* TODO Proper signal handling. See `man 7 signal` section on standards. *)
+  let _ = Sys.signal Sys.sigint (Sys.Signal_handle raise_signal) in
+  let _ = Sys.signal Sys.sigterm (Sys.Signal_handle raise_signal) in
+
   bracket
     ~acquire:begin fun () ->
       let strans : Transport.server_t = new TReusableServerSocket.t 9092 in
@@ -42,27 +54,43 @@ let main () =
     ~release:begin fun strans ->
       strans#close
     end
-    (* TODO Error recovery for when Python chokes. *)
     begin fun strans ->
+      print_endline ("Process " ^ string_of_int (Unix.getpid ()) ^
+        " is listening.") ;
       strans#listen ;
 
-      let cwd = Sys.getcwd () in
-      Sys.chdir "../scales" ;
-      (* let exitcode = Sys.command "python3 client_proxy.py" in *)
-      let py = "python3" in
-      let pid = Unix.create_process py [|py; "client_proxy.py"|]
-        Unix.stdin Unix.stdout Unix.stderr in
-      Sys.chdir cwd ;
-
-      let trans = strans#accept in
-      let proto = new TBinaryProtocol.t trans in
-      let req = read_request proto in
-      let value = Hashtbl.fold
-        (fun i a y -> y +. a *. req#grab_point ** Int32.to_float i)
-        req#grab_coeffs 0. in
-      let res = new response in
-      res#set_value value ;
-      res#write proto ;
-      proto#getTransport#flush ;
-      proto#getTransport#close
+      bracket
+        ~acquire:begin fun () ->
+          (* TODO Cwd is a resource. *)
+          let cwd = Sys.getcwd () in
+          Sys.chdir "../scales" ;
+          (* let exitcode = Sys.command "python3 main.py" in *)
+          let py = "python3" in
+          let pid = Unix.create_process py [|py; "main.py"|]
+            Unix.stdin Unix.stdout Unix.stderr in
+          Sys.chdir cwd ;
+          print_endline ("Process " ^ string_of_int (Unix.getpid ()) ^
+            " started subprocess " ^ string_of_int pid ^ ".") ;
+          pid
+        end
+        ~release:begin fun pid ->
+          (* Unix.kill pid Sys.sigterm ;
+          print_endline ("Process " ^ string_of_int (Unix.getpid ()) ^
+            " killed subprocess " ^ string_of_int pid ^ ".") ;
+          let i, s = Unix.waitpid [] pid in *)
+          ()
+        end
+        begin fun pid ->
+          let trans = strans#accept in
+          let proto = new TBinaryProtocol.t trans in
+          let req = read_request proto in
+          let value = Hashtbl.fold
+            (fun i a y -> y +. a *. req#grab_point ** Int32.to_float i)
+            req#grab_coeffs 0. in
+          let res = new response in
+          res#set_value value ;
+          res#write proto ;
+          proto#getTransport#flush ;
+          proto#getTransport#close
+        end
     end

@@ -1,4 +1,4 @@
 open Broker
 
 let () =
-  main ()
+  start ()

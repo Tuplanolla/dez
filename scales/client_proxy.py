@@ -1,13 +1,15 @@
 import sys
-import thrift
 sys.path.append('gen-py')
 import polynomial
+import thrift
+import os
 from polynomial.ttypes import *
 from thrift.protocol import TBinaryProtocol
 from thrift.transport import TTransport
 from thrift.transport import TSocket
 
-def main():
+def start():
+  print('Process {} is connecting.'.format(os.getpid()))
   trans = TTransport.TBufferedTransport(TSocket.TSocket('localhost', 9092))
   proto = TBinaryProtocol.TBinaryProtocol(trans)
   proto.trans.open()
@@ -18,5 +20,3 @@ def main():
   res.read(proto)
   proto.trans.close()
   print(str(res))
-
-main()

@@ -538,7 +538,7 @@ $ pip3 install --user thrift
 $ opam install thrift
 $ inside plant make
 $ inside primate make
-$ utop
+$ inside primate utop -I gen-ocaml
 utop # #require "thrift" ;;
 utop # #mod_use "gen-ocaml/polynomial_types.ml" ;;
 utop # #use "broker.ml" ;;

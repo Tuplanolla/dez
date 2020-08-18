@@ -1,15 +1,15 @@
 CMD:=$(if $(VERBOSE),,@ )
 MSG:=$(if $(VERBOSE),@ true || ,@ )
 
-all:: broker
+all:: main
 	$(MSG) echo BROKER test
-	$(CMD) ./broker test
+	$(CMD) ./main test
 .PHONY: all
 
 clean::
-	$(CMD) $(RM) gen-ocaml
+	$(CMD) $(RM) -r gen-ocaml
 	$(CMD) $(RM) *.cmi *.cmx *.o
-	$(CMD) $(RM) broker
+	$(CMD) $(RM) main
 .PHONY: clean
 
 gen-ocaml:: ../plant/polynomial.thrift
@@ -22,13 +22,17 @@ gen-ocaml:: ../plant/polynomial.thrift
 	$(CMD) ocamlfind ocamlopt -I gen-ocaml -O2 -c \
 	-package num -package thrift -thread gen-ocaml/polynomial_consts.ml
 
-broker:: gen-ocaml broker.ml
+main:: gen-ocaml broker.ml
 	$(MSG) echo OCAMLOPT broker
+	$(CMD) ocamlfind ocamlopt -I gen-ocaml -O2 -c \
+	-package num -package thrift -thread util.mli
+	$(CMD) ocamlfind ocamlopt -I gen-ocaml -O2 -c \
+	-package num -package thrift -thread util.ml
 	$(CMD) ocamlfind ocamlopt -I gen-ocaml -O2 -c \
 	-package num -package thrift -thread broker.ml
 	$(CMD) ocamlfind ocamlopt -I gen-ocaml -O2 -c \
 	-package num -package thrift -thread main.ml
-	$(CMD) ocamlfind ocamlopt -I gen-ocaml -O2 -linkpkg -o broker \
+	$(CMD) ocamlfind ocamlopt -I gen-ocaml -O2 -linkpkg -o main \
 	-package num -package thrift -thread \
 	gen-ocaml/polynomial_types.cmx gen-ocaml/polynomial_consts.cmx \
-	broker.cmx main.cmx
+	util.cmx broker.cmx main.cmx
