@@ -19,7 +19,11 @@ val raise_signal : int -> 'a
 (** Make the given signals raise the [Signal] exception. *)
 val catch_signals : int array -> unit
 
-(** Manage the lifetime of a resource.
+(** Make the given signals not raise the [Signal] exception or
+    terminate the process. *)
+val ignore_signals : int array -> unit
+
+(** Manage the scope of a resource.
 
     Note that [~release] is not called
     if the process is terminated by an unhandled signal. *)

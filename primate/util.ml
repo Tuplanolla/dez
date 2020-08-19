@@ -54,16 +54,31 @@ let catch_signals =
     begin fun i ->
       let open Sys in
       try
-        match signal i Signal_default with
-        | Signal_default -> set_signal i (Signal_handle raise_signal) ;
-          Log.info (fun m -> m "Set the behavior of SIG%s (%d)."
-            (string_of_signal i) i)
-        | b -> set_signal i b ;
-          Log.info (fun m -> m "Did not set the behavior of SIG%s (%d)."
-            (string_of_signal i) i)
+        set_signal i (Signal_handle raise_signal) ;
+        Log.info (fun m ->
+          m "Set the behavior of SIG%s (%d) to raise an exception."
+          (string_of_signal i) i)
       with
-      | _ -> Log.warn (fun m -> m "Failed to set the behavior of SIG%s (%d)."
-        (string_of_signal i) i)
+      | _ ->
+        Log.warn (fun m ->
+          m "Failed to set the behavior of SIG%s (%d)."
+          (string_of_signal i) i)
+    end
+
+let ignore_signals =
+  Array.iter
+    begin fun i ->
+      let open Sys in
+      try
+        set_signal i Signal_ignore ;
+        Log.info (fun m ->
+          m "Set the behavior of SIG%s (%d) to be ignored."
+          (string_of_signal i) i)
+      with
+      | _ ->
+        Log.warn (fun m ->
+          m "Failed to set the behavior of SIG%s (%d)."
+          (string_of_signal i) i)
     end
 
 let bracket ~acquire work ~release =

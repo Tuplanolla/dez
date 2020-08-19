@@ -9,7 +9,8 @@ from thrift.transport import TTransport
 from thrift.transport import TSocket
 
 def start():
-  print('Process {} is connecting.'.format(os.getpid()))
+  # TODO How to log this?
+  # print('Process {} is connecting.'.format(os.getpid()))
   trans = TTransport.TBufferedTransport(TSocket.TSocket('localhost', 9092))
   proto = TBinaryProtocol.TBinaryProtocol(trans)
   proto.trans.open()

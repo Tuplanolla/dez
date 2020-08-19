@@ -46,8 +46,7 @@ let start () =
       strans#close
     end
     begin fun strans ->
-      print_endline ("Process " ^ string_of_int (Unix.getpid ()) ^
-        " is listening.") ;
+      Log.info (fun m -> m "Process %d is listening." (Unix.getpid ())) ;
       strans#listen ;
 
       bracket
@@ -60,14 +59,14 @@ let start () =
           let pid = Unix.create_process py [|py; "main.py"|]
             Unix.stdin Unix.stdout Unix.stderr in
           Sys.chdir cwd ;
-          print_endline ("Process " ^ string_of_int (Unix.getpid ()) ^
-            " started subprocess " ^ string_of_int pid ^ ".") ;
+          Log.info (fun m -> m "Process %d started subprocess %d."
+            (Unix.getpid ()) pid) ;
           pid
         end
         ~release:begin fun pid ->
           (* Unix.kill pid Sys.sigterm ;
-          print_endline ("Process " ^ string_of_int (Unix.getpid ()) ^
-            " killed subprocess " ^ string_of_int pid ^ ".") ;
+          Log.info (fun m -> m "Process %d terminated subprocess %d."
+            (Unix.getpid ()) pid) ;
           let i, s = Unix.waitpid [] pid in *)
           ()
         end
