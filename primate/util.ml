@@ -1,3 +1,4 @@
+(* TODO Does this really belong here? *)
 module Log = (val Logs.src_log (Logs.Src.create "maniunfold.primate"))
 
 let posix_signals_array =
@@ -88,3 +89,7 @@ let bracket ~acquire work ~release =
       raise e in
   release a ;
   w
+
+let string_is_prefix s t =
+  let n = String.length s in
+  if n <= String.length t then String.equal s (String.sub t 0 n) else false

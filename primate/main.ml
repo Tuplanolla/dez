@@ -5,9 +5,7 @@ let main () =
     ~acquire:begin fun () ->
       open_out "/tmp/primate.log"
     end
-    ~release:begin fun oc ->
-      close_out oc
-    end
+    ~release:close_out
     begin fun oc ->
       let fmt = Format.formatter_of_out_channel oc in
       Logs.set_reporter (Logs.format_reporter ~app:fmt ~dst:fmt ()) ;

@@ -8,9 +8,12 @@ from thrift.protocol import TBinaryProtocol
 from thrift.transport import TTransport
 from thrift.transport import TSocket
 
+import logging
+logging.basicConfig(filename='/tmp/scales.log', filemode='w', level=logging.DEBUG)
+logger = logging.getLogger('maniunfold.scales')
+
 def start():
-  # TODO How to log this?
-  # print('Process {} is connecting.'.format(os.getpid()))
+  logger.info('Process {} is connecting.'.format(os.getpid()))
   trans = TTransport.TBufferedTransport(TSocket.TSocket('localhost', 9092))
   proto = TBinaryProtocol.TBinaryProtocol(trans)
   proto.trans.open()

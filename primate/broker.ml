@@ -17,18 +17,6 @@ module TReusableServerSocket =
       end
   end
 
-(*
-let och = open_out "/tmp/primate.log" in
-let f = Format.formatter_of_out_channel och in
-Logs.set_reporter (Logs.format_reporter ~app:f ~dst:f ()) ;
-Logs.set_level (Some Logs.Debug)
-
-module Log = (val Logs.src_log (Logs.Src.create "primate"))
-Logs.debug (fun f -> f "Good!")
-
-close_out och
-*)
-
 (** Listen for connections,
     start `fur` process, accept connection from `fur`,
     start `scales` process, accept connection from `scales`,
@@ -51,26 +39,37 @@ let start () =
 
       bracket
         ~acquire:begin fun () ->
-          (* TODO Cwd is a resource. *)
-          let cwd = Sys.getcwd () in
-          Sys.chdir "../scales" ;
-          (* let exitcode = Sys.command "python3 main.py" in *)
-          let py = "python3" in
-          let pid = Unix.create_process py [|py; "main.py"|]
-            Unix.stdin Unix.stdout Unix.stderr in
-          Sys.chdir cwd ;
-          Log.info (fun m -> m "Process %d started subprocess %d."
-            (Unix.getpid ()) pid) ;
-          pid
+          bracket
+            ~acquire:begin fun () ->
+              let cwd = Sys.getcwd () in
+              Sys.chdir "../scales" ;
+              cwd
+            end
+            ~release:Sys.chdir
+            begin fun _ ->
+              let prog = "python3" in
+              let args = [|prog; "main.py"|] in
+              Unix.create_process prog args Unix.stdin Unix.stdout Unix.stderr
+            end
         end
         ~release:begin fun pid ->
-          (* Unix.kill pid Sys.sigterm ;
-          Log.info (fun m -> m "Process %d terminated subprocess %d."
-            (Unix.getpid ()) pid) ;
-          let i, s = Unix.waitpid [] pid in *)
-          ()
+          (** We can apply this in case of a crisis. *)
+          (* Unix.kill pid Sys.sigterm ; *)
+          let i, w = Unix.waitpid [] pid in
+          match w with
+          | Unix.WEXITED _ ->
+            Log.info (fun m -> m "Process %d terminated subprocess %d (WEXIT)."
+              (Unix.getpid ()) pid)
+          | Unix.WSIGNALED _ ->
+            Log.info (fun m -> m "Process %d terminated subprocess %d (WSIG)."
+              (Unix.getpid ()) pid)
+          | Unix.WSTOPPED _ ->
+            Log.info (fun m -> m "Process %d terminated subprocess %d (WSTOP)."
+              (Unix.getpid ()) pid)
         end
         begin fun pid ->
+          Log.info (fun m -> m "Process %d started subprocess %d."
+            (Unix.getpid ()) pid) ;
           let trans = strans#accept in
           let proto = new TBinaryProtocol.t trans in
           let req = read_request proto in
