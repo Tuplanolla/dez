@@ -29,11 +29,6 @@ Logs.debug (fun f -> f "Good!")
 close_out och
 *)
 
-exception Signal of int
-
-let raise_signal i =
-  raise (Signal i)
-
 (** Listen for connections,
     start `fur` process, accept connection from `fur`,
     start `scales` process, accept connection from `scales`,
@@ -42,10 +37,6 @@ let raise_signal i =
     forward message to `scales`, repeat; or:
     stop processes, exit. *)
 let start () =
-  (* TODO Proper signal handling. See `man 7 signal` section on standards. *)
-  let _ = Sys.signal Sys.sigint (Sys.Signal_handle raise_signal) in
-  let _ = Sys.signal Sys.sigterm (Sys.Signal_handle raise_signal) in
-
   bracket
     ~acquire:begin fun () ->
       let strans : Transport.server_t = new TReusableServerSocket.t 9092 in

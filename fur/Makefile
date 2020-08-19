@@ -8,7 +8,7 @@ gen-ocaml:: ../plant/polynomial.thrift
 clean::
 	$(CMD) $(RM) -r gen-ocaml
 	$(CMD) $(RM) *.cmi *.cmx *.o
-	$(CMD) $(RM) broker
+	$(CMD) $(RM) main
 .PHONY: clean
 
 server_proxy:: gen-ocaml
