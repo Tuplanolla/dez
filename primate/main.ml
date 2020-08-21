@@ -4,7 +4,7 @@ open Util
 module Log = (val Logs.src_log (Logs.Src.create "maniunfold.primate"))
 
 (** Log messages follow a format, where
-    - `[%f]` mimicks `dmesg`,
+    - `[%0.03f]` mimicks `dmesg`,
     - `==%d==` mimicks `valgrind`,
     - `"%s"` mimicks `httpd`,
     - `<%s>` mimicks `objdump` and
@@ -20,14 +20,15 @@ let loc file line =
 let reporter ppf =
   let report src level ~over k msgf =
     let with_stamp _h tags k ppf fmt =
-      let file, line =
-        match
-          match tags with
-          | None -> None
-          | Some ts -> Logs.Tag.find loc_tag ts with
-        | None -> ("//toplevel//", 1)
-        | Some x -> x in
-      Format.kfprintf k ppf
+      match
+        match tags with
+        | None -> None
+        | Some ts -> Logs.Tag.find loc_tag ts with
+      | None -> Format.kfprintf k ppf
+        ("[%0.3f] ==%d== \"%s\" %a: " ^^ fmt ^^ "@.")
+        (Unix.gettimeofday ()) (Unix.getpid ()) (Logs.Src.name src)
+        Logs.pp_level level
+      | Some (file, line) -> Format.kfprintf k ppf
         ("[%0.3f] ==%d== \"%s\" %s:%d: %a: " ^^ fmt ^^ "@.")
         (Unix.gettimeofday ()) (Unix.getpid ()) (Logs.Src.name src)
         file line Logs.pp_level level in
@@ -42,7 +43,7 @@ let catch_signals =
       try
         set_signal i (Signal_handle raise_signal) ;
         Log.info (fun m ->
-          m "Set the behavior of SIG%s (%d) to raise an exception."
+          m "Set to raise an exception on SIG%s (%d)."
           (string_of_signal i) i)
       with
       | _ ->
@@ -58,7 +59,7 @@ let ignore_signals =
       try
         set_signal i Signal_ignore ;
         Log.info (fun m ->
-          m "Set the behavior of SIG%s (%d) to be ignored."
+          m "Set to ignore SIG%s (%d)."
           (string_of_signal i) i)
       with
       | _ ->
@@ -78,8 +79,8 @@ let main () =
       Logs.set_reporter (Logs.format_reporter ~app:fmt ~dst:fmt ()) ;
       Logs.set_reporter (reporter fmt) ;
       Logs.set_level (Some Logs.Debug) ;
-      Log.debug (fun m -> m "Timed!") ;
       Log.debug (fun m -> m "Timed!" ~tags:(loc __FILE__ __LINE__)) ;
+      Log.debug (fun m -> m "Timed!") ;
 
       let open Sys in
       catch_signals [|

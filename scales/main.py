@@ -3,7 +3,7 @@ import logging
 
 # Log messages follow a format, where
 #
-# * `[%(asctime)s.%(msecs)d]` mimicks `dmesg`,
+# * `[%(asctime)s.%(msecs)03d]` mimicks `dmesg`,
 # * `==%(process)d==` mimicks `valgrind`,
 # * `"%(name)s"` mimicks `httpd`,
 # * `<%(funcName)s>` mimicks `objdump` and
@@ -13,10 +13,10 @@ logging.basicConfig(
   filename='/tmp/scales.log',
   filemode='w',
   format=' '.join([
-    '[%(asctime)s.%(msecs)d]',
+    '[%(asctime)s.%(msecs)03d]',
     '==%(process)d==',
     '"%(name)s"',
-    '%(filename)s:%(lineno)d: %(levelname)s: %(message)s']),
+    '%(levelname)s: %(message)s']),
   datefmt='%s',
   level=logging.DEBUG)
 
