@@ -2,6 +2,8 @@ open Polynomial_types
 open Thrift
 open Util
 
+module Log = (val Logs.src_log (Logs.Src.create "maniunfold.primate"))
+
 module TReusableServerSocket =
   struct
     (** We need this subclass to set `SO_REUSEADDR`. *)

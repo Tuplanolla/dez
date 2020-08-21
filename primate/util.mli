@@ -1,6 +1,3 @@
-(** A specialization of [Logs] with this project as the source. *)
-module Log : Logs.LOG
-
 (** All the standard POSIX signals. *)
 val posix_signals : int array
 
@@ -15,13 +12,6 @@ exception Signal of int
 
 (** Raise a [Signal] exception for the given signal. *)
 val raise_signal : int -> 'a
-
-(** Make the given signals raise the [Signal] exception. *)
-val catch_signals : int array -> unit
-
-(** Make the given signals not raise the [Signal] exception or
-    terminate the process. *)
-val ignore_signals : int array -> unit
 
 (** Manage the scope of a resource.
 

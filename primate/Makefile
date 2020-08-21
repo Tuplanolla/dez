@@ -28,6 +28,7 @@ main:: gen-ocaml main.ml broker.ml util.ml
 	$(MSG) echo OCAMLOPT broker
 	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c util.mli
 	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c util.ml
+	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c broker.mli
 	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c broker.ml
 	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c main.ml
 	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -linkpkg -o main \

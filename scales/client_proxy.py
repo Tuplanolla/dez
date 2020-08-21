@@ -1,5 +1,6 @@
 import sys
 sys.path.append('gen-py')
+import logging
 import polynomial
 import thrift
 import os
@@ -8,13 +9,11 @@ from thrift.protocol import TBinaryProtocol
 from thrift.transport import TTransport
 from thrift.transport import TSocket
 
-import logging
-logging.basicConfig(filename='/tmp/scales.log', filemode='w', level=logging.DEBUG)
 logger = logging.getLogger('maniunfold.scales')
 
 def start():
-  logger.info('Process {} is connecting.'.format(os.getpid()))
-  trans = TTransport.TBufferedTransport(TSocket.TSocket('localhost', 9092))
+  logger.info('Connecting to {}.'.format('localhorse'))
+  trans = TTransport.TBufferedTransport(TSocket.TSocket('127.0.0.1', 9092))
   proto = TBinaryProtocol.TBinaryProtocol(trans)
   proto.trans.open()
   req = request(coeffs={0: 42.0, 2: 13.0}, point=7.0)
