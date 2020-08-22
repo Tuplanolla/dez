@@ -544,6 +544,12 @@ utop # #mod_use "gen-ocaml/polynomial_types.ml" ;;
 utop # #use "broker.ml" ;;
 ```
 
+Collate all logs together as follows.
+
+```
+$ LC_ALL=C sort -nk 1.2 -s primate.log scales.log
+```
+
 ## Simple Laws about Nonprominent Properties of Binary Relations by Jochen Burghardt
 
 Regarding common and less common binary relations,

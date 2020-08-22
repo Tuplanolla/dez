@@ -76,10 +76,8 @@ let main () =
     ~release:close_out
     begin fun oc ->
       let fmt = Format.formatter_of_out_channel oc in
-      Logs.set_reporter (Logs.format_reporter ~app:fmt ~dst:fmt ()) ;
       Logs.set_reporter (reporter fmt) ;
       Logs.set_level (Some Logs.Debug) ;
-      Log.debug (fun m -> m "Timed!" ~tags:(loc __FILE__ __LINE__)) ;
       Log.debug (fun m -> m "Timed!") ;
 
       let open Sys in
