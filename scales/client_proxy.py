@@ -1,9 +1,9 @@
 import sys
 sys.path.append('gen-py')
 import logging
+import os
 import polynomial
 import thrift
-import os
 from polynomial.ttypes import *
 from thrift.protocol import TBinaryProtocol
 from thrift.transport import TTransport

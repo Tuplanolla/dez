@@ -34,12 +34,12 @@ let posix_signals =
 
 let string_of_signal =
   let h = Hashtbl.create (Array.length posix_signals_array) in
-  Array.iter (fun (i, s) -> Hashtbl.add h i s) posix_signals_array ;
+  Array.iter (fun (i, s) -> Hashtbl.add h i s) posix_signals_array;
   Hashtbl.find h
 
 let signal_of_string =
   let h = Hashtbl.create (Array.length posix_signals_array) in
-  Array.iter (fun (i, s) -> Hashtbl.add h s i) posix_signals_array ;
+  Array.iter (fun (i, s) -> Hashtbl.add h s i) posix_signals_array;
   Hashtbl.find h
 
 exception Signal of int
@@ -50,9 +50,9 @@ let raise_signal i =
 let bracket ~acquire work ~release =
   let a = acquire () in
   let w = try work a with
-    | e -> release a ;
+    | e -> release a;
       raise e in
-  release a ;
+  release a;
   w
 
 let string_is_prefix s t =

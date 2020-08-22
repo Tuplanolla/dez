@@ -12,9 +12,9 @@ module TReusableServerSocket =
         inherit TServerSocket.t port
         method listen =
           let s = Unix.socket Unix.PF_INET Unix.SOCK_STREAM 0 in
-          sock <- Some s ;
-          Unix.setsockopt s Unix.SO_REUSEADDR true ;
-          Unix.bind s (Unix.ADDR_INET (Unix.inet_addr_any, port)) ;
+          sock <- Some s;
+          Unix.setsockopt s Unix.SO_REUSEADDR true;
+          Unix.bind s (Unix.ADDR_INET (Unix.inet_addr_any, port));
           Unix.listen s 256
       end
   end
@@ -36,15 +36,15 @@ let start () =
       strans#close
     end
     begin fun strans ->
-      Log.info (fun m -> m "Process %d is listening." (Unix.getpid ())) ;
-      strans#listen ;
+      Log.info (fun m -> m "Process %d is listening." (Unix.getpid ()));
+      strans#listen;
 
       bracket
         ~acquire:begin fun () ->
           bracket
             ~acquire:begin fun () ->
               let cwd = Sys.getcwd () in
-              Sys.chdir "../scales" ;
+              Sys.chdir "../scales";
               cwd
             end
             ~release:Sys.chdir
@@ -71,7 +71,7 @@ let start () =
         end
         begin fun pid ->
           Log.info (fun m -> m "Process %d started subprocess %d."
-            (Unix.getpid ()) pid) ;
+            (Unix.getpid ()) pid);
           let trans = strans#accept in
           let proto = new TBinaryProtocol.t trans in
           let req = read_request proto in
@@ -79,9 +79,9 @@ let start () =
             (fun i a y -> y +. a *. req#grab_point ** Int32.to_float i)
             req#grab_coeffs 0. in
           let res = new response in
-          res#set_value value ;
-          res#write proto ;
-          proto#getTransport#flush ;
+          res#set_value value;
+          res#write proto;
+          proto#getTransport#flush;
           proto#getTransport#close
         end
     end
