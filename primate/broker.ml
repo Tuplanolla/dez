@@ -36,7 +36,7 @@ let start () =
       strans#close
     end
     begin fun strans ->
-      Log.info (fun m -> m "Process %d is listening." (Unix.getpid ()));
+      Log.info (fun m -> m "Broker is listening.");
       strans#listen;
 
       bracket
@@ -60,18 +60,14 @@ let start () =
           let i, w = Unix.waitpid [] pid in
           match w with
           | Unix.WEXITED _ ->
-            Log.info (fun m -> m "Process %d terminated subprocess %d (WEXIT)."
-              (Unix.getpid ()) pid)
+            Log.info (fun m -> m "Broker terminated %d (WEXITED)." pid)
           | Unix.WSIGNALED _ ->
-            Log.info (fun m -> m "Process %d terminated subprocess %d (WSIG)."
-              (Unix.getpid ()) pid)
+            Log.info (fun m -> m "Broker terminated %d (WSIGNALED)." pid)
           | Unix.WSTOPPED _ ->
-            Log.info (fun m -> m "Process %d terminated subprocess %d (WSTOP)."
-              (Unix.getpid ()) pid)
+            Log.info (fun m -> m "Broker terminated %d (WSTOPPED)." pid)
         end
         begin fun pid ->
-          Log.info (fun m -> m "Process %d started subprocess %d."
-            (Unix.getpid ()) pid);
+          Log.info (fun m -> m "Broker started %d." pid);
           let trans = strans#accept in
           let proto = new TBinaryProtocol.t trans in
           let req = read_request proto in

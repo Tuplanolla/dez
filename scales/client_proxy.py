@@ -22,4 +22,5 @@ def start():
   res = response()
   res.read(proto)
   proto.trans.close()
+  logger.info('Work is done.')
   print(str(res))
