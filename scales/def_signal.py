@@ -59,18 +59,18 @@ class SignalBehavior(enum.Enum):
   '''
   Defunctionalized version of ``signal.SIG_*``.
   '''
-  SIGNAL_DEFAULT = enum.auto()
-  SIGNAL_IGNORE = enum.auto()
-  SIGNAL_RAISE = enum.auto()
-  SIGNAL_SKIP = enum.auto()
+  DEFAULT = enum.auto()
+  IGNORE = enum.auto()
+  RAISE = enum.auto()
+  SKIP = enum.auto()
 
 def set_signal(signum, behavior):
   '''
   Defunctionalized version of ``signal.signal``.
   '''
-  if behavior is SignalBehavior.SIGNAL_DEFAULT:
+  if behavior is SignalBehavior.DEFAULT:
     return signal.signal(signum, signal.SIG_DFL)
-  if behavior is SignalBehavior.SIGNAL_IGNORE:
+  if behavior is SignalBehavior.IGNORE:
     return signal.signal(signum, signal.SIG_IGN)
-  if behavior is SignalBehavior.SIGNAL_RAISE:
+  if behavior is SignalBehavior.RAISE:
     return signal.signal(signum, raise_signal)

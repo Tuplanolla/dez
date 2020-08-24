@@ -1,7 +1,3 @@
-open Util
-
-module Log = (val Logs.src_log (Logs.Src.create "maniunfold.primate"))
-
 (** Tag carrying location information. *)
 let loc_tag : (string * int) Logs.Tag.def =
   Logs.Tag.def "loc" begin fun fmt (s, i) ->
@@ -9,9 +5,18 @@ let loc_tag : (string * int) Logs.Tag.def =
     Format.pp_print_string s Format.pp_print_int i
   end
 
-(** Location information. *)
+(** Attach location information. *)
 let loc file line =
   Logs.Tag.add loc_tag (file, line) Logs.Tag.empty
+
+(** TODO Upgrade to OCaml 4.08. *)
+module Option =
+  struct
+    let bind xs m =
+      match xs with
+      | None -> None
+      | Some x -> m x
+  end
 
 (** Report a log message with location information.
 
@@ -26,18 +31,21 @@ let reporter ppf =
     let k _ =
       over ();
       f () in
-    msgf begin fun ?header ?tags fmt ->
-      match Option.bind tags (Logs.Tag.find loc_tag) with
-      | None -> Format.kfprintf k ppf
-        ("[%0.3f] ==%d== \"%s\" %a: " ^^ fmt ^^ "@.")
-        (Unix.gettimeofday ()) (Unix.getpid ()) (Logs.Src.name src)
-        Logs.pp_level level
-      | Some (file, line) -> Format.kfprintf k ppf
-        ("[%0.3f] ==%d== \"%s\" %s:%d: %a: " ^^ fmt ^^ "@.")
-        (Unix.gettimeofday ()) (Unix.getpid ()) (Logs.Src.name src)
-        file line Logs.pp_level level
-    end in
+    msgf
+      begin fun ?header ?tags fmt ->
+        match Option.bind tags (Logs.Tag.find loc_tag) with
+        | None -> Format.kfprintf k ppf
+          ("[%0.3f] ==%d== \"%s\" %a: " ^^ fmt ^^ "@.")
+          (Unix.gettimeofday ()) (Unix.getpid ()) (Logs.Src.name src)
+          Logs.pp_level level
+        | Some (file, line) -> Format.kfprintf k ppf
+          ("[%0.3f] ==%d== \"%s\" %s:%d: %a: " ^^ fmt ^^ "@.")
+          (Unix.gettimeofday ()) (Unix.getpid ()) (Logs.Src.name src)
+          file line Logs.pp_level level
+      end in
   {Logs.report = report}
+
+module Log = (val Logs.src_log (Logs.Src.create "maniunfold.primate"))
 
 (** Configure logging. *)
 let config_logging ppf =
@@ -71,9 +79,9 @@ let config_signals () =
       (Sys.sigterm, Def_sys.Signal_raise);
       (Sys.sigusr1, Def_sys.Signal_raise);
       (Sys.sigusr2, Def_sys.Signal_raise);
-      (** We keep the default behavior of this signal
-          in order to be able to wait for subprocesses. *)
-      (Sys.sigchld, Def_sys.Signal_default);
+      (** We ignore this signal,
+          so that we do not have to wait for subprocesses. *)
+      (Sys.sigchld, Def_sys.Signal_ignore);
       (Sys.sigcont, Def_sys.Signal_default);
       (** We cannot catch this signal. *)
       (Sys.sigstop, Def_sys.Signal_skip);
@@ -96,7 +104,7 @@ let config_signals () =
 
 (** Configure and start the message broker. *)
 let main () =
-  bracket
+  Util.bracket
     ~acquire:begin fun () ->
       open_out "/tmp/primate.log"
     end
