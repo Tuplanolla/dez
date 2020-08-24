@@ -1,6 +1,9 @@
 CMD:=$(if $(VERBOSE),,@ )
 MSG:=$(if $(VERBOSE),@ true || ,@ )
 
+OCAMLPFFTLAGS:=-I gen-ocaml -O2 \
+-package num -package logs -package thrift -thread
+
 main:: gen-ocaml main.ml server_proxy.ml
 	$(MSG) echo OCAMLOPT server_proxy
 	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c ../primate/util.mli
@@ -29,5 +32,7 @@ clean::
 	$(CMD) $(RM) main
 .PHONY: clean
 
-OCAMLPFFTLAGS:=-I ../ungulate -I gen-ocaml -O2 \
--package num -package logs -package thrift -thread
+run::
+	$(MSG) echo FUR test
+	$(CMD) ./main test
+.PHONY: run

@@ -35,13 +35,13 @@ let reporter ppf =
       begin fun ?header ?tags fmt ->
         match Option.bind tags (Logs.Tag.find loc_tag) with
         | None -> Format.kfprintf k ppf
-          ("[%0.3f] ==%d== \"%s\" %a: " ^^ fmt ^^ "@.")
-          (Unix.gettimeofday ()) (Unix.getpid ()) (Logs.Src.name src)
-          Logs.pp_level level
+            ("[%0.3f] ==%d== \"%s\" %a: " ^^ fmt ^^ "@.")
+            (Unix.gettimeofday ()) (Unix.getpid ()) (Logs.Src.name src)
+            Logs.pp_level level
         | Some (file, line) -> Format.kfprintf k ppf
-          ("[%0.3f] ==%d== \"%s\" %s:%d: %a: " ^^ fmt ^^ "@.")
-          (Unix.gettimeofday ()) (Unix.getpid ()) (Logs.Src.name src)
-          file line Logs.pp_level level
+            ("[%0.3f] ==%d== \"%s\" %s:%d: %a: " ^^ fmt ^^ "@.")
+            (Unix.gettimeofday ()) (Unix.getpid ()) (Logs.Src.name src)
+            file line Logs.pp_level level
       end in
   {Logs.report = report}
 
@@ -58,12 +58,13 @@ let config_logging ppf =
 let config_signals () =
   Array.iter
     begin fun (i, b) ->
-      try Def_sys.set_signal i b;
+      try
+        Def_sys.set_signal i b;
         Log.debug (fun m -> m "Set the behavior of SIG%s (%d)."
           (Def_sys.string_of_signal i) i) with
       | _ ->
-        Log.warn (fun m -> m "Failed to set the behavior of SIG%s (%d)."
-          (Def_sys.string_of_signal i) i)
+          Log.warn (fun m -> m "Failed to set the behavior of SIG%s (%d)."
+            (Def_sys.string_of_signal i) i)
     end
     [|(Sys.sigabrt, Def_sys.Signal_raise);
       (Sys.sigalrm, Def_sys.Signal_raise);

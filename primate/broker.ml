@@ -33,7 +33,7 @@ module TForkableChannelTransport =
         inherit TChannelTransport.t (ic, oc)
         method close_fork = self#close
       end
-    end
+  end
 
 module TForkableSocket =
   struct
@@ -48,7 +48,7 @@ module TForkableSocket =
               close_in ic;
               chans <- None
       end
-    end
+  end
 
 module TForkableServerSocket =
   struct
@@ -65,7 +65,8 @@ module TForkableServerSocket =
           listen s 256
         method accept_fork =
           match sock with
-          | None -> raise (Transport.E (Transport.NOT_OPEN, "TForkableSocket"))
+          | None -> raise
+              (Transport.E (Transport.NOT_OPEN, "TForkableServerSocket"))
           | Some s ->
               let fd, _ = accept s in
               new TForkableChannelTransport.t
@@ -77,7 +78,7 @@ module TForkableServerSocket =
               close s;
               sock <- None
       end
-    end
+  end
 
 (** We cannot use [TThreadedServer] here,
     because threads get blocked on system calls. *)
@@ -85,8 +86,7 @@ module TForkableServerSocket =
 let start () =
   bracket
     ~acquire:begin fun () ->
-      let strans = new TForkableServerSocket.t 9092 in
-      strans
+      new TForkableServerSocket.t 9092
     end
     ~release:begin fun strans ->
       strans#close
@@ -94,24 +94,30 @@ let start () =
     begin fun strans ->
       Log.info (fun m -> m "Process is listening.");
       strans#listen;
+      (** TODO Now pool connections here and start brokering! *)
       while true do
         let trans = strans#accept_fork in
         match Unix.fork () with
-        | 0 -> strans#close_fork;
-          let proto = new TBinaryProtocol.t (trans :> Transport.t) in
-          let req = read_request proto in
-          let value = Hashtbl.fold
-            (fun i a y -> y +. a *. req#grab_point ** Int32.to_float i)
-            req#grab_coeffs 0. in
-          Unix.sleep 1;
-          let res = new response in
-          res#set_value value;
-          res#write proto;
-          proto#getTransport#flush;
-          proto#getTransport#close;
-          Log.debug (fun m -> m "Ended subprocess %d." (Unix.getpid ()));
-          exit 0
-        | pid -> trans#close_fork;
-          Log.debug (fun m -> m "Started subprocess %d." pid)
+        | 0 ->
+            strans#close_fork;
+            (** TODO Specify an identification message and read it here.
+                Based on the identification, choose the protocol.
+                The following assumes "one-shot gui". *)
+            let proto = new TBinaryProtocol.t (trans :> Transport.t) in
+            let req = read_request proto in
+            let value = Hashtbl.fold
+              (fun i a y -> y +. a *. req#grab_point ** Int32.to_float i)
+              req#grab_coeffs 0. in
+            Unix.sleep 1;
+            let res = new response in
+            res#set_value value;
+            res#write proto;
+            proto#getTransport#flush;
+            proto#getTransport#close;
+            Log.debug (fun m -> m "Ended subprocess %d." (Unix.getpid ()));
+            exit 0
+        | pid ->
+            trans#close_fork;
+            Log.debug (fun m -> m "Started subprocess %d." pid)
       done
-  end
+    end

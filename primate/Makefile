@@ -1,28 +1,8 @@
 CMD:=$(if $(VERBOSE),,@ )
 MSG:=$(if $(VERBOSE),@ true || ,@ )
 
-all:: main
-.PHONY: all
-
-clean::
-	$(CMD) $(RM) -r gen-ocaml
-	$(CMD) $(RM) *.cmi *.cmx *.o
-	$(CMD) $(RM) main
-.PHONY: clean
-
-run::
-	$(MSG) echo BROKER test
-	$(CMD) ./main test
-.PHONY: run
-
-OCAMLPFFTLAGS:=-I gen-ocaml -O2 -package num -package logs -package thrift -thread
-
-gen-ocaml:: ../plant/polynomial.thrift
-	$(MSG) echo THRIFT primate
-	$(CMD) thrift --gen ocaml $<
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_types.mli
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_types.ml
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_consts.ml
+OCAMLPFFTLAGS:=-I gen-ocaml -O2 \
+-package num -package logs -package thrift -thread
 
 main:: gen-ocaml main.ml broker.ml util.ml
 	$(MSG) echo OCAMLOPT broker
@@ -36,3 +16,21 @@ main:: gen-ocaml main.ml broker.ml util.ml
 	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -linkpkg -o main \
 	gen-ocaml/polynomial_types.cmx gen-ocaml/polynomial_consts.cmx \
 	def_sys.cmx util.cmx broker.cmx main.cmx
+
+gen-ocaml:: ../plant/polynomial.thrift
+	$(MSG) echo THRIFT primate
+	$(CMD) thrift --gen ocaml $<
+	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_types.mli
+	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_types.ml
+	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_consts.ml
+
+clean::
+	$(CMD) $(RM) -r gen-ocaml
+	$(CMD) $(RM) *.cmi *.cmx *.o
+	$(CMD) $(RM) main
+.PHONY: clean
+
+run::
+	$(MSG) echo BROKER test
+	$(CMD) ./main test
+.PHONY: run
