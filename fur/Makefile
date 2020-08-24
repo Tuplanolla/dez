@@ -1,9 +1,27 @@
 CMD:=$(if $(VERBOSE),,@ )
 MSG:=$(if $(VERBOSE),@ true || ,@ )
 
+main:: gen-ocaml main.ml server_proxy.ml
+	$(MSG) echo OCAMLOPT server_proxy
+	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c ../primate/util.mli
+	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c ../primate/util.ml
+	# TODO Common package for utilities.
+	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c ../primate/def_sys.mli
+	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c ../primate/def_sys.ml
+	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c server_proxy.mli
+	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c server_proxy.ml
+	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c main.ml
+	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -linkpkg -o main \
+	gen-ocaml/polynomial_types.cmx gen-ocaml/polynomial_consts.cmx \
+	../ungulate/extraction.cmx ../ungulate/adapter.cmx \
+	def_sys.cmx util.cmx server_proxy.cmx main.cmx
+
 gen-ocaml:: ../plant/polynomial.thrift
 	$(MSG) echo THRIFT fur
 	$(CMD) thrift --gen ocaml $<
+	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_types.mli
+	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_types.ml
+	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_consts.ml
 
 clean::
 	$(CMD) $(RM) -r gen-ocaml
@@ -11,8 +29,5 @@ clean::
 	$(CMD) $(RM) main
 .PHONY: clean
 
-server_proxy:: gen-ocaml
-	$(MSG) echo OCAMLOPT fur
-	$(CMD) ocamlfind ocamlopt -I ../ungulate -O2 -c -package num server_proxy.ml
-	$(CMD) ocamlfind ocamlopt -I ../ungulate -O2 -linkpkg -o server_proxy -package num \
-	extraction.cmx adapter.cmx server_proxy.cmx
+OCAMLPFFTLAGS:=-I ../ungulate -I gen-ocaml -O2 \
+-package num -package logs -package thrift -thread
