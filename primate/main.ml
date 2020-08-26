@@ -67,7 +67,9 @@ let config_signals () =
             (Def_sys.string_of_signal i) i)
     end
     [|(Sys.sigabrt, Def_sys.Signal_raise);
-      (Sys.sigalrm, Def_sys.Signal_raise);
+      (** We ignore this signal,
+          since it is only used to wake up sleeping threads. *)
+      (Sys.sigalrm, Def_sys.Signal_ignore);
       (Sys.sigfpe, Def_sys.Signal_raise);
       (Sys.sighup, Def_sys.Signal_raise);
       (Sys.sigill, Def_sys.Signal_raise);
@@ -91,7 +93,9 @@ let config_signals () =
       (Sys.sigtstp, Def_sys.Signal_default);
       (Sys.sigttin, Def_sys.Signal_default);
       (Sys.sigttou, Def_sys.Signal_default);
-      (Sys.sigvtalrm, Def_sys.Signal_raise);
+      (** We ignore this signal,
+          since it is only used to wake up sleeping threads. *)
+      (Sys.sigvtalrm, Def_sys.Signal_ignore);
       (Sys.sigprof, Def_sys.Signal_raise);
       (Sys.sigbus, Def_sys.Signal_raise);
       (Sys.sigpoll, Def_sys.Signal_raise);
