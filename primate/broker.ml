@@ -6,45 +6,16 @@ open Util
 module Log = (val Logs.src_log (Logs.Src.create "maniunfold.primate"))
 
 (** We need to extend [Transport]
-    with capabilities to [close] a socket without [shutdown].
+    with capabilities for preemptive multitasking.
     We also add [SO_REUSEADDR] to the socket options.
     As you can see, object-oriented programming was a mistake. *)
 
-(** TODO Get rid of the [fork] business. *)
-
-module ParallelTransport =
-  struct
-    class virtual t =
-      object
-        inherit Transport.t
-        method virtual close_fork : unit
-      end
-
-    class virtual server_t =
-      object
-        inherit Transport.server_t
-        method virtual accept_fork : t
-        method virtual close_fork : unit
-      end
-  end
-
-module TParallelChannelTransport =
-  struct
-    class t (ic, oc) =
-      object (self)
-        inherit ParallelTransport.t
-        inherit TChannelTransport.t (ic, oc)
-        method close_fork = self#close
-      end
-  end
-
-module TParallelSocket =
+module TThreadedSocket =
   struct
     class t host port =
       let open Unix in
       let open ThreadUnix in
       object
-        inherit ParallelTransport.t
         inherit TSocket.t host port
         method isOpen = chans != None
         method opn =
@@ -80,22 +51,15 @@ module TParallelSocket =
           match chans with
           | None -> raise (Transport.E (Transport.NOT_OPEN, "TSocket: Socket not open"))
           | Some (i, o) -> flush o
-        method close_fork =
-          match chans with
-          | None -> ()
-          | Some (ic, _) ->
-              close_in ic;
-              chans <- None
       end
   end
 
-module TParallelServerSocket =
+module TThreadedServerSocket =
   struct
     class t port =
       let open Unix in
       let open ThreadUnix in
       object
-        inherit ParallelTransport.server_t
         inherit TServerSocket.t port
         method listen =
           let s = socket PF_INET SOCK_STREAM 0 in
@@ -118,20 +82,6 @@ module TParallelServerSocket =
               let fd, _ = accept s in
               new TChannelTransport.t
               (in_channel_of_descr fd, out_channel_of_descr fd)
-        method accept_fork =
-          match sock with
-          | None -> raise
-              (Transport.E (Transport.NOT_OPEN, "TServerSocket: Not listening but tried to accept"))
-          | Some s ->
-              let fd, _ = accept s in
-              new TParallelChannelTransport.t
-              (in_channel_of_descr fd, out_channel_of_descr fd)
-        method close_fork =
-          match sock with
-          | None -> ()
-          | Some s ->
-              close s;
-              sock <- None
       end
   end
 
@@ -143,7 +93,7 @@ let start () =
     ~acquire:begin fun () ->
       (** This is the only unregistered port
           that is both prime and has a trivial binary representation. *)
-      new TParallelServerSocket.t 8191
+      new TThreadedServerSocket.t 8191
     end
     ~release:begin fun strans ->
       strans#close
@@ -151,16 +101,25 @@ let start () =
     begin fun strans ->
       Log.info (fun m -> m "Process is listening.");
       strans#listen;
-      (** TODO Now pool connections here and start brokering! *)
+      let mutex = Mutex.create () in
+      let atomically f =
+        Mutex.lock mutex;
+        f ();
+        Mutex.unlock mutex in
       let tbl = Hashtbl.create 0 in
+      (** TODO Now pool connections here and start brokering! *)
       while true do
         let thread = Thread.create begin fun trans ->
           let proto = new TBinaryProtocol.t (trans :> Transport.t) in
           let id = read_identity proto in
+          (** TODO Handle duplicate keys. *)
+          atomically begin fun () ->
+            Hashtbl.add tbl id#grab_name proto
+          end;
           match id#grab_name with
-          | "fur" ->
-              raise (Invalid_argument "Not supported yet")
+          | "fur" -> raise (Invalid_argument "Not supported yet")
           | "scales" ->
+              Log.debug (fun m -> m "Identified the animal.");
               let req = read_request proto in
               let value = Hashtbl.fold
                 (fun i a y -> y +. a *. req#grab_point ** Int32.to_float i)
@@ -172,11 +131,15 @@ let start () =
               res#write proto;
               proto#getTransport#flush;
               proto#getTransport#close;
-              Log.debug (fun m -> m "Ended subprocess %d." (Unix.getpid ()))
-          | name ->
-              raise (Invalid_argument name)
+              Log.debug (fun m -> m "Ended subprocess %d."
+                (Thread.id (Thread.self ())))
+          | name -> raise (Invalid_argument name);
+          atomically begin fun () ->
+            Hashtbl.remove tbl id#grab_name;
+          end
         end
         strans#accept in
         Log.debug (fun m -> m "Started subprocess %d." (Thread.id thread))
       done
+      (** TODO Graceful exit. *)
     end
