@@ -1,9 +1,8 @@
 CMD:=$(if $(VERBOSE),,@ )
 MSG:=$(if $(VERBOSE),@ true || ,@ )
 
-gen-py:: ../plant/polynomial.thrift
-	$(MSG) echo THRIFT scales
-	$(CMD) thrift --gen py $<
+build:: gen-py
+.PHONY: build
 
 clean::
 	$(CMD) $(RM) -r gen-py
@@ -11,3 +10,7 @@ clean::
 
 run:: gen-py
 	$(CMD) python3 main.py
+
+gen-py:: ../plant/main.thrift ../plant/component.thrift ../plant/polynomial.thrift
+	$(MSG) echo THRIFT $<
+	$(CMD) thrift --gen py -r $<

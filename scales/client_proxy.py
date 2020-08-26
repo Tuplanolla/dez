@@ -1,9 +1,11 @@
 import sys
 sys.path.append('gen-py')
+import component
 import logging
 import os
 import polynomial
 import thrift
+from component.ttypes import *
 from polynomial.ttypes import *
 from thrift.protocol import TBinaryProtocol
 from thrift.transport import TSocket
@@ -16,13 +18,13 @@ def start():
   Configure and start the client proxy.
   '''
   logger.info('Connecting to {}.'.format('localhorse'))
-  trans = TTransport.TBufferedTransport(TSocket.TSocket('127.0.0.1', 9092))
+  trans = TTransport.TBufferedTransport(TSocket.TSocket('127.0.0.1', 8191))
   proto = TBinaryProtocol.TBinaryProtocol(trans)
   proto.trans.open()
-  # Launch gui and wait for commands.
+  id = identity(name="scales")
+  id.write(proto)
+  proto.trans.flush()
   req = request(coeffs={0: 42.0, 2: 13.0}, point=7.0)
-  # On each command, send it to the broker, wait for the response, forward it.
-  # We may block the proxy, but never the gui.
   req.write(proto)
   proto.trans.flush()
   res = response()

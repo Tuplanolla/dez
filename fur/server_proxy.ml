@@ -5,7 +5,7 @@ module Log = (val Logs.src_log (Logs.Src.create "maniunfold.fur"))
 
 let start () =
   Log.info (fun m -> m "Connecting to %s." "localhorse");
-  let trans = new TSocket.t "localhost" 9092 in
+  let trans = new TSocket.t "localhost" 8191 in
   let proto = new TBinaryProtocol.t trans in
   proto#getTransport#opn;
   let req = read_request proto in

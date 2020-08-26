@@ -1,7 +1,7 @@
 CMD:=$(if $(VERBOSE),,@ )
 MSG:=$(if $(VERBOSE),@ true || ,@ )
 
-OCAMLPFFTLAGS:=-I gen-ocaml -O2 \
+OCAMLPFFTLAGS:=-I gen-ocaml -I ../ungulate -I ../primate -O2 \
 -package num -package logs -package thrift -thread
 
 main:: gen-ocaml main.ml server_proxy.ml
@@ -19,9 +19,12 @@ main:: gen-ocaml main.ml server_proxy.ml
 	../ungulate/extraction.cmx ../ungulate/adapter.cmx \
 	def_sys.cmx util.cmx server_proxy.cmx main.cmx
 
-gen-ocaml:: ../plant/polynomial.thrift
-	$(MSG) echo THRIFT fur
-	$(CMD) thrift --gen ocaml $<
+gen-ocaml:: ../plant/main.thrift
+	$(MSG) echo THRIFT $<
+	$(CMD) thrift --gen ocaml -r $<
+	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/component_types.mli
+	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/component_types.ml
+	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/component_consts.ml
 	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_types.mli
 	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_types.ml
 	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_consts.ml
