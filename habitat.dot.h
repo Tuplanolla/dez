@@ -4,121 +4,83 @@
 #define SUBGRAPH(x) uncluster_##x
 #endif
 digraph habitat {
-  subgraph SUBGRAPH(maniunfold) {
-    label = "Project\nManiunfold"
+  subgraph SUBGRAPH(bird) {
+    label = "Component\nBird"
 
-    subgraph SUBGRAPH(bird) {
-      label = "Component\nBird"
+    node [shape = box]
 
-      node [shape = box]
-
-      bird [label = "Coq Source\nfor Formal Specification"]
-    }
-
-    /* subgraph SUBGRAPH(feathers) {
-      label = "Component\nFeathers"
-    } */
-
-    subgraph SUBGRAPH(plant) {
-      label = "Component\nPlant"
-
-      node [shape = box]
-
-      plant [label = "Thrift IDL Source\nfor Message Specification"]
-    }
-
-    /* subgraph SUBGRAPH(leaves) {
-      label = "Component\nLeaves"
-    } */
-
-    subgraph SUBGRAPH(ungulate) {
-      label = "Component\nUngulate"
-
-      node [shape = box]
-
-      ungulate [label = "OCaml Source\nfor Symbolic Manipulation"]
-      ungulate_from_bird [label = "OCaml Source\nfor Formal Verification"]
-
-      node [shape = oval]
-
-      ungulate_from_ungulate [label = "Server\nfor Verified Symbolic Manipulation"]
-    }
-
-    subgraph SUBGRAPH(fur) {
-      label = "Component\nFur"
-
-      node [shape = box]
-
-      fur [label = "OCaml Source\nfor Message Interpretation"]
-      fur_from_plant [label = "OCaml Source\nfor Message Transmission"]
-
-      node [shape = oval]
-
-      fur_from_fur [label = "Server Proxy\nfor Verified Symbolic Manipulation"]
-    }
-
-    subgraph SUBGRAPH(reptile) {
-      label = "Component\nReptile"
-
-      node [shape = box]
-
-      reptile [label = "Python Source\nfor Graphical User Interaction"]
-
-      node [shape = oval]
-
-      reptile_from_reptile [label = "Client\nfor Graphical User Interaction"]
-    }
-
-    subgraph SUBGRAPH(scales) {
-      label = "Component\nScales"
-
-      node [shape = box]
-
-      scales [label = "Python Source\nfor Graphical User Interaction"]
-      scales_from_plant [label = "Python Source\nfor Message Transmission"]
-
-      node [shape = oval]
-
-      scales_from_scales [label = "Client Proxy\nfor Graphical User Interaction"]
-    }
-
-    /* subgraph SUBGRAPH(fungus) {
-      label = "Component\nFungus"
-    } */
-
-    subgraph SUBGRAPH(spores) {
-      label = "Component\nSpores"
-
-      node [shape = box]
-
-      spores [label = "C++ Source\nfor Message Interpretation"]
-      spores_from_plant [label = "C++ Source\nfor Message Transmission"]
-
-      node [shape = oval]
-
-      spores_from_spores [label = "Server Proxy\nfor Numerical Computation"]
-    }
-
-    subgraph SUBGRAPH(primate) {
-      label = "Component\nPrimate"
-
-      node [shape = box]
-
-      primate [label = "OCaml Source\nfor Message Interpretation"]
-      primate_from_plant [label = "OCaml Source\nfor Message Transmission"]
-
-      node [shape = oval]
-
-      primate_from_primate [label = "Broker\nfor Message Passing"]
-    }
-
-    /* subgraph SUBGRAPH(hair) {
-      label = "Component\nHair"
-    } */
+    bird [label = "Coq Source\nfor Formal Specification"]
   }
 
-  subgraph SUBGRAPH(gfd) {
-    label = "Project\nGFD"
+  /* subgraph SUBGRAPH(feathers) {
+    label = "Component\nFeathers"
+  } */
+
+  subgraph SUBGRAPH(plant) {
+    label = "Component\nPlant"
+
+    node [shape = box]
+
+    plant [label = "Thrift IDL Source\nfor Message Specification"]
+  }
+
+  /* subgraph SUBGRAPH(leaves) {
+    label = "Component\nLeaves"
+  } */
+
+  subgraph SUBGRAPH(ungulate) {
+    label = "Component\nUngulate"
+
+    node [shape = box]
+
+    ungulate [label = "OCaml Source\nfor Symbolic Manipulation"]
+    ungulate_from_bird [label = "OCaml Source\nfor Formal Verification"]
+
+    node [shape = oval]
+
+    ungulate_from_ungulate [label = "Server\nfor Verified Symbolic Manipulation"]
+  }
+
+  subgraph SUBGRAPH(fur) {
+    label = "Component\nFur"
+
+    node [shape = box]
+
+    fur [label = "OCaml Source\nfor Message Interpretation"]
+    fur_from_plant [label = "OCaml Source\nfor Message Transmission"]
+
+    node [shape = oval]
+
+    fur_from_fur [label = "Server Proxy\nfor Verified Symbolic Manipulation"]
+  }
+
+  subgraph SUBGRAPH(reptile) {
+    label = "Component\nReptile"
+
+    node [shape = box]
+
+    reptile [label = "Python Source\nfor Graphical User Interaction"]
+
+    node [shape = oval]
+
+    reptile_from_reptile [label = "Client\nfor Graphical User Interaction"]
+  }
+
+  subgraph SUBGRAPH(scales) {
+    label = "Component\nScales"
+
+    node [shape = box]
+
+    scales [label = "Python Source\nfor Graphical User Interaction"]
+    scales_from_plant [label = "Python Source\nfor Message Transmission"]
+
+    node [shape = oval]
+
+    scales_from_scales [label = "Client Proxy\nfor Graphical User Interaction"]
+  }
+
+  subgraph SUBGRAPH(fungus) {
+    label = "Component\nFungus"
 
     node [shape = box]
 
@@ -128,6 +90,36 @@ digraph habitat {
 
     fungus_from_fungus [label = "Server\nfor Numerical Computation"]
   }
+
+  subgraph SUBGRAPH(spores) {
+    label = "Component\nSpores"
+
+    node [shape = box]
+
+    spores [label = "C++ Source\nfor Message Interpretation"]
+    spores_from_plant [label = "C++ Source\nfor Message Transmission"]
+
+    node [shape = oval]
+
+    spores_from_spores [label = "Server Proxy\nfor Numerical Computation"]
+  }
+
+  subgraph SUBGRAPH(primate) {
+    label = "Component\nPrimate"
+
+    node [shape = box]
+
+    primate [label = "OCaml Source\nfor Message Interpretation"]
+    primate_from_plant [label = "OCaml Source\nfor Message Transmission"]
+
+    node [shape = oval]
+
+    primate_from_primate [label = "Broker\nfor Message Passing"]
+  }
+
+  /* subgraph SUBGRAPH(hair) {
+    label = "Component\nHair"
+  } */
 #ifdef COMPILE
   bird -> ungulate_from_bird [label = "(1) Code Extraction"]
   plant -> fur_from_plant [label = "(1) Code Generation"]
