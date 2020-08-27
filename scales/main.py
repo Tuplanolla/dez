@@ -110,4 +110,5 @@ def main():
   config_signals()
   client_proxy.start()
 
-main()
+if __name__ == '__main__':
+  main()
