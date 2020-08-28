@@ -37,7 +37,7 @@ def main():
     try:
       x = sp.Symbol('x')
       p = sp.polys.polytools.poly_from_expr(expr.get())[0]
-      y = p.sub(x, float(pt.get()))
+      y = p.subs({x: float(pt.get())})
       val.insert(0, str(y))
     except:
       val.insert(0, 'Error')

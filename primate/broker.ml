@@ -88,35 +88,50 @@ module TThreadedServerSocket =
 (** We cannot use [TThreadedServer] here,
     because threads get blocked on system calls. *)
 
+let broker_port = 8191
+
 let start () =
   bracket
-    ~acquire:begin fun () ->
-      (** This is the only unregistered port
-          that is both prime and has a trivial binary representation. *)
-      new TThreadedServerSocket.t 8191
-    end
-    ~release:begin fun strans ->
-      strans#close
-    end
-    begin fun strans ->
-      Log.info (fun m -> m "Process is listening.");
-      strans#listen;
-      let mutex = Mutex.create () in
-      let atomically f =
-        Mutex.lock mutex;
-        f ();
-        Mutex.unlock mutex in
-      let tbl = Hashtbl.create 0 in
-      (** TODO Now pool connections here and start brokering! *)
-      while true do
-        let thread = Thread.create begin fun trans ->
-          let proto = new TBinaryProtocol.t (trans :> Transport.t) in
+  ~acquire:(fun () -> new TThreadedServerSocket.t broker_port)
+  ~release:(fun strans -> strans#close)
+  begin fun strans ->
+    let mutex = Mutex.create () in
+    let atomically f =
+      bracket
+      ~acquire:(fun () -> Mutex.lock mutex)
+      ~release:(fun () -> Mutex.unlock mutex)
+      f in
+    let protos = Hashtbl.create 0 in
+    let on = ref true in
+    strans#listen;
+    Log.debug begin fun m ->
+      m "Started listening for connections on thread %d."
+      (Thread.id (Thread.self ()))
+    end;
+    while atomically (fun () -> !on) do
+      try
+      let thread = Thread.create begin fun trans ->
+        bracket
+        ~acquire:begin fun () ->
+          ref None
+        end
+        ~release:begin fun names ->
+          atomically begin fun () ->
+            match !names with
+            | None -> ()
+            | Some name -> Hashtbl.remove protos name
+          end
+        end
+        begin fun names ->
+          let proto = new TBinaryProtocol.t trans in
           let id = read_identity proto in
+          let name = id#grab_name in
           (** TODO Handle duplicate keys. *)
           atomically begin fun () ->
-            Hashtbl.add tbl id#grab_name proto
+            Hashtbl.add protos name proto;
+            names := Some name
           end;
-          match id#grab_name with
+          match name with
           | "fur" -> raise (Invalid_argument "Not supported yet")
           | "scales" ->
               Log.debug (fun m -> m "Identified the animal.");
@@ -133,13 +148,19 @@ let start () =
               proto#getTransport#close;
               Log.debug (fun m -> m "Ended subprocess %d."
                 (Thread.id (Thread.self ())))
-          | name -> raise (Invalid_argument name);
-          atomically begin fun () ->
-            Hashtbl.remove tbl id#grab_name;
-          end
+          | name -> raise (Invalid_argument name)
         end
-        strans#accept in
-        Log.debug (fun m -> m "Started subprocess %d." (Thread.id thread))
-      done
-      (** TODO Graceful exit. *)
+      end
+      strans#accept in
+      Log.debug begin fun m ->
+        m "Accepted a connection on thread %d." (Thread.id thread)
+      end
+    with
+    | Def_sys.Signal i when i = Sys.sigint ->
+        atomically (fun () -> on := false)
+    done;
+    Log.debug begin fun m ->
+      m "Stopped listening for connections on thread %d."
+      (Thread.id (Thread.self ()))
     end
+  end

@@ -13,12 +13,18 @@ from thrift.transport import TTransport
 
 logger = logging.getLogger('maniunfold.scales')
 
+def broker_port():
+  '''
+  See the documentation for the broker.
+  '''
+  return 8191
+
 def start():
   '''
   Configure and start the client proxy.
   '''
   logger.info('Connecting to {}.'.format('localhorse'))
-  trans = TTransport.TBufferedTransport(TSocket.TSocket('127.0.0.1', 8191))
+  trans = TTransport.TBufferedTransport(TSocket.TSocket('127.0.0.1', broker_port()))
   proto = TBinaryProtocol.TBinaryProtocol(trans)
   proto.trans.open()
   id = identity(name="scales")
