@@ -1,10 +1,10 @@
 import tkinter as tk
+from multiprocessing import Process, Queue
 
 def start(impl):
   '''
   Configure and start the client.
   '''
-
   func = {}
 
   window = tk.Tk()
@@ -30,13 +30,42 @@ def start(impl):
   val = tk.Entry(window, state=tk.DISABLED)
 
   def eval_func(event):
-    val.config(state=tk.NORMAL)
-    val.delete(0, tk.END)
     try:
-      val.insert(0, impl['solve'](expr.get(), pt.get()))
+      q = Queue()
+      def slow():
+        q.put(impl['solve'](expr.get(), pt.get()))
+      p = Process(target=slow)
+      p.start()
+      def poll():
+        try:
+          v = q.get_nowait()
+          val.config(state=tk.NORMAL)
+          val.delete(0, tk.END)
+          val.insert(0, v)
+          val.config(state=tk.DISABLED)
+          expr['state'] = tk.NORMAL
+          pt['state'] = tk.NORMAL
+          eval['state'] = tk.NORMAL
+        except: # raise queue.Empty
+          val.config(state=tk.NORMAL)
+          val.insert(tk.END, '.')
+          val.config(state=tk.DISABLED)
+          val.after(200, poll)
+      val.config(state=tk.NORMAL)
+      val.delete(0, tk.END)
+      val.insert(0, 'Processing')
+      val.config(state=tk.DISABLED)
+      # TODO This is insufficient, because it neglects command bindings.
+      expr['state'] = tk.DISABLED
+      pt['state'] = tk.DISABLED
+      eval['state'] = tk.DISABLED
+      poll()
     except:
+      logger.error(sys.exc_info()[0])
+      val.config(state=tk.NORMAL)
+      val.delete(0, tk.END)
       val.insert(0, 'Error')
-    val.config(state=tk.DISABLED)
+      val.config(state=tk.DISABLED)
 
   def val_func(event):
     val.config(state=tk.NORMAL)
