@@ -1,5 +1,6 @@
 import tkinter as tk
-from multiprocessing import Process, Queue
+from queue import Queue
+from threading import Thread
 
 def start(impl):
   '''
@@ -34,7 +35,7 @@ def start(impl):
       q = Queue()
       def slow():
         q.put(impl['solve'](expr.get(), pt.get()))
-      p = Process(target=slow)
+      p = Thread(target=slow)
       p.start()
       def poll():
         try:

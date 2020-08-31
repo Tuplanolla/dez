@@ -101,6 +101,7 @@ let start () =
       ~acquire:(fun () -> Mutex.lock mutex)
       ~release:(fun () -> Mutex.unlock mutex)
       f in
+    (** TODO Track synchronous states in a sum type matching the components. *)
     let protos = Hashtbl.create 0 in
     let on = ref true in
     strans#listen;
@@ -112,9 +113,7 @@ let start () =
       try
       let thread = Thread.create begin fun trans ->
         bracket
-        ~acquire:begin fun () ->
-          ref None
-        end
+        ~acquire:(fun () -> ref None)
         ~release:begin fun names ->
           atomically begin fun () ->
             match !names with
@@ -126,7 +125,9 @@ let start () =
           let proto = new TBinaryProtocol.t trans in
           let id = read_identity proto in
           let name = id#grab_name in
-          (** TODO Handle duplicate keys. *)
+          (** TODO Handle duplicate keys.
+              Perhaps allow duplicate keys,
+              but treat duplicate components as indistinguishable. *)
           atomically begin fun () ->
             Hashtbl.add protos name proto;
             names := Some name
@@ -140,9 +141,6 @@ let start () =
                 (fun i a y -> y +. a *. req#grab_point ** Int32.to_float i)
                 req#grab_coeffs 0. in
               (** TODO Stop sleeping all the time. *)
-              Log.debug begin fun m ->
-                m "Crunching real hard right here!"
-              end;
               Unix.sleep 1;
               let res = new response in
               res#set_value value;
