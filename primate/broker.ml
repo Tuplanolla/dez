@@ -140,6 +140,9 @@ let start () =
                 (fun i a y -> y +. a *. req#grab_point ** Int32.to_float i)
                 req#grab_coeffs 0. in
               (** TODO Stop sleeping all the time. *)
+              Log.debug begin fun m ->
+                m "Crunching real hard right here!"
+              end;
               Unix.sleep 1;
               let res = new response in
               res#set_value value;

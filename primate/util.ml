@@ -1,15 +1,19 @@
 let finally work ~release =
-  let w = try work () with
-    | e -> release ();
-      raise e in
+  let w =
+    try work () with
+    | e ->
+        release ();
+        raise e in
   release ();
   w
 
 let bracket ~acquire work ~release =
   let a = acquire () in
-  let w = try work a with
-    | e -> release a;
-      raise e in
+  let w =
+    try work a with
+    | e ->
+        release a;
+        raise e in
   release a;
   w
 
