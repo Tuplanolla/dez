@@ -15,6 +15,7 @@ main:: gen-ocaml main.ml server_proxy.ml
 	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c server_proxy.ml
 	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c main.ml
 	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -linkpkg -o main \
+	gen-ocaml/component_types.cmx gen-ocaml/component_consts.cmx \
 	gen-ocaml/polynomial_types.cmx gen-ocaml/polynomial_consts.cmx \
 	../ungulate/extraction.cmx ../ungulate/adapter.cmx \
 	def_sys.cmx util.cmx server_proxy.cmx main.cmx

@@ -152,7 +152,7 @@ type state =
   | Idle
   | Working
 
-type component = Thread.t * Protocol.t * state
+type component = Protocol.t * state
 
 let broker_port = 8191
 
@@ -174,8 +174,7 @@ let start () =
       m "Started listening for connections on thread %d."
       (Thread.id (Thread.self ()))
     end;
-    while atomically (fun () -> !on) do
-      try
+    while atomically (fun () -> !on) do try
       (** TODO This kind of scheduling is dumb.
 
           Client-like components should be unblocked and
@@ -190,50 +189,79 @@ let start () =
 
           In short, allocate threads for blocking contexts, not components. *)
       let thread = Thread.create begin fun trans ->
-        bracket
-        ~acquire:(fun () -> ref None)
-        ~release:begin fun names ->
-          atomically begin fun () ->
-            match !names with
-            | None -> ()
-            | Some name -> Hashtbl.remove comps name
-          end
-        end
-        begin fun names ->
-          let proto = new TBinaryProtocol.t trans in
-          let id = read_identity proto in
-          let name = id#grab_name in
-          (** TODO Handle duplicate keys.
-              Perhaps allow duplicate keys,
-              but treat duplicate components as indistinguishable. *)
-          match name with
-          | "fur" ->
-              (** TODO Do not allocate a thread here. *)
-              while atomically (fun () -> !on) do
-                Thread.delay 0.1
-              done
-          | "scales" ->
-              (** TODO Repeat this process on this thread. *)
+        let proto = new TBinaryProtocol.t trans in
+        let id = read_identity proto in
+        let name = id#grab_name in
+        Log.debug begin fun m ->
+          m "Identified thread %d as %s." (Thread.id (Thread.self ())) name
+        end;
+        (** TODO Handle duplicate keys.
+            Perhaps allow duplicate keys,
+            but treat duplicate components as indistinguishable. *)
+        match name with
+        | "fur" ->
+            atomically begin fun () ->
+              Hashtbl.add comps name (proto, Idle)
+            end
+        | "scales-oneshot" ->
+            begin
               atomically begin fun () ->
-                Hashtbl.add comps name (Thread.self (), proto, Idle);
-                names := Some name
+                Hashtbl.add comps name (proto, Idle)
               end;
-              Log.debug (fun m -> m "Identified the animal.");
               let req = read_request proto in
-              let value = Hashtbl.fold
-                (fun i a y -> y +. a *. req#grab_point ** Int32.to_float i)
-                req#grab_coeffs 0. in
-              (** TODO Stop sleeping all the time. *)
-              Unix.sleep 2;
-              let res = new response in
-              res#set_value value;
-              res#write proto;
-              proto#getTransport#flush;
-              proto#getTransport#close;
+              Log.info (fun m -> m "Received request.");
+              match atomically begin fun () ->
+                Hashtbl.find_opt comps "fur"
+              end with
+              | Some (sproto, Idle) ->
+                  (** TODO Change state here. *)
+                  req#write sproto;
+                  sproto#getTransport#flush;
+                  let res = read_response sproto in
+                  res#write proto;
+                  proto#getTransport#flush;
+                  Log.info (fun m -> m "Sent response.")
+              (** TODO Handle missing or busy server. *)
+              | _ -> ();
+              atomically begin fun () ->
+                Hashtbl.remove comps name
+              end;
               Log.debug (fun m -> m "Ended thread %d."
                 (Thread.id (Thread.self ())))
-          | name -> raise (Invalid_argument name)
-        end
+            end
+        | "scales" ->
+            atomically begin fun () ->
+              Hashtbl.add comps name (proto, Idle)
+            end;
+            while atomically (fun () -> !on) do try
+              let req = read_request proto in
+              Log.info (fun m -> m "Received request.");
+              match atomically begin fun () ->
+                Hashtbl.find_opt comps "fur"
+              end with
+              | Some (sproto, Idle) ->
+                  (** TODO Change state here. *)
+                  req#write sproto;
+                  sproto#getTransport#flush;
+                  let res = read_response sproto in
+                  res#write proto;
+                  proto#getTransport#flush;
+                  Log.info (fun m -> m "Sent response.")
+              (** TODO Handle missing or busy server. *)
+              | _ -> ()
+              (** TODO On failure... *)
+              (* atomically begin fun () ->
+                match !names with
+                | None -> ()
+                | Some name -> Hashtbl.remove comps name
+              end *)
+            with
+            | Def_sys.Signal i when i = Sys.sigint ->
+                atomically (fun () -> on := false)
+            done;
+            Log.debug (fun m -> m "Ended thread %d."
+              (Thread.id (Thread.self ())))
+        | name -> raise (Invalid_argument name)
       end
       strans#accept in
       Log.debug begin fun m ->

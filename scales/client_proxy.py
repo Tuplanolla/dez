@@ -33,7 +33,7 @@ def start():
     trans = TTransport.TBufferedTransport(TSocket.TSocket(ip, broker_port()))
     proto = TBinaryProtocol.TBinaryProtocol(trans)
     proto.trans.open()
-    id = identity(name="scales")
+    id = identity(name="scales-oneshot")
     id.write(proto)
     proto.trans.flush()
 
