@@ -14,13 +14,13 @@ OCAMLPFFTLAGS:=-O2 -package num -package logs -thread
 
 extraction.cmi:: extraction.mli
 	$(MSG) echo OCAMLOPT extraction
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) extraction.mli
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) extraction.ml
+	$(CMD) ocamlfind ocamlopt -c $(OCAMLPFFTLAGS) extraction.mli
+	$(CMD) ocamlfind ocamlopt -c $(OCAMLPFFTLAGS) extraction.ml
 
-adapter.cmi:: adapter.mli
+adapter.cmi:: adapter.mli extraction.cmi
 	$(MSG) echo OCAMLOPT adapter
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) adapter.mli
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) adapter.ml
+	$(CMD) ocamlfind ocamlopt -c $(OCAMLPFFTLAGS) adapter.mli
+	$(CMD) ocamlfind ocamlopt -c $(OCAMLPFFTLAGS) adapter.ml
 
 extraction.mli:: Extraction.v
-	$(CMD) coqc -Q ../bird Maniunfold Extraction.v
+	$(CMD) coqc -Q ../fowl Maniunfold Extraction.v

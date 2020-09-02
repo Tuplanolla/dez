@@ -5,15 +5,15 @@ This is a repository for a research project that aims to
 * develop a type-theoretical model of discrete exterior calculus
   (see the related publications),
 * formalize the model with the Coq proof assistant
-  (see the `bird` subcomponent),
+  (see the `fowl` subcomponent),
 * extract OCaml code from the proof-relevant parts of the formalization
-  (see the `ungulate` subcomponent),
+  (see the `camel` subcomponent),
 * link the extracted code with existing numerical solvers
-  (see the `fungus` submodule),
+  (see the `truffle` submodule),
 * implement a user interface for the resulting system
-  (see the `reptile` subcomponent) and
+  (see the `snake` subcomponent) and
 * define a protocol for distributing and extending it further
-  (see the `plant` subcomponent and the associated
+  (see the `flower` subcomponent and the associated
   `feathers`, `leaves`, `fur`, `scales`, `spores` and `hair` subcomponents).
 
 The code in this repository is free software and, as such, licensed under
@@ -28,7 +28,7 @@ The development of this project
 
 Currently, the authors of this project are
 
-* Jukka Räbinä, who works on the `fungus` submodule
+* Jukka Räbinä, who works on the `truffle` submodule
   in the Faculty of Information Technology at the University of Jyväskylä, and
 * Sampsa Kiiskinen, who works on all the other parts
   in the Faculty of Information Technology at the University of Jyväskylä.

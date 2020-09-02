@@ -1,3 +1,3 @@
-[submodule "fungus/gfd"]
-	path = fungus/gfd
+[submodule "truffle/gfd"]
+	path = truffle/gfd
 	url = git@github.com:juolrabi/gfd.git

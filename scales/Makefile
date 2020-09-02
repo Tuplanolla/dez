@@ -11,6 +11,6 @@ clean::
 run:: gen-py
 	$(CMD) python3 main.py
 
-gen-py:: ../plant/main.thrift ../plant/component.thrift ../plant/polynomial.thrift
+gen-py:: ../flower/main.thrift ../flower/component.thrift ../flower/polynomial.thrift
 	$(MSG) echo THRIFT $<
 	$(CMD) thrift --gen py -r $<

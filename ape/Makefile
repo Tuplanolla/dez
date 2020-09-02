@@ -32,7 +32,7 @@ main:: gen-ocaml main.ml broker.ml util.ml
 	gen-ocaml/polynomial_types.cmx gen-ocaml/polynomial_consts.cmx \
 	def_sys.cmx util.cmx broker.cmx main.cmx
 
-gen-ocaml:: ../plant/main.thrift
+gen-ocaml:: ../flower/main.thrift
 	$(MSG) echo THRIFT $<
 	$(CMD) thrift --gen ocaml -r $<
 	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/component_types.mli
