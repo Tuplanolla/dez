@@ -3,7 +3,12 @@
 #else
 #define SUBGRAPH(x) uncluster_##x
 #endif
+
 digraph habitat {
+  /* subgraph SUBGRAPH(fowl) {
+    label = "Component\nFowl"
+  } */
+
   subgraph SUBGRAPH(bird) {
     label = "Component\nBird"
 
@@ -14,6 +19,10 @@ digraph habitat {
 
   /* subgraph SUBGRAPH(feathers) {
     label = "Component\nFeathers"
+  } */
+
+  /* subgraph SUBGRAPH(flower) {
+    label = "Component\nFlower"
   } */
 
   subgraph SUBGRAPH(plant) {
@@ -28,6 +37,18 @@ digraph habitat {
     label = "Component\nLeaves"
   } */
 
+  subgraph SUBGRAPH(camel) {
+    label = "Component\nCamel"
+
+    node [shape = box]
+
+    camel [label = "OCaml Source\nfor Common Tasks"]
+
+    node [shape = oval]
+
+    camel_from_camel [label = "Utility Library\nfor Common Tasks"]
+  }
+
   subgraph SUBGRAPH(ungulate) {
     label = "Component\nUngulate"
 
@@ -38,7 +59,7 @@ digraph habitat {
 
     node [shape = oval]
 
-    ungulate_from_ungulate [label = "Server\nfor Verified Symbolic Manipulation"]
+    ungulate_from_ungulate [label = "Server Library\nfor Verified Symbolic Manipulation"]
   }
 
   subgraph SUBGRAPH(fur) {
@@ -54,6 +75,18 @@ digraph habitat {
     fur_from_fur [label = "Server Proxy\nfor Verified Symbolic Manipulation"]
   }
 
+  subgraph SUBGRAPH(snake) {
+    label = "Component\nSnake"
+
+    node [shape = box]
+
+    snake [label = "Python Source\nfor Common Tasks"]
+
+    node [shape = oval]
+
+    snake_from_snake [label = "Utility Library\nfor Common Tasks"]
+  }
+
   subgraph SUBGRAPH(reptile) {
     label = "Component\nReptile"
 
@@ -63,7 +96,7 @@ digraph habitat {
 
     node [shape = oval]
 
-    reptile_from_reptile [label = "Client\nfor Graphical User Interaction"]
+    reptile_from_reptile [label = "Client Program\nfor Graphical User Interaction"]
   }
 
   subgraph SUBGRAPH(scales) {
@@ -79,6 +112,18 @@ digraph habitat {
     scales_from_scales [label = "Client Proxy\nfor Graphical User Interaction"]
   }
 
+  subgraph SUBGRAPH(truffle) {
+    label = "Component\nTruffle"
+
+    node [shape = box]
+
+    truffle [label = "C++ Source\nfor Common Tasks"]
+
+    node [shape = oval]
+
+    truffle_from_truffle [label = "Utility Library\nfor Common Tasks"]
+  }
+
   subgraph SUBGRAPH(fungus) {
     label = "Component\nFungus"
 
@@ -88,7 +133,7 @@ digraph habitat {
 
     node [shape = oval]
 
-    fungus_from_fungus [label = "Server\nfor Numerical Computation"]
+    fungus_from_fungus [label = "Server Library\nfor Numerical Computation"]
   }
 
   subgraph SUBGRAPH(spores) {
@@ -103,6 +148,10 @@ digraph habitat {
 
     spores_from_spores [label = "Server Proxy\nfor Numerical Computation"]
   }
+
+  /* subgraph SUBGRAPH(ape) {
+    label = "Component\nApe"
+  } */
 
   subgraph SUBGRAPH(primate) {
     label = "Component\nPrimate"
@@ -120,47 +169,60 @@ digraph habitat {
   /* subgraph SUBGRAPH(hair) {
     label = "Component\nHair"
   } */
+
 #ifdef COMPILE
+  edge [style = solid]
+
   bird -> ungulate_from_bird [label = "(1) Code Extraction"]
   plant -> fur_from_plant [label = "(1) Code Generation"]
   plant -> scales_from_plant [label = "(1) Code Generation"]
   plant -> spores_from_plant [label = "(1) Code Generation"]
   plant -> primate_from_plant [label = "(1) Code Generation"]
+  camel -> camel_from_camel [label = "(1) Compilation"]
+  camel_from_camel -> fur_from_fur [label = "(3) Linking"]
+  camel_from_camel -> primate_from_primate [label = "(2) Linking"]
   ungulate -> ungulate_from_ungulate [label = "(2) Compilation"]
   ungulate_from_bird -> ungulate_from_ungulate [label = "(2) Compilation"]
-  fungus -> fungus_from_fungus [label = "(2) Compilation"]
+  ungulate_from_ungulate -> fur_from_fur [label = "(3) Linking"]
   fur -> fur_from_fur [label = "(3) Compilation"]
   fur_from_plant -> fur_from_fur [label = "(3) Compilation"]
-  ungulate_from_ungulate -> fur_from_fur [label = "(3) Linking"]
-  spores -> spores_from_spores [label = "(3) Compilation"]
-  spores_from_plant -> spores_from_spores [label = "(3) Compilation"]
-  fungus_from_fungus -> spores_from_spores [label = "(3) Linking"]
-  primate -> primate_from_primate [label = "(4) Compilation"]
-  primate_from_plant -> primate_from_primate [label = "(4) Compilation"]
-  fur_from_fur -> primate_from_primate [label = "(5) Loading"]
-  scales_from_scales -> primate_from_primate [label = "(5) Loading"]
-  spores_from_spores -> primate_from_primate [label = "(5) Loading"]
-  reptile -> reptile_from_reptile [label = "(5) Interpretation"]
-  reptile_from_reptile -> scales_from_scales [label = "(5) Loading"]
-  scales -> scales_from_scales [label = "(5) Interpretation"]
-  scales_from_plant -> scales_from_scales [label = "(5) Interpretation"]
+  fur_from_fur -> primate_from_primate [label = "(4) Connection", dir = both]
+  snake -> snake_from_snake [label = "(4) Interpretation"]
+  snake_from_snake -> scales_from_scales [label = "(4) Interpretation"]
+  reptile -> reptile_from_reptile [label = "(4) Interpretation"]
+  reptile_from_reptile -> scales_from_scales [label = "(4) Interpretation"]
+  scales -> scales_from_scales [label = "(4) Interpretation"]
+  scales_from_plant -> scales_from_scales [label = "(4) Interpretation"]
+  scales_from_scales -> primate_from_primate [label = "(4) Connection", dir = both]
+  truffle -> truffle_from_truffle [label = "(1) Compilation"]
+  truffle_from_truffle -> spores_from_spores [label = "(2) Linking"]
+  fungus -> fungus_from_fungus [label = "(1) Compilation"]
+  fungus_from_fungus -> spores_from_spores [label = "(2) Linking"]
+  spores -> spores_from_spores [label = "(2) Compilation"]
+  spores_from_plant -> spores_from_spores [label = "(2) Compilation"]
+  spores_from_spores -> primate_from_primate [label = "(4) Connection", dir = both]
+  primate -> primate_from_primate [label = "(2) Compilation"]
+  primate_from_plant -> primate_from_primate [label = "(2) Compilation"]
 #endif
+
 #ifdef RUN
-  reptile_from_reptile -> scales_from_scales [label = "(6) Problem\nas Python Object"]
-  scales_from_scales -> primate_from_primate [label = "(7) Problem\nas Thrift Message"]
-  primate_from_primate -> fur_from_fur [label = "(8) Problem\nas Thrift Message"]
-  fur_from_fur -> ungulate_from_ungulate [label = "(9) Problem\nas OCaml Object"]
-  ungulate_from_ungulate -> fur_from_fur [label = "(10) Command\nas OCaml Object"]
-  fur_from_fur -> primate_from_primate [label = "(11) Command\nas Thrift Message"]
-  primate_from_primate -> spores_from_spores [label = "(12) Command\nas Thrift Message"]
-  spores_from_spores -> fungus_from_fungus [label = "(13) Command\nas C++ Object"]
-  fungus_from_fungus -> spores_from_spores [label = "(14) Result\nas C++ Object"]
-  spores_from_spores -> primate_from_primate [label = "(15) Result\nas Thrift Message"]
-  primate_from_primate -> fur_from_fur [label = "(16) Result\nas Thrift Message"]
-  fur_from_fur -> ungulate_from_ungulate [label = "(17) Result\nas OCaml Object"]
-  ungulate_from_ungulate -> fur_from_fur [label = "(18) Solution\nas OCaml Object"]
-  fur_from_fur -> primate_from_primate [label = "(19) Solution\nas Thrift Message"]
-  primate_from_primate -> scales_from_scales [label = "(20) Solution\nas Thrift Message"]
-  scales_from_scales -> reptile_from_reptile [label = "(21) Solution\nas Python Object"]
+  edge [style = dashed]
+
+  reptile_from_reptile -> scales_from_scales [label = "(5) Problem\nas Python Object"]
+  scales_from_scales -> primate_from_primate [label = "(6) Problem\nas Thrift Message"]
+  primate_from_primate -> fur_from_fur [label = "(7) Problem\nas Thrift Message"]
+  fur_from_fur -> ungulate_from_ungulate [label = "(8) Problem\nas OCaml Object"]
+  ungulate_from_ungulate -> fur_from_fur [label = "(9) Command\nas OCaml Object"]
+  fur_from_fur -> primate_from_primate [label = "(10) Command\nas Thrift Message"]
+  primate_from_primate -> spores_from_spores [label = "(11) Command\nas Thrift Message"]
+  spores_from_spores -> fungus_from_fungus [label = "(12) Command\nas C++ Object"]
+  fungus_from_fungus -> spores_from_spores [label = "(13) Result\nas C++ Object"]
+  spores_from_spores -> primate_from_primate [label = "(14) Result\nas Thrift Message"]
+  primate_from_primate -> fur_from_fur [label = "(15) Result\nas Thrift Message"]
+  fur_from_fur -> ungulate_from_ungulate [label = "(16) Result\nas OCaml Object"]
+  ungulate_from_ungulate -> fur_from_fur [label = "(17) Solution\nas OCaml Object"]
+  fur_from_fur -> primate_from_primate [label = "(18) Solution\nas Thrift Message"]
+  primate_from_primate -> scales_from_scales [label = "(19) Solution\nas Thrift Message"]
+  scales_from_scales -> reptile_from_reptile [label = "(20) Solution\nas Python Object"]
 #endif
 }

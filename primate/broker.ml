@@ -187,7 +187,9 @@ let start () =
           those threads should fire the appropriate server-like components and
           block them on writes (and the threads on reads).
 
-          In short, allocate threads for blocking contexts, not components. *)
+          In short, allocate threads for blocking contexts, not components.
+          Note that an unidentified accepted connection
+          is also a blocking context. *)
       let thread = Thread.create begin fun trans ->
         let proto = new TBinaryProtocol.t trans in
         let id = read_identity proto in
