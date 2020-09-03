@@ -1,8 +1,8 @@
 CMD:=$(if $(VERBOSE),,@ )
 MSG:=$(if $(VERBOSE),@ true || ,@ )
 
-OCAMLPFFTLAGS:=-I gen-ocaml -O2 \
--package num -package logs -package thrift -thread
+OCAMLPFFTLAGS:=-I gen-ocaml -I ../ungulate -O2 \
+-package num,logs,thrift -thread
 
 build:: main
 .PHONY: build
@@ -18,12 +18,8 @@ run::
 	$(CMD) ./main test
 .PHONY: run
 
-main:: gen-ocaml main.ml broker.ml util.ml
+main:: gen-ocaml main.ml broker.ml
 	$(MSG) echo OCAMLOPT broker
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c util.mli
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c util.ml
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c def_sys.mli
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c def_sys.ml
 	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c broker.mli
 	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c broker.ml
 	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c main.ml

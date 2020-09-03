@@ -1,6 +1,7 @@
 import sys
 sys.path.append('gen-py')
 sys.path.append('../reptile')
+sys.path.append('../snake')
 import client
 import component
 import logging

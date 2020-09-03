@@ -1,7 +1,7 @@
 CMD:=$(if $(VERBOSE),,@ )
 MSG:=$(if $(VERBOSE),@ true || ,@ )
 
-SUBCOMPONENTS:=fowl camel truffle snake flower fur spores scales ape
+SUBCOMPONENTS:=fowl ungulate camel truffle snake flower fur spores scales ape
 
 DEFAULT::
 	$(CMD) for x in $(SUBCOMPONENTS) ; \

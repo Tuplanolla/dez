@@ -555,7 +555,7 @@ Run simple gui, server and broker as follows.
 ```
 $ ( sleep 1 && inside scales make run ; ) &
   ( sleep 1 && inside fur make run ; ) &
-  inside primate make run
+  inside ape make run
 ```
 
 ## Simple Laws about Nonprominent Properties of Binary Relations by Jochen Burghardt
