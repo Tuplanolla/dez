@@ -1,7 +1,19 @@
 CMD:=$(if $(VERBOSE),,@ )
 MSG:=$(if $(VERBOSE),@ true || ,@ )
 
-SUBCOMPONENTS:=fowl ungulate camel truffle snake flower fur spores scales ape
+SUBCOMPONENTS:=fowl flower ungulate camel fur reptile snake scales \
+fungus truffle spores ape
+
+# TODO Do it like this and then make subcomponents independent...
+#
+# .PHONY: partA partB partC
+#
+# all: partA partB partC
+#
+# partA partB partC:
+# 	$(MAKE) -C $@
+#
+# partB: partA
 
 DEFAULT::
 	$(CMD) for x in $(SUBCOMPONENTS) ; \
