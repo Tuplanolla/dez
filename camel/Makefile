@@ -1,7 +1,7 @@
 CMD:=$(if $(VERBOSE),,@ )
 MSG:=$(if $(VERBOSE),@ true || ,@ )
 
-all:: extraction.cmx adapter.cmx
+all:: adapter.cmi adapter.cmx extraction.cmi extraction.cmx
 .PHONY: all
 
 clean::
@@ -20,11 +20,11 @@ extraction.cmx:: extraction.ml
 	$(MSG) echo OCAMLOPT extraction
 	$(CMD) ocamlfind ocamlopt -c $(OCAMLPFFTLAGS) extraction.ml
 
-adapter.cmi:: adapter.mli
+adapter.cmi:: adapter.mli extraction.cmi
 	$(MSG) echo OCAMLOPT adapter
 	$(CMD) ocamlfind ocamlopt -c $(OCAMLPFFTLAGS) adapter.mli
 
-adapter.cmx:: adapter.ml
+adapter.cmx:: adapter.ml extraction.cmi
 	$(MSG) echo OCAMLOPT adapter
 	$(CMD) ocamlfind ocamlopt -c $(OCAMLPFFTLAGS) adapter.ml
 
