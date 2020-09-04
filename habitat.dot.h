@@ -179,13 +179,24 @@ digraph habitat {
   flower -> spores_from_flower [label = "(1) Code Generation"]
   flower -> ape_from_flower [label = "(1) Code Generation"]
   ungulate -> ungulate_from_ungulate [label = "(1) Compilation"]
-  ungulate_from_ungulate -> fur_from_fur [label = "(3) Linking"]
+  fungus -> fungus_from_fungus [label = "(1) Compilation"]
+  truffle -> truffle_from_truffle [label = "(1) Compilation"]
+
   ungulate_from_ungulate -> ape_from_ape [label = "(2) Linking"]
   camel -> camel_from_camel [label = "(2) Compilation"]
   camel_from_fowl -> camel_from_camel [label = "(2) Compilation"]
+  fungus_from_fungus -> spores_from_spores [label = "(2) Linking"]
+  truffle_from_truffle -> spores_from_spores [label = "(2) Linking"]
+  spores -> spores_from_spores [label = "(2) Compilation"]
+  spores_from_flower -> spores_from_spores [label = "(2) Compilation"]
+  ape -> ape_from_ape [label = "(2) Compilation"]
+  ape_from_flower -> ape_from_ape [label = "(2) Compilation"]
+
+  ungulate_from_ungulate -> fur_from_fur [label = "(3) Linking"]
   camel_from_camel -> fur_from_fur [label = "(3) Linking"]
   fur -> fur_from_fur [label = "(3) Compilation"]
   fur_from_flower -> fur_from_fur [label = "(3) Compilation"]
+
   fur_from_fur -> ape_from_ape [label = "(4) Connection", dir = both]
   reptile -> reptile_from_reptile [label = "(4) Interpretation"]
   reptile_from_reptile -> scales_from_scales [label = "(4) Interpretation"]
@@ -194,15 +205,7 @@ digraph habitat {
   scales -> scales_from_scales [label = "(4) Interpretation"]
   scales_from_flower -> scales_from_scales [label = "(4) Interpretation"]
   scales_from_scales -> ape_from_ape [label = "(4) Connection", dir = both]
-  fungus -> fungus_from_fungus [label = "(1) Compilation"]
-  fungus_from_fungus -> spores_from_spores [label = "(2) Linking"]
-  truffle -> truffle_from_truffle [label = "(1) Compilation"]
-  truffle_from_truffle -> spores_from_spores [label = "(2) Linking"]
-  spores -> spores_from_spores [label = "(2) Compilation"]
-  spores_from_flower -> spores_from_spores [label = "(2) Compilation"]
   spores_from_spores -> ape_from_ape [label = "(4) Connection", dir = both]
-  ape -> ape_from_ape [label = "(2) Compilation"]
-  ape_from_flower -> ape_from_ape [label = "(2) Compilation"]
 #endif
 
 #ifdef RUN
@@ -225,4 +228,22 @@ digraph habitat {
   ape_from_ape -> scales_from_scales [label = "(19) Solution\nas Thrift Message"]
   scales_from_scales -> snake_from_snake [label = "(20) Solution\nas Python Object"]
 #endif
+
+  edge [style = invis]
+
+  ungulate_from_ungulate -> camel
+  reptile_from_reptile -> snake
+  fungus_from_fungus -> truffle
+
+  camel_from_camel -> fur
+  snake_from_snake -> scales
+  truffle_from_truffle -> spores
+
+  camel_from_camel -> flower -> fur
+  snake_from_snake -> flower -> scales
+  truffle_from_truffle -> flower -> spores
+
+  fur_from_fur -> ape
+  scales_from_scales -> ape
+  spores_from_spores -> ape
 }
