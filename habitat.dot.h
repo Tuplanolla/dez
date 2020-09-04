@@ -5,6 +5,8 @@
 #endif
 
 digraph habitat {
+  /** We do not have this component,
+      because the formal specification does not need a utility library. */
   /* subgraph SUBGRAPH(bird) {
     label = "Component\nBird"
   } */
@@ -17,10 +19,14 @@ digraph habitat {
     fowl [label = "Coq Source\nfor Formal Specification"]
   }
 
+  /** We do not have this component,
+      because the formal specification is not accessed through a proxy. */
   /* subgraph SUBGRAPH(feathers) {
     label = "Component\nFeathers"
   } */
 
+  /** We do not have this component,
+      because the message specification does not need a utility library. */
   /* subgraph SUBGRAPH(plant) {
     label = "Component\nPlant"
   } */
@@ -33,6 +39,8 @@ digraph habitat {
     flower [label = "Thrift IDL Source\nfor Message Specification"]
   }
 
+  /** We do not have this component,
+      because the message specification is not accessed through a proxy. */
   /* subgraph SUBGRAPH(leaves) {
     label = "Component\nLeaves"
   } */
@@ -149,6 +157,8 @@ digraph habitat {
     spores_from_spores [label = "Server Proxy\nfor Numerical Computation"]
   }
 
+  /** We do not have this component,
+      because the broker uses the same utility library as the server proxy. */
   /* subgraph SUBGRAPH(primate) {
     label = "Component\nPrimate"
   } */
@@ -166,11 +176,14 @@ digraph habitat {
     ape_from_ape [label = "Broker\nfor Message Passing"]
   }
 
+  /** We do not have this component,
+      because the broker is not accessed through a proxy. */
   /* subgraph SUBGRAPH(hair) {
     label = "Component\nHair"
   } */
 
 #ifdef COMPILE
+  /** We illustrate compiling the system with solid edges. */
   edge [style = solid]
 
   fowl -> camel_from_fowl [label = "(1) Code Extraction"]
@@ -209,6 +222,7 @@ digraph habitat {
 #endif
 
 #ifdef RUN
+  /** We illustrate running the system with dashed edges. */
   edge [style = dashed]
 
   snake_from_snake -> scales_from_scales [label = "(5) Problem\nas Python Object"]
@@ -229,6 +243,7 @@ digraph habitat {
   scales_from_scales -> snake_from_snake [label = "(20) Solution\nas Python Object"]
 #endif
 
+  /** We use invisible edges to adjust the layout. */
   edge [style = invis]
 
   ungulate_from_ungulate -> camel

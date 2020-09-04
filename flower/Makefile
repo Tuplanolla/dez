@@ -10,6 +10,6 @@ clean::
 .PHONY: clean
 
 # We generate diagrams just to check that the specification is valid.
-gen-gv:: main.thrift component.thrift polynomial.thrift
+gen-gv:: main.idl component.idl polynomial.idl
 	$(MSG) echo THRIFT $<
 	$(CMD) thrift --gen gv -r $<

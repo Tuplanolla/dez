@@ -15,7 +15,7 @@ main:: gen-ocaml main.ml server_proxy.ml
 	extraction.cmx adapter.cmx \
 	def_sys.cmx util.cmx server_proxy.cmx main.cmx
 
-gen-ocaml:: ../flower/main.thrift
+gen-ocaml:: ../flower/main.idl
 	$(MSG) echo THRIFT $<
 	$(CMD) thrift --gen ocaml -r $<
 	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/component_types.mli
