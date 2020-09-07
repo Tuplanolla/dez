@@ -1,13 +1,16 @@
+MKDIR:=mkdir -p
+
 CMD:=$(if $(VERBOSE),,@ )
 MSG:=$(if $(VERBOSE),@ true || ,@ )
 
 all:: adapter.cmi adapter.cmx extraction.cmi extraction.cmx
 .PHONY: all
 
+# TODO Take clean from `fowl`.
 clean::
 	$(CMD) $(RM) .*.aux *.glob *.vo*
-	$(CMD) bash -c "echo *.{ml,mli,cmx,cmi,o} | tr ' ' '\n' | \
-	grep -v 'adapter.ml' | xargs rm -f"
+	$(CMD) $(RM) extraction.{ml,mli,cmx,cmi,o}
+	$(CMD) $(RM) -r gen-ocaml
 .PHONY: clean
 
 OCAMLPFFTLAGS:=-O2 -package num -package logs -thread
@@ -29,4 +32,5 @@ adapter.cmx:: adapter.ml extraction.cmi
 	$(CMD) ocamlfind ocamlopt -c $(OCAMLPFFTLAGS) adapter.ml
 
 extraction.mli:: Extraction.v
+	$(MKDIR) gen-ocaml
 	$(CMD) coqc -Q ../fowl Maniunfold Extraction.v

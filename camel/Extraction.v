@@ -16,10 +16,10 @@ From Maniunfold.ShouldOffer Require Import
 Definition monkey_saddle (x y : Z) : Z :=
   (x * ((x ^ 2)%N - (1 + 1 + 1) * (y ^ 2)%N))%ring.
 
+(** TODO Remove this. *)
 Extraction Language OCaml.
 Extraction "extraction.ml" monkey_saddle.
 
-(** We want to eventually do this.
-    However, currently this creates a mess of files. *)
-
-(* Recursive Extraction Library ZTheorems. *)
+Extraction Language OCaml.
+Cd "gen-ocaml".
+Recursive Extraction Library ZTheorems.

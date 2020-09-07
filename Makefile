@@ -1,39 +1,38 @@
-CMD:=$(if $(VERBOSE),,@ )
-MSG:=$(if $(VERBOSE),@ true || ,@ )
+HIDE:=$(if $(VERBOSE),,@)
+SHOW:=$(if $(VERBOSE),@ true||,@)
 
-SUBCOMPONENTS:=fowl flower ungulate camel fur reptile snake scales \
-fungus truffle spores ape
+TARGETS:=fowl \
+flower ungulate camel fur reptile snake scales fungus truffle spores ape
 
-# TODO Do it like this and then make subcomponents independent...
-#
-# .PHONY: partA partB partC
-#
-# all: partA partB partC
-#
-# partA partB partC:
-# 	$(MAKE) -C $@
-#
-# partB: partA
-
-DEFAULT::
-	$(CMD) for x in $(SUBCOMPONENTS) ; \
-	do echo SUBMAKE $$x && make --no-print-directory -C $$x ; \
-	done
-.PHONY: DEFAULT
-
-Makefile::
-	@ true
+all:: habitat.svg habitat-with-example.svg $(TARGETS)
+.PHONY: all
 
 clean::
-	$(CMD) for x in $(SUBCOMPONENTS) ; \
-	do echo SUBCLEAN $$x && make --no-print-directory -C $$x -s $@ ; \
+	$(SHOW) echo CLEAN $(TARGETS)
+	$(HIDE) for x in $(TARGETS) ; do \
+	$(MAKE) -C $$x -s $@ ; \
 	done
 .PHONY: clean
 
-habitat::
-	cpp -P -DCLUSTER -DCOMPILE -URUN -o habitat.dot habitat.dot.h
-	cpp -P -DCLUSTER -DCOMPILE -DRUN -o habitat-with-example.dot habitat.dot.h
-	for x in habitat habitat-with-example ; \
-	do dot -Gfontname=sans -Efontname=sans -Nfontname=sans -Tsvg $$x.dot -o$$x.svg ; \
-	done
-.PHONY: habitat
+$(TARGETS)::
+	$(SHOW) echo MAKE -C $@
+	$(HIDE) $(MAKE) -C $@ -s
+
+camel:: fowl
+fur:: flower ungulate camel
+snake:: reptile
+scales:: reptile snake flower
+spores:: flower fungus truffle
+ape:: ungulate
+
+%.svg:: %.dot
+	$(SHOW) echo DOT $<
+	$(HIDE) dot -Efontname=sans -Gfontname=sans -Nfontname=sans -Tsvg -o$@ $<
+
+habitat.dot:: habitat.dot.h
+	$(SHOW) echo CPP -DCOMPILE $<
+	$(HIDE) cpp -P -DCLUSTER -DCOMPILE -DSHOWCOMPILE -URUN -USHOWRUN -o$@ $<
+
+habitat-with-example.dot:: habitat.dot.h
+	$(SHOW) echo CPP -DRUN $<
+	$(HIDE) cpp -P -DCLUSTER -DCOMPILE -USHOWCOMPILE -DRUN -DSHOWRUN -o$@ $<

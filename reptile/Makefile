@@ -1,0 +1,5 @@
+build::
+	@ true
+
+clean::
+	@ true

@@ -182,10 +182,14 @@ digraph habitat {
     label = "Component\nHair"
   } */
 
-#ifdef COMPILE
+#ifdef SHOWCOMPILE
   /** We illustrate compiling the system with solid edges. */
   edge [style = solid]
+#else
+  edge [style = invis]
+#endif
 
+#ifdef COMPILE
   fowl -> camel_from_fowl [label = "(1) Code Extraction"]
   flower -> fur_from_flower [label = "(1) Code Generation"]
   flower -> scales_from_flower [label = "(1) Code Generation"]
@@ -213,6 +217,7 @@ digraph habitat {
   fur_from_fur -> ape_from_ape [label = "(4) Connection", dir = both]
   reptile -> reptile_from_reptile [label = "(4) Interpretation"]
   reptile_from_reptile -> scales_from_scales [label = "(4) Interpretation"]
+  reptile_from_reptile -> snake_from_snake [label = "(4) Interpretation"]
   snake -> snake_from_snake [label = "(4) Interpretation"]
   snake_from_snake -> scales_from_scales [label = "(4) Interpretation"]
   scales -> scales_from_scales [label = "(4) Interpretation"]
@@ -221,30 +226,38 @@ digraph habitat {
   spores_from_spores -> ape_from_ape [label = "(4) Connection", dir = both]
 #endif
 
-#ifdef RUN
+#ifdef SHOWRUN
   /** We illustrate running the system with dashed edges. */
   edge [style = dashed]
-
-  snake_from_snake -> scales_from_scales [label = "(5) Problem\nas Python Object"]
-  scales_from_scales -> ape_from_ape [label = "(6) Problem\nas Thrift Message"]
-  ape_from_ape -> fur_from_fur [label = "(7) Problem\nas Thrift Message"]
-  fur_from_fur -> camel_from_camel [label = "(8) Problem\nas OCaml Object"]
-  camel_from_camel -> fur_from_fur [label = "(9) Command\nas OCaml Object"]
-  fur_from_fur -> ape_from_ape [label = "(10) Command\nas Thrift Message"]
-  ape_from_ape -> spores_from_spores [label = "(11) Command\nas Thrift Message"]
-  spores_from_spores -> truffle_from_truffle [label = "(12) Command\nas C++ Object"]
-  truffle_from_truffle -> spores_from_spores [label = "(13) Result\nas C++ Object"]
-  spores_from_spores -> ape_from_ape [label = "(14) Result\nas Thrift Message"]
-  ape_from_ape -> fur_from_fur [label = "(15) Result\nas Thrift Message"]
-  fur_from_fur -> camel_from_camel [label = "(16) Result\nas OCaml Object"]
-  camel_from_camel -> fur_from_fur [label = "(17) Solution\nas OCaml Object"]
-  fur_from_fur -> ape_from_ape [label = "(18) Solution\nas Thrift Message"]
-  ape_from_ape -> scales_from_scales [label = "(19) Solution\nas Thrift Message"]
-  scales_from_scales -> snake_from_snake [label = "(20) Solution\nas Python Object"]
+#else
+  edge [style = invis]
 #endif
 
+#ifdef RUN
+  snake_from_snake -> scales_from_scales [label = "(1) Problem\nas Python Object"]
+  scales_from_scales -> ape_from_ape [label = "(2) Problem\nas Thrift Message"]
+  ape_from_ape -> fur_from_fur [label = "(3) Problem\nas Thrift Message"]
+  fur_from_fur -> camel_from_camel [label = "(4) Problem\nas OCaml Object"]
+  camel_from_camel -> fur_from_fur [label = "(5) Command\nas OCaml Object"]
+  fur_from_fur -> ape_from_ape [label = "(6) Command\nas Thrift Message"]
+  ape_from_ape -> spores_from_spores [label = "(7) Command\nas Thrift Message"]
+  spores_from_spores -> truffle_from_truffle [label = "(8) Command\nas C++ Object"]
+  truffle_from_truffle -> spores_from_spores [label = "(9) Result\nas C++ Object"]
+  spores_from_spores -> ape_from_ape [label = "(10) Result\nas Thrift Message"]
+  ape_from_ape -> fur_from_fur [label = "(11) Result\nas Thrift Message"]
+  fur_from_fur -> camel_from_camel [label = "(12) Result\nas OCaml Object"]
+  camel_from_camel -> fur_from_fur [label = "(13) Solution\nas OCaml Object"]
+  fur_from_fur -> ape_from_ape [label = "(14) Solution\nas Thrift Message"]
+  ape_from_ape -> scales_from_scales [label = "(15) Solution\nas Thrift Message"]
+  scales_from_scales -> snake_from_snake [label = "(16) Solution\nas Python Object"]
+#endif
+
+#ifdef SHOWCONSTRAIN
+  edge [style = dotted]
+#else
   /** We use invisible edges to adjust the layout. */
   edge [style = invis]
+#endif
 
   ungulate_from_ungulate -> camel
   reptile_from_reptile -> snake

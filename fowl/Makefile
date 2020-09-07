@@ -1,39 +1,46 @@
-CMD:=$(if $(VERBOSE),,@ )
-MSG:=$(if $(VERBOSE),@ true || ,@ )
+HIDE:=$(if $(VERBOSE),,@)
+SHOW:=$(if $(VERBOSE),@ true||,@)
 
 DEFAULT::
-	$(MSG) echo MAKE
-	$(CMD) make -s _CoqMakefile
-	$(CMD) make -f _CoqMakefile -s
+	$(HIDE) $(MAKE) -s _CoqMakefile
+	$(SHOW) echo MAKE
+	$(HIDE) $(MAKE) -f _CoqMakefile -s
 .PHONY: DEFAULT
 
-Makefile::
-	@ true
-
-%:: .FORCE
-	$(MSG) echo MAKE $@
-	$(CMD) make -s _CoqMakefile
-	$(CMD) make -f _CoqMakefile -s $@
-
-_CoqMakefile:: _CoqMakefile.args _CoqMakefile.local
-	$(MSG) echo MAKE $@
-	$(CMD) coq_makefile -f $< -o $@ -opt
-
-_CoqMakefile.args:: _CoqProject _CoqFiles
-	$(CMD) cat $^ > $@
-
-_CoqProject::
-	$(CMD) printf '%s\n' "INSTALLDEFAULTROOT = . -Q . Maniunfold" > $@
-
-_CoqFiles::
-	$(CMD) find . -type f -name '*.v' | LC_ALL=C sort > $@
-
-_CoqMakefile.local::
-	$(CMD) printf 'clean::\n\t@ %s %s %s\n' \
-	"find . -type f '('" \
-	"-name '*_Coq*' -o -name '*.aux*' -o -name '*.glob*' -o -name '*.vo*'" \
-	"')' -exec rm '{}' '+'" > $@
-
+# This target is here just to prevent a loop.
 .FORCE::
 	@ true
 .PHONY: .FORCE
+
+%:: .FORCE
+	$(HIDE) $(MAKE) -s _CoqMakefile
+	$(SHOW) echo MAKE $@
+	$(HIDE) $(MAKE) -f _CoqMakefile -s $@
+
+# This target is here just to prevent a loop.
+Makefile::
+	@ true
+
+_CoqMakefile:: _CoqMakefile.args _CoqMakefile.local
+	$(SHOW) echo MAKE $@
+	$(HIDE) coq_makefile -f $< -o $@ -opt
+
+_CoqMakefile.args:: _CoqProject _CoqFiles
+	$(SHOW) echo MAKE $@
+	$(HIDE) cat $^ > $@
+
+_CoqProject::
+	$(SHOW) echo MAKE $@
+	$(HIDE) printf '%s\n' "INSTALLDEFAULTROOT = . -Q . Maniunfold" > $@
+
+_CoqFiles::
+	$(SHOW) echo MAKE $@
+	$(HIDE) find . -type f -name '*.v' | LC_ALL=C sort > $@
+
+_CoqMakefile.local::
+	$(SHOW) echo MAKE $@
+	$(HIDE) printf 'clean::\n\t@ %s %s %s %s\n' \
+	"find . -type f '('" \
+	"-name '_Coq*' -o -name '*.aux' -o -name '*.cache' -o -name '*.glob' -o" \
+	"-name '*.vio' -o -name '*.vo' -o -name '*.vok' -o -name '*.vos'" \
+	"')' -exec rm '{}' '+'" > $@
