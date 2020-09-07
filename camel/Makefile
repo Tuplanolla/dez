@@ -1,36 +1,59 @@
 MKDIR:=mkdir -p
+COQC:=coqc
+COQFLAGS:=-Q ../fowl Maniunfold
+CAMLFLAGS:=-I gen-ocaml
+CAMLDEP:=ocamlfind ocamldep
+CAMLDEPFLAGS:=$(CAMLFLAGS)
+CAMLC:=ocamlfind ocamlopt
+CAMLCFLAGS:=$(CAMLFLAGS) -O2 -thread -package num,logs
 
-CMD:=$(if $(VERBOSE),,@ )
-MSG:=$(if $(VERBOSE),@ true || ,@ )
+HIDE:=$(if $(VERBOSE),,@)
+SHOW:=$(if $(VERBOSE),@ true||,@)
 
-all:: adapter.cmi adapter.cmx extraction.cmi extraction.cmx
+# TODO There is a conflict saying
+# `The files ~/.opam/default/lib/ocaml/big_int.cmi and gen-ocaml/Nat.cmi
+# make inconsistent assumptions over interface Nat`
+# and also this file sucks.
+
+all:: .Makefile.d adapter.cmi adapter.cmx
 .PHONY: all
 
-# TODO Take clean from `fowl`.
 clean::
-	$(CMD) $(RM) .*.aux *.glob *.vo*
-	$(CMD) $(RM) extraction.{ml,mli,cmx,cmi,o}
-	$(CMD) $(RM) -r gen-ocaml
+	$(SHOW) echo CLEAN gen-ocaml
+	$(HIDE) $(RM) -r gen-ocaml
+	$(HIDE) find . -type f '(' \
+	-name '_Coq*' -o -name '*.aux' -o -name '*.cache' -o -name '*.glob' -o \
+	-name '*.vio' -o -name '*.vo' -o -name '*.vok' -o -name '*.vos' -o \
+	-name '*.cmi' -o -name '*.cmx' -o -name '*.o' \
+	')' -exec $(RM) '{}' '+'
 .PHONY: clean
 
-OCAMLPFFTLAGS:=-O2 -package num -package logs -thread
+%.cmi:: %.mli .Makefile.d
+	$(SHOW) echo CAMLC -o $@
+	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c $<
 
-extraction.cmi:: extraction.mli
-	$(MSG) echo OCAMLOPT extraction
-	$(CMD) ocamlfind ocamlopt -c $(OCAMLPFFTLAGS) extraction.mli
+%.cmx:: %.ml .Makefile.d
+	$(SHOW) echo CAMLC -o $@
+	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c $<
 
-extraction.cmx:: extraction.ml
-	$(MSG) echo OCAMLOPT extraction
-	$(CMD) ocamlfind ocamlopt -c $(OCAMLPFFTLAGS) extraction.ml
+gen-ocaml/%.cmi:: gen-ocaml/%.mli .Makefile.d
+	$(SHOW) echo CAMLC -o $@
+	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c $<
 
-adapter.cmi:: adapter.mli extraction.cmi
-	$(MSG) echo OCAMLOPT adapter
-	$(CMD) ocamlfind ocamlopt -c $(OCAMLPFFTLAGS) adapter.mli
+gen-ocaml/%.cmx:: gen-ocaml/%.ml .Makefile.d
+	$(SHOW) echo CAMLC -o $@
+	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c $<
 
-adapter.cmx:: adapter.ml extraction.cmi
-	$(MSG) echo OCAMLOPT adapter
-	$(CMD) ocamlfind ocamlopt -c $(OCAMLPFFTLAGS) adapter.ml
+gen-ocaml:: Extraction.v
+	$(SHOW) echo COQC $<
+	$(HIDE) $(MKDIR) gen-ocaml
+	$(HIDE) $(COQC) $(COQFLAGS) Extraction.v
 
-extraction.mli:: Extraction.v
-	$(MKDIR) gen-ocaml
-	$(CMD) coqc -Q ../fowl Maniunfold Extraction.v
+# We automatically generate dependencies between components here.
+.Makefile.d:: gen-ocaml
+	$(SHOW) echo CAMLDEP '>' $@
+	$(HIDE) find . -type f '(' \
+	-name '*.ml' -o -name '*.mli' \
+	')' -exec $(CAMLDEP) $(CAMLDEPFLAGS) '{}' '+' > $@
+
+include .Makefile.d
