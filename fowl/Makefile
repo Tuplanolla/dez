@@ -7,7 +7,6 @@ DEFAULT::
 	$(HIDE) $(MAKE) -f _CoqMakefile -s
 .PHONY: DEFAULT
 
-# We have this target just to prevent getting stuck on nothing to do.
 .FORCE::
 	@ true
 .PHONY: .FORCE
@@ -17,7 +16,8 @@ DEFAULT::
 	$(SHOW) echo MAKE $@
 	$(HIDE) $(MAKE) -f _CoqMakefile -s $@
 
-# We have this target just to prevent getting stuck on an infinite loop.
+# We need this target to override an implicit rule
+# that would get us stuck in an infinite loop.
 Makefile::
 	@ true
 

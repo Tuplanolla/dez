@@ -1,4 +1,6 @@
-build::
+# TODO This.
+
+all::
 	@ true
 
 clean::

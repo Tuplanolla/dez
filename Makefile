@@ -1,6 +1,10 @@
 HIDE:=$(if $(VERBOSE),,@)
 SHOW:=$(if $(VERBOSE),@ true||,@)
 
+# We cannot easily track dependencies between components,
+# because they span several languages,
+# which is why we do not even try.
+
 COMPONENTS:=fowl \
 flower ungulate camel fur reptile snake scales fungus truffle spores ape
 
@@ -12,9 +16,14 @@ clean::
 	$(HIDE) for x in $(COMPONENTS) ; do $(MAKE) -C $$x -s $@ ; done
 .PHONY: clean
 
+run::
+	echo TODO This.
+.PHONY: run
+
 $(COMPONENTS)::
 	$(SHOW) echo MAKE -C $@
 	$(HIDE) $(MAKE) -C $@ -s
+.PHONY: $(COMPONENTS)
 
 %.svg:: %.dot
 	$(SHOW) echo DOT -o $@
@@ -27,11 +36,3 @@ habitat.dot:: habitat.dot.h
 habitat-with-example.dot:: habitat.dot.h
 	$(SHOW) echo CPP -o $@
 	$(HIDE) cpp -P -D CLUSTER -D COMPILE -U SHOWCOMPILE -D RUN -D SHOWRUN -o$@ $<
-
-# We only consider dependencies between components here.
-camel:: fowl
-fur:: flower ungulate camel
-snake:: reptile
-scales:: reptile snake flower
-spores:: flower fungus truffle
-ape:: ungulate

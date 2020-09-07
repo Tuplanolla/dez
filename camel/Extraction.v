@@ -1,10 +1,15 @@
 From Coq Require
   extraction.Extraction.
 From Coq Require Import
-  PArith.PArith.
+  ZArith.ZArith.
+From Maniunfold.Offers Require Export
+  IntegerOperations.
 From Maniunfold.Provides Require Export
-  PositiveTheorems.
+  ZTheorems.
+From Maniunfold.ShouldOffer Require Import
+  OneSorted.ArithmeticNotations OneSorted.ArithmeticOperationNotations.
 
 Extraction Language OCaml.
 Cd "gen-ocaml".
-Recursive Extraction Library PositiveTheorems.
+Extraction Blacklist Nat.
+Recursive Extraction Library ZTheorems.

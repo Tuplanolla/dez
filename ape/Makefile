@@ -1,11 +1,13 @@
 CMD:=$(if $(VERBOSE),,@ )
 MSG:=$(if $(VERBOSE),@ true || ,@ )
 
+# TODO This.
+
 OCAMLPFFTLAGS:=-I gen-ocaml -I ../ungulate -O2 \
 -package num,logs,thrift -thread
 
-build:: main
-.PHONY: build
+all:: main
+.PHONY: all
 
 clean::
 	$(CMD) $(RM) -r gen-ocaml

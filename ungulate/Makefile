@@ -1,17 +1,36 @@
-CMD:=$(if $(VERBOSE),,@ )
-MSG:=$(if $(VERBOSE),@ true || ,@ )
+CAMLFLAGS:=
+CAMLDEP:=ocamlfind ocamldep
+CAMLDEPFLAGS:=$(CAMLFLAGS)
+CAMLC:=ocamlfind ocamlopt
+CAMLCFLAGS:=$(CAMLFLAGS) -O2 -package num,logs -thread
 
-OCAMLPFFTLAGS:=-O2 -package num,logs -thread
+HIDE:=$(if $(VERBOSE),,@)
+SHOW:=$(if $(VERBOSE),@ true||,@)
 
-build:: def_sys.cmi def_sys.cmx util.cmi util.cmx
-.PHONY: build
+all:: def_sys.cmi def_sys.cmx util.cmi util.cmx
+.PHONY: all
 
 clean::
-	$(CMD) $(RM) *.cmi *.cmx *.o
+	$(SHOW) echo CLEAN .Makefile.d
+	$(HIDE) $(RM) .Makefile.d
+	$(SHOW) echo CLEAN
+	$(HIDE) find . -type f '(' \
+	-name '*.cmi' -o -name '*.cmx' -o -name '*.o' \
+	')' -exec $(RM) '{}' '+'
 .PHONY: clean
 
-%.cmi:: %.mli
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c $<
+-include .Makefile.d
 
-%.cmx:: %.ml
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c $<
+%.cmi:: %.mli .Makefile.d
+	$(SHOW) echo CAMLC $<
+	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c $<
+
+%.cmx:: %.ml .Makefile.d
+	$(SHOW) echo CAMLC $<
+	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c $<
+
+.Makefile.d::
+	$(SHOW) echo CAMLDEP '>' $@
+	$(HIDE) find . -type f '(' \
+	-name '*.ml' -o -name '*.mli' \
+	')' -exec $(CAMLDEP) $(CAMLDEPFLAGS) '{}' '+' > $@
