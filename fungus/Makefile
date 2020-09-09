@@ -1,10 +1,10 @@
 HIDE:=$(if $(VERBOSE),,@)
 SHOW:=$(if $(VERBOSE),@ true||,@)
 
-all::
-	@ true
+all ::
+	$(SHOW) echo STAT
 .PHONY: all
 
-clean::
-	@ true
+clean ::
+	$(SHOW) echo CLEAN
 .PHONY: clean

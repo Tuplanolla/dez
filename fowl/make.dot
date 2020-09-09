@@ -1,7 +1,0 @@
-digraph make {
-  "_CoqMakefile.args" -> "_CoqMakefile"
-  "_CoqMakefile.local" -> "_CoqMakefile"
-  "_CoqProject" -> "_CoqMakefile.args"
-  "_CoqFiles" -> "_CoqMakefile.args"
-  "*.v" -> "_CoqFiles"
-}

@@ -1,11 +1,11 @@
 HIDE:=$(if $(VERBOSE),,@)
 SHOW:=$(if $(VERBOSE),@ true||,@)
 
-all::
-	@ true
+all ::
+	$(SHOW) echo STAT
 .PHONY: all
 
-clean::
+clean ::
 	$(SHOW) echo CLEAN PY
 	$(HIDE) $(RM) -r __pycache__
 .PHONY: clean

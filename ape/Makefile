@@ -3,24 +3,26 @@ SHOW:=$(if $(VERBOSE),@ true||,@)
 
 # TODO This.
 
+THRIFT:=thrift
 OCAMLPFFTLAGS:=-I gen-ocaml -I ../ungulate -O2 \
 -package num,logs,thrift -thread
 
-all:: main
+all :: main
+	$(SHOW) echo STAT $^
 .PHONY: all
 
-clean::
+clean ::
 	$(HIDE) $(RM) -r gen-ocaml
 	$(HIDE) $(RM) *.cmi *.cmx *.o
 	$(HIDE) $(RM) main
 .PHONY: clean
 
-run::
+run ::
 	$(SHOW) echo RUN main
 	$(HIDE) ./main
 .PHONY: run
 
-main:: gen-ocaml main.ml broker.ml
+main :: gen-ocaml main.ml broker.ml
 	$(SHOW) echo OCAMLOPT broker
 	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c broker.mli
 	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c broker.ml
@@ -30,7 +32,7 @@ main:: gen-ocaml main.ml broker.ml
 	gen-ocaml/polynomial_types.cmx gen-ocaml/polynomial_consts.cmx \
 	def_sys.cmx util.cmx broker.cmx main.cmx
 
-gen-ocaml:: ../flower/main.idl
+gen-ocaml :: ../flower/gen.idl
 	$(SHOW) echo THRIFT $<
 	$(HIDE) thrift --gen ocaml -r $<
 	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/component_types.mli
@@ -39,5 +41,3 @@ gen-ocaml:: ../flower/main.idl
 	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_types.mli
 	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_types.ml
 	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_consts.ml
-
-# prereq:: ungulate

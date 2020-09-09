@@ -1,19 +1,30 @@
 HIDE:=$(if $(VERBOSE),,@)
 SHOW:=$(if $(VERBOSE),@ true||,@)
 
-all:: gen-gv
+GV:=dot
+GVFLAGS:=-Efontname=sans -Gfontname=sans -Nfontname=sans
+THRIFT:=thrift
+
+TARGETS:=gen-gv/component.svg gen-gv/polynomial.svg
+
+all :: $(TARGETS)
+	$(SHOW) echo STAT $^
 .PHONY: all
 
-clean::
+clean ::
 	$(SHOW) echo CLEAN gen-gv
 	$(HIDE) $(RM) -r gen-gv
 .PHONY: clean
 
-# We generate diagrams just to check that the message specification is valid.
-gen-gv:: main.idl
-	$(SHOW) echo THRIFT -o $@
-	$(HIDE) thrift --gen gv -r $<
+gen-gv/%.svg :: gen-gv/%.gv
+	$(SHOW) echo GV $<
+	$(HIDE) $(GV) $(GVFLAGS) -Tsvg -o$@ $<
 
-main.idl:: component.idl polynomial.idl
+# We generate diagrams just to check that the message specification is valid.
+$(TARGETS:.svg=.gv) &:: gen.idl
+	$(SHOW) echo THRIFT $<
+	$(HIDE) $(THRIFT) --gen gv -r $<
+
+gen.idl :: component.idl polynomial.idl
 	$(SHOW) echo MAKE $@
 	$(HIDE) for x in $^ ; do printf 'include "%s"\n' $$x ; done > $@

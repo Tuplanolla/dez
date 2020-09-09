@@ -1,17 +1,26 @@
 HIDE:=$(if $(VERBOSE),,@)
 SHOW:=$(if $(VERBOSE),@ true||,@)
 
-all::
-	@ true
+all :: main
+	$(SHOW) echo STAT $^
 .PHONY: all
 
-clean::
-	@ true
+clean ::
+	$(SHOW) echo CLEAN CXX
+	$(HIDE) find . -maxdepth 1 -type f '(' \
+	-name '*.o' \
+	')' -exec $(RM) '{}' '+'
+	$(SHOW) echo CLEAN main
+	$(HIDE) $(RM) main
 .PHONY: clean
 
-run::
+run ::
 	$(SHOW) echo RUN main
 	$(HIDE) ./main
 .PHONY: run
 
-# prereq:: flower fungus truffle
+main :: main.o
+	$(CXX) $(CXXFLAGS) -o $@ $<
+
+main.o :: main.cxx
+	$(CXX) $(CXXFLAGS) -c -o $@ $<

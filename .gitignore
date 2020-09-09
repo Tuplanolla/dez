@@ -12,7 +12,7 @@
 *.vos
 /*.dot
 /*.svg
-/flower/main.idl
+/flower/gen.idl
 __pycache__
 _build
 gen-*

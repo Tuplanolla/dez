@@ -3,35 +3,50 @@ SHOW:=$(if $(VERBOSE),@ true||,@)
 
 CAMLFLAGS:=
 CAMLDEP:=ocamlfind ocamldep
-CAMLDEPFLAGS:=$(CAMLFLAGS)
+CAMLDEPFLAGS:=$(CAMLFLAGS) -native
 CAMLC:=ocamlfind ocamlopt
 CAMLCFLAGS:=$(CAMLFLAGS) -O2 -package logs -thread
 
-all:: def_sys.cmi def_sys.cmx util.cmi util.cmx
+TARGETS:=def_sys.cm util.cm
+
+all :: $(TARGETS:.cm=.cmi) $(TARGETS:.cm=.cmx)
+	$(SHOW) echo STAT $^
 .PHONY: all
 
-clean::
+clean ::
 	$(SHOW) echo CLEAN .Makefile.d
 	$(HIDE) $(RM) .Makefile.d
 	$(SHOW) echo CLEAN CAML
 	$(HIDE) find . -type f '(' \
-	-name '*.cmi' -o -name '*.cmo' -o -name '*.cmx' -o -name '*.cmxa' -o \
-	-name '*.o' \
-	')' -exec $(RM) '{}' '+'
+	-name '*.cmi' -o -name '*.cmo' -o -name '*.cmx' -o -name '*.o' -o \
+	-false ')' -exec $(RM) '{}' '+'
 .PHONY: clean
 
-%.cmi:: %.mli .Makefile.d
+# We use this rule with `ocamlc` and `ocamlopt`.
+%.cmi :: %.mli .Makefile.d
 	$(SHOW) echo CAMLC $<
-	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c -o $@ $<
+	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c $<
 
-%.cmx:: %.ml .Makefile.d
+# We use this rule with `ocamlc`.
+%.cmo :: %.ml .Makefile.d
 	$(SHOW) echo CAMLC $<
-	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c -o $@ $<
+	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c $<
 
-.Makefile.d::
-	$(SHOW) echo CAMLDEP '>' $@
-	$(HIDE) find . -type f '(' \
-	-name '*.ml' -o -name '*.mli' \
-	')' -exec $(CAMLDEP) $(CAMLDEPFLAGS) '{}' '+' > $@
+# We use this rule with `ocamlopt`.
+%.cmx %.o :: %.ml .Makefile.d
+	$(SHOW) echo CAMLC $<
+	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c $<
 
+# We need this rule to keep track of the included dependencies.
+Makefile :: .Makefile.d
+	$(SHOW) echo MAKE $@
+
+# We would like to automatically find
+# all the transitive dependencies of `$(TARGETS:.cm=.ml)`,
+# but there is currently no simple way to do that.
+.Makefile.d :: *.ml *.mli
+	$(SHOW) echo CAMLDEP -o $@
+	$(HIDE) $(CAMLDEP) $(CAMLDEPFLAGS) *.ml *.mli > $@
+
+# We always have dependency information.
 -include .Makefile.d
