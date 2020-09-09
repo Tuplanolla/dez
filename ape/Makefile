@@ -1,5 +1,5 @@
-CMD:=$(if $(VERBOSE),,@ )
-MSG:=$(if $(VERBOSE),@ true || ,@ )
+HIDE:=$(if $(VERBOSE),,@)
+SHOW:=$(if $(VERBOSE),@ true||,@)
 
 # TODO This.
 
@@ -10,32 +10,34 @@ all:: main
 .PHONY: all
 
 clean::
-	$(CMD) $(RM) -r gen-ocaml
-	$(CMD) $(RM) *.cmi *.cmx *.o
-	$(CMD) $(RM) main
+	$(HIDE) $(RM) -r gen-ocaml
+	$(HIDE) $(RM) *.cmi *.cmx *.o
+	$(HIDE) $(RM) main
 .PHONY: clean
 
 run::
-	$(MSG) echo BROKER test
-	$(CMD) ./main test
+	$(SHOW) echo RUN main
+	$(HIDE) ./main
 .PHONY: run
 
 main:: gen-ocaml main.ml broker.ml
-	$(MSG) echo OCAMLOPT broker
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c broker.mli
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c broker.ml
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c main.ml
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -linkpkg -o main \
+	$(SHOW) echo OCAMLOPT broker
+	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c broker.mli
+	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c broker.ml
+	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c main.ml
+	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -linkpkg -o main \
 	gen-ocaml/component_types.cmx gen-ocaml/component_consts.cmx \
 	gen-ocaml/polynomial_types.cmx gen-ocaml/polynomial_consts.cmx \
 	def_sys.cmx util.cmx broker.cmx main.cmx
 
 gen-ocaml:: ../flower/main.idl
-	$(MSG) echo THRIFT $<
-	$(CMD) thrift --gen ocaml -r $<
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/component_types.mli
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/component_types.ml
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/component_consts.ml
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_types.mli
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_types.ml
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_consts.ml
+	$(SHOW) echo THRIFT $<
+	$(HIDE) thrift --gen ocaml -r $<
+	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/component_types.mli
+	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/component_types.ml
+	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/component_consts.ml
+	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_types.mli
+	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_types.ml
+	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_consts.ml
+
+# prereq:: ungulate

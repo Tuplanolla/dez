@@ -3,7 +3,7 @@ SHOW:=$(if $(VERBOSE),@ true||,@)
 
 DEFAULT::
 	$(HIDE) $(MAKE) -s _CoqMakefile
-	$(SHOW) echo MAKE
+	$(SHOW) echo MAKE -f _CoqMakefile
 	$(HIDE) $(MAKE) -f _CoqMakefile -s
 .PHONY: DEFAULT
 
@@ -26,19 +26,19 @@ _CoqMakefile:: _CoqMakefile.args _CoqMakefile.local
 	$(HIDE) coq_makefile -f $< -o $@ -opt
 
 _CoqMakefile.args:: _CoqProject _CoqFiles
-	$(SHOW) echo SH '>' $@
+	$(SHOW) echo MAKE $@
 	$(HIDE) cat $^ > $@
 
 _CoqProject::
-	$(SHOW) echo SH '>' $@
+	$(SHOW) echo MAKE $@
 	$(HIDE) printf '%s\n' "INSTALLDEFAULTROOT = . -Q . Maniunfold" > $@
 
 _CoqFiles::
-	$(SHOW) echo SH '>' $@
+	$(SHOW) echo MAKE $@
 	$(HIDE) find . -type f -name '*.v' | LC_ALL=C sort > $@
 
 _CoqMakefile.local::
-	$(SHOW) echo SH '>' $@
+	$(SHOW) echo MAKE $@
 	$(HIDE) printf 'clean::\n\t@ %s %s %s %s\n' \
 	"find . -type f '('" \
 	"-name '_Coq*' -o -name '*.aux' -o -name '*.cache' -o -name '*.glob' -o" \

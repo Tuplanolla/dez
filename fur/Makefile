@@ -1,39 +1,73 @@
-CMD:=$(if $(VERBOSE),,@ )
-MSG:=$(if $(VERBOSE),@ true || ,@ )
+HIDE:=$(if $(VERBOSE),,@)
+SHOW:=$(if $(VERBOSE),@ true||,@)
 
-# TODO This.
+CAMLFLAGS:=-I gen-ocaml -I ../ungulate -I ../camel -I ../camel/gen-ocaml
+CAMLDEP:=ocamlfind ocamldep
+CAMLDEPFLAGS:=$(CAMLFLAGS)
+CAMLC:=ocamlfind ocamlopt
+CAMLCFLAGS:=$(CAMLFLAGS) -O2 -package num,logs,thrift -thread
 
-OCAMLPFFTLAGS:=-I gen-ocaml -I ../camel -I ../ungulate -O2 \
--package num -package logs -package thrift -thread
-
-main:: gen-ocaml main.ml server_proxy.ml
-	$(MSG) echo OCAMLOPT server_proxy
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c server_proxy.mli
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c server_proxy.ml
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c main.ml
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -linkpkg -o main \
-	gen-ocaml/component_types.cmx gen-ocaml/component_consts.cmx \
-	gen-ocaml/polynomial_types.cmx gen-ocaml/polynomial_consts.cmx \
-	extraction.cmx adapter.cmx \
-	def_sys.cmx util.cmx server_proxy.cmx main.cmx
-
-gen-ocaml:: ../flower/main.idl
-	$(MSG) echo THRIFT $<
-	$(CMD) thrift --gen ocaml -r $<
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/component_types.mli
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/component_types.ml
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/component_consts.ml
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_types.mli
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_types.ml
-	$(CMD) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_consts.ml
+all:: main
+.PHONY: all
 
 clean::
-	$(CMD) $(RM) -r gen-ocaml
-	$(CMD) $(RM) *.cmi *.cmx *.o
-	$(CMD) $(RM) main
+	$(SHOW) echo CLEAN gen-ocaml
+	$(HIDE) $(RM) -r gen-ocaml
+	$(SHOW) echo CLEAN CAML
+	$(HIDE) find . -type f '(' \
+	-name '*.cmi' -o -name '*.cmo' -o -name '*.cmx' -o -name '*.cmxa' -o \
+	-name '*.o' \
+	')' -exec $(RM) '{}' '+'
+	$(HIDE) $(RM) main
 .PHONY: clean
 
 run::
-	$(MSG) echo FUR test
-	$(CMD) ./main test
+	$(SHOW) echo RUN main
+	$(HIDE) ./main
 .PHONY: run
+
+# TODO What should we do with this mess?
+main:: .main.d main.cmx
+	$(SHOW) echo CAMLC -o $@
+	$(HIDE) cat .main.d | xargs $(CAMLC) $(CAMLCFLAGS) -linkpkg -o $@
+
+.main.d:: .Makefile.d
+	$(SHOW) echo CAMLDEP '>' $@
+	$(HIDE) { find . -maxdepth 1 -type f -name '*.ml' && \
+	find gen-ocaml ../ungulate ../camel -type f -name '*.cmx' | \
+	sed 's/\.cmx/.ml/g' ; } | \
+	xargs $(CAMLDEP) $(CAMLDEPFLAGS) -sort | \
+	sed 's/\.ml/.cmx/g' > $@
+
+%.cmi:: %.mli .Makefile.d
+	$(SHOW) echo CAMLC $<
+	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c -o $@ $<
+
+%.cmx:: %.ml .Makefile.d
+	$(SHOW) echo CAMLC $<
+	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c -o $@ $<
+
+# We must duplicate these rules if we do not wish to mess around with `VPATH`.
+gen-ocaml/%.cmi:: gen-ocaml/%.mli .Makefile.d
+	$(SHOW) echo CAMLC $<
+	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c -o $@ $<
+
+gen-ocaml/%.cmx:: gen-ocaml/%.ml .Makefile.d
+	$(SHOW) echo CAMLC $<
+	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c -o $@ $<
+
+# We use dependency information as the target of this rule,
+# because otherwise subsequent rules that write files into the source directory
+# would trigger this rule again.
+.Makefile.d::
+	$(SHOW) echo THRIFT ../flower/main.idl
+	$(HIDE) thrift --gen ocaml -r ../flower/main.idl
+	$(SHOW) echo CAMLDEP '>' $@
+	$(HIDE) find . -type f '(' \
+	-name '*.ml' -o -name '*.mli' \
+	')' -exec $(CAMLDEP) $(CAMLDEPFLAGS) '{}' '+' > $@
+
+# .Makefile.d.prereq:: ../flower
+# .main.d.prereq:: ../ungulate ../camel
+
+-include .Makefile.d
