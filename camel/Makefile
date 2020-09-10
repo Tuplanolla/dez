@@ -13,6 +13,9 @@ CAMLCFLAGS:=$(CAMLFLAGS) -O2 -package num,logs -thread
 MLFILES:=$(shell cat _MLFiles 2> /dev/null || echo _MLFiles)
 MLIFILES:=$(shell cat _MLIFiles 2> /dev/null || echo _MLIFiles)
 
+# We use this special variable to avoid having to duplicate some of the rules.
+VPATH:=.:gen-ocaml
+
 all :: $(MLFILES:.ml=.cmx) $(MLIFILES:.mli=.cmi)
 	$(SHOW) echo STAT $^
 .PHONY : all
@@ -31,10 +34,6 @@ clean ::
 	-name '*.cmi' -o -name '*.cmo' -o -name '*.cmx' -o -name '*.o' -o \
 	-false ')' -exec $(RM) '{}' '+'
 .PHONY : clean
-
-# We use this variable to avoid having to duplicate
-# the following rules for `gen-ocaml`.
-VPATH:=.:gen-ocaml
 
 %.cmi :: %.mli .Makefile.d
 	$(SHOW) echo CAMLC $<

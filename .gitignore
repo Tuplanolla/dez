@@ -14,7 +14,7 @@
 /*.svg
 /flower/gen.idl
 _Coq*
-_ML*
+_*Files
 __pycache__
 _build
 gen-*

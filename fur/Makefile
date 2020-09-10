@@ -11,6 +11,8 @@ CAMLCFLAGS:=$(CAMLFLAGS) -O2 -package num,logs,thrift -thread
 MLFILES:=$(shell cat _MLFiles 2> /dev/null || echo _MLFiles)
 MLIFILES:=$(shell cat _MLIFiles 2> /dev/null || echo _MLIFiles)
 
+VPATH:=.:gen-ocaml
+
 all :: main
 	$(SHOW) echo STAT $^
 .PHONY : all
@@ -41,8 +43,6 @@ main :: $(MLFILES:.ml=.cmx) $(MLIFILES:.mli=.cmi)
 	} | xargs $(CAMLDEP) $(CAMLDEPFLAGS) -sort | \
 	sed 's|$(MLPATTERN)|\1.cmx|g' | \
 	xargs $(CAMLC) $(CAMLCFLAGS) -linkpkg -o $@
-
-VPATH:=.:gen-ocaml
 
 %.cmi :: %.mli .Makefile.d
 	$(SHOW) echo CAMLC $<
