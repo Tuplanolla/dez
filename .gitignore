@@ -13,6 +13,8 @@
 /*.dot
 /*.svg
 /flower/gen.idl
+_Coq*
+_ML*
 __pycache__
 _build
 gen-*

@@ -5,19 +5,19 @@ PYTHON:=python3
 
 all :: gen-py main.pyc
 	$(SHOW) echo STAT $^
-.PHONY: all
+.PHONY : all
 
 clean ::
 	$(SHOW) echo CLEAN gen-py
 	$(HIDE) $(RM) -r gen-py
 	$(SHOW) echo CLEAN PY
 	$(HIDE) $(RM) -r __pycache__
-.PHONY: clean
+.PHONY : clean
 
 run ::
 	$(SHOW) echo RUN main.py
 	$(HIDE) $(PYTHON) main.py
-.PHONY: run
+.PHONY : run
 
 gen-py :: ../flower/gen.idl
 	$(SHOW) echo THRIFT $<

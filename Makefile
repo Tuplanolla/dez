@@ -13,12 +13,12 @@ TARGETS:=habitat.svg habitat-with-example.svg
 
 all :: $(COMPONENTS) $(TARGETS)
 	$(SHOW) echo STAT $(TARGETS)
-.PHONY: all
+.PHONY : all
 
 clean ::
 	$(SHOW) echo CLEAN $(COMPONENTS)
 	$(HIDE) for x in $(COMPONENTS) ; do $(MAKE) -C $$x -s $@ ; done
-.PHONY: clean
+.PHONY : clean
 
 run :: fur scales ape
 	$(SHOW) echo RUN $^
@@ -26,7 +26,7 @@ run :: fur scales ape
 	( sleep 1 && $(MAKE) -C scales -s $@ ; ) & \
 	( sleep 1 && $(MAKE) -C spores -s $@ ; ) & \
 	$(MAKE) -C ape -s $@
-.PHONY: run
+.PHONY : run
 
 # We track dependencies between components here,
 # because we do not want to have the components care about making each other.
@@ -42,7 +42,7 @@ ape :: ungulate
 $(COMPONENTS) ::
 	$(SHOW) echo MAKE -C $@
 	$(HIDE) $(MAKE) -C $@ -s
-.PHONY: $(COMPONENTS)
+.PHONY : $(COMPONENTS)
 
 %.svg :: %.dot
 	$(SHOW) echo GV $<

@@ -9,18 +9,18 @@ OCAMLPFFTLAGS:=-I gen-ocaml -I ../ungulate -O2 \
 
 all :: main
 	$(SHOW) echo STAT $^
-.PHONY: all
+.PHONY : all
 
 clean ::
 	$(HIDE) $(RM) -r gen-ocaml
 	$(HIDE) $(RM) *.cmi *.cmx *.o
 	$(HIDE) $(RM) main
-.PHONY: clean
+.PHONY : clean
 
 run ::
 	$(SHOW) echo RUN main
 	$(HIDE) ./main
-.PHONY: run
+.PHONY : run
 
 main :: gen-ocaml main.ml broker.ml
 	$(SHOW) echo OCAMLOPT broker

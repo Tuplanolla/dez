@@ -10,7 +10,7 @@ DEFAULT ::
 	$(HIDE) for x in $(SUBCOMPONENTS) ; \
 	do echo SUBMAKE $$x && make --no-print-directory -C gfd/Samples/$$x ; \
 	done
-.PHONY: DEFAULT
+.PHONY : DEFAULT
 
 Makefile ::
 	@ true
@@ -19,4 +19,4 @@ clean ::
 	$(HIDE) for x in $(SUBCOMPONENTS) ; \
 	do echo SUBCLEAN $$x && make --no-print-directory -C gfd/Samples/$$x -s $@ ; \
 	done
-.PHONY: clean
+.PHONY : clean

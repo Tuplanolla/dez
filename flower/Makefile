@@ -5,23 +5,23 @@ GV:=dot
 GVFLAGS:=-Efontname=sans -Gfontname=sans -Nfontname=sans
 THRIFT:=thrift
 
-TARGETS:=gen-gv/component.svg gen-gv/polynomial.svg
+TARGETS:=gen-gv/component.g gen-gv/polynomial.g
 
-all :: $(TARGETS)
+all :: $(TARGETS:.g=.svg)
 	$(SHOW) echo STAT $^
-.PHONY: all
+.PHONY : all
 
 clean ::
 	$(SHOW) echo CLEAN gen-gv
 	$(HIDE) $(RM) -r gen-gv
-.PHONY: clean
+.PHONY : clean
 
 gen-gv/%.svg :: gen-gv/%.gv
 	$(SHOW) echo GV $<
 	$(HIDE) $(GV) $(GVFLAGS) -Tsvg -o$@ $<
 
 # We generate diagrams just to check that the message specification is valid.
-$(TARGETS:.svg=.gv) &:: gen.idl
+$(TARGETS:.g=.gv) &:: gen.idl
 	$(SHOW) echo THRIFT $<
 	$(HIDE) $(THRIFT) --gen gv -r $<
 

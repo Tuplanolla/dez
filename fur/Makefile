@@ -10,25 +10,26 @@ THRIFT:=thrift
 
 all :: main
 	$(SHOW) echo STAT $^
-.PHONY: all
+.PHONY : all
 
 clean ::
+	$(SHOW) echo CLEAN .Makefile.d
+	$(HIDE) $(RM) .Makefile.d
 	$(SHOW) echo CLEAN gen-ocaml
 	$(HIDE) $(RM) -r gen-ocaml
 	$(SHOW) echo CLEAN CAML
-	$(HIDE) find . -type f '(' \
-	-name '*.cmi' -o -name '*.cmo' -o -name '*.cmx' -o -name '*.cmxa' -o \
-	-name '*.o' \
-	')' -exec $(RM) '{}' '+'
 	$(HIDE) $(RM) main
-.PHONY: clean
+	$(HIDE) find . -type f '(' \
+	-name '*.cmi' -o -name '*.cmo' -o -name '*.cmx' -o -name '*.o' -o \
+	-false ')' -exec $(RM) '{}' '+'
+.PHONY : clean
 
-run ::
-	$(SHOW) echo RUN main
-	$(HIDE) ./main
-.PHONY: run
+run :: main
+	$(SHOW) echo RUN $<
+	$(HIDE) ./$<
+.PHONY : run
 
-# TODO What should we do with this mess?
+# TODO What should we do with this mess? Follow the `camel`!
 main :: .main.d main.cmx
 	$(SHOW) echo CAMLC -o $@
 	$(HIDE) cat .main.d | xargs $(CAMLC) $(CAMLCFLAGS) -linkpkg -o $@
@@ -43,31 +44,25 @@ main :: .main.d main.cmx
 
 %.cmi :: %.mli .Makefile.d
 	$(SHOW) echo CAMLC $<
-	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c -o $@ $<
+	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c $<
 
-%.cmx :: %.ml .Makefile.d
+%.cmo :: %.ml .Makefile.d
 	$(SHOW) echo CAMLC $<
-	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c -o $@ $<
+	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c $<
 
-# We must duplicate these rules if we do not wish to mess around with `VPATH`.
-gen-ocaml/%.cmi :: gen-ocaml/%.mli .Makefile.d
+%.cmx %.o :: %.ml .Makefile.d
 	$(SHOW) echo CAMLC $<
-	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c -o $@ $<
+	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c $<
 
-gen-ocaml/%.cmx :: gen-ocaml/%.ml .Makefile.d
-	$(SHOW) echo CAMLC $<
-	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c -o $@ $<
+Makefile :: .Makefile.d
+	$(SHOW) echo MAKE $@
 
-# We use dependency information as the target of this rule,
-# because otherwise subsequent rules that write files into the source directory
-# would trigger this rule again.
-.Makefile.d ::
-	$(SHOW) echo THRIFT ../flower/gen.idl
-	$(HIDE) $(THRIFT) --gen ocaml -r ../flower/gen.idl
+.Makefile.d :: ../flower/gen.idl
+	$(SHOW) echo THRIFT $<
+	$(HIDE) $(THRIFT) --gen ocaml -r $<
 	$(SHOW) echo CAMLDEP -o $@
-	$(HIDE) find . -type f '(' \
-	-name '*.ml' -o -name '*.mli' \
-	')' -exec $(CAMLDEP) $(CAMLDEPFLAGS) '{}' '+' > $@
+	$(HIDE) $(CAMLDEP) $(CAMLDEPFLAGS) *.ml *.mli \
+	gen-ocaml/*.ml gen-ocaml/*.mli > $@
 
 # We do not have dependency information until code generation is done.
 -include .Makefile.d

@@ -5,11 +5,11 @@ DEFAULT ::
 	$(HIDE) $(MAKE) -s _CoqMakefile
 	$(SHOW) echo MAKE -f _CoqMakefile
 	$(HIDE) $(MAKE) -f _CoqMakefile -s
-.PHONY: DEFAULT
+.PHONY : DEFAULT
 
 .FORCE ::
 	@ true
-.PHONY: .FORCE
+.PHONY : .FORCE
 
 % :: .FORCE
 	$(HIDE) $(MAKE) -s _CoqMakefile

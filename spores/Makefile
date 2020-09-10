@@ -3,7 +3,7 @@ SHOW:=$(if $(VERBOSE),@ true||,@)
 
 all :: main
 	$(SHOW) echo STAT $^
-.PHONY: all
+.PHONY : all
 
 clean ::
 	$(SHOW) echo CLEAN CXX
@@ -12,12 +12,12 @@ clean ::
 	')' -exec $(RM) '{}' '+'
 	$(SHOW) echo CLEAN main
 	$(HIDE) $(RM) main
-.PHONY: clean
+.PHONY : clean
 
 run ::
 	$(SHOW) echo RUN main
 	$(HIDE) ./main
-.PHONY: run
+.PHONY : run
 
 main :: main.o
 	$(CXX) $(CXXFLAGS) -o $@ $<
