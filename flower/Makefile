@@ -12,7 +12,7 @@ all :: $(TARGETS:.g=.svg)
 .PHONY : all
 
 clean ::
-	$(SHOW) echo CLEAN gen-gv
+	$(SHOW) echo CLEAN GV
 	$(HIDE) $(RM) -r gen-gv
 .PHONY : clean
 

@@ -10,8 +10,6 @@ CAMLDEPFLAGS:=$(CAMLFLAGS) -native
 CAMLC:=ocamlfind ocamlopt
 CAMLCFLAGS:=$(CAMLFLAGS) -O2 -package num,logs -thread
 
-TARGETS:=adapter.cm
-
 MLFILES:=$(shell cat _MLFiles 2> /dev/null || echo _MLFiles)
 MLIFILES:=$(shell cat _MLIFiles 2> /dev/null || echo _MLIFiles)
 
@@ -20,18 +18,15 @@ all :: $(MLFILES:.ml=.cmx) $(MLIFILES:.mli=.cmi)
 .PHONY : all
 
 clean ::
-	$(SHOW) echo CLEAN .Makefile.d
-	$(HIDE) $(RM) .Makefile.d
-	$(SHOW) echo CLEAN _MLFiles _MLIFiles
-	$(HIDE) $(RM) _MLFiles _MLIFiles
-	$(SHOW) echo CLEAN gen-ocaml
-	$(HIDE) $(RM) -r gen-ocaml
+	$(SHOW) echo CLEAN MAKE
+	$(HIDE) $(RM) .Makefile.d _MLFiles _MLIFiles
 	$(SHOW) echo CLEAN COQ
 	$(HIDE) find . -type f '(' \
 	-name '_Coq*' -o -name '*.aux' -o -name '*.cache' -o -name '*.glob' -o \
 	-name '*.vio' -o -name '*.vo' -o -name '*.vok' -o -name '*.vos' -o \
 	-false ')' -exec $(RM) '{}' '+'
 	$(SHOW) echo CLEAN CAML
+	$(HIDE) $(RM) -r gen-ocaml
 	$(HIDE) find . -type f '(' \
 	-name '*.cmi' -o -name '*.cmo' -o -name '*.cmx' -o -name '*.o' -o \
 	-false ')' -exec $(RM) '{}' '+'
@@ -61,12 +56,14 @@ Makefile :: .Makefile.d
 	$(HIDE) cat $^ | xargs $(CAMLDEP) $(CAMLDEPFLAGS) > $@
 
 # We use `_MLFiles` and `_MLIFiles` as the target of this rule for two reasons.
-# First, if we used `gen-ocaml` as the target,
-# subsequent rules that compile any dependencies would trigger this rule again,
-# resulting in an infinite loop.
+# First, if we used the `gen-ocaml` directory as the target,
+# subsequent rules that compile any files within the directory
+# would trigger this rule again,
+# leading to an infinite loop.
 # Second, if we used `.Makefile.d` as the target,
-# subsequent rules would only compile transitive dependencies of `$(TARGETS)`,
-# resulting in a partial result.
+# subsequent rules that compile files
+# would only consider the transitive dependencies of our targets,
+# leading to an incomplete result.
 _MLFiles _MLIFiles &:: Extraction.v
 	$(SHOW) echo COQC $<
 	$(HIDE) $(MKDIR) gen-ocaml

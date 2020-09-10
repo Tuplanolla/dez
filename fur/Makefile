@@ -1,24 +1,26 @@
 HIDE:=$(if $(VERBOSE),,@)
 SHOW:=$(if $(VERBOSE),@ true||,@)
 
+THRIFT:=thrift
 CAMLFLAGS:=-I gen-ocaml -I ../ungulate -I ../camel -I ../camel/gen-ocaml
 CAMLDEP:=ocamlfind ocamldep
 CAMLDEPFLAGS:=$(CAMLFLAGS) -native
 CAMLC:=ocamlfind ocamlopt
 CAMLCFLAGS:=$(CAMLFLAGS) -O2 -package num,logs,thrift -thread
-THRIFT:=thrift
+
+MLFILES:=$(shell cat _MLFiles 2> /dev/null || echo _MLFiles)
+MLIFILES:=$(shell cat _MLIFiles 2> /dev/null || echo _MLIFiles)
 
 all :: main
 	$(SHOW) echo STAT $^
 .PHONY : all
 
 clean ::
-	$(SHOW) echo CLEAN .Makefile.d
-	$(HIDE) $(RM) .Makefile.d
-	$(SHOW) echo CLEAN gen-ocaml
-	$(HIDE) $(RM) -r gen-ocaml
+	$(SHOW) echo CLEAN MAKE
+	$(HIDE) $(RM) .Makefile.d _MLFiles _MLIFiles
 	$(SHOW) echo CLEAN CAML
 	$(HIDE) $(RM) main
+	$(HIDE) $(RM) -r gen-ocaml
 	$(HIDE) find . -type f '(' \
 	-name '*.cmi' -o -name '*.cmo' -o -name '*.cmx' -o -name '*.o' -o \
 	-false ')' -exec $(RM) '{}' '+'
@@ -29,18 +31,18 @@ run :: main
 	$(HIDE) ./$<
 .PHONY : run
 
-# TODO What should we do with this mess? Follow the `camel`!
-main :: .main.d main.cmx
-	$(SHOW) echo CAMLC -o $@
-	$(HIDE) cat .main.d | xargs $(CAMLC) $(CAMLCFLAGS) -linkpkg -o $@
+MLPATTERN:=\<\([^[:space:]]\+\)\.ml\>
 
-.main.d :: .Makefile.d
-	$(SHOW) echo CAMLDEP -o $@
-	$(HIDE) { find . -maxdepth 1 -type f -name '*.ml' && \
-	find gen-ocaml ../ungulate ../camel -type f -name '*.cmx' | \
-	sed 's/\.cmx/.ml/g' ; } | \
+main :: $(MLFILES:.ml=.cmx) $(MLIFILES:.mli=.cmi)
+	$(SHOW) echo CAMLC -o $@
+	$(HIDE) { cat _MLFiles ; \
+	sed 's|$(MLPATTERN)|../ungulate/\1.ml|g' ../ungulate/_MLFiles ; \
+	sed 's|$(MLPATTERN)|../camel/\1.ml|g' ../camel/_MLFiles ; } | \
 	xargs $(CAMLDEP) $(CAMLDEPFLAGS) -sort | \
-	sed 's/\.ml/.cmx/g' > $@
+	sed 's|$(MLPATTERN)|\1.cmx|g' | \
+	xargs $(CAMLC) $(CAMLCFLAGS) -linkpkg -o $@
+
+VPATH:=.:gen-ocaml
 
 %.cmi :: %.mli .Makefile.d
 	$(SHOW) echo CAMLC $<
@@ -57,12 +59,16 @@ main :: .main.d main.cmx
 Makefile :: .Makefile.d
 	$(SHOW) echo MAKE $@
 
-.Makefile.d :: ../flower/gen.idl
+.Makefile.d :: _MLFiles _MLIFiles
+	$(SHOW) echo CAMLDEP -o $@
+	$(HIDE) cat $^ | xargs $(CAMLDEP) $(CAMLDEPFLAGS) > $@
+
+_MLFiles _MLIFiles &:: ../flower/gen.idl
 	$(SHOW) echo THRIFT $<
 	$(HIDE) $(THRIFT) --gen ocaml -r $<
-	$(SHOW) echo CAMLDEP -o $@
-	$(HIDE) $(CAMLDEP) $(CAMLDEPFLAGS) *.ml *.mli \
-	gen-ocaml/*.ml gen-ocaml/*.mli > $@
+	$(SHOW) echo MAKE _MLFiles _MLIFiles
+	$(HIDE) echo *.ml gen-ocaml/*.ml > _MLFiles
+	$(HIDE) echo *.mli gen-ocaml/*.mli > _MLIFiles
 
 # We do not have dependency information until code generation is done.
 -include .Makefile.d
