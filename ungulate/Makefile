@@ -23,17 +23,17 @@ clean ::
 	-false ')' -exec $(RM) '{}' '+'
 .PHONY : clean
 
-# We use this rule with `ocamlc` and `ocamlopt`.
+# This rule is for `ocamlc` and `ocamlopt`.
 %.cmi :: %.mli .Makefile.d
 	$(SHOW) echo CAMLC $<
 	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c $<
 
-# We use this rule with `ocamlc`.
+# This rule is for `ocamlc`.
 %.cmo :: %.ml .Makefile.d
 	$(SHOW) echo CAMLC $<
 	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c $<
 
-# We use this rule with `ocamlopt`.
+# This rule is for `ocamlopt`.
 %.cmx %.o :: %.ml .Makefile.d
 	$(SHOW) echo CAMLC $<
 	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c $<

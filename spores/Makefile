@@ -1,22 +1,25 @@
 HIDE:=$(if $(VERBOSE),,@)
 SHOW:=$(if $(VERBOSE),@ true||,@)
 
-all :: main
+THRIFT:=thrift
+CXX:=g++
+CXXFLAGS:=-I gen-cpp -O2
+
+all :: main gen-cpp
 	$(SHOW) echo STAT $^
 .PHONY : all
 
 clean ::
 	$(SHOW) echo CLEAN CXX
-	$(HIDE) find . -maxdepth 1 -type f '(' \
-	-name '*.o' \
-	')' -exec $(RM) '{}' '+'
-	$(SHOW) echo CLEAN main
 	$(HIDE) $(RM) main
+	$(HIDE) find . -type f '(' \
+	-name '*.o' -o \
+	-false ')' -exec $(RM) '{}' '+'
 .PHONY : clean
 
-run ::
-	$(SHOW) echo RUN main
-	$(HIDE) ./main
+run :: main
+	$(SHOW) echo RUN $<
+	$(HIDE) ./$<
 .PHONY : run
 
 main :: main.o
@@ -24,3 +27,9 @@ main :: main.o
 
 main.o :: main.cxx
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+gen-cpp :: ../flower/gen.idl
+	$(SHOW) echo THRIFT $<
+	$(HIDE) $(THRIFT) --gen cpp -r $<
+
+# TODO Unify with `_MLFiles` convention.

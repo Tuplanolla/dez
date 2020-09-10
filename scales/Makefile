@@ -1,27 +1,29 @@
 HIDE:=$(if $(VERBOSE),,@)
 SHOW:=$(if $(VERBOSE),@ true||,@)
 
-PYTHON:=python3
+THRIFT:=thrift
+PY:=python3
 
-all :: gen-py main.pyc
+all :: gen-py *.py
 	$(SHOW) echo STAT $^
 .PHONY : all
 
 clean ::
-	$(SHOW) echo CLEAN gen-py
-	$(HIDE) $(RM) -r gen-py
 	$(SHOW) echo CLEAN PY
 	$(HIDE) $(RM) -r __pycache__
+	$(HIDE) $(RM) -r gen-py
+	$(HIDE) find . -type f '(' \
+	-name '*.pyc' -o \
+	-false ')' -exec $(RM) '{}' '+'
 .PHONY : clean
 
-run ::
-	$(SHOW) echo RUN main.py
-	$(HIDE) $(PYTHON) main.py
+run :: main.py
+	$(SHOW) echo RUN $<
+	$(HIDE) $(PY) $<
 .PHONY : run
 
 gen-py :: ../flower/gen.idl
 	$(SHOW) echo THRIFT $<
-	$(HIDE) thrift --gen py -r $<
+	$(HIDE) $(THRIFT) --gen py -r $<
 
-%.pyc :: %.py
-	$(PYTHON) -m py_compile $<
+# TODO Unify with `_MLFiles` convention.

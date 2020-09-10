@@ -1,18 +1,21 @@
 HIDE:=$(if $(VERBOSE),,@)
 SHOW:=$(if $(VERBOSE),@ true||,@)
 
-PYTHON:=python3
+PY:=python3
 
-all ::
-	$(SHOW) echo STAT
+all :: *.py
+	$(SHOW) echo STAT $^
 .PHONY : all
 
 clean ::
 	$(SHOW) echo CLEAN PY
 	$(HIDE) $(RM) -r __pycache__
+	$(HIDE) find . -type f '(' \
+	-name '*.pyc' -o \
+	-false ')' -exec $(RM) '{}' '+'
 .PHONY : clean
 
-run ::
-	$(SHOW) echo RUN main.py
-	$(HIDE) $(PYTHON) main.py
+run :: main.py
+	$(SHOW) echo RUN $<
+	$(HIDE) $(PY) $<
 .PHONY : run

@@ -1,43 +1,72 @@
 HIDE:=$(if $(VERBOSE),,@)
 SHOW:=$(if $(VERBOSE),@ true||,@)
 
-# TODO This.
-
 THRIFT:=thrift
-OCAMLPFFTLAGS:=-I gen-ocaml -I ../ungulate -O2 \
--package num,logs,thrift -thread
+CAMLFLAGS:=-I gen-ocaml -I ../ungulate
+CAMLDEP:=ocamlfind ocamldep
+CAMLDEPFLAGS:=$(CAMLFLAGS) -native
+CAMLC:=ocamlfind ocamlopt
+CAMLCFLAGS:=$(CAMLFLAGS) -O2 -package logs,thrift -thread
+
+MLFILES:=$(shell cat _MLFiles 2> /dev/null || echo _MLFiles)
+MLIFILES:=$(shell cat _MLIFiles 2> /dev/null || echo _MLIFiles)
 
 all :: main
 	$(SHOW) echo STAT $^
 .PHONY : all
 
 clean ::
-	$(HIDE) $(RM) -r gen-ocaml
-	$(HIDE) $(RM) *.cmi *.cmx *.o
+	$(SHOW) echo CLEAN MAKE
+	$(HIDE) $(RM) .Makefile.d _MLFiles _MLIFiles
+	$(SHOW) echo CLEAN CAML
 	$(HIDE) $(RM) main
+	$(HIDE) $(RM) -r gen-ocaml
+	$(HIDE) find . -type f '(' \
+	-name '*.cmi' -o -name '*.cmo' -o -name '*.cmx' -o -name '*.o' -o \
+	-false ')' -exec $(RM) '{}' '+'
 .PHONY : clean
 
-run ::
-	$(SHOW) echo RUN main
-	$(HIDE) ./main
+run :: main
+	$(SHOW) echo RUN $<
+	$(HIDE) ./$<
 .PHONY : run
 
-main :: gen-ocaml main.ml broker.ml
-	$(SHOW) echo OCAMLOPT broker
-	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c broker.mli
-	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c broker.ml
-	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c main.ml
-	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -linkpkg -o main \
-	gen-ocaml/component_types.cmx gen-ocaml/component_consts.cmx \
-	gen-ocaml/polynomial_types.cmx gen-ocaml/polynomial_consts.cmx \
-	def_sys.cmx util.cmx broker.cmx main.cmx
+MLPATTERN:=\<\([^[:space:]]\+\)\.ml\>
 
-gen-ocaml :: ../flower/gen.idl
+main :: $(MLFILES:.ml=.cmx) $(MLIFILES:.mli=.cmi)
+	$(SHOW) echo CAMLC -o $@
+	$(HIDE) { cat _MLFiles ; \
+	sed 's|$(MLPATTERN)|../ungulate/\1.ml|g' ../ungulate/_MLFiles ; \
+	} | xargs $(CAMLDEP) $(CAMLDEPFLAGS) -sort | \
+	sed 's|$(MLPATTERN)|\1.cmx|g' | \
+	xargs $(CAMLC) $(CAMLCFLAGS) -linkpkg -o $@
+
+VPATH:=.:gen-ocaml
+
+%.cmi :: %.mli .Makefile.d
+	$(SHOW) echo CAMLC $<
+	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c $<
+
+%.cmo :: %.ml .Makefile.d
+	$(SHOW) echo CAMLC $<
+	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c $<
+
+%.cmx %.o :: %.ml .Makefile.d
+	$(SHOW) echo CAMLC $<
+	$(HIDE) $(CAMLC) $(CAMLCFLAGS) -c $<
+
+Makefile :: .Makefile.d
+	$(SHOW) echo MAKE $@
+
+.Makefile.d :: _MLFiles _MLIFiles
+	$(SHOW) echo CAMLDEP -o $@
+	$(HIDE) cat $^ | xargs $(CAMLDEP) $(CAMLDEPFLAGS) > $@
+
+_MLFiles _MLIFiles &:: ../flower/gen.idl
 	$(SHOW) echo THRIFT $<
-	$(HIDE) thrift --gen ocaml -r $<
-	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/component_types.mli
-	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/component_types.ml
-	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/component_consts.ml
-	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_types.mli
-	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_types.ml
-	$(HIDE) ocamlfind ocamlopt $(OCAMLPFFTLAGS) -c gen-ocaml/polynomial_consts.ml
+	$(HIDE) $(THRIFT) --gen ocaml -r $<
+	$(SHOW) echo MAKE _MLFiles _MLIFiles
+	$(HIDE) echo *.ml gen-ocaml/*.ml > _MLFiles
+	$(HIDE) echo *.mli gen-ocaml/*.mli > _MLIFiles
+
+-include .Makefile.d

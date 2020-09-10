@@ -37,8 +37,8 @@ main :: $(MLFILES:.ml=.cmx) $(MLIFILES:.mli=.cmi)
 	$(SHOW) echo CAMLC -o $@
 	$(HIDE) { cat _MLFiles ; \
 	sed 's|$(MLPATTERN)|../ungulate/\1.ml|g' ../ungulate/_MLFiles ; \
-	sed 's|$(MLPATTERN)|../camel/\1.ml|g' ../camel/_MLFiles ; } | \
-	xargs $(CAMLDEP) $(CAMLDEPFLAGS) -sort | \
+	sed 's|$(MLPATTERN)|../camel/\1.ml|g' ../camel/_MLFiles ; \
+	} | xargs $(CAMLDEP) $(CAMLDEPFLAGS) -sort | \
 	sed 's|$(MLPATTERN)|\1.cmx|g' | \
 	xargs $(CAMLC) $(CAMLCFLAGS) -linkpkg -o $@
 
@@ -70,5 +70,4 @@ _MLFiles _MLIFiles &:: ../flower/gen.idl
 	$(HIDE) echo *.ml gen-ocaml/*.ml > _MLFiles
 	$(HIDE) echo *.mli gen-ocaml/*.mli > _MLIFiles
 
-# We do not have dependency information until code generation is done.
 -include .Makefile.d

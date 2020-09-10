@@ -28,8 +28,9 @@ run :: fur scales ape
 	$(MAKE) -C ape -s $@
 .PHONY : run
 
-# We track dependencies between components here,
-# because we do not want to have the components care about making each other.
+# We track the dependencies between components here,
+# because we do not want to have the components
+# care about compiling each other.
 camel :: fowl
 fur :: flower ungulate camel
 snake :: reptile

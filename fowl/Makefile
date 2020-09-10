@@ -16,8 +16,8 @@ DEFAULT ::
 	$(SHOW) echo MAKE $@
 	$(HIDE) $(MAKE) -f _CoqMakefile -s $@
 
-# We need this target to override an implicit rule
-# that would otherwise get us stuck in an infinite loop.
+# We need this rule to override an implicit rule
+# that would otherwise lead to an infinite loop.
 Makefile ::
 	@ true
 
