@@ -2,14 +2,15 @@ HIDE:=$(if $(VERBOSE),,@)
 SHOW:=$(if $(VERBOSE),@ true||,@)
 
 THRIFT:=thrift
+THRIFTFLAGS:=-r
 CAMLFLAGS:=-I gen-ocaml -I ../ungulate
 CAMLDEP:=ocamlfind ocamldep
 CAMLDEPFLAGS:=$(CAMLFLAGS) -native
 CAMLC:=ocamlfind ocamlopt
 CAMLCFLAGS:=$(CAMLFLAGS) -O2 -package logs,thrift -thread
 
-IDLPATTERN:=\<\([^[:space:]]\+\)\.idl\>
-MLPATTERN:=\<\([^[:space:]]\+\)\.ml\>
+IDLPATTERN:=\<\([^[:space:]]\+\)\.\(idl\)\>
+MLPATTERN:=\<\([^[:space:]]\+\)\.\(ml\)\>
 
 MLFILES:=$(shell cat _MLFiles 2> /dev/null)
 MLIFILES:=$(shell cat _MLIFiles 2> /dev/null)
@@ -66,7 +67,7 @@ Makefile :: .Makefile.d
 _MLFiles _MLIFiles &:: ../flower/_IDLFiles
 	$(SHOW) echo THRIFT $<
 	$(HIDE) for x in $$(sed 's#$(IDLPATTERN)#../flower/\1.idl#g' $^) ; \
-	do $(THRIFT) --gen ocaml -r $$x ; \
+	do $(THRIFT) $(THRIFTFLAGS) --gen ocaml $$x ; \
 	done
 	$(SHOW) echo MAKE _MLFiles _MLIFiles
 	$(HIDE) find . gen-ocaml -maxdepth 1 -type f '(' \

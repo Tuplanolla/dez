@@ -2,15 +2,24 @@ HIDE:=$(if $(VERBOSE),,@)
 SHOW:=$(if $(VERBOSE),@ true||,@)
 
 THRIFT:=thrift
+THRIFTFLAGS:=-r
 PY:=python3
+PYFLAGS:=
 
-IDLPATTERN:=\<\([^[:space:]]\+\)\.idl\>
+IDLPATTERN:=\<\([^[:space:]]\+\)\.\(idl\)\>
+PYPATTERN:=\<\([^[:space:]]\+\)\.\(py\)\>
 
-all :: gen-py *.py
+PYFILES:=$(shell cat _PYFiles 2> /dev/null)
+
+VPATH:=.:gen-py
+
+all :: $(PYFILES:.py=.pyc)
 	$(SHOW) echo STAT $^
 .PHONY : all
 
 clean ::
+	$(SHOW) echo CLEAN MAKE
+	$(HIDE) $(RM) .Makefile.d _PYFiles
 	$(SHOW) echo CLEAN PY
 	$(HIDE) $(RM) -r __pycache__
 	$(HIDE) $(RM) -r gen-py
@@ -21,13 +30,27 @@ clean ::
 
 run :: main.py
 	$(SHOW) echo RUN $<
-	$(HIDE) $(PY) $<
+	$(HIDE) $(PY) $(PYFLAGS) $<
 .PHONY : run
 
-gen-py :: ../flower/_IDLFiles
+%.pyc :: %.py .Makefile.d
+	$(SHOW) echo PY $<
+	$(HIDE) $(PY) $(PYFLAGS) -m py_compile $<
+
+Makefile :: .Makefile.d
+	$(SHOW) echo MAKE $@
+
+.Makefile.d :: _PYFiles
+	$(HIDE) touch $@
+
+_PYFiles :: ../flower/_IDLFiles
 	$(SHOW) echo THRIFT $<
 	$(HIDE) for x in $$(sed 's#$(IDLPATTERN)#../flower/\1.idl#g' $^) ; \
-	do $(THRIFT) --gen py -r $$x ; \
+	do $(THRIFT) $(THRIFTFLAGS) --gen py $$x ; \
 	done
+	$(SHOW) echo MAKE $@
+	$(HIDE) find . gen-py -type f '(' \
+	-name '*.py' -o \
+	-false ')' > $@
 
-# TODO Unify with `_MLFiles` convention.
+-include .Makefile.d

@@ -2,11 +2,12 @@ HIDE:=$(if $(VERBOSE),,@)
 SHOW:=$(if $(VERBOSE),@ true||,@)
 
 THRIFT:=thrift
+THRIFTFLAGS:=-r
 CXX:=g++
 CXXFLAGS:=-I gen-cpp -I ../fungus -O2 -g -std=c++11 -lthrift
 
-IDLPATTERN:=\<\([^[:space:]]\+\)\.idl\>
-CXXPATTERN:=\<\([^[:space:]]\+\)\.cpp\>
+IDLPATTERN:=\<\([^[:space:]]\+\)\.\(idl\)\>
+CXXPATTERN:=\<\([^[:space:]]\+\)\.\(cpp\)\>
 
 CXXFILES:=$(shell cat _CXXFiles 2> /dev/null)
 HXXFILES:=$(shell cat _HXXFiles 2> /dev/null)
@@ -56,7 +57,7 @@ Makefile :: .Makefile.d
 _CXXFiles _HXXFiles &:: ../flower/_IDLFiles
 	$(SHOW) echo THRIFT $<
 	$(HIDE) for x in $$(sed 's#$(IDLPATTERN)#../flower/\1.idl#g' $^) ; \
-	do $(THRIFT) --gen cpp -r $$x ; \
+	do $(THRIFT) $(THRIFTFLAGS) --gen cpp $$x ; \
 	done
 	$(SHOW) echo MAKE _CXXFiles _HXXFiles
 	$(HIDE) find . gen-cpp -maxdepth 1 -type f '(' \

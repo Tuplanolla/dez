@@ -2,6 +2,7 @@ HIDE:=$(if $(VERBOSE),,@)
 SHOW:=$(if $(VERBOSE),@ true||,@)
 
 THRIFT:=thrift
+THRIFTFLAGS:=-r
 DOT:=dot
 DOTFLAGS:=-Efontname=sans -Gfontname=sans -Nfontname=sans
 
@@ -43,7 +44,9 @@ _IDLFiles :: $(IDLFILES)
 # We begrudgingly allow GraphViz files to have the extension `.gv`.
 _DOTFiles :: _IDLFiles
 	$(SHOW) echo THRIFT $<
-	$(HIDE) for x in $$(cat $^) ; do $(THRIFT) --gen gv -r $$x ; done
+	$(HIDE) for x in $$(cat $^) ; \
+	do $(THRIFT) $(THRIFTFLAGS) --gen gv $$x ; \
+	done
 	$(SHOW) echo MAKE $@
 	$(HIDE) find . gen-gv -maxdepth 1 -type f '(' \
 	-name '*.dot' -o -name '*.gv' -o \

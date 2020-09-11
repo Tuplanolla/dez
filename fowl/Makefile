@@ -8,7 +8,7 @@ DEFAULT ::
 .PHONY : DEFAULT
 
 .FORCE ::
-	@ true
+	$(HIDE) true
 .PHONY : .FORCE
 
 % :: .FORCE
@@ -19,7 +19,7 @@ DEFAULT ::
 # We need this rule to override an implicit rule
 # that would otherwise lead to an infinite loop.
 Makefile ::
-	@ true
+	$(HIDE) true
 
 _CoqMakefile :: _CoqMakefile.args _CoqMakefile.local
 	$(SHOW) echo COQ_MAKEFILE -o $@
