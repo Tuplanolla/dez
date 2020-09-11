@@ -3,7 +3,7 @@ SHOW:=$(if $(VERBOSE),@ true||,@)
 
 THRIFT:=thrift
 CXX:=g++
-CXXFLAGS:=-I gen-cpp -O2 -std=c++11 -lthrift
+CXXFLAGS:=-I gen-cpp -I ../fungus -O2 -g -std=c++11 -lthrift
 
 IDLPATTERN:=\<\([^[:space:]]\+\)\.idl\>
 CXXPATTERN:=\<\([^[:space:]]\+\)\.cpp\>
