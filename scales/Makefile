@@ -4,6 +4,8 @@ SHOW:=$(if $(VERBOSE),@ true||,@)
 THRIFT:=thrift
 PY:=python3
 
+IDLPATTERN:=\<\([^[:space:]]\+\)\.idl\>
+
 all :: gen-py *.py
 	$(SHOW) echo STAT $^
 .PHONY : all
@@ -22,8 +24,10 @@ run :: main.py
 	$(HIDE) $(PY) $<
 .PHONY : run
 
-gen-py :: ../flower/gen.idl
+gen-py :: ../flower/_IDLFiles
 	$(SHOW) echo THRIFT $<
-	$(HIDE) $(THRIFT) --gen py -r $<
+	$(HIDE) for x in $$(sed 's#$(IDLPATTERN)#../flower/\1.idl#g' $^) ; \
+	do $(THRIFT) --gen py -r $$x ; \
+	done
 
 # TODO Unify with `_MLFiles` convention.

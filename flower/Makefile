@@ -2,46 +2,51 @@ HIDE:=$(if $(VERBOSE),,@)
 SHOW:=$(if $(VERBOSE),@ true||,@)
 
 THRIFT:=thrift
-GV:=dot
-GVFLAGS:=-Efontname=sans -Gfontname=sans -Nfontname=sans
+DOT:=dot
+DOTFLAGS:=-Efontname=sans -Gfontname=sans -Nfontname=sans
 
-IDLFILES:=component.idl polynomial.idl
-GVFILES:=$(shell cat _GVFiles 2> /dev/null || echo _GVFiles)
+IDLFILES:=$(shell cat _IDLFiles 2> /dev/null)
+DOTFILES:=$(shell cat _DOTFiles 2> /dev/null)
 
+# This and several other directives in this file are completely unnecessary,
+# but we keep them to be consistent with the other components.
 VPATH:=.:gen-gv
 
-all :: $(GVFILES:.gv=.svg)
+# We generate diagrams just to check that the message specification is valid.
+all :: $(DOTFILES:.gv=.svg)
 	$(SHOW) echo STAT $^
 .PHONY : all
 
 clean ::
 	$(SHOW) echo CLEAN MAKE
-	$(HIDE) $(RM) _GVFiles
-	$(SHOW) echo CLEAN GV
+	$(HIDE) $(RM) _IDLFiles _DOTFiles
+	$(SHOW) echo CLEAN DOT
 	$(HIDE) $(RM) -r gen-gv
 .PHONY : clean
 
 %.svg :: %.gv .Makefile.d
-	$(SHOW) echo GV $<
-	$(HIDE) $(GV) $(GVFLAGS) -Tsvg -o$@ $<
+	$(SHOW) echo DOT $<
+	$(HIDE) $(DOT) $(DOTFLAGS) -Tsvg -o$@ $<
 
 Makefile :: .Makefile.d
 	$(SHOW) echo MAKE $@
 
-# This rule is completely unnecessary,
-# but we keep it in order to be consistent with the other components.
-.Makefile.d :: _GVFiles
+.Makefile.d :: _IDLFiles _DOTFiles
 	$(HIDE) touch $@
 
-# We generate diagrams just to check that the message specification is valid.
-_GVFiles :: gen.idl
-	$(SHOW) echo THRIFT $<
-	$(HIDE) $(THRIFT) --gen gv -r $<
-	$(SHOW) echo MAKE _GVFiles
-	$(HIDE) echo gen-gv/*.gv > _GVFiles
-
-gen.idl :: $(IDLFILES)
+_IDLFiles :: $(IDLFILES)
 	$(SHOW) echo MAKE $@
-	$(HIDE) for x in $^ ; do printf 'include "%s"\n' $$x ; done > $@
+	$(HIDE) find . -maxdepth 1 -type f '(' \
+	-name '*.idl' -o \
+	-false ')' > $@
+
+# We begrudgingly allow GraphViz files to have the extension `.gv`.
+_DOTFiles :: _IDLFiles
+	$(SHOW) echo THRIFT $<
+	$(HIDE) for x in $$(cat $^) ; do $(THRIFT) --gen gv -r $$x ; done
+	$(SHOW) echo MAKE $@
+	$(HIDE) find . gen-gv -maxdepth 1 -type f '(' \
+	-name '*.dot' -o -name '*.gv' -o \
+	-false ')' > $@
 
 -include .Makefile.d

@@ -8,8 +8,11 @@ CAMLDEPFLAGS:=$(CAMLFLAGS) -native
 CAMLC:=ocamlfind ocamlopt
 CAMLCFLAGS:=$(CAMLFLAGS) -O2 -package num,logs,thrift -thread
 
-MLFILES:=$(shell cat _MLFiles 2> /dev/null || echo _MLFiles)
-MLIFILES:=$(shell cat _MLIFiles 2> /dev/null || echo _MLIFiles)
+IDLPATTERN:=\<\([^[:space:]]\+\)\.idl\>
+MLPATTERN:=\<\([^[:space:]]\+\)\.ml\>
+
+MLFILES:=$(shell cat _MLFiles 2> /dev/null)
+MLIFILES:=$(shell cat _MLIFiles 2> /dev/null)
 
 VPATH:=.:gen-ocaml
 
@@ -33,15 +36,13 @@ run :: main
 	$(HIDE) ./$<
 .PHONY : run
 
-MLPATTERN:=\<\([^[:space:]]\+\)\.ml\>
-
 main :: $(MLFILES:.ml=.cmx) $(MLIFILES:.mli=.cmi)
 	$(SHOW) echo CAMLC -o $@
 	$(HIDE) { cat _MLFiles ; \
-	sed 's|$(MLPATTERN)|../ungulate/\1.ml|g' ../ungulate/_MLFiles ; \
-	sed 's|$(MLPATTERN)|../camel/\1.ml|g' ../camel/_MLFiles ; \
+	sed 's#$(MLPATTERN)#../ungulate/\1.ml#g' ../ungulate/_MLFiles ; \
+	sed 's#$(MLPATTERN)#../camel/\1.ml#g' ../camel/_MLFiles ; \
 	} | xargs $(CAMLDEP) $(CAMLDEPFLAGS) -sort | \
-	sed 's|$(MLPATTERN)|\1.cmx|g' | \
+	sed 's#$(MLPATTERN)#\1.cmx#g' | \
 	xargs $(CAMLC) $(CAMLCFLAGS) -linkpkg -o $@
 
 %.cmi :: %.mli .Makefile.d
@@ -63,11 +64,17 @@ Makefile :: .Makefile.d
 	$(SHOW) echo CAMLDEP -o $@
 	$(HIDE) cat $^ | xargs $(CAMLDEP) $(CAMLDEPFLAGS) > $@
 
-_MLFiles _MLIFiles &:: ../flower/gen.idl
+_MLFiles _MLIFiles &:: ../flower/_IDLFiles
 	$(SHOW) echo THRIFT $<
-	$(HIDE) $(THRIFT) --gen ocaml -r $<
+	$(HIDE) for x in $$(sed 's#$(IDLPATTERN)#../flower/\1.idl#g' $^) ; \
+	do $(THRIFT) --gen ocaml -r $$x ; \
+	done
 	$(SHOW) echo MAKE _MLFiles _MLIFiles
-	$(HIDE) echo *.ml gen-ocaml/*.ml > _MLFiles
-	$(HIDE) echo *.mli gen-ocaml/*.mli > _MLIFiles
+	$(HIDE) find . gen-ocaml -maxdepth 1 -type f '(' \
+	-name '*.ml' -o \
+	-false ')' > _MLFiles
+	$(HIDE) find . gen-ocaml -maxdepth 1 -type f '(' \
+	-name '*.mli' -o \
+	-false ')' > _MLIFiles
 
 -include .Makefile.d

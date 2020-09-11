@@ -7,8 +7,8 @@ CAMLDEPFLAGS:=$(CAMLFLAGS) -native
 CAMLC:=ocamlfind ocamlopt
 CAMLCFLAGS:=$(CAMLFLAGS) -O2 -package logs -thread
 
-MLFILES:=$(shell cat _MLFiles 2> /dev/null || echo _MLFiles)
-MLIFILES:=$(shell cat _MLIFiles 2> /dev/null || echo _MLIFiles)
+MLFILES:=$(shell cat _MLFiles 2> /dev/null)
+MLIFILES:=$(shell cat _MLIFiles 2> /dev/null)
 
 all :: $(MLFILES:.ml=.cmx) $(MLIFILES:.mli=.cmi)
 	$(SHOW) echo STAT $^
@@ -46,13 +46,17 @@ Makefile :: .Makefile.d
 	$(SHOW) echo CAMLDEP -o $@
 	$(HIDE) cat $^ | xargs $(CAMLDEP) $(CAMLDEPFLAGS) > $@
 
-_MLFiles :: *.ml
-	$(SHOW) echo MAKE _MLFiles
-	$(HIDE) echo *.ml > _MLFiles
+_MLFiles :: $(MLFILES)
+	$(SHOW) echo MAKE $@
+	$(HIDE) find . -maxdepth 1 -type f '(' \
+	-name '*.ml' -o \
+	-false ')' > $@
 
-_MLIFiles :: *.mli
-	$(SHOW) echo MAKE _MLIFiles
-	$(HIDE) echo *.mli > _MLIFiles
+_MLIFiles :: $(MLIFILES)
+	$(SHOW) echo MAKE $@
+	$(HIDE) find . -maxdepth 1 -type f '(' \
+	-name '*.mli' -o \
+	-false ')' > $@
 
 # We always have dependency information.
 -include .Makefile.d

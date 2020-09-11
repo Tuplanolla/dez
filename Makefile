@@ -12,12 +12,14 @@ flower ungulate camel fur reptile snake scales fungus truffle spores ape
 TARGETS:=habitat.svg habitat-with-example.svg
 
 all :: $(COMPONENTS) $(TARGETS)
-	$(SHOW) echo STAT $(TARGETS)
+	$(SHOW) echo STAT $^
 .PHONY : all
 
 clean ::
 	$(SHOW) echo CLEAN $(COMPONENTS)
-	$(HIDE) for x in $(COMPONENTS) ; do $(MAKE) -C $$x -s $@ ; done
+	$(HIDE) for x in $(COMPONENTS) ; \
+	do $(MAKE) -C $$x -s $@ ; \
+	done
 .PHONY : clean
 
 run :: fur scales ape

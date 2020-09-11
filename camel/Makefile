@@ -10,8 +10,8 @@ CAMLDEPFLAGS:=$(CAMLFLAGS) -native
 CAMLC:=ocamlfind ocamlopt
 CAMLCFLAGS:=$(CAMLFLAGS) -O2 -package num,logs -thread
 
-MLFILES:=$(shell cat _MLFiles 2> /dev/null || echo _MLFiles)
-MLIFILES:=$(shell cat _MLIFiles 2> /dev/null || echo _MLIFiles)
+MLFILES:=$(shell cat _MLFiles 2> /dev/null)
+MLIFILES:=$(shell cat _MLIFiles 2> /dev/null)
 
 # We use this special variable to avoid having to duplicate some of the rules.
 VPATH:=.:gen-ocaml
@@ -68,8 +68,12 @@ _MLFiles _MLIFiles &:: Extraction.v
 	$(HIDE) $(MKDIR) gen-ocaml
 	$(HIDE) $(COQC) $(COQFLAGS) $<
 	$(SHOW) echo MAKE _MLFiles _MLIFiles
-	$(HIDE) echo *.ml gen-ocaml/*.ml > _MLFiles
-	$(HIDE) echo *.mli gen-ocaml/*.mli > _MLIFiles
+	$(HIDE) find . gen-ocaml -maxdepth 1 -type f '(' \
+	-name '*.ml' -o \
+	-false ')' > _MLFiles
+	$(HIDE) find . gen-ocaml -maxdepth 1 -type f '(' \
+	-name '*.mli' -o \
+	-false ')' > _MLIFiles
 
 # We do not have dependency information until code extraction is done.
 -include .Makefile.d

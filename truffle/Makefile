@@ -1,22 +1,21 @@
 HIDE:=$(if $(VERBOSE),,@)
 SHOW:=$(if $(VERBOSE),@ true||,@)
 
-SUBCOMPONENTS:=LoadMsh # MeshGeneration MeshSplitter RelativisticSchrodinger \
+COMPONENTS:=LoadMsh # MeshGeneration MeshSplitter RelativisticSchrodinger \
 RotatingCavity ShrinkingCavity UnitCubeTest WavePropagation
 
-DEFAULT ::
-	$(HIDE) for x in $(SUBCOMPONENTS) ; \
-	do echo SUBMAKE $$x && make --no-print-directory -C gfd/Samples/$$x ; \
-	done
-.PHONY : DEFAULT
-
-Makefile ::
-	@ true
+all :: $(COMPONENTS)
+	$(SHOW) echo STAT $^
+.PHONY : all
 
 clean ::
-	$(HIDE) for x in $(SUBCOMPONENTS) ; \
-	do echo SUBCLEAN $$x && make --no-print-directory -C gfd/Samples/$$x -s $@ ; \
+	$(SHOW) echo CLEAN $(COMPONENTS)
+	$(HIDE) for x in $(COMPONENTS) ; \
+	do $(MAKE) -C gfd/Samples/$$x -s $@ ; \
 	done
 .PHONY : clean
 
-# TODO Unify with `fowl` convention.
+$(COMPONENTS) ::
+	$(SHOW) echo MAKE -C $@
+	$(HIDE) $(MAKE) -C gfd/Samples/$@ -s
+.PHONY : $(COMPONENTS)
