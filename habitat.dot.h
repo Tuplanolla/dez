@@ -263,6 +263,10 @@ digraph habitat {
   reptile_from_reptile -> snake
   fungus_from_fungus -> truffle
 
+  ungulate_from_ungulate -> fowl -> camel
+  reptile_from_reptile -> fowl -> snake
+  fungus_from_fungus -> fowl -> truffle
+
   camel_from_camel -> fur
   snake_from_snake -> scales
   truffle_from_truffle -> spores
