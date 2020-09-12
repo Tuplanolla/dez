@@ -31,7 +31,7 @@ _CoqMakefile.args :: _CoqProject _CoqFiles
 
 _CoqProject ::
 	$(SHOW) echo STAT $@
-	$(HIDE) printf '%s\n' "INSTALLDEFAULTROOT = . -Q . Maniunfold" > $@
+	$(HIDE) echo 'INSTALLDEFAULTROOT = . -Q . Maniunfold' > $@
 
 _CoqFiles ::
 	$(SHOW) echo STAT $@

@@ -20,9 +20,13 @@ all :: $(DOTFILES:.gv=.svg)
 
 clean ::
 	$(SHOW) echo CLEAN MAKE
-	$(HIDE) $(RM) _IDLFiles _DOTFiles
-	$(SHOW) echo CLEAN DOT
-	$(HIDE) $(RM) -r gen-gv
+	$(HIDE) find . -type f '(' \
+	-name '.*.d' -o -name '_*Files' -o \
+	-false ')' -exec $(RM) '{}' '+'
+	$(SHOW) echo CLEAN THRIFT
+	$(HIDE) find . -type d '(' \
+	-name 'gen-*' -o \
+	-false ')' -exec $(RM) -r '{}' '+'
 .PHONY : clean
 
 %.svg :: %.gv .Makefile.d

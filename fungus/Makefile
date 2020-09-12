@@ -13,7 +13,9 @@ all :: $(CXXFILES:.cpp=.o)
 
 clean ::
 	$(SHOW) echo CLEAN MAKE
-	$(HIDE) $(RM) .Makefile.d _CXXFiles _HXXFiles
+	$(HIDE) find . -type f '(' \
+	-name '.*.d' -o -name '_*Files' -o \
+	-false ')' -exec $(RM) '{}' '+'
 	$(SHOW) echo CLEAN CXX
 	$(HIDE) find . -type f '(' \
 	-name '*.o' -o \

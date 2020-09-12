@@ -16,7 +16,9 @@ all :: $(MLFILES:.ml=.cmx) $(MLIFILES:.mli=.cmi)
 
 clean ::
 	$(SHOW) echo CLEAN MAKE
-	$(HIDE) $(RM) .Makefile.d _MLFiles _MLIFiles
+	$(HIDE) find . -type f '(' \
+	-name '.*.d' -o -name '_*Files' -o \
+	-false ')' -exec $(RM) '{}' '+'
 	$(SHOW) echo CLEAN CAML
 	$(HIDE) find . -type f '(' \
 	-name '*.cmi' -o -name '*.cmo' -o -name '*.cmx' -o -name '*.o' -o \

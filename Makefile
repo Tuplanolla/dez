@@ -17,12 +17,41 @@ all :: $(COMPONENTS) $(TARGETS)
 
 clean ::
 	$(SHOW) echo CLEAN $(COMPONENTS)
-	$(HIDE) for x in $(COMPONENTS) ; \
+	$(HIDE) for x in $$(echo $(COMPONENTS) | tac -s ' ') ; \
 	do $(MAKE) -C $$x -s $@ ; \
 	done
 .PHONY : clean
 
-run :: fur scales ape
+# We have this failsafe mechanism in place,
+# because cleaning some of the components may require
+# having some of the other components built.
+deep-clean ::
+	$(SHOW) echo CLEAN MAKE
+	$(HIDE) find . -type f '(' \
+	-name '.*.d' -o -name '_*Files' -o \
+	-false ')' -exec $(RM) '{}' '+'
+	$(SHOW) echo CLEAN COQ
+	$(HIDE) find . -type f '(' \
+	-name '_Coq*' -o -name '*.aux' -o -name '*.cache' -o -name '*.glob' -o \
+	-name '*.vio' -o -name '*.vo' -o -name '*.vok' -o -name '*.vos' -o \
+	-false ')' -exec $(RM) '{}' '+'
+	$(SHOW) echo CLEAN THRIFT
+	$(HIDE) find . -type d '(' \
+	-name 'gen-*' -o \
+	-false ')' -exec $(RM) -r '{}' '+'
+	$(SHOW) echo CLEAN CAML
+	$(HIDE) find . -type f '(' \
+	-name '*.cmi' -o -name '*.cmo' -o -name '*.cmx' -o -name '*.o' -o \
+	-false ')' -exec $(RM) '{}' '+'
+	$(SHOW) echo CLEAN CXX
+	$(HIDE) find . -type f '(' \
+	-name '*.o' -o \
+	-false ')' -exec $(RM) '{}' '+'
+.PHONY : deep-clean
+
+# We do not depend on the components here,
+# because having them as phony targets slows down the launch.
+run :: # fur scales ape
 	$(SHOW) echo RUN $^
 	$(HIDE) ( sleep 1 && $(MAKE) -C fur -s $@ ; ) & \
 	( sleep 1 && $(MAKE) -C scales -s $@ ; ) & \

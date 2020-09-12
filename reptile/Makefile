@@ -14,12 +14,16 @@ all :: $(PYFILES:.py=.pyc)
 
 clean ::
 	$(SHOW) echo CLEAN MAKE
-	$(HIDE) $(RM) .Makefile.d _PYFiles
+	$(HIDE) find . -type f '(' \
+	-name '.*.d' -o -name '_*Files' -o \
+	-false ')' -exec $(RM) '{}' '+'
 	$(SHOW) echo CLEAN PY
-	$(HIDE) $(RM) -r __pycache__
 	$(HIDE) find . -type f '(' \
 	-name '*.pyc' -o \
 	-false ')' -exec $(RM) '{}' '+'
+	$(HIDE) find . -type d '(' \
+	-name '__pycache__' -o \
+	-false ')' -exec $(RM) -r '{}' '+'
 .PHONY : clean
 
 # These targets may never be created,

@@ -23,10 +23,15 @@ all :: main
 
 clean ::
 	$(SHOW) echo CLEAN MAKE
-	$(HIDE) $(RM) .Makefile.d _MLFiles _MLIFiles
+	$(HIDE) find . -type f '(' \
+	-name '.*.d' -o -name '_*Files' -o \
+	-false ')' -exec $(RM) '{}' '+'
+	$(SHOW) echo CLEAN THRIFT
+	$(HIDE) find . -type d '(' \
+	-name 'gen-*' -o \
+	-false ')' -exec $(RM) -r '{}' '+'
 	$(SHOW) echo CLEAN CAML
 	$(HIDE) $(RM) main
-	$(HIDE) $(RM) -r gen-ocaml
 	$(HIDE) find . -type f '(' \
 	-name '*.cmi' -o -name '*.cmo' -o -name '*.cmx' -o -name '*.o' -o \
 	-false ')' -exec $(RM) '{}' '+'
