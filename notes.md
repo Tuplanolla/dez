@@ -9,14 +9,25 @@ because otherwise things break in surprising ways.
 
 ### Build Automation
 
-Run `make` inside `bird` to build it with Make.
-Eventually running `make` at the root will work too.
-Even more eventually `dune` might work as well,
-as follows.
+There are two build systems: GNU Make and Dune.
+The system based on Make works and does not waste resources egregiously,
+but it is not smart or fast.
 
 ```
-$ inside .. dune exec -- coqide -Q _build/default/bird Maniunfold bird/Provides/PolynomialTheorems.v
+$ make
+$ make run
 ```
+
+The system based on Dune does not work yet,
+but should one day do that while being smart and fast.
+
+```
+$ dune build
+$ dune exec -- coqide -Q _build/default/bird Maniunfold fowl/Provides/PolynomialTheorems.v
+```
+
+I should probably list the dependencies and
+some installation and usage instructions here as well.
 
 ### Coherence Conditions
 
