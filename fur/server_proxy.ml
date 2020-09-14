@@ -27,10 +27,7 @@ let start () =
   while atomically (fun () -> !on) do try
     let req = read_request proto in
     Log.info (fun m -> m "Received request.");
-    (** TODO Call the extracted server code here. *)
-    let value = Hashtbl.fold
-      (fun i a y -> y +. a *. req#grab_point ** Int32.to_float i)
-      req#grab_coeffs 0. in
+    let value = Server.crunch req#grab_coeffs req#grab_point in
     Unix.sleep 1;
     let res = new response in
     res#set_value value;

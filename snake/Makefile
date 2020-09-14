@@ -18,12 +18,12 @@ clean ::
 	-name '.*.d' -o -name '_*Files' -o \
 	-false ')' -exec $(RM) '{}' '+'
 	$(SHOW) echo CLEAN PY
-	$(HIDE) find . -type f '(' \
-	-name '*.pyc' -o \
-	-false ')' -exec $(RM) '{}' '+'
 	$(HIDE) find . -type d '(' \
 	-name '__pycache__' -o \
 	-false ')' -exec $(RM) -r '{}' '+'
+	$(HIDE) find . -type f '(' \
+	-name '*.pyc' -o \
+	-false ')' -exec $(RM) '{}' '+'
 .PHONY : clean
 
 run :: main.py
