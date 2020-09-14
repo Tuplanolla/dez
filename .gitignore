@@ -5,11 +5,13 @@
 *.cmx
 *.glob
 *.o
+*.opam
 *.vio
 *.vo
 *.vok
 *.vos
 .*.d
+.merlin
 /*.dot
 /*.svg
 _*Files

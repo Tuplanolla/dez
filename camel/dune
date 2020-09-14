@@ -1,8 +1,17 @@
 (coq.extraction
   (prelude Extraction)
-  (extracted_modules Extraction)
+  ; TODO Having to list these modules sucks.
+  (extracted_modules
+    Addition BinInt BinNat BinNums BinPos BinPosDef BinaryFunction
+    BinaryOperation Bool Datatypes Decimal Function Hexadecimal Isomorphism
+    LeftAction LeftTorsion Logic Multiplication Nat0 Negation NullaryOperation
+    Numeral One RightAction RightTorsion Specif Torsion UnaryOperation
+    ZTheorems Zero)
   ; (libraries <ocaml_libraries>)
   ; (flags <coq_flags>)
   (theories Maniunfold))
 
-(include_subdirs qualified)
+(library
+  (name camel)
+  (public_name maniunfold.camel)
+  (synopsis "Server Library for Verified Symbolic Manipulation"))

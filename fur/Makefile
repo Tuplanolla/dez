@@ -7,7 +7,7 @@ CAMLFLAGS:=-I gen-ocaml -I ../ungulate -I ../camel -I ../camel/gen-ocaml
 CAMLDEP:=ocamlfind ocamldep
 CAMLDEPFLAGS:=$(CAMLFLAGS) -native
 CAMLC:=ocamlfind ocamlopt
-CAMLCFLAGS:=$(CAMLFLAGS) -O2 -package num,logs,thrift -thread
+CAMLCFLAGS:=$(CAMLFLAGS) -O2 -package logs,num,thrift -thread
 
 IDLPATTERN:=\<\([^[:space:]]\+\)\.\(idl\)\>
 MLPATTERN:=\<\([^[:space:]]\+\)\.\(ml\)\>

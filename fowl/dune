@@ -1,12 +1,14 @@
+(include_subdirs qualified)
+
 (coq.theory
   (name Maniunfold)
+  ; TODO There is no public name for some reason.
+  ; (public_name maniunfold.fowl)
   ; (package <package>)
-  ; (synopsis <text>)
+  (synopsis "Formal Specification")
   ; (modules <ordered_set_lang>)
   ; (libraries <ocaml_libraries>)
   ; (flags <coq_flags>)
-  ; TODO Put the `coq` and `coq-stdpp` here once they are supported.
+  ; TODO Put `coq-stdpp` here once external theories become supported.
   ; (theories <coq_theories>)
   )
-
-(include_subdirs qualified)

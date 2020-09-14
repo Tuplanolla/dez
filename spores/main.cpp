@@ -2,8 +2,8 @@
 #include <cstdlib>
 #include <iostream>
 #include "def_signal.hpp"
-#include "gen-cpp/component_types.h"
-#include "gen-cpp/polynomial_types.h"
+#include "component_types.h"
+#include "polynomial_types.h"
 
 /** TODO Do something useful here. */
 
