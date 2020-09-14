@@ -11,8 +11,10 @@ int main() {
   identity id;
   id.name = "spores";
   std::cout << "Here comes a C++ object!" << std::endl;
-  id.printTo(std::cout);
-  std::cout << std::endl;
+  /** All compatible versions of Thrift do not have this debug utility. */
+  /* id.printTo(std::cout); */
+  std::cout << id.name << std::endl;
+  std::cout << "identity(" << "name=" << id.name << ")" << std::endl;
 
   std::cout << "Here comes a C value!" << std::endl;
   if ((*posix_signals_array())[2].type == SIG_TYPE_NONRT)
