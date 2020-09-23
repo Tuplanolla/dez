@@ -78,7 +78,7 @@ let start ?(port=broker_port) () =
                   end with
                   | Some (sproto, Idle) ->
                       (** TODO Change state here. *)
-                      req#grab_data#grab_eval#write sproto;
+                      req#write sproto;
                       sproto#getTransport#flush;
                       let res = read_response sproto in
                       res#write proto;
@@ -116,5 +116,18 @@ let start ?(port=broker_port) () =
     Log.debug begin fun m ->
       m "Stopped listening for connections on thread %d."
       (Thread.id (Thread.self ()))
-    end
+    end;
+    (** TODO Graceful full shutdown. *)
+    match atomically begin fun () ->
+      Hashtbl.find_opt comps "fur"
+    end with
+    | Some (sproto, Idle) ->
+        let req = new request in
+        req#set_type Request_type.EXIT;
+        req#set_data new request_data;
+        req#write sproto;
+        sproto#getTransport#flush;
+        Log.info (fun m -> m "Shut down leftover server.")
+    (** TODO Handle missing or busy server. *)
+    | _ -> ()
   end

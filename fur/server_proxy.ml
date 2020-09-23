@@ -6,6 +6,7 @@ open Util
 module Log = (val Logs.src_log (Logs.Src.create "maniunfold.fur"))
 
 let start ?(addr="127.0.0.1") ?(port=8191) () =
+  (** TODO Do we need this exclusion for signals? *)
   let mutex = Mutex.create () in
   let atomically f =
     bracket
@@ -23,19 +24,23 @@ let start ?(addr="127.0.0.1") ?(port=8191) () =
   proto#getTransport#flush;
   Log.info (fun m -> m "Sent identification.");
   while atomically (fun () -> !on) do try
-    let req = read_poly proto in
+    let req = read_request proto in
     Log.info (fun m -> m "Received request.");
-    let value = Server.crunch req#grab_coeffs req#grab_point in
-    Unix.sleep 1;
-    let res = new response in
-    res#set_value value;
-    res#write proto;
-    proto#getTransport#flush;
-    Log.info (fun m -> m "Sent response.")
+    match req#grab_type with
+    | Request_type.EVAL ->
+        let poly = req#grab_data#grab_eval in
+        let value = Server.crunch poly#grab_coeffs poly#grab_point in
+        Unix.sleep 1;
+        let res = new response in
+        res#set_value value;
+        res#write proto;
+        proto#getTransport#flush;
+        Log.info (fun m -> m "Sent response.")
+    | Request_type.EXIT ->
+        atomically (fun () -> on := false);
+        Log.info (fun m -> m "Stopped serving the people.")
   with
   | Def_sys.Signal i when i = Sys.sigint ->
-      atomically (fun () -> on := false)
-  | Thrift.Transport.E _ ->
       atomically (fun () -> on := false)
   done;
   proto#getTransport#close

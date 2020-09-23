@@ -63,7 +63,7 @@ def start(addr='127.0.0.1', port=8191):
 
   def exit():
     logger.info('Sending exit message and disconnecting.')
-    req = request(type=request_type.EXIT, data=request_data(exit=0))
+    req = request(type=request_type.EXIT, data=request_data())
     req.write(proto)
     proto.trans.flush()
     proto.trans.close()
