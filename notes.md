@@ -564,9 +564,28 @@ $ LC_ALL=C sort -nk 1.2 -s primate.log scales.log
 Run simple gui, server and broker as follows.
 
 ```
-$ ( sleep 1 && inside scales make run ; ) &
-  ( sleep 1 && inside fur make run ; ) &
-  inside ape make run
+$ ( sleep 1 && make -C fur -s run ; ) & \
+  ( sleep 1 && make -C scales -s run ; ) & \
+  ( sleep 1 && make -C spores -s run ; ) & \
+  make -C ape -s run
+```
+
+It also works without build automation and can be distributed.
+
+```
+$ ( sleep 1 && cd fur && ./main 127.0.0.1 8191 ; ) & \
+  ( sleep 1 && cd scales && python3 main.py 127.0.0.1 8191 ; ) & \
+  ( sleep 1 && cd spores && ./main 127.0.0.1 8191 ; ) & \
+  ( cd ape && ./main 8191 ; )
+```
+
+Technically, we could unify the command with the following `main` program,
+but it would require `bash` to pass its correctly.
+
+```
+#! /bin/bash
+
+python3 main.py "$@"
 ```
 
 ## Simple Laws about Nonprominent Properties of Binary Relations by Jochen Burghardt

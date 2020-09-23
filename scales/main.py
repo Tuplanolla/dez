@@ -2,11 +2,12 @@ import client_proxy
 import def_signal
 import logging
 import signal
+import sys
 from def_signal import SignalBehavior
 
 logger = logging.getLogger('maniunfold.scales')
 
-def config_logging(loc):
+def config_logging(loc=None):
   '''
   Configure logging.
 
@@ -18,6 +19,9 @@ def config_logging(loc):
   * ``<%(funcName)s>`` mimicks ``objdump`` and
   * ``%(filename)s:%(lineno)d: %(levelname)s: %(message)s`` mimicks ``cc``.
   '''
+  if loc is None:
+    raise ValueError('loc')
+
   if loc:
     fmt = ' '.join([
       '[%(asctime)s.%(msecs)03d]',
@@ -106,9 +110,14 @@ def main():
   '''
   Configure and start the message broker.
   '''
-  config_logging(False)
+  config_logging(loc=False)
   config_signals()
-  client_proxy.start()
+  if len(sys.argv) == 3:
+    client_proxy.start(addr=sys.argv[1], port=sys.argv[2])
+  elif len(sys.argv) == 2:
+    client_proxy.start(addr=sys.argv[1])
+  else:
+    client_proxy.start()
 
 if __name__ == '__main__':
   main()

@@ -17,27 +17,20 @@ from thrift.transport import TTransport
 
 logger = logging.getLogger('maniunfold.scales')
 
-def broker_port():
-  '''
-  See the documentation for the broker.
-  '''
-  return 8191
-
-def start():
+def start(addr='127.0.0.1', port=8191):
   '''
   Configure and start the client proxy.
   '''
-  # TODO Open, execute, close...
-  def solve(expr, pt):
-    ip = '127.0.0.1'
-    logger.info('Connecting to {}.'.format(ip))
-    trans = TTransport.TBufferedTransport(TSocket.TSocket(ip, broker_port()))
-    proto = TBinaryProtocol.TBinaryProtocol(trans)
-    proto.trans.open()
-    id = identity(name="scales-oneshot")
-    id.write(proto)
-    proto.trans.flush()
+  logger.info('Connecting to {}:{}.'.format(addr, port))
+  trans = TTransport.TBufferedTransport(TSocket.TSocket(addr, port))
+  proto = TBinaryProtocol.TBinaryProtocol(trans)
+  proto.trans.open()
+  id = identity(name='scales')
+  id.write(proto)
+  proto.trans.flush()
 
+  # TODO Specify this dependency inversion contract somewhere.
+  def solve(expr, pt):
     # This sucks on purpose.
     const = '([+-]? *[0-9]+)'
     var = '(?:([x])(?: *\*\* *([+]? *[0-9]+))?)'
@@ -58,13 +51,21 @@ def start():
         raise SyntaxError(expr)
     point = float(pt)
 
-    req = request(coeffs=coeffs, point=point)
+    p = poly(coeffs=coeffs, point=point)
+    req = request(type=request_type.EVAL, data=request_data(eval=p))
     req.write(proto)
     proto.trans.flush()
     res = response()
     res.read(proto)
-    proto.trans.close()
+
     logger.info('Work is done.')
     return str(res.value)
 
-  client.start({'solve': solve})
+  def exit():
+    logger.info('Sending exit message and disconnecting.')
+    req = request(type=request_type.EXIT, data=request_data(exit=0))
+    req.write(proto)
+    proto.trans.flush()
+    proto.trans.close()
+
+  client.start({'solve': solve, 'exit': exit})

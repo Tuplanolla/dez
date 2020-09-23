@@ -98,3 +98,4 @@ def start(impl):
   pt.insert(0, '7')
 
   window.mainloop()
+  impl['exit']()

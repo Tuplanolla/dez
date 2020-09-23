@@ -5,9 +5,7 @@ open Util
 
 module Log = (val Logs.src_log (Logs.Src.create "maniunfold.fur"))
 
-let broker_port = 8191
-
-let start () =
+let start ?(addr="127.0.0.1") ?(port=8191) () =
   let mutex = Mutex.create () in
   let atomically f =
     bracket
@@ -15,8 +13,8 @@ let start () =
     ~release:(fun () -> Mutex.unlock mutex)
     f in
   let on = ref true in
-  Log.info (fun m -> m "Connecting to %s." "localhorse");
-  let trans = new TSocket.t "localhost" broker_port in
+  Log.info (fun m -> m "Connecting to %s." addr);
+  let trans = new TSocket.t addr port in
   let proto = new TBinaryProtocol.t trans in
   proto#getTransport#opn;
   let id = new identity in
@@ -25,7 +23,7 @@ let start () =
   proto#getTransport#flush;
   Log.info (fun m -> m "Sent identification.");
   while atomically (fun () -> !on) do try
-    let req = read_request proto in
+    let req = read_poly proto in
     Log.info (fun m -> m "Received request.");
     let value = Server.crunch req#grab_coeffs req#grab_point in
     Unix.sleep 1;

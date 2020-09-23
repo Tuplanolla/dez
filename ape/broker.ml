@@ -13,9 +13,9 @@ type component = Protocol.t * state
 
 let broker_port = 8191
 
-let start () =
+let start ?(port=broker_port) () =
   bracket
-  ~acquire:(fun () -> new TThreadedServerSocket.t broker_port)
+  ~acquire:(fun () -> new TThreadedServerSocket.t port)
   ~release:(fun strans -> strans#close)
   begin fun strans ->
     let mutex = Mutex.create () in
@@ -62,52 +62,32 @@ let start () =
             atomically begin fun () ->
               Hashtbl.add comps name (proto, Idle)
             end
-        | "scales-oneshot" ->
-            begin
-              atomically begin fun () ->
-                Hashtbl.add comps name (proto, Idle)
-              end;
-              let req = read_request proto in
-              Log.info (fun m -> m "Received request.");
-              match atomically begin fun () ->
-                Hashtbl.find_opt comps "fur"
-              end with
-              | Some (sproto, Idle) ->
-                  (** TODO Change state here. *)
-                  req#write sproto;
-                  sproto#getTransport#flush;
-                  let res = read_response sproto in
-                  res#write proto;
-                  proto#getTransport#flush;
-                  Log.info (fun m -> m "Sent response.")
-              (** TODO Handle missing or busy server. *)
-              | _ -> ();
-              atomically begin fun () ->
-                Hashtbl.remove comps name
-              end;
-              Log.debug (fun m -> m "Ended thread %d."
-                (Thread.id (Thread.self ())))
-            end
         | "scales" ->
             atomically begin fun () ->
               Hashtbl.add comps name (proto, Idle)
             end;
-            while atomically (fun () -> !on) do try
+            (** TODO There must be a better way to handle exiting. *)
+            let hard_on = ref true in
+            while atomically (fun () -> !on && !hard_on) do try
               let req = read_request proto in
               Log.info (fun m -> m "Received request.");
-              match atomically begin fun () ->
-                Hashtbl.find_opt comps "fur"
-              end with
-              | Some (sproto, Idle) ->
-                  (** TODO Change state here. *)
-                  req#write sproto;
-                  sproto#getTransport#flush;
-                  let res = read_response sproto in
-                  res#write proto;
-                  proto#getTransport#flush;
-                  Log.info (fun m -> m "Sent response.")
-              (** TODO Handle missing or busy server. *)
-              | _ -> ()
+              match req#grab_type with
+              | Request_type.EVAL ->
+                  begin match atomically begin fun () ->
+                    Hashtbl.find_opt comps "fur"
+                  end with
+                  | Some (sproto, Idle) ->
+                      (** TODO Change state here. *)
+                      req#grab_data#grab_eval#write sproto;
+                      sproto#getTransport#flush;
+                      let res = read_response sproto in
+                      res#write proto;
+                      proto#getTransport#flush;
+                      Log.info (fun m -> m "Sent response.")
+                  (** TODO Handle missing or busy server. *)
+                  | _ -> ()
+                  end
+              | Request_type.EXIT -> hard_on := false
               (** TODO On failure... *)
               (* atomically begin fun () ->
                 match !names with
@@ -118,6 +98,9 @@ let start () =
             | Def_sys.Signal i when i = Sys.sigint ->
                 atomically (fun () -> on := false)
             done;
+            atomically begin fun () ->
+              Hashtbl.remove comps name
+            end;
             Log.debug (fun m -> m "Ended thread %d."
               (Thread.id (Thread.self ())))
         | name -> raise (Invalid_argument name)

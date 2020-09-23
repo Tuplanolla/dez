@@ -31,18 +31,17 @@ let reporter ppf =
     let k _ =
       over ();
       f () in
-    msgf
-      begin fun ?header ?tags fmt ->
-        match Option.bind tags (Logs.Tag.find loc_tag) with
-        | None -> Format.kfprintf k ppf
-            ("[%0.3f] ==%d== \"%s\" %a: " ^^ fmt ^^ "@.")
-            (Unix.gettimeofday ()) (Unix.getpid ()) (Logs.Src.name src)
-            Logs.pp_level level
-        | Some (file, line) -> Format.kfprintf k ppf
-            ("[%0.3f] ==%d== \"%s\" %s:%d: %a: " ^^ fmt ^^ "@.")
-            (Unix.gettimeofday ()) (Unix.getpid ()) (Logs.Src.name src)
-            file line Logs.pp_level level
-      end in
+    msgf begin fun ?header ?tags fmt ->
+      match Option.bind tags (Logs.Tag.find loc_tag) with
+      | None -> Format.kfprintf k ppf
+          ("[%0.3f] ==%d== \"%s\" %a: " ^^ fmt ^^ "@.")
+          (Unix.gettimeofday ()) (Unix.getpid ()) (Logs.Src.name src)
+          Logs.pp_level level
+      | Some (file, line) -> Format.kfprintf k ppf
+          ("[%0.3f] ==%d== \"%s\" %s:%d: %a: " ^^ fmt ^^ "@.")
+          (Unix.gettimeofday ()) (Unix.getpid ()) (Logs.Src.name src)
+          file line Logs.pp_level level
+    end in
   {Logs.report = report}
 
 module Log = (val Logs.src_log (Logs.Src.create "maniunfold.primate"))
@@ -110,15 +109,18 @@ let config_signals () =
 (** Configure and start the message broker. *)
 let main () =
   Util.bracket
-    ~acquire:begin fun () ->
-      open_out "/tmp/primate.log"
-    end
-    ~release:close_out
-    begin fun oc ->
-      config_logging (Format.formatter_of_out_channel oc);
-      config_signals ();
-      Broker.start ()
-    end
+  ~acquire:begin fun () ->
+    open_out "/tmp/primate.log"
+  end
+  ~release:close_out
+  begin fun oc ->
+    config_logging (Format.formatter_of_out_channel oc);
+    config_signals ();
+    match Array.to_list Sys.argv with
+    | _ :: [] -> Broker.start ()
+    | _ :: port :: [] -> Broker.start ~port:(int_of_string port) ()
+    | _ -> raise (Invalid_argument "ape")
+  end
 
 let () =
   main ()

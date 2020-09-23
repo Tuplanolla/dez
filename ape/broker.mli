@@ -8,4 +8,4 @@
 val broker_port : int
 
 (** Start the broker. *)
-val start : unit -> unit
+val start : ?port:int -> unit -> unit

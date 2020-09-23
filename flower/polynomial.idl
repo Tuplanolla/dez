@@ -1,6 +1,21 @@
-struct request {
+struct poly {
   1: map<i32, double> coeffs;
   2: double point;
+}
+
+enum request_type {
+  EVAL = 1,
+  EXIT = 0
+}
+
+union request_data {
+  1: poly eval;
+  2: i32 exit;
+}
+
+struct request {
+  1: request_type type;
+  2: request_data data;
 }
 
 struct response {
