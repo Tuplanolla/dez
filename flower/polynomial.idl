@@ -6,8 +6,8 @@ struct poly {
 }
 
 enum request_type {
-  EVAL = 1,
-  EXIT = 0
+  EXIT = 0,
+  EVAL = 1
 }
 
 union request_data {

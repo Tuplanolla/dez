@@ -120,6 +120,31 @@ digraph habitat {
     scales_from_scales [label = "Client Proxy\nfor Graphical User Interaction"]
   }
 
+  subgraph SUBGRAPH(turtle) {
+    label = "Component\nTurtle"
+
+    node [shape = box]
+
+    turtle [label = "Python Source\nfor Terminal User Interaction"]
+
+    node [shape = oval]
+
+    turtle_from_turtle [label = "Client Program\nfor Terminal User Interaction"]
+  }
+
+  subgraph SUBGRAPH(shell) {
+    label = "Component\nShell"
+
+    node [shape = box]
+
+    shell [label = "Python Source\nfor Terminal User Interaction"]
+    shell_from_flower [label = "Python Source\nfor Message Transmission"]
+
+    node [shape = oval]
+
+    shell_from_shell [label = "Client Proxy\nfor Terminal User Interaction"]
+  }
+
   subgraph SUBGRAPH(fungus) {
     label = "Component\nFungus"
 
@@ -193,6 +218,7 @@ digraph habitat {
   fowl -> camel_from_fowl [label = "(1) Code Extraction"]
   flower -> fur_from_flower [label = "(1) Code Generation"]
   flower -> scales_from_flower [label = "(1) Code Generation"]
+  flower -> shell_from_flower [label = "(1) Code Generation"]
   flower -> spores_from_flower [label = "(1) Code Generation"]
   flower -> ape_from_flower [label = "(1) Code Generation"]
   ungulate -> ungulate_from_ungulate [label = "(1) Compilation"]
@@ -216,13 +242,20 @@ digraph habitat {
 
   fur_from_fur -> ape_from_ape [label = "(4) Connection", dir = both]
   reptile -> reptile_from_reptile [label = "(4) Interpretation"]
-  reptile_from_reptile -> scales_from_scales [label = "(4) Interpretation"]
   reptile_from_reptile -> snake_from_snake [label = "(4) Interpretation"]
+  reptile_from_reptile -> scales_from_scales [label = "(4) Interpretation"]
+  reptile_from_reptile -> turtle_from_turtle [label = "(4) Interpretation"]
+  reptile_from_reptile -> shell_from_shell [label = "(4) Interpretation"]
   snake -> snake_from_snake [label = "(4) Interpretation"]
   snake_from_snake -> scales_from_scales [label = "(4) Interpretation"]
   scales -> scales_from_scales [label = "(4) Interpretation"]
   scales_from_flower -> scales_from_scales [label = "(4) Interpretation"]
   scales_from_scales -> ape_from_ape [label = "(4) Connection", dir = both]
+  turtle -> turtle_from_turtle [label = "(4) Interpretation"]
+  turtle_from_turtle -> shell_from_shell [label = "(4) Interpretation"]
+  shell -> shell_from_shell [label = "(4) Interpretation"]
+  shell_from_flower -> shell_from_shell [label = "(4) Interpretation"]
+  shell_from_shell -> ape_from_ape [label = "(4) Connection", dir = both]
   spores_from_spores -> ape_from_ape [label = "(4) Connection", dir = both]
 #endif
 
@@ -261,21 +294,26 @@ digraph habitat {
 
   ungulate_from_ungulate -> camel
   reptile_from_reptile -> snake
+  reptile_from_reptile -> turtle
   fungus_from_fungus -> truffle
 
   ungulate_from_ungulate -> fowl -> camel
   reptile_from_reptile -> fowl -> snake
+  reptile_from_reptile -> fowl -> turtle
   fungus_from_fungus -> fowl -> truffle
 
   camel_from_camel -> fur
   snake_from_snake -> scales
+  turtle_from_turtle -> shell
   truffle_from_truffle -> spores
 
   camel_from_camel -> flower -> fur
   snake_from_snake -> flower -> scales
+  turtle_from_turtle -> flower -> shell
   truffle_from_truffle -> flower -> spores
 
   fur_from_fur -> ape
   scales_from_scales -> ape
+  shell_from_shell -> ape
   spores_from_spores -> ape
 }

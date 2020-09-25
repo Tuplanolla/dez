@@ -5,16 +5,18 @@ This is a repository for a research project that aims to
 * develop a type-theoretical model of discrete exterior calculus
   (see the related publications),
 * formalize the model with the Coq proof assistant
-  (see the `fowl` subcomponent),
+  (see the `fowl` component),
 * extract OCaml code from the proof-relevant parts of the formalization
-  (see the `camel` subcomponent),
-* link the extracted code with existing numerical solvers
-  (see the `truffle` submodule),
+  (see the `camel` component),
+* link the extracted code with an existing numerical solver
+  (see the `truffle` component),
 * implement a user interface for the resulting system
-  (see the `snake` subcomponent) and
-* define a protocol for distributing and extending it further
-  (see the `flower` subcomponent and the associated
-  `feathers`, `leaves`, `fur`, `scales`, `spores` and `hair` subcomponents).
+  (see the `snake` and `turtle` components),
+* define a protocol and an architecture for distributing and extending it
+  (see the `ape` and `flower` components and
+  the associated `fur`, `scales`, `shell` and `spores` components) and
+* accompany it with utility libraries
+  (see the `ungulate`, `reptile` and `fungus` components).
 
 The code in this repository is free software and, as such, licensed under
 
@@ -23,20 +25,20 @@ The code in this repository is free software and, as such, licensed under
 The development of this project
 
 * started around 2018-05-01,
-* continues as of 2020-04-01 and
+* continues as of 2020-09-01 and
 * is expected to reach a usable state by 2022-05-01.
 
 Currently, the authors of this project are
 
-* Jukka Räbinä, who works on the `truffle` submodule
-  in the Faculty of Information Technology at the University of Jyväskylä, and
-* Sampsa Kiiskinen, who works on all the other parts
+* Jukka Räbinä, who works on the `truffle` component at IQM Finland, and
+* Sampsa Kiiskinen, who works on all the other components
   in the Faculty of Information Technology at the University of Jyväskylä.
 
 Over the course of the project,
 
 * Sampsa Kiiskinen has been partially funded by
     * the Jane and Aatos Erkko Foundation grant 170015 and
+    * the University of Jyväskylä Graduate School and
 * Jukka Räbinä has been partially funded by
     * the Academy of Finland grants 259925, 260076 and 295897 and
     * the European Research Council advanced grant 320773.

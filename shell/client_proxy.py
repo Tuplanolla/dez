@@ -1,7 +1,7 @@
 import sys
 sys.path.append('gen-py')
 sys.path.append('../reptile')
-sys.path.append('../snake')
+sys.path.append('../turtle')
 import client
 import component
 import logging
@@ -15,7 +15,7 @@ from thrift.protocol import TBinaryProtocol
 from thrift.transport import TSocket
 from thrift.transport import TTransport
 
-logger = logging.getLogger('maniunfold.scales')
+logger = logging.getLogger('maniunfold.shell')
 
 class SocketSolver(client.Solver):
   def __init__(self, addr, port):
@@ -28,6 +28,7 @@ class SocketSolver(client.Solver):
     trans = TTransport.TBufferedTransport(TSocket.TSocket(self.addr, self.port))
     self.proto = TBinaryProtocol.TBinaryProtocol(trans)
     self.proto.trans.open()
+    # TODO This identity theft works by accident.
     id = identity(name='scales')
     id.write(self.proto)
     self.proto.trans.flush()

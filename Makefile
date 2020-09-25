@@ -7,8 +7,8 @@ CPPFLAGS:=-P
 GV:=dot
 GVFLAGS:=-Efontname=sans -Gfontname=sans -Nfontname=sans
 
-COMPONENTS:=fowl \
-flower ungulate camel fur reptile snake scales fungus truffle spores ape
+COMPONENTS:=fowl flower ungulate camel fur reptile snake scales turtle shell \
+fungus truffle spores ape
 TARGETS:=habitat.svg habitat-with-example.svg
 
 all :: $(COMPONENTS) $(TARGETS)

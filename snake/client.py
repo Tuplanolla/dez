@@ -1,21 +1,21 @@
+import logging
 import tkinter as tk
 from abc import *
 from queue import Queue
 from threading import Thread
+
+logger = logging.getLogger('maniunfold.snake')
 
 class Solver(ABC):
   @abstractmethod
   def solve(self, expr, pt):
     pass
 
-  @abstractmethod
-  def exit(self):
-    pass
-
-def start(impl):
+def start(solver):
   '''
   Configure and start the client.
   '''
+  # We use this dictionary to "tie the knot" with callbacks.
   func = {}
 
   window = tk.Tk()
@@ -44,7 +44,7 @@ def start(impl):
     try:
       q = Queue()
       def slow():
-        q.put(impl.solve(expr.get(), pt.get()))
+        q.put(solver.solve(expr.get(), pt.get()))
       p = Thread(target=slow)
       p.start()
       def poll():
@@ -107,5 +107,6 @@ def start(impl):
   pt.delete(0, tk.END)
   pt.insert(0, '7')
 
+  logger.info('Opened the user interface.')
   window.mainloop()
-  impl.exit()
+  logger.info('Closed the user interface.')

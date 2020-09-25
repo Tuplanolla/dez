@@ -1,4 +1,7 @@
+module Log = (val Logs.src_log (Logs.Src.create "maniunfold.camel"))
+
 let crunch coeffs point =
+  Log.info (fun m -> m "Crunched real hard!");
   Hashtbl.fold
   (fun i a y -> y +. a *. point ** Int32.to_float i)
   coeffs

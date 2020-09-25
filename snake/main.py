@@ -1,7 +1,15 @@
+# TODO Perhaps remove this.
+
 import client
 import sympy
 
 class SympySolver(client.Solver):
+  def __enter__(self):
+    return self
+
+  def __exit__(self, exc_type, exc_value, traceback):
+    pass
+
   def solve(self, expr, pt):
     # Things go wrong with SymPy,
     # because expressions that simplify into constants
@@ -12,14 +20,12 @@ class SympySolver(client.Solver):
     y = p.subs({x: float(pt)})
     return str(y)
 
-  def exit(self):
-    pass
-
 def main():
   '''
   Test the client with SymPy.
   '''
-  client.start(SympySolver())
+  with SympySolver() as solver:
+    client.start(solver)
 
 if __name__ == '__main__':
   main()

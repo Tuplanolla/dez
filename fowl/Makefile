@@ -26,19 +26,19 @@ _CoqMakefile :: _CoqMakefile.args _CoqMakefile.local
 	$(HIDE) coq_makefile -f $< -o $@ -opt
 
 _CoqMakefile.args :: _CoqProject _CoqFiles
-	$(SHOW) echo STAT $@
+	$(SHOW) echo TEE $@
 	$(HIDE) cat $^ > $@
 
 _CoqProject ::
-	$(SHOW) echo STAT $@
+	$(SHOW) echo TEE $@
 	$(HIDE) echo 'INSTALLDEFAULTROOT = . -Q . Maniunfold' > $@
 
 _CoqFiles ::
-	$(SHOW) echo STAT $@
+	$(SHOW) echo TEE $@
 	$(HIDE) find . -type f -name '*.v' | LC_ALL=C sort > $@
 
 _CoqMakefile.local ::
-	$(SHOW) echo STAT $@
+	$(SHOW) echo TEE $@
 	$(HIDE) printf 'clean ::\n\t@ %s \\\n\t%s \\\n\t%s \\\n\t%s\n' \
 	"find . -type f '('" \
 	"-name '_Coq*' -o -name '*.aux' -o -name '*.cache' -o -name '*.glob' -o" \

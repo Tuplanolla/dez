@@ -574,7 +574,7 @@ It also works without build automation and can be distributed.
 
 ```
 $ ( sleep 1 && cd fur && ./main 127.0.0.1 8191 ; ) & \
-  ( sleep 1 && cd scales && python3 main.py 127.0.0.1 8191 ; ) & \
+  ( sleep 1 && cd scales && ./main 127.0.0.1 8191 ; ) & \
   ( sleep 1 && cd spores && ./main 127.0.0.1 8191 ; ) & \
   ( cd ape && ./main 8191 ; )
 ```
@@ -586,6 +586,17 @@ but it would require `bash` to pass its correctly.
 #! /bin/bash
 
 python3 main.py "$@"
+```
+
+Another way is to do the following.
+
+```
+#! /usr/bin/env python3
+
+import os
+import sys
+
+os.execvp('python3', ['python3', 'main.py'] + sys.argv[1:])
 ```
 
 ## Simple Laws about Nonprominent Properties of Binary Relations by Jochen Burghardt
