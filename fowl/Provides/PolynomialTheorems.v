@@ -49,8 +49,9 @@ Ltac conversions := typeclasses
 Definition poly_eval (p : poly) (x : A) : A :=
   map_fold (fun (i : N) (a b : A) => b + a * (x ^ i)%N) 0 p.
 
-(** We cannot keep nonzero values in the map,
-    because they would break definitional equality. *)
+(** We cannot keep zero values in the map,
+    because they would break definitional equality and
+    needlessly increase space usage. *)
 
 Definition nonzero (a : A) : option A :=
   if decide (a = 0) then None else Some a.
@@ -58,22 +59,40 @@ Definition nonzero (a : A) : option A :=
 Lemma nonzero_zero : nonzero 0 = None.
 Proof. cbv [nonzero]. rewrite decide_True by reflexivity. reflexivity. Defined.
 
-(** Parallel sum.
-    The terms of $p$, $q$ and $r$ in $r = p + q$ are related
-    by $r_k = p_k + q_k$. *)
+(** Addition of polynomials.
+
+    The terms of the polynomials $p$, $q$ and $r$ in $r = p + q$
+    are related by the parallel summation $r_k = p_k + q_k$ for all $k$.
+    We need to prune the terms after carrying out each addition,
+    because it is possible to have $r_k = 0$ for some $k$,
+    even though $p_k \ne 0$ and $q_k \ne 0$. *)
 
 Definition poly_add (p q : poly) : poly :=
   merge (union_with (fun a b : A => nonzero (a + b))) p q.
 
+(** Zero polynomial.
+
+    The terms of the polynomial $p$ in $p = 0$
+    are constrained by $p_k = 0$ for all $k$. *)
+
 Definition poly_zero : poly :=
   empty.
+
+(** Negation of polynomials.
+
+    The terms of the polynomials $p$ and $q$ in $q = - p$
+    are related by the pointwise negation $p_k = - q_k$ for all $k$. *)
 
 Definition poly_neg (p : poly) : poly :=
   fmap (fun a : A => - a) p.
 
-(** Discrete convolution.
-    The terms of $p$, $q$ and $r$ in $r = p \times q$ are related
-    by $r_k = \sum_{i + j = k} p_i \times q_j$. *)
+(** Multiplication of polynomials.
+
+    The terms of the polynomials $p$, $q$ and $r$ in $r = p \times q$
+    are related by the discrete convolution
+    $r_k = \sum_{i + j = k} p_i \times q_j$ for all $i$, $j$ and $k$.
+    We need to prune the terms after carrying out each addition,
+    because it is possible to have $r_k = 0$ for some $k$. *)
 
 Definition poly_mul (p q : poly) : poly :=
   map_fold (fun (i : N) (a : A) (r : poly) =>
@@ -81,11 +100,30 @@ Definition poly_mul (p q : poly) : poly :=
       partial_alter (fun cs : option A =>
         nonzero (a * b + default 0 cs)) (i + j) s) r q) empty p.
 
+(** Unit polynomial.
+
+    The terms of the polynomial $p$ in $p = 1$
+    are constrained by $p_0 = 1$ and $p_k = 0$ for all $k > 0$. *)
+
 Definition poly_one : poly :=
   singletonM 0 1.
 
+(** Left scalar multiplication of polynomials.
+
+    The scalar $a$ and
+    the terms of the polynomials $p$ and $q$ in $q = a \times p$
+    are related by the pointwise multiplication
+    $q_k = a \times p_k$ for all $k$. *)
+
 Definition poly_l_act (a : A) (p : poly) : poly :=
   omap (fun b : A => nonzero (a * b)) p.
+
+(** Right scalar multiplication of polynomials.
+
+    The scalar $a$ and
+    the terms of the polynomials $p$ and $q$ in $q = p \times a$
+    are related by the pointwise multiplication
+    $q_k = p_k \times a$ for all $k$. *)
 
 Definition poly_r_act (p : poly) (a : A) : poly :=
   omap (fun b : A => nonzero (b * a)) p.
@@ -122,6 +160,25 @@ Global Instance poly_has_un_op : HasUnOp poly := poly_neg.
 Global Instance poly_bin_op_is_mag : IsMag poly bin_op.
 Proof. Defined.
 
+Lemma add_nonzero : forall {a b : A},
+  nonzero a = None -> nonzero b = None -> nonzero (a + b) = None.
+Proof.
+  intros a b Ha Hb. cbv [nonzero] in *.
+  destruct (decide (a = 0)) as [dHa | dHa], (decide (b = 0)) as [dHb | dHb].
+  - subst. rewrite l_unl. rewrite decide_True by reflexivity. reflexivity.
+  - inversion Hb.
+  - inversion Ha.
+  - inversion Ha || inversion Hb. Defined.
+
+Lemma nonzero_cases : forall {a b : A},
+  a + b = 0 -> a = 0 \/ b = 0 \/ b = - a.
+Proof with conversions.
+  intros a b H.
+  destruct (decide (a = 0)) as [Ha | Ha], (decide (b = 0)) as [Hb | Hb]; auto.
+  repeat right. apply (l_cancel b (- a) a)...
+  rewrite H. rewrite r_inv...
+  reflexivity. Defined.
+
 Lemma zero_inversion : forall {a : A},
   nonzero a = None -> a = 0.
 Proof.
@@ -147,7 +204,7 @@ Proof with conversions.
   intros [a |] [b |] [c |]; try reflexivity.
   - cbv [union_with option_union_with].
     destruct (nonzero (a + b)) as [d |] eqn : Hd,
-      (nonzero (b + c)) as [e |] eqn : He.
+    (nonzero (b + c)) as [e |] eqn : He.
     + f_equal.
       destruct (nonzero_inversion Hd) as [Hd0 Hd1]; clear Hd.
       destruct (nonzero_inversion He) as [He0 He1]; clear He.
@@ -155,13 +212,15 @@ Proof with conversions.
       reflexivity.
     + destruct (nonzero_inversion Hd) as [Hd0 Hd1]; clear Hd.
       pose proof (zero_inversion He) as He0; clear He.
-      subst. rewrite <- assoc...
-      rewrite He0. rewrite r_unl.
-      destruct (nonzero a) as [f |] eqn : Hf.
-      * f_equal.
-        destruct (nonzero_inversion Hf) as [Hf0 Hf1]; clear Hf.
-        auto.
-      * exfalso. shelve.
+      subst. destruct (nonzero_cases He0) as [H | [H | H]].
+      * subst. rewrite r_unl in Hd0. rewrite l_unl in He0.
+        rewrite He0. repeat rewrite r_unl.
+        cbv [nonzero]. rewrite decide_False; auto.
+      * subst. rewrite r_unl in He0. subst.
+        rewrite r_unl in Hd0. repeat rewrite r_unl.
+        cbv [nonzero]. rewrite decide_False; auto.
+      * subst. rewrite <- assoc... rewrite r_inv... rewrite r_unl.
+        shelve.
     + shelve.
     + shelve.
   - cbv [union_with option_union_with].
