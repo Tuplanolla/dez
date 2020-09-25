@@ -1,11 +1,8 @@
 import client
 import sympy
 
-def main():
-  '''
-  Test the client with SymPy.
-  '''
-  def solve(expr, pt):
+class SympySolver(client.Solver):
+  def solve(self, expr, pt):
     # Things go wrong with SymPy,
     # because expressions that simplify into constants
     # are not considered to be polynomials and
@@ -15,7 +12,14 @@ def main():
     y = p.subs({x: float(pt)})
     return str(y)
 
-  client.start({'solve': solve})
+  def exit(self):
+    pass
+
+def main():
+  '''
+  Test the client with SymPy.
+  '''
+  client.start(SympySolver())
 
 if __name__ == '__main__':
   main()

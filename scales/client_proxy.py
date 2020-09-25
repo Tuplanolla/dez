@@ -17,20 +17,20 @@ from thrift.transport import TTransport
 
 logger = logging.getLogger('maniunfold.scales')
 
-def start(addr='127.0.0.1', port=8191):
-  '''
-  Configure and start the client proxy.
-  '''
-  logger.info('Connecting to {}:{}.'.format(addr, port))
-  trans = TTransport.TBufferedTransport(TSocket.TSocket(addr, port))
-  proto = TBinaryProtocol.TBinaryProtocol(trans)
-  proto.trans.open()
-  id = identity(name='scales')
-  id.write(proto)
-  proto.trans.flush()
+class SocketSolver(client.Solver):
+  def __init__(self, addr, port):
+    logger.info('Connecting to {}:{}.'.format(addr, port))
+    trans = TTransport.TBufferedTransport(TSocket.TSocket(addr, port))
+    self.proto = TBinaryProtocol.TBinaryProtocol(trans)
+    self.proto.trans.open()
+    id = identity(name='scales')
+    id.write(self.proto)
+    self.proto.trans.flush()
 
-  # TODO Specify this dependency inversion contract somewhere.
-  def solve(expr, pt):
+  def __del__(self):
+    self.proto.trans.close()
+
+  def solve(self, expr, pt):
     # This sucks on purpose.
     const = '([+-]? *[0-9]+)'
     var = '(?:([x])(?: *\*\* *([+]? *[0-9]+))?)'
@@ -53,19 +53,22 @@ def start(addr='127.0.0.1', port=8191):
 
     p = poly(coeffs=coeffs, point=point)
     req = request(type=request_type.EVAL, data=request_data(eval=p))
-    req.write(proto)
-    proto.trans.flush()
+    req.write(self.proto)
+    self.proto.trans.flush()
     res = response()
-    res.read(proto)
+    res.read(self.proto)
 
     logger.info('Work is done.')
     return str(res.value)
 
-  def exit():
+  def exit(self):
     logger.info('Sending exit message and disconnecting.')
     req = request(type=request_type.EXIT, data=request_data())
-    req.write(proto)
-    proto.trans.flush()
-    proto.trans.close()
+    req.write(self.proto)
+    self.proto.trans.flush()
 
-  client.start({'solve': solve, 'exit': exit})
+def start(addr='127.0.0.1', port=8191):
+  '''
+  Configure and start the client proxy.
+  '''
+  client.start(SocketSolver(addr, port))

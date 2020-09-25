@@ -1,6 +1,16 @@
 import tkinter as tk
+from abc import *
 from queue import Queue
 from threading import Thread
+
+class Solver(ABC):
+  @abstractmethod
+  def solve(self, expr, pt):
+    pass
+
+  @abstractmethod
+  def exit(self):
+    pass
 
 def start(impl):
   '''
@@ -34,7 +44,7 @@ def start(impl):
     try:
       q = Queue()
       def slow():
-        q.put(impl['solve'](expr.get(), pt.get()))
+        q.put(impl.solve(expr.get(), pt.get()))
       p = Thread(target=slow)
       p.start()
       def poll():
@@ -98,4 +108,4 @@ def start(impl):
   pt.insert(0, '7')
 
   window.mainloop()
-  impl['exit']()
+  impl.exit()

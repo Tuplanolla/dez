@@ -44,7 +44,7 @@ let reporter ppf =
     end in
   {Logs.report = report}
 
-module Log = (val Logs.src_log (Logs.Src.create "maniunfold.primate"))
+module Log = (val Logs.src_log (Logs.Src.create "maniunfold.ape"))
 
 (** Configure logging. *)
 let config_logging ppf =
@@ -110,7 +110,7 @@ let config_signals () =
 let main () =
   Util.bracket
   ~acquire:begin fun () ->
-    open_out "/tmp/primate.log"
+    open_out "/tmp/ape.log"
   end
   ~release:close_out
   begin fun oc ->
