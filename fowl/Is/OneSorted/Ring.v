@@ -57,6 +57,16 @@ Proof. intros x. apply A_zero_mul_r_absorb. Defined.
 Global Instance A_zero_mul_is_absorb : IsAbsorb A zero mul.
 Proof. split; typeclasses eauto. Defined.
 
+Theorem A_zero_neg_un_absorb :
+  - 0 = 0.
+Proof with conversions.
+  rewrite <- (l_unl (A_has_null_op := 0) (- 0))...
+  rewrite (r_inv 0)...
+  reflexivity. Defined.
+
+Global Instance A_zero_neg_is_un_absorb : IsUnAbsorb A zero neg.
+Proof. apply A_zero_neg_un_absorb. Defined.
+
 Theorem A_neg_mul_one_l_sgn_absorb : forall x : A,
   (- (1)) * x = - x.
 Proof with conversions.

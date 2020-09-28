@@ -2,7 +2,7 @@
 From Coq Require Import
   ZArith.ZArith.
 From stdpp Require Import
-  option gmap pmap nmap.
+  option fin_maps gmap pmap nmap.
 From Maniunfold.Has Require Export
   OneSorted.Enumeration OneSorted.Cardinality TwoSorted.Isomorphism.
 From Maniunfold.Is Require Export
@@ -28,130 +28,211 @@ From Maniunfold.ShouldOffer Require
 Section Context.
 
 Import OneSorted.ArithmeticNotations.
+
+(** This is a weaker form of [EqDecision]. *)
+
+Class HasZeroApart (A : Type) {has_zero : HasZero A} : Type :=
+  zero_apart : forall x : A, Decision (x <> 0).
+
+End Context.
+
+Section Context.
+
+Import OneSorted.ArithmeticNotations.
+
+Context {A : Type} `{has_zero : HasZero A} `{eq_dec : EqDecision A}.
+
+Global Instance A_has_zero_apart : HasZeroApart A :=
+  fun x : A => decide (x <> 0).
+
+End Context.
+
+Section Context.
+
+Import OneSorted.ArithmeticNotations.
 Import OneSorted.ArithmeticOperationNotations.
 
-Context {A : Type} `{is_ring : IsRing A} `{eq_dec : EqDecision A}.
-
-Definition poly : Type := Nmap A.
-
-Ltac conversions := typeclasses
-  convert bin_op into (add (A := poly)) and
-    null_op into (zero (A := poly)) and
-    un_op into (neg (A := poly)) or
-  convert bin_op into (mul (A := poly)) and
-    null_op into (one (A := poly)) or
-  convert bin_op into (add (A := A)) and
-    null_op into (zero (A := A)) and
-    un_op into (neg (A := A)) or
-  convert bin_op into (mul (A := A)) and
-    null_op into (one (A := A)).
-
-Definition poly_eval (p : poly) (x : A) : A :=
-  map_fold (fun (i : N) (a b : A) => b + a * (x ^ i)%N) 0 p.
+Context {A : Type} `{is_ring : IsRing A} `{has_zero_apart : !HasZeroApart A}.
 
 (** We cannot keep zero values in the map,
     because they would break definitional equality and
     needlessly increase space usage. *)
 
-Definition nonzero (a : A) : option A :=
-  if decide (a = 0) then None else Some a.
+Definition NZ (a : A) : Prop := a <> 0.
+Definition NZA : Type := {a : A | NZ a}.
+Definition poly : Type := Nmap NZA.
 
-Lemma nonzero_zero : nonzero 0 = None.
-Proof. cbv [nonzero]. rewrite decide_True by reflexivity. reflexivity. Defined.
+Ltac conversions := typeclasses
+  convert bin_op into (add (A := poly)) and
+  null_op into (zero (A := poly)) and
+  un_op into (neg (A := poly)) or
+  convert bin_op into (mul (A := poly)) and
+  null_op into (one (A := poly)) or
+  convert bin_op into (add (A := A)) and
+  null_op into (zero (A := A)) and
+  un_op into (neg (A := A)) or
+  convert bin_op into (mul (A := A)) and
+  null_op into (one (A := A)).
+
+Definition poly_eval (x : poly) (a : A) : A :=
+  map_fold (fun (i : N) (b : NZA) (c : A) => c + `b * (a ^ i)%N) 0 x.
 
 (** Addition of polynomials.
 
-    The terms of the polynomials $p$, $q$ and $r$ in $r = p + q$
-    are related by the parallel summation $r_k = p_k + q_k$ for all $k$.
-    We need to prune the terms after carrying out each addition,
-    because it is possible to have $r_k = 0$ for some $k$,
-    even though $p_k \ne 0$ and $q_k \ne 0$. *)
+    The terms of the polynomials $x$, $y$ and $z$ in $z = x + y$
+    are related by the parallel summation $z_n = x_n + y_n$ for all $n$.
+    We need to prune zero terms after carrying out each addition,
+    because it is possible that $z_n = 0$ for some $n$,
+    even though $x_n \ne 0$ and $y_n \ne 0$;
+    indeed, this happens whenever $y_n = - x_n$. *)
 
-Definition poly_add (p q : poly) : poly :=
-  merge (union_with (fun a b : A => nonzero (a + b))) p q.
+Program Definition poly_add (x y : poly) : poly :=
+  union_with (fun a b : NZA => let c := `a + `b in
+    if zero_apart c then Some (exist NZ c _) else None) x y.
+Next Obligation. intros x y a b c F. cbv [NZ]. apply F. Defined.
 
 (** Zero polynomial.
 
-    The terms of the polynomial $p$ in $p = 0$
-    are constrained by $p_k = 0$ for all $k$. *)
+    The terms of the polynomial $x$ in $x = 0$
+    are constrained by $x_n = 0$ for all $n$. *)
 
 Definition poly_zero : poly :=
   empty.
 
 (** Negation of polynomials.
 
-    The terms of the polynomials $p$ and $q$ in $q = - p$
-    are related by the pointwise negation $p_k = - q_k$ for all $k$. *)
+    The terms of the polynomials $x$ and $y$ in $y = - x$
+    are related by the pointwise negation $y_n = - x_n$ for all $n$. *)
 
-Definition poly_neg (p : poly) : poly :=
-  fmap (fun a : A => - a) p.
+Program Definition poly_neg (x : poly) : poly :=
+  fmap (fun a : NZA => let b := - `a in exist NZ b _) x.
+Next Obligation with conversions.
+  intros x a b. cbv [NZ]. intros H.
+  pose proof proj2_sig a as F; cbn in F; cbv [NZ] in F. apply F. apply inj...
+  rewrite un_absorb...
+  apply H. Defined.
 
 (** Multiplication of polynomials.
 
-    The terms of the polynomials $p$, $q$ and $r$ in $r = p \times q$
+    The terms of the polynomials $x$, $y$ and $z$ in $z = x \times y$
     are related by the discrete convolution
-    $r_k = \sum_{i + j = k} p_i \times q_j$ for all $i$, $j$ and $k$.
+    $r_q = \sum_{n + p = q} x_n \times y_p$ for all $n$, $p$ and $q$.
     We need to prune the terms after carrying out each addition,
-    because it is possible to have $r_k = 0$ for some $k$. *)
+    because it is possible that $z_q = 0$ for some $q$,
+    as was the case with $x + y$. *)
 
-Definition poly_mul (p q : poly) : poly :=
-  map_fold (fun (i : N) (a : A) (r : poly) =>
-    map_fold (fun (j : N) (b : A) (s : poly) =>
-      partial_alter (fun cs : option A =>
-        nonzero (a * b + default 0 cs)) (i + j) s) r q) empty p.
+Program Definition poly_mul (x y : poly) : poly :=
+  map_fold (fun (i : N) (a : NZA) (u : poly) =>
+    map_fold (fun (j : N) (b : NZA) (v : poly) =>
+      partial_alter (fun c : option NZA =>
+        let d := `a * `b + from_option proj1_sig 0 c in
+        if zero_apart d then Some (exist NZ d _) else None)
+      (i + j) v) u y) empty x.
+Next Obligation.
+  intros x y i a u j b v c d F. cbv [NZ]. intros H. apply F. apply H. Defined.
 
 (** Unit polynomial.
 
-    The terms of the polynomial $p$ in $p = 1$
-    are constrained by $p_0 = 1$ and $p_k = 0$ for all $k > 0$. *)
+    The terms of the polynomial $x$ in $x = 1$
+    are constrained by $x_0 = 1$ and $x_n = 0$ for all $n > 0$. *)
 
-Definition poly_one : poly :=
-  singletonM 0 1.
+Program Definition poly_one : poly :=
+  singletonM 0 (exist NZ 1 _).
+(* TODO The ring must be nontrivial for this unit element to exist! *)
+Next Obligation.
+  cbv [NZ]. intros H. Admitted.
 
 (** Left scalar multiplication of polynomials.
 
     The scalar $a$ and
-    the terms of the polynomials $p$ and $q$ in $q = a \times p$
+    the terms of the polynomials $x$ and $y$ in $y = a \times x$
     are related by the pointwise multiplication
-    $q_k = a \times p_k$ for all $k$. *)
+    $x_n = a \times x_n$ for all $n$. *)
 
-Definition poly_l_act (a : A) (p : poly) : poly :=
-  omap (fun b : A => nonzero (a * b)) p.
+Program Definition poly_l_act (a : A) (x : poly) : poly :=
+  omap (fun b : NZA => let c := a * `b in
+  if zero_apart c then Some (exist NZ c _) else None) x.
+Next Obligation.
+  intros a x b c F. cbv [NZ]. intros H. apply F. apply H. Defined.
 
 (** Right scalar multiplication of polynomials.
 
     The scalar $a$ and
-    the terms of the polynomials $p$ and $q$ in $q = p \times a$
+    the terms of the polynomials $x$ and $y$ in $y = x \times a$
     are related by the pointwise multiplication
-    $q_k = p_k \times a$ for all $k$. *)
+    $x_n = x_n \times a$ for all $n$. *)
 
-Definition poly_r_act (p : poly) (a : A) : poly :=
-  omap (fun b : A => nonzero (b * a)) p.
+Program Definition poly_r_act (x : poly) (a : A) : poly :=
+  omap (fun b : NZA => let c := `b * a in
+  if zero_apart c then Some (exist NZ c _) else None) x.
+Next Obligation.
+  intros x a b c F. cbv [NZ]. intros H. apply F. apply H. Defined.
 
 End Context.
 
+Section Tests.
+
+Local Open Scope Z_scope.
+
+Obligation Tactic :=
+  match goal with
+  | |- NZ ?x => let H := fresh in
+      hnf; destruct (zero_apart x) as [H | H]; auto
+  end || auto.
+
+(* 42 * x ^ 3 + 7 + 13 * x *)
+Program Let p : poly := insert (N.add N.one N.two) (exist NZ 42 _)
+  (insert N.zero (exist NZ 7 _) (insert N.one (exist NZ 13 _) empty)).
+
+(* 3 * x ^ 4 + x + 5 *)
+Program Let q : poly := insert (N.add N.two N.two) (exist NZ 3 _)
+  (insert N.one (exist NZ 1 _) (insert N.zero (exist NZ 5 _) empty)).
+
+(* 7, 5 *)
+Compute poly_eval p 0.
+Compute poly_eval q 0.
+
+(* 1180, 251 *)
+Compute poly_eval p 3.
+Compute poly_eval q 3.
+
+(* None, PLeaf *)
+(* Compute poly_add p (poly_neg p).
+Compute poly_add (poly_neg q) q. *)
+
+(* 12, 1431 *)
+Compute poly_eval (poly_add p q) 0.
+Compute poly_eval (poly_add p q) 3.
+
+(* 35, 296180 *)
+Compute poly_eval (poly_mul p q) 0.
+Compute poly_eval (poly_mul p q) 3.
+
+End Tests.
+
 Module Additive.
 
-Import OneSorted.ArithmeticNotations.
-Import OneSorted.ArithmeticOperationNotations.
+Import OneSorted.AdditiveNotations.
 
 Section Context.
 
-Context {A : Type} `{is_ring : IsRing A} `{eq_dec : EqDecision A}.
+Context {A : Type} `{is_ring : IsRing A} `{has_zero_apart : !HasZeroApart A}.
+
+(** Performing this specialization by hand aids type inference. *)
 
 Let poly := poly (A := A).
 
 Ltac conversions := typeclasses
   convert bin_op into (add (A := poly)) and
-    null_op into (zero (A := poly)) and
-    un_op into (neg (A := poly)) or
+  null_op into (zero (A := poly)) and
+  un_op into (neg (A := poly)) or
   convert bin_op into (mul (A := poly)) and
-    null_op into (one (A := poly)) or
+  null_op into (one (A := poly)) or
   convert bin_op into (add (A := A)) and
-    null_op into (zero (A := A)) and
-    un_op into (neg (A := A)) or
+  null_op into (zero (A := A)) and
+  un_op into (neg (A := A)) or
   convert bin_op into (mul (A := A)) and
-    null_op into (one (A := A)).
+  null_op into (one (A := A)).
 
 Global Instance poly_has_bin_op : HasBinOp poly := poly_add.
 Global Instance poly_has_null_op : HasNullOp poly := poly_zero.
@@ -160,113 +241,22 @@ Global Instance poly_has_un_op : HasUnOp poly := poly_neg.
 Global Instance poly_bin_op_is_mag : IsMag poly bin_op.
 Proof. Defined.
 
-Lemma add_nonzero : forall {a b : A},
-  nonzero a = None -> nonzero b = None -> nonzero (a + b) = None.
-Proof.
-  intros a b Ha Hb. cbv [nonzero] in *.
-  destruct (decide (a = 0)) as [dHa | dHa], (decide (b = 0)) as [dHb | dHb].
-  - subst. rewrite l_unl. rewrite decide_True by reflexivity. reflexivity.
-  - inversion Hb.
-  - inversion Ha.
-  - inversion Ha || inversion Hb. Defined.
-
-Lemma nonzero_cases : forall {a b : A},
-  a + b = 0 -> a = 0 \/ b = 0 \/ b = - a.
-Proof with conversions.
-  intros a b H.
-  destruct (decide (a = 0)) as [Ha | Ha], (decide (b = 0)) as [Hb | Hb]; auto.
-  repeat right. apply (l_cancel b (- a) a)...
-  rewrite H. rewrite r_inv...
-  reflexivity. Defined.
-
-Lemma zero_inversion : forall {a : A},
-  nonzero a = None -> a = 0.
-Proof.
-  intros a H. cbv [nonzero] in H. destruct (decide (a = 0)) as [Ha | Ha].
-  - apply Ha.
-  - inversion H. Defined.
-
-Lemma nonzero_inversion : forall {a b : A},
-  nonzero a = Some b -> a <> 0 /\ a = b.
-Proof.
-  intros a b H. split.
-  - cbv [nonzero] in H. destruct (decide (a = 0)) as [Ha | Ha].
-    + inversion H.
-    + assumption.
-  - cbv [nonzero] in H. destruct (decide (a = 0)) as [Ha | Ha].
-    + inversion H.
-    + inversion H as [H']. reflexivity. Defined.
-
 Global Instance poly_bin_op_is_assoc : IsAssoc poly bin_op.
 Proof with conversions.
-  intros x y z. cbv [bin_op poly_has_bin_op]; cbv [poly_add].
-  apply merge_assoc'; try reflexivity.
-  intros [a |] [b |] [c |]; try reflexivity.
-  - cbv [union_with option_union_with].
-    destruct (nonzero (a + b)) as [d |] eqn : Hd,
-    (nonzero (b + c)) as [e |] eqn : He.
-    + f_equal.
-      destruct (nonzero_inversion Hd) as [Hd0 Hd1]; clear Hd.
-      destruct (nonzero_inversion He) as [He0 He1]; clear He.
-      subst. rewrite <- assoc...
-      reflexivity.
-    + destruct (nonzero_inversion Hd) as [Hd0 Hd1]; clear Hd.
-      pose proof (zero_inversion He) as He0; clear He.
-      subst. destruct (nonzero_cases He0) as [H | [H | H]].
-      * subst. rewrite r_unl in Hd0. rewrite l_unl in He0.
-        rewrite He0. repeat rewrite r_unl.
-        cbv [nonzero]. rewrite decide_False; auto.
-      * subst. rewrite r_unl in He0. subst.
-        rewrite r_unl in Hd0. repeat rewrite r_unl.
-        cbv [nonzero]. rewrite decide_False; auto.
-      * subst. rewrite <- assoc... rewrite r_inv... rewrite r_unl.
-        shelve.
-    + shelve.
-    + shelve.
-  - cbv [union_with option_union_with].
-    destruct (nonzero (a + b)) as [d |]; reflexivity.
-  - cbv [union_with option_union_with].
-    destruct (nonzero (b + c)) as [e |]; reflexivity. Admitted.
+  intros x y z. cbv [bin_op poly_has_bin_op]. cbv [poly_add].
+  (* TODO There is no instance matching [f |- Assoc eq (union_with f)]. *)
+  Admitted.
 
 Global Instance poly_bin_op_is_sgrp : IsSgrp poly bin_op.
 Proof. split; typeclasses eauto. Defined.
 
 Local Open Scope ring_scope.
 
-Lemma l_whatever : forall b : A,
-  b <> zero ->
-  union_with (fun c d : A => nonzero (c + d)) (Some 0) (Some b) = Some b.
-Proof.
-  intros b Hb.
-  cbv [union_with option_union_with]. rewrite (l_unl b).
-  cbv [nonzero]. rewrite decide_False by assumption.
-  reflexivity. Defined.
-
-Lemma r_whatever : forall a : A,
-  a <> zero ->
-  union_with (fun c d : A => nonzero (c + d)) (Some a) (Some 0) = Some a.
-Proof.
-  intros a Ha.
-  cbv [union_with option_union_with]. rewrite (r_unl a).
-  cbv [nonzero]. rewrite decide_False by assumption.
-  reflexivity. Defined.
-
-Lemma b_whatever : forall a b : A,
-  a + b <> zero ->
-  union_with (fun c d : A => nonzero (c + d)) (Some a) (Some b) = Some (a + b).
-Proof.
-  intros a b Hab.
-  cbv [union_with option_union_with].
-  cbv [nonzero]. rewrite decide_False by assumption.
-  reflexivity. Defined.
-
 Global Instance poly_bin_op_is_comm : IsComm poly bin_op.
 Proof.
-  intros x y.
-  cbv [bin_op poly_has_bin_op]; cbv [poly_add].
-  apply merge_comm'; try reflexivity.
-  intros [a |] [b |]; try reflexivity.
-  cbv [union_with option_union_with]. rewrite comm. reflexivity. Defined.
+  intros x y. cbv [bin_op poly_has_bin_op]. cbv [poly_add].
+  (* TODO There is no instance matching [f |- Comm eq (union_with f)]. *)
+  Admitted.
 
 Global Instance poly_bin_op_is_comm_sgrp : IsCommSgrp poly bin_op.
 Proof. split; typeclasses eauto. Defined.
@@ -276,14 +266,16 @@ Proof.
   intros x.
   cbv [bin_op poly_has_bin_op]; cbv [poly_add].
   cbv [null_op poly_has_null_op]; cbv [poly_zero].
-  apply (left_id_L empty _ x); try reflexivity. Defined.
+  (* TODO There is no instance. *)
+  Admitted.
 
 Global Instance poly_bin_op_null_op_is_r_unl : IsRUnl poly bin_op null_op.
 Proof.
   intros x.
   cbv [bin_op poly_has_bin_op]; cbv [poly_add].
   cbv [null_op poly_has_null_op]; cbv [poly_zero].
-  apply (right_id_L empty _ x); try reflexivity. Defined.
+  (* TODO There is no instance. *)
+  Admitted.
 
 Global Instance poly_bin_op_null_op_is_unl : IsUnl poly bin_op null_op.
 Proof. split; typeclasses eauto. Defined.
@@ -329,8 +321,7 @@ End Additive.
 
 Module Multiplicative.
 
-Import OneSorted.ArithmeticNotations.
-Import OneSorted.ArithmeticOperationNotations.
+Import OneSorted.MultiplicativeNotations.
 
 Section Context.
 
@@ -363,8 +354,7 @@ Proof.
   intros x.
   cbv [bin_op poly_has_bin_op]; cbv [poly_mul].
   cbv [null_op poly_has_null_op]; cbv [poly_one].
-  rewrite <- insert_empty.
-  rewrite (map_fold_insert_L _); try reflexivity. Admitted.
+  Admitted.
 
 Global Instance poly_bin_op_null_op_is_r_unl : IsRUnl poly bin_op null_op.
 Proof. intros x. Admitted.
@@ -416,13 +406,7 @@ Global Instance poly_add_is_comm : IsComm poly add.
 Proof with conversions.
   intros p q...
   cbv [add]; cbv [poly_has_add poly_add].
-  apply merge_comm'.
-  - reflexivity.
-  - intros [a |] [b |]; cbn.
-    + rewrite comm... reflexivity.
-    + reflexivity.
-    + reflexivity.
-    + reflexivity. Defined.
+  Admitted.
 
 Global Instance poly_add_mul_is_l_distr : IsLDistr poly add mul.
 Proof. intros x y z. Admitted.
@@ -478,32 +462,3 @@ Global Instance add_zero_neg_mul_one_is_unl_assoc_alg :
 Proof. split; typeclasses eauto. Defined.
 
 End Context.
-
-Section Tests.
-
-Local Open Scope Z_scope.
-
-(* 42 * x ^ 3 + 7 + 13 * x *)
-Let p : poly := insert (N.add N.one N.two) 42
-  (insert N.zero 7 (insert N.one 13 empty)).
-
-(* 3 * x ^ 4 + x + 5 *)
-Let q : poly := insert (N.add N.two N.two) 3
-  (insert N.one 1 (insert N.zero 5 empty)).
-
-(* 7, 5 *)
-Compute poly_eval p 0.
-Compute poly_eval q 0.
-(* 1180, 251 *)
-Compute poly_eval p 3.
-Compute poly_eval q 3.
-
-(* 12, 1431 *)
-Compute poly_eval (add p q) 0.
-Compute poly_eval (add p q) 3.
-
-(* 35, 296180 *)
-Compute poly_eval (mul p q) 0.
-Compute poly_eval (mul p q) 3.
-
-End Tests.
