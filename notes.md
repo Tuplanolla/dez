@@ -599,6 +599,21 @@ import sys
 os.execvp('python3', ['python3', 'main.py'] + sys.argv[1:])
 ```
 
+In case of `ECONNREFUSED`, the server is probably dead.
+Start it again as follows.
+
+```
+$ ( cd ape && ./main 8191 ; ) &
+```
+
+In case of `ENOTCONN`, the server is probably stuck.
+Find and stop it as follows.
+
+```
+$ netstat -A inet -p
+$ kill 16384
+```
+
 ## Simple Laws about Nonprominent Properties of Binary Relations by Jochen Burghardt
 
 Regarding common and less common binary relations,

@@ -212,6 +212,7 @@ End Tests.
 
 Module Additive.
 
+Import OneSorted.ArithmeticNotations.
 Import OneSorted.AdditiveNotations.
 
 Section Context.
@@ -243,8 +244,54 @@ Proof. Defined.
 
 Global Instance poly_bin_op_is_assoc : IsAssoc poly bin_op.
 Proof with conversions.
-  intros x y z. cbv [bin_op poly_has_bin_op]. cbv [poly_add].
-  (* TODO There is no instance matching [f |- Assoc eq (union_with f)]. *)
+  intros x y z. cbv [bin_op poly_has_bin_op poly_add].
+  (** Peel the onion. *)
+  cbv [union_with map_union_with].
+  match goal with
+  |- merge ?e x (merge ?e y z) = merge ?e (merge ?e x y) z => set (f := e)
+  end.
+  apply (merge_assoc' f).
+  (** Cry. *)
+  intros [a |] [b |] [c |].
+  all: try reflexivity. 3:{
+  cbv [f]. cbn.
+  destruct (zero_apart (`b + `c)%ring) as [F | F].
+  all: try reflexivity.
+  }
+  cbv [f]. cbn.
+  destruct (zero_apart (`a + `b)%ring) as [Fab | Fab],
+  (zero_apart (`b + `c)%ring) as [Fbc | Fbc].
+  all: cbn. {
+  destruct (zero_apart (`a + (`b + `c))%ring) as [Fabc | Fabc],
+  (zero_apart ((`a + `b) + `c)%ring) as [Fabc' | Fabc'].
+  f_equal. apply ProofIrrelevance.ProofIrrelevanceTheory.subset_eq_compat.
+  rewrite assoc. reflexivity.
+  exfalso. apply Fabc'. rewrite <- assoc. apply Fabc.
+  exfalso. apply Fabc. rewrite assoc. apply Fabc'.
+  reflexivity.
+  } {
+  destruct (zero_apart ((`a + `b) + `c)%ring) as [Fabc' | Fabc'].
+  shelve.
+  exfalso. apply Fbc. intros H.
+  rewrite <- assoc in Fabc'... rewrite H in Fabc'. rewrite r_unl in Fabc'.
+  apply Fabc'. intros C. destruct a. hnf in n. apply n. apply C.
+  } {
+  destruct (zero_apart (`a + (`b + `c))%ring) as [Fabc | Fabc].
+  shelve.
+  exfalso. apply Fab. intros H.
+  rewrite assoc in Fabc... rewrite H in Fabc. rewrite l_unl in Fabc.
+  apply Fabc. intros C. destruct c. hnf in n. apply n. apply C.
+  } {
+  f_equal. destruct a, c.
+  apply ProofIrrelevance.ProofIrrelevanceTheory.subset_eq_compat. cbn in *.
+  enough (x0 + (`b + - `b) = (- `b + `b) + x1)%ring.
+  rewrite l_inv, r_inv in H. rewrite l_unl, r_unl in H. apply H.
+  rewrite assoc...
+  enough (x0 + `b = 0)%ring.
+  rewrite H. rewrite l_unl.
+  enough (`b + x1 = 0)%ring.
+  rewrite <- assoc...
+  rewrite H0. rewrite r_unl. reflexivity.
   Admitted.
 
 Global Instance poly_bin_op_is_sgrp : IsSgrp poly bin_op.
