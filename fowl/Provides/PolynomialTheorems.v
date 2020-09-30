@@ -28,37 +28,15 @@ From Maniunfold.ShouldOffer Require
 Section Context.
 
 Import OneSorted.ArithmeticNotations.
-
-(** This is a weaker form of [EqDecision]. *)
-
-Class HasZeroApart (A : Type) {has_zero : HasZero A} : Type :=
-  zero_apart : forall x : A, Decision (x <> 0).
-
-End Context.
-
-Section Context.
-
-Import OneSorted.ArithmeticNotations.
-
-Context {A : Type} `{has_zero : HasZero A} `{eq_dec : EqDecision A}.
-
-Global Instance A_has_zero_apart : HasZeroApart A :=
-  fun x : A => decide (x <> 0).
-
-End Context.
-
-Section Context.
-
-Import OneSorted.ArithmeticNotations.
 Import OneSorted.ArithmeticOperationNotations.
 
-Context {A : Type} `{is_ring : IsRing A} `{has_zero_apart : !HasZeroApart A}.
+Context {A : Type} `{is_ring : IsRing A} `{eq_dec : EqDecision A}.
 
 (** We cannot keep zero values in the map,
     because they would break definitional equality and
     needlessly increase space usage. *)
 
-Definition NZ (a : A) : Prop := a <> 0.
+Definition NZ (a : A) : Prop := bool_decide (a <> 0).
 Definition NZA : Type := {a : A | NZ a}.
 Definition poly : Type := Nmap NZA.
 
@@ -88,8 +66,9 @@ Definition poly_eval (x : poly) (a : A) : A :=
 
 Program Definition poly_add (x y : poly) : poly :=
   union_with (fun a b : NZA => let c := `a + `b in
-    if zero_apart c then Some (exist NZ c _) else None) x y.
-Next Obligation. intros x y a b c F. cbv [NZ]. apply F. Defined.
+    if decide (c <> 0) then Some (exist NZ c _) else None) x y.
+Next Obligation.
+  intros x y a b c F. cbv [NZ]. apply bool_decide_pack. apply F. Defined.
 
 (** Zero polynomial.
 
@@ -107,8 +86,9 @@ Definition poly_zero : poly :=
 Program Definition poly_neg (x : poly) : poly :=
   fmap (fun a : NZA => let b := - `a in exist NZ b _) x.
 Next Obligation with conversions.
-  intros x a b. cbv [NZ]. intros H.
-  pose proof proj2_sig a as F; cbn in F; cbv [NZ] in F. apply F. apply inj...
+  intros x a b. cbv [NZ]. apply bool_decide_pack. intros H.
+  pose proof proj2_sig a as F; cbn in F; cbv [NZ] in F.
+  apply bool_decide_unpack in F. apply F. apply inj...
   rewrite un_absorb...
   apply H. Defined.
 
@@ -126,10 +106,11 @@ Program Definition poly_mul (x y : poly) : poly :=
     map_fold (fun (j : N) (b : NZA) (v : poly) =>
       partial_alter (fun c : option NZA =>
         let d := `a * `b + from_option proj1_sig 0 c in
-        if zero_apart d then Some (exist NZ d _) else None)
+        if decide (d <> 0) then Some (exist NZ d _) else None)
       (i + j) v) u y) empty x.
 Next Obligation.
-  intros x y i a u j b v c d F. cbv [NZ]. intros H. apply F. apply H. Defined.
+  intros x y i a u j b v c d F. cbv [NZ]. apply bool_decide_pack.
+  intros H. apply F. apply H. Defined.
 
 (** Unit polynomial.
 
@@ -137,10 +118,9 @@ Next Obligation.
     are constrained by $x_0 = 1$ and $x_n = 0$ for all $n > 0$. *)
 
 Program Definition poly_one : poly :=
-  singletonM 0 (exist NZ 1 _).
-(* TODO The ring must be nontrivial for this unit element to exist! *)
+  if decide (1 <> 0) then singletonM 0 (exist NZ 1 _) else empty.
 Next Obligation.
-  cbv [NZ]. intros H. Admitted.
+  intros H. cbv [NZ]. apply bool_decide_pack. apply H. Defined.
 
 (** Left scalar multiplication of polynomials.
 
@@ -151,9 +131,10 @@ Next Obligation.
 
 Program Definition poly_l_act (a : A) (x : poly) : poly :=
   omap (fun b : NZA => let c := a * `b in
-  if zero_apart c then Some (exist NZ c _) else None) x.
+  if decide (c <> 0) then Some (exist NZ c _) else None) x.
 Next Obligation.
-  intros a x b c F. cbv [NZ]. intros H. apply F. apply H. Defined.
+  intros a x b c F. cbv [NZ]. apply bool_decide_pack.
+  intros H. apply F. apply H. Defined.
 
 (** Right scalar multiplication of polynomials.
 
@@ -164,9 +145,10 @@ Next Obligation.
 
 Program Definition poly_r_act (x : poly) (a : A) : poly :=
   omap (fun b : NZA => let c := `b * a in
-  if zero_apart c then Some (exist NZ c _) else None) x.
+  if decide (c <> 0) then Some (exist NZ c _) else None) x.
 Next Obligation.
-  intros x a b c F. cbv [NZ]. intros H. apply F. apply H. Defined.
+  intros x a b c F. cbv [NZ]. apply bool_decide_pack.
+  intros H. apply F. apply H. Defined.
 
 End Context.
 
@@ -177,7 +159,7 @@ Local Open Scope Z_scope.
 Obligation Tactic :=
   match goal with
   | |- NZ ?x => let H := fresh in
-      hnf; destruct (zero_apart x) as [H | H]; auto
+      hnf; destruct (decide (x <> 0)) as [H | H]; auto
   end || auto.
 
 (* 42 * x ^ 3 + 7 + 13 * x *)
@@ -217,7 +199,7 @@ Import OneSorted.AdditiveNotations.
 
 Section Context.
 
-Context {A : Type} `{is_ring : IsRing A} `{has_zero_apart : !HasZeroApart A}.
+Context {A : Type} `{is_ring : IsRing A} `{eq_dec : EqDecision A}.
 
 (** Performing this specialization by hand aids type inference. *)
 
@@ -244,55 +226,64 @@ Proof. Defined.
 
 Global Instance poly_bin_op_is_assoc : IsAssoc poly bin_op.
 Proof with conversions.
-  intros x y z. cbv [bin_op poly_has_bin_op poly_add].
+  intros x y z.
+  cbv [bin_op poly_has_bin_op poly_add].
   (** Peel the onion. *)
   cbv [union_with map_union_with].
+  replace option_union_with with (union_with (M := option NZA))
+  by reflexivity.
   match goal with
   |- merge ?e x (merge ?e y z) = merge ?e (merge ?e x y) z => set (f := e)
   end.
   apply (merge_assoc' f).
-  (** Cry. *)
+  clear poly x y z.
   intros [a |] [b |] [c |].
-  all: try reflexivity. 3:{
-  cbv [f]. cbn.
-  destruct (zero_apart (`b + `c)%ring) as [F | F].
   all: try reflexivity.
-  }
-  cbv [f]. cbn.
-  destruct (zero_apart (`a + `b)%ring) as [Fab | Fab],
-  (zero_apart (`b + `c)%ring) as [Fbc | Fbc].
-  all: cbn. {
-  destruct (zero_apart (`a + (`b + `c))%ring) as [Fabc | Fabc],
-  (zero_apart ((`a + `b) + `c)%ring) as [Fabc' | Fabc'].
-  f_equal. apply ProofIrrelevance.ProofIrrelevanceTheory.subset_eq_compat.
-  rewrite assoc. reflexivity.
-  exfalso. apply Fabc'. rewrite <- assoc. apply Fabc.
-  exfalso. apply Fabc. rewrite assoc. apply Fabc'.
+  all: cycle 1.
+  cbv [f]. repeat rewrite union_with_right_id. reflexivity.
+  cbv [f]. repeat rewrite union_with_left_id. reflexivity.
+  (** Cry. *)
+  cbv [f]. cbv [union_with option_union_with].
+  destruct (decide (`a + `b <> 0)%ring) as [Fab | Fab],
+  (decide (`b + `c <> 0)%ring) as [Fbc | Fbc].
+  cbn.
+  destruct (decide (`a + (`b + `c) <> 0)%ring) as [Fa_bc | Fa_bc],
+  (decide ((`a + `b) + `c <> 0)%ring) as [Fab_c | Fab_c].
+  f_equal. apply sig_eq_pi. intros x. apply Is_true_pi.
+  cbn. rewrite assoc... reflexivity.
+  exfalso. apply Fab_c. intros Hab_c. rewrite <- assoc in Hab_c...
+  rewrite Hab_c in Fa_bc. apply Fa_bc. reflexivity.
+  exfalso. apply Fa_bc. intros Ha_bc. rewrite assoc in Ha_bc...
+  rewrite Ha_bc in Fab_c. apply Fab_c. reflexivity.
   reflexivity.
-  } {
-  destruct (zero_apart ((`a + `b) + `c)%ring) as [Fabc' | Fabc'].
-  shelve.
-  exfalso. apply Fbc. intros H.
-  rewrite <- assoc in Fabc'... rewrite H in Fabc'. rewrite r_unl in Fabc'.
-  apply Fabc'. intros C. destruct a. hnf in n. apply n. apply C.
-  } {
-  destruct (zero_apart (`a + (`b + `c))%ring) as [Fabc | Fabc].
-  shelve.
-  exfalso. apply Fab. intros H.
-  rewrite assoc in Fabc... rewrite H in Fabc. rewrite l_unl in Fabc.
-  apply Fabc. intros C. destruct c. hnf in n. apply n. apply C.
-  } {
-  f_equal. destruct a, c.
-  apply ProofIrrelevance.ProofIrrelevanceTheory.subset_eq_compat. cbn in *.
-  enough (x0 + (`b + - `b) = (- `b + `b) + x1)%ring.
-  rewrite l_inv, r_inv in H. rewrite l_unl, r_unl in H. apply H.
-  rewrite assoc...
-  enough (x0 + `b = 0)%ring.
-  rewrite H. rewrite l_unl.
-  enough (`b + x1 = 0)%ring.
-  rewrite <- assoc...
-  rewrite H0. rewrite r_unl. reflexivity.
-  Admitted.
+  cbn.
+  destruct (decide ((`a + `b) + `c <> 0)%ring) as [Fab_c | Fab_c].
+  f_equal. apply sig_eq_pi. intros x. apply Is_true_pi.
+  cbn. apply dec_stable in Fbc. rewrite <- assoc...
+  rewrite Fbc. rewrite r_unl. reflexivity.
+  exfalso. apply Fab_c. apply dec_stable in Fbc. rewrite <- assoc...
+  rewrite Fbc. rewrite r_unl. pose proof proj2_sig a as H. hnf in H.
+  rewrite <- decide_bool_decide in H.
+  destruct (decide (`a <> 0)%ring) as [Fa | Fa].
+  apply Fa. inversion H.
+  cbn.
+  destruct (decide (`a + (`b + `c) <> 0)%ring) as [Fa_bc | Fa_bc].
+  f_equal. apply sig_eq_pi. intros x. apply Is_true_pi.
+  cbn. apply dec_stable in Fab. rewrite assoc...
+  rewrite Fab. rewrite l_unl. reflexivity.
+  exfalso. apply Fab. intros Hab. apply Fa_bc. rewrite assoc...
+  rewrite Hab. rewrite l_unl. pose proof proj2_sig c as H. hnf in H.
+  rewrite <- decide_bool_decide in H.
+  destruct (decide (`c <> 0)%ring) as [Fc | Fc].
+  apply Fc. inversion H.
+  apply dec_stable in Fab. apply dec_stable in Fbc.
+  f_equal. apply sig_eq_pi. intros x. apply Is_true_pi.
+  replace (`a) with (`a + (`b + - `b))%ring. rewrite assoc...
+  rewrite Fab. rewrite l_unl.
+  replace (`c) with ((- `b + `b) + `c)%ring. rewrite <- assoc...
+  rewrite Fbc. rewrite r_unl. reflexivity.
+  rewrite l_inv. rewrite l_unl. reflexivity.
+  rewrite r_inv. rewrite r_unl. reflexivity. Defined.
 
 Global Instance poly_bin_op_is_sgrp : IsSgrp poly bin_op.
 Proof. split; typeclasses eauto. Defined.
