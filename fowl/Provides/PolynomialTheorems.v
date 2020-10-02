@@ -233,7 +233,8 @@ Proof with conversions.
   replace option_union_with with (union_with (M := option NZA))
   by reflexivity.
   match goal with
-  |- merge ?e x (merge ?e y z) = merge ?e (merge ?e x y) z => set (f := e)
+  |- merge ?e ?x (merge ?e ?y ?z) = merge ?e (merge ?e ?x ?y) ?z =>
+      set (f := e)
   end.
   apply (merge_assoc' f).
   clear poly x y z.
@@ -288,32 +289,60 @@ Proof with conversions.
 Global Instance poly_bin_op_is_sgrp : IsSgrp poly bin_op.
 Proof. split; typeclasses eauto. Defined.
 
-Local Open Scope ring_scope.
-
 Global Instance poly_bin_op_is_comm : IsComm poly bin_op.
-Proof.
-  intros x y. cbv [bin_op poly_has_bin_op]. cbv [poly_add].
-  (* TODO There is no instance matching [f |- Comm eq (union_with f)]. *)
-  Admitted.
+Proof with conversions.
+  intros x y. cbv [bin_op poly_has_bin_op poly_add].
+  cbv [union_with map_union_with].
+  replace option_union_with with (union_with (M := option NZA))
+  by reflexivity.
+  match goal with
+  |- merge ?e ?x ?y = merge ?e ?y ?x => set (f := e)
+  end.
+  apply (merge_comm' f).
+  clear poly x y.
+  cbv [f]. clear f.
+  match goal with
+  |- Comm eq (union_with ?e) => set (g := e)
+  end.
+  apply (option.union_with_comm g).
+  intros a b.
+  cbv [g]. clear g.
+  destruct (decide (`a + `b <> 0)%ring) as [Fab | Fab],
+  (decide (`b + `a <> 0)%ring) as [Fba | Fba].
+  - f_equal. apply sig_eq_pi; [typeclasses eauto |].
+    cbn. rewrite comm. reflexivity.
+  - exfalso. apply Fba. rewrite comm...
+    apply Fab.
+  - exfalso. apply Fab. rewrite comm...
+    apply Fba.
+  - reflexivity. Defined.
 
 Global Instance poly_bin_op_is_comm_sgrp : IsCommSgrp poly bin_op.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_is_l_unl : IsLUnl poly bin_op null_op.
 Proof.
-  intros x.
-  cbv [bin_op poly_has_bin_op]; cbv [poly_add].
-  cbv [null_op poly_has_null_op]; cbv [poly_zero].
-  (* TODO There is no instance. *)
-  Admitted.
+  intros x. cbv [bin_op poly_has_bin_op poly_add
+  null_op poly_zero poly_has_null_op].
+  cbv [union_with map_union_with].
+  replace option_union_with with (union_with (M := option NZA))
+  by reflexivity.
+  match goal with
+  |- merge ?e ?x ?y = ?z => set (f := e)
+  end.
+  apply (left_id empty (merge f)). Defined.
 
 Global Instance poly_bin_op_null_op_is_r_unl : IsRUnl poly bin_op null_op.
 Proof.
-  intros x.
-  cbv [bin_op poly_has_bin_op]; cbv [poly_add].
-  cbv [null_op poly_has_null_op]; cbv [poly_zero].
-  (* TODO There is no instance. *)
-  Admitted.
+  intros x. cbv [bin_op poly_has_bin_op poly_add
+  null_op poly_zero poly_has_null_op].
+  cbv [union_with map_union_with].
+  replace option_union_with with (union_with (M := option NZA))
+  by reflexivity.
+  match goal with
+  |- merge ?e ?x ?y = ?z => set (f := e)
+  end.
+  apply (right_id empty (merge f)). Defined.
 
 Global Instance poly_bin_op_null_op_is_unl : IsUnl poly bin_op null_op.
 Proof. split; typeclasses eauto. Defined.
