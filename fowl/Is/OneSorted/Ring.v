@@ -155,6 +155,13 @@ Proof. split; typeclasses eauto. Defined.
 
 (** TODO Clean up. *)
 
+Lemma degenerate : forall x : A,
+  1 = 0 -> x = 0.
+Proof.
+  intros x H. epose proof l_distr x 0 1 as H'.
+  rewrite l_unl in H'. rewrite r_unl in H' at 1. rewrite H in H'.
+  repeat rewrite r_absorb in H'. rewrite r_unl in H'. apply H'. Defined.
+
 Local Instance unit_has_bin_op : HasBinOp unit := fun x y : unit => tt.
 
 Local Instance bin_op_is_assoc : IsAssoc unit bin_op.

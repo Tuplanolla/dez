@@ -419,6 +419,7 @@ End Additive.
 Module Multiplicative.
 
 Import OneSorted.MultiplicativeNotations.
+Import OneSorted.ArithmeticNotations.
 
 Section Context.
 
@@ -441,7 +442,8 @@ Proof. split; typeclasses eauto. Defined.
 Global Instance poly_bin_op_is_comm : IsComm poly bin_op.
 Proof.
   intros x y.
-  cbv [bin_op poly_has_bin_op]; cbv [poly_mul]. Admitted.
+  cbv [bin_op poly_has_bin_op]; cbv [poly_mul].
+  generalize dependent x. Admitted.
 
 Global Instance poly_bin_op_is_comm_sgrp : IsCommSgrp poly bin_op.
 Proof. split; typeclasses eauto. Defined.
@@ -450,7 +452,17 @@ Global Instance poly_bin_op_null_op_is_l_unl : IsLUnl poly bin_op null_op.
 Proof.
   intros x.
   cbv [bin_op poly_has_bin_op]; cbv [poly_mul].
+  match goal with
+  |- map_fold ?e _ _ = _ => set (f := e)
+  end.
   cbv [null_op poly_has_null_op]; cbv [poly_one].
+  destruct (decide (1 <> 0)) as [H10 | H10].
+  epose proof (insert_empty (M := Nmap) 0 (exist NZ 1 _)) as H.
+  rewrite <- H. clear H.
+  epose proof map_fold_insert_L _ (empty (A := Nmap NZA)) 0 (exist NZ 1 _) (empty (A := Nmap NZA)) as H.
+  rewrite H. clear H. rewrite map_fold_empty. cbv [f]. cbn. clear f. admit.
+  shelve. reflexivity. rewrite (map_fold_empty (M := Nmap) f).
+  apply dec_stable in H10. (* use Is.OneSorted.Ring.degenerate. *)
   Admitted.
 
 Global Instance poly_bin_op_null_op_is_r_unl : IsRUnl poly bin_op null_op.
