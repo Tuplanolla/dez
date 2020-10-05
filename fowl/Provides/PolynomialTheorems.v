@@ -40,6 +40,16 @@ Definition NZ (a : A) : Prop := bool_decide (a <> 0).
 Definition NZA : Type := {a : A | NZ a}.
 Definition poly : Type := Nmap NZA.
 
+Ltac stabilize :=
+  repeat match goal with
+  | H : ~ ?a <> ?b |- _ => apply dec_stable in H
+  end.
+
+Lemma nza_neq : forall a : NZA, `a <> 0.
+Proof.
+  cbv [NZA NZ]. intros [a dH]. cbn. intros H.
+  apply bool_decide_unpack in dH. apply dH. apply H. Defined.
+
 Ltac conversions := typeclasses
   convert bin_op into (add (A := poly)) and
   null_op into (zero (A := poly)) and
@@ -55,6 +65,65 @@ Ltac conversions := typeclasses
 Definition poly_eval (x : poly) (a : A) : A :=
   map_fold (fun (i : N) (b : NZA) (c : A) => c + `b * (a ^ i)%N) 0 x.
 
+Program Definition nza_add (a b : NZA) :=
+  let c := `a + `b in
+  if decide (c <> 0) then Some (exist NZ c _) else None.
+Next Obligation.
+  intros a b c F. cbv [NZ]. apply bool_decide_pack. apply F. Defined.
+
+Global Instance union_with_nza_add_assoc :
+  Assoc eq (union_with (M := option NZA) nza_add).
+Proof with conversions.
+  intros [a |] [b |] [c |]; try (
+    repeat (rewrite union_with_left_id || rewrite union_with_right_id);
+    reflexivity).
+  cbv [union_with option_union_with nza_add].
+  destruct (decide (`a + `b <> 0)) as [Fab | Fab],
+  (decide (`b + `c <> 0)) as [Fbc | Fbc]; stabilize; cbn.
+  - destruct (decide (`a + (`b + `c) <> 0)) as [Fa_bc | Fa_bc],
+    (decide ((`a + `b) + `c <> 0)) as [Fab_c | Fab_c]; stabilize; cbn.
+    + f_equal. apply sig_eq_pi; [typeclasses eauto | cbn]. rewrite assoc...
+      reflexivity.
+    + exfalso. apply Fa_bc. rewrite assoc...
+      apply Fab_c.
+    + exfalso. apply Fab_c. rewrite <- assoc...
+      apply Fa_bc.
+    + reflexivity.
+  - destruct (decide ((`a + `b) + `c <> 0)) as [Fab_c | Fab_c];
+    stabilize; cbn.
+    + f_equal. apply sig_eq_pi; [typeclasses eauto | cbn].
+      rewrite <- assoc...
+      rewrite Fbc. rewrite r_unl. reflexivity.
+    + exfalso. apply (nza_neq a). rewrite <- assoc in Fab_c...
+      rewrite Fbc in Fab_c. rewrite r_unl in Fab_c. apply Fab_c.
+  - destruct (decide (`a + (`b + `c) <> 0)) as [Fa_bc | Fa_bc];
+    stabilize; cbn.
+    + f_equal. apply sig_eq_pi; [typeclasses eauto | cbn].
+      rewrite assoc...
+      rewrite Fab. rewrite l_unl. reflexivity.
+    + exfalso. apply (nza_neq c). rewrite assoc in Fa_bc...
+      rewrite Fab in Fa_bc. rewrite l_unl in Fa_bc.
+      apply Fa_bc.
+  - f_equal. apply sig_eq_pi; [typeclasses eauto | cbn].
+    assert (Ha : `a = `a + (`b + - `b)).
+    { rewrite r_inv. rewrite r_unl. reflexivity. }
+    assert (Hc : `c = (- `b + `b) + `c).
+    { rewrite l_inv. rewrite l_unl. reflexivity. }
+    rewrite Ha. rewrite assoc...
+    rewrite Fab. rewrite l_unl.
+    rewrite Hc. rewrite <- assoc...
+    rewrite Fbc. rewrite r_unl. reflexivity. Defined.
+
+Program Definition nza_neg (a : NZA) :=
+  let b := - `a in
+  exist NZ b _.
+Next Obligation with conversions.
+  intros a b. cbv [NZ]. apply bool_decide_pack. intros H.
+  pose proof proj2_sig a as F; cbn in F; cbv [NZ] in F.
+  apply bool_decide_unpack in F. apply F. apply inj...
+  rewrite un_absorb...
+  apply H. Defined.
+
 (** Addition of polynomials.
 
     The terms of the polynomials $x$, $y$ and $z$ in $z = x + y$
@@ -64,33 +133,21 @@ Definition poly_eval (x : poly) (a : A) : A :=
     even though $x_n \ne 0$ and $y_n \ne 0$;
     indeed, this happens whenever $y_n = - x_n$. *)
 
-Program Definition poly_add (x y : poly) : poly :=
-  union_with (fun a b : NZA => let c := `a + `b in
-    if decide (c <> 0) then Some (exist NZ c _) else None) x y.
-Next Obligation.
-  intros x y a b c F. cbv [NZ]. apply bool_decide_pack. apply F. Defined.
+Definition poly_add (x y : poly) : poly := union_with nza_add x y.
 
 (** Zero polynomial.
 
     The terms of the polynomial $x$ in $x = 0$
     are constrained by $x_n = 0$ for all $n$. *)
 
-Definition poly_zero : poly :=
-  empty.
+Definition poly_zero : poly := empty.
 
 (** Negation of polynomials.
 
     The terms of the polynomials $x$ and $y$ in $y = - x$
     are related by the pointwise negation $y_n = - x_n$ for all $n$. *)
 
-Program Definition poly_neg (x : poly) : poly :=
-  fmap (fun a : NZA => let b := - `a in exist NZ b _) x.
-Next Obligation with conversions.
-  intros x a b. cbv [NZ]. apply bool_decide_pack. intros H.
-  pose proof proj2_sig a as F; cbn in F; cbv [NZ] in F.
-  apply bool_decide_unpack in F. apply F. apply inj...
-  rewrite un_absorb...
-  apply H. Defined.
+Definition poly_neg (x : poly) : poly := fmap nza_neg x.
 
 (** Multiplication of polynomials.
 
@@ -194,8 +251,8 @@ End Tests.
 
 Module Additive.
 
-Import OneSorted.ArithmeticNotations.
 Import OneSorted.AdditiveNotations.
+Import OneSorted.ArithmeticNotations.
 
 Section Context.
 
@@ -228,63 +285,9 @@ Global Instance poly_bin_op_is_assoc : IsAssoc poly bin_op.
 Proof with conversions.
   intros x y z.
   cbv [bin_op poly_has_bin_op poly_add].
-  (** Peel the onion. *)
   cbv [union_with map_union_with].
-  replace option_union_with with (union_with (M := option NZA))
-  by reflexivity.
-  match goal with
-  |- merge ?e ?x (merge ?e ?y ?z) = merge ?e (merge ?e ?x ?y) ?z =>
-      set (f := e)
-  end.
-  apply (merge_assoc' f).
-  clear poly x y z.
-  intros [a |] [b |] [c |].
-  all: try reflexivity.
-  all: cycle 1.
-  cbv [f]. repeat rewrite union_with_right_id. reflexivity.
-  cbv [f]. repeat rewrite union_with_left_id. reflexivity.
-  (** Cry. *)
-  cbv [f]. cbv [union_with option_union_with].
-  destruct (decide (`a + `b <> 0)%ring) as [Fab | Fab],
-  (decide (`b + `c <> 0)%ring) as [Fbc | Fbc].
-  cbn.
-  destruct (decide (`a + (`b + `c) <> 0)%ring) as [Fa_bc | Fa_bc],
-  (decide ((`a + `b) + `c <> 0)%ring) as [Fab_c | Fab_c].
-  f_equal. apply sig_eq_pi. intros x. apply Is_true_pi.
-  cbn. rewrite assoc... reflexivity.
-  exfalso. apply Fab_c. intros Hab_c. rewrite <- assoc in Hab_c...
-  rewrite Hab_c in Fa_bc. apply Fa_bc. reflexivity.
-  exfalso. apply Fa_bc. intros Ha_bc. rewrite assoc in Ha_bc...
-  rewrite Ha_bc in Fab_c. apply Fab_c. reflexivity.
-  reflexivity.
-  cbn.
-  destruct (decide ((`a + `b) + `c <> 0)%ring) as [Fab_c | Fab_c].
-  f_equal. apply sig_eq_pi. intros x. apply Is_true_pi.
-  cbn. apply dec_stable in Fbc. rewrite <- assoc...
-  rewrite Fbc. rewrite r_unl. reflexivity.
-  exfalso. apply Fab_c. apply dec_stable in Fbc. rewrite <- assoc...
-  rewrite Fbc. rewrite r_unl. pose proof proj2_sig a as H. hnf in H.
-  rewrite <- decide_bool_decide in H.
-  destruct (decide (`a <> 0)%ring) as [Fa | Fa].
-  apply Fa. inversion H.
-  cbn.
-  destruct (decide (`a + (`b + `c) <> 0)%ring) as [Fa_bc | Fa_bc].
-  f_equal. apply sig_eq_pi. intros x. apply Is_true_pi.
-  cbn. apply dec_stable in Fab. rewrite assoc...
-  rewrite Fab. rewrite l_unl. reflexivity.
-  exfalso. apply Fab. intros Hab. apply Fa_bc. rewrite assoc...
-  rewrite Hab. rewrite l_unl. pose proof proj2_sig c as H. hnf in H.
-  rewrite <- decide_bool_decide in H.
-  destruct (decide (`c <> 0)%ring) as [Fc | Fc].
-  apply Fc. inversion H.
-  apply dec_stable in Fab. apply dec_stable in Fbc.
-  f_equal. apply sig_eq_pi. intros x. apply Is_true_pi.
-  replace (`a) with (`a + (`b + - `b))%ring. rewrite assoc...
-  rewrite Fab. rewrite l_unl.
-  replace (`c) with ((- `b + `b) + `c)%ring. rewrite <- assoc...
-  rewrite Fbc. rewrite r_unl. reflexivity.
-  rewrite l_inv. rewrite l_unl. reflexivity.
-  rewrite r_inv. rewrite r_unl. reflexivity. Defined.
+  apply (merge_assoc' (option_union_with nza_add)).
+  typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_is_sgrp : IsSgrp poly bin_op.
 Proof. split; typeclasses eauto. Defined.
@@ -307,6 +310,7 @@ Proof with conversions.
   apply (option.union_with_comm g).
   intros a b.
   cbv [g]. clear g.
+  cbv [nza_add].
   destruct (decide (`a + `b <> 0)%ring) as [Fab | Fab],
   (decide (`b + `a <> 0)%ring) as [Fba | Fba].
   - f_equal. apply sig_eq_pi; [typeclasses eauto |].
@@ -323,7 +327,7 @@ Proof. split; typeclasses eauto. Defined.
 Global Instance poly_bin_op_null_op_is_l_unl : IsLUnl poly bin_op null_op.
 Proof.
   intros x. cbv [bin_op poly_has_bin_op poly_add
-  null_op poly_zero poly_has_null_op].
+  null_op poly_has_null_op poly_zero].
   cbv [union_with map_union_with].
   replace option_union_with with (union_with (M := option NZA))
   by reflexivity.
@@ -335,7 +339,7 @@ Proof.
 Global Instance poly_bin_op_null_op_is_r_unl : IsRUnl poly bin_op null_op.
 Proof.
   intros x. cbv [bin_op poly_has_bin_op poly_add
-  null_op poly_zero poly_has_null_op].
+  null_op poly_has_null_op poly_zero].
   cbv [union_with map_union_with].
   replace option_union_with with (union_with (M := option NZA))
   by reflexivity.
@@ -356,11 +360,53 @@ Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_un_op_is_l_inv :
   IsLInv poly bin_op null_op un_op.
-Proof.
-  intros x.
-  cbv [bin_op poly_has_bin_op]; cbv [poly_add].
-  cbv [null_op poly_has_null_op]; cbv [poly_zero].
-  cbv [un_op poly_has_un_op]; cbv [poly_neg]. Admitted.
+Proof with conversions.
+  intros x. cbv [bin_op poly_has_bin_op poly_add
+  null_op poly_has_null_op poly_zero
+  un_op poly_has_un_op poly_neg].
+  cbv [union_with map_union_with].
+  replace option_union_with with (union_with (M := option NZA))
+  by reflexivity.
+  generalize dependent x. apply (map_ind (M := Nmap)).
+  match goal with
+  |- merge ?e (fmap ?d ?x) ?y = ?z => set (f := e); set (g := d)
+  end.
+  rewrite fmap_empty. apply (merge_empty f).
+  intros i x m.
+  match goal with
+  |- context [merge (union_with ?e) (fmap ?d ?x) ?y = ?z] =>
+      set (f := union_with e); set (g := d); set (k := e)
+  end.
+  intros H IH.
+  rewrite fmap_insert.
+  apply (map_eq (M := Nmap)). intros j.
+  destruct (decide (i = j)) as [D | D]. subst j.
+  rewrite lookup_merge; [| reflexivity].
+  cbv [f g].
+  cbv [nza_add nza_neg].
+  cbv [union_with map_union_with option_union_with].
+  rewrite lookup_insert. rewrite lookup_insert. cbn.
+  destruct (decide (- `x + `x <> 0)%ring) as [F_xx | F_xx].
+  exfalso. apply F_xx. rewrite l_inv...
+  reflexivity.
+  replace empty with (empty : Nmap NZA) by reflexivity.
+  rewrite (lookup_empty i). reflexivity.
+  rewrite <- (insert_merge_r f _ _ i x x).
+  2:{ cbv [f g].
+  cbv [nza_add nza_neg].
+  cbv [union_with map_union_with option_union_with].
+  rewrite lookup_insert. cbn.
+  destruct (decide (- `x + `x <> 0)%ring) as [F_xx | F_xx].
+  f_equal. apply sig_eq_pi. intros w. apply Is_true_pi.
+  cbn. rewrite l_inv...
+  exfalso. apply F_xx. rewrite l_inv...
+  reflexivity.
+  exfalso. }
+  rewrite <- (insert_merge_l f _ _ i (g x) (g x)).
+  2:{ rewrite H. reflexivity. }
+  rewrite IH.
+  rewrite lookup_insert_ne. rewrite lookup_insert_ne. reflexivity.
+  apply D. apply D. Admitted.
 
 Global Instance poly_bin_op_null_op_un_op_is_r_inv :
   IsRInv poly bin_op null_op un_op.
@@ -459,15 +505,15 @@ Global Instance poly_has_r_act : HasRAct A poly := poly_r_act.
 
 Ltac conversions := typeclasses
   convert bin_op into (add (A := poly)) and
-    null_op into (zero (A := poly)) and
-    un_op into (neg (A := poly)) or
+  null_op into (zero (A := poly)) and
+  un_op into (neg (A := poly)) or
   convert bin_op into (mul (A := poly)) and
-    null_op into (one (A := poly)) or
+  null_op into (one (A := poly)) or
   convert bin_op into (add (A := A)) and
-    null_op into (zero (A := A)) and
-    un_op into (neg (A := A)) or
+  null_op into (zero (A := A)) and
+  un_op into (neg (A := A)) or
   convert bin_op into (mul (A := A)) and
-    null_op into (one (A := A)).
+  null_op into (one (A := A)).
 
 Global Instance poly_add_is_comm : IsComm poly add.
 Proof with conversions.
