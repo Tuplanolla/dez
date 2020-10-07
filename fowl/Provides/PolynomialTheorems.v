@@ -86,6 +86,12 @@ Program Definition nza_add (a b : NZA) : option NZA :=
 Next Obligation.
   intros a b c F. cbv [NZ]. apply bool_decide_pack. apply F. Defined.
 
+Program Definition nza_mul (a b : NZA) : option NZA :=
+  let c := `a * `b in
+  if decide (c <> 0) then Some (exist NZ c _) else None.
+Next Obligation.
+  intros a b c F. cbv [NZ]. apply bool_decide_pack. apply F. Defined.
+
 Global Instance union_with_nza_add_assoc :
   Assoc eq (union_with (M := option NZA) nza_add).
 Proof with conversions.
@@ -164,6 +170,38 @@ Proof with conversions.
   - exfalso. apply Hab. rewrite r_inv... reflexivity.
   - reflexivity. Defined.
 
+Program Definition nza_l_act (a : A) (b : NZA) : option NZA :=
+  let c := a * `b in
+  if decide (c <> 0) then Some (exist NZ c _) else None.
+Next Obligation.
+  intros a b c F. cbv [NZ]. apply bool_decide_pack.
+  intros H. apply F. apply H. Defined.
+
+Program Definition nza_r_act (a : NZA) (b : A) : option NZA :=
+  let c := `a * b in
+  if decide (c <> 0) then Some (exist NZ c _) else None.
+Next Obligation.
+  intros a b c F. cbv [NZ]. apply bool_decide_pack.
+  intros H. apply F. apply H. Defined.
+
+Lemma nza_act_comm : forall a b : NZA,
+  nza_l_act (`a) b = nza_r_act a (`b).
+Proof. intros a b. cbv [nza_l_act nza_r_act]. reflexivity. Defined.
+
+Lemma nza_l_act_zero_l : forall a : NZA, nza_l_act 0 a = None.
+Proof with conversions.
+  intros a. cbv [nza_l_act].
+  destruct (decide (0 * `a <> 0)) as [H | H]; stabilize.
+  - exfalso. apply H. rewrite l_absorb. reflexivity.
+  - reflexivity. Defined.
+
+Lemma nza_r_act_zero_r : forall a : NZA, nza_r_act a 0 = None.
+Proof with conversions.
+  intros a. cbv [nza_r_act].
+  destruct (decide (`a * 0 <> 0)) as [H | H]; stabilize.
+  - exfalso. apply H. rewrite r_absorb. reflexivity.
+  - reflexivity. Defined.
+
 (** Addition of polynomials.
 
     The terms of the polynomials $x$, $y$ and $z$ in $z = x + y$
@@ -226,12 +264,8 @@ Next Obligation.
     are related by the pointwise multiplication
     $x_n = a \times x_n$ for all $n$. *)
 
-Program Definition poly_l_act (a : A) (x : poly) : poly :=
-  omap (fun b : NZA => let c := a * `b in
-  if decide (c <> 0) then Some (exist NZ c _) else None) x.
-Next Obligation.
-  intros a x b c F. cbv [NZ]. apply bool_decide_pack.
-  intros H. apply F. apply H. Defined.
+Definition poly_l_act (a : A) (x : poly) : poly :=
+  omap (nza_l_act a) x.
 
 (** Right scalar multiplication of polynomials.
 
@@ -240,12 +274,64 @@ Next Obligation.
     are related by the pointwise multiplication
     $x_n = x_n \times a$ for all $n$. *)
 
-Program Definition poly_r_act (x : poly) (a : A) : poly :=
-  omap (fun b : NZA => let c := `b * a in
-  if decide (c <> 0) then Some (exist NZ c _) else None) x.
-Next Obligation.
-  intros x a b c F. cbv [NZ]. apply bool_decide_pack.
-  intros H. apply F. apply H. Defined.
+Definition poly_r_act (x : poly) (a : A) : poly :=
+  omap (flip nza_r_act a) x.
+
+(** Product of finite maps.
+
+    Given the functions $g$ and $f$,
+    the finite maps $x$, $y$ and $z$ in $z = x \times y$
+    are related by $z_k = \sum_{g (i, j) = k} f (x_i, y_j)$
+    for all $i$, $j$ and $k$. *)
+
+Fail Fail Definition map_prod {K A B C M : Type}
+  `{Empty M} `{FinMapToList K A M} `{PartialAlter K A M}
+  (g : K -> K -> K) (f : A -> A -> B)
+  (h : B -> option A -> option A) (x y : M) : M :=
+  map_fold (fun (i : K) (x : A) (m : M) =>
+    map_fold (fun (j : K) (y : A) (m : M) =>
+      partial_alter (h (f x y)) (g i j) m) m y) empty x.
+
+Definition dom_partial_alter {K A M : Type} `{PartialAlter K A M}
+  (f : option A -> A) (i : K) (m : M) : M :=
+  partial_alter (fun x : option A => mret (f x)) i m.
+
+Definition codom_partial_alter {K A M : Type} `{PartialAlter K A M}
+  (f : A -> option A) (i : K) (m : M) : M :=
+  partial_alter (fun x : option A => mbind f x) i m.
+
+(** Free product of two finite maps along their keys. *)
+
+Definition map_free_prod {KA KB A B MA MB MAB : Type}
+  `{FinMapToList KA A MA} `{FinMapToList KB B MB}
+  `{Empty MAB} `{Insert (A * B) (KA * KB) MAB}
+  (x : MA) (y : MB) : MAB :=
+  map_fold (fun (i : KA) (a : A) (z : MAB) =>
+    map_fold (fun (j : KB) (b : B) (z : MAB) =>
+      insert (a, b) (i, j) z) z y) empty x.
+
+(** Pullback of a finite map along a key altering function. *)
+
+Definition map_pull_back {K L A MK ML : Type}
+  `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
+  (f : K -> L) (x : MK) : ML :=
+  map_fold (fun (i : K) (x : A) (y : ML) =>
+    partial_alter (fun y : option (list A) =>
+      Some (x :: default [] y)) (f i) y) empty x.
+
+Definition map_semifree_prod {K A B C MA MB MC : Type}
+  `{FinMapToList K A MA} `{FinMapToList K B MB}
+  `{Empty MC} `{PartialAlter K (list C) MC}
+  (g : K -> K -> K) (f : A -> B -> C) (x : MA) (y : MB) : MC :=
+  map_fold (fun (i : K) (x : A) (m : MC) =>
+    map_fold (fun (j : K) (y : B) (m : MC) =>
+      partial_alter (fun z : option (list C) =>
+        Some (f x y :: default [] z)) (g i j) m) m y) empty x.
+
+Fail Program Definition poly_mult (x y : poly) : poly :=
+  map_prod N.add nza_mul (fun (a : A) (b : option NZA) =>
+    let cs := union_with nza_add a b in
+    if decide (c <> 0) then Some (exist NZ c _) else None) x y.
 
 End Context.
 
@@ -266,6 +352,13 @@ Program Let p : poly := insert (N.add N.one N.two) (exist NZ 42 _)
 (* 3 * x ^ 4 + x + 5 *)
 Program Let q : poly := insert (N.add N.two N.two) (exist NZ 3 _)
   (insert N.one (exist NZ 1 _) (insert N.zero (exist NZ 5 _) empty)).
+
+Compute fmap (fun '(x, y) => (x, `y)) (map_to_list (poly_mul p q)).
+Compute map_to_list
+  (map_semifree_prod N.add (fun x y => Z.mul (`x) (`y)) p q : Nmap (list Z)).
+Compute map_to_list (fmap (fold_right Z.add Z.zero)
+  (map_semifree_prod N.add (fun x y => Z.mul (`x) (`y)) p q : Nmap (list Z))).
+Compute fmap (fun '(x, y) => (x, `y)) (map_to_list (poly_mult p q)).
 
 (* 7, 5 *)
 Compute poly_eval p 0.
