@@ -312,26 +312,18 @@ Definition map_free_prod {KA KB A B MA MB MAB : Type}
 
 (** Pullback of a finite map along a key altering function. *)
 
-Definition map_pull_back {K L A MK ML : Type}
+Definition map_pullback {K L A MK ML : Type}
   `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
   (f : K -> L) (x : MK) : ML :=
   map_fold (fun (i : K) (x : A) (y : ML) =>
     partial_alter (fun y : option (list A) =>
       Some (x :: default [] y)) (f i) y) empty x.
 
-Definition map_semifree_prod {K A B C MA MB MC : Type}
-  `{FinMapToList K A MA} `{FinMapToList K B MB}
-  `{Empty MC} `{PartialAlter K (list C) MC}
-  (g : K -> K -> K) (f : A -> B -> C) (x : MA) (y : MB) : MC :=
-  map_fold (fun (i : K) (x : A) (m : MC) =>
-    map_fold (fun (j : K) (y : B) (m : MC) =>
-      partial_alter (fun z : option (list C) =>
-        Some (f x y :: default [] z)) (g i j) m) m y) empty x.
-
 Fail Program Definition poly_mult (x y : poly) : poly :=
-  map_prod N.add nza_mul (fun (a : A) (b : option NZA) =>
-    let cs := union_with nza_add a b in
-    if decide (c <> 0) then Some (exist NZ c _) else None) x y.
+  map_filter (fun as' : list NZA =>
+    let b := fold_right add 0 (fmap proj1_sig as') in
+    if decide (b <> 0) then Some (exist NZ b _) else None)
+  (map_pullback (uncurry add) (map_free_prod x y)).
 
 End Context.
 
