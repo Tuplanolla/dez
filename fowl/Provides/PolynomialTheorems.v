@@ -40,6 +40,33 @@ Proof. by intros; apply partial_alter_merge. Qed.
 
 End more_merge.
 
+Definition dom_partial_alter {K A M : Type} `{PartialAlter K A M}
+  (f : option A -> A) (i : K) (m : M) : M :=
+  partial_alter (fun x : option A => mret (f x)) i m.
+
+Definition codom_partial_alter {K A M : Type} `{PartialAlter K A M}
+  (f : A -> option A) (i : K) (m : M) : M :=
+  partial_alter (fun x : option A => mbind f x) i m.
+
+(** Free product of two finite maps along their keys. *)
+
+Definition map_free_prod {KA KB A B MA MB MAB : Type}
+  `{FinMapToList KA A MA} `{FinMapToList KB B MB}
+  `{Empty MAB} `{Insert (KA * KB) (A * B) MAB}
+  (x : MA) (y : MB) : MAB :=
+  map_fold (fun (i : KA) (a : A) (z : MAB) =>
+    map_fold (fun (j : KB) (b : B) (z : MAB) =>
+      insert (i, j) (a, b) z) z y) empty x.
+
+(** Pullback of a finite map along a key altering function. *)
+
+Definition map_pullback {K L A MK ML : Type}
+  `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
+  (f : K -> L) (x : MK) : ML :=
+  map_fold (fun (i : K) (x : A) (y : ML) =>
+    partial_alter (fun y : option (list A) =>
+      Some (x :: default [] y)) (f i) y) empty x.
+
 Section Context.
 
 Import OneSorted.ArithmeticNotations.
@@ -51,19 +78,21 @@ Context {A : Type} `{is_ring : IsRing A} `{eq_dec : EqDecision A}.
     because they would break definitional equality and
     needlessly increase space usage. *)
 
-Definition NZ (a : A) : Prop := bool_decide (a <> 0).
-Definition NZA : Type := {a : A | NZ a}.
-Definition poly : Type := Nmap NZA.
+Definition poly_value_wf (i : N) (a : A) : Prop := bool_decide (a <> 0).
+Definition poly_wf (x : gmap N A) : Prop := map_Forall poly_value_wf x.
+Definition poly : Type := {x : gmap N A | poly_wf x}.
+
+Lemma poly_lookup_wf : forall (x : poly) (i : N),
+  `x !! i <> Some 0.
+Proof.
+  intros [x Wp] i. intros H.
+  pose proof map_Forall_lookup_1 poly_value_wf x i 0 Wp H as Wc.
+  apply bool_decide_unpack in Wc. apply Wc. reflexivity. Defined.
 
 Ltac stabilize :=
   repeat match goal with
   | H : ~ ?a <> ?b |- _ => apply dec_stable in H
   end.
-
-Lemma nza_neq : forall a : NZA, `a <> 0.
-Proof.
-  cbv [NZA NZ]. intros [a dH]. cbn. intros H.
-  apply bool_decide_unpack in dH. apply dH. apply H. Defined.
 
 Ltac conversions := typeclasses
   convert bin_op into (add (A := poly)) and
@@ -78,129 +107,7 @@ Ltac conversions := typeclasses
   null_op into (one (A := A)).
 
 Definition poly_eval (x : poly) (a : A) : A :=
-  map_fold (fun (i : N) (b : NZA) (c : A) => c + `b * (a ^ i)%N) 0 x.
-
-Program Definition nza_add (a b : NZA) : option NZA :=
-  let c := `a + `b in
-  if decide (c <> 0) then Some (exist NZ c _) else None.
-Next Obligation.
-  intros a b c F. cbv [NZ]. apply bool_decide_pack. apply F. Defined.
-
-Program Definition nza_mul (a b : NZA) : option NZA :=
-  let c := `a * `b in
-  if decide (c <> 0) then Some (exist NZ c _) else None.
-Next Obligation.
-  intros a b c F. cbv [NZ]. apply bool_decide_pack. apply F. Defined.
-
-Global Instance union_with_nza_add_assoc :
-  Assoc eq (union_with (M := option NZA) nza_add).
-Proof with conversions.
-  intros [a |] [b |] [c |]; try (
-    repeat (rewrite union_with_left_id || rewrite union_with_right_id);
-    reflexivity).
-  cbv [union_with option_union_with nza_add].
-  destruct (decide (`a + `b <> 0)) as [Fab | Fab],
-  (decide (`b + `c <> 0)) as [Fbc | Fbc]; stabilize; cbn.
-  - destruct (decide (`a + (`b + `c) <> 0)) as [Fa_bc | Fa_bc],
-    (decide ((`a + `b) + `c <> 0)) as [Fab_c | Fab_c]; stabilize; cbn.
-    + f_equal. apply sig_eq_pi; [typeclasses eauto | cbn]. rewrite assoc...
-      reflexivity.
-    + exfalso. apply Fa_bc. rewrite assoc...
-      apply Fab_c.
-    + exfalso. apply Fab_c. rewrite <- assoc...
-      apply Fa_bc.
-    + reflexivity.
-  - destruct (decide ((`a + `b) + `c <> 0)) as [Fab_c | Fab_c];
-    stabilize; cbn.
-    + f_equal. apply sig_eq_pi; [typeclasses eauto | cbn].
-      rewrite <- assoc...
-      rewrite Fbc. rewrite r_unl. reflexivity.
-    + exfalso. apply (nza_neq a). rewrite <- assoc in Fab_c...
-      rewrite Fbc in Fab_c. rewrite r_unl in Fab_c. apply Fab_c.
-  - destruct (decide (`a + (`b + `c) <> 0)) as [Fa_bc | Fa_bc];
-    stabilize; cbn.
-    + f_equal. apply sig_eq_pi; [typeclasses eauto | cbn].
-      rewrite assoc...
-      rewrite Fab. rewrite l_unl. reflexivity.
-    + exfalso. apply (nza_neq c). rewrite assoc in Fa_bc...
-      rewrite Fab in Fa_bc. rewrite l_unl in Fa_bc.
-      apply Fa_bc.
-  - f_equal. apply sig_eq_pi; [typeclasses eauto | cbn].
-    assert (Ha : `a = `a + (`b + - `b)).
-    { rewrite r_inv. rewrite r_unl. reflexivity. }
-    assert (Hc : `c = (- `b + `b) + `c).
-    { rewrite l_inv. rewrite l_unl. reflexivity. }
-    rewrite Ha. rewrite assoc...
-    rewrite Fab. rewrite l_unl.
-    rewrite Hc. rewrite <- assoc...
-    rewrite Fbc. rewrite r_unl. reflexivity. Defined.
-
-Global Instance nza_add_comm : Comm eq nza_add.
-Proof with conversions.
-  intros a b. cbv [nza_add].
-  destruct (decide (`a + `b <> 0)) as [Hab | Hab],
-  (decide (`b + `a <> 0)) as [Hba | Hba]; stabilize.
-  - f_equal. apply sig_eq_pi; [typeclasses eauto | cbn].
-    rewrite comm... reflexivity.
-  - exfalso. apply Hab. rewrite comm... apply Hba.
-  - exfalso. apply Hba. rewrite comm... apply Hab.
-  - reflexivity. Defined.
-
-Program Definition nza_neg (a : NZA) : NZA :=
-  let b := - `a in
-  exist NZ b _.
-Next Obligation with conversions.
-  intros a b. cbv [NZ]. apply bool_decide_pack. intros H.
-  pose proof proj2_sig a as F; cbn in F; cbv [NZ] in F.
-  apply bool_decide_unpack in F. apply F. apply inj...
-  rewrite un_absorb...
-  apply H. Defined.
-
-Lemma nza_add_nza_neg_l : forall a : NZA, nza_add (nza_neg a) a = None.
-Proof with conversions.
-  intros a. cbv [nza_add nza_neg]. cbn.
-  destruct (decide (- `a + `a <> 0)) as [Hab | Hab]; stabilize.
-  - exfalso. apply Hab. rewrite l_inv... reflexivity.
-  - reflexivity. Defined.
-
-Lemma nza_add_nza_neg_r : forall a : NZA, nza_add a (nza_neg a) = None.
-Proof with conversions.
-  intros a. cbv [nza_add nza_neg]. cbn.
-  destruct (decide (`a + - `a <> 0)) as [Hab | Hab]; stabilize.
-  - exfalso. apply Hab. rewrite r_inv... reflexivity.
-  - reflexivity. Defined.
-
-Program Definition nza_l_act (a : A) (b : NZA) : option NZA :=
-  let c := a * `b in
-  if decide (c <> 0) then Some (exist NZ c _) else None.
-Next Obligation.
-  intros a b c F. cbv [NZ]. apply bool_decide_pack.
-  intros H. apply F. apply H. Defined.
-
-Program Definition nza_r_act (a : NZA) (b : A) : option NZA :=
-  let c := `a * b in
-  if decide (c <> 0) then Some (exist NZ c _) else None.
-Next Obligation.
-  intros a b c F. cbv [NZ]. apply bool_decide_pack.
-  intros H. apply F. apply H. Defined.
-
-Lemma nza_act_comm : forall a b : NZA,
-  nza_l_act (`a) b = nza_r_act a (`b).
-Proof. intros a b. cbv [nza_l_act nza_r_act]. reflexivity. Defined.
-
-Lemma nza_l_act_zero_l : forall a : NZA, nza_l_act 0 a = None.
-Proof with conversions.
-  intros a. cbv [nza_l_act].
-  destruct (decide (0 * `a <> 0)) as [H | H]; stabilize.
-  - exfalso. apply H. rewrite l_absorb. reflexivity.
-  - reflexivity. Defined.
-
-Lemma nza_r_act_zero_r : forall a : NZA, nza_r_act a 0 = None.
-Proof with conversions.
-  intros a. cbv [nza_r_act].
-  destruct (decide (`a * 0 <> 0)) as [H | H]; stabilize.
-  - exfalso. apply H. rewrite r_absorb. reflexivity.
-  - reflexivity. Defined.
+  map_fold (fun (i : N) (b : A) (c : A) => c + b * (a ^ i)%N) 0 (`x).
 
 (** Addition of polynomials.
 
@@ -211,21 +118,44 @@ Proof with conversions.
     even though $x_n \ne 0$ and $y_n \ne 0$;
     indeed, this happens whenever $y_n = - x_n$. *)
 
-Definition poly_add (x y : poly) : poly := union_with nza_add x y.
+Program Definition poly_add (x y : poly) : poly :=
+  exist poly_wf (union_with (fun a b : A => let c := a + b in
+    if decide (c <> 0) then Some c else None) (`x) (`y)) _.
+Next Obligation.
+  intros x y i a H. apply bool_decide_pack. intros Ha. subst a.
+  apply lookup_union_with_Some in H. cbn in H.
+  destruct H as [[Hx Hy] | [[Hx Hy] | [a [b [Hx [Hy Hxy]]]]]].
+  - apply (poly_lookup_wf x i Hx).
+  - apply (poly_lookup_wf y i Hy).
+  - cbv zeta in Hxy. destruct (decide (a + b <> 0)) as [Fab | Fab]; stabilize.
+    + inversion Hxy as [Hab]. apply Fab. apply Hab.
+    + inversion Hxy. Defined.
 
 (** Zero polynomial.
 
     The terms of the polynomial $x$ in $x = 0$
     are constrained by $x_n = 0$ for all $n$. *)
 
-Definition poly_zero : poly := empty.
+Program Definition poly_zero : poly := exist poly_wf empty _.
+Next Obligation.
+  intros i a H. apply bool_decide_pack. intros Ha. subst a.
+  apply lookup_empty_Some in H.
+  destruct H. Defined.
 
 (** Negation of polynomials.
 
     The terms of the polynomials $x$ and $y$ in $y = - x$
     are related by the pointwise negation $y_n = - x_n$ for all $n$. *)
 
-Definition poly_neg (x : poly) : poly := fmap nza_neg x.
+Program Definition poly_neg (x : poly) : poly :=
+  exist poly_wf (neg <$> `x) _.
+Next Obligation with conversions.
+  intros x i a H. apply bool_decide_pack. intros Ha. subst a.
+  rewrite lookup_fmap in H.
+  pose proof fmap_Some_1 _ _ _ H as H'.
+  destruct H' as [a [Hx Hy]].
+  rewrite <- un_absorb in Hy... apply inj in Hy. subst a.
+  apply (poly_lookup_wf x i Hx). Defined.
 
 (** Multiplication of polynomials.
 
@@ -236,16 +166,17 @@ Definition poly_neg (x : poly) : poly := fmap nza_neg x.
     because it is possible that $z_q = 0$ for some $q$,
     as was the case with $x + y$. *)
 
+Definition summation (as' : list A) : A := foldr add 0 as'.
+
 Program Definition poly_mul (x y : poly) : poly :=
-  map_fold (fun (i : N) (a : NZA) (u : poly) =>
-    map_fold (fun (j : N) (b : NZA) (v : poly) =>
-      partial_alter (fun c : option NZA =>
-        let d := `a * `b + from_option proj1_sig 0 c in
-        if decide (d <> 0) then Some (exist NZ d _) else None)
-      (i + j) v) u y) empty x.
+  exist poly_wf (filter (uncurry poly_value_wf)
+    (summation <$> map_pullback (K := N * N) (L := N)
+      (uncurry add) (uncurry mul <$> map_free_prod (`x) (`y)))) _.
 Next Obligation.
-  intros x y i a u j b v c d F. cbv [NZ]. apply bool_decide_pack.
-  intros H. apply F. apply H. Defined.
+  intros x y i a H. apply bool_decide_pack. intros Ha. subst a.
+  apply map_filter_lookup_Some in H.
+  destruct H as [H Wc].
+  apply bool_decide_unpack in Wc. apply Wc. reflexivity. Defined.
 
 (** Unit polynomial.
 
@@ -253,9 +184,18 @@ Next Obligation.
     are constrained by $x_0 = 1$ and $x_n = 0$ for all $n > 0$. *)
 
 Program Definition poly_one : poly :=
-  if decide (1 <> 0) then singletonM 0 (exist NZ 1 _) else empty.
+  exist poly_wf (if decide (1 <> 0) then singletonM 0 1 else empty) _.
 Next Obligation.
-  intros H. cbv [NZ]. apply bool_decide_pack. apply H. Defined.
+  intros i a H. apply bool_decide_pack. intros Ha. subst a.
+  destruct (decide (1 <> 0)) as [F10 | F10]; stabilize.
+  - rewrite lookup_singleton_ne in H.
+    + inversion H.
+    + intros Hi. subst i. rewrite lookup_singleton in H. inversion H as [H10].
+      apply F10. apply H10.
+  - rewrite lookup_empty in H. inversion H. Defined.
+
+(** We could use the zero-product property to speed up computations here,
+    but not fully, because our ring may not be a domain. *)
 
 (** Left scalar multiplication of polynomials.
 
@@ -264,8 +204,13 @@ Next Obligation.
     are related by the pointwise multiplication
     $x_n = a \times x_n$ for all $n$. *)
 
-Definition poly_l_act (a : A) (x : poly) : poly :=
-  omap (nza_l_act a) x.
+Program Definition poly_l_act (a : A) (x : poly) : poly :=
+  exist poly_wf (filter (uncurry poly_value_wf) (mul a <$> `x)) _.
+Next Obligation with conversions.
+  intros a x i b H. apply bool_decide_pack. intros Hb. subst b.
+  apply map_filter_lookup_Some in H.
+  destruct H as [H Wc].
+  apply bool_decide_unpack in Wc. apply Wc. reflexivity. Defined.
 
 (** Right scalar multiplication of polynomials.
 
@@ -274,83 +219,32 @@ Definition poly_l_act (a : A) (x : poly) : poly :=
     are related by the pointwise multiplication
     $x_n = x_n \times a$ for all $n$. *)
 
-Definition poly_r_act (x : poly) (a : A) : poly :=
-  omap (flip nza_r_act a) x.
-
-(** Product of finite maps.
-
-    Given the functions $g$ and $f$,
-    the finite maps $x$, $y$ and $z$ in $z = x \times y$
-    are related by $z_k = \sum_{g (i, j) = k} f (x_i, y_j)$
-    for all $i$, $j$ and $k$. *)
-
-Fail Fail Definition map_prod {K A B C M : Type}
-  `{Empty M} `{FinMapToList K A M} `{PartialAlter K A M}
-  (g : K -> K -> K) (f : A -> A -> B)
-  (h : B -> option A -> option A) (x y : M) : M :=
-  map_fold (fun (i : K) (x : A) (m : M) =>
-    map_fold (fun (j : K) (y : A) (m : M) =>
-      partial_alter (h (f x y)) (g i j) m) m y) empty x.
-
-Definition dom_partial_alter {K A M : Type} `{PartialAlter K A M}
-  (f : option A -> A) (i : K) (m : M) : M :=
-  partial_alter (fun x : option A => mret (f x)) i m.
-
-Definition codom_partial_alter {K A M : Type} `{PartialAlter K A M}
-  (f : A -> option A) (i : K) (m : M) : M :=
-  partial_alter (fun x : option A => mbind f x) i m.
-
-(** Free product of two finite maps along their keys. *)
-
-Definition map_free_prod {KA KB A B MA MB MAB : Type}
-  `{FinMapToList KA A MA} `{FinMapToList KB B MB}
-  `{Empty MAB} `{Insert (A * B) (KA * KB) MAB}
-  (x : MA) (y : MB) : MAB :=
-  map_fold (fun (i : KA) (a : A) (z : MAB) =>
-    map_fold (fun (j : KB) (b : B) (z : MAB) =>
-      insert (a, b) (i, j) z) z y) empty x.
-
-(** Pullback of a finite map along a key altering function. *)
-
-Definition map_pullback {K L A MK ML : Type}
-  `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
-  (f : K -> L) (x : MK) : ML :=
-  map_fold (fun (i : K) (x : A) (y : ML) =>
-    partial_alter (fun y : option (list A) =>
-      Some (x :: default [] y)) (f i) y) empty x.
-
-Fail Program Definition poly_mult (x y : poly) : poly :=
-  map_filter (fun as' : list NZA =>
-    let b := fold_right add 0 (fmap proj1_sig as') in
-    if decide (b <> 0) then Some (exist NZ b _) else None)
-  (map_pullback (uncurry add) (map_free_prod x y)).
+Program Definition poly_r_act (x : poly) (a : A) : poly :=
+  exist poly_wf (filter (uncurry poly_value_wf) (flip mul a <$> `x)) _.
+Next Obligation with conversions.
+  intros a x i b H. apply bool_decide_pack. intros Hb. subst b.
+  apply map_filter_lookup_Some in H.
+  destruct H as [H Wc].
+  apply bool_decide_unpack in Wc. apply Wc. reflexivity. Defined.
 
 End Context.
 
-Section Tests.
+(* Section Tests.
 
+Local Open Scope N_scope.
 Local Open Scope Z_scope.
 
-Obligation Tactic :=
-  match goal with
-  | |- NZ ?x => let H := fresh in
-      hnf; destruct (decide (x <> 0)) as [H | H]; auto
-  end || auto.
-
 (* 42 * x ^ 3 + 7 + 13 * x *)
-Program Let p : poly := insert (N.add N.one N.two) (exist NZ 42 _)
-  (insert N.zero (exist NZ 7 _) (insert N.one (exist NZ 13 _) empty)).
+Program Let p : poly := exist poly_wf
+  (insert 3%N 42%Z (insert 0%N 7%Z (insert 1%N 13%Z empty))) _.
+Next Obligation. Admitted.
 
 (* 3 * x ^ 4 + x + 5 *)
-Program Let q : poly := insert (N.add N.two N.two) (exist NZ 3 _)
-  (insert N.one (exist NZ 1 _) (insert N.zero (exist NZ 5 _) empty)).
+Program Let q : poly := exist poly_wf
+  (insert 4%N 3%Z (insert 1%N 1%Z (insert 0%N 5%Z empty))) _.
+Next Obligation. Admitted.
 
-Compute fmap (fun '(x, y) => (x, `y)) (map_to_list (poly_mul p q)).
-Compute map_to_list
-  (map_semifree_prod N.add (fun x y => Z.mul (`x) (`y)) p q : Nmap (list Z)).
-Compute map_to_list (fmap (fold_right Z.add Z.zero)
-  (map_semifree_prod N.add (fun x y => Z.mul (`x) (`y)) p q : Nmap (list Z))).
-Compute fmap (fun '(x, y) => (x, `y)) (map_to_list (poly_mult p q)).
+Compute map_to_list (``(poly_mul p q)).
 
 (* 7, 5 *)
 Compute poly_eval p 0.
@@ -372,7 +266,7 @@ Compute poly_eval (poly_add p q) 3.
 Compute poly_eval (poly_mul p q) 0.
 Compute poly_eval (poly_mul p q) 3.
 
-End Tests.
+End Tests. *)
 
 Module Additive.
 
@@ -410,9 +304,7 @@ Global Instance poly_bin_op_is_assoc : IsAssoc poly bin_op.
 Proof.
   intros x y z.
   cbv [bin_op poly_has_bin_op poly_add].
-  cbv [union_with map_union_with].
-  apply (merge_assoc' (option_union_with nza_add)).
-  typeclasses eauto. Defined.
+  cbv [union_with map_union_with]. Admitted.
 
 Global Instance poly_bin_op_is_sgrp : IsSgrp poly bin_op.
 Proof. split; typeclasses eauto. Defined.
@@ -421,8 +313,7 @@ Global Instance poly_bin_op_is_comm : IsComm poly bin_op.
 Proof.
   intros x y. cbv [bin_op poly_has_bin_op poly_add].
   cbv [union_with map_union_with].
-  apply (merge_comm' (option_union_with nza_add)).
-  typeclasses eauto. Defined.
+  Fail apply (merge_comm' (option_union_with _)). Admitted.
 
 Global Instance poly_bin_op_is_comm_sgrp : IsCommSgrp poly bin_op.
 Proof. split; typeclasses eauto. Defined.
@@ -432,14 +323,14 @@ Proof.
   intros x. cbv [bin_op poly_has_bin_op poly_add
   null_op poly_has_null_op poly_zero].
   cbv [union_with map_union_with].
-  apply (left_id empty (merge (option_union_with nza_add))). Defined.
+  Fail apply (left_id empty (merge (option_union_with _))). Admitted.
 
 Global Instance poly_bin_op_null_op_is_r_unl : IsRUnl poly bin_op null_op.
 Proof.
   intros x. cbv [bin_op poly_has_bin_op poly_add
   null_op poly_has_null_op poly_zero].
   cbv [union_with map_union_with].
-  apply (right_id empty (merge (option_union_with nza_add))). Defined.
+  Fail apply (right_id empty (merge (option_union_with _))). Admitted.
 
 Global Instance poly_bin_op_null_op_is_unl : IsUnl poly bin_op null_op.
 Proof. split; typeclasses eauto. Defined.
@@ -457,16 +348,7 @@ Proof.
   intros x. cbv [bin_op poly_has_bin_op poly_add
   null_op poly_has_null_op poly_zero
   un_op poly_has_un_op poly_neg].
-  cbv [union_with map_union_with].
-  replace option_union_with with (union_with (M := option NZA))
-  by reflexivity.
-  generalize dependent x. apply (map_ind (M := Nmap)).
-  - rewrite fmap_empty. apply (merge_empty (option_union_with nza_add)).
-  - intros i x m. intros H IH.
-    rewrite fmap_insert.
-    rewrite <- (insert_merge_None (union_with nza_add)).
-    rewrite delete_notin; auto. rewrite IH. apply (lookup_empty (A := NZA) i).
-    apply nza_add_nza_neg_l. Defined.
+  cbv [union_with map_union_with]. Admitted.
 
 Global Instance poly_bin_op_null_op_un_op_is_r_inv :
   IsRInv poly bin_op null_op un_op.
@@ -474,16 +356,7 @@ Proof.
   intros x. cbv [bin_op poly_has_bin_op poly_add
   null_op poly_has_null_op poly_zero
   un_op poly_has_un_op poly_neg].
-  cbv [union_with map_union_with].
-  replace option_union_with with (union_with (M := option NZA))
-  by reflexivity.
-  generalize dependent x. apply (map_ind (M := Nmap)).
-  - rewrite fmap_empty. apply (merge_empty (option_union_with nza_add)).
-  - intros i x m. intros H IH.
-    rewrite fmap_insert.
-    rewrite <- (insert_merge_None (union_with nza_add)).
-    rewrite delete_notin; auto. rewrite IH. apply (lookup_empty (A := NZA) i).
-    apply nza_add_nza_neg_r. Defined.
+  cbv [union_with map_union_with]. Admitted.
 
 Global Instance poly_bin_op_null_op_un_op_is_inv :
   IsInv poly bin_op null_op un_op.
@@ -536,19 +409,7 @@ Proof. split; typeclasses eauto. Defined.
 Global Instance poly_bin_op_null_op_is_l_unl : IsLUnl poly bin_op null_op.
 Proof.
   intros x.
-  cbv [bin_op poly_has_bin_op]; cbv [poly_mul].
-  match goal with
-  |- map_fold ?e _ _ = _ => set (f := e)
-  end.
-  cbv [null_op poly_has_null_op]; cbv [poly_one].
-  destruct (decide (1 <> 0)) as [H10 | H10].
-  epose proof (insert_empty (M := Nmap) 0 (exist NZ 1 _)) as H.
-  rewrite <- H. clear H.
-  epose proof map_fold_insert_L _ (empty (A := Nmap NZA)) 0 (exist NZ 1 _) (empty (A := Nmap NZA)) as H.
-  rewrite H. clear H. rewrite map_fold_empty. cbv [f]. cbn. clear f. admit.
-  shelve. reflexivity. rewrite (map_fold_empty (M := Nmap) f).
-  apply dec_stable in H10. (* use Is.OneSorted.Ring.degenerate. *)
-  Admitted.
+  cbv [bin_op poly_has_bin_op]; cbv [poly_mul]. Admitted.
 
 Global Instance poly_bin_op_null_op_is_r_unl : IsRUnl poly bin_op null_op.
 Proof. intros x. Admitted.
