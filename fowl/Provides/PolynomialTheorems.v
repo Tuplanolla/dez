@@ -79,14 +79,16 @@ Context {A : Type} `{is_ring : IsRing A} `{eq_dec : EqDecision A}.
     needlessly increase space usage. *)
 
 Definition poly_value_wf (i : N) (a : A) : Prop := bool_decide (a <> 0).
-Definition poly_wf (x : gmap N A) : Prop := map_Forall poly_value_wf x.
+Definition poly_wf (x : gmap N A) : Prop :=
+  bool_decide (map_Forall poly_value_wf x).
 Definition poly : Type := {x : gmap N A | poly_wf x}.
 
 Lemma poly_lookup_wf : forall (x : poly) (i : N),
   `x !! i <> Some 0.
 Proof.
   intros [x Wp] i. intros H.
-  pose proof map_Forall_lookup_1 poly_value_wf x i 0 Wp H as Wc.
+  pose proof Wp as Wp'. apply bool_decide_unpack in Wp'.
+  pose proof map_Forall_lookup_1 poly_value_wf x i 0 Wp' H as Wc.
   apply bool_decide_unpack in Wc. apply Wc. reflexivity. Defined.
 
 Ltac stabilize :=
@@ -122,7 +124,8 @@ Program Definition poly_add (x y : poly) : poly :=
   exist poly_wf (union_with (fun a b : A => let c := a + b in
     if decide (c <> 0) then Some c else None) (`x) (`y)) _.
 Next Obligation.
-  intros x y i a H. apply bool_decide_pack. intros Ha. subst a.
+  intros x y. apply bool_decide_pack.
+  intros i a H. apply bool_decide_pack. intros Ha. subst a.
   apply lookup_union_with_Some in H. cbn in H.
   destruct H as [[Hx Hy] | [[Hx Hy] | [a [b [Hx [Hy Hxy]]]]]].
   - apply (poly_lookup_wf x i Hx).
@@ -138,6 +141,7 @@ Next Obligation.
 
 Program Definition poly_zero : poly := exist poly_wf empty _.
 Next Obligation.
+  apply bool_decide_pack.
   intros i a H. apply bool_decide_pack. intros Ha. subst a.
   apply lookup_empty_Some in H.
   destruct H. Defined.
@@ -150,7 +154,8 @@ Next Obligation.
 Program Definition poly_neg (x : poly) : poly :=
   exist poly_wf (neg <$> `x) _.
 Next Obligation with conversions.
-  intros x i a H. apply bool_decide_pack. intros Ha. subst a.
+  intros x. apply bool_decide_pack.
+  intros i a H. apply bool_decide_pack. intros Ha. subst a.
   rewrite lookup_fmap in H.
   pose proof fmap_Some_1 _ _ _ H as H'.
   destruct H' as [a [Hx Hy]].
@@ -173,7 +178,8 @@ Program Definition poly_mul (x y : poly) : poly :=
     (summation <$> map_pullback (K := N * N) (L := N)
       (uncurry add) (uncurry mul <$> map_free_prod (`x) (`y)))) _.
 Next Obligation.
-  intros x y i a H. apply bool_decide_pack. intros Ha. subst a.
+  intros x y. apply bool_decide_pack.
+  intros i a H. apply bool_decide_pack. intros Ha. subst a.
   apply map_filter_lookup_Some in H.
   destruct H as [H Wc].
   apply bool_decide_unpack in Wc. apply Wc. reflexivity. Defined.
@@ -186,6 +192,7 @@ Next Obligation.
 Program Definition poly_one : poly :=
   exist poly_wf (if decide (1 <> 0) then singletonM 0 1 else empty) _.
 Next Obligation.
+  apply bool_decide_pack.
   intros i a H. apply bool_decide_pack. intros Ha. subst a.
   destruct (decide (1 <> 0)) as [F10 | F10]; stabilize.
   - rewrite lookup_singleton_ne in H.
@@ -207,7 +214,8 @@ Next Obligation.
 Program Definition poly_l_act (a : A) (x : poly) : poly :=
   exist poly_wf (filter (uncurry poly_value_wf) (mul a <$> `x)) _.
 Next Obligation with conversions.
-  intros a x i b H. apply bool_decide_pack. intros Hb. subst b.
+  intros a x. apply bool_decide_pack.
+  intros i b H. apply bool_decide_pack. intros Hb. subst b.
   apply map_filter_lookup_Some in H.
   destruct H as [H Wc].
   apply bool_decide_unpack in Wc. apply Wc. reflexivity. Defined.
@@ -222,7 +230,8 @@ Next Obligation with conversions.
 Program Definition poly_r_act (x : poly) (a : A) : poly :=
   exist poly_wf (filter (uncurry poly_value_wf) (flip mul a <$> `x)) _.
 Next Obligation with conversions.
-  intros a x i b H. apply bool_decide_pack. intros Hb. subst b.
+  intros a x. apply bool_decide_pack.
+  intros i b H. apply bool_decide_pack. intros Hb. subst b.
   apply map_filter_lookup_Some in H.
   destruct H as [H Wc].
   apply bool_decide_unpack in Wc. apply Wc. reflexivity. Defined.
@@ -293,6 +302,11 @@ Ltac conversions := typeclasses
   convert bin_op into (mul (A := A)) and
   null_op into (one (A := A)).
 
+Ltac stabilize :=
+  repeat match goal with
+  | H : ~ ?a <> ?b |- _ => apply dec_stable in H
+  end.
+
 Global Instance poly_has_bin_op : HasBinOp poly := poly_add.
 Global Instance poly_has_null_op : HasNullOp poly := poly_zero.
 Global Instance poly_has_un_op : HasUnOp poly := poly_neg.
@@ -301,10 +315,51 @@ Global Instance poly_bin_op_is_mag : IsMag poly bin_op.
 Proof. Defined.
 
 Global Instance poly_bin_op_is_assoc : IsAssoc poly bin_op.
-Proof.
+Proof with conversions.
   intros x y z.
-  cbv [bin_op poly_has_bin_op poly_add].
-  cbv [union_with map_union_with]. Admitted.
+  cbv [bin_op poly_has_bin_op poly_add]. cbn.
+  apply sig_eq_pi; [typeclasses eauto |]. cbn.
+  cbv [union_with map_union_with].
+  match goal with
+  |- merge ?e _ _ = merge ?e _ _ => set (f := e)
+  end.
+  apply (merge_assoc f).
+  intros i.
+  destruct (`x !! i) as [a |] eqn : Dx,
+  (`y !! i) as [b |] eqn : Dy, (`z !! i) as [c |] eqn : Dz; try (
+    cbv [f]; replace option_union_with with (union_with (M := option A));
+    repeat (rewrite union_with_left_id || rewrite union_with_right_id);
+    reflexivity).
+  cbv [f].
+  cbv [union_with option_union_with].
+  destruct (decide (a + b <> 0)) as [Fab | Fab],
+  (decide (b + c <> 0)) as [Fbc | Fbc]; stabilize; cbn.
+  - destruct (decide (a + (b + c) <> 0)) as [Fa_bc | Fa_bc],
+    (decide ((a + b) + c <> 0)) as [Fab_c | Fab_c]; stabilize; cbn.
+    + f_equal. rewrite assoc... reflexivity.
+    + exfalso. apply Fa_bc. rewrite assoc... apply Fab_c.
+    + exfalso. apply Fab_c. rewrite <- assoc... apply Fa_bc.
+    + reflexivity.
+  - destruct (decide ((a + b) + c <> 0)) as [Fab_c | Fab_c];
+    stabilize; cbn.
+    + f_equal. rewrite <- assoc... rewrite Fbc. rewrite r_unl. reflexivity.
+    + exfalso. rewrite <- assoc in Fab_c...
+      rewrite Fbc in Fab_c. rewrite r_unl in Fab_c.
+      subst a. apply (poly_lookup_wf x i). apply Dx.
+  - destruct (decide (a + (b + c) <> 0)) as [Fa_bc | Fa_bc];
+    stabilize; cbn.
+    + f_equal. rewrite assoc... rewrite Fab. rewrite l_unl. reflexivity.
+    + exfalso. rewrite assoc in Fa_bc...
+      rewrite Fab in Fa_bc. rewrite l_unl in Fa_bc.
+      subst c. apply (poly_lookup_wf z i). apply Dz.
+  - f_equal. assert (Ha : a = a + (b + - b)).
+    { rewrite r_inv. rewrite r_unl. reflexivity. }
+    assert (Hc : c = (- b + b) + c).
+    { rewrite l_inv. rewrite l_unl. reflexivity. }
+    rewrite Ha. rewrite assoc...
+    rewrite Fab. rewrite l_unl.
+    rewrite Hc. rewrite <- assoc...
+    rewrite Fbc. rewrite r_unl. reflexivity. Defined.
 
 Global Instance poly_bin_op_is_sgrp : IsSgrp poly bin_op.
 Proof. split; typeclasses eauto. Defined.
