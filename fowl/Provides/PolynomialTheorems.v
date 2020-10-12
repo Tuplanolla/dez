@@ -2,7 +2,7 @@
 From Coq Require Import
   ZArith.ZArith.
 From stdpp Require Import
-  option fin_maps gmap pmap nmap.
+  option finite fin_maps gmap pmap nmap.
 From Maniunfold.Has Require Export
   OneSorted.Enumeration OneSorted.Cardinality TwoSorted.Isomorphism.
 From Maniunfold.Is Require Export
@@ -48,6 +48,48 @@ Definition codom_partial_alter {K A M : Type} `{PartialAlter K A M}
   (f : A -> option A) (i : K) (m : M) : M :=
   partial_alter (fun x : option A => mbind f x) i m.
 
+(** Pullback of a finite map along a key altering function. *)
+
+Definition map_pullback {K L A MK ML : Type}
+  `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L A ML}
+  (f : K -> L) (x : MK) : ML :=
+  map_fold (fun (i : K) (x : A) (y : ML) =>
+    partial_alter (fun y : option A => Some x) (f i) y) empty x.
+
+Definition map_pullback_free {K L A MK ML : Type}
+  `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
+  (f : K -> L) (x : MK) : ML :=
+  map_fold (fun (i : K) (x : A) (y : ML) =>
+    partial_alter (fun y : option (list A) =>
+      Some (x :: default [] y)) (f i) y) empty x.
+
+(** The order should be unspecified. *)
+
+Lemma map_pullbacks {K L A MK ML : Type}
+  `{FinMapToList K A MK} `{Empty ML}
+  `{PartialAlter L A ML} `{PartialAlter L (list A) ML}
+  `{FMap (const MK)} `{FMap (const ML)}
+  (f : K -> L) (x : MK) :
+  Some (A := A) <$> map_pullback f x = hd_error <$> map_pullback_free f x.
+Proof. Admitted.
+
+Lemma map_Forall_pullback {K L A MK ML : Type} {P : L -> A -> Prop}
+  `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
+  `{Lookup K A MK} `{Lookup L (list A) ML}
+  (f : K -> L) (x : MK) :
+  map_Forall (fun (i : K) (a : A) => P (f i) a) x <->
+  map_Forall (fun (i : L) (a : list A) => Forall (P i) a)
+  (map_pullback_free (MK := MK) (ML := ML) f x).
+Proof. Admitted.
+
+Lemma map_Forall_pullback' {K L A MK ML : Type} {P : A -> Prop}
+  `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
+  `{Lookup K A MK} `{Lookup L (list A) ML}
+  (f : K -> L) (x : MK) :
+  map_Forall (const P) x <->
+  map_Forall (const (Forall P)) (map_pullback_free (MK := MK) (ML := ML) f x).
+Proof. exact (map_Forall_pullback f x). Defined.
+
 (** Free product of two finite maps along their keys. *)
 
 Definition map_free_prod {KA KB A B MA MB MAB : Type}
@@ -58,14 +100,55 @@ Definition map_free_prod {KA KB A B MA MB MAB : Type}
     map_fold (fun (j : KB) (b : B) (z : MAB) =>
       insert (i, j) (a, b) z) z y) empty x.
 
-(** Pullback of a finite map along a key altering function. *)
+Definition map_proj1 {KA KB A B MA MB MAB : Type}
+  `{FinMapToList (KA * KB) A MAB} `{Empty MA}
+  `{FMap (const MA)} `{PartialAlter KA A MA}
+  (x : MAB) : MA :=
+  @fst A B <$> map_pullback fst x.
 
-Definition map_pullback {K L A MK ML : Type}
-  `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
-  (f : K -> L) (x : MK) : ML :=
-  map_fold (fun (i : K) (x : A) (y : ML) =>
-    partial_alter (fun y : option (list A) =>
-      Some (x :: default [] y)) (f i) y) empty x.
+Definition map_proj1' {KA KB A B MA MB MAB : Type}
+  `{FinMapToList (KA * KB) A MAB} `{Empty MA}
+  `{FMap (const MAB)} `{PartialAlter KA A MA}
+  (x : MAB) : MA :=
+  map_pullback fst (@fst A B <$> x).
+
+Lemma map_free_prod_1 {KA KB A B MA MB MAB : Type}
+  `{FinMapToList KA A MA} `{FinMapToList KB B MB}
+  `{FinMapToList (KA * KB) A MAB}
+  `{Empty MA} `{Empty MAB} `{Insert (KA * KB) (A * B) MAB}
+  `{FMap (const MA)} `{PartialAlter KA A MA}
+  (x : MA) (y : MB) :
+  map_proj1 (B := B) (MB := MB) (map_free_prod x y) = x.
+Proof. Admitted.
+
+(** If we wish to state that [map_free_prod] is associative,
+    we need to transport one side of the equation via [assoc] on [prod].
+    However, inhabiting this instance of [assoc] requires univalence.
+    We could also express the property pointwise,
+    but that still requires pointwise transport with [fmap].
+    More generally, [map_free_prod] is free,
+    so it commutes with all the obvious things. *)
+
+Definition prod_bimap {A0 B0 A1 B1 : Type}
+  (f0 : A0 -> B0) (f1 : A1 -> B1) (x : A0 * A1) : B0 * B1 := (f0 x.1, f1 x.2).
+
+Lemma map_free_prod_fmap {KA KB A B MA MB MAB A' B' MA' MB' MAB' : Type}
+  `{FinMapToList KA A MA} `{FinMapToList KB B MB}
+  `{Empty MAB} `{Insert (KA * KB) (A * B) MAB}
+  `{FMap (const MA)} `{FMap (const MB)} `{FMap (const MAB)}
+  (f : A -> A') (g : B -> B') (x : MA) (y : MB) :
+  prod_bimap f g <$> map_free_prod x y = map_free_prod (f <$> x) (g <$> y).
+Proof. Admitted.
+
+(** A finite map is equivalent to a function with finite support.
+    Almost, at least. We also need an upper bound for the largest key. *)
+
+Definition almost_maplike {K A : Type} `{HasZero A} : Type :=
+  {f : K -> A | exists `(Finite J), forall project : J -> K,
+    forall i : K, ~ (exists j : J, project j = i) -> f i = zero}.
+
+Definition actually_maplike {K A : Type} `{Finite K} `{HasZero A} : Type :=
+  K -> A.
 
 Section Context.
 
@@ -175,7 +258,7 @@ Definition summation (as' : list A) : A := foldr add 0 as'.
 
 Program Definition poly_mul (x y : poly) : poly :=
   exist poly_wf (filter (uncurry poly_value_wf)
-    (summation <$> map_pullback (K := N * N) (L := N)
+    (summation <$> map_pullback_free (K := N * N) (L := N)
       (uncurry add) (uncurry mul <$> map_free_prod (`x) (`y)))) _.
 Next Obligation.
   intros x y. apply bool_decide_pack.
@@ -365,10 +448,25 @@ Global Instance poly_bin_op_is_sgrp : IsSgrp poly bin_op.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_is_comm : IsComm poly bin_op.
-Proof.
+Proof with conversions.
   intros x y. cbv [bin_op poly_has_bin_op poly_add].
   cbv [union_with map_union_with].
-  Fail apply (merge_comm' (option_union_with _)). Admitted.
+  apply sig_eq_pi; [typeclasses eauto |]. cbn.
+  match goal with
+  |- merge ?e _ _ = merge ?e _ _ => set (f := e)
+  end.
+  apply (merge_comm f).
+  intros i.
+  destruct (`x !! i) as [a |] eqn : Dx,
+  (`y !! i) as [b |] eqn : Dy; try reflexivity.
+  cbv [f].
+  cbv [union_with option_union_with].
+  destruct (decide (a + b <> 0)) as [Fab | Fab],
+  (decide (b + a <> 0)) as [Fba | Fba]; stabilize; cbn.
+  - f_equal. rewrite comm... reflexivity.
+  - exfalso. apply Fab. rewrite comm... apply Fba.
+  - exfalso. apply Fba. rewrite comm... apply Fab.
+  - reflexivity. Defined.
 
 Global Instance poly_bin_op_is_comm_sgrp : IsCommSgrp poly bin_op.
 Proof. split; typeclasses eauto. Defined.
@@ -440,6 +538,18 @@ Context {A : Type} `{is_ring : IsRing A} `{eq_dec : EqDecision A}.
 
 Let poly := poly (A := A).
 
+Ltac conversions := typeclasses
+  convert bin_op into (add (A := poly)) and
+  null_op into (zero (A := poly)) and
+  un_op into (neg (A := poly)) or
+  convert bin_op into (mul (A := poly)) and
+  null_op into (one (A := poly)) or
+  convert bin_op into (add (A := A)) and
+  null_op into (zero (A := A)) and
+  un_op into (neg (A := A)) or
+  convert bin_op into (mul (A := A)) and
+  null_op into (one (A := A)).
+
 Global Instance poly_has_bin_op : HasBinOp poly := poly_mul.
 Global Instance poly_has_null_op : HasNullOp poly := poly_one.
 
@@ -447,7 +557,17 @@ Global Instance poly_bin_op_is_mag : IsMag poly bin_op.
 Proof. Defined.
 
 Global Instance poly_bin_op_is_assoc : IsAssoc poly bin_op.
-Proof. intros x y z. Admitted.
+Proof with conversions.
+  intros x y z.
+  cbv [bin_op poly_has_bin_op poly_mul]. cbn.
+  apply sig_eq_pi; [typeclasses eauto |]. cbn.
+  set (f (x y : gmap N A) :=
+    filter (uncurry poly_value_wf)
+    (summation <$>
+      map_pullback_free (K := N * N) (L := N) (uncurry add)
+        (uncurry mul <$>
+          map_free_prod x y)) : gmap N A).
+  enough (f (`x) (f (`y) (`z)) = f (f (`x) (`y)) (`z)) by assumption. Admitted.
 
 Global Instance poly_bin_op_is_sgrp : IsSgrp poly bin_op.
 Proof. split; typeclasses eauto. Defined.
