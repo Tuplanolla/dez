@@ -52,16 +52,16 @@ Definition codom_partial_alter {K A M : Type} `{PartialAlter K A M}
 
 Definition map_pullback {K L A MK ML : Type}
   `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L A ML}
-  (f : K -> L) (x : MK) : ML :=
+  (p : K -> L) (x : MK) : ML :=
   map_fold (fun (i : K) (x : A) (y : ML) =>
-    partial_alter (fun y : option A => Some x) (f i) y) empty x.
+    partial_alter (fun y : option A => Some x) (p i) y) empty x.
 
-Definition map_pullback_free {K L A MK ML : Type}
+Definition map_free_pullback {K L A MK ML : Type}
   `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
-  (f : K -> L) (x : MK) : ML :=
+  (p : K -> L) (x : MK) : ML :=
   map_fold (fun (i : K) (x : A) (y : ML) =>
     partial_alter (fun y : option (list A) =>
-      Some (x :: default [] y)) (f i) y) empty x.
+      Some (x :: default [] y)) (p i) y) empty x.
 
 (** The order should be unspecified. *)
 
@@ -69,26 +69,41 @@ Lemma map_pullbacks {K L A MK ML : Type}
   `{FinMapToList K A MK} `{Empty ML}
   `{PartialAlter L A ML} `{PartialAlter L (list A) ML}
   `{FMap (const MK)} `{FMap (const ML)}
-  (f : K -> L) (x : MK) :
-  Some (A := A) <$> map_pullback f x = hd_error <$> map_pullback_free f x.
+  (p : K -> L) (x : MK) :
+  Some (A := A) <$> map_pullback p x = hd_error <$> map_free_pullback p x.
+Proof. Admitted.
+
+Lemma map_pullback_fmap {K L A B MK ML : Type}
+  `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L A ML}
+  `{FMap (const MK)} `{FMap (const ML)}
+  (p : K -> L) (f : A -> B) (x : MK) :
+  f <$> map_pullback p x = map_pullback p (f <$> x).
+Proof. cbv [map_pullback]. Admitted.
+
+Lemma map_free_pullback_fmap {K L A B MK ML : Type} {P : L -> A -> Prop}
+  `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
+  `{Lookup K A MK} `{Lookup L (list A) ML}
+  `{FMap (const MK)} `{FMap (const ML)}
+  (p : K -> L) (f : A -> B) (x : MK) :
+  fmap f <$> map_free_pullback p x = map_free_pullback p (f <$> x).
 Proof. Admitted.
 
 Lemma map_Forall_pullback {K L A MK ML : Type} {P : L -> A -> Prop}
   `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
   `{Lookup K A MK} `{Lookup L (list A) ML}
-  (f : K -> L) (x : MK) :
-  map_Forall (fun (i : K) (a : A) => P (f i) a) x <->
+  (p : K -> L) (x : MK) :
+  map_Forall (fun (i : K) (a : A) => P (p i) a) x <->
   map_Forall (fun (i : L) (a : list A) => Forall (P i) a)
-  (map_pullback_free (MK := MK) (ML := ML) f x).
+  (map_free_pullback (MK := MK) (ML := ML) p x).
 Proof. Admitted.
 
-Lemma map_Forall_pullback' {K L A MK ML : Type} {P : A -> Prop}
+Lemma map_Forall_pullback_const {K L A MK ML : Type} {P : A -> Prop}
   `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
   `{Lookup K A MK} `{Lookup L (list A) ML}
-  (f : K -> L) (x : MK) :
+  (p : K -> L) (x : MK) :
   map_Forall (const P) x <->
-  map_Forall (const (Forall P)) (map_pullback_free (MK := MK) (ML := ML) f x).
-Proof. exact (map_Forall_pullback f x). Defined.
+  map_Forall (const (Forall P)) (map_free_pullback (MK := MK) (ML := ML) p x).
+Proof. exact (map_Forall_pullback p x). Defined.
 
 (** Free product of two finite maps along their keys. *)
 
@@ -129,16 +144,28 @@ Proof. Admitted.
     More generally, [map_free_prod] is free,
     so it commutes with all the obvious things. *)
 
-Definition prod_bimap {A0 B0 A1 B1 : Type}
-  (f0 : A0 -> B0) (f1 : A1 -> B1) (x : A0 * A1) : B0 * B1 := (f0 x.1, f1 x.2).
-
 Lemma map_free_prod_fmap {KA KB A B MA MB MAB A' B' MA' MB' MAB' : Type}
   `{FinMapToList KA A MA} `{FinMapToList KB B MB}
   `{Empty MAB} `{Insert (KA * KB) (A * B) MAB}
   `{FMap (const MA)} `{FMap (const MB)} `{FMap (const MAB)}
   (f : A -> A') (g : B -> B') (x : MA) (y : MB) :
-  prod_bimap f g <$> map_free_prod x y = map_free_prod (f <$> x) (g <$> y).
+  prod_map f g <$> map_free_prod x y = map_free_prod (f <$> x) (g <$> y).
 Proof. Admitted.
+
+Check let map_pullback_prod_flip {KA KB KC A B C MA MB : Type}
+  (p : KA -> KB -> KC) (f : A -> B -> C) (x : MA) (y : MB) :=
+  map_free_pullback (K := KA * KB) (L := KC) (A := C)
+  (uncurry p) (uncurry f <$> map_free_prod x y) =
+  map_free_pullback (K := KB * KA) (L := KC) (A := C)
+  (uncurry (flip p)) (uncurry (flip f) <$> map_free_prod y x) in
+  map_pullback_prod_flip.
+
+Lemma filter_fmap {A B : Type} {M : Type -> Type}
+  `{FMap M} `{Filter A (M A)} `{Filter B (M B)}
+  (P : A -> Prop) `{forall x : A, Decision (P x)}
+  (f : B -> A) `{forall x : B, Decision (compose P f x)} (xs : M B) :
+  filter P (f <$> xs) = f <$> filter (compose P f) xs.
+Proof. Abort.
 
 (** A finite map is equivalent to a function with finite support.
     Almost, at least. We also need an upper bound for the largest key. *)
@@ -258,7 +285,7 @@ Definition summation (as' : list A) : A := foldr add 0 as'.
 
 Program Definition poly_mul (x y : poly) : poly :=
   exist poly_wf (filter (uncurry poly_value_wf)
-    (summation <$> map_pullback_free (K := N * N) (L := N)
+    (summation <$> map_free_pullback (K := N * N) (L := N)
       (uncurry add) (uncurry mul <$> map_free_prod (`x) (`y)))) _.
 Next Obligation.
   intros x y. apply bool_decide_pack.
@@ -561,13 +588,21 @@ Proof with conversions.
   intros x y z.
   cbv [bin_op poly_has_bin_op poly_mul]. cbn.
   apply sig_eq_pi; [typeclasses eauto |]. cbn.
+  match goal with
+  |- filter ?e _ = filter ?e _ => set (P := e)
+  end.
   set (f (x y : gmap N A) :=
-    filter (uncurry poly_value_wf)
+    filter P
     (summation <$>
-      map_pullback_free (K := N * N) (L := N) (uncurry add)
+      map_free_pullback (K := N * N) (L := N) (uncurry add)
         (uncurry mul <$>
           map_free_prod x y)) : gmap N A).
-  enough (f (`x) (f (`y) (`z)) = f (f (`x) (`y)) (`z)) by assumption. Admitted.
+  enough (f (`x) (f (`y) (`z)) = f (f (`x) (`y)) (`z)) by assumption.
+  destruct x as [m Wm]. cbn.
+  generalize dependent m.
+  apply (map_ind (fun m : gmap N A => poly_wf m → f m (f (`y) (`z)) = f (f m (`y)) (`z))).
+  - intros W. cbv [f]. reflexivity.
+  - intros i x m H IH W. cbv [f]. Admitted.
 
 Global Instance poly_bin_op_is_sgrp : IsSgrp poly bin_op.
 Proof. split; typeclasses eauto. Defined.
@@ -576,6 +611,7 @@ Global Instance poly_bin_op_is_comm : IsComm poly bin_op.
 Proof.
   intros x y.
   cbv [bin_op poly_has_bin_op]; cbv [poly_mul].
+  apply sig_eq_pi; [typeclasses eauto |]. cbn.
   generalize dependent x. Admitted.
 
 Global Instance poly_bin_op_is_comm_sgrp : IsCommSgrp poly bin_op.
