@@ -5,11 +5,11 @@ From Coq Require Import
 From Maniunfold.Offers Require Export
   IntegerOperations.
 From Maniunfold.Provides Require Export
-  ZTheorems.
+  ZTheorems PolynomialTheorems.
 From Maniunfold.ShouldOffer Require Import
   OneSorted.ArithmeticNotations OneSorted.ArithmeticOperationNotations.
 
 Extraction Language OCaml.
 Cd "gen-ocaml".
 Extraction Blacklist Nat.
-Recursive Extraction Library ZTheorems.
+Recursive Extraction Library PolynomialTheorems.

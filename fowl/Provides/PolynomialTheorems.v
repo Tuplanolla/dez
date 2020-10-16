@@ -642,6 +642,8 @@ End Multiplicative.
 Import OneSorted.ArithmeticNotations.
 Import OneSorted.ArithmeticOperationNotations.
 
+Import OneSorted.Graded.ArithmeticNotations.
+
 Section Context.
 
 Context {A : Type} `{is_ring : IsRing A} `{eq_dec : EqDecision A}.
@@ -704,10 +706,51 @@ Global Instance poly_add_zero_neg_mul_one_is_comm_ring :
   IsCommRing poly add zero neg mul one.
 Proof. split; typeclasses eauto. Defined.
 
+Definition poly_grd (i : N) : Type := A.
+
+Global Instance poly_has_grd_mul : HasGrdMul poly_grd := fun i j : N => mul.
+Global Instance poly_has_grd_one : HasGrdOne poly_grd := one.
+
+Global Instance poly_is_grd_assoc :
+  IsGrdAssoc poly_grd (A_has_bin_op := Additive.N_has_bin_op) grd_mul.
+Proof.
+  esplit. intros i j k x y z. cbv [poly_grd]. rewrite rew_const.
+  cbv [grd_bin_op grd_mul poly_has_grd_mul]. apply assoc. Defined.
+
+Global Instance poly_is_grd_l_unl :
+  IsGrdLUnl poly_grd (A_has_bin_op := Additive.N_has_bin_op)
+  (A_has_null_op := Additive.N_has_null_op) grd_mul grd_one.
+Proof.
+  esplit. intros i x. cbv [poly_grd]. rewrite rew_const.
+  cbv [grd_bin_op grd_mul poly_has_grd_mul
+    grd_null_op grd_one poly_has_grd_one]. apply l_unl. Defined.
+
+Global Instance poly_is_grd_r_unl :
+  IsGrdRUnl poly_grd (A_has_bin_op := Additive.N_has_bin_op)
+  (A_has_null_op := Additive.N_has_null_op) grd_mul grd_one.
+Proof.
+  esplit. intros i x. cbv [poly_grd]. rewrite rew_const.
+  cbv [grd_bin_op grd_mul poly_has_grd_mul
+    grd_null_op grd_one poly_has_grd_one]. apply r_unl. Defined.
+
+Global Instance poly_is_grd_l_distr :
+  IsGrdLDistr poly_grd (fun i : N => add) grd_mul.
+Proof.
+  intros i j x y z. cbv [grd_mul poly_has_grd_mul]. apply l_distr. Defined.
+
+Global Instance poly_is_grd_r_distr :
+  IsGrdRDistr poly_grd (fun i : N => add) grd_mul.
+Proof.
+  intros i j x y z. cbv [grd_mul poly_has_grd_mul]. apply r_distr. Defined.
+
+Global Instance poly_is_grd_distr :
+  IsGrdDistr poly_grd (fun i : N => add) grd_mul.
+Proof. split; try typeclasses eauto. Defined.
+
 Global Instance poly_is_grd_ring : IsGrdRing (fun i : N => A)
   (fun i : N => add) (fun i : N => zero) (fun i : N => neg)
   (fun i j : N => mul) one.
-Proof. repeat split. Abort.
+Proof. split; try typeclasses eauto. Admitted.
 
 Global Instance add_zero_neg_mul_one_is_alg :
   IsAlg A poly add zero neg mul one add zero neg mul l_act r_act.
