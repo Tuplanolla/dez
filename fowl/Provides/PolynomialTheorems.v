@@ -48,7 +48,14 @@ Definition codom_partial_alter {K A M : Type} `{PartialAlter K A M}
   (f : A -> option A) (i : K) (m : M) : M :=
   partial_alter (fun x : option A => mbind f x) i m.
 
-(** Pullback of a finite map along a key altering function. *)
+(** Indexed mapping. *)
+
+Definition map_imap {K A B MA MB : Type}
+  `{FinMapToList K A MA} `{Insert K B MB} `{Empty MB}
+  (f : K -> A -> B) (m : MA) : MB :=
+  map_fold (fun (k : K) (a : A) => insert k (f k a)) empty m.
+
+(** Not a pullback of a finite map along a key altering function. *)
 
 Definition map_pullback {K L A MK ML : Type}
   `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L A ML}
@@ -180,6 +187,28 @@ Definition actually_maplike {K A : Type} `{Finite K} `{HasZero A} : Type :=
 Section Context.
 
 Import OneSorted.ArithmeticNotations.
+
+Definition map_sum {K A M : Type}
+  `{FinMapToList K A M} `{HasAdd A} `{HasZero A}
+  (m : M) : A := map_fold (const add) 0 m.
+
+Definition map_product {K A M : Type}
+  `{FinMapToList K A M} `{HasMul A} `{HasOne A}
+  (m : M) : A := map_fold (const mul) 1 m.
+
+Definition list_sum {A : Type}
+  `{HasAdd A} `{HasZero A}
+  (l : list A) : A := foldr add 0 l.
+
+Definition list_product {A : Type}
+  `{HasMul A} `{HasOne A}
+  (l : list A) : A := foldr mul 1 l.
+
+End Context.
+
+Section Context.
+
+Import OneSorted.ArithmeticNotations.
 Import OneSorted.ArithmeticOperationNotations.
 
 Context {A : Type} `{is_ring : IsRing A} `{eq_dec : EqDecision A}.
@@ -188,10 +217,10 @@ Context {A : Type} `{is_ring : IsRing A} `{eq_dec : EqDecision A}.
     because they would break definitional equality and
     needlessly increase space usage. *)
 
-Definition poly_value_wf (i : N) (a : A) : Prop := bool_decide (a <> 0).
-Definition poly_wf (x : gmap N A) : Prop :=
-  bool_decide (map_Forall poly_value_wf x).
-Definition poly : Type := {x : gmap N A | poly_wf x}.
+Definition poly_value_wf (n : N) (a : A) : Prop := bool_decide (a <> 0).
+Definition poly_wf (m : gmap N A) : Prop :=
+  bool_decide (map_Forall poly_value_wf m).
+Definition poly : Type := {m : gmap N A | poly_wf m}.
 
 Lemma poly_lookup_wf : forall (x : poly) (i : N),
   `x !! i <> Some 0.
@@ -218,8 +247,10 @@ Ltac conversions := typeclasses
   convert bin_op into (mul (A := A)) and
   null_op into (one (A := A)).
 
-Definition poly_eval (x : poly) (a : A) : A :=
-  map_fold (fun (i : N) (b : A) (c : A) => c + b * (a ^ i)%N) 0 (`x).
+Definition poly_value_eval (x : A) (n : N) (a : A) : A := a * (x ^ n)%N.
+
+Definition poly_eval (p : poly) (x : A) : A :=
+  map_sum (map_imap (MB := gmap N A) (poly_value_eval x) (`p)).
 
 (** Addition of polynomials.
 
@@ -281,12 +312,10 @@ Next Obligation with conversions.
     because it is possible that $z_q = 0$ for some $q$,
     as was the case with $x + y$. *)
 
-Definition summation (as' : list A) : A := foldr add 0 as'.
-
 Program Definition poly_mul (x y : poly) : poly :=
   exist poly_wf (filter (uncurry poly_value_wf)
-    (summation <$> map_free_pullback (K := N * N) (L := N)
-      (uncurry add) (uncurry mul <$> map_free_prod (`x) (`y)))) _.
+    (list_sum <$> map_free_pullback (uncurry add (A := N))
+      (uncurry mul <$> map_free_prod (`x) (`y)))) _.
 Next Obligation.
   intros x y. apply bool_decide_pack.
   intros i a H. apply bool_decide_pack. intros Ha. subst a.
