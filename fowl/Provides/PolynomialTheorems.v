@@ -55,6 +55,25 @@ Definition map_imap {K A B MA MB : Type}
   (f : K -> A -> B) (m : MA) : MB :=
   map_fold (fun (k : K) (a : A) => insert k (f k a)) empty m.
 
+Section Context.
+
+Context `{FinMap K M}.
+
+Lemma map_imap_empty {A B : Type} (f : K -> A -> B) :
+  map_imap (MA := M A) (MB := M B) f empty = empty.
+Proof with auto.
+  cbv [map_imap]. rewrite map_fold_empty... Qed.
+
+Lemma map_imap_singleton {A B : Type} (f : K -> A -> B) (k : K) (a : A) :
+  map_imap (MA := M A) (MB := M B) f (singletonM k a) = singletonM k (f k a).
+Proof with auto.
+  cbv [map_imap]. do 2 rewrite <- insert_empty. rewrite map_fold_insert_L.
+  - rewrite map_fold_empty...
+  - intros. rewrite insert_commute...
+  - rewrite lookup_empty... Qed.
+
+End Context.
+
 (** Not a pullback of a finite map along a key altering function. *)
 
 Definition map_pullback {K L A MK ML : Type}
@@ -622,7 +641,7 @@ Proof with conversions.
   end.
   set (f (x y : gmap N A) :=
     filter P
-    (summation <$>
+    (list_sum <$>
       map_free_pullback (K := N * N) (L := N) (uncurry add)
         (uncurry mul <$>
           map_free_prod x y)) : gmap N A).
@@ -670,8 +689,6 @@ End Multiplicative.
 
 Import OneSorted.ArithmeticNotations.
 Import OneSorted.ArithmeticOperationNotations.
-
-Import OneSorted.Graded.ArithmeticNotations.
 
 Section Context.
 
@@ -734,6 +751,47 @@ Proof. intros x y. Admitted.
 Global Instance poly_add_zero_neg_mul_one_is_comm_ring :
   IsCommRing poly add zero neg mul one.
 Proof. split; typeclasses eauto. Defined.
+
+(** We can now prove that the evaluation map is a homomorphism. *)
+
+Lemma poly_eval_add : forall (p q : poly) (x : A),
+  poly_eval (p + q) x = poly_eval p x + poly_eval q x.
+Proof with conversions.
+  intros p q x. etransitivity. cbv [add]. reflexivity.
+  cbv [poly_has_add poly_add poly_eval]. cbn. Admitted.
+
+Lemma poly_eval_zero : forall x : A,
+  poly_eval 0 x = 0.
+Proof with conversions.
+  intros x. etransitivity. cbv [zero]. reflexivity.
+  cbv [poly_has_zero poly_zero poly_eval]. cbn.
+  rewrite map_imap_empty. reflexivity. Defined.
+
+Lemma poly_eval_neg : forall (p : poly) (x : A),
+  poly_eval (- p) x = - poly_eval p x.
+Proof with conversions. Admitted.
+
+Lemma poly_eval_mul : forall (p q : poly) (x : A),
+  poly_eval (p * q) x = poly_eval p x * poly_eval q x.
+Proof with conversions. Admitted.
+
+Lemma poly_eval_one : forall x : A,
+  poly_eval 1 x = 1.
+Proof with conversions.
+  intros x. etransitivity. cbv [one]. reflexivity.
+  cbv [poly_has_one poly_one poly_eval]. cbn.
+  destruct (decide (1 <> 0)) as [F10 | F10].
+  - rewrite map_imap_singleton.
+    cbv [map_sum]. rewrite <- insert_empty. rewrite map_fold_insert_L.
+    + cbn. rewrite map_fold_empty. rewrite r_unl. cbv [poly_value_eval].
+      rewrite l_unl. reflexivity.
+    + cbn. intros ? ? a b c **. rewrite assoc... rewrite (comm a b)...
+      rewrite <- assoc... reflexivity.
+    + rewrite lookup_empty. reflexivity.
+  - apply dec_stable in F10. rewrite F10.
+    rewrite map_imap_empty. reflexivity. Defined.
+
+Import OneSorted.Graded.ArithmeticNotations.
 
 Definition poly_grd (i : N) : Type := A.
 
