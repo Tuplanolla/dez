@@ -3,15 +3,17 @@
 
 Global Set Warnings "-notation-overridden".
 
-(** We turn automatically inferred [Implicit Arguments] off,
-    but make them maximally inserted and conservatively detected
-    in case they are turned on in some local context. *)
+(** We turn on automatically inferred implicit arguments and
+    make them maximally inserted and conservatively detected,
+    since most type classes follow the same design pattern. *)
 
-Set Maximal Implicit Insertion.
-Set Strict Implicit.
-Set Strongly Strict Implicit.
-Unset Contextual Implicit.
-Unset Reversible Pattern Implicit.
+(* TODO Main screen turn on. *)
+Global Unset Implicit Arguments.
+Global Set Maximal Implicit Insertion.
+Global Set Strict Implicit.
+Global Set Strongly Strict Implicit.
+Global Unset Contextual Implicit.
+Global Unset Reversible Pattern Implicit.
 
 (** We disable universe polymorphism until we really need it,
     because it is experimental and
@@ -109,7 +111,7 @@ Arguments sigT_uncurry {_ _ _} _ _ _ /.
 Arguments sigT_curry {_ _ _} _ !_.
 
 (** We only use obligations to define local lemmas,
-    which is why we do not want to see them in [Search] results. *)
+    which is why we do not want to see them in search results. *)
 
 Add Search Blacklist "_obligation_".
 
