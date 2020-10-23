@@ -7,6 +7,6 @@ From Maniunfold.ShouldHave Require Import
 
 Class IsScat (A : Type) `{HasHom A}
   `(HasComp A) : Prop := {
-  A_comp_is_cat_assoc :> IsCatAssoc A comp;
-  A_comp_is_magd :> IsMagd A comp;
+  A_comp_is_cat_assoc :> IsCatAssoc comp;
+  A_comp_is_magd :> IsMagd comp;
 }.

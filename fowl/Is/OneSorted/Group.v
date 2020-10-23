@@ -12,8 +12,8 @@ From Maniunfold.ShouldHave Require Import
 
 Class IsGrp (A : Type) `(HasBinOp A)
   `(HasNullOp A) `(HasUnOp A) : Prop := {
-  A_bin_op_null_op_is_mon :> IsMon A bin_op null_op;
-  A_bin_op_null_op_un_op_is_inv :> IsInv A bin_op null_op un_op;
+  A_bin_op_null_op_is_mon :> IsMon bin_op null_op;
+  A_bin_op_null_op_un_op_is_inv :> IsInv bin_op null_op un_op;
 }.
 
 Section Context.
@@ -33,7 +33,7 @@ Proof.
   rewrite (l_unl y).
   reflexivity. Defined.
 
-Global Instance A_bin_op_is_l_cancel : IsLCancel A bin_op.
+Global Instance A_bin_op_is_l_cancel : IsLCancel (bin_op (A := A)).
 Proof. intros x y z. apply A_bin_op_l_cancel. Defined.
 
 Theorem A_bin_op_r_cancel : forall x y z : A,
@@ -49,10 +49,10 @@ Proof.
   rewrite (r_unl y).
   reflexivity. Defined.
 
-Global Instance A_bin_op_is_r_cancel : IsRCancel A bin_op.
+Global Instance A_bin_op_is_r_cancel : IsRCancel (bin_op (A := A)).
 Proof. intros x y z. apply A_bin_op_r_cancel. Defined.
 
-Global Instance A_bin_op_is_cancel : IsCancel A bin_op.
+Global Instance A_bin_op_is_cancel : IsCancel (bin_op (A := A)).
 Proof. split; typeclasses eauto. Defined.
 
 Theorem A_bin_op_un_op_un_antidistr : forall x y : A,
@@ -68,7 +68,7 @@ Proof.
   rewrite (r_inv x).
   reflexivity. Defined.
 
-Global Instance A_bin_op_un_op_is_un_antidistr : IsUnAntidistr A bin_op un_op.
+Global Instance A_bin_op_un_op_is_un_antidistr : IsUnAntidistr bin_op un_op.
 Proof. intros x y. apply A_bin_op_un_op_un_antidistr. Defined.
 
 Theorem A_un_op_inj : forall x y : A,
@@ -83,7 +83,7 @@ Proof.
   rewrite (r_unl x).
   reflexivity. Defined.
 
-Global Instance A_un_op_is_inj : IsInj A un_op.
+Global Instance A_un_op_is_inj : IsInj un_op.
 Proof. intros x y. apply A_un_op_inj. Defined.
 
 Theorem A_un_op_invol : forall x : A,
@@ -97,7 +97,7 @@ Proof.
   rewrite (l_unl x).
   reflexivity. Defined.
 
-Global Instance A_un_op_is_invol : IsInvol A un_op.
+Global Instance A_un_op_is_invol : IsInvol un_op.
 Proof. intros x. apply A_un_op_invol. Defined.
 
 Theorem A_null_op_un_op_un_absorb : - 0 = 0.
@@ -106,7 +106,7 @@ Proof.
   rewrite (l_inv 0).
   reflexivity. Defined.
 
-Global Instance A_null_op_un_op_is_un_absorb : IsUnAbsorb A null_op un_op.
+Global Instance A_null_op_un_op_is_un_absorb : IsUnAbsorb null_op un_op.
 Proof. apply A_null_op_un_op_un_absorb. Defined.
 
 End Context.

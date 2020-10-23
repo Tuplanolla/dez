@@ -15,7 +15,7 @@ Section Context.
 Context {A : Type} `{IsAssoc A}.
 
 Global Instance A_A_A_bin_op_bin_op_is_bicompat :
-  IsBicompat A A A bin_op bin_op.
+  IsBicompat (bin_op (A := A)) (bin_op (A := A)).
 Proof. intros x y z. apply assoc. Defined.
 
 End Context.

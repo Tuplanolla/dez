@@ -9,9 +9,9 @@ From Maniunfold.ShouldHave Require Import
 
 Class IsTotOrd (A : Type)
   `(HasOrdRel A) : Prop := {
-  A_ord_is_antisym :> IsAntisym A ord_rel;
-  A_ord_is_connex :> IsConnex A ord_rel;
-  A_ord_is_trans :> IsTrans A ord_rel;
+  A_ord_is_antisym :> IsAntisym ord_rel;
+  A_ord_is_connex :> IsConnex ord_rel;
+  A_ord_is_trans :> IsTrans ord_rel;
 }.
 
 Section Context.
@@ -28,10 +28,10 @@ Proof with conversions.
   - apply Hyp.
   - apply Hyp. Defined.
 
-Global Instance A_ord_rel_is_refl : IsRefl A ord_rel.
+Global Instance A_ord_rel_is_refl : IsRefl ord_rel.
 Proof. intros x. apply A_ord_rel_refl. Defined.
 
-Global Instance A_ord_rel_is_part_ord : IsPartOrd A ord_rel.
+Global Instance A_ord_rel_is_part_ord : IsPartOrd ord_rel.
 Proof. repeat (split; try typeclasses eauto). Defined.
 
 End Context.

@@ -4,5 +4,5 @@ From Maniunfold.ShouldHave Require Import
   Categorical.Notations.
 
 Class IsCatRUnl (A : Type) `{HasHom A}
-  `(!HasComp A hom) `(!HasIdt A hom) : Prop :=
+  `(!HasComp hom) `(!HasIdt hom) : Prop :=
   cat_r_unl : forall {x y : A} (f : x --> y), id o f = f.

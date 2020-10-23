@@ -12,52 +12,52 @@ Global Instance Z_has_bin_op : HasBinOp Z := Z.add.
 Global Instance Z_has_null_op : HasNullOp Z := Z.zero.
 Global Instance Z_has_un_op : HasUnOp Z := Z.opp.
 
-Global Instance Z_bin_op_is_mag : IsMag Z bin_op.
+Global Instance Z_bin_op_is_mag : IsMag (bin_op (A := Z)).
 Proof. Defined.
 
-Global Instance Z_bin_op_is_assoc : IsAssoc Z bin_op.
+Global Instance Z_bin_op_is_assoc : IsAssoc (bin_op (A := Z)).
 Proof. intros x y z. apply Z.add_assoc. Defined.
 
-Global Instance Z_bin_op_is_sgrp : IsSgrp Z bin_op.
+Global Instance Z_bin_op_is_sgrp : IsSgrp (bin_op (A := Z)).
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_bin_op_is_comm : IsComm Z bin_op.
+Global Instance Z_bin_op_is_comm : IsComm (bin_op (A := Z)).
 Proof. intros x y. apply Z.add_comm. Defined.
 
-Global Instance Z_bin_op_is_comm_sgrp : IsCommSgrp Z bin_op.
+Global Instance Z_bin_op_is_comm_sgrp : IsCommSgrp (bin_op (A := Z)).
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_bin_op_null_op_is_l_unl : IsLUnl Z bin_op null_op.
+Global Instance Z_bin_op_null_op_is_l_unl : IsLUnl (bin_op (A := Z)) null_op.
 Proof. intros x. apply Z.add_0_l. Defined.
 
-Global Instance Z_bin_op_null_op_is_r_unl : IsRUnl Z bin_op null_op.
+Global Instance Z_bin_op_null_op_is_r_unl : IsRUnl (bin_op (A := Z)) null_op.
 Proof. intros x. apply Z.add_0_r. Defined.
 
-Global Instance Z_bin_op_null_op_is_unl : IsUnl Z bin_op null_op.
+Global Instance Z_bin_op_null_op_is_unl : IsUnl (bin_op (A := Z)) null_op.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_bin_op_null_op_is_mon : IsMon Z bin_op null_op.
+Global Instance Z_bin_op_null_op_is_mon : IsMon (bin_op (A := Z)) null_op.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_bin_op_null_op_is_comm_mon : IsCommMon Z bin_op null_op.
+Global Instance Z_bin_op_null_op_is_comm_mon : IsCommMon (bin_op (A := Z)) null_op.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_bin_op_null_op_un_op_is_l_inv :
-  IsLInv Z bin_op null_op un_op.
+  IsLInv (bin_op (A := Z)) null_op un_op.
 Proof. intros x. apply Z.add_opp_diag_l. Defined.
 
 Global Instance Z_bin_op_null_op_un_op_is_r_inv :
-  IsRInv Z bin_op null_op un_op.
+  IsRInv (bin_op (A := Z)) null_op un_op.
 Proof. intros x. apply Z.add_opp_diag_r. Defined.
 
-Global Instance Z_bin_op_null_op_un_op_is_inv : IsInv Z bin_op null_op un_op.
+Global Instance Z_bin_op_null_op_un_op_is_inv : IsInv (bin_op (A := Z)) null_op un_op.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_bin_op_null_op_un_op_is_grp : IsGrp Z bin_op null_op un_op.
+Global Instance Z_bin_op_null_op_un_op_is_grp : IsGrp (bin_op (A := Z)) null_op un_op.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_bin_op_null_op_un_op_is_ab_grp :
-  IsAbGrp Z bin_op null_op un_op.
+  IsAbGrp (bin_op (A := Z)) null_op un_op.
 Proof. split; typeclasses eauto. Defined.
 
 End Additive.
@@ -67,34 +67,34 @@ Module Multiplicative.
 Global Instance Z_bin_op_has_bin_op : HasBinOp Z := Z.mul.
 Global Instance Z_has_null_op : HasNullOp Z := Z.one.
 
-Global Instance Z_bin_op_is_mag : IsMag Z bin_op.
+Global Instance Z_bin_op_is_mag : IsMag (bin_op (A := Z)).
 Proof. Defined.
 
-Global Instance Z_bin_op_is_assoc : IsAssoc Z bin_op.
+Global Instance Z_bin_op_is_assoc : IsAssoc (bin_op (A := Z)).
 Proof. intros x y z. apply Z.mul_assoc. Defined.
 
-Global Instance Z_bin_op_is_sgrp : IsSgrp Z bin_op.
+Global Instance Z_bin_op_is_sgrp : IsSgrp (bin_op (A := Z)).
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_bin_op_is_comm : IsComm Z bin_op.
+Global Instance Z_bin_op_is_comm : IsComm (bin_op (A := Z)).
 Proof. intros x y. apply Z.mul_comm. Defined.
 
-Global Instance Z_bin_op_is_comm_sgrp : IsCommSgrp Z bin_op.
+Global Instance Z_bin_op_is_comm_sgrp : IsCommSgrp (bin_op (A := Z)).
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_bin_op_null_op_is_l_unl : IsLUnl Z bin_op null_op.
+Global Instance Z_bin_op_null_op_is_l_unl : IsLUnl (bin_op (A := Z)) null_op.
 Proof. intros x. apply Z.mul_1_l. Defined.
 
-Global Instance Z_bin_op_null_op_is_r_unl : IsRUnl Z bin_op null_op.
+Global Instance Z_bin_op_null_op_is_r_unl : IsRUnl (bin_op (A := Z)) null_op.
 Proof. intros x. apply Z.mul_1_r. Defined.
 
-Global Instance Z_bin_op_null_op_is_unl : IsUnl Z bin_op null_op.
+Global Instance Z_bin_op_null_op_is_unl : IsUnl (bin_op (A := Z)) null_op.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_bin_op_null_op_is_mon : IsMon Z bin_op null_op.
+Global Instance Z_bin_op_null_op_is_mon : IsMon (bin_op (A := Z)) null_op.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_bin_op_null_op_is_comm_mon : IsCommMon Z bin_op null_op.
+Global Instance Z_bin_op_null_op_is_comm_mon : IsCommMon (bin_op (A := Z)) null_op.
 Proof. split; typeclasses eauto. Defined.
 
 End Multiplicative.
@@ -105,61 +105,61 @@ Global Instance Z_has_neg : HasNeg Z := Z.opp.
 Global Instance Z_has_mul : HasMul Z := Z.mul.
 Global Instance Z_has_one : HasOne Z := Z.one.
 
-Global Instance Z_add_is_comm : IsComm Z add.
+Global Instance Z_add_is_comm : IsComm add.
 Proof. intros x y. apply Z.add_comm. Defined.
 
-Global Instance Z_add_mul_is_l_distr : IsLDistr Z add mul.
+Global Instance Z_add_mul_is_l_distr : IsLDistr add mul.
 Proof. intros x y z. apply Z.mul_add_distr_l. Defined.
 
-Global Instance Z_add_mul_is_r_distr : IsRDistr Z add mul.
+Global Instance Z_add_mul_is_r_distr : IsRDistr add mul.
 Proof. intros x y z. apply Z.mul_add_distr_r. Defined.
 
-Global Instance Z_add_mul_is_distr : IsDistr Z add mul.
+Global Instance Z_add_mul_is_distr : IsDistr add mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_zero_mul_is_l_absorb : IsLAbsorb Z zero mul.
+Global Instance Z_zero_mul_is_l_absorb : IsLAbsorb zero mul.
 Proof. intros x. apply Z.mul_0_l. Defined.
 
-Global Instance Z_zero_mul_is_r_absorb : IsRAbsorb Z zero mul.
+Global Instance Z_zero_mul_is_r_absorb : IsRAbsorb zero mul.
 Proof. intros x. apply Z.mul_0_r. Defined.
 
-Global Instance Z_zero_mul_is_absorb : IsAbsorb Z zero mul.
+Global Instance Z_zero_mul_is_absorb : IsAbsorb zero mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_add_zero_mul_one_is_sring : IsSring Z add zero mul one.
+Global Instance Z_add_zero_mul_one_is_sring : IsSring add zero mul one.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_add_zero_mul_one_is_comm_sring :
-  IsCommSring Z add zero mul one.
+  IsCommSring add zero mul one.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_add_zero_neg_mul_one_is_ring : IsRing Z add zero neg mul one.
+Global Instance Z_add_zero_neg_mul_one_is_ring : IsRing add zero neg mul one.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_mul_is_comm : IsComm Z mul.
+Global Instance Z_mul_is_comm : IsComm mul.
 Proof. intros x y. apply Z.mul_comm. Defined.
 
 Global Instance Z_add_zero_neg_mul_one_is_comm_ring :
-  IsCommRing Z add zero neg mul one.
+  IsCommRing add zero neg mul one.
 Proof. split; typeclasses eauto. Defined.
 
 (** TODO Organize the rest. *)
 
 Global Instance Z_has_eq_rel : HasEqRel Z := Z.eq.
 
-Global Instance Z_eq_is_refl : IsRefl Z eq.
+Global Instance Z_eq_is_refl : IsRefl Z.eq.
 Proof. intros x. reflexivity. Defined.
 
-Global Instance Z_eq_is_sym : IsSym Z eq.
+Global Instance Z_eq_is_sym : IsSym Z.eq.
 Proof. intros x y p. symmetry; auto. Defined.
 
-Global Instance Z_eq_is_trans : IsTrans Z eq.
+Global Instance Z_eq_is_trans : IsTrans Z.eq.
 Proof. intros x y z p q. transitivity y; auto. Defined.
 
-Global Instance Z_eq_is_part_eq : IsPartEq Z eq.
+Global Instance Z_eq_is_part_eq : IsPartEq Z.eq.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_eq_is_eq : IsEq Z eq.
+Global Instance Z_eq_is_eq : IsEq Z.eq.
 Proof. split; typeclasses eauto. Defined.
 
 (** This is the sign--parity isomorphism. *)
@@ -183,7 +183,7 @@ Definition Z_of_double_N (n : N) : Z :=
 
 Global Instance Z_N_has_iso : HasIso Z N := (Z_to_double_N, Z_of_double_N).
 
-Global Instance Z_N_is_iso : IsIso Z N iso.
+Global Instance Z_N_is_iso : IsIso Z_N_has_iso.
 Proof.
   split.
   - intros x. destruct x as [| p | p].

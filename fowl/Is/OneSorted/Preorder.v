@@ -7,8 +7,8 @@ From Maniunfold.Is Require Export
   Reflexive Transitive.
 
 Class IsPreord (A : Type) `(HasOrdRel A) : Prop := {
-  A_ord_rel_is_refl :> IsRefl A ord_rel;
-  A_ord_rel_is_trans :> IsTrans A ord_rel;
+  A_ord_rel_is_refl :> IsRefl ord_rel;
+  A_ord_rel_is_trans :> IsTrans ord_rel;
 }.
 
 Section Context.

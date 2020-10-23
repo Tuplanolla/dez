@@ -7,8 +7,8 @@ From Maniunfold.Is Require Export
   PartialEquivalence Reflexive.
 
 Class IsEq (A : Type) `(HasEqRel A) : Prop := {
-  A_eq_rel_is_part_eq :> IsPartEq A eq_rel;
-  A_eq_rel_is_refl :> IsRefl A eq_rel;
+  A_eq_rel_is_part_eq :> IsPartEq eq_rel;
+  A_eq_rel_is_refl :> IsRefl eq_rel;
 }.
 
 Section Context.

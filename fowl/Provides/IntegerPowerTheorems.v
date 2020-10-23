@@ -100,7 +100,7 @@ Proof.
     reflexivity. Defined.
 
 Global Instance positive_op_un_op_is_two_l_bin_comm :
-  IsTwoLBinComm positive A un_op positive_op.
+  IsTwoLBinComm un_op positive_op.
 Proof. intros x y. apply positive_op_un_op_two_l_bin_comm. Defined.
 
 Theorem n_op_un_op_two_l_bin_comm : forall (n : N) (x : A),
@@ -115,7 +115,7 @@ Proof.
     rewrite (positive_op_un_op_two_l_bin_comm p x).
     reflexivity. Defined.
 
-Global Instance n_op_un_op_is_two_l_bin_comm : IsTwoLBinComm N A un_op n_op.
+Global Instance n_op_un_op_is_two_l_bin_comm : IsTwoLBinComm un_op n_op.
 Proof. intros x y. apply n_op_un_op_two_l_bin_comm. Defined.
 
 Theorem z_op_un_op_two_l_bin_comm : forall (n : Z) (x : A),
@@ -133,7 +133,7 @@ Proof.
     rewrite (positive_op_un_op_two_l_bin_comm p x).
     reflexivity. Defined.
 
-Global Instance z_op_un_op_is_two_l_bin_comm : IsTwoLBinComm Z A un_op z_op.
+Global Instance z_op_un_op_is_two_l_bin_comm : IsTwoLBinComm un_op z_op.
 Proof. intros x y. apply z_op_un_op_two_l_bin_comm. Defined.
 
 End Context.

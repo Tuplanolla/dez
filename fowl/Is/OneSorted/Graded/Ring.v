@@ -16,7 +16,7 @@ Class IsGrdRing {A : Type} (P : A -> Type)
   `(P_has_neg : forall i : A, HasNeg (P i))
   `(HasGrdMul A P) `(HasGrdOne A P) : Prop := {
   P_add_zero_neg_is_ab_grp :> forall i : A,
-    IsAbGrp (P i) (P_has_add i) (P_has_zero i) (P_has_neg i);
+    IsAbGrp (P_has_add i) (P_has_zero i) (P_has_neg i);
   P_add_grd_mul_is_grd_distr :> IsGrdDistr P P_has_add grd_mul;
   P_grd_mul_grd_one_is_grd_mon :> IsGrdMon P grd_mul grd_one;
 }.

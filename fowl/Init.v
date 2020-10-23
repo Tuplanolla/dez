@@ -7,8 +7,7 @@ Global Set Warnings "-notation-overridden".
     make them maximally inserted and conservatively detected,
     since most type classes follow the same design pattern. *)
 
-(* TODO Main screen turn on. *)
-Global Unset Implicit Arguments.
+Global Set Implicit Arguments.
 Global Set Maximal Implicit Insertion.
 Global Set Strict Implicit.
 Global Set Strongly Strict Implicit.

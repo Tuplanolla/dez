@@ -7,7 +7,7 @@ From Maniunfold.Is Require Export
 Class IsDistrLat (A : Type)
   `(HasJoin A) `(HasBot A)
   `(HasMeet A) `(HasTop A) : Prop := {
-  A_join_meet_is_lat :> IsLat A join meet;
-  A_join_meet_is_distr :> IsDistr A join meet;
-  A_meet_join_is_distr :> IsDistr A meet join;
+  A_join_meet_is_lat :> IsLat join meet;
+  A_join_meet_is_distr :> IsDistr join meet;
+  A_meet_join_is_distr :> IsDistr meet join;
 }.

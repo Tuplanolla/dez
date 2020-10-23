@@ -7,8 +7,8 @@ From Maniunfold.Is Require Export
 
 Class IsUnl (A : Type)
   `(HasBinOp A) `(HasNullOp A) : Prop := {
-  A_bin_op_null_op_is_l_unl :> IsLUnl A bin_op null_op;
-  A_bin_op_null_op_is_r_unl :> IsRUnl A bin_op null_op;
+  A_bin_op_null_op_is_l_unl :> IsLUnl bin_op null_op;
+  A_bin_op_null_op_is_r_unl :> IsRUnl bin_op null_op;
 }.
 
 Section Context.
@@ -16,7 +16,7 @@ Section Context.
 Context {A : Type} `{IsUnl A}.
 
 Global Instance A_A_bin_op_bin_op_null_op_is_two_unl :
-  IsTwoUnl A A bin_op bin_op null_op.
+  IsTwoUnl bin_op bin_op null_op.
 Proof. split; typeclasses eauto. Defined.
 
 End Context.

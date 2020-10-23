@@ -9,8 +9,8 @@ From Maniunfold.ShouldHave Require Import
   OrderRelationNotations.
 
 Class IsStrPartOrd (A : Type) `(HasOrdRel A) : Prop := {
-  A_ord_rel_is_irrefl :> IsIrrefl A ord_rel;
-  A_ord_rel_is_trans :> IsTrans A ord_rel;
+  A_ord_rel_is_irrefl :> IsIrrefl ord_rel;
+  A_ord_rel_is_trans :> IsTrans ord_rel;
 }.
 
 Section Context.

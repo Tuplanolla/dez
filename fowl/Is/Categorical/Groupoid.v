@@ -7,17 +7,17 @@ From Maniunfold.ShouldHave Require Import
   Categorical.Notations.
 
 Class IsGrpd (A : Type) `{HasHom A}
-  `(!HasComp A hom) `(!HasIdt A hom)
-  `(!HasInv A hom) : Prop := {
-  A_comp_idt_is_cat :> IsCat A comp idt;
-  A_comp_idt_inv_is_cat_inv :> IsCatInv A comp idt inv;
+  `(!HasComp hom) `(!HasIdt hom)
+  `(!HasInv hom) : Prop := {
+  A_comp_idt_is_cat :> IsCat comp idt;
+  A_comp_idt_inv_is_cat_inv :> IsCatInv comp idt inv;
 }.
 
 Section Context.
 
 Context {A : Type} `{IsGrpd A}.
 
-Global Instance inv_is_cat_invol : IsCatInvol A inv.
+Global Instance inv_is_cat_invol : IsCatInvol inv.
 Proof.
   intros x y f.
   rewrite <- (cat_r_unl ((f ^-1) ^-1)).

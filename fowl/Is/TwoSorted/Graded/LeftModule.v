@@ -24,7 +24,7 @@ Class IsGrdLMod {A : Type} (P Q : A -> Type)
   P_add_zero_neg_mul_one_is_grd_ring :>
     IsGrdRing P P_has_add P_has_zero P_has_neg grd_mul grd_one;
   Q_add_zero_neg_is_ab_grp :> forall i : A,
-    IsAbGrp (Q i) (Q_has_add i) (Q_has_zero i) (Q_has_neg i);
+    IsAbGrp (Q_has_add i) (Q_has_zero i) (Q_has_neg i);
   P_Q_add_add_grd_l_act_is_grd_two_r_distr :>
     IsTwoGrdLRDistr P Q P_has_add Q_has_add grd_l_act;
   P_Q_grd_mul_grd_l_act_is_grd_l_compat :> IsGrdLCompat P Q grd_mul grd_l_act;

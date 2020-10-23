@@ -16,7 +16,7 @@ Import ListNotations.
 
 Global Instance bool_has_enum : HasEnum bool := [false; true].
 
-Global Instance bool_is_b_fin : IsBFin bool.
+Global Instance bool_is_b_fin : IsBFin (A := bool).
 Proof.
   split.
   - intros [].
@@ -44,7 +44,7 @@ Proof.
     + apply false.
     + apply true. Defined.
 
-Global Instance bool_is_fin : IsFin bool.
+Global Instance bool_is_fin : IsFin (A := bool).
 Proof.
   split.
   - intros [].
@@ -112,21 +112,21 @@ Local Instance this_has_grd_one :
   HasGrdOne (fun x : bool => if x then unit else Z).
 Proof. hnf. apply 1. Defined.
 
-Local Instance bool_bin_op_is_assoc : IsAssoc bool bin_op.
+Local Instance bool_bin_op_is_assoc : IsAssoc (bin_op (A := bool)).
 Proof.
   intros x y z. all: cbn; repeat match goal with
   | x : bool |- _ => destruct x
   | x : unit |- _ => destruct x
   end; try reflexivity. Defined.
 
-Local Instance bool_bin_op_is_l_unl : IsLUnl bool bin_op null_op.
+Local Instance bool_bin_op_is_l_unl : IsLUnl (bin_op (A := bool)) null_op.
 Proof.
   intros x. all: cbn; repeat match goal with
   | x : bool |- _ => destruct x
   | x : unit |- _ => destruct x
   end; try reflexivity. Defined.
 
-Local Instance bool_bin_op_is_r_unl : IsRUnl bool bin_op null_op.
+Local Instance bool_bin_op_is_r_unl : IsRUnl (bin_op (A := bool)) null_op.
 Proof.
   intros x. all: cbn; repeat match goal with
   | x : bool |- _ => destruct x

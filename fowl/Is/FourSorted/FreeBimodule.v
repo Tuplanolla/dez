@@ -41,9 +41,9 @@ Class IsFourFreeBimod (X A B C : Type)
   `(HasMul B) `(HasOne B)
   `(HasAdd C) `(HasZero C) `(HasNeg C)
   `(HasLAct A C) `(HasRAct B C) : Prop := {
-  X_is_b_fin :> IsBFin X;
+  X_is_b_fin :> IsBFin (A := X);
   A_B_C_add_zero_neg_mul_one_add_zero_neg_mul_one_add_zero_neg_l_act_r_act_is_three_bimod
-    :> IsThreeBimod A B C
+    :> IsThreeBimod
     add zero neg mul one add zero neg mul one add zero neg l_act r_act;
   (** The folded summation must be associative and commutative
       in order to keep the basis independent of the enumeration.

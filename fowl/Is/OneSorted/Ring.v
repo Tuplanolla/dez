@@ -15,9 +15,9 @@ From Maniunfold.ShouldHave Require Import
 Class IsRing (A : Type)
   `(HasAdd A) `(HasZero A) `(HasNeg A)
   `(HasMul A) `(HasOne A) : Prop := {
-  A_add_zero_neg_is_ab_grp :> IsAbGrp A add zero neg;
-  A_add_mul_is_distr :> IsDistr A add mul;
-  A_mul_one_is_mon :> IsMon A mul one;
+  A_add_zero_neg_is_ab_grp :> IsAbGrp add zero neg;
+  A_add_mul_is_distr :> IsDistr add mul;
+  A_mul_one_is_mon :> IsMon mul one;
 }.
 
 Section Context.
@@ -38,7 +38,7 @@ Proof with conversions.
   rewrite (r_unl 1).
   reflexivity. Defined.
 
-Global Instance A_zero_mul_is_l_absorb : IsLAbsorb A zero mul.
+Global Instance A_zero_mul_is_l_absorb : IsLAbsorb zero mul.
 Proof. intros x. apply A_zero_mul_l_absorb. Defined.
 
 Theorem A_zero_mul_r_absorb : forall x : A,
@@ -51,10 +51,10 @@ Proof with conversions.
   rewrite (r_unl 1).
   reflexivity. Defined.
 
-Global Instance A_zero_mul_is_r_absorb : IsRAbsorb A zero mul.
+Global Instance A_zero_mul_is_r_absorb : IsRAbsorb zero mul.
 Proof. intros x. apply A_zero_mul_r_absorb. Defined.
 
-Global Instance A_zero_mul_is_absorb : IsAbsorb A zero mul.
+Global Instance A_zero_mul_is_absorb : IsAbsorb zero mul.
 Proof. split; typeclasses eauto. Defined.
 
 Theorem A_zero_neg_un_absorb :
@@ -64,7 +64,7 @@ Proof with conversions.
   rewrite (r_inv 0)...
   reflexivity. Defined.
 
-Global Instance A_zero_neg_is_un_absorb : IsUnAbsorb A zero neg.
+Global Instance A_zero_neg_is_un_absorb : IsUnAbsorb zero neg.
 Proof. apply A_zero_neg_un_absorb. Defined.
 
 Theorem A_neg_mul_one_l_sgn_absorb : forall x : A,
@@ -79,7 +79,7 @@ Proof with conversions.
   rewrite (l_absorb x).
   reflexivity. Defined.
 
-Global Instance A_neg_mul_one_is_l_sgn_absorb : IsLSgnAbsorb A neg mul one.
+Global Instance A_neg_mul_one_is_l_sgn_absorb : IsLSgnAbsorb neg mul one.
 Proof. intros x. apply A_neg_mul_one_l_sgn_absorb. Defined.
 
 Theorem A_neg_mul_one_r_sgn_absorb : forall x : A,
@@ -94,10 +94,10 @@ Proof with conversions.
   rewrite (r_absorb x).
   reflexivity. Defined.
 
-Global Instance A_neg_mul_one_is_r_sgn_absorb : IsRSgnAbsorb A neg mul one.
+Global Instance A_neg_mul_one_is_r_sgn_absorb : IsRSgnAbsorb neg mul one.
 Proof. intros x. apply A_neg_mul_one_r_sgn_absorb. Defined.
 
-Global Instance A_neg_mul_one_is_sgn_absorb : IsSgnAbsorb A neg mul one.
+Global Instance A_neg_mul_one_is_sgn_absorb : IsSgnAbsorb neg mul one.
 Proof. split; typeclasses eauto. Defined.
 
 Theorem A_neg_mul_l_bin_comm : forall x y : A,
@@ -109,7 +109,7 @@ Proof with conversions.
   rewrite r_sgn_absorb.
   reflexivity. Defined.
 
-Global Instance A_neg_mul_is_l_bin_comm : IsLBinComm A neg mul.
+Global Instance A_neg_mul_is_l_bin_comm : IsLBinComm neg mul.
 Proof. intros x y. apply A_neg_mul_l_bin_comm. Defined.
 
 Theorem A_neg_mul_r_bin_comm : forall x y : A,
@@ -121,10 +121,10 @@ Proof with conversions.
   rewrite l_sgn_absorb.
   reflexivity. Defined.
 
-Global Instance A_neg_mul_is_r_bin_comm : IsRBinComm A neg mul.
+Global Instance A_neg_mul_is_r_bin_comm : IsRBinComm neg mul.
 Proof. intros x y. apply A_neg_mul_r_bin_comm. Defined.
 
-Global Instance A_neg_mul_is_bin_comm : IsBinComm A neg mul.
+Global Instance A_neg_mul_is_bin_comm : IsBinComm neg mul.
 Proof. split; typeclasses eauto. Defined.
 
 Theorem A_neg_mul_bin_crs : forall x y : A,
@@ -135,7 +135,7 @@ Proof with conversions.
   rewrite <- (r_bin_comm x y).
   reflexivity. Defined.
 
-Global Instance A_neg_mul_is_bin_crs : IsBinCrs A neg mul.
+Global Instance A_neg_mul_is_bin_crs : IsBinCrs neg mul.
 Proof. intros x y. apply A_neg_mul_bin_crs. Defined.
 
 Theorem A_neg_mul_bin_spt_cancel : forall x y : A,
@@ -147,10 +147,10 @@ Proof with conversions.
   rewrite (invol (x * y)).
   reflexivity. Defined.
 
-Global Instance A_neg_mul_is_bin_spt_cancel : IsBinSptCancel A neg mul.
+Global Instance A_neg_mul_is_bin_spt_cancel : IsBinSptCancel neg mul.
 Proof. intros x y. apply A_neg_mul_bin_spt_cancel. Defined.
 
-Global Instance A_add_zero_mul_one_is_sring : IsSring A add zero mul one.
+Global Instance A_add_zero_mul_one_is_sring : IsSring add zero mul one.
 Proof. split; typeclasses eauto. Defined.
 
 (** TODO Clean up. *)
@@ -164,17 +164,17 @@ Proof.
 
 Local Instance unit_has_bin_op : HasBinOp unit := fun x y : unit => tt.
 
-Local Instance bin_op_is_assoc : IsAssoc unit bin_op.
+Local Instance bin_op_is_assoc : IsAssoc (bin_op (A := unit)).
 Proof. intros x y z. repeat match goal with t : unit |- _ => destruct t end.
   reflexivity. Defined.
 
 Local Instance unit_has_null_op : HasNullOp unit := tt.
 
-Local Instance bin_op_null_op_is_l_unl : IsLUnl unit bin_op null_op.
+Local Instance bin_op_null_op_is_l_unl : IsLUnl bin_op null_op.
 Proof. intros x. repeat match goal with t : unit |- _ => destruct t end.
   reflexivity. Defined.
 
-Local Instance bin_op_null_op_is_r_unl : IsRUnl unit bin_op null_op.
+Local Instance bin_op_null_op_is_r_unl : IsRUnl bin_op null_op.
 Proof. intros x. repeat match goal with t : unit |- _ => destruct t end.
   reflexivity. Defined.
 

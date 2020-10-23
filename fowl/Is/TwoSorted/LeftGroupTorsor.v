@@ -10,6 +10,6 @@ Class IsLGrpTor (A B : Type)
   `(HasUnOp A) `(HasLAct A B)
   `(HasLTor A B) : Prop := {
   A_B_bin_op_null_op_un_op_l_act_is_l_grp_act :>
-    IsLGrpAct A B bin_op null_op un_op l_act;
-  A_B_l_act_l_tor_l_uniq :> IsLUniq A B l_act l_tor;
+    IsLGrpAct bin_op null_op un_op (l_act (A := A) (B := B));
+  A_B_l_act_l_tor_l_uniq :> IsLUniq l_act l_tor;
 }.

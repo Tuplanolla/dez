@@ -7,8 +7,8 @@ From Maniunfold.Is Require Export
   Symmetric Transitive.
 
 Class IsPartEq (A : Type) `(HasEqRel A) : Prop := {
-  A_eq_rel_is_sym :> IsSym A eq_rel;
-  A_eq_rel_is_trans :> IsTrans A eq_rel;
+  A_eq_rel_is_sym :> IsSym eq_rel;
+  A_eq_rel_is_trans :> IsTrans eq_rel;
 }.
 
 Section Context.

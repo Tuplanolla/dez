@@ -11,11 +11,11 @@ From Maniunfold.ShouldHave Require Import
 Class IsSring (A : Type)
   `(HasAdd A) `(HasZero A)
   `(HasMul A) `(HasOne A) : Prop := {
-  A_add_is_comm :> IsComm A add;
-  A_add_zero_is_mon :> IsMon A add zero;
-  A_add_mul_is_distr :> IsDistr A add mul;
-  A_zero_mul_is_absorb :> IsAbsorb A zero mul;
-  A_mul_one_is_mon :> IsMon A mul one;
+  A_add_is_comm :> IsComm add;
+  A_add_zero_is_mon :> IsMon add zero;
+  A_add_mul_is_distr :> IsDistr add mul;
+  A_zero_mul_is_absorb :> IsAbsorb zero mul;
+  A_mul_one_is_mon :> IsMon mul one;
 }.
 
 Section Context.

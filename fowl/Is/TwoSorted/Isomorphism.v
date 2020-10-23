@@ -15,7 +15,7 @@ Context {A B : Type} `{IsIso A B}.
 
 Local Instance B_A_has_iso : HasIso B A := (retr, sect).
 
-Local Instance B_A_iso_is_iso : IsIso B A iso.
+Local Instance B_A_iso_is_iso : IsIso iso.
 Proof.
   split.
   - intros x. apply (sect_retr x).

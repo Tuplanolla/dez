@@ -5,6 +5,6 @@ From Maniunfold.ShouldHave Require Import
   Categorical.Notations.
 
 Class IsCatLInv (A : Type) `{HasHom A}
-  `(!HasComp A hom) `(!HasIdt A hom)
-  `(!HasInv A hom) : Prop :=
+  `(!HasComp hom) `(!HasIdt hom)
+  `(!HasInv hom) : Prop :=
   cat_l_inv : forall {x y : A} (f : x --> y), f o f ^-1 = id.

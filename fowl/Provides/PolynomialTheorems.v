@@ -472,10 +472,10 @@ Global Instance poly_has_bin_op : HasBinOp poly := poly_add.
 Global Instance poly_has_null_op : HasNullOp poly := poly_zero.
 Global Instance poly_has_un_op : HasUnOp poly := poly_neg.
 
-Global Instance poly_bin_op_is_mag : IsMag poly bin_op.
+Global Instance poly_bin_op_is_mag : IsMag poly_add.
 Proof. Defined.
 
-Global Instance poly_bin_op_is_assoc : IsAssoc poly bin_op.
+Global Instance poly_bin_op_is_assoc : IsAssoc poly_add.
 Proof with conversions.
   intros x y z.
   cbv [bin_op poly_has_bin_op poly_add]. cbn.
@@ -522,10 +522,10 @@ Proof with conversions.
     rewrite Hc. rewrite <- assoc...
     rewrite Fbc. rewrite r_unl. reflexivity. Defined.
 
-Global Instance poly_bin_op_is_sgrp : IsSgrp poly bin_op.
+Global Instance poly_bin_op_is_sgrp : IsSgrp poly_add.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_bin_op_is_comm : IsComm poly bin_op.
+Global Instance poly_bin_op_is_comm : IsComm poly_add.
 Proof with conversions.
   intros x y. cbv [bin_op poly_has_bin_op poly_add].
   cbv [union_with map_union_with].
@@ -546,35 +546,35 @@ Proof with conversions.
   - exfalso. apply Fba. rewrite comm... apply Fab.
   - reflexivity. Defined.
 
-Global Instance poly_bin_op_is_comm_sgrp : IsCommSgrp poly bin_op.
+Global Instance poly_bin_op_is_comm_sgrp : IsCommSgrp poly_add.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_bin_op_null_op_is_l_unl : IsLUnl poly bin_op null_op.
+Global Instance poly_bin_op_null_op_is_l_unl : IsLUnl poly_add null_op.
 Proof.
   intros x. cbv [bin_op poly_has_bin_op poly_add
   null_op poly_has_null_op poly_zero].
   cbv [union_with map_union_with].
   Fail apply (left_id empty (merge (option_union_with _))). Admitted.
 
-Global Instance poly_bin_op_null_op_is_r_unl : IsRUnl poly bin_op null_op.
+Global Instance poly_bin_op_null_op_is_r_unl : IsRUnl poly_add null_op.
 Proof.
   intros x. cbv [bin_op poly_has_bin_op poly_add
   null_op poly_has_null_op poly_zero].
   cbv [union_with map_union_with].
   Fail apply (right_id empty (merge (option_union_with _))). Admitted.
 
-Global Instance poly_bin_op_null_op_is_unl : IsUnl poly bin_op null_op.
+Global Instance poly_bin_op_null_op_is_unl : IsUnl poly_add null_op.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_bin_op_null_op_is_mon : IsMon poly bin_op null_op.
+Global Instance poly_bin_op_null_op_is_mon : IsMon poly_add null_op.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_is_comm_mon :
-  IsCommMon poly bin_op null_op.
+  IsCommMon poly_add null_op.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_un_op_is_l_inv :
-  IsLInv poly bin_op null_op un_op.
+  IsLInv poly_add null_op un_op.
 Proof.
   intros x. cbv [bin_op poly_has_bin_op poly_add
   null_op poly_has_null_op poly_zero
@@ -582,7 +582,7 @@ Proof.
   cbv [union_with map_union_with]. Admitted.
 
 Global Instance poly_bin_op_null_op_un_op_is_r_inv :
-  IsRInv poly bin_op null_op un_op.
+  IsRInv poly_add null_op un_op.
 Proof.
   intros x. cbv [bin_op poly_has_bin_op poly_add
   null_op poly_has_null_op poly_zero
@@ -590,15 +590,15 @@ Proof.
   cbv [union_with map_union_with]. Admitted.
 
 Global Instance poly_bin_op_null_op_un_op_is_inv :
-  IsInv poly bin_op null_op un_op.
+  IsInv poly_add null_op un_op.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_un_op_is_grp :
-  IsGrp poly bin_op null_op un_op.
+  IsGrp poly_add null_op un_op.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_un_op_is_ab_grp :
-  IsAbGrp poly bin_op null_op un_op.
+  IsAbGrp poly_add null_op un_op.
 Proof. split; typeclasses eauto. Defined.
 
 End Context.
@@ -631,10 +631,10 @@ Ltac conversions := typeclasses
 Global Instance poly_has_bin_op : HasBinOp poly := poly_mul.
 Global Instance poly_has_null_op : HasNullOp poly := poly_one.
 
-Global Instance poly_bin_op_is_mag : IsMag poly bin_op.
+Global Instance poly_bin_op_is_mag : IsMag poly_mul.
 Proof. Defined.
 
-Global Instance poly_bin_op_is_assoc : IsAssoc poly bin_op.
+Global Instance poly_bin_op_is_assoc : IsAssoc poly_mul.
 Proof with conversions.
   intros x y z.
   cbv [bin_op poly_has_bin_op poly_mul]. cbn.
@@ -655,35 +655,35 @@ Proof with conversions.
   - intros W. cbv [f]. reflexivity.
   - intros i x m Hyp IH W. cbv [f]. Admitted.
 
-Global Instance poly_bin_op_is_sgrp : IsSgrp poly bin_op.
+Global Instance poly_bin_op_is_sgrp : IsSgrp poly_mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_bin_op_is_comm : IsComm poly bin_op.
+Global Instance poly_bin_op_is_comm : IsComm poly_mul.
 Proof.
   intros x y.
   cbv [bin_op poly_has_bin_op]; cbv [poly_mul].
   apply sig_eq_pi; [typeclasses eauto |]. cbn.
   generalize dependent x. Admitted.
 
-Global Instance poly_bin_op_is_comm_sgrp : IsCommSgrp poly bin_op.
+Global Instance poly_bin_op_is_comm_sgrp : IsCommSgrp poly_mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_bin_op_null_op_is_l_unl : IsLUnl poly bin_op null_op.
+Global Instance poly_bin_op_null_op_is_l_unl : IsLUnl poly_mul null_op.
 Proof.
   intros x.
   cbv [bin_op poly_has_bin_op]; cbv [poly_mul]. Admitted.
 
-Global Instance poly_bin_op_null_op_is_r_unl : IsRUnl poly bin_op null_op.
+Global Instance poly_bin_op_null_op_is_r_unl : IsRUnl poly_mul null_op.
 Proof. intros x. Admitted.
 
-Global Instance poly_bin_op_null_op_is_unl : IsUnl poly bin_op null_op.
+Global Instance poly_bin_op_null_op_is_unl : IsUnl poly_mul null_op.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_bin_op_null_op_is_mon : IsMon poly bin_op null_op.
+Global Instance poly_bin_op_null_op_is_mon : IsMon poly_mul null_op.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_is_comm_mon :
-  IsCommMon poly bin_op null_op.
+  IsCommMon poly_mul null_op.
 Proof. split; typeclasses eauto. Defined.
 
 End Context.
@@ -719,40 +719,40 @@ Ltac conversions := typeclasses
   convert bin_op into (mul (A := A)) and
   null_op into (one (A := A)).
 
-Global Instance poly_add_mul_is_l_distr : IsLDistr poly add mul.
+Global Instance poly_add_mul_is_l_distr : IsLDistr add mul.
 Proof. intros x y z. Admitted.
 
-Global Instance poly_add_mul_is_r_distr : IsRDistr poly add mul.
+Global Instance poly_add_mul_is_r_distr : IsRDistr add mul.
 Proof. intros x y z. Admitted.
 
-Global Instance poly_add_mul_is_distr : IsDistr poly add mul.
+Global Instance poly_add_mul_is_distr : IsDistr add mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_zero_mul_is_l_absorb : IsLAbsorb poly zero mul.
+Global Instance poly_zero_mul_is_l_absorb : IsLAbsorb zero mul.
 Proof. intros x. Admitted.
 
-Global Instance poly_zero_mul_is_r_absorb : IsRAbsorb poly zero mul.
+Global Instance poly_zero_mul_is_r_absorb : IsRAbsorb zero mul.
 Proof. intros x. Admitted.
 
-Global Instance poly_zero_mul_is_absorb : IsAbsorb poly zero mul.
+Global Instance poly_zero_mul_is_absorb : IsAbsorb zero mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_add_zero_mul_one_is_sring : IsSring poly add zero mul one.
+Global Instance poly_add_zero_mul_one_is_sring : IsSring add zero mul one.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_add_zero_mul_one_is_comm_sring :
-  IsCommSring poly add zero mul one.
+  IsCommSring add zero mul one.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_add_zero_neg_mul_one_is_ring :
-  IsRing poly add zero neg mul one.
+  IsRing add zero neg mul one.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_mul_is_comm : IsComm poly mul.
+Global Instance poly_mul_is_comm : IsComm mul.
 Proof. intros x y. Admitted.
 
 Global Instance poly_add_zero_neg_mul_one_is_comm_ring :
-  IsCommRing poly add zero neg mul one.
+  IsCommRing add zero neg mul one.
 Proof. split; typeclasses eauto. Defined.
 
 (** We can now prove that the evaluation map is a homomorphism. *)
@@ -845,15 +845,18 @@ Global Instance poly_is_grd_ring : IsGrdRing (fun i : N => A)
 Proof. split; try typeclasses eauto. Admitted.
 
 Global Instance add_zero_neg_mul_one_is_alg :
-  IsAlg A poly add zero neg mul one add zero neg mul l_act r_act.
+  IsAlg (A := A) (B := poly)
+  add zero neg mul one add zero neg mul l_act r_act.
 Proof. split; try typeclasses eauto. Admitted.
 
 Global Instance add_zero_neg_mul_one_is_assoc_alg :
-  IsAssocAlg A poly add zero neg mul one add zero neg mul l_act r_act.
+  IsAssocAlg (A := A) (B := poly)
+  add zero neg mul one add zero neg mul l_act r_act.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance add_zero_neg_mul_one_is_unl_assoc_alg :
-  IsUnlAssocAlg A poly add zero neg mul one add zero neg mul one l_act r_act.
+  IsUnlAssocAlg (A := A) (B := poly)
+  add zero neg mul one add zero neg mul one l_act r_act.
 Proof. split; typeclasses eauto. Defined.
 
 End Context.

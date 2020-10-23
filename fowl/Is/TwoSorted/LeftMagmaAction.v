@@ -6,5 +6,5 @@ From Maniunfold.Is Require Export
 
 Class IsLMagAct (A B : Type)
   `(HasBinOp A) `(HasLAct A B) : Prop := {
-  A_bin_op_is_mag :> IsMag A bin_op;
+  A_bin_op_is_mag :> IsMag (bin_op (A := A));
 }.

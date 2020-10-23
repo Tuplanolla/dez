@@ -15,7 +15,8 @@ Class IsAssocAlg (A B : Type)
   `(HasAdd B) `(HasZero B) `(HasNeg B)
   `(HasMul B)
   `(HasLAct A B) `(HasRAct A B) : Prop := {
-  B_mul_is_assoc :> IsAssoc B mul;
+  B_mul_is_assoc :> IsAssoc (mul (A := B));
   A_B_add_zero_neg_mul_one_add_zero_neg_mul_l_act_r_act_is_alg :>
-    IsAlg A B add zero neg mul one add zero neg mul l_act r_act;
+    IsAlg add zero neg mul one add zero neg mul
+    (l_act (A := A) (B := B)) (r_act (A := A) (B := B));
 }.

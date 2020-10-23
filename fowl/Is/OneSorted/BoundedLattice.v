@@ -7,9 +7,9 @@ From Maniunfold.Is Require Export
 Class IsBndLat (A : Type)
   `(HasJoin A) `(HasBot A)
   `(HasMeet A) `(HasTop A) : Prop := {
-  A_join_meet_is_lat :> IsLat A join meet;
-  A_join_bot_is_unl :> IsUnl A join bot;
-  A_meet_top_is_unl :> IsUnl A meet top;
+  A_join_meet_is_lat :> IsLat join meet;
+  A_join_bot_is_unl :> IsUnl join bot;
+  A_meet_top_is_unl :> IsUnl meet top;
 }.
 
 Section Context.
@@ -18,10 +18,10 @@ Context {A : Type} `{IsBndLat A}.
 
 (** TODO Not sure if this is sensible... *)
 
-Global Instance A_join_bot_is_bnd_slat : IsBndSlat A join bot.
+Global Instance A_join_bot_is_bnd_slat : IsBndSlat join bot.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance A_meet_top_is_bnd_slat : IsBndSlat A meet top.
+Global Instance A_meet_top_is_bnd_slat : IsBndSlat meet top.
 Proof. split; typeclasses eauto. Defined.
 
 End Context.

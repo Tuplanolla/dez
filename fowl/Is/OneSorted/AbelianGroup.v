@@ -10,8 +10,8 @@ From Maniunfold.ShouldHave Require Import
 
 Class IsAbGrp (A : Type) `(HasBinOp A)
   `(HasNullOp A) `(HasUnOp A) : Prop := {
-  A_bin_op_is_comm :> IsComm A bin_op;
-  A_bin_op_null_op_un_op_is_grp :> IsGrp A bin_op null_op un_op;
+  A_bin_op_is_comm :> IsComm (bin_op (A := A));
+  A_bin_op_null_op_un_op_is_grp :> IsGrp bin_op null_op un_op;
 }.
 
 Section Context.
@@ -26,7 +26,7 @@ Proof.
   rewrite (un_antidistr y x).
   reflexivity. Defined.
 
-Global Instance A_bin_op_un_op_is_un_distr : IsUnDistr A bin_op un_op.
+Global Instance A_bin_op_un_op_is_un_distr : IsUnDistr bin_op un_op.
 Proof. intros x y. apply A_bin_op_un_op_un_distr. Defined.
 
 End Context.

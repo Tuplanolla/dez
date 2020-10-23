@@ -14,7 +14,7 @@ Class IsGrdBicompat {A : Type} (P Q R : A -> Type)
   `{HasBinOp A} `{HasNullOp A}
   `(!@HasGrdLAct A P R bin_op)
   `(!@HasGrdRAct A Q R bin_op) : Prop := {
-  A_bin_op_is_assoc :> IsAssoc A bin_op;
+  A_bin_op_is_assoc :> IsAssoc bin_op;
   grd_bicompat : forall {i j k : A} (a : P i) (x : R j) (b : Q k),
     rew assoc i j k in
     (a * (x * b)%grd_r_mod)%grd_l_mod = ((a * x)%grd_l_mod * b)%grd_r_mod;
