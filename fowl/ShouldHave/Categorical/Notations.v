@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Export
   Categorical.TypeNotations.
 
-Reserved Notation "g 'o' f" (at level 38, left associativity).
+Reserved Notation "g 'o' f" (at level 40, left associativity).
 Reserved Notation "'id'" (at level 0, no associativity).
 Reserved Notation "f '^-1'" (at level 36, left associativity).
 

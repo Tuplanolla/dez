@@ -25,6 +25,8 @@ From Maniunfold.ShouldHave Require
 From Maniunfold.ShouldOffer Require
   OneSorted.ArithmeticOperationNotations.
 
+Generalizable All Variables.
+
 Section more_merge.
 
 Context `{FinMap K M}.
@@ -74,15 +76,16 @@ Proof with auto.
 
 End Context.
 
-(** Not a pullback of a finite map along a key altering function. *)
+(** Almost a left Kan extension of a finite map
+    along a key altering function. *)
 
-Definition map_pullback {K L A MK ML : Type}
+Definition map_something {K L A MK ML : Type}
   `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L A ML}
   (p : K -> L) (x : MK) : ML :=
   map_fold (fun (i : K) (x : A) (y : ML) =>
     partial_alter (fun y : option A => Some x) (p i) y) empty x.
 
-Definition map_free_pullback {K L A MK ML : Type}
+Definition map_free_something {K L A MK ML : Type}
   `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
   (p : K -> L) (x : MK) : ML :=
   map_fold (fun (i : K) (x : A) (y : ML) =>
@@ -91,45 +94,45 @@ Definition map_free_pullback {K L A MK ML : Type}
 
 (** The order should be unspecified. *)
 
-Lemma map_pullbacks {K L A MK ML : Type}
+Lemma map_somethings {K L A MK ML : Type}
   `{FinMapToList K A MK} `{Empty ML}
   `{PartialAlter L A ML} `{PartialAlter L (list A) ML}
   `{FMap (const MK)} `{FMap (const ML)}
   (p : K -> L) (x : MK) :
-  Some (A := A) <$> map_pullback p x = hd_error <$> map_free_pullback p x.
+  Some (A := A) <$> map_something p x = hd_error <$> map_free_something p x.
 Proof. Admitted.
 
-Lemma map_pullback_fmap {K L A B MK ML : Type}
+Lemma map_something_fmap {K L A B MK ML : Type}
   `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L A ML}
   `{FMap (const MK)} `{FMap (const ML)}
   (p : K -> L) (f : A -> B) (x : MK) :
-  f <$> map_pullback p x = map_pullback p (f <$> x).
-Proof. cbv [map_pullback]. Admitted.
+  f <$> map_something p x = map_something p (f <$> x).
+Proof. cbv [map_something]. Admitted.
 
-Lemma map_free_pullback_fmap {K L A B MK ML : Type} {P : L -> A -> Prop}
+Lemma map_free_something_fmap {K L A B MK ML : Type} {P : L -> A -> Prop}
   `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
   `{Lookup K A MK} `{Lookup L (list A) ML}
   `{FMap (const MK)} `{FMap (const ML)}
   (p : K -> L) (f : A -> B) (x : MK) :
-  fmap f <$> map_free_pullback p x = map_free_pullback p (f <$> x).
+  fmap f <$> map_free_something p x = map_free_something p (f <$> x).
 Proof. Admitted.
 
-Lemma map_Forall_pullback {K L A MK ML : Type} {P : L -> A -> Prop}
+Lemma map_Forall_something {K L A MK ML : Type} {P : L -> A -> Prop}
   `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
   `{Lookup K A MK} `{Lookup L (list A) ML}
   (p : K -> L) (x : MK) :
   map_Forall (fun (i : K) (a : A) => P (p i) a) x <->
   map_Forall (fun (i : L) (a : list A) => Forall (P i) a)
-  (map_free_pullback (MK := MK) (ML := ML) p x).
+  (map_free_something (MK := MK) (ML := ML) p x).
 Proof. Admitted.
 
-Lemma map_Forall_pullback_const {K L A MK ML : Type} {P : A -> Prop}
+Lemma map_Forall_something_const {K L A MK ML : Type} {P : A -> Prop}
   `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
   `{Lookup K A MK} `{Lookup L (list A) ML}
   (p : K -> L) (x : MK) :
   map_Forall (const P) x <->
-  map_Forall (const (Forall P)) (map_free_pullback (MK := MK) (ML := ML) p x).
-Proof. exact (map_Forall_pullback p x). Defined.
+  map_Forall (const (Forall P)) (map_free_something (MK := MK) (ML := ML) p x).
+Proof. exact (map_Forall_something p x). Defined.
 
 (** Free product of two finite maps along their keys. *)
 
@@ -145,13 +148,13 @@ Definition map_proj1 {KA KB A B MA MB MAB : Type}
   `{FinMapToList (KA * KB) A MAB} `{Empty MA}
   `{FMap (const MA)} `{PartialAlter KA A MA}
   (x : MAB) : MA :=
-  @fst A B <$> map_pullback fst x.
+  @fst A B <$> map_something fst x.
 
 Definition map_proj1' {KA KB A B MA MB MAB : Type}
   `{FinMapToList (KA * KB) A MAB} `{Empty MA}
   `{FMap (const MAB)} `{PartialAlter KA A MA}
   (x : MAB) : MA :=
-  map_pullback fst (@fst A B <$> x).
+  map_something fst (@fst A B <$> x).
 
 Lemma map_free_prod_1 {KA KB A B MA MB MAB : Type}
   `{FinMapToList KA A MA} `{FinMapToList KB B MB}
@@ -178,13 +181,13 @@ Lemma map_free_prod_fmap {KA KB A B MA MB MAB A' B' MA' MB' MAB' : Type}
   prod_map f g <$> map_free_prod x y = map_free_prod (f <$> x) (g <$> y).
 Proof. Admitted.
 
-Check let map_pullback_prod_flip {KA KB KC A B C MA MB : Type}
+Check let map_something_prod_flip {KA KB KC A B C MA MB : Type}
   (p : KA -> KB -> KC) (f : A -> B -> C) (x : MA) (y : MB) :=
-  map_free_pullback (K := KA * KB) (L := KC) (A := C)
-  (uncurry p) (uncurry f <$> map_free_prod x y) =
-  map_free_pullback (K := KB * KA) (L := KC) (A := C)
-  (uncurry (flip p)) (uncurry (flip f) <$> map_free_prod y x) in
-  map_pullback_prod_flip.
+  map_free_something (K := KA * KB) (L := KC) (A := C)
+  (prod_curry p) (prod_curry f <$> map_free_prod x y) =
+  map_free_something (K := KB * KA) (L := KC) (A := C)
+  (prod_curry (flip p)) (prod_curry (flip f) <$> map_free_prod y x) in
+  map_something_prod_flip.
 
 Lemma filter_fmap {A B : Type} {M : Type -> Type}
   `{FMap M} `{Filter A (M A)} `{Filter B (M B)}
@@ -332,9 +335,9 @@ Next Obligation with conversions.
     as was the case with $x + y$. *)
 
 Program Definition poly_mul (x y : poly) : poly :=
-  exist poly_wf (filter (uncurry poly_value_wf)
-    (list_sum <$> map_free_pullback (uncurry add (A := N))
-      (uncurry mul <$> map_free_prod (`x) (`y)))) _.
+  exist poly_wf (filter (prod_curry poly_value_wf)
+    (list_sum <$> map_free_something (prod_curry add (A := N))
+      (prod_curry mul <$> map_free_prod (`x) (`y)))) _.
 Next Obligation.
   intros x y. apply bool_decide_pack.
   intros i a H. apply bool_decide_pack. intros Ha. subst a.
@@ -370,7 +373,7 @@ Next Obligation.
     $x_n = a \times x_n$ for all $n$. *)
 
 Program Definition poly_l_act (a : A) (x : poly) : poly :=
-  exist poly_wf (filter (uncurry poly_value_wf) (mul a <$> `x)) _.
+  exist poly_wf (filter (prod_curry poly_value_wf) (mul a <$> `x)) _.
 Next Obligation with conversions.
   intros a x. apply bool_decide_pack.
   intros i b H. apply bool_decide_pack. intros Hb. subst b.
@@ -386,7 +389,7 @@ Next Obligation with conversions.
     $x_n = x_n \times a$ for all $n$. *)
 
 Program Definition poly_r_act (x : poly) (a : A) : poly :=
-  exist poly_wf (filter (uncurry poly_value_wf) (flip mul a <$> `x)) _.
+  exist poly_wf (filter (prod_curry poly_value_wf) (flip mul a <$> `x)) _.
 Next Obligation with conversions.
   intros a x. apply bool_decide_pack.
   intros i b H. apply bool_decide_pack. intros Hb. subst b.
@@ -642,8 +645,8 @@ Proof with conversions.
   set (f (x y : gmap N A) :=
     filter P
     (list_sum <$>
-      map_free_pullback (K := N * N) (L := N) (uncurry add)
-        (uncurry mul <$>
+      map_free_something (K := N * N) (L := N) (prod_curry add)
+        (prod_curry mul <$>
           map_free_prod x y)) : gmap N A).
   enough (f (`x) (f (`y) (`z)) = f (f (`x) (`y)) (`z)) by assumption.
   destruct x as [m Wm]. cbn.

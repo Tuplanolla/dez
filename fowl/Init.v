@@ -3,34 +3,115 @@
 
 Global Set Warnings "-notation-overridden".
 
+(** We turn automatically inferred [Implicit Arguments] off,
+    but make them maximally inserted and conservatively detected
+    in case they are turned on in some local context. *)
+
+Set Maximal Implicit Insertion.
+Set Strict Implicit.
+Set Strongly Strict Implicit.
+Unset Contextual Implicit.
+Unset Reversible Pattern Implicit.
+
 (** We disable universe polymorphism until we really need it,
-    because it is experimental and comes with a performance penalty. *)
+    because it is experimental and
+    incurs a considerable performance penalty on type checking. *)
 
 Global Unset Universe Polymorphism.
 
-(** We export [Basics] to make its utility functions available everywhere,
+(** We export [Datatypes] and [Basics] to
+    make their utility functions available everywhere,
     import [Logic] to gain access to the [EqNotations] submodule and
     import [Setoid] to generalize the [rewrite] tactic. *)
 
 From Coq Require Export
-  Program.Basics.
+  Init.Datatypes Program.Basics.
 From Coq Require Import
   Init.Logic.
 From Coq Require Import
   Setoids.Setoid.
 
+(** We do not use implicit generalization,
+    because the consequences of accidental misuse
+    are worse than the convenience it permits. *)
+
+Global Generalizable No Variables.
+
+(** We do not allow automatic solution of obligations,
+    because we do not want the addition or removal of hints
+    to change the total number of obligations. *)
+
+Obligation Tactic := idtac.
+
+(** Using [o] as a variable name should be prohibited by law,
+    which is why we turn it into a notation. *)
+
+Reserved Notation "g 'o' f" (at level 40, left associativity).
+
+Notation "g 'o' f" := (compose g f) : core_scope.
+
 (** We define some additional utility functions. *)
 
-Definition curry {A B C : Type} (f : A * B -> C) (x : A) (y : B) : C :=
-  f (x, y).
+Definition sig_uncurry {A : Type} {P : A -> Prop} {C : Type}
+  (f : {x : A | P x} -> C) (x : A) (y : P x) : C :=
+  f (exist P x y).
 
-Definition uncurry {A B C : Type} (f : A -> B -> C) (xy : A * B) : C :=
-  f (fst xy) (snd xy).
+Definition sig_curry {A : Type} {P : A -> Prop} {C : Type}
+  (f : forall x : A, P x -> C) (xy : {x : A | P x}) : C :=
+  f (proj1_sig xy) (proj2_sig xy).
 
-(** We mark the utility functions transparent for unification. *)
+Definition sigT_uncurry {A : Type} {P : A -> Type} {C : Type}
+  (f : {x : A & P x} -> C) (x : A) (y : P x) : C :=
+  f (existT P x y).
+
+Definition sigT_curry {A : Type} {P : A -> Type} {C : Type}
+  (f : forall x : A, P x -> C) (xy : {x : A & P x}) : C :=
+  f (projT1 xy) (projT2 xy).
+
+(** We mark the utility functions transparent for unification and
+    provide some hints for simplifying them. *)
+
+Typeclasses Transparent andb orb implb xorb negb is_true option_map fst snd
+  prod_uncurry prod_curry length app ID id IDProp idProp.
 
 Typeclasses Transparent compose arrow impl const flip apply.
-Typeclasses Transparent curry uncurry.
+
+Typeclasses Transparent sig_uncurry sig_curry sigT_uncurry sigT_curry.
+
+Arguments andb !_ _.
+Arguments orb !_ _.
+Arguments implb !_ _.
+Arguments xorb !_ !_.
+Arguments negb !_.
+Arguments is_true !_.
+Arguments option_map {_ _} _ !_.
+Arguments fst {_ _} !_.
+Arguments snd {_ _} !_.
+Arguments prod_uncurry {_ _ _} _ _ _ /.
+Arguments prod_curry {_ _ _} _ !_.
+Arguments length {_} !_.
+Arguments app {_} !_ _.
+Arguments ID /.
+Arguments id _ _ /.
+Arguments IDProp /.
+Arguments idProp _ _ /.
+
+Arguments compose {_ _ _} _ _ _ /.
+Arguments arrow _ _ /.
+Arguments impl _ _ /.
+Arguments const {_ _} _ _ /.
+Arguments flip {_ _ _} _ _ _ /.
+Arguments apply {_ _} _ _ /.
+
+Arguments sig_uncurry {_ _ _} _ _ _ /.
+Arguments sig_curry {_ _ _} _ !_.
+Arguments sigT_uncurry {_ _ _} _ _ _ /.
+Arguments sigT_curry {_ _ _} _ !_.
+
+(** We only use obligations to define local lemmas,
+    which is why we do not want to see them in [Search] results. *)
+
+Add Search Blacklist "_obligation_".
 
 (** We export the [rew] notations to use them like a transport lemma. *)
 

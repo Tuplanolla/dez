@@ -19,7 +19,7 @@ From Maniunfold.ShouldOffer Require Import
 
 Import ListNotations.
 
-Fixpoint Nseq (start len : N) : list N :=
+Definition Nseq (start len : N) : list N :=
   map N.of_nat (seq (N.to_nat start) (N.to_nat len)).
 
 (* From Coq Require Import
@@ -62,7 +62,7 @@ Definition proper (p : tensor) : Prop :=
 Definition Add (p q : tensor) : tensor := {|
   ht := Addition.add (ht p) (ht q);
   tt := Map.map2 (fun (as' bs : option (list B)) => match as', bs with
-    | Some a, Some b => Some (List.map (uncurry Addition.add) (combine a b))
+    | Some a, Some b => Some (List.map (prod_curry Addition.add) (combine a b))
     | Some a, None => Some a
     | None, Some b => Some b
     | None, None => None
@@ -88,7 +88,7 @@ Definition GrdMul (ps qs : tensor) : tensor :=
       fold_right (fun (l : nat) (s : t (list B)) => match Map.find (Pos.of_nat k) s with
         | Some u => Map.add (Pos.of_nat k) (app u
           match Map.find (Pos.of_nat l) p, Map.find (Pos.of_nat (Nat.sub k l)) q with
-          | Some a, Some b => app a b (* List.map (uncurry Addition.add) (combine a b) *)
+          | Some a, Some b => app a b (* List.map (prod_uncurry Addition.add) (combine a b) *)
           | _, _ => nil
           end) s
         | None => Map.add (Pos.of_nat k)

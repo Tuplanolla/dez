@@ -50,11 +50,11 @@ Class IsFourFreeBimod (X A B C : Type)
       Luckily, in this case, it already is. *)
   (* x = a0 L* e0 + a1 L* e1 + ... + an L* en *)
   l_gen_set : forall x : C, exists f : X -> A,
-    x = sum (map (uncurry l_act) (combine (map f enum) (map basis enum)));
+    x = sum (map (prod_curry l_act) (combine (map f enum) (map basis enum)));
   (* 0 = a0 L* e0 + a1 L* e1 + ... + an L* en ->
      0 = a0 /\ 0 = a1 /\ ... /\ 0 = an *)
   l_lin_indep : forall f : X -> A,
-    zero = sum (map (uncurry l_act) (combine (map f enum) (map basis enum))) ->
+    zero = sum (map (prod_curry l_act) (combine (map f enum) (map basis enum))) ->
     Forall (eq zero) (map f enum);
   (** TODO Repeat for the other chirality. *)
 }.
