@@ -7,9 +7,14 @@ From Maniunfold.Has Require Export
 
 Class HasBinOp (A : Type) : Type := bin_op : A -> A -> A.
 
+Hint Mode HasBinOp ! : typeclass_instances.
+
 Typeclasses Transparent HasBinOp.
 
-(** TODO Check these superclasses.
+Arguments bin_op {_ _} !_ !_.
+
+(** TODO Hint modes and arguments.
+    Also check these superclasses.
     Will give the following error if omitted.
 
 <<
@@ -40,7 +45,7 @@ A_B_has_r_act : HasRAct A B
 
 Section Context.
 
-Context {A : Type} `{A_has_bin_op : HasBinOp A}.
+Context {A : Type} `{HasBinOp A}.
 
 Global Instance A_A_has_l_act : HasLAct A A := bin_op.
 Global Instance A_A_has_r_act : HasRAct A A := bin_op.
