@@ -9,8 +9,8 @@ From Maniunfold.ShouldHave Require Import
 
 Section Context.
 
-Context {A : Type} {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}
-  {A_has_un_op : HasUnOp A}.
+Context {A : Type} `{A_has_bin_op : HasBinOp A} `{A_has_null_op : HasNullOp A}
+  `{A_has_un_op : HasUnOp A}.
 
 Definition z_op (n : Z) (x : A) : A :=
   match n with

@@ -12,7 +12,7 @@ Typeclasses Transparent HasLAct.
 
 Section Context.
 
-Context {A B : Type} `{A_B_has_l_act : HasLAct A B}.
+Context {A B : Type} `{HasLAct A B}.
 
 Global Instance A_B_B_has_bin_fn : HasBinFn A B B := l_act.
 

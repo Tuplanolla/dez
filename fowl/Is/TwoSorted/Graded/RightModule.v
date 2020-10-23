@@ -12,15 +12,15 @@ From Maniunfold.Is Require Export
     See [Is.TwoSorted.Graded.LeftModule]. *)
 
 Class IsGrdRMod {A : Type} (P Q : A -> Type)
-  {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}
-  (P_has_add : forall i : A, HasAdd (P i))
-  (P_has_zero : forall i : A, HasZero (P i))
-  (P_has_neg : forall i : A, HasNeg (P i))
-  (P_has_grd_mul : HasGrdMul P) (P_has_grd_one : HasGrdOne P)
-  (Q_has_add : forall i : A, HasAdd (Q i))
-  (Q_has_zero : forall i : A, HasZero (Q i))
-  (Q_has_neg : forall i : A, HasNeg (Q i))
-  (P_Q_has_grd_r_act : HasGrdRAct P Q) : Prop := {
+  `{HasBinOp A} `{HasNullOp A}
+  `(P_has_add : forall i : A, HasAdd (P i))
+  `(P_has_zero : forall i : A, HasZero (P i))
+  `(P_has_neg : forall i : A, HasNeg (P i))
+  `(!@HasGrdMul A P bin_op) `(!@HasGrdOne A P null_op)
+  `(Q_has_add : forall i : A, HasAdd (Q i))
+  `(Q_has_zero : forall i : A, HasZero (Q i))
+  `(Q_has_neg : forall i : A, HasNeg (Q i))
+  `(!@HasGrdRAct A P Q bin_op) : Prop := {
   P_add_zero_neg_mul_one_is_grd_ring :>
     IsGrdRing P P_has_add P_has_zero P_has_neg grd_mul grd_one;
   Q_add_zero_neg_is_ab_grp :> forall i : A,

@@ -10,24 +10,24 @@ From Maniunfold.ShouldHave Require Import
 
 (** Group, invertible monoid. *)
 
-Class IsGrp (A : Type) (A_has_bin_op : HasBinOp A)
-  (A_has_null_op : HasNullOp A) (A_has_un_op : HasUnOp A) : Prop := {
+Class IsGrp (A : Type) `(HasBinOp A)
+  `(HasNullOp A) `(HasUnOp A) : Prop := {
   A_bin_op_null_op_is_mon :> IsMon A bin_op null_op;
   A_bin_op_null_op_un_op_is_inv :> IsInv A bin_op null_op un_op;
 }.
 
 Section Context.
 
-Context {A : Type} `{is_grp : IsGrp A}.
+Context {A : Type} `{IsGrp A}.
 
 Theorem A_bin_op_l_cancel : forall x y z : A,
   z + x = z + y -> x = y.
 Proof.
-  intros x y z H.
+  intros x y z Hyp.
   rewrite <- (l_unl x).
   rewrite <- (l_inv z).
   rewrite <- (assoc (- z) z x).
-  rewrite H.
+  rewrite Hyp.
   rewrite (assoc (- z) z y).
   rewrite (l_inv z).
   rewrite (l_unl y).
@@ -39,11 +39,11 @@ Proof. intros x y z. apply A_bin_op_l_cancel. Defined.
 Theorem A_bin_op_r_cancel : forall x y z : A,
   x + z = y + z -> x = y.
 Proof.
-  intros x y z H.
+  intros x y z Hyp.
   rewrite <- (r_unl x).
   rewrite <- (r_inv z).
   rewrite (assoc x z (- z)).
-  rewrite H.
+  rewrite Hyp.
   rewrite <- (assoc y z (- z)).
   rewrite (r_inv z).
   rewrite (r_unl y).
@@ -74,10 +74,10 @@ Proof. intros x y. apply A_bin_op_un_op_un_antidistr. Defined.
 Theorem A_un_op_inj : forall x y : A,
   - x = - y -> x = y.
 Proof.
-  intros x y H.
+  intros x y Hyp.
   rewrite <- (l_unl y).
   rewrite <- (r_inv x).
-  rewrite H.
+  rewrite Hyp.
   rewrite <- (assoc x (- y) y).
   rewrite (l_inv y).
   rewrite (r_unl x).

@@ -12,7 +12,7 @@ Local Open Scope N_scope.
 
 Section Context.
 
-Context {A : Type} `{A_is_fin : IsFin A}.
+Context {A : Type} `{IsFin A}.
 
 Import N.
 

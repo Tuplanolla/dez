@@ -8,7 +8,7 @@ From Maniunfold.ShouldHave Require Import
   OneSorted.OrderRelationNotations.
 
 Class IsTotOrd (A : Type)
-  (A_has_ord_rel : HasOrdRel A) : Prop := {
+  `(HasOrdRel A) : Prop := {
   A_ord_is_antisym :> IsAntisym A ord_rel;
   A_ord_is_connex :> IsConnex A ord_rel;
   A_ord_is_trans :> IsTrans A ord_rel;
@@ -16,7 +16,7 @@ Class IsTotOrd (A : Type)
 
 Section Context.
 
-Context {A : Type} `{is_tot_ord : IsTotOrd A}.
+Context {A : Type} `{IsTotOrd A}.
 
 Ltac conversions := typeclasses
   convert bin_rel into ord_rel.
@@ -24,9 +24,9 @@ Ltac conversions := typeclasses
 Theorem A_ord_rel_refl : forall x : A,
   x <= x.
 Proof with conversions.
-  intros x. destruct (connex x x) as [H | H]...
-  - apply H.
-  - apply H. Defined.
+  intros x. destruct (connex x x) as [Hyp | Hyp]...
+  - apply Hyp.
+  - apply Hyp. Defined.
 
 Global Instance A_ord_rel_is_refl : IsRefl A ord_rel.
 Proof. intros x. apply A_ord_rel_refl. Defined.

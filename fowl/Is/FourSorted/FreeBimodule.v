@@ -28,19 +28,19 @@ Typeclasses Transparent HasBasis.
 (** TODO Find a way to clean these properties up by refactoring stuff. *)
 
 Definition sum {A : Type}
-  {A_has_add : HasAdd A} {A_has_zero : HasZero A} : list A -> A :=
+  `{HasAdd A} `{HasZero A} : list A -> A :=
   fold_right add zero.
 
 (** TODO See if freeness is a good standalone property. *)
 
 Class IsFourFreeBimod (X A B C : Type)
-  {X_has_enum : HasEnum X} (X_C_has_basis : HasBasis X C)
-  (A_has_add : HasAdd A) (A_has_zero : HasZero A) (A_has_neg : HasNeg A)
-  (A_has_mul : HasMul A) (A_has_one : HasOne A)
-  (B_has_add : HasAdd B) (B_has_zero : HasZero B) (B_has_neg : HasNeg B)
-  (B_has_mul : HasMul B) (B_has_one : HasOne B)
-  (C_has_add : HasAdd C) (C_has_zero : HasZero C) (C_has_neg : HasNeg C)
-  (A_C_has_l_act : HasLAct A C) (B_C_has_r_act : HasRAct B C) : Prop := {
+  `{HasEnum X} `(HasBasis X C)
+  `(HasAdd A) `(HasZero A) `(HasNeg A)
+  `(HasMul A) `(HasOne A)
+  `(HasAdd B) `(HasZero B) `(HasNeg B)
+  `(HasMul B) `(HasOne B)
+  `(HasAdd C) `(HasZero C) `(HasNeg C)
+  `(HasLAct A C) `(HasRAct B C) : Prop := {
   X_is_b_fin :> IsBFin X;
   A_B_C_add_zero_neg_mul_one_add_zero_neg_mul_one_add_zero_neg_l_act_r_act_is_three_bimod
     :> IsThreeBimod A B C

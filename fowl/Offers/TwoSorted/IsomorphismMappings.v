@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
 
 Section Context.
 
-Context {A B : Type} {A_B_has_iso : HasIso A B}.
+Context {A B : Type} `{HasIso A B}.
 
 (** Section, forward mapping. *)
 

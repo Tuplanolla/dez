@@ -10,7 +10,7 @@ Typeclasses Transparent HasBot.
 
 Section Context.
 
-Context {A : Type} `{A_has_bot : HasBot A}.
+Context {A : Type} `{HasBot A}.
 
 Global Instance A_has_null_op : HasNullOp A := bot.
 

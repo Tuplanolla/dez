@@ -14,13 +14,13 @@ Local Open Scope N_scope.
 
 (** TODO Perhaps define another notation for [HasIso A {n : N | ...}]. *)
 
-Class IsFin (A : Type) {A_has_card : HasCard A}
-  {A_has_iso : HasIso A {n : N | n < card A}} : Prop :=
+Class IsFin (A : Type) `{HasCard A}
+  `{HasIso A {n : N | n < card A}} : Prop :=
   A_iso_is_iso :> IsIso A {n : N | n < card A} iso.
 
 Module Export Bishop.
 
-Class IsBFin (A : Type) {A_has_enum : HasEnum A} : Prop := {
+Class IsBFin (A : Type) `{HasEnum A} : Prop := {
   full : Full enum;
   no_dup : NoDup enum;
 }.
@@ -29,7 +29,7 @@ End Bishop.
 
 Module Export Kuratowski.
 
-Class IsKFin (A : Type) {A_has_enum : HasEnum A} : Prop := {
+Class IsKFin (A : Type) `{HasEnum A} : Prop := {
   full : Full enum;
 }.
 

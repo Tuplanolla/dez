@@ -5,7 +5,7 @@ From Maniunfold.Has Require Export
 
 Section Context.
 
-Context {A : Type} {A_has_bin_op : HasBinOp A}.
+Context {A : Type} `{A_has_bin_op : HasBinOp A}.
 
 Import Pos.
 

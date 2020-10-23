@@ -10,7 +10,7 @@ Typeclasses Transparent HasRecip.
 
 Section Context.
 
-Context {A : Type} `{A_has_recip : HasRecip A}.
+Context {A : Type} `{HasRecip A}.
 
 Global Instance A_has_un_op : HasUnOp A := recip.
 

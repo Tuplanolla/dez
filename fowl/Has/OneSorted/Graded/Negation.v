@@ -7,14 +7,14 @@ From Maniunfold.ShouldHave Require Import
     See [Has.OneSorted.Negation]. *)
 
 Class HasGrdNeg {A : Type} (P : A -> Type)
-  {A_has_un_op : HasUnOp A} : Type :=
+  `{HasUnOp A} : Type :=
   grd_neg : forall i : A, P i -> P (- i).
 
 Typeclasses Transparent HasGrdNeg.
 
 Section Context.
 
-Context {A : Type} {P : A -> Type} `{P_has_grd_neg : HasGrdNeg A P}.
+Context {A : Type} {P : A -> Type} `{HasGrdNeg A P}.
 
 Global Instance P_has_grd_un_op : HasGrdUnOp P := grd_neg.
 

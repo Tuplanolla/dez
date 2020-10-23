@@ -9,8 +9,8 @@ From Maniunfold.ShouldHave Require Import
 (** Noncommutative semiring. *)
 
 Class IsSring (A : Type)
-  (A_has_add : HasAdd A) (A_has_zero : HasZero A)
-  (A_has_mul : HasMul A) (A_has_one : HasOne A) : Prop := {
+  `(HasAdd A) `(HasZero A)
+  `(HasMul A) `(HasOne A) : Prop := {
   A_add_is_comm :> IsComm A add;
   A_add_zero_is_mon :> IsMon A add zero;
   A_add_mul_is_distr :> IsDistr A add mul;
@@ -20,7 +20,7 @@ Class IsSring (A : Type)
 
 Section Context.
 
-Context {A : Type} `{is_sring : IsSring A}.
+Context {A : Type} `{IsSring A}.
 
 Ltac conversions := typeclasses
   convert bin_op into add and null_op into zero or
@@ -28,10 +28,10 @@ Ltac conversions := typeclasses
 
 Goal 0 = 1 -> forall x y : A, x = y.
 Proof with conversions.
-  intros H x y.
-  rewrite <- (l_unl (A_has_null_op := 1) x)...
-  rewrite <- (l_unl (A_has_null_op := 1) y)...
-  rewrite <- H.
+  intros Hyp x y.
+  rewrite <- (l_unl (H0 := 1) x)...
+  rewrite <- (l_unl (H0 := 1) y)...
+  rewrite <- Hyp.
   rewrite (l_absorb x).
   rewrite (l_absorb y).
   reflexivity. Defined.

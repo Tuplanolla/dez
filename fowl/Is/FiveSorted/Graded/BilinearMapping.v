@@ -17,27 +17,27 @@ From Maniunfold.Is Require Export
     See [Is.FiveSorted.BilinearMapping]. *)
 
 Class IsGrdBilinMap {A : Type} (P Q R S T : A -> Type)
-  {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}
-  (P_has_add : forall i : A, HasAdd (P i))
-  (P_has_zero : forall i : A, HasZero (P i))
-  (P_has_neg : forall i : A, HasNeg (P i))
-  (P_has_grd_mul : HasGrdMul P) (P_has_grd_one : HasGrdOne P)
-  (Q_has_add : forall i : A, HasAdd (Q i))
-  (Q_has_zero : forall i : A, HasZero (Q i))
-  (Q_has_neg : forall i : A, HasNeg (Q i))
-  (Q_has_grd_mul : HasGrdMul Q) (Q_has_grd_one : HasGrdOne Q)
-  (R_has_add : forall i : A, HasAdd (R i))
-  (R_has_zero : forall i : A, HasZero (R i))
-  (R_has_neg : forall i : A, HasNeg (R i))
-  (S_has_add : forall i : A, HasAdd (S i))
-  (S_has_zero : forall i : A, HasZero (S i))
-  (S_has_neg : forall i : A, HasNeg (S i))
-  (T_has_add : forall i : A, HasAdd (T i))
-  (T_has_zero : forall i : A, HasZero (T i))
-  (T_has_neg : forall i : A, HasNeg (T i))
-  (P_R_has_grd_l_act : HasGrdLAct P R) (Q_S_has_grd_r_act : HasGrdRAct Q S)
-  (P_T_has_grd_l_act : HasGrdLAct P T) (Q_T_has_grd_r_act : HasGrdRAct Q T)
-  (R_S_T_has_grd_bin_fn : HasGrdBinFn R S T) : Prop := {
+  `{HasBinOp A} `{HasNullOp A}
+  `(P_has_add : forall i : A, HasAdd (P i))
+  `(P_has_zero : forall i : A, HasZero (P i))
+  `(P_has_neg : forall i : A, HasNeg (P i))
+  `(!@HasGrdMul A P bin_op) `(!@HasGrdOne A P null_op)
+  `(Q_has_add : forall i : A, HasAdd (Q i))
+  `(Q_has_zero : forall i : A, HasZero (Q i))
+  `(Q_has_neg : forall i : A, HasNeg (Q i))
+  `(!@HasGrdMul A Q bin_op) `(!@HasGrdOne A Q null_op)
+  `(R_has_add : forall i : A, HasAdd (R i))
+  `(R_has_zero : forall i : A, HasZero (R i))
+  `(R_has_neg : forall i : A, HasNeg (R i))
+  `(S_has_add : forall i : A, HasAdd (S i))
+  `(S_has_zero : forall i : A, HasZero (S i))
+  `(S_has_neg : forall i : A, HasNeg (S i))
+  `(T_has_add : forall i : A, HasAdd (T i))
+  `(T_has_zero : forall i : A, HasZero (T i))
+  `(T_has_neg : forall i : A, HasNeg (T i))
+  `(!@HasGrdLAct A P R bin_op) `(!@HasGrdRAct A Q S bin_op)
+  `(!@HasGrdLAct A P T bin_op) `(!@HasGrdRAct A Q T bin_op)
+  `(!@HasGrdBinFn A R S T bin_op) : Prop := {
   P_R_add_zero_neg_grd_mul_grd_one_add_zero_neg_grd_l_act_is_grd_l_mod :>
     IsGrdLMod P R P_has_add P_has_zero P_has_neg grd_mul grd_one
     R_has_add R_has_zero R_has_neg grd_l_act;

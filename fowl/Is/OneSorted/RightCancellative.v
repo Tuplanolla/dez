@@ -3,5 +3,5 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   OneSorted.AdditiveNotations.
 
-Class IsRCancel (A : Type) (A_has_bin_op : HasBinOp A) : Prop :=
+Class IsRCancel (A : Type) `(HasBinOp A) : Prop :=
   r_cancel : forall x y z : A, x + z = y + z -> x = y.

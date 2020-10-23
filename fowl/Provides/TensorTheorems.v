@@ -48,7 +48,7 @@ Definition Map_max_key_def {A : Type} (d : key) (xs : Map.t A) : key :=
 
 Section Context.
 
-Context {A B : Type} `{is_two_bimod : IsTwoBimod A B}.
+Context {A B : Type} `{IsTwoBimod A B}.
 
 Record tensor : Type := {
   ht : A;
@@ -116,7 +116,7 @@ Global Instance N_has_bin_op : HasBinOp N := N.add.
 Global Instance N_has_null_op : HasNullOp N := N.zero.
 
 Check IsGrdAlg (A := N) (fun n : N => A) (fun n : N => tensor)
-  (A_has_bin_op := N_has_bin_op) (A_has_null_op := N_has_null_op)
+  (H := N_has_bin_op) (H0 := N_has_null_op)
   (fun n : N => Addition.add) (fun n : N => zero) (fun n : N => neg)
   (fun n p : N => mul) one
   (fun n : N => Add) (fun n : N => Zero) (fun n : N => Neg)
@@ -127,7 +127,7 @@ Check IsGrdAlg (A := N) (fun n : N => A) (fun n : N => tensor)
 
 Global Instance lensor_is_grd_alg :
   IsGrdAlg (A := N) (fun n : N => A) (fun n : N => tensor)
-  (A_has_bin_op := N_has_bin_op) (A_has_null_op := N_has_null_op)
+  (H := N_has_bin_op) (H0 := N_has_null_op)
   (fun n : N => Addition.add) (fun n : N => zero) (fun n : N => neg)
   (fun n p : N => mul) one
   (fun n : N => Add) (fun n : N => Zero) (fun n : N => Neg)

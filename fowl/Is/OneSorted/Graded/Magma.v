@@ -5,6 +5,6 @@ From Maniunfold.Is Require Export
   OneSorted.Magma.
 
 Class IsGrdMag {A : Type} (P : A -> Type)
-  {A_has_bin_op : HasBinOp A} (P_has_grd_bin_op : HasGrdBinOp P) : Prop := {
+  `{HasBinOp A} `(HasGrdBinOp A P) : Prop := {
   A_bin_op_is_mag :> IsMag A bin_op;
 }.

@@ -233,7 +233,7 @@ Section Context.
 Import OneSorted.ArithmeticNotations.
 Import OneSorted.ArithmeticOperationNotations.
 
-Context {A : Type} `{is_ring : IsRing A} `{eq_dec : EqDecision A}.
+Context {A : Type} `{IsRing A} `{eq_dec : EqDecision A}.
 
 (** We cannot keep zero values in the map,
     because they would break definitional equality and
@@ -247,9 +247,9 @@ Definition poly : Type := {m : gmap N A | poly_wf m}.
 Lemma poly_lookup_wf : forall (x : poly) (i : N),
   `x !! i <> Some 0.
 Proof.
-  intros [x Wp] i. intros H.
+  intros [x Wp] i. intros Hyp.
   pose proof Wp as Wp'. apply bool_decide_unpack in Wp'.
-  pose proof map_Forall_lookup_1 poly_value_wf x i 0 Wp' H as Wc.
+  pose proof map_Forall_lookup_1 poly_value_wf x i 0 Wp' Hyp as Wc.
   apply bool_decide_unpack in Wc. apply Wc. reflexivity. Defined.
 
 Ltac stabilize :=
@@ -288,9 +288,9 @@ Program Definition poly_add (x y : poly) : poly :=
     if decide (c <> 0) then Some c else None) (`x) (`y)) _.
 Next Obligation.
   intros x y. apply bool_decide_pack.
-  intros i a H. apply bool_decide_pack. intros Ha. subst a.
-  apply lookup_union_with_Some in H. cbn in H.
-  destruct H as [[Hx Hy] | [[Hx Hy] | [a [b [Hx [Hy Hxy]]]]]].
+  intros i a Hyp. apply bool_decide_pack. intros Ha. subst a.
+  apply lookup_union_with_Some in Hyp. cbn in Hyp.
+  destruct Hyp as [[Hx Hy] | [[Hx Hy] | [a [b [Hx [Hy Hxy]]]]]].
   - apply (poly_lookup_wf x i Hx).
   - apply (poly_lookup_wf y i Hy).
   - cbv zeta in Hxy. destruct (decide (a + b <> 0)) as [Fab | Fab]; stabilize.
@@ -305,9 +305,9 @@ Next Obligation.
 Program Definition poly_zero : poly := exist poly_wf empty _.
 Next Obligation.
   apply bool_decide_pack.
-  intros i a H. apply bool_decide_pack. intros Ha. subst a.
-  apply lookup_empty_Some in H.
-  destruct H. Defined.
+  intros i a Hyp. apply bool_decide_pack. intros Ha. subst a.
+  apply lookup_empty_Some in Hyp.
+  destruct Hyp. Defined.
 
 (** Negation of polynomials.
 
@@ -318,10 +318,10 @@ Program Definition poly_neg (x : poly) : poly :=
   exist poly_wf (neg <$> `x) _.
 Next Obligation with conversions.
   intros x. apply bool_decide_pack.
-  intros i a H. apply bool_decide_pack. intros Ha. subst a.
-  rewrite lookup_fmap in H.
-  pose proof fmap_Some_1 _ _ _ H as H'.
-  destruct H' as [a [Hx Hy]].
+  intros i a Hyp. apply bool_decide_pack. intros Ha. subst a.
+  rewrite lookup_fmap in Hyp.
+  pose proof fmap_Some_1 _ _ _ Hyp as Hyp'.
+  destruct Hyp' as [a [Hx Hy]].
   rewrite <- un_absorb in Hy... apply inj in Hy. subst a.
   apply (poly_lookup_wf x i Hx). Defined.
 
@@ -340,9 +340,9 @@ Program Definition poly_mul (x y : poly) : poly :=
       (prod_curry mul <$> map_free_prod (`x) (`y)))) _.
 Next Obligation.
   intros x y. apply bool_decide_pack.
-  intros i a H. apply bool_decide_pack. intros Ha. subst a.
-  apply map_filter_lookup_Some in H.
-  destruct H as [H Wc].
+  intros i a Hyp. apply bool_decide_pack. intros Ha. subst a.
+  apply map_filter_lookup_Some in Hyp.
+  destruct Hyp as [Hyp Wc].
   apply bool_decide_unpack in Wc. apply Wc. reflexivity. Defined.
 
 (** Unit polynomial.
@@ -354,13 +354,13 @@ Program Definition poly_one : poly :=
   exist poly_wf (if decide (1 <> 0) then singletonM 0 1 else empty) _.
 Next Obligation.
   apply bool_decide_pack.
-  intros i a H. apply bool_decide_pack. intros Ha. subst a.
+  intros i a Hyp. apply bool_decide_pack. intros Ha. subst a.
   destruct (decide (1 <> 0)) as [F10 | F10]; stabilize.
-  - rewrite lookup_singleton_ne in H.
-    + inversion H.
-    + intros Hi. subst i. rewrite lookup_singleton in H. inversion H as [H10].
+  - rewrite lookup_singleton_ne in Hyp.
+    + inversion Hyp.
+    + intros Hi. subst i. rewrite lookup_singleton in Hyp. inversion Hyp as [H10].
       apply F10. apply H10.
-  - rewrite lookup_empty in H. inversion H. Defined.
+  - rewrite lookup_empty in Hyp. inversion Hyp. Defined.
 
 (** We could use the zero-product property to speed up computations here,
     but not fully, because our ring may not be a domain. *)
@@ -376,9 +376,9 @@ Program Definition poly_l_act (a : A) (x : poly) : poly :=
   exist poly_wf (filter (prod_curry poly_value_wf) (mul a <$> `x)) _.
 Next Obligation with conversions.
   intros a x. apply bool_decide_pack.
-  intros i b H. apply bool_decide_pack. intros Hb. subst b.
-  apply map_filter_lookup_Some in H.
-  destruct H as [H Wc].
+  intros i b Hyp. apply bool_decide_pack. intros Hb. subst b.
+  apply map_filter_lookup_Some in Hyp.
+  destruct Hyp as [Hyp Wc].
   apply bool_decide_unpack in Wc. apply Wc. reflexivity. Defined.
 
 (** Right scalar multiplication of polynomials.
@@ -392,9 +392,9 @@ Program Definition poly_r_act (x : poly) (a : A) : poly :=
   exist poly_wf (filter (prod_curry poly_value_wf) (flip mul a <$> `x)) _.
 Next Obligation with conversions.
   intros a x. apply bool_decide_pack.
-  intros i b H. apply bool_decide_pack. intros Hb. subst b.
-  apply map_filter_lookup_Some in H.
-  destruct H as [H Wc].
+  intros i b Hyp. apply bool_decide_pack. intros Hb. subst b.
+  apply map_filter_lookup_Some in Hyp.
+  destruct Hyp as [Hyp Wc].
   apply bool_decide_unpack in Wc. apply Wc. reflexivity. Defined.
 
 End Context.
@@ -445,7 +445,7 @@ Import OneSorted.ArithmeticNotations.
 
 Section Context.
 
-Context {A : Type} `{is_ring : IsRing A} `{eq_dec : EqDecision A}.
+Context {A : Type} `{IsRing A} `{eq_dec : EqDecision A}.
 
 (** Performing this specialization by hand aids type inference. *)
 
@@ -612,7 +612,7 @@ Import OneSorted.ArithmeticNotations.
 
 Section Context.
 
-Context {A : Type} `{is_ring : IsRing A} `{eq_dec : EqDecision A}.
+Context {A : Type} `{IsRing A} `{eq_dec : EqDecision A}.
 
 Let poly := poly (A := A).
 
@@ -653,7 +653,7 @@ Proof with conversions.
   generalize dependent m.
   apply (map_ind (fun m : gmap N A => poly_wf m → f m (f (`y) (`z)) = f (f m (`y)) (`z))).
   - intros W. cbv [f]. reflexivity.
-  - intros i x m H IH W. cbv [f]. Admitted.
+  - intros i x m Hyp IH W. cbv [f]. Admitted.
 
 Global Instance poly_bin_op_is_sgrp : IsSgrp poly bin_op.
 Proof. split; typeclasses eauto. Defined.
@@ -695,7 +695,7 @@ Import OneSorted.ArithmeticOperationNotations.
 
 Section Context.
 
-Context {A : Type} `{is_ring : IsRing A} `{eq_dec : EqDecision A}.
+Context {A : Type} `{IsRing A} `{eq_dec : EqDecision A}.
 
 Let poly := poly (A := A).
 
@@ -801,23 +801,25 @@ Definition poly_grd (i : N) : Type := A.
 Global Instance poly_has_grd_mul : HasGrdMul poly_grd := fun i j : N => mul.
 Global Instance poly_has_grd_one : HasGrdOne poly_grd := one.
 
+(** TODO Should never reference implicitly named variables like this. *)
+
 Global Instance poly_is_grd_assoc :
-  IsGrdAssoc poly_grd (A_has_bin_op := Additive.N_has_bin_op) grd_mul.
+  IsGrdAssoc poly_grd (H := Additive.N_has_bin_op) grd_mul.
 Proof.
   esplit. intros i j k x y z. cbv [poly_grd]. rewrite rew_const.
   cbv [grd_bin_op grd_mul poly_has_grd_mul]. apply assoc. Defined.
 
 Global Instance poly_is_grd_l_unl :
-  IsGrdLUnl poly_grd (A_has_bin_op := Additive.N_has_bin_op)
-  (A_has_null_op := Additive.N_has_null_op) grd_mul grd_one.
+  IsGrdLUnl poly_grd (H := Additive.N_has_bin_op)
+  (H0 := Additive.N_has_null_op) grd_mul grd_one.
 Proof.
   esplit. intros i x. cbv [poly_grd]. rewrite rew_const.
   cbv [grd_bin_op grd_mul poly_has_grd_mul
     grd_null_op grd_one poly_has_grd_one]. apply l_unl. Defined.
 
 Global Instance poly_is_grd_r_unl :
-  IsGrdRUnl poly_grd (A_has_bin_op := Additive.N_has_bin_op)
-  (A_has_null_op := Additive.N_has_null_op) grd_mul grd_one.
+  IsGrdRUnl poly_grd (H := Additive.N_has_bin_op)
+  (H0 := Additive.N_has_null_op) grd_mul grd_one.
 Proof.
   esplit. intros i x. cbv [poly_grd]. rewrite rew_const.
   cbv [grd_bin_op grd_mul poly_has_grd_mul

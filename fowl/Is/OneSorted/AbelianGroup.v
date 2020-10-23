@@ -8,15 +8,15 @@ From Maniunfold.ShouldHave Require Import
 
 (** Abelian group, commutative group. *)
 
-Class IsAbGrp (A : Type) (A_has_bin_op : HasBinOp A)
-  (A_has_null_op : HasNullOp A) (A_has_un_op : HasUnOp A) : Prop := {
+Class IsAbGrp (A : Type) `(HasBinOp A)
+  `(HasNullOp A) `(HasUnOp A) : Prop := {
   A_bin_op_is_comm :> IsComm A bin_op;
   A_bin_op_null_op_un_op_is_grp :> IsGrp A bin_op null_op un_op;
 }.
 
 Section Context.
 
-Context {A : Type} `{is_ab_grp : IsAbGrp A}.
+Context {A : Type} `{IsAbGrp A}.
 
 Theorem A_bin_op_un_op_un_distr : forall x y : A,
   - (x + y) = - x + - y.

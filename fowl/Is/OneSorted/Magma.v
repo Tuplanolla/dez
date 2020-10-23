@@ -3,4 +3,4 @@ From Maniunfold.Has Require Export
 
 (** Magma, groupoid, binary operation. *)
 
-Class IsMag (A : Type) (A_has_bin_op : HasBinOp A) : Prop := {}.
+Class IsMag (A : Type) `(HasBinOp A) : Prop := {}.

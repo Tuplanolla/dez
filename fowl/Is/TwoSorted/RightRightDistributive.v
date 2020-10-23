@@ -7,5 +7,5 @@ From Maniunfold.ShouldHave Require Import
 Local Open Scope r_mod_scope.
 
 Class IsTwoRRDistr (A B : Type)
-  (B_has_add : HasAdd B) (A_B_has_r_act : HasRAct A B) : Prop :=
+  `(HasAdd B) `(HasRAct A B) : Prop :=
   two_r_r_distr : forall (a : A) (x y : B), (x + y) * a = x * a + y * a.

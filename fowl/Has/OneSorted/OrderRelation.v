@@ -9,7 +9,7 @@ Typeclasses Transparent HasOrdRel.
 
 Section Context.
 
-Context {A : Type} `{A_has_ord_rel : HasOrdRel A}.
+Context {A : Type} `{HasOrdRel A}.
 
 Global Instance A_has_bin_rel : HasBinRel A := ord_rel.
 

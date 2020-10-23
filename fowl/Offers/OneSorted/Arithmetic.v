@@ -6,7 +6,7 @@ From Maniunfold.ShouldHave Require Import
 
 Section Context.
 
-Context {A : Type} {A_has_add : HasAdd A} {A_has_neg : HasNeg A}.
+Context {A : Type} `{HasAdd A} `{HasNeg A}.
 
 (** Subtraction, difference, minus. *)
 
@@ -16,7 +16,7 @@ End Context.
 
 Section Context.
 
-Context {A : Type} {A_has_mul : HasMul A} {A_has_recip : HasRecip A}.
+Context {A : Type} `{HasMul A} `{HasRecip A}.
 
 (** Division, ratio, obelus. *)
 

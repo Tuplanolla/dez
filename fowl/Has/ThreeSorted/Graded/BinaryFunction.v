@@ -7,7 +7,7 @@ From Maniunfold.ShouldHave Require Import
     See [Has.ThreeSorted.BinaryFunction]. *)
 
 Class HasGrdBinFn {A : Type} (P Q R : A -> Type)
-  {A_has_bin_op : HasBinOp A} : Type :=
+  `{HasBinOp A} : Type :=
   grd_bin_fn : forall i j : A, P i -> Q j -> R (i + j).
 
 Typeclasses Transparent HasGrdBinFn.

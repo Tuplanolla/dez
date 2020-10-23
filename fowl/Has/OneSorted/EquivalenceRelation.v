@@ -9,7 +9,7 @@ Typeclasses Transparent HasEqRel.
 
 Section Context.
 
-Context {A : Type} `{A_has_eq_rel : HasEqRel A}.
+Context {A : Type} `{HasEqRel A}.
 
 Global Instance A_has_bin_rel : HasBinRel A := eq_rel.
 

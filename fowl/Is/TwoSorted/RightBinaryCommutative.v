@@ -6,5 +6,5 @@ From Maniunfold.ShouldHave Require Import
 Local Open Scope r_mod_scope.
 
 Class IsTwoRBinComm (A B : Type)
-  (B_has_un_op : HasUnOp B) (A_B_has_r_act : HasRAct A B) : Prop :=
+  `(HasUnOp B) `(HasRAct A B) : Prop :=
   two_r_bin_comm : forall (x : B) (a : A), - (x * a) = (- x) * a.

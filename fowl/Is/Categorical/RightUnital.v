@@ -3,6 +3,6 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   Categorical.Notations.
 
-Class IsCatRUnl (A : Type) {A_has_hom : HasHom A}
-  (A_hom_has_comp : HasComp A hom) (A_hom_has_idt : HasIdt A hom) : Prop :=
+Class IsCatRUnl (A : Type) `{HasHom A}
+  `(!HasComp A hom) `(!HasIdt A hom) : Prop :=
   cat_r_unl : forall {x y : A} (f : x --> y), id o f = f.

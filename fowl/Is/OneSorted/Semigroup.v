@@ -5,7 +5,7 @@ From Maniunfold.Is Require Export
 
 (** Semigroup, associative magma. *)
 
-Class IsSgrp (A : Type) (A_has_bin_op : HasBinOp A) : Prop := {
+Class IsSgrp (A : Type) `(HasBinOp A) : Prop := {
   A_bin_op_is_assoc :> IsAssoc A bin_op;
   A_bin_op_is_mag :> IsMag A bin_op;
 }.

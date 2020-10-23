@@ -6,14 +6,14 @@ From Maniunfold.Has Require Export
 From Maniunfold.Is Require Export
   Reflexive Transitive.
 
-Class IsPreord (A : Type) (A_has_ord_rel : HasOrdRel A) : Prop := {
+Class IsPreord (A : Type) `(HasOrdRel A) : Prop := {
   A_ord_rel_is_refl :> IsRefl A ord_rel;
   A_ord_rel_is_trans :> IsTrans A ord_rel;
 }.
 
 Section Context.
 
-Context {A : Type} `{is_preord : IsPreord A}.
+Context {A : Type} `{IsPreord A}.
 
 Global Instance ord_rel_pre_order : PreOrder ord_rel | 0.
 Proof. split; typeclasses eauto. Defined.

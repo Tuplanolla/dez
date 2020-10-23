@@ -6,7 +6,7 @@ From Maniunfold.ShouldHave Require Import
 (** Identity morphism, unit morphism, looping arrow.
     Commonly found in categories. *)
 
-Class HasIdt (A : Type) (A_has_hom : HasHom A) : Type :=
+Class HasIdt (A : Type) `(HasHom A) : Type :=
   idt : forall x : A, x --> x.
 
 Typeclasses Transparent HasIdt.

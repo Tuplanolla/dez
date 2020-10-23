@@ -7,12 +7,12 @@ From Maniunfold.ShouldHave Require Import
 
 (** Associative binary operation. *)
 
-Class IsAssoc (A : Type) (A_has_bin_op : HasBinOp A) : Prop :=
+Class IsAssoc (A : Type) `(HasBinOp A) : Prop :=
   assoc : forall x y z : A, x + (y + z) = (x + y) + z.
 
 Section Context.
 
-Context {A : Type} `{is_assoc : IsAssoc A}.
+Context {A : Type} `{IsAssoc A}.
 
 Global Instance A_A_A_bin_op_bin_op_is_bicompat :
   IsBicompat A A A bin_op bin_op.

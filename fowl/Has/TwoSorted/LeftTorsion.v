@@ -10,7 +10,7 @@ Typeclasses Transparent HasLTor.
 
 Section Context.
 
-Context {A B : Type} `{A_B_has_l_tor : HasLTor A B}.
+Context {A B : Type} `{HasLTor A B}.
 
 Global Instance A_B_has_tor : HasTor A B := l_tor.
 

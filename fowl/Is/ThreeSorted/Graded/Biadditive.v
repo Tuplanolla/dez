@@ -18,11 +18,11 @@ From Maniunfold.ShouldHave Require Import
   TwoSorted.Graded.MultiplicativeNotations.
 
 Class IsGrdBiaddve {A : Type} (P Q R : A -> Type)
-  {A_has_bin_op : HasBinOp A} {A_has_null_op : HasNullOp A}
-  (P_has_add : forall i : A, HasAdd (P i))
-  (Q_has_add : forall i : A, HasAdd (Q i))
-  (R_has_add : forall i : A, HasAdd (R i))
-  (P_Q_R_has_grd_bin_fn : HasGrdBinFn P Q R) : Prop := {
+  `{HasBinOp A} `{HasNullOp A}
+  `(P_has_add : forall i : A, HasAdd (P i))
+  `(Q_has_add : forall i : A, HasAdd (Q i))
+  `(R_has_add : forall i : A, HasAdd (R i))
+  `(!@HasGrdBinFn A P Q R bin_op) : Prop := {
   P_Q_R_add_add_grd_bin_fn_is_grd_l_biaddve :>
     IsGrdLBiaddve P Q R P_has_add R_has_add grd_bin_fn;
   P_Q_R_add_add_grd_bin_fn_is_grd_r_biaddve :>

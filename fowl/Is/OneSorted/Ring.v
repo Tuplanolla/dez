@@ -13,8 +13,8 @@ From Maniunfold.ShouldHave Require Import
 (** Noncommutative ring. *)
 
 Class IsRing (A : Type)
-  (A_has_add : HasAdd A) (A_has_zero : HasZero A) (A_has_neg : HasNeg A)
-  (A_has_mul : HasMul A) (A_has_one : HasOne A) : Prop := {
+  `(HasAdd A) `(HasZero A) `(HasNeg A)
+  `(HasMul A) `(HasOne A) : Prop := {
   A_add_zero_neg_is_ab_grp :> IsAbGrp A add zero neg;
   A_add_mul_is_distr :> IsDistr A add mul;
   A_mul_one_is_mon :> IsMon A mul one;
@@ -22,7 +22,7 @@ Class IsRing (A : Type)
 
 Section Context.
 
-Context {A : Type} `{is_ring : IsRing A}.
+Context {A : Type} `{IsRing A}.
 
 Ltac conversions := typeclasses
   convert bin_op into add and null_op into zero and un_op into neg or
@@ -60,7 +60,7 @@ Proof. split; typeclasses eauto. Defined.
 Theorem A_zero_neg_un_absorb :
   - 0 = 0.
 Proof with conversions.
-  rewrite <- (l_unl (A_has_null_op := 0) (- 0))...
+  rewrite <- (l_unl (H0 := 0) (- 0))...
   rewrite (r_inv 0)...
   reflexivity. Defined.
 
@@ -158,9 +158,9 @@ Proof. split; typeclasses eauto. Defined.
 Lemma degenerate : forall x : A,
   1 = 0 -> x = 0.
 Proof.
-  intros x H. epose proof l_distr x 0 1 as H'.
-  rewrite l_unl in H'. rewrite r_unl in H' at 1. rewrite H in H'.
-  repeat rewrite r_absorb in H'. rewrite r_unl in H'. apply H'. Defined.
+  intros x Hyp. epose proof l_distr x 0 1 as Hyp'.
+  rewrite l_unl in Hyp'. rewrite r_unl in Hyp' at 1. rewrite Hyp in Hyp'.
+  repeat rewrite r_absorb in Hyp'. rewrite r_unl in Hyp'. apply Hyp'. Defined.
 
 Local Instance unit_has_bin_op : HasBinOp unit := fun x y : unit => tt.
 

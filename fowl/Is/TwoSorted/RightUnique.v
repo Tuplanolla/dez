@@ -7,5 +7,5 @@ From Maniunfold.ShouldHave Require Import
 Local Open Scope r_mod_scope.
 
 Class IsRUniq (A B : Type)
-  (A_B_has_r_act : HasRAct A B) (A_B_has_r_tor : HasRTor A B) : Prop :=
+  `(HasRAct A B) `(HasRTor A B) : Prop :=
   r_uniq : forall x y : B, x + (y - x)%r_subgrp = y.
