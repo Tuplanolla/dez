@@ -184,9 +184,9 @@ Proof. Admitted.
 Check let map_something_prod_flip {KA KB KC A B C MA MB : Type}
   (p : KA -> KB -> KC) (f : A -> B -> C) (x : MA) (y : MB) :=
   map_free_something (K := KA * KB) (L := KC) (A := C)
-  (prod_curry p) (prod_curry f <$> map_free_prod x y) =
+  (prod_uncurry p) (prod_uncurry f <$> map_free_prod x y) =
   map_free_something (K := KB * KA) (L := KC) (A := C)
-  (prod_curry (flip p)) (prod_curry (flip f) <$> map_free_prod y x) in
+  (prod_uncurry (flip p)) (prod_uncurry (flip f) <$> map_free_prod y x) in
   map_something_prod_flip.
 
 Lemma filter_fmap {A B : Type} {M : Type -> Type}
@@ -335,9 +335,9 @@ Next Obligation with conversions.
     as was the case with $x + y$. *)
 
 Program Definition poly_mul (x y : poly) : poly :=
-  exist poly_wf (filter (prod_curry poly_value_wf)
-    (list_sum <$> map_free_something (prod_curry add (A := N))
-      (prod_curry mul <$> map_free_prod (`x) (`y)))) _.
+  exist poly_wf (filter (prod_uncurry poly_value_wf)
+    (list_sum <$> map_free_something (prod_uncurry add (A := N))
+      (prod_uncurry mul <$> map_free_prod (`x) (`y)))) _.
 Next Obligation.
   intros x y. apply bool_decide_pack.
   intros i a Hyp. apply bool_decide_pack. intros Ha. subst a.
@@ -373,7 +373,7 @@ Next Obligation.
     $x_n = a \times x_n$ for all $n$. *)
 
 Program Definition poly_l_act (a : A) (x : poly) : poly :=
-  exist poly_wf (filter (prod_curry poly_value_wf) (mul a <$> `x)) _.
+  exist poly_wf (filter (prod_uncurry poly_value_wf) (mul a <$> `x)) _.
 Next Obligation with conversions.
   intros a x. apply bool_decide_pack.
   intros i b Hyp. apply bool_decide_pack. intros Hb. subst b.
@@ -389,7 +389,7 @@ Next Obligation with conversions.
     $x_n = x_n \times a$ for all $n$. *)
 
 Program Definition poly_r_act (x : poly) (a : A) : poly :=
-  exist poly_wf (filter (prod_curry poly_value_wf) (flip mul a <$> `x)) _.
+  exist poly_wf (filter (prod_uncurry poly_value_wf) (flip mul a <$> `x)) _.
 Next Obligation with conversions.
   intros a x. apply bool_decide_pack.
   intros i b Hyp. apply bool_decide_pack. intros Hb. subst b.
@@ -645,8 +645,8 @@ Proof with conversions.
   set (f (x y : gmap N A) :=
     filter P
     (list_sum <$>
-      map_free_something (K := N * N) (L := N) (prod_curry add)
-        (prod_curry mul <$>
+      map_free_something (K := N * N) (L := N) (prod_uncurry add)
+        (prod_uncurry mul <$>
           map_free_prod x y)) : gmap N A).
   enough (f (`x) (f (`y) (`z)) = f (f (`x) (`y)) (`z)) by assumption.
   destruct x as [m Wm]. cbn.

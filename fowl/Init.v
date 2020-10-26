@@ -53,31 +53,39 @@ Notation "g 'o' f" := (compose g f) : core_scope.
 
 (** We define some additional utility functions. *)
 
-Definition prod_uncurry_dep {A B : Type} {P : A -> B -> Type}
+Definition prod_curry {A B C : Type}
+  (f : A * B -> C) (x : A) (y : B) : C :=
+  f (x, y).
+
+Definition prod_uncurry {A B C : Type}
+  (f : A -> B -> C) (xy : A * B) : C :=
+  f (fst xy) (snd xy).
+
+Definition prod_curry_dep {A B : Type} {P : A -> B -> Type}
   (f : forall xy : A * B, P (fst xy) (snd xy)) (x : A) (y : B) : P x y :=
   f (x, y).
 
-Definition prod_curry_dep {A B : Type} {P : A -> B -> Type}
+Definition prod_uncurry_dep {A B : Type} {P : A -> B -> Type}
   (f : forall (x : A) (y : B), P x y) (xy : A * B) : P (fst xy) (snd xy) :=
   f (fst xy) (snd xy).
 
-Definition sig_uncurry_dep
+Definition sig_curry_dep
   {A : Type} {P : A -> Prop} {Q : forall x : A, P x -> Type}
   (f : forall xy : {x : A | P x}, Q (proj1_sig xy) (proj2_sig xy))
   (x : A) (y : P x) : Q x y :=
   f (exist P x y).
 
-Definition sig_curry_dep
+Definition sig_uncurry_dep
   {A : Type} {P : A -> Prop} {Q : forall x : A, P x -> Type}
   (f : forall (x : A) (y : P x), Q x y)
   (xy : {x : A | P x}) : Q (proj1_sig xy) (proj2_sig xy) :=
   f (proj1_sig xy) (proj2_sig xy).
 
-Definition sig_uncurry {A : Type} {P : A -> Prop} {B : Type}
+Definition sig_curry {A : Type} {P : A -> Prop} {B : Type}
   (f : {x : A | P x} -> B) (x : A) (y : P x) : B :=
   f (exist P x y).
 
-Definition sig_curry {A : Type} {P : A -> Prop} {B : Type}
+Definition sig_uncurry {A : Type} {P : A -> Prop} {B : Type}
   (f : forall x : A, P x -> B) (xy : {x : A | P x}) : B :=
   f (proj1_sig xy) (proj2_sig xy).
 
@@ -85,15 +93,15 @@ Definition sig_curry {A : Type} {P : A -> Prop} {B : Type}
     provide some hints for simplifying them. *)
 
 Typeclasses Transparent andb orb implb xorb negb is_true option_map fst snd
-  prod_uncurry prod_curry length app ID id IDProp idProp.
+  prod_curry prod_uncurry length app ID id IDProp idProp.
 
 Typeclasses Transparent proj1_sig proj2_sig projT1 projT2
   sig_of_sigT sigT_of_sig.
 
 Typeclasses Transparent compose arrow impl const flip apply.
 
-Typeclasses Transparent prod_uncurry_dep prod_curry_dep
-  sig_uncurry_dep sig_curry_dep sig_uncurry sig_curry.
+Typeclasses Transparent prod_curry_dep prod_uncurry_dep
+  sig_curry_dep sig_uncurry_dep sig_curry sig_uncurry.
 
 Arguments andb !_ _.
 Arguments orb !_ _.
@@ -104,8 +112,8 @@ Arguments is_true !_.
 Arguments option_map {_ _} _ !_.
 Arguments fst {_ _} !_.
 Arguments snd {_ _} !_.
-Arguments prod_uncurry {_ _ _} _ _ _ /.
-Arguments prod_curry {_ _ _} _ !_.
+Arguments prod_curry {_ _ _} _ _ _ /.
+Arguments prod_uncurry {_ _ _} _ !_.
 Arguments length {_} !_.
 Arguments app {_} !_ _.
 Arguments ID /.
@@ -127,57 +135,57 @@ Arguments const {_ _} _ _ /.
 Arguments flip {_ _ _} _ _ _ /.
 Arguments apply {_ _} _ _ /.
 
-Arguments prod_uncurry_dep {_ _ _} _ _ _ /.
-Arguments prod_curry_dep {_ _ _} _ !_.
-Arguments sig_uncurry_dep {_ _ _} _ _ _ /.
-Arguments sig_curry_dep {_ _ _} _ !_.
-Arguments sig_uncurry {_ _ _} _ _ _ /.
-Arguments sig_curry {_ _ _} _ !_.
-(* Arguments sigT_uncurry_dep {_ _ _} _ _ _ /.
-Arguments sigT_curry_dep {_ _ _} _ !_.
-Arguments sigT_uncurry {_ _ _} _ _ _ /.
-Arguments sigT_curry {_ _ _} _ !_. *)
+Arguments prod_curry_dep {_ _ _} _ _ _ /.
+Arguments prod_uncurry_dep {_ _ _} _ !_.
+Arguments sig_curry_dep {_ _ _} _ _ _ /.
+Arguments sig_uncurry_dep {_ _ _} _ !_.
+Arguments sig_curry {_ _ _} _ _ _ /.
+Arguments sig_uncurry {_ _ _} _ !_.
+(* Arguments sigT_curry_dep {_ _ _} _ _ _ /.
+Arguments sigT_uncurry_dep {_ _ _} _ !_.
+Arguments sigT_curry {_ _ _} _ _ _ /.
+Arguments sigT_uncurry {_ _ _} _ !_. *)
 
-Lemma eq_prod_uncurry_nondep {A B C : Type} (f : A * B -> C) (x : A) (y : B) :
-  prod_uncurry_dep f x y = prod_uncurry f x y.
+Lemma eq_prod_curry_nondep {A B C : Type} (f : A * B -> C) (x : A) (y : B) :
+  prod_curry_dep f x y = prod_curry f x y.
 Proof. reflexivity. Qed.
 
-Lemma eq_prod_curry_nondep {A B C : Type} (f : A -> B -> C) (xy : A * B) :
-  prod_curry_dep f xy = prod_curry f xy.
-Proof. destruct xy as [x y]. reflexivity. Qed.
-
-Lemma eq_prod_curry_uncurry {A B : Type} {P : A -> B -> Type}
-  (f : forall xy : A * B, P (fst xy) (snd xy)) (xy : A * B) :
-  prod_curry_dep (prod_uncurry_dep f) xy = f xy.
+Lemma eq_prod_uncurry_nondep {A B C : Type} (f : A -> B -> C) (xy : A * B) :
+  prod_uncurry_dep f xy = prod_uncurry f xy.
 Proof. destruct xy as [x y]. reflexivity. Qed.
 
 Lemma eq_prod_uncurry_curry {A B : Type} {P : A -> B -> Type}
-  (f : forall (x : A) (y : B), P x y) (x : A) (y : B) :
-  prod_uncurry_dep (prod_curry_dep f) x y = f x y.
-Proof. reflexivity. Qed.
+  (f : forall xy : A * B, P (fst xy) (snd xy)) (xy : A * B) :
+  prod_uncurry_dep (prod_curry_dep f) xy = f xy.
+Proof. destruct xy as [x y]. reflexivity. Qed.
 
-Lemma eq_sig_uncurry_nondep {A : Type} {P : A -> Prop} {B : Type}
-  (f : {x : A | P x} -> B) (x : A) (y : P x) :
-  sig_uncurry_dep f x y = sig_uncurry f x y.
+Lemma eq_prod_curry_uncurry {A B : Type} {P : A -> B -> Type}
+  (f : forall (x : A) (y : B), P x y) (x : A) (y : B) :
+  prod_curry_dep (prod_uncurry_dep f) x y = f x y.
 Proof. reflexivity. Qed.
 
 Lemma eq_sig_curry_nondep {A : Type} {P : A -> Prop} {B : Type}
-  (f : forall x : A, P x -> B) (xy : {x : A | P x}) :
-  sig_curry_dep f xy = sig_curry f xy.
-Proof. destruct xy as [x y]. reflexivity. Qed.
+  (f : {x : A | P x} -> B) (x : A) (y : P x) :
+  sig_curry_dep f x y = sig_curry f x y.
+Proof. reflexivity. Qed.
 
-Lemma eq_sig_curry_uncurry
-  {A : Type} {P : A -> Prop} {Q : forall x : A, P x -> Type}
-  (f : forall xy : {x : A | P x}, Q (proj1_sig xy) (proj2_sig xy))
-  (xy : {x : A | P x}) :
-  sig_curry_dep (sig_uncurry_dep f) xy = f xy.
+Lemma eq_sig_uncurry_nondep {A : Type} {P : A -> Prop} {B : Type}
+  (f : forall x : A, P x -> B) (xy : {x : A | P x}) :
+  sig_uncurry_dep f xy = sig_uncurry f xy.
 Proof. destruct xy as [x y]. reflexivity. Qed.
 
 Lemma eq_sig_uncurry_curry
   {A : Type} {P : A -> Prop} {Q : forall x : A, P x -> Type}
+  (f : forall xy : {x : A | P x}, Q (proj1_sig xy) (proj2_sig xy))
+  (xy : {x : A | P x}) :
+  sig_uncurry_dep (sig_curry_dep f) xy = f xy.
+Proof. destruct xy as [x y]. reflexivity. Qed.
+
+Lemma eq_sig_curry_uncurry
+  {A : Type} {P : A -> Prop} {Q : forall x : A, P x -> Type}
   (f : forall (x : A) (y : P x), Q x y)
   (x : A) (y : P x) :
-  sig_uncurry_dep (sig_curry_dep f) x y = f x y.
+  sig_curry_dep (sig_uncurry_dep f) x y = f x y.
 Proof. reflexivity. Qed.
 
 (** We use anonymous goals and obligations to define local lemmas,
