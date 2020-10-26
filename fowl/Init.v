@@ -20,6 +20,18 @@ Global Unset Reversible Pattern Implicit.
 
 Global Unset Universe Polymorphism.
 
+(** We do not use implicit generalization,
+    because the consequences of accidental misuse
+    are worse than the convenience it permits. *)
+
+Global Generalizable No Variables.
+
+(** We use anonymous goals and obligations to define local lemmas,
+    which is why we do not want to see them in search results. *)
+
+Add Search Blacklist "Unnamed_".
+Add Search Blacklist "_obligation".
+
 (** We export [Datatypes], [Specif] and [Basics] to
     make their utility functions available everywhere,
     import [Logic] to gain access to the [EqNotations] submodule and
@@ -32,11 +44,9 @@ From Coq Require Import
 From Coq Require Import
   Setoids.Setoid.
 
-(** We do not use implicit generalization,
-    because the consequences of accidental misuse
-    are worse than the convenience it permits. *)
+(** We export the [rew] notations to use them like a transport lemma. *)
 
-Global Generalizable No Variables.
+Export EqNotations.
 
 (** We do not allow automatic solution of obligations,
     because we do not want the addition or removal of hints
@@ -44,50 +54,94 @@ Global Generalizable No Variables.
 
 Obligation Tactic := idtac.
 
-(** Using [o] as a variable name should be prohibited by law,
-    which is why we turn it into a notation. *)
-
-Reserved Notation "g 'o' f" (at level 40, left associativity).
-
-Notation "g 'o' f" := (compose g f) : core_scope.
-
 (** We define some additional utility functions. *)
 
-Definition prod_curry {A B C : Type}
+(** Currying and uncurrying are swapped around in the standard library,
+    which is why we redefine them here. *)
+
+Definition prod_curry (A B C : Type)
   (f : A * B -> C) (x : A) (y : B) : C :=
   f (x, y).
 
-Definition prod_uncurry {A B C : Type}
+Definition prod_uncurry (A B C : Type)
   (f : A -> B -> C) (xy : A * B) : C :=
   f (fst xy) (snd xy).
 
-Definition prod_curry_dep {A B : Type} {P : A -> B -> Type}
+Definition prod_curry_dep (A B : Type) (P : A -> B -> Type)
   (f : forall xy : A * B, P (fst xy) (snd xy)) (x : A) (y : B) : P x y :=
   f (x, y).
 
-Definition prod_uncurry_dep {A B : Type} {P : A -> B -> Type}
+Definition prod_uncurry_dep (A B : Type) (P : A -> B -> Type)
   (f : forall (x : A) (y : B), P x y) (xy : A * B) : P (fst xy) (snd xy) :=
   f (fst xy) (snd xy).
 
+Definition sig_curry (A : Type) (P : A -> Prop) (B : Type)
+  (f : {x : A | P x} -> B) (x : A) (y : P x) : B :=
+  f (exist P x y).
+
+Definition sig_uncurry (A : Type) (P : A -> Prop) (B : Type)
+  (f : forall x : A, P x -> B) (xy : {x : A | P x}) : B :=
+  f (proj1_sig xy) (proj2_sig xy).
+
 Definition sig_curry_dep
-  {A : Type} {P : A -> Prop} {Q : forall x : A, P x -> Type}
+  (A : Type) (P : A -> Prop) (Q : forall x : A, P x -> Type)
   (f : forall xy : {x : A | P x}, Q (proj1_sig xy) (proj2_sig xy))
   (x : A) (y : P x) : Q x y :=
   f (exist P x y).
 
 Definition sig_uncurry_dep
-  {A : Type} {P : A -> Prop} {Q : forall x : A, P x -> Type}
+  (A : Type) (P : A -> Prop) (Q : forall x : A, P x -> Type)
   (f : forall (x : A) (y : P x), Q x y)
   (xy : {x : A | P x}) : Q (proj1_sig xy) (proj2_sig xy) :=
   f (proj1_sig xy) (proj2_sig xy).
 
-Definition sig_curry {A : Type} {P : A -> Prop} {B : Type}
-  (f : {x : A | P x} -> B) (x : A) (y : P x) : B :=
-  f (exist P x y).
+Definition sigT_curry (A : Type) (P : A -> Type) (B : Type)
+  (f : {x : A & P x} -> B) (x : A) (y : P x) : B :=
+  f (existT P x y).
 
-Definition sig_uncurry {A : Type} {P : A -> Prop} {B : Type}
-  (f : forall x : A, P x -> B) (xy : {x : A | P x}) : B :=
-  f (proj1_sig xy) (proj2_sig xy).
+Definition sigT_uncurry (A : Type) (P : A -> Type) (B : Type)
+  (f : forall x : A, P x -> B) (xy : {x : A & P x}) : B :=
+  f (projT1 xy) (projT2 xy).
+
+Definition sigT_curry_dep
+  (A : Type) (P : A -> Type) (Q : forall x : A, P x -> Type)
+  (f : forall xy : {x : A & P x}, Q (projT1 xy) (projT2 xy))
+  (x : A) (y : P x) : Q x y :=
+  f (existT P x y).
+
+Definition sigT_uncurry_dep
+  (A : Type) (P : A -> Type) (Q : forall x : A, P x -> Type)
+  (f : forall (x : A) (y : P x), Q x y)
+  (xy : {x : A & P x}) : Q (projT1 xy) (projT2 xy) :=
+  f (projT1 xy) (projT2 xy).
+
+(** Composition, constancy, flipping and application
+    are just fine in the standard library. *)
+
+Fail Fail Definition compose (A B C : Type)
+  (g : B -> C) (f : A -> B) (x : A) : C :=
+  g (f x).
+
+Definition compose_dep
+  (A : Type) (P : A -> Type) (Q : forall x : A, P x -> Type)
+  (g : forall (x : A) (y : P x), Q x y) (f : forall x : A, P x)
+  (x : A) : Q x (f x) :=
+  g x (f x).
+
+Fail Fail Definition const (A B : Type) (x : A) (y : B) : A := x.
+
+Definition const_dep (A : Type) (P : A -> Type) (x : A) (y : P x) : A := x.
+
+Fail Fail Definition flip (A B C : Type)
+  (f : A -> B -> C) (y : B) (x : A) : C := f x y.
+
+Definition flip_dep (A B : Type) (P : A -> B -> Type)
+  (f : forall (x : A) (y : B), P x y) (y : B) (x : A) : P x y := f x y.
+
+Fail Fail Definition apply (A B : Type) (f : A -> B) (x : A) : B := f x.
+
+Definition apply_dep (A : Type) (P : A -> Type)
+  (f : forall x : A, P x) (x : A) : P x := f x.
 
 (** We mark the utility functions transparent for unification and
     provide some hints for simplifying them. *)
@@ -101,7 +155,8 @@ Typeclasses Transparent proj1_sig proj2_sig projT1 projT2
 Typeclasses Transparent compose arrow impl const flip apply.
 
 Typeclasses Transparent prod_curry_dep prod_uncurry_dep
-  sig_curry_dep sig_uncurry_dep sig_curry sig_uncurry.
+  sig_curry_dep sig_uncurry_dep sig_curry sig_uncurry
+  compose_dep const_dep flip_dep apply_dep.
 
 Arguments andb !_ _.
 Arguments orb !_ _.
@@ -137,66 +192,121 @@ Arguments apply {_ _} _ _ /.
 
 Arguments prod_curry_dep {_ _ _} _ _ _ /.
 Arguments prod_uncurry_dep {_ _ _} _ !_.
-Arguments sig_curry_dep {_ _ _} _ _ _ /.
-Arguments sig_uncurry_dep {_ _ _} _ !_.
 Arguments sig_curry {_ _ _} _ _ _ /.
 Arguments sig_uncurry {_ _ _} _ !_.
-(* Arguments sigT_curry_dep {_ _ _} _ _ _ /.
-Arguments sigT_uncurry_dep {_ _ _} _ !_.
+Arguments sig_curry_dep {_ _ _} _ _ _ /.
+Arguments sig_uncurry_dep {_ _ _} _ !_.
 Arguments sigT_curry {_ _ _} _ _ _ /.
-Arguments sigT_uncurry {_ _ _} _ !_. *)
+Arguments sigT_uncurry {_ _ _} _ !_.
+Arguments sigT_curry_dep {_ _ _} _ _ _ /.
+Arguments sigT_uncurry_dep {_ _ _} _ !_.
+Arguments compose_dep {_ _ _} _ _ _ /.
+Arguments const_dep {_ _} _ _ /.
+Arguments flip_dep {_ _ _} _ _ _ /.
+Arguments apply_dep {_ _} _ _ /.
 
-Lemma eq_prod_curry_nondep {A B C : Type} (f : A * B -> C) (x : A) (y : B) :
+(** Using [o] as a variable name should be prohibited by law,
+    which is why we turn it into a notation. *)
+
+Reserved Notation "g 'o' f" (at level 40, left associativity).
+
+Notation "g 'o' f" := (compose g f) : core_scope.
+
+Lemma eq_prod_curry_nondep (A B C : Type) (f : A * B -> C) (x : A) (y : B) :
   prod_curry_dep f x y = prod_curry f x y.
 Proof. reflexivity. Qed.
 
-Lemma eq_prod_uncurry_nondep {A B C : Type} (f : A -> B -> C) (xy : A * B) :
+Lemma eq_prod_uncurry_nondep (A B C : Type) (f : A -> B -> C) (xy : A * B) :
   prod_uncurry_dep f xy = prod_uncurry f xy.
 Proof. destruct xy as [x y]. reflexivity. Qed.
 
-Lemma eq_prod_uncurry_curry {A B : Type} {P : A -> B -> Type}
+Lemma eq_prod_uncurry_curry (A B : Type) (P : A -> B -> Type)
   (f : forall xy : A * B, P (fst xy) (snd xy)) (xy : A * B) :
   prod_uncurry_dep (prod_curry_dep f) xy = f xy.
 Proof. destruct xy as [x y]. reflexivity. Qed.
 
-Lemma eq_prod_curry_uncurry {A B : Type} {P : A -> B -> Type}
+Lemma eq_prod_curry_uncurry (A B : Type) (P : A -> B -> Type)
   (f : forall (x : A) (y : B), P x y) (x : A) (y : B) :
   prod_curry_dep (prod_uncurry_dep f) x y = f x y.
 Proof. reflexivity. Qed.
 
-Lemma eq_sig_curry_nondep {A : Type} {P : A -> Prop} {B : Type}
+Lemma eq_sig_curry_nondep (A : Type) (P : A -> Prop) (B : Type)
   (f : {x : A | P x} -> B) (x : A) (y : P x) :
   sig_curry_dep f x y = sig_curry f x y.
 Proof. reflexivity. Qed.
 
-Lemma eq_sig_uncurry_nondep {A : Type} {P : A -> Prop} {B : Type}
+Lemma eq_sig_uncurry_nondep (A : Type) (P : A -> Prop) (B : Type)
   (f : forall x : A, P x -> B) (xy : {x : A | P x}) :
   sig_uncurry_dep f xy = sig_uncurry f xy.
 Proof. destruct xy as [x y]. reflexivity. Qed.
 
 Lemma eq_sig_uncurry_curry
-  {A : Type} {P : A -> Prop} {Q : forall x : A, P x -> Type}
+  (A : Type) (P : A -> Prop) (Q : forall x : A, P x -> Type)
   (f : forall xy : {x : A | P x}, Q (proj1_sig xy) (proj2_sig xy))
   (xy : {x : A | P x}) :
   sig_uncurry_dep (sig_curry_dep f) xy = f xy.
 Proof. destruct xy as [x y]. reflexivity. Qed.
 
 Lemma eq_sig_curry_uncurry
-  {A : Type} {P : A -> Prop} {Q : forall x : A, P x -> Type}
+  (A : Type) (P : A -> Prop) (Q : forall x : A, P x -> Type)
   (f : forall (x : A) (y : P x), Q x y)
   (x : A) (y : P x) :
   sig_curry_dep (sig_uncurry_dep f) x y = f x y.
 Proof. reflexivity. Qed.
 
-(** We use anonymous goals and obligations to define local lemmas,
-    which is why we do not want to see them in search results. *)
+Lemma eq_sigT_curry_nondep (A : Type) (P : A -> Type) (B : Type)
+  (f : {x : A & P x} -> B) (x : A) (y : P x) :
+  sigT_curry_dep f x y = sigT_curry f x y.
+Proof. reflexivity. Qed.
 
-Add Search Blacklist "Unnamed_".
-Add Search Blacklist "_obligation".
+Lemma eq_sigT_uncurry_nondep (A : Type) (P : A -> Type) (B : Type)
+  (f : forall x : A, P x -> B) (xy : {x : A & P x}) :
+  sigT_uncurry_dep f xy = sigT_uncurry f xy.
+Proof. destruct xy as [x y]. reflexivity. Qed.
 
-(** We export the [rew] notations to use them like a transport lemma. *)
+Lemma eq_sigT_uncurry_curry
+  (A : Type) (P : A -> Type) (Q : forall x : A, P x -> Type)
+  (f : forall xy : {x : A & P x}, Q (projT1 xy) (projT2 xy))
+  (xy : {x : A & P x}) :
+  sigT_uncurry_dep (sigT_curry_dep f) xy = f xy.
+Proof. destruct xy as [x y]. reflexivity. Qed.
 
-Export EqNotations.
+Lemma eq_sigT_curry_uncurry
+  (A : Type) (P : A -> Type) (Q : forall x : A, P x -> Type)
+  (f : forall (x : A) (y : P x), Q x y)
+  (x : A) (y : P x) :
+  sigT_curry_dep (sigT_uncurry_dep f) x y = f x y.
+Proof. reflexivity. Qed.
+
+Lemma eq_compose_nondep (A B C : Type) (g : B -> C) (f : A -> B) (x : A) :
+  compose_dep (const g) f x = compose g f x.
+Proof. reflexivity. Qed.
+
+Lemma compose_assoc (A B C D : Type)
+  (h : C -> D) (g : B -> C) (f : A -> B) (x : A) :
+  compose h (compose g f) x = compose (compose h g) f x.
+Proof. reflexivity. Qed.
+
+Lemma eq_const_nondep (A B : Type) (x : A) (y : B) :
+  const_dep x y = const x y.
+Proof. reflexivity. Qed.
+
+Lemma eq_flip_nondep (A B C : Type) (f : A -> B -> C) (y : B) (x : A) :
+  flip_dep f y x = flip f y x.
+Proof. reflexivity. Qed.
+
+Lemma flip_involutive (A B C : Type) (f : A -> B -> C) (x : A) (y : B) :
+  flip (flip f) x y = f x y.
+Proof. reflexivity. Qed.
+
+Lemma flip_dep_involutive (A B : Type) (P : A -> B -> Type)
+  (f : forall (x : A) (y : B), P x y) (y : B) (x : A) :
+  flip_dep (flip_dep f) x y = f x y.
+Proof. reflexivity. Qed.
+
+Lemma eq_apply_nondep (A B : Type) (f : A -> B) (x : A) :
+  apply_dep f x = apply f x.
+Proof. reflexivity. Qed.
 
 (** We define the following tactic notations
     to conveniently specialize superclasses into subclasses.
