@@ -209,8 +209,10 @@ Arguments apply_dep {_ _} _ _ /.
     which is why we turn it into a notation. *)
 
 Reserved Notation "g 'o' f" (at level 40, left associativity).
+Reserved Notation "g 'o'' f" (at level 40, left associativity).
 
 Notation "g 'o' f" := (compose g f) : core_scope.
+Notation "g 'o'' f" := (compose_dep g f) : core_scope.
 
 Lemma eq_prod_curry_nondep (A B C : Type) (f : A * B -> C) (x : A) (y : B) :
   prod_curry_dep f x y = prod_curry f x y.
@@ -285,6 +287,15 @@ Proof. reflexivity. Qed.
 Lemma compose_assoc (A B C D : Type)
   (h : C -> D) (g : B -> C) (f : A -> B) (x : A) :
   compose h (compose g f) x = compose (compose h g) f x.
+Proof. reflexivity. Qed.
+
+Lemma compose_dep_assoc
+  (A : Type) (P : A -> Type) (Q : forall x : A, P x -> Type)
+  (R : forall (x : A) (y : P x), Q x y -> Type)
+  (h : forall (x : A) (y : P x) (z : Q x y), R x y z)
+  (g : forall (x : A) (y : P x), Q x y) (f : forall x : A, P x) (x : A) :
+  compose_dep (fun x : A => h x (f x)) (compose_dep g f) x =
+  compose_dep (fun x : A => compose_dep (h x) (g x)) f x.
 Proof. reflexivity. Qed.
 
 Lemma eq_const_nondep (A B : Type) (x : A) (y : B) :
