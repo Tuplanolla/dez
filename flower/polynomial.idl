@@ -11,8 +11,8 @@ enum request_type {
 }
 
 union request_data {
-  1: optional poly eval;
-  2: optional empty exit;
+  1: optional empty exit;
+  2: optional poly eval;
 }
 
 struct request {

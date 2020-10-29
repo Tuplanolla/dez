@@ -323,7 +323,7 @@ Proof. reflexivity. Qed.
     to conveniently specialize superclasses into subclasses.
     There are more principled ways to do this,
     but they all require plugins or other more advanced mechanisms.
-    Eight arguments ought to be enough for anybody. *)
+    Besides, eight arguments ought to be enough for anybody. *)
 
 Tactic Notation "typeclasses"
   tactic3(xy0) :=

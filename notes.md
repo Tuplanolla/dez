@@ -10,16 +10,15 @@ because otherwise things break in surprising ways.
 ### Build Automation
 
 There are two build systems: GNU Make and Dune.
-The system based on Make works and does not waste resources egregiously,
-but it is not smart or fast.
+The system based on Make is decently good.
 
 ```
-$ make
+$ make -j $(nproc)
 $ make run
 ```
 
-The system based on Dune does not work yet,
-but should one day do that while being smart and fast.
+The system based on Dune should work better for the OCaml components,
+but is otherwise too simple to handle the build.
 
 ```
 $ dune build
