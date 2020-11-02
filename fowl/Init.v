@@ -116,7 +116,8 @@ Definition sigT_uncurry_dep
   f (projT1 xy) (projT2 xy).
 
 (** Composition, constancy, flipping and application
-    are just fine in the standard library. *)
+    are totally fine in the standard library.
+    We just augment them with dependent versions. *)
 
 Fail Fail Definition compose (A B C : Type)
   (g : B -> C) (f : A -> B) (x : A) : C :=
@@ -214,6 +215,8 @@ Reserved Notation "g 'o'' f" (at level 40, left associativity).
 Notation "g 'o' f" := (compose g f) : core_scope.
 Notation "g 'o'' f" := (compose_dep g f) : core_scope.
 
+(** The dependent and nondependent versions are related as follows. *)
+
 Lemma eq_prod_curry_nondep (A B C : Type) (f : A * B -> C) (x : A) (y : B) :
   prod_curry_dep f x y = prod_curry f x y.
 Proof. reflexivity. Qed.
@@ -221,16 +224,6 @@ Proof. reflexivity. Qed.
 Lemma eq_prod_uncurry_nondep (A B C : Type) (f : A -> B -> C) (xy : A * B) :
   prod_uncurry_dep f xy = prod_uncurry f xy.
 Proof. destruct xy as [x y]. reflexivity. Qed.
-
-Lemma eq_prod_uncurry_curry (A B : Type) (P : A -> B -> Type)
-  (f : forall xy : A * B, P (fst xy) (snd xy)) (xy : A * B) :
-  prod_uncurry_dep (prod_curry_dep f) xy = f xy.
-Proof. destruct xy as [x y]. reflexivity. Qed.
-
-Lemma eq_prod_curry_uncurry (A B : Type) (P : A -> B -> Type)
-  (f : forall (x : A) (y : B), P x y) (x : A) (y : B) :
-  prod_curry_dep (prod_uncurry_dep f) x y = f x y.
-Proof. reflexivity. Qed.
 
 Lemma eq_sig_curry_nondep (A : Type) (P : A -> Prop) (B : Type)
   (f : {x : A | P x} -> B) (x : A) (y : P x) :
@@ -241,6 +234,44 @@ Lemma eq_sig_uncurry_nondep (A : Type) (P : A -> Prop) (B : Type)
   (f : forall x : A, P x -> B) (xy : {x : A | P x}) :
   sig_uncurry_dep f xy = sig_uncurry f xy.
 Proof. destruct xy as [x y]. reflexivity. Qed.
+
+Lemma eq_sigT_curry_nondep (A : Type) (P : A -> Type) (B : Type)
+  (f : {x : A & P x} -> B) (x : A) (y : P x) :
+  sigT_curry_dep f x y = sigT_curry f x y.
+Proof. reflexivity. Qed.
+
+Lemma eq_sigT_uncurry_nondep (A : Type) (P : A -> Type) (B : Type)
+  (f : forall x : A, P x -> B) (xy : {x : A & P x}) :
+  sigT_uncurry_dep f xy = sigT_uncurry f xy.
+Proof. destruct xy as [x y]. reflexivity. Qed.
+
+Lemma eq_compose_nondep (A B C : Type) (g : B -> C) (f : A -> B) (x : A) :
+  compose_dep (const g) f x = compose g f x.
+Proof. reflexivity. Qed.
+
+Lemma eq_const_nondep (A B : Type) (x : A) (y : B) :
+  const_dep x y = const x y.
+Proof. reflexivity. Qed.
+
+Lemma eq_flip_nondep (A B C : Type) (f : A -> B -> C) (y : B) (x : A) :
+  flip_dep f y x = flip f y x.
+Proof. reflexivity. Qed.
+
+Lemma eq_apply_nondep (A B : Type) (f : A -> B) (x : A) :
+  apply_dep f x = apply f x.
+Proof. reflexivity. Qed.
+
+(** Some other properties also hold. *)
+
+Lemma eq_prod_uncurry_curry (A B : Type) (P : A -> B -> Type)
+  (f : forall xy : A * B, P (fst xy) (snd xy)) (xy : A * B) :
+  prod_uncurry_dep (prod_curry_dep f) xy = f xy.
+Proof. destruct xy as [x y]. reflexivity. Qed.
+
+Lemma eq_prod_curry_uncurry (A B : Type) (P : A -> B -> Type)
+  (f : forall (x : A) (y : B), P x y) (x : A) (y : B) :
+  prod_curry_dep (prod_uncurry_dep f) x y = f x y.
+Proof. reflexivity. Qed.
 
 Lemma eq_sig_uncurry_curry
   (A : Type) (P : A -> Prop) (Q : forall x : A, P x -> Type)
@@ -256,16 +287,6 @@ Lemma eq_sig_curry_uncurry
   sig_curry_dep (sig_uncurry_dep f) x y = f x y.
 Proof. reflexivity. Qed.
 
-Lemma eq_sigT_curry_nondep (A : Type) (P : A -> Type) (B : Type)
-  (f : {x : A & P x} -> B) (x : A) (y : P x) :
-  sigT_curry_dep f x y = sigT_curry f x y.
-Proof. reflexivity. Qed.
-
-Lemma eq_sigT_uncurry_nondep (A : Type) (P : A -> Type) (B : Type)
-  (f : forall x : A, P x -> B) (xy : {x : A & P x}) :
-  sigT_uncurry_dep f xy = sigT_uncurry f xy.
-Proof. destruct xy as [x y]. reflexivity. Qed.
-
 Lemma eq_sigT_uncurry_curry
   (A : Type) (P : A -> Type) (Q : forall x : A, P x -> Type)
   (f : forall xy : {x : A & P x}, Q (projT1 xy) (projT2 xy))
@@ -278,10 +299,6 @@ Lemma eq_sigT_curry_uncurry
   (f : forall (x : A) (y : P x), Q x y)
   (x : A) (y : P x) :
   sigT_curry_dep (sigT_uncurry_dep f) x y = f x y.
-Proof. reflexivity. Qed.
-
-Lemma eq_compose_nondep (A B C : Type) (g : B -> C) (f : A -> B) (x : A) :
-  compose_dep (const g) f x = compose g f x.
 Proof. reflexivity. Qed.
 
 Lemma compose_assoc (A B C D : Type)
@@ -298,25 +315,14 @@ Lemma compose_dep_assoc
   compose_dep (fun x : A => compose_dep (h x) (g x)) f x.
 Proof. reflexivity. Qed.
 
-Lemma eq_const_nondep (A B : Type) (x : A) (y : B) :
-  const_dep x y = const x y.
-Proof. reflexivity. Qed.
-
-Lemma eq_flip_nondep (A B C : Type) (f : A -> B -> C) (y : B) (x : A) :
-  flip_dep f y x = flip f y x.
-Proof. reflexivity. Qed.
-
-Lemma flip_involutive (A B C : Type) (f : A -> B -> C) (x : A) (y : B) :
+Lemma flip_involutive (A B C : Type)
+  (f : A -> B -> C) (x : A) (y : B) :
   flip (flip f) x y = f x y.
 Proof. reflexivity. Qed.
 
 Lemma flip_dep_involutive (A B : Type) (P : A -> B -> Type)
   (f : forall (x : A) (y : B), P x y) (y : B) (x : A) :
   flip_dep (flip_dep f) x y = f x y.
-Proof. reflexivity. Qed.
-
-Lemma eq_apply_nondep (A B : Type) (f : A -> B) (x : A) :
-  apply_dep f x = apply f x.
 Proof. reflexivity. Qed.
 
 (** We define the following tactic notations

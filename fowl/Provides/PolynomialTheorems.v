@@ -76,63 +76,54 @@ Proof with auto.
 
 End Context.
 
-(** Almost a left Kan extension of a finite map
-    along a key altering function. *)
+(** Left Kan extension of finitely-supported functions along inclusion,
+    where the commutative monoid is free
+    (it should actually be multiset instead of list,
+    but developer laziness wins). *)
 
-Definition map_something {K L A MK ML : Type}
-  `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L A ML}
-  (p : K -> L) (x : MK) : ML :=
-  map_fold (fun (i : K) (x : A) (y : ML) =>
-    partial_alter (fun y : option A => Some x) (p i) y) empty x.
-
-Definition map_free_something {K L A MK ML : Type}
+Definition map_free_lan {K L A MK ML : Type}
   `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
-  (p : K -> L) (x : MK) : ML :=
-  map_fold (fun (i : K) (x : A) (y : ML) =>
-    partial_alter (fun y : option (list A) =>
-      Some (x :: default [] y)) (p i) y) empty x.
+  (p : K -> L) (m : MK) : ML :=
+  map_fold (fun (i : K) (x : A) (n : ML) =>
+    partial_alter (fun a : option (list A) =>
+      Some (x :: default [] a)) (p i) n) empty m.
 
-(** The order should be unspecified. *)
+(** Left Kan extension of finitely-supported functions along inclusion,
+    where the commutative monoid is given (in [f] and [x] pieces).
+    It must be commutative and associative, because the fold is unordered;
+    it must be unital, because the integration must start somewhere. *)
 
-Lemma map_somethings {K L A MK ML : Type}
-  `{FinMapToList K A MK} `{Empty ML}
-  `{PartialAlter L A ML} `{PartialAlter L (list A) ML}
-  `{FMap (const MK)} `{FMap (const ML)}
-  (p : K -> L) (x : MK) :
-  Some (A := A) <$> map_something p x = hd_error <$> map_free_something p x.
-Proof. Admitted.
-
-Lemma map_something_fmap {K L A B MK ML : Type}
+Definition map_lan {K L A MK ML : Type}
   `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L A ML}
-  `{FMap (const MK)} `{FMap (const ML)}
-  (p : K -> L) (f : A -> B) (x : MK) :
-  f <$> map_something p x = map_something p (f <$> x).
-Proof. cbv [map_something]. Admitted.
+  (f : A -> A -> A) (x : A) (p : K -> L) (m : MK) : ML :=
+  map_fold (fun (i : K) (y : A) (n : ML) =>
+    partial_alter (fun a : option A =>
+      Some (f y (default x a))) (p i) n) empty m.
 
-Lemma map_free_something_fmap {K L A B MK ML : Type} {P : L -> A -> Prop}
+Lemma map_free_lan_fmap {K L A B MK ML : Type} {P : L -> A -> Prop}
   `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
   `{Lookup K A MK} `{Lookup L (list A) ML}
   `{FMap (const MK)} `{FMap (const ML)}
   (p : K -> L) (f : A -> B) (x : MK) :
-  fmap f <$> map_free_something p x = map_free_something p (f <$> x).
+  fmap f <$> map_free_lan p x = map_free_lan p (f <$> x).
 Proof. Admitted.
 
-Lemma map_Forall_something {K L A MK ML : Type} {P : L -> A -> Prop}
+Lemma map_Forall_free_lan {K L A MK ML : Type} {P : L -> A -> Prop}
   `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
   `{Lookup K A MK} `{Lookup L (list A) ML}
   (p : K -> L) (x : MK) :
   map_Forall (fun (i : K) (a : A) => P (p i) a) x <->
   map_Forall (fun (i : L) (a : list A) => Forall (P i) a)
-  (map_free_something (MK := MK) (ML := ML) p x).
+  (map_free_lan (MK := MK) (ML := ML) p x).
 Proof. Admitted.
 
-Lemma map_Forall_something_const {K L A MK ML : Type} {P : A -> Prop}
+Lemma map_Forall_free_lan_const {K L A MK ML : Type} {P : A -> Prop}
   `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
   `{Lookup K A MK} `{Lookup L (list A) ML}
   (p : K -> L) (x : MK) :
   map_Forall (const P) x <->
-  map_Forall (const (Forall P)) (map_free_something (MK := MK) (ML := ML) p x).
-Proof. exact (map_Forall_something p x). Defined.
+  map_Forall (const (Forall P)) (map_free_lan (MK := MK) (ML := ML) p x).
+Proof. exact (map_Forall_free_lan p x). Defined.
 
 (** Free product of two finite maps along their keys. *)
 
@@ -143,27 +134,6 @@ Definition map_free_prod {KA KB A B MA MB MAB : Type}
   map_fold (fun (i : KA) (a : A) (z : MAB) =>
     map_fold (fun (j : KB) (b : B) (z : MAB) =>
       insert (i, j) (a, b) z) z y) empty x.
-
-Definition map_proj1 {KA KB A B MA MB MAB : Type}
-  `{FinMapToList (KA * KB) A MAB} `{Empty MA}
-  `{FMap (const MA)} `{PartialAlter KA A MA}
-  (x : MAB) : MA :=
-  @fst A B <$> map_something fst x.
-
-Definition map_proj1' {KA KB A B MA MB MAB : Type}
-  `{FinMapToList (KA * KB) A MAB} `{Empty MA}
-  `{FMap (const MAB)} `{PartialAlter KA A MA}
-  (x : MAB) : MA :=
-  map_something fst (@fst A B <$> x).
-
-Lemma map_free_prod_1 {KA KB A B MA MB MAB : Type}
-  `{FinMapToList KA A MA} `{FinMapToList KB B MB}
-  `{FinMapToList (KA * KB) A MAB}
-  `{Empty MA} `{Empty MAB} `{Insert (KA * KB) (A * B) MAB}
-  `{FMap (const MA)} `{PartialAlter KA A MA}
-  (x : MA) (y : MB) :
-  map_proj1 (B := B) (MB := MB) (map_free_prod x y) = x.
-Proof. Admitted.
 
 (** If we wish to state that [map_free_prod] is associative,
     we need to transport one side of the equation via [assoc] on [prod].
@@ -181,13 +151,13 @@ Lemma map_free_prod_fmap {KA KB A B MA MB MAB A' B' MA' MB' MAB' : Type}
   prod_map f g <$> map_free_prod x y = map_free_prod (f <$> x) (g <$> y).
 Proof. Admitted.
 
-Check let map_something_prod_flip {KA KB KC A B C MA MB : Type}
+Check let map_lan_prod_flip {KA KB KC A B C MA MB : Type}
   (p : KA -> KB -> KC) (f : A -> B -> C) (x : MA) (y : MB) :=
-  map_free_something (K := KA * KB) (L := KC) (A := C)
+  map_free_lan (K := KA * KB) (L := KC) (A := C)
   (prod_uncurry p) (prod_uncurry f <$> map_free_prod x y) =
-  map_free_something (K := KB * KA) (L := KC) (A := C)
+  map_free_lan (K := KB * KA) (L := KC) (A := C)
   (prod_uncurry (flip p)) (prod_uncurry (flip f) <$> map_free_prod y x) in
-  map_something_prod_flip.
+  map_lan_prod_flip.
 
 Lemma filter_fmap {A B : Type} {M : Type -> Type}
   `{FMap M} `{Filter A (M A)} `{Filter B (M B)}
@@ -336,7 +306,7 @@ Next Obligation with conversions.
 
 Program Definition poly_mul (x y : poly) : poly :=
   exist poly_wf (filter (prod_uncurry poly_value_wf)
-    (list_sum <$> map_free_something (prod_uncurry add (A := N))
+    (list_sum <$> map_free_lan (prod_uncurry add (A := N))
       (prod_uncurry mul <$> map_free_prod (`x) (`y)))) _.
 Next Obligation.
   intros x y. apply bool_decide_pack.
@@ -344,6 +314,12 @@ Next Obligation.
   apply map_filter_lookup_Some in Hyp.
   destruct Hyp as [Hyp Wc].
   apply bool_decide_unpack in Wc. apply Wc. reflexivity. Defined.
+
+Program Definition poly_mul' (x y : poly) : poly :=
+  exist poly_wf (filter (prod_uncurry poly_value_wf)
+    (map_lan (add (A := A)) 0 (prod_uncurry add (A := N))
+      (prod_uncurry mul <$> map_free_prod (`x) (`y)))) _.
+Next Obligation. Admitted.
 
 (** Unit polynomial.
 
@@ -645,7 +621,7 @@ Proof with conversions.
   set (f (x y : gmap N A) :=
     filter P
     (list_sum <$>
-      map_free_something (K := N * N) (L := N) (prod_uncurry add)
+      map_free_lan (K := N * N) (L := N) (prod_uncurry add)
         (prod_uncurry mul <$>
           map_free_prod x y)) : gmap N A).
   enough (f (`x) (f (`y) (`z)) = f (f (`x) (`y)) (`z)) by assumption.
