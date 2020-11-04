@@ -32,11 +32,15 @@ Global Generalizable No Variables.
 Add Search Blacklist "Unnamed_".
 Add Search Blacklist "_obligation".
 
-(** We export [Datatypes], [Specif] and [Basics] to
+(** We export [StrictProp] to be able to
+    use strict propositions without ceremony,
+    export [Datatypes], [Specif] and [Basics] to
     make their utility functions available everywhere,
     import [Logic] to gain access to the [EqNotations] submodule and
     import [Setoid] to generalize the [rewrite] tactic. *)
 
+From Coq Require Export
+  Logic.StrictProp.
 From Coq Require Export
   Init.Datatypes Init.Specif Program.Basics.
 From Coq Require Import
@@ -47,6 +51,23 @@ From Coq Require Import
 (** We export the [rew] notations to use them like a transport lemma. *)
 
 Export EqNotations.
+
+(** The implicit arguments of [Ssig], [sig] and [sigT] should be the same. *)
+
+Arguments sig {_} _.
+Arguments exist {_} _ _ _.
+Arguments sigT {_} _.
+Arguments existT {_} _ _ _.
+Arguments Ssig {_} _.
+Arguments Sexists {_} _ _ _.
+
+(** We should have similar notations for [Ssig] as there are for [sig]. *)
+
+Reserved Notation "'{' x '!' P '}'" (at level 0, x at level 99).
+Reserved Notation "'{' x : A '!' P '}'" (at level 0, x at level 99).
+
+Notation "'{' x '!' P '}'" := (Ssig (fun x : _ => P)) : type_scope.
+Notation "'{' x : A '!' P '}'" := (Ssig (fun x : A => P)) : type_scope.
 
 (** We do not allow automatic solution of obligations,
     because we do not want the addition or removal of hints
@@ -115,6 +136,26 @@ Definition sigT_uncurry_dep
   (xy : {x : A & P x}) : Q (projT1 xy) (projT2 xy) :=
   f (projT1 xy) (projT2 xy).
 
+Definition Ssig_curry (A : Type) (P : A -> SProp) (B : Type)
+  (f : {x : A ! P x} -> B) (x : A) (y : P x) : B :=
+  f (Sexists P x y).
+
+Definition Ssig_uncurry (A : Type) (P : A -> SProp) (B : Type)
+  (f : forall x : A, P x -> B) (xy : {x : A ! P x}) : B :=
+  f (Spr1 xy) (Spr2 xy).
+
+Definition Ssig_curry_dep
+  (A : Type) (P : A -> SProp) (Q : forall x : A, P x -> Type)
+  (f : forall xy : {x : A ! P x}, Q (Spr1 xy) (Spr2 xy))
+  (x : A) (y : P x) : Q x y :=
+  f (Sexists P x y).
+
+Definition Ssig_uncurry_dep
+  (A : Type) (P : A -> SProp) (Q : forall x : A, P x -> Type)
+  (f : forall (x : A) (y : P x), Q x y)
+  (xy : {x : A ! P x}) : Q (Spr1 xy) (Spr2 xy) :=
+  f (Spr1 xy) (Spr2 xy).
+
 (** Composition, constancy, flipping and application
     are totally fine in the standard library.
     We just augment them with dependent versions. *)
@@ -147,6 +188,8 @@ Definition apply_dep (A : Type) (P : A -> Type)
 (** We mark the utility functions transparent for unification and
     provide some hints for simplifying them. *)
 
+Typeclasses Transparent Spr1 Spr2.
+
 Typeclasses Transparent andb orb implb xorb negb is_true option_map fst snd
   prod_curry prod_uncurry length app ID id IDProp idProp.
 
@@ -158,6 +201,9 @@ Typeclasses Transparent compose arrow impl const flip apply.
 Typeclasses Transparent prod_curry_dep prod_uncurry_dep
   sig_curry_dep sig_uncurry_dep sig_curry sig_uncurry
   compose_dep const_dep flip_dep apply_dep.
+
+Arguments Spr1 {_ _} !_.
+Arguments Spr2 {_ _} !_.
 
 Arguments andb !_ _.
 Arguments orb !_ _.
@@ -201,6 +247,10 @@ Arguments sigT_curry {_ _ _} _ _ _ /.
 Arguments sigT_uncurry {_ _ _} _ !_.
 Arguments sigT_curry_dep {_ _ _} _ _ _ /.
 Arguments sigT_uncurry_dep {_ _ _} _ !_.
+Arguments Ssig_curry {_ _ _} _ _ _ /.
+Arguments Ssig_uncurry {_ _ _} _ !_.
+Arguments Ssig_curry_dep {_ _ _} _ _ _ /.
+Arguments Ssig_uncurry_dep {_ _ _} _ !_.
 Arguments compose_dep {_ _ _} _ _ _ /.
 Arguments const_dep {_ _} _ _ /.
 Arguments flip_dep {_ _ _} _ _ _ /.
@@ -243,6 +293,16 @@ Proof. reflexivity. Qed.
 Lemma eq_sigT_uncurry_nondep (A : Type) (P : A -> Type) (B : Type)
   (f : forall x : A, P x -> B) (xy : {x : A & P x}) :
   sigT_uncurry_dep f xy = sigT_uncurry f xy.
+Proof. destruct xy as [x y]. reflexivity. Qed.
+
+Lemma eq_Ssig_curry_nondep (A : Type) (P : A -> SProp) (B : Type)
+  (f : {x : A ! P x} -> B) (x : A) (y : P x) :
+  Ssig_curry_dep f x y = Ssig_curry f x y.
+Proof. reflexivity. Qed.
+
+Lemma eq_Ssig_uncurry_nondep (A : Type) (P : A -> SProp) (B : Type)
+  (f : forall x : A, P x -> B) (xy : {x : A ! P x}) :
+  Ssig_uncurry_dep f xy = Ssig_uncurry f xy.
 Proof. destruct xy as [x y]. reflexivity. Qed.
 
 Lemma eq_compose_nondep (A B C : Type) (g : B -> C) (f : A -> B) (x : A) :
@@ -299,6 +359,20 @@ Lemma eq_sigT_curry_uncurry
   (f : forall (x : A) (y : P x), Q x y)
   (x : A) (y : P x) :
   sigT_curry_dep (sigT_uncurry_dep f) x y = f x y.
+Proof. reflexivity. Qed.
+
+Lemma eq_Ssig_uncurry_curry
+  (A : Type) (P : A -> SProp) (Q : forall x : A, P x -> Type)
+  (f : forall xy : {x : A ! P x}, Q (Spr1 xy) (Spr2 xy))
+  (xy : {x : A ! P x}) :
+  Ssig_uncurry_dep (Ssig_curry_dep f) xy = f xy.
+Proof. destruct xy as [x y]. reflexivity. Qed.
+
+Lemma eq_Ssig_curry_uncurry
+  (A : Type) (P : A -> SProp) (Q : forall x : A, P x -> Type)
+  (f : forall (x : A) (y : P x), Q x y)
+  (x : A) (y : P x) :
+  Ssig_curry_dep (Ssig_uncurry_dep f) x y = f x y.
 Proof. reflexivity. Qed.
 
 Lemma compose_assoc (A B C D : Type)
