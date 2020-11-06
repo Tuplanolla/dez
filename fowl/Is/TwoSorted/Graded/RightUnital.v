@@ -11,8 +11,8 @@ From Maniunfold.ShouldHave Require Import
 
 Local Open Scope grd_r_mod_scope.
 
-Class IsTwoGrdRUnl {A : Type} (P Q : A -> Type)
-  `{HasBinOp A} `{HasNullOp A}
+Class IsTwoGrdRUnl (A : Type) (P Q : A -> Type)
+  `(HasBinOp A) `(HasNullOp A)
   `(HasGrdRAct A P Q)
   `(HasGrdOne A P) : Prop := {
   A_bin_op_null_op_is_r_unl :> IsRUnl bin_op null_op;

@@ -13,7 +13,7 @@ Class IsLUnl (A : Type)
 
 Section Context.
 
-Context {A : Type} `{IsLUnl A}.
+Context (A : Type) `(IsLUnl A).
 
 Global Instance A_A_bin_op_null_op_is_two_l_unl : IsTwoLUnl bin_op null_op.
 Proof. intros x. apply l_unl. Defined.

@@ -6,8 +6,7 @@ From Maniunfold.ShouldHave Require Import
 (** Graded nullary operation.
     See [Has.OneSorted.NullaryOperation]. *)
 
-Class HasGrdNullOp {A : Type} (P : A -> Type)
-  `{HasNullOp A} : Type :=
+Class HasGrdNullOp (A : Type) (P : A -> Type) `(HasNullOp A) : Type :=
   grd_null_op : P 0.
 
 Typeclasses Transparent HasGrdNullOp.

@@ -20,7 +20,7 @@ Class IsSring (A : Type)
 
 Section Context.
 
-Context {A : Type} `{IsSring A}.
+Context (A : Type) `(IsSring A).
 
 Ltac conversions := typeclasses
   convert bin_op into add and null_op into zero or

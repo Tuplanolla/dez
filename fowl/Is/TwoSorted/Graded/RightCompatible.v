@@ -11,8 +11,8 @@ From Maniunfold.ShouldHave Require Import
 
 Local Open Scope grd_r_mod_scope.
 
-Class IsGrdRCompat {A : Type} (P Q : A -> Type)
-  `{HasBinOp A} `{HasNullOp A}
+Class IsGrdRCompat (A : Type) (P Q : A -> Type)
+  `(HasBinOp A) `(HasNullOp A)
   `(!@HasGrdMul A P bin_op)
   `(!@HasGrdRAct A P Q bin_op) : Prop := {
   A_bin_op_is_assoc :> IsAssoc bin_op;

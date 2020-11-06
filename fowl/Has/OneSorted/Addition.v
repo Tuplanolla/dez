@@ -10,7 +10,7 @@ Typeclasses Transparent HasAdd.
 
 Section Context.
 
-Context {A : Type} `{HasAdd A}.
+Context (A : Type) `(HasAdd A).
 
 Global Instance A_has_bin_op : HasBinOp A := add.
 

@@ -9,7 +9,7 @@ Typeclasses Transparent HasApartRel.
 
 Section Context.
 
-Context {A : Type} `{HasApartRel A}.
+Context (A : Type) `(HasApartRel A).
 
 Global Instance A_has_bin_rel : HasBinRel A := apart_rel.
 

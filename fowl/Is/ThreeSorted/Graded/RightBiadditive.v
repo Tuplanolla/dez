@@ -14,8 +14,8 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   OneSorted.ArithmeticNotations.
 
-Class IsGrdRBiaddve {A : Type} (P Q R : A -> Type)
-  `{HasBinOp A} `{HasNullOp A}
+Class IsGrdRBiaddve (A : Type) (P Q R : A -> Type)
+  `(HasBinOp A) `(HasNullOp A)
   `(forall i : A, HasAdd (Q i))
   `(forall i : A, HasAdd (R i))
   `(HasGrdBinFn A P Q R) : Prop :=

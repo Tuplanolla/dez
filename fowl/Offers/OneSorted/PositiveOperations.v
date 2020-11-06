@@ -5,7 +5,7 @@ From Maniunfold.Has Require Export
 
 Section Context.
 
-Context {A : Type} `{A_has_bin_op : HasBinOp A}.
+Context (A : Type) `(HasBinOp A).
 
 Import Pos.
 
@@ -15,3 +15,5 @@ Definition positive_op (n : positive) (x : A) : A :=
 Global Instance positive_A_has_l_act : HasLAct positive A := positive_op.
 
 End Context.
+
+Arguments positive_op {_ _} _ _ /.

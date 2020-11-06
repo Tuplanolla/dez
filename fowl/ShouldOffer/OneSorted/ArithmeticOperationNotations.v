@@ -10,17 +10,17 @@ From Maniunfold.ShouldHave Require Export
 Reserved Notation "n '*' x" (at level 40, left associativity).
 Reserved Notation "x '^' n" (at level 30, right associativity).
 
-Notation "n '*' x" := (positive_op (A_has_bin_op := add) n x) : positive_scope.
-Notation "n '*' x" := (nat_op (A_has_bin_op := add)
-  (A_has_null_op := zero) n x) : nat_scope.
-Notation "n '*' x" := (n_op (A_has_bin_op := add)
-  (A_has_null_op := zero) n x) : N_scope.
-Notation "n '*' x" := (z_op (A_has_bin_op := add)
-  (A_has_null_op := zero) (A_has_un_op := neg) n x) : Z_scope.
-Notation "x '^' n" := (positive_op (A_has_bin_op := mul) n x) : positive_scope.
-Notation "x '^' n" := (nat_op (A_has_bin_op := mul)
-  (A_has_null_op := one) n x) : nat_scope.
-Notation "x '^' n" := (n_op (A_has_bin_op := mul)
-  (A_has_null_op := one) n x) : N_scope.
-Notation "x '^' n" := (z_op (A_has_bin_op := mul)
-  (A_has_null_op := one) (A_has_un_op := recip) n x) : Z_scope.
+Notation "n '*' x" := (positive_op (H := add) n x) : positive_scope.
+Notation "n '*' x" := (nat_op (H := add)
+  (H0 := zero) n x) : nat_scope.
+Notation "n '*' x" := (n_op (H := add)
+  (H0 := zero) n x) : N_scope.
+Notation "n '*' x" := (z_op (H := add)
+  (H0 := zero) (H1 := neg) n x) : Z_scope.
+Notation "x '^' n" := (positive_op (H := mul) n x) : positive_scope.
+Notation "x '^' n" := (nat_op (H := mul)
+  (H0 := one) n x) : nat_scope.
+Notation "x '^' n" := (n_op (H := mul)
+  (H0 := one) n x) : N_scope.
+Notation "x '^' n" := (z_op (H := mul)
+  (H0 := one) (H1 := recip) n x) : Z_scope.

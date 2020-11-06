@@ -13,8 +13,8 @@ From Maniunfold.ShouldHave Require Import
 
 Local Open Scope grd_r_mod_scope.
 
-Class IsTwoGrdRLDistr {A : Type} (P Q : A -> Type)
-  `{HasBinOp A} `{HasNullOp A}
+Class IsTwoGrdRLDistr (A : Type) (P Q : A -> Type)
+  `(HasBinOp A) `(HasNullOp A)
   `(forall i : A, HasAdd (P i))
   `(forall i : A, HasAdd (Q i))
   `(HasGrdRAct A P Q) : Prop :=

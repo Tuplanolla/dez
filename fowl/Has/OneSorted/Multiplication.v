@@ -10,7 +10,7 @@ Typeclasses Transparent HasMul.
 
 Section Context.
 
-Context {A : Type} `{HasMul A}.
+Context (A : Type) `(HasMul A).
 
 Global Instance A_has_bin_op : HasBinOp A := mul.
 

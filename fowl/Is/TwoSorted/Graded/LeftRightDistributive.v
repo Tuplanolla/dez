@@ -11,8 +11,8 @@ From Maniunfold.ShouldHave Require Import
 
 Local Open Scope grd_l_mod_scope.
 
-Class IsTwoGrdLRDistr {A : Type} (P Q : A -> Type)
-  `{HasBinOp A} `{HasNullOp A}
+Class IsTwoGrdLRDistr (A : Type) (P Q : A -> Type)
+  `(HasBinOp A) `(HasNullOp A)
   `(forall i : A, HasAdd (P i))
   `(forall i : A, HasAdd (Q i))
   `(HasGrdLAct A P Q) : Prop :=

@@ -11,7 +11,7 @@ Class IsSym (A : Type) `(HasBinRel A) : Prop :=
 
 Section Context.
 
-Context {A : Type} `{IsSym A}.
+Context (A : Type) `(IsSym A).
 
 Global Instance bin_rel_symmetric : Symmetric bin_rel | 0.
 Proof. intros x y. apply sym. Defined.

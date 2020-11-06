@@ -16,7 +16,7 @@ Import ListNotations.
 
 Global Instance bool_has_enum : HasEnum bool := [false; true].
 
-Global Instance bool_is_b_fin : IsBFin (A := bool).
+Global Instance bool_is_b_fin : IsBFin enum.
 Proof.
   split.
   - intros [].
@@ -44,7 +44,7 @@ Proof.
     + apply false.
     + apply true. Defined.
 
-Global Instance bool_is_fin : IsFin (A := bool).
+Global Instance bool_is_fin : IsFin (card bool) iso.
 Proof.
   split.
   - intros [].
@@ -100,7 +100,7 @@ Local Instance unit_Z_has_neg (i : bool) :
 Proof. hnf. intros x. destruct i. all: apply (neg x). Defined.
 
 Local Instance this_has_grd_mul :
-  HasGrdMul (fun x : bool => if x then unit else Z).
+  HasGrdMul (fun x : bool => if x then unit else Z) bin_op.
 Proof.
   hnf. intros i j x y. destruct i, j. all: cbv.
   - apply tt.
@@ -109,7 +109,7 @@ Proof.
   - apply (x * y). Defined.
 
 Local Instance this_has_grd_one :
-  HasGrdOne (fun x : bool => if x then unit else Z).
+  HasGrdOne (fun x : bool => if x then unit else Z) null_op.
 Proof. hnf. apply 1. Defined.
 
 Local Instance bool_bin_op_is_assoc : IsAssoc (bin_op (A := bool)).
@@ -143,7 +143,7 @@ Ltac smash := repeat match goal with
   end; try reflexivity.
 
 Local Instance Z_bool_is_grd_ring :
-  IsGrdRing (A := bool) (fun x : bool => if x then unit else Z)
+  IsGrdRing (A := bool) (fun x : bool => if x then unit else Z) bin_op null_op
   unit_Z_has_add unit_Z_has_zero unit_Z_has_neg grd_mul grd_one.
 Proof.
   repeat split.

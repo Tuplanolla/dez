@@ -10,7 +10,7 @@ Typeclasses Transparent HasRTor.
 
 Section Context.
 
-Context {A B : Type} `{HasRTor A B}.
+Context (A B : Type) `(HasRTor A B).
 
 Global Instance A_B_has_tor : HasTor A B := r_tor.
 

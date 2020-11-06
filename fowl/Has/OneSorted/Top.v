@@ -10,7 +10,7 @@ Typeclasses Transparent HasTop.
 
 Section Context.
 
-Context {A : Type} `{HasTop A}.
+Context (A : Type) `(HasTop A).
 
 Global Instance A_has_null_op : HasNullOp A := top.
 

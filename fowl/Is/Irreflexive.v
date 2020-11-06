@@ -11,7 +11,7 @@ Class IsIrrefl (A : Type) `(HasBinRel A) : Prop :=
 
 Section Context.
 
-Context {A : Type} `{IsIrrefl A}.
+Context (A : Type) `(IsIrrefl A).
 
 Global Instance bin_rel_reflexive : Irreflexive bin_rel | 0.
 Proof. intros x. apply irrefl. Defined.

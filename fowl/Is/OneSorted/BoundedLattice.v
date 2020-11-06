@@ -14,7 +14,7 @@ Class IsBndLat (A : Type)
 
 Section Context.
 
-Context {A : Type} `{IsBndLat A}.
+Context (A : Type) `(IsBndLat A).
 
 (** TODO Not sure if this is sensible... *)
 

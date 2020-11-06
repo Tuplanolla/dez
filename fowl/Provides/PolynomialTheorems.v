@@ -31,7 +31,7 @@ Section more_merge.
 
 Context `{FinMap K M}.
 
-Context {A B C} (f : option A → option B → option C) `{!DiagNone f}.
+Context {A B C : Type} {f : option A → option B → option C} `{!DiagNone f}.
 
 (** TODO Ask the std++ people about merging this. *)
 
@@ -203,7 +203,7 @@ Section Context.
 Import OneSorted.ArithmeticNotations.
 Import OneSorted.ArithmeticOperationNotations.
 
-Context {A : Type} `{IsRing A} `{eq_dec : EqDecision A}.
+Context (A : Type) `{IsRing A} `{eq_dec : EqDecision A}.
 
 (** We cannot keep zero values in the map,
     because they would break definitional equality and
@@ -421,7 +421,7 @@ Import OneSorted.ArithmeticNotations.
 
 Section Context.
 
-Context {A : Type} `{IsRing A} `{eq_dec : EqDecision A}.
+Context (A : Type) `{IsRing A} `{eq_dec : EqDecision A}.
 
 (** Performing this specialization by hand aids type inference. *)
 
@@ -588,7 +588,7 @@ Import OneSorted.ArithmeticNotations.
 
 Section Context.
 
-Context {A : Type} `{IsRing A} `{eq_dec : EqDecision A}.
+Context (A : Type) `{IsRing A} `{eq_dec : EqDecision A}.
 
 Let poly := poly (A := A).
 
@@ -671,7 +671,7 @@ Import OneSorted.ArithmeticOperationNotations.
 
 Section Context.
 
-Context {A : Type} `{IsRing A} `{eq_dec : EqDecision A}.
+Context (A : Type) `{IsRing A} `{eq_dec : EqDecision A}.
 
 Let poly := poly (A := A).
 
@@ -774,48 +774,50 @@ Import OneSorted.Graded.ArithmeticNotations.
 
 Definition poly_grd (i : N) : Type := A.
 
-Global Instance poly_has_grd_mul : HasGrdMul poly_grd := fun i j : N => mul.
-Global Instance poly_has_grd_one : HasGrdOne poly_grd := one.
+Global Instance poly_has_grd_mul : HasGrdMul poly_grd bin_op :=
+  fun i j : N => mul.
+Global Instance poly_has_grd_one : HasGrdOne poly_grd null_op :=
+  one.
 
 (** TODO Should never reference implicitly named variables like this. *)
 
 Global Instance poly_is_grd_assoc :
-  IsGrdAssoc poly_grd (H := Additive.N_has_bin_op) grd_mul.
+  IsGrdAssoc poly_grd Additive.N_has_bin_op grd_mul.
 Proof.
   esplit. intros i j k x y z. cbv [poly_grd]. rewrite rew_const.
   cbv [grd_bin_op grd_mul poly_has_grd_mul]. apply assoc. Defined.
 
 Global Instance poly_is_grd_l_unl :
-  IsGrdLUnl poly_grd (H := Additive.N_has_bin_op)
-  (H0 := Additive.N_has_null_op) grd_mul grd_one.
+  IsGrdLUnl poly_grd Additive.N_has_bin_op
+  Additive.N_has_null_op grd_mul grd_one.
 Proof.
   esplit. intros i x. cbv [poly_grd]. rewrite rew_const.
   cbv [grd_bin_op grd_mul poly_has_grd_mul
     grd_null_op grd_one poly_has_grd_one]. apply l_unl. Defined.
 
 Global Instance poly_is_grd_r_unl :
-  IsGrdRUnl poly_grd (H := Additive.N_has_bin_op)
-  (H0 := Additive.N_has_null_op) grd_mul grd_one.
+  IsGrdRUnl poly_grd Additive.N_has_bin_op
+  Additive.N_has_null_op grd_mul grd_one.
 Proof.
   esplit. intros i x. cbv [poly_grd]. rewrite rew_const.
   cbv [grd_bin_op grd_mul poly_has_grd_mul
     grd_null_op grd_one poly_has_grd_one]. apply r_unl. Defined.
 
 Global Instance poly_is_grd_l_distr :
-  IsGrdLDistr poly_grd (fun i : N => add) grd_mul.
+  IsGrdLDistr poly_grd bin_op (fun i : N => add) grd_mul.
 Proof.
   intros i j x y z. cbv [grd_mul poly_has_grd_mul]. apply l_distr. Defined.
 
 Global Instance poly_is_grd_r_distr :
-  IsGrdRDistr poly_grd (fun i : N => add) grd_mul.
+  IsGrdRDistr poly_grd bin_op (fun i : N => add) grd_mul.
 Proof.
   intros i j x y z. cbv [grd_mul poly_has_grd_mul]. apply r_distr. Defined.
 
 Global Instance poly_is_grd_distr :
-  IsGrdDistr poly_grd (fun i : N => add) grd_mul.
+  IsGrdDistr poly_grd bin_op (fun i : N => add) grd_mul.
 Proof. split; try typeclasses eauto. Defined.
 
-Global Instance poly_is_grd_ring : IsGrdRing (fun i : N => A)
+Global Instance poly_is_grd_ring : IsGrdRing (fun i : N => A) bin_op null_op
   (fun i : N => add) (fun i : N => zero) (fun i : N => neg)
   (fun i j : N => mul) one.
 Proof. split; try typeclasses eauto. Admitted.

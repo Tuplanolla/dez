@@ -16,7 +16,7 @@ Class IsAbGrp (A : Type) `(HasBinOp A)
 
 Section Context.
 
-Context {A : Type} `{IsAbGrp A}.
+Context (A : Type) `(IsAbGrp A).
 
 Theorem A_bin_op_un_op_un_distr : forall x y : A,
   - (x + y) = - x + - y.

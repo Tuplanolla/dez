@@ -12,7 +12,7 @@ Typeclasses Transparent HasUnOp.
 
 Section Context.
 
-Context {A : Type} `{HasUnOp A}.
+Context (A : Type) `(HasUnOp A).
 
 Global Instance A_A_has_fn : HasFn A A := un_op.
 

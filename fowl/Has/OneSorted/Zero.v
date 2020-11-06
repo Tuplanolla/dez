@@ -10,7 +10,7 @@ Typeclasses Transparent HasZero.
 
 Section Context.
 
-Context {A : Type} `{HasZero A}.
+Context (A : Type) `(HasZero A).
 
 Global Instance A_has_null_op : HasNullOp A := zero.
 

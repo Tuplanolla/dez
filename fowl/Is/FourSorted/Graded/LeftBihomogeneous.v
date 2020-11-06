@@ -9,8 +9,7 @@ From Maniunfold.ShouldHave Require Import
 
 Local Open Scope grd_l_mod_scope.
 
-Class IsGrdLBihomogen {A : Type} (P Q R S : A -> Type)
-  `{HasBinOp A}
+Class IsGrdLBihomogen (A : Type) (P Q R S : A -> Type) `(HasBinOp A)
   `(!@HasGrdLAct A P Q bin_op) `(!@HasGrdLAct A P S bin_op)
   `(!@HasGrdBinFn A Q R S bin_op) : Prop := {
   A_bin_op_is_assoc :> IsAssoc bin_op;

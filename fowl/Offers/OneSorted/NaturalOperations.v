@@ -9,7 +9,7 @@ From Maniunfold.ShouldHave Require Import
 
 Section Context.
 
-Context {A : Type} `{A_has_bin_op : HasBinOp A} `{A_has_null_op : HasNullOp A}.
+Context (A : Type) `(HasBinOp A) `(HasNullOp A).
 
 Fixpoint nat_op (n : nat) (x : A) : A :=
   match n with
@@ -28,3 +28,6 @@ Definition n_op (n : N) (x : A) : A :=
 Global Instance N_A_has_l_act : HasLAct N A := n_op.
 
 End Context.
+
+Arguments nat_op {_ _ _} !_ _.
+Arguments n_op {_ _ _} !_ _.

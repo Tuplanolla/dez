@@ -176,15 +176,15 @@ Local Instance const_has_zero (i : unit) : HasZero A := zero.
 
 Local Instance const_has_neg (i : unit) : HasNeg A := neg.
 
-Local Instance const_has_grd_mul : HasGrdMul (A := unit) (const A) :=
+Local Instance const_has_grd_mul : HasGrdMul (A := unit) (const A) bin_op :=
   fun (i j : unit) (x y : A) => mul x y.
 
-Local Instance const_has_grd_one : HasGrdOne (A := unit) (const A) :=
+Local Instance const_has_grd_one : HasGrdOne (A := unit) (const A) null_op :=
   one.
 
 (** Every ring is a trivially graded ring. *)
 
-Local Instance ring_is_grd_ring : IsGrdRing (A := unit) (const A)
+Local Instance ring_is_grd_ring : IsGrdRing (A := unit) (const A) bin_op null_op
   const_has_add const_has_zero const_has_neg
   const_has_grd_mul const_has_grd_one.
 Proof. repeat split. all: try typeclasses eauto.

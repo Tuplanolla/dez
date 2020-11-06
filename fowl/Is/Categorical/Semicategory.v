@@ -5,8 +5,7 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   Categorical.Notations.
 
-Class IsScat (A : Type) `{HasHom A}
-  `(HasComp A) : Prop := {
-  A_comp_is_cat_assoc :> IsCatAssoc comp;
-  A_comp_is_magd :> IsMagd comp;
+Class IsScat (A : Type) `(HasHom A) `(!HasComp hom) : Prop := {
+  hom_comp_is_cat_assoc :> IsCatAssoc hom comp;
+  hom_comp_is_magd :> IsMagd hom comp;
 }.

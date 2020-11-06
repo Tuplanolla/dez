@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
 
 Section Context.
 
-Context {A B : Type} `{HasIso A B}.
+Context (A B : Type) `(HasIso A B).
 
 (** Section, forward mapping. *)
 
@@ -14,3 +14,6 @@ Definition sect : A -> B := fst iso.
 Definition retr : B -> A := snd iso.
 
 End Context.
+
+Arguments sect {_ _ !_} _.
+Arguments retr {_ _ !_} _.

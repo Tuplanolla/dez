@@ -24,7 +24,7 @@ Proof. reflexivity. Defined.
 
 Section Context.
 
-Context {A : Type} `{IsMag A}.
+Context (A : Type) `(IsMag A).
 
 Fact iter_op_xI : forall (n : positive) (x : A),
   Pos.iter_op bin_op (xI n) x = x + Pos.iter_op bin_op n (x + x).
@@ -42,7 +42,7 @@ End Context.
 
 Section Context.
 
-Context {A : Type} `{IsSgrp A}.
+Context (A : Type) `{IsSgrp A}.
 
 Lemma iter_op_succ : forall (n : positive) (x : A),
   Pos.iter_op bin_op (Pos.succ n) x = x + Pos.iter_op bin_op n x.
@@ -81,7 +81,7 @@ End Context.
 
 Section Context.
 
-Context {A : Type} `{IsGrp A}.
+Context (A : Type) `{IsGrp A}.
 
 Theorem positive_op_un_op_two_l_bin_comm : forall (n : positive) (x : A),
   - (n * x)%positive = (n * - x)%positive.

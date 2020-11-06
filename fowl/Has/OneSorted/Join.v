@@ -10,7 +10,7 @@ Typeclasses Transparent HasJoin.
 
 Section Context.
 
-Context {A : Type} `{HasJoin A}.
+Context (A : Type) `(HasJoin A).
 
 Global Instance A_has_bin_op : HasBinOp A := join.
 

@@ -27,21 +27,22 @@ Typeclasses Transparent HasBasis.
 
 (** TODO Find a way to clean these properties up by refactoring stuff. *)
 
-Definition sum {A : Type}
-  `{HasAdd A} `{HasZero A} : list A -> A :=
+Definition sum (A : Type) `(HasAdd A) `(HasZero A) : list A -> A :=
   fold_right add zero.
+
+Arguments sum {_ _ _} _.
 
 (** TODO See if freeness is a good standalone property. *)
 
 Class IsFourFreeBimod (X A B C : Type)
-  `{HasEnum X} `(HasBasis X C)
+  `(HasEnum X) `(HasBasis X C)
   `(HasAdd A) `(HasZero A) `(HasNeg A)
   `(HasMul A) `(HasOne A)
   `(HasAdd B) `(HasZero B) `(HasNeg B)
   `(HasMul B) `(HasOne B)
   `(HasAdd C) `(HasZero C) `(HasNeg C)
   `(HasLAct A C) `(HasRAct B C) : Prop := {
-  X_is_b_fin :> IsBFin (A := X);
+  X_is_b_fin :> IsBFin enum;
   A_B_C_add_zero_neg_mul_one_add_zero_neg_mul_one_add_zero_neg_l_act_r_act_is_three_bimod
     :> IsThreeBimod
     add zero neg mul one add zero neg mul one add zero neg l_act r_act;

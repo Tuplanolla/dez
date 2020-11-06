@@ -51,6 +51,10 @@ When defining classes, implicit generalization must not be used.
 When writing definitions or proving theorems,
 implicit generalization should be used in the `Context` of a `Section`,
 which itself is usually named `Context`.
+When the classes to generalize are operational,
+make them explicit (possibly automatically implicit);
+when the classes to generalize are predicative,
+make them implicit (explicitly so).
 
 Instances inside sections should always be marked `Global` or `Local`,
 never implicitly local.

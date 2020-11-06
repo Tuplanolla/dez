@@ -12,8 +12,8 @@ From Maniunfold.Is Require Export
     The grading is carried by [A], the ring by [P] and the algebra by [Q].
     See [Is.TwoSorted.Algebra]. *)
 
-Class IsGrdAlg {A : Type} (P Q : A -> Type)
-  `{HasBinOp A} `{HasNullOp A}
+Class IsGrdAlg (A : Type) (P Q : A -> Type)
+  `(HasBinOp A) `(HasNullOp A)
   `(P_has_add : forall i : A, HasAdd (P i))
   `(P_has_zero : forall i : A, HasZero (P i))
   `(P_has_neg : forall i : A, HasNeg (P i))
@@ -25,11 +25,11 @@ Class IsGrdAlg {A : Type} (P Q : A -> Type)
   `(!@HasGrdLAct A P Q bin_op)
   `(!@HasGrdRAct A P Q bin_op) : Prop := {
   P_add_zero_neg_grd_mul_grd_one_is_grd_ring :>
-    IsGrdRing P P_has_add P_has_zero P_has_neg grd_mul grd_one;
+    IsGrdRing P bin_op null_op P_has_add P_has_zero P_has_neg grd_mul grd_one;
   P_Q_add_zero_neg_grd_mul_grd_one_add_zero_neg_grd_l_act_grd_r_act_is_two_grd_bimod
-    :> IsTwoGrdBimod P Q P_has_add P_has_zero P_has_neg grd_mul grd_one
+    :> IsTwoGrdBimod P Q bin_op null_op P_has_add P_has_zero P_has_neg grd_mul grd_one
     Q_has_add Q_has_zero Q_has_neg grd_l_act grd_r_act;
   P_Q_add_zero_neg_grd_mul_grd_one_add_zero_neg_grd_l_act_grd_r_act_grd_mul_is_grd_bilin_op
-    :> IsGrdBilinOp P Q P_has_add P_has_zero P_has_neg grd_mul grd_one
+    :> IsGrdBilinOp P Q bin_op null_op P_has_add P_has_zero P_has_neg grd_mul grd_one
     Q_has_add Q_has_zero Q_has_neg grd_l_act grd_r_act grd_mul;
 }.

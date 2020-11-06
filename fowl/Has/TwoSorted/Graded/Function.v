@@ -6,8 +6,7 @@ From Maniunfold.ShouldHave Require Import
 (** Graded function.
     See [Has.TwoSorted.Function]. *)
 
-Class HasGrdFn {A : Type} (P Q : A -> Type)
-  `{HasUnOp A} : Type :=
+Class HasGrdFn (A : Type) (P Q : A -> Type) `(HasUnOp A) : Type :=
   grd_fn : forall i : A, P i -> Q (- i).
 
 Typeclasses Transparent HasGrdFn.

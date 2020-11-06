@@ -45,7 +45,7 @@ A_B_has_r_act : HasRAct A B
 
 Section Context.
 
-Context {A : Type} `{HasBinOp A}.
+Context (A : Type) `(HasBinOp A).
 
 Global Instance A_A_has_l_act : HasLAct A A := bin_op.
 Global Instance A_A_has_r_act : HasRAct A A := bin_op.

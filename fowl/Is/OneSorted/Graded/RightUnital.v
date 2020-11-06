@@ -7,8 +7,8 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   OneSorted.Graded.AdditiveNotations.
 
-Class IsGrdRUnl {A : Type} (P : A -> Type)
-  `{HasBinOp A} `{HasNullOp A}
+Class IsGrdRUnl (A : Type) (P : A -> Type)
+  `(HasBinOp A) `(HasNullOp A)
   `(HasGrdBinOp A P)
   `(HasGrdNullOp A P) : Prop := {
   A_bin_op_null_op_is_r_unl :> IsRUnl bin_op null_op;
