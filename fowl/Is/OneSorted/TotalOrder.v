@@ -16,7 +16,7 @@ Class IsTotOrd (A : Type)
 
 Section Context.
 
-Context (A : Type) `(IsTotOrd A).
+Context (A : Type) `{IsTotOrd A}.
 
 Ltac conversions := typeclasses
   convert bin_rel into ord_rel.

@@ -14,7 +14,7 @@ Class IsGrpd (A : Type)
 
 Section Context.
 
-Context (A : Type) `(IsGrpd A).
+Context (A : Type) `{IsGrpd A}.
 
 Global Instance inv_is_cat_invol : IsCatInvol hom inv.
 Proof.

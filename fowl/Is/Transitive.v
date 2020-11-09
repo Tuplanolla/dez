@@ -11,7 +11,7 @@ Class IsTrans (A : Type) `(HasBinRel A) : Prop :=
 
 Section Context.
 
-Context (A : Type) `(IsTrans A).
+Context (A : Type) `{IsTrans A}.
 
 Global Instance bin_rel_transitive : Transitive bin_rel | 0.
 Proof. intros x y z. apply trans. Defined.

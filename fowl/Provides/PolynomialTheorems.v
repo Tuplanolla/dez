@@ -151,13 +151,13 @@ Lemma map_free_prod_fmap {KA KB A B MA MB MAB A' B' MA' MB' MAB' : Type}
   prod_map f g <$> map_free_prod x y = map_free_prod (f <$> x) (g <$> y).
 Proof. Admitted.
 
-Check let map_lan_prod_flip {KA KB KC A B C MA MB : Type}
+(* Check let map_lan_prod_flip {KA KB KC A B C MA MB : Type}
   (p : KA -> KB -> KC) (f : A -> B -> C) (x : MA) (y : MB) :=
   map_free_lan (K := KA * KB) (L := KC) (A := C)
   (prod_uncurry p) (prod_uncurry f <$> map_free_prod x y) =
   map_free_lan (K := KB * KA) (L := KC) (A := C)
   (prod_uncurry (flip p)) (prod_uncurry (flip f) <$> map_free_prod y x) in
-  map_lan_prod_flip.
+  map_lan_prod_flip. *)
 
 Lemma filter_fmap {A B : Type} {M : Type -> Type}
   `{FMap M} `{Filter A (M A)} `{Filter B (M B)}
@@ -334,7 +334,8 @@ Next Obligation.
   destruct (decide (1 <> 0)) as [F10 | F10]; stabilize.
   - rewrite lookup_singleton_ne in Hyp.
     + inversion Hyp.
-    + intros Hi. subst i. rewrite lookup_singleton in Hyp. inversion Hyp as [H10].
+    + intros Hi. subst i.
+      rewrite lookup_singleton in Hyp. inversion Hyp as [H10].
       apply F10. apply H10.
   - rewrite lookup_empty in Hyp. inversion Hyp. Defined.
 

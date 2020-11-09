@@ -25,7 +25,7 @@ Class IsRing (A : Type)
 
 Section Context.
 
-Context (A : Type) `(IsRing A).
+Context (A : Type) `{IsRing A}.
 
 Ltac conversions := typeclasses
   convert bin_op into add and null_op into zero and un_op into neg or
@@ -184,7 +184,8 @@ Local Instance const_has_grd_one : HasGrdOne (A := unit) (const A) null_op :=
 
 (** Every ring is a trivially graded ring. *)
 
-Local Instance ring_is_grd_ring : IsGrdRing (A := unit) (const A) bin_op null_op
+Local Instance ring_is_grd_ring :
+  IsGrdRing (A := unit) (const A) bin_op null_op
   const_has_add const_has_zero const_has_neg
   const_has_grd_mul const_has_grd_one.
 Proof. repeat split. all: try typeclasses eauto.

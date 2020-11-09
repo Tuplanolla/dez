@@ -17,7 +17,7 @@ Class IsGrp (A : Type) `(HasBinOp A) `(HasNullOp A) `(HasUnOp A) : Prop := {
 
 Section Context.
 
-Context (A : Type) `(IsGrp A).
+Context (A : Type) `{IsGrp A}.
 
 Let bin_op : HasBinOp A := bin_op.
 

@@ -63,6 +63,22 @@ When defining multi-sorted classes,
 always supply implicit type arguments explicitly,
 because tracking down degeneration bugs is really annoying.
 
+### Definitions
+
+Prefer writing arguments to the left of `:` in definitions,
+because then we do not have to `intros` variables introduced
+by implicit generalization, which is fragile.
+
+Rewrite rules true by reduction can be stated as `Fact`s.
+
+When writing `Fixpoint` definitions,
+make sure to pass recursive arguments explicitly.
+Otherwise, changes in implicit argument inference will break them.
+
+### Notations
+
+Always provide full sections, in Agda style.
+
 ### Imports and Exports
 
 When defining operational classes,

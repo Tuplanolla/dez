@@ -11,7 +11,7 @@ Class IsIso (A B : Type) `(HasIso A B) : Prop := {
 
 Section Context.
 
-Context (A B : Type) `(IsIso A B).
+Context (A B : Type) `{IsIso A B}.
 
 Local Instance B_A_has_iso : HasIso B A := (retr, sect).
 

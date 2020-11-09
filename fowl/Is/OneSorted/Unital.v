@@ -13,7 +13,7 @@ Class IsUnl (A : Type)
 
 Section Context.
 
-Context (A : Type) `(IsUnl A).
+Context (A : Type) `{IsUnl A}.
 
 Global Instance A_A_bin_op_bin_op_null_op_is_two_unl :
   IsTwoUnl bin_op bin_op null_op.

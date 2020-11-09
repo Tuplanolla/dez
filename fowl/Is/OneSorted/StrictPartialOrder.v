@@ -15,7 +15,7 @@ Class IsStrPartOrd (A : Type) `(HasOrdRel A) : Prop := {
 
 Section Context.
 
-Context (A : Type) `(IsStrPartOrd A).
+Context (A : Type) `{IsStrPartOrd A}.
 
 Global Instance ord_rel_asymmetric : StrictOrder ord_rel | 0.
 Proof. split; typeclasses eauto. Defined.

@@ -11,7 +11,7 @@ Class IsAsym (A : Type) `(HasBinRel A) : Prop :=
 
 Section Context.
 
-Context (A : Type) `(IsAsym A).
+Context (A : Type) `{IsAsym A}.
 
 Global Instance bin_rel_asymmetric : Asymmetric bin_rel | 0.
 Proof. intros x y. apply asym. Defined.

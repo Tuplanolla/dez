@@ -13,7 +13,7 @@ Class IsEq (A : Type) `(HasEqRel A) : Prop := {
 
 Section Context.
 
-Context (A : Type) `(IsEq A).
+Context (A : Type) `{IsEq A}.
 
 Global Instance eq_rel_equivalence : Equivalence eq_rel | 0.
 Proof. split; typeclasses eauto. Defined.

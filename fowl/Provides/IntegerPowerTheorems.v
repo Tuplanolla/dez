@@ -1,6 +1,6 @@
 (* bad *)
 From Coq Require Import
-  ZArith.
+  ZArith.ZArith.
 From Maniunfold.Is Require Export
   Magma Semigroup Monoid Group TwoSorted.LeftBinaryCommutative.
 From Maniunfold.Offers Require Export
@@ -11,32 +11,32 @@ From Maniunfold.ShouldHave Require Import
 From Maniunfold.ShouldOffer Require Import
   OneSorted.AdditiveOperationNotations.
 
-Fact succ_xI : forall n : positive,
+Fact succ_xI (n : positive) :
   Pos.succ (xI n) = xO (Pos.succ n).
-Proof. intros n. reflexivity. Defined.
+Proof. reflexivity. Defined.
 
-Fact succ_xO : forall n : positive,
+Fact succ_xO (n : positive) :
   Pos.succ (xO n) = xI n.
-Proof. intros n. reflexivity. Defined.
+Proof. reflexivity. Defined.
 
 Fact succ_xH : Pos.succ xH = xO xH.
 Proof. reflexivity. Defined.
 
 Section Context.
 
-Context (A : Type) `(IsMag A).
+Context (A : Type) `{IsMag A}.
 
-Fact iter_op_xI : forall (n : positive) (x : A),
-  Pos.iter_op bin_op (xI n) x = x + Pos.iter_op bin_op n (x + x).
-Proof. intros n x. reflexivity. Defined.
+Fact iter_op_xI (n : positive) (x : A) :
+  Pos.iter_op _+_ (xI n) x = x + Pos.iter_op _+_ n (x + x).
+Proof. reflexivity. Defined.
 
-Fact iter_op_xO : forall (n : positive) (x : A),
-  Pos.iter_op bin_op (xO n) x = Pos.iter_op bin_op n (x + x).
-Proof. intros n x. reflexivity. Defined.
+Fact iter_op_xO (n : positive) (x : A) :
+  Pos.iter_op _+_ (xO n) x = Pos.iter_op _+_ n (x + x).
+Proof. reflexivity. Defined.
 
-Fact iter_op_xH : forall x : A,
-  Pos.iter_op bin_op xH x = x.
-Proof. intros x. reflexivity. Defined.
+Fact iter_op_xH (x : A) :
+  Pos.iter_op _+_ xH x = x.
+Proof. reflexivity. Defined.
 
 End Context.
 
@@ -44,11 +44,10 @@ Section Context.
 
 Context (A : Type) `{IsSgrp A}.
 
-Lemma iter_op_succ : forall (n : positive) (x : A),
-  Pos.iter_op bin_op (Pos.succ n) x = x + Pos.iter_op bin_op n x.
+Lemma iter_op_succ (n : positive) (x : A) :
+  Pos.iter_op _+_ (Pos.succ n) x = x + Pos.iter_op _+_ n x.
 Proof.
-  intros n.
-  induction n as [p IH | p IH |]; intros x.
+  revert x; induction n as [p IH | p IH |]; intros x.
   - rewrite (succ_xI p).
     rewrite (iter_op_xO (Pos.succ p) x).
     rewrite (IH (bin_op x x)).
@@ -65,10 +64,9 @@ Proof.
     try rewrite (iter_op_xH x).
     reflexivity. Defined.
 
-Lemma iter_op_comm : forall (n : positive) (x : A),
-  x + Pos.iter_op bin_op n x = Pos.iter_op bin_op n x + x.
+Lemma iter_op_comm (n : positive) (x : A) :
+  x + Pos.iter_op _+_ n x = Pos.iter_op _+_ n x + x.
 Proof.
-  intros n x.
   induction n as [| p IH] using Pos.peano_ind.
   - try rewrite (iter_op_xH x).
     reflexivity.
@@ -83,10 +81,9 @@ Section Context.
 
 Context (A : Type) `{IsGrp A}.
 
-Theorem positive_op_un_op_two_l_bin_comm : forall (n : positive) (x : A),
+Theorem positive_op_un_op_two_l_bin_comm (n : positive) (x : A) :
   - (n * x)%positive = (n * - x)%positive.
 Proof.
-  intros n x.
   cbv [positive_op].
   induction n as [| p IH] using Pos.peano_ind.
   - rewrite (iter_op_xH (- x)).
@@ -100,40 +97,40 @@ Proof.
     reflexivity. Defined.
 
 Global Instance positive_op_un_op_is_two_l_bin_comm :
-  IsTwoLBinComm un_op positive_op.
+  IsTwoLBinComm -_ _*_%positive.
 Proof. intros x y. apply positive_op_un_op_two_l_bin_comm. Defined.
 
-Theorem n_op_un_op_two_l_bin_comm : forall (n : N) (x : A),
+Theorem n_op_un_op_two_l_bin_comm (n : N) (x : A) :
   - (n * x)%N = (n * - x)%N.
 Proof.
-  intros n x.
   destruct n as [| p].
   - cbv [n_op].
     rewrite un_absorb.
     reflexivity.
   - cbv [n_op].
-    rewrite (positive_op_un_op_two_l_bin_comm p x).
+    (* Here [rewrite] does not work for some reason. *)
+    etransitivity; [| apply (positive_op_un_op_two_l_bin_comm p x)].
     reflexivity. Defined.
 
-Global Instance n_op_un_op_is_two_l_bin_comm : IsTwoLBinComm un_op n_op.
+Global Instance n_op_un_op_is_two_l_bin_comm : IsTwoLBinComm -_ _*_%N.
 Proof. intros x y. apply n_op_un_op_two_l_bin_comm. Defined.
 
-Theorem z_op_un_op_two_l_bin_comm : forall (n : Z) (x : A),
+Theorem z_op_un_op_two_l_bin_comm (n : Z) (x : A) :
   - (n * x)%Z = (n * (- x)%grp)%Z.
 Proof.
-  intros n x.
   destruct n as [| p | p].
   - cbv [z_op].
     rewrite un_absorb.
     reflexivity.
   - cbv [z_op].
-    rewrite (positive_op_un_op_two_l_bin_comm p x).
+    etransitivity; [| apply (positive_op_un_op_two_l_bin_comm p x)].
     reflexivity.
   - cbv [z_op].
-    rewrite (positive_op_un_op_two_l_bin_comm p x).
+    etransitivity; [| apply (f_equal un_op);
+      apply (positive_op_un_op_two_l_bin_comm p x)].
     reflexivity. Defined.
 
-Global Instance z_op_un_op_is_two_l_bin_comm : IsTwoLBinComm un_op z_op.
+Global Instance z_op_un_op_is_two_l_bin_comm : IsTwoLBinComm -_ _*_%Z.
 Proof. intros x y. apply z_op_un_op_two_l_bin_comm. Defined.
 
 End Context.

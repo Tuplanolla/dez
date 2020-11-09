@@ -10,8 +10,7 @@ From Maniunfold.ShouldOffer Require Import
 Section Context.
 
 Context (A : Type) (P : A -> Type)
-  `(HasBinOp A) `(HasUnOp A)
-  `(!@HasGrdAdd A P bin_op) `(!@HasGrdNeg A P un_op).
+  `(HasBinOp A) `(HasUnOp A) `(!HasGrdAdd P bin_op) `(!HasGrdNeg P un_op).
 
 (** Graded subtraction.
     See [Offers.OneSorted.Arithmetic]. *)
@@ -24,8 +23,7 @@ End Context.
 Section Context.
 
 Context (A : Type) (P : A -> Type)
-  `(HasBinOp A) `(HasUnOp A)
-  `(!@HasGrdMul A P bin_op) `(!@HasGrdRecip A P un_op).
+  `(HasBinOp A) `(HasUnOp A) `(!HasGrdMul P bin_op) `(!HasGrdRecip P un_op).
 
 (** Graded division.
     See [Offers.OneSorted.Arithmetic]. *)

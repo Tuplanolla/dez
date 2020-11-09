@@ -48,7 +48,7 @@ Definition Map_max_key_def {A : Type} (d : key) (xs : Map.t A) : key :=
 
 Section Context.
 
-Context (A B : Type) `(IsTwoBimod A B).
+Context (A B : Type) `{IsTwoBimod A B}.
 
 Record tensor : Type := {
   ht : A;

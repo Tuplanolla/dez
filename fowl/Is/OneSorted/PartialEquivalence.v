@@ -13,7 +13,7 @@ Class IsPartEq (A : Type) `(HasEqRel A) : Prop := {
 
 Section Context.
 
-Context (A : Type) `(IsPartEq A).
+Context (A : Type) `{IsPartEq A}.
 
 Global Instance eq_rel_p_e_r : PER eq_rel | 0.
 Proof. split; typeclasses eauto. Defined.

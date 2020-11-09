@@ -14,12 +14,12 @@ Context (A : Type) `(HasBinOp A) `(HasNullOp A) `(HasUnOp A).
 Definition z_op (n : Z) (x : A) : A :=
   match n with
   | Z0 => 0
-  | Zpos p => positive_op p x
-  | Zneg p => - positive_op p x
+  | Zpos p => positive_op _+_ p x
+  | Zneg p => - positive_op _+_ p x
   end.
+
+Global Arguments z_op !_ _.
 
 Global Instance Z_A_has_l_act : HasLAct Z A := z_op.
 
 End Context.
-
-Arguments z_op {_ _ _ _} !_ _.

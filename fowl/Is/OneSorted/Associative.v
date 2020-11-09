@@ -12,7 +12,7 @@ Class IsAssoc (A : Type) `(HasBinOp A) : Prop :=
 
 Section Context.
 
-Context (A : Type) `(IsAssoc A).
+Context (A : Type) `{IsAssoc A}.
 
 Global Instance A_A_A_bin_op_bin_op_is_bicompat :
   IsBicompat (bin_op (A := A)) (bin_op (A := A)).

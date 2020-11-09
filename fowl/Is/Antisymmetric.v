@@ -13,7 +13,7 @@ Class IsAntisym (A : Type) `(HasBinRel A) : Prop :=
 
 Section Context.
 
-Context (A : Type) `(IsAntisym A).
+Context (A : Type) `{IsAntisym A}.
 
 Global Instance bin_rel_antisymmetric : Antisymmetric A eq bin_rel | 0.
 Proof. intros x y. apply antisym. Defined.
