@@ -16,6 +16,6 @@ Class IsTwoGrdLUnl (A : Type) (P Q : A -> Type)
   `(HasGrdLAct A P Q)
   `(HasGrdOne A P) : Prop := {
   A_bin_op_null_op_is_l_unl :> IsLUnl bin_op null_op;
-  grd_two_l_unl : forall {i : A} (x : Q i),
+  grd_two_l_unl : forall (i : A) (x : Q i),
     rew l_unl i in (1 * x) = x;
 }.

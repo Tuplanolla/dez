@@ -15,5 +15,5 @@ Class IsTwoGrdRRDistr (A : Type) (P Q : A -> Type)
   `(HasBinOp A) `(HasNullOp A)
   `(forall i : A, HasAdd (Q i))
   `(HasGrdRAct A P Q) : Prop :=
-  grd_two_r_r_distr : forall {i j : A} (x y : Q i) (a : P j),
+  grd_two_r_r_distr : forall (i j : A) (x y : Q i) (a : P j),
     (x + y) * a = x * a + y * a.

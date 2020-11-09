@@ -19,5 +19,5 @@ Class IsGrdLBiaddve (A : Type) (P Q R : A -> Type)
   `(forall i : A, HasAdd (P i))
   `(forall i : A, HasAdd (R i))
   `(HasGrdBinFn A P Q R) : Prop :=
-  grd_l_biaddve : forall {i j : A} (x y : P i) (z : Q j),
+  grd_l_biaddve : forall (i j : A) (x y : P i) (z : Q j),
     grd_bin_fn _ _ (x + y) z = grd_bin_fn _ _ x z + grd_bin_fn _ _ y z.

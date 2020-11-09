@@ -19,6 +19,9 @@ Section Context.
 
 Context (A : Type) `{IsGrp A}.
 
+(** TODO If we use section notations here,
+    the following `Let` becomes useless. *)
+
 Let bin_op : HasBinOp A := bin_op.
 
 Theorem bin_op_l_cancel (x y z : A) (e : z + x = z + y) : x = y.
