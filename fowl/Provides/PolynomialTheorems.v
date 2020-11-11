@@ -198,29 +198,41 @@ Definition list_product {A : Type}
 
 End Context.
 
+(** TODO Uh oh! *)
+
+Notation "'`' x" := (Spr1 x).
+
 Section Context.
 
 Import OneSorted.ArithmeticNotations.
 Import OneSorted.ArithmeticOperationNotations.
 
-Context (A : Type) `{IsRing A} `{eq_dec : EqDecision A}.
+Context (A : Type) `{IsRing A} `{EqDecision A}.
 
 (** We cannot keep zero values in the map,
     because they would break definitional equality and
     needlessly increase space usage. *)
 
-Definition poly_value_wf (n : N) (a : A) : Prop := bool_decide (a <> 0).
-Definition poly_wf (m : gmap N A) : Prop :=
-  bool_decide (map_Forall poly_value_wf m).
-Definition poly : Type := {m : gmap N A | poly_wf m}.
+Definition poly_value_wf (n : N) (a : A) : Prop := a <> 0.
+Definition poly_wf (m : gmap N A) : Prop := map_Forall poly_value_wf m.
+Definition poly : Type := {m : gmap N A ! Squash (poly_wf m)}.
+
+Lemma squash_poly_wf (m : gmap N A) (w : poly_wf m) : Squash (poly_wf m).
+Proof. apply squash. apply w. Qed.
+
+Lemma unsquash_poly_wf (m : gmap N A) (s : Squash (poly_wf m)) : poly_wf m.
+Proof.
+  intros i x em ex.
+  enough sEmpty by contradiction. inversion s as [w].
+  pose proof w i x em ex as f. inversion f. Qed.
 
 Lemma poly_lookup_wf : forall (x : poly) (i : N),
   `x !! i <> Some 0.
 Proof.
   intros [x Wp] i. intros Hyp.
-  pose proof Wp as Wp'. apply bool_decide_unpack in Wp'.
+  pose proof unsquash_poly_wf _ Wp as Wp'.
   pose proof map_Forall_lookup_1 poly_value_wf x i 0 Wp' Hyp as Wc.
-  apply bool_decide_unpack in Wc. apply Wc. reflexivity. Defined.
+  apply Wc. reflexivity. Defined.
 
 Ltac stabilize :=
   repeat match goal with
@@ -254,11 +266,11 @@ Definition poly_eval (p : poly) (x : A) : A :=
     indeed, this happens whenever $y_n = - x_n$. *)
 
 Program Definition poly_add (x y : poly) : poly :=
-  exist poly_wf (union_with (fun a b : A => let c := a + b in
+  Sexists (Squash o poly_wf) (union_with (fun a b : A => let c := a + b in
     if decide (c <> 0) then Some c else None) (`x) (`y)) _.
 Next Obligation.
-  intros x y. apply bool_decide_pack.
-  intros i a Hyp. apply bool_decide_pack. intros Ha. subst a.
+  intros x y. apply squash_poly_wf.
+  intros i a Hyp. intros Ha. subst a.
   apply lookup_union_with_Some in Hyp. cbn in Hyp.
   destruct Hyp as [[Hx Hy] | [[Hx Hy] | [a [b [Hx [Hy Hxy]]]]]].
   - apply (poly_lookup_wf x i Hx).
@@ -272,10 +284,10 @@ Next Obligation.
     The terms of the polynomial $x$ in $x = 0$
     are constrained by $x_n = 0$ for all $n$. *)
 
-Program Definition poly_zero : poly := exist poly_wf empty _.
+Program Definition poly_zero : poly := Sexists (Squash o poly_wf) empty _.
 Next Obligation.
-  apply bool_decide_pack.
-  intros i a Hyp. apply bool_decide_pack. intros Ha. subst a.
+  apply squash_poly_wf.
+  intros i a Hyp. intros Ha. subst a.
   apply lookup_empty_Some in Hyp.
   destruct Hyp. Defined.
 
@@ -285,10 +297,10 @@ Next Obligation.
     are related by the pointwise negation $y_n = - x_n$ for all $n$. *)
 
 Program Definition poly_neg (x : poly) : poly :=
-  exist poly_wf (neg <$> `x) _.
+  Sexists (Squash o poly_wf) (neg <$> `x) _.
 Next Obligation with conversions.
-  intros x. apply bool_decide_pack.
-  intros i a Hyp. apply bool_decide_pack. intros Ha. subst a.
+  intros x. apply squash_poly_wf.
+  intros i a Hyp. intros Ha. subst a.
   rewrite lookup_fmap in Hyp.
   pose proof fmap_Some_1 _ _ _ Hyp as Hyp'.
   destruct Hyp' as [a [Hx Hy]].
@@ -305,18 +317,18 @@ Next Obligation with conversions.
     as was the case with $x + y$. *)
 
 Program Definition poly_mul (x y : poly) : poly :=
-  exist poly_wf (filter (prod_uncurry poly_value_wf)
+  Sexists (Squash o poly_wf) (filter (prod_uncurry poly_value_wf)
     (list_sum <$> map_free_lan (prod_uncurry add (A := N))
       (prod_uncurry mul <$> map_free_prod (`x) (`y)))) _.
 Next Obligation.
-  intros x y. apply bool_decide_pack.
-  intros i a Hyp. apply bool_decide_pack. intros Ha. subst a.
+  intros x y. apply squash_poly_wf.
+  intros i a Hyp. intros Ha. subst a.
   apply map_filter_lookup_Some in Hyp.
   destruct Hyp as [Hyp Wc].
-  apply bool_decide_unpack in Wc. apply Wc. reflexivity. Defined.
+  apply Wc. reflexivity. Defined.
 
 Program Definition poly_mul' (x y : poly) : poly :=
-  exist poly_wf (filter (prod_uncurry poly_value_wf)
+  Sexists (Squash o poly_wf) (filter (prod_uncurry poly_value_wf)
     (map_lan (add (A := A)) 0 (prod_uncurry add (A := N))
       (prod_uncurry mul <$> map_free_prod (`x) (`y)))) _.
 Next Obligation. Admitted.
@@ -327,10 +339,11 @@ Next Obligation. Admitted.
     are constrained by $x_0 = 1$ and $x_n = 0$ for all $n > 0$. *)
 
 Program Definition poly_one : poly :=
-  exist poly_wf (if decide (1 <> 0) then singletonM 0 1 else empty) _.
+  Sexists (Squash o poly_wf)
+  (if decide (1 <> 0) then singletonM 0 1 else empty) _.
 Next Obligation.
-  apply bool_decide_pack.
-  intros i a Hyp. apply bool_decide_pack. intros Ha. subst a.
+  apply squash_poly_wf.
+  intros i a Hyp. intros Ha. subst a.
   destruct (decide (1 <> 0)) as [F10 | F10]; stabilize.
   - rewrite lookup_singleton_ne in Hyp.
     + inversion Hyp.
@@ -350,13 +363,14 @@ Next Obligation.
     $x_n = a \times x_n$ for all $n$. *)
 
 Program Definition poly_l_act (a : A) (x : poly) : poly :=
-  exist poly_wf (filter (prod_uncurry poly_value_wf) (mul a <$> `x)) _.
+  Sexists (Squash o poly_wf)
+  (filter (prod_uncurry poly_value_wf) (mul a <$> `x)) _.
 Next Obligation with conversions.
-  intros a x. apply bool_decide_pack.
-  intros i b Hyp. apply bool_decide_pack. intros Hb. subst b.
+  intros a x. apply squash_poly_wf.
+  intros i b Hyp. intros Hb. subst b.
   apply map_filter_lookup_Some in Hyp.
   destruct Hyp as [Hyp Wc].
-  apply bool_decide_unpack in Wc. apply Wc. reflexivity. Defined.
+  apply Wc. reflexivity. Defined.
 
 (** Right scalar multiplication of polynomials.
 
@@ -366,13 +380,14 @@ Next Obligation with conversions.
     $x_n = x_n \times a$ for all $n$. *)
 
 Program Definition poly_r_act (x : poly) (a : A) : poly :=
-  exist poly_wf (filter (prod_uncurry poly_value_wf) (flip mul a <$> `x)) _.
+  Sexists (Squash o poly_wf)
+  (filter (prod_uncurry poly_value_wf) (flip mul a <$> `x)) _.
 Next Obligation with conversions.
-  intros a x. apply bool_decide_pack.
-  intros i b Hyp. apply bool_decide_pack. intros Hb. subst b.
+  intros a x. apply squash_poly_wf.
+  intros i b Hyp. intros Hb. subst b.
   apply map_filter_lookup_Some in Hyp.
   destruct Hyp as [Hyp Wc].
-  apply bool_decide_unpack in Wc. apply Wc. reflexivity. Defined.
+  apply Wc. reflexivity. Defined.
 
 End Context.
 
@@ -422,7 +437,7 @@ Import OneSorted.ArithmeticNotations.
 
 Section Context.
 
-Context (A : Type) `{IsRing A} `{eq_dec : EqDecision A}.
+Context (A : Type) `{IsRing A} `{EqDecision A}.
 
 (** Performing this specialization by hand aids type inference. *)
 
@@ -456,7 +471,7 @@ Global Instance poly_bin_op_is_assoc : IsAssoc poly_add.
 Proof with conversions.
   intros x y z.
   cbv [bin_op poly_has_bin_op poly_add]. cbn.
-  apply sig_eq_pi; [typeclasses eauto |]. cbn.
+  apply Spr1_inj. cbn.
   cbv [union_with map_union_with].
   match goal with
   |- merge ?e _ _ = merge ?e _ _ => set (f := e)
@@ -506,7 +521,7 @@ Global Instance poly_bin_op_is_comm : IsComm poly_add.
 Proof with conversions.
   intros x y. cbv [bin_op poly_has_bin_op poly_add].
   cbv [union_with map_union_with].
-  apply sig_eq_pi; [typeclasses eauto |]. cbn.
+  apply Spr1_inj. cbn.
   match goal with
   |- merge ?e _ _ = merge ?e _ _ => set (f := e)
   end.
@@ -589,7 +604,7 @@ Import OneSorted.ArithmeticNotations.
 
 Section Context.
 
-Context (A : Type) `{IsRing A} `{eq_dec : EqDecision A}.
+Context (A : Type) `{IsRing A} `{EqDecision A}.
 
 Let poly := poly (A := A).
 
@@ -615,7 +630,7 @@ Global Instance poly_bin_op_is_assoc : IsAssoc poly_mul.
 Proof with conversions.
   intros x y z.
   cbv [bin_op poly_has_bin_op poly_mul]. cbn.
-  apply sig_eq_pi; [typeclasses eauto |]. cbn.
+  apply Spr1_inj. cbn.
   match goal with
   |- filter ?e _ = filter ?e _ => set (P := e)
   end.
@@ -627,10 +642,7 @@ Proof with conversions.
           map_free_prod x y)) : gmap N A).
   enough (f (`x) (f (`y) (`z)) = f (f (`x) (`y)) (`z)) by assumption.
   destruct x as [m Wm]. cbn.
-  generalize dependent m.
-  apply (map_ind (fun m : gmap N A => poly_wf m → f m (f (`y) (`z)) = f (f m (`y)) (`z))).
-  - intros W. cbv [f]. reflexivity.
-  - intros i x m Hyp IH W. cbv [f]. Admitted.
+  generalize dependent m. Admitted.
 
 Global Instance poly_bin_op_is_sgrp : IsSgrp poly_mul.
 Proof. split; typeclasses eauto. Defined.
@@ -639,7 +651,7 @@ Global Instance poly_bin_op_is_comm : IsComm poly_mul.
 Proof.
   intros x y.
   cbv [bin_op poly_has_bin_op]; cbv [poly_mul].
-  apply sig_eq_pi; [typeclasses eauto |]. cbn.
+  apply Spr1_inj. cbn.
   generalize dependent x. Admitted.
 
 Global Instance poly_bin_op_is_comm_sgrp : IsCommSgrp poly_mul.
@@ -672,7 +684,7 @@ Import OneSorted.ArithmeticOperationNotations.
 
 Section Context.
 
-Context (A : Type) `{IsRing A} `{eq_dec : EqDecision A}.
+Context (A : Type) `{IsRing A} `{EqDecision A}.
 
 Let poly := poly (A := A).
 
