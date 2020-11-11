@@ -76,10 +76,36 @@ Proof with auto.
 
 End Context.
 
+Example peemap_raw : Pmap_raw nat.
+Proof.
+  apply PNode.
+  - apply None.
+  - apply PNode.
+    + apply Some. apply 42.
+    + apply PLeaf.
+    + apply PLeaf.
+  - apply PNode.
+    + apply Some. apply 13.
+    + apply PNode.
+      * apply Some. apply 7.
+      * apply PLeaf.
+      * apply PLeaf.
+    + apply PLeaf. Defined.
+
+Example peemap : Pmap nat.
+Proof. apply (PMap peemap_raw I). Defined.
+
+(** The std++ documentation says that
+    the order of the return value of [map_to_list] is unspecified,
+    but this is silly, because [Pmap] is inherently ordered. *)
+
+Example peelist : list (positive * nat) := map_to_list peemap.
+
 (** Left Kan extension of finitely-supported functions along inclusion,
     where the commutative monoid is free
     (it should actually be multiset instead of list,
-    but developer laziness wins). *)
+    but, since the domain of maps ought to be ordered anyway,
+    the monoid really need not be commutative. *)
 
 Definition map_free_lan {K L A MK ML : Type}
   `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
