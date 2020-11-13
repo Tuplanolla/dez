@@ -7,6 +7,6 @@ From Maniunfold.ShouldHave Require Import
     Commonly found in categories. *)
 
 Class HasIdt (A : Type) `(HasHom A) : Type :=
-  idt : forall x : A, x --> x.
+  idn : forall x : A, x --> x.
 
 Typeclasses Transparent HasIdt.

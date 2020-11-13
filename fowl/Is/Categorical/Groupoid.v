@@ -8,22 +8,24 @@ From Maniunfold.ShouldHave Require Import
 
 Class IsGrpd (A : Type)
   `(HasHom A) `(!HasComp hom) `(!HasIdt hom) `(!HasInv hom) : Prop := {
-  hom_comp_idt_is_cat :> IsCat hom comp idt;
-  hom_comp_idt_inv_is_cat_inv :> IsCatInv hom comp idt inv;
+  hom_comp_idn_is_cat :> IsCat hom comp idn;
+  hom_comp_idn_inv_is_cat_inv :> IsCatInv hom comp idn inv;
 }.
 
 Section Context.
 
 Context (A : Type) `{IsGrpd A}.
 
-Global Instance inv_is_cat_invol : IsCatInvol hom inv.
+Theorem hom_inv_cat_invol (x y : A) (f : x --> y) : (f ^-1) ^-1 = f.
 Proof.
-  intros x y f.
-  rewrite <- (cat_r_unl ((f ^-1) ^-1)).
-  rewrite <- (cat_l_inv f).
-  rewrite (cat_assoc ((f ^-1) ^-1) (f ^-1) f).
-  rewrite (cat_l_inv (f ^-1)).
-  rewrite (cat_l_unl f).
-  reflexivity. Defined.
+  rewrite <- (cat_r_unl _ _ ((f ^-1) ^-1)).
+  rewrite <- (cat_l_inv _ _ f).
+  rewrite (cat_assoc _ _ _ _ ((f ^-1) ^-1) (f ^-1) f).
+  rewrite (cat_l_inv _ _ (f ^-1)).
+  rewrite (cat_l_unl _ _ f).
+  reflexivity. Qed.
+
+Global Instance hom_inv_is_cat_invol : IsCatInvol hom inv.
+Proof. exact @hom_inv_cat_invol. Qed.
 
 End Context.

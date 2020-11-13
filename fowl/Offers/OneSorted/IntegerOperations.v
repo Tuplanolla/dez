@@ -2,23 +2,12 @@ From Coq Require Import
   ZArith.ZArith.
 From Maniunfold.Has Require Export
   TwoSorted.LeftAction.
-From Maniunfold.Is Require Import
+From Maniunfold.Is Require Export
   OneSorted.Group.
 From Maniunfold.Offers Require Export
-  OneSorted.PositiveOperations.
-From Maniunfold.ShouldHave Require Import
-  OneSorted.AdditiveNotations.
-
-(** TODO Split operation notations. *)
-
-Local Reserved Notation "n '*' x" (at level 40, left associativity).
-Local Reserved Notation "x '^' n" (at level 30, right associativity).
-
-Local Reserved Notation "'_*_'" (at level 0, no associativity).
-Local Reserved Notation "'_^_'" (at level 0, no associativity).
-
-Local Notation "n '*' x" := (positive_op _+_ n x) : positive_scope.
-Local Notation "'_*_'" := (positive_op _+_) (only parsing) : positive_scope.
+  OneSorted.PositiveOperations OneSorted.NaturalOperations.
+From Maniunfold.ShouldOffer Require Import
+  OneSorted.AdditivePositiveOperationNotations.
 
 Section Context.
 

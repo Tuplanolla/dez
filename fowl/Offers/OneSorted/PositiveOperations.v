@@ -2,7 +2,7 @@ From Coq Require Import
   PArith.PArith.
 From Maniunfold.Has Require Export
   TwoSorted.LeftAction.
-From Maniunfold.Is Require Import
+From Maniunfold.Is Require Export
   OneSorted.Semigroup.
 From Maniunfold.ShouldHave Require Import
   OneSorted.AdditiveNotations.

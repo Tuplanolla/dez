@@ -57,8 +57,7 @@ Export EqNotations.
     this list also serves as a quick reference. *)
 
 Reserved Notation "g 'o' f" (at level 40, left associativity).
-Reserved Notation "g 'o'' f" (at level 40, left associativity).
-Reserved Notation "'id''" (at level 0, no associativity).
+Reserved Notation "'id'" (at level 0, no associativity).
 Reserved Notation "f '^-1'" (at level 25, left associativity).
 Reserved Notation "'{' x '!' P '}'" (at level 0, x at level 99).
 Reserved Notation "'{' x ':' A '!' P '}'" (at level 0, x at level 99).
@@ -69,7 +68,7 @@ Reserved Notation "'-|-'" (at level 0, no associativity).
 Reserved Notation "x '~~' y" (at level 70, no associativity).
 Reserved Notation "x '##' y" (at level 70, no associativity).
 
-(** We can only assert these notations,
+(** We can only assert the following notations,
     because they are fixed by the standard library. *)
 
 Reserved Notation "x '<=' y" (at level 70, no associativity).
@@ -241,12 +240,14 @@ Definition apply_dep (A : Type) (P : A -> Type)
   (f : forall x : A, P x) (x : A) : P x := f x.
 
 (** We mark the utility functions transparent for unification and
-    provide some hints for simplifying them. *)
+    provide some hints for simplifying them.
+    Maybe one day there will be a reduction mechanism
+    that actually interprets the hints reliably. *)
 
 Typeclasses Transparent Spr1 Spr2.
 
 Typeclasses Transparent andb orb implb xorb negb is_true option_map fst snd
-  prod_curry prod_uncurry length app ID id IDProp idProp.
+  prod_curry prod_uncurry length app ID Datatypes.id IDProp idProp.
 
 Typeclasses Transparent proj1_sig proj2_sig projT1 projT2
   sig_of_sigT sigT_of_sig.
@@ -274,7 +275,7 @@ Arguments prod_uncurry {_ _ _} _ !_.
 Arguments length {_} !_.
 Arguments app {_} !_ _.
 Arguments ID /.
-Arguments id _ _ /.
+Arguments Datatypes.id _ _ /.
 Arguments IDProp /.
 Arguments idProp _ _ /.
 
@@ -312,67 +313,67 @@ Arguments flip_dep {_ _ _} _ _ _ /.
 Arguments apply_dep {_ _} _ _ /.
 
 (** Using [o] as a variable name should be prohibited by law,
-    which is why we turn it into a notation. *)
+    which is why we turn it into a notation.
+    We also turn [id] into a notation to keep it reusable. *)
 
 Notation "g 'o' f" := (compose g f) : core_scope.
-Notation "g 'o'' f" := (compose_dep g f) : core_scope.
+Notation "'id'" := Datatypes.id : core_scope.
 
 Notation "'_o_'" := compose (only parsing) : core_scope.
-Notation "'_o'_'" := compose_dep (only parsing) : core_scope.
 
 (** The dependent and nondependent versions are related as follows. *)
 
-Lemma eq_prod_curry_nondep (A B C : Type) (f : A * B -> C) (x : A) (y : B) :
+Fact eq_prod_curry_nondep (A B C : Type) (f : A * B -> C) (x : A) (y : B) :
   prod_curry_dep f x y = prod_curry f x y.
 Proof. reflexivity. Qed.
 
-Lemma eq_prod_uncurry_nondep (A B C : Type) (f : A -> B -> C) (xy : A * B) :
+Fact eq_prod_uncurry_nondep (A B C : Type) (f : A -> B -> C) (xy : A * B) :
   prod_uncurry_dep f xy = prod_uncurry f xy.
 Proof. destruct xy as [x y]. reflexivity. Qed.
 
-Lemma eq_sig_curry_nondep (A : Type) (P : A -> Prop) (B : Type)
+Fact eq_sig_curry_nondep (A : Type) (P : A -> Prop) (B : Type)
   (f : {x : A | P x} -> B) (x : A) (y : P x) :
   sig_curry_dep f x y = sig_curry f x y.
 Proof. reflexivity. Qed.
 
-Lemma eq_sig_uncurry_nondep (A : Type) (P : A -> Prop) (B : Type)
+Fact eq_sig_uncurry_nondep (A : Type) (P : A -> Prop) (B : Type)
   (f : forall x : A, P x -> B) (xy : {x : A | P x}) :
   sig_uncurry_dep f xy = sig_uncurry f xy.
 Proof. destruct xy as [x y]. reflexivity. Qed.
 
-Lemma eq_sigT_curry_nondep (A : Type) (P : A -> Type) (B : Type)
+Fact eq_sigT_curry_nondep (A : Type) (P : A -> Type) (B : Type)
   (f : {x : A & P x} -> B) (x : A) (y : P x) :
   sigT_curry_dep f x y = sigT_curry f x y.
 Proof. reflexivity. Qed.
 
-Lemma eq_sigT_uncurry_nondep (A : Type) (P : A -> Type) (B : Type)
+Fact eq_sigT_uncurry_nondep (A : Type) (P : A -> Type) (B : Type)
   (f : forall x : A, P x -> B) (xy : {x : A & P x}) :
   sigT_uncurry_dep f xy = sigT_uncurry f xy.
 Proof. destruct xy as [x y]. reflexivity. Qed.
 
-Lemma eq_Ssig_curry_nondep (A : Type) (P : A -> SProp) (B : Type)
+Fact eq_Ssig_curry_nondep (A : Type) (P : A -> SProp) (B : Type)
   (f : {x : A ! P x} -> B) (x : A) (y : P x) :
   Ssig_curry_dep f x y = Ssig_curry f x y.
 Proof. reflexivity. Qed.
 
-Lemma eq_Ssig_uncurry_nondep (A : Type) (P : A -> SProp) (B : Type)
+Fact eq_Ssig_uncurry_nondep (A : Type) (P : A -> SProp) (B : Type)
   (f : forall x : A, P x -> B) (xy : {x : A ! P x}) :
   Ssig_uncurry_dep f xy = Ssig_uncurry f xy.
 Proof. destruct xy as [x y]. reflexivity. Qed.
 
-Lemma eq_compose_nondep (A B C : Type) (g : B -> C) (f : A -> B) (x : A) :
+Fact eq_compose_nondep (A B C : Type) (g : B -> C) (f : A -> B) (x : A) :
   compose_dep (const g) f x = compose g f x.
 Proof. reflexivity. Qed.
 
-Lemma eq_const_nondep (A B : Type) (x : A) (y : B) :
+Fact eq_const_nondep (A B : Type) (x : A) (y : B) :
   const_dep x y = const x y.
 Proof. reflexivity. Qed.
 
-Lemma eq_flip_nondep (A B C : Type) (f : A -> B -> C) (y : B) (x : A) :
+Fact eq_flip_nondep (A B C : Type) (f : A -> B -> C) (y : B) (x : A) :
   flip_dep f y x = flip f y x.
 Proof. reflexivity. Qed.
 
-Lemma eq_apply_nondep (A B : Type) (f : A -> B) (x : A) :
+Fact eq_apply_nondep (A B : Type) (f : A -> B) (x : A) :
   apply_dep f x = apply f x.
 Proof. reflexivity. Qed.
 
