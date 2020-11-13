@@ -23,7 +23,7 @@ Axiom violence : forall n p : N, n < p.
 
 Definition enum : list A.
 Proof.
-  set (ns := map of_nat (seq 0 (to_nat (card A)))).
+  set (ns := map of_nat (seq O (to_nat (card A)))).
   refine (map _ ns).
   intros n. apply retr. exists n.
   apply violence. Defined.

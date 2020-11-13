@@ -37,8 +37,8 @@ Proof.
   split.
   - intros [].
     (** We map [true] into [1] and [false] into [0]. *)
-    + exists 1. apply N.lt_1_2.
-    + exists 0. apply N.lt_0_2.
+    + exists N.one. apply N.lt_1_2.
+    + exists N.zero. apply N.lt_0_2.
   - intros [[| p] H].
     (** We thus decree that [false] is less than [true]. *)
     + apply false.
@@ -110,7 +110,7 @@ Proof.
 
 Local Instance this_has_grd_one :
   HasGrdOne (fun x : bool => if x then unit else Z) null_op.
-Proof. hnf. apply 1. Defined.
+Proof. hnf. apply Z.one. Defined.
 
 Local Instance bool_bin_op_is_assoc : IsAssoc (bin_op (A := bool)).
 Proof.

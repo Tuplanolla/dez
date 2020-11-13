@@ -52,6 +52,62 @@ From Coq Require Import
 
 Export EqNotations.
 
+(** We reserve the following notations.
+    While doing so is not strictly necessary,
+    this list also serves as a quick reference. *)
+
+Reserved Notation "g 'o' f" (at level 40, left associativity).
+Reserved Notation "g 'o'' f" (at level 40, left associativity).
+Reserved Notation "'id''" (at level 0, no associativity).
+Reserved Notation "f '^-1'" (at level 25, left associativity).
+Reserved Notation "'{' x '!' P '}'" (at level 0, x at level 99).
+Reserved Notation "'{' x ':' A '!' P '}'" (at level 0, x at level 99).
+Reserved Notation "x '\/' y" (at level 85, right associativity).
+Reserved Notation "'_|_'" (at level 0, no associativity).
+Reserved Notation "x '/\' y" (at level 80, right associativity).
+Reserved Notation "'-|-'" (at level 0, no associativity).
+Reserved Notation "x '~~' y" (at level 70, no associativity).
+Reserved Notation "x '##' y" (at level 70, no associativity).
+
+(** We can only assert these notations,
+    because they are fixed by the standard library. *)
+
+Reserved Notation "x '<=' y" (at level 70, no associativity).
+Reserved Notation "x '+' y" (at level 50, left associativity).
+Reserved Notation "'-' x" (at level 35, right associativity).
+Reserved Notation "x '-' y" (at level 50, left associativity).
+Reserved Notation "x '*' y" (at level 40, left associativity).
+Reserved Notation "'/' x" (at level 35, right associativity).
+Reserved Notation "x '/' y" (at level 40, left associativity).
+Reserved Notation "x '^' y" (at level 30, right associativity).
+Reserved Notation "x '==' y" (at level 70, no associativity).
+Reserved Notation "x '-->' y" (at level 55, right associativity).
+Reserved Notation "'0'" (at level 0, no associativity).
+Reserved Notation "'1'" (at level 0, no associativity).
+
+(** These partial applications (operator sections)
+    can be generated automatically from the preceding notations. *)
+
+Reserved Notation "'_o_'" (at level 0, no associativity).
+Reserved Notation "'_o'_'" (at level 0, no associativity).
+Reserved Notation "'_^-1'" (at level 0, no associativity).
+Reserved Notation "'{_!_}'" (at level 0, no associativity).
+Reserved Notation "'_\/_'" (at level 0, no associativity).
+Reserved Notation "'_/\_'" (at level 0, no associativity).
+Reserved Notation "'_~~_'" (at level 0, no associativity).
+Reserved Notation "'_##_'" (at level 0, no associativity).
+
+Reserved Notation "'_<=_'" (at level 0, no associativity).
+Reserved Notation "'_+_'" (at level 0, no associativity).
+Reserved Notation "'-_'" (at level 0, no associativity).
+Reserved Notation "'_-_'" (at level 0, no associativity).
+Reserved Notation "'_*_'" (at level 0, no associativity).
+Reserved Notation "'/_'" (at level 0, no associativity).
+Reserved Notation "'_/_'" (at level 0, no associativity).
+Reserved Notation "'_^_'" (at level 0, no associativity).
+Reserved Notation "'_==_'" (at level 0, no associativity).
+Reserved Notation "'_-->_'" (at level 0, no associativity).
+
 (** The implicit arguments of [Ssig], [sig] and [sigT] should be the same. *)
 
 Arguments sig {_} _.
@@ -63,11 +119,10 @@ Arguments Sexists {_} _ _ _.
 
 (** We should have similar notations for [Ssig] as there are for [sig]. *)
 
-Reserved Notation "'{' x '!' P '}'" (at level 0, x at level 99).
-Reserved Notation "'{' x : A '!' P '}'" (at level 0, x at level 99).
-
 Notation "'{' x '!' P '}'" := (Ssig (fun x : _ => P)) : type_scope.
-Notation "'{' x : A '!' P '}'" := (Ssig (fun x : A => P)) : type_scope.
+Notation "'{' x ':' A '!' P '}'" := (Ssig (fun x : A => P)) : type_scope.
+
+Notation "'{_!_}'" := Ssig (only parsing) : type_scope.
 
 (** We do not allow automatic solution of obligations,
     because we do not want the addition or removal of hints
@@ -259,11 +314,11 @@ Arguments apply_dep {_ _} _ _ /.
 (** Using [o] as a variable name should be prohibited by law,
     which is why we turn it into a notation. *)
 
-Reserved Notation "g 'o' f" (at level 40, left associativity).
-Reserved Notation "g 'o'' f" (at level 40, left associativity).
-
 Notation "g 'o' f" := (compose g f) : core_scope.
 Notation "g 'o'' f" := (compose_dep g f) : core_scope.
+
+Notation "'_o_'" := compose (only parsing) : core_scope.
+Notation "'_o'_'" := compose_dep (only parsing) : core_scope.
 
 (** The dependent and nondependent versions are related as follows. *)
 
