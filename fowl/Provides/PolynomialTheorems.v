@@ -2,7 +2,7 @@
 From Coq Require Import
   ZArith.ZArith.
 From stdpp Require Import
-  option finite fin_maps gmap pmap nmap.
+  option finite fin_maps gmap gmultiset pmap.
 From Maniunfold.Has Require Export
   OneSorted.Enumeration OneSorted.Cardinality TwoSorted.Isomorphism.
 From Maniunfold.Is Require Export
@@ -102,12 +102,21 @@ Proof. apply (PMap peemap_raw I). Defined.
 Example peelist : list (positive * nat) := map_to_list peemap.
 
 (** Left Kan extension of finitely-supported functions along inclusion,
-    where the commutative monoid is free
-    (it should actually be multiset instead of list,
-    but, since the domain of maps ought to be ordered anyway,
-    the monoid really need not be commutative. *)
+    where the commutative monoid is free.
+    It would be nicer to use a list instead of a multiset,
+    since the domain of maps ought to be ordered anyway and
+    countability of values is not essential,
+    but this is not afforded to us by the map interface. *)
 
 Definition map_free_lan {K L A MK ML : Type}
+  `{Countable A} `{FinMapToList K A MK}
+  `{Empty ML} `{PartialAlter L (gmultiset A) ML}
+  (p : K -> L) (m : MK) : ML :=
+  map_fold (fun (i : K) (x : A) (n : ML) =>
+    partial_alter (fun a : option (gmultiset A) =>
+      Some (union (singleton x) (default empty a))) (p i) n) empty m.
+
+Definition map_free_lan' {K L A MK ML : Type}
   `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
   (p : K -> L) (m : MK) : ML :=
   map_fold (fun (i : K) (x : A) (n : ML) =>
@@ -126,31 +135,6 @@ Definition map_lan {K L A MK ML : Type}
     partial_alter (fun a : option A =>
       Some (f y (default x a))) (p i) n) empty m.
 
-Lemma map_free_lan_fmap {K L A B MK ML : Type} {P : L -> A -> Prop}
-  `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
-  `{Lookup K A MK} `{Lookup L (list A) ML}
-  `{FMap (const MK)} `{FMap (const ML)}
-  (p : K -> L) (f : A -> B) (x : MK) :
-  fmap f <$> map_free_lan p x = map_free_lan p (f <$> x).
-Proof. Admitted.
-
-Lemma map_Forall_free_lan {K L A MK ML : Type} {P : L -> A -> Prop}
-  `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
-  `{Lookup K A MK} `{Lookup L (list A) ML}
-  (p : K -> L) (x : MK) :
-  map_Forall (fun (i : K) (a : A) => P (p i) a) x <->
-  map_Forall (fun (i : L) (a : list A) => Forall (P i) a)
-  (map_free_lan (MK := MK) (ML := ML) p x).
-Proof. Admitted.
-
-Lemma map_Forall_free_lan_const {K L A MK ML : Type} {P : A -> Prop}
-  `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}
-  `{Lookup K A MK} `{Lookup L (list A) ML}
-  (p : K -> L) (x : MK) :
-  map_Forall (const P) x <->
-  map_Forall (const (Forall P)) (map_free_lan (MK := MK) (ML := ML) p x).
-Proof. exact (map_Forall_free_lan p x). Defined.
-
 (** Free product of two finite maps along their keys. *)
 
 Definition map_free_prod {KA KB A B MA MB MAB : Type}
@@ -160,37 +144,6 @@ Definition map_free_prod {KA KB A B MA MB MAB : Type}
   map_fold (fun (i : KA) (a : A) (z : MAB) =>
     map_fold (fun (j : KB) (b : B) (z : MAB) =>
       insert (i, j) (a, b) z) z y) empty x.
-
-(** If we wish to state that [map_free_prod] is associative,
-    we need to transport one side of the equation via [assoc] on [prod].
-    However, inhabiting this instance of [assoc] requires univalence.
-    We could also express the property pointwise,
-    but that still requires pointwise transport with [fmap].
-    More generally, [map_free_prod] is free,
-    so it commutes with all the obvious things. *)
-
-Lemma map_free_prod_fmap {KA KB A B MA MB MAB A' B' MA' MB' MAB' : Type}
-  `{FinMapToList KA A MA} `{FinMapToList KB B MB}
-  `{Empty MAB} `{Insert (KA * KB) (A * B) MAB}
-  `{FMap (const MA)} `{FMap (const MB)} `{FMap (const MAB)}
-  (f : A -> A') (g : B -> B') (x : MA) (y : MB) :
-  prod_map f g <$> map_free_prod x y = map_free_prod (f <$> x) (g <$> y).
-Proof. Admitted.
-
-(* Check let map_lan_prod_flip {KA KB KC A B C MA MB : Type}
-  (p : KA -> KB -> KC) (f : A -> B -> C) (x : MA) (y : MB) :=
-  map_free_lan (K := KA * KB) (L := KC) (A := C)
-  (prod_uncurry p) (prod_uncurry f <$> map_free_prod x y) =
-  map_free_lan (K := KB * KA) (L := KC) (A := C)
-  (prod_uncurry (flip p)) (prod_uncurry (flip f) <$> map_free_prod y x) in
-  map_lan_prod_flip. *)
-
-Lemma filter_fmap {A B : Type} {M : Type -> Type}
-  `{FMap M} `{Filter A (M A)} `{Filter B (M B)}
-  (P : A -> Prop) `{forall x : A, Decision (P x)}
-  (f : B -> A) `{forall x : B, Decision (compose P f x)} (xs : M B) :
-  filter P (f <$> xs) = f <$> filter (compose P f) xs.
-Proof. Abort.
 
 (** A finite map is equivalent to a function with finite support.
     Almost, at least. We also need an upper bound for the largest key. *)
@@ -204,23 +157,75 @@ Definition actually_maplike {K A : Type} `{Finite K} `{HasZero A} : Type :=
 
 Section Context.
 
+Lemma filter_fmap {A B : Type} {M : Type -> Type}
+  `{FMap M} `{Filter A (M A)} `{Filter B (M B)}
+  (P : A -> Prop) `{forall x : A, Decision (P x)}
+  (f : B -> A) `{forall x : B, Decision (compose P f x)} (xs : M B) :
+  filter P (f <$> xs) = f <$> filter (compose P f) xs.
+Proof. Abort.
+
+Context `{FinMap K M} `{FinMap L M'}.
+
+Lemma map_free_lan_fmap {A B : Type} (p : K -> L) (f : A -> B) (x : M A) :
+  fmap f <$> map_free_lan' p x = map_free_lan' p (f <$> x).
+Proof. Admitted.
+
+Lemma map_Forall_free_lan {A : Type} {P : L -> A -> Prop}
+  (p : K -> L) (x : M A) :
+  map_Forall (fun (i : K) (a : A) => P (p i) a) x <->
+  map_Forall (fun (i : L) (a : list A) => Forall (P i) a)
+  (map_free_lan' (MK := M A) (ML := M' (list A)) p x).
+Proof. Admitted.
+
+Lemma map_Forall_free_lan_const {A : Type} {P : A -> Prop}
+  (p : K -> L) (x : M A) :
+  map_Forall (const P) x <->
+  map_Forall (const (Forall P))
+  (map_free_lan' (MK := M A) (ML := M' (list A)) p x).
+Proof. exact (map_Forall_free_lan p x). Defined.
+
+(** If we wish to state that [map_free_prod] is associative,
+    we need to transport one side of the equation via [assoc] on [prod].
+    However, inhabiting this instance of [assoc] requires univalence.
+    We could also express the property pointwise,
+    but that still requires pointwise transport with [fmap].
+    More generally, [map_free_prod] is free,
+    so it commutes with all the obvious things. *)
+
+(* Lemma map_free_prod_fmap {A B A' B' : Type}
+  (f : A -> A') (g : B -> B') (x : M A) (y : M' B) :
+  prod_map f g <$> map_free_prod x y = map_free_prod (f <$> x) (g <$> y).
+Proof. Admitted. *)
+
+End Context.
+
+Section Context.
+
 Import OneSorted.ArithmeticNotations.
 
 Definition map_sum {K A M : Type}
   `{FinMapToList K A M} `{HasAdd A} `{HasZero A}
-  (m : M) : A := map_fold (const add) 0 m.
+  (m : M) : A := map_fold (const _+_) 0 m.
 
 Definition map_product {K A M : Type}
   `{FinMapToList K A M} `{HasMul A} `{HasOne A}
-  (m : M) : A := map_fold (const mul) 1 m.
+  (m : M) : A := map_fold (const _*_) 1 m.
+
+Definition set_sum {A M : Type}
+  `{Elements A M} `{HasAdd A} `{HasZero A}
+  (m : M) : A := set_fold _+_ 0 m.
+
+Definition set_product {A M : Type}
+  `{Elements A M} `{HasMul A} `{HasOne A}
+  (m : M) : A := set_fold _*_ 1 m.
 
 Definition list_sum {A : Type}
   `{HasAdd A} `{HasZero A}
-  (l : list A) : A := foldr add 0 l.
+  (l : list A) : A := foldr _+_ 0 l.
 
 Definition list_product {A : Type}
   `{HasMul A} `{HasOne A}
-  (l : list A) : A := foldr mul 1 l.
+  (l : list A) : A := foldr _*_ 1 l.
 
 End Context.
 
@@ -233,7 +238,7 @@ Section Context.
 Import OneSorted.ArithmeticNotations.
 Import OneSorted.ArithmeticOperationNotations.
 
-Context (A : Type) `{IsRing A} `{EqDecision A}.
+Context (A : Type) `{IsRing A} `{EqDecision A} `{Countable A}.
 
 (** We cannot keep zero values in the map,
     because they would break definitional equality and
@@ -344,7 +349,7 @@ Next Obligation with conversions.
 
 Program Definition poly_mul (x y : poly) : poly :=
   Sexists (Squash o poly_wf) (filter (prod_uncurry poly_value_wf)
-    (list_sum <$> map_free_lan (prod_uncurry add (A := N))
+    (set_sum <$> map_free_lan (prod_uncurry add (A := N))
       (prod_uncurry mul <$> map_free_prod (`x) (`y)))) _.
 Next Obligation.
   intros x y. apply squash_poly_wf.
@@ -630,7 +635,7 @@ Import OneSorted.ArithmeticNotations.
 
 Section Context.
 
-Context (A : Type) `{IsRing A} `{EqDecision A}.
+Context (A : Type) `{IsRing A} `{EqDecision A} `{Countable A}.
 
 Let poly := poly (A := A).
 
@@ -662,7 +667,7 @@ Proof with conversions.
   end.
   set (f (x y : gmap N A) :=
     filter P
-    (list_sum <$>
+    (set_sum <$>
       map_free_lan (K := N * N) (L := N) (prod_uncurry add)
         (prod_uncurry mul <$>
           map_free_prod x y)) : gmap N A).
@@ -710,7 +715,7 @@ Import OneSorted.ArithmeticOperationNotations.
 
 Section Context.
 
-Context (A : Type) `{IsRing A} `{EqDecision A}.
+Context (A : Type) `{IsRing A} `{EqDecision A} `{Countable A}.
 
 Let poly := poly (A := A).
 

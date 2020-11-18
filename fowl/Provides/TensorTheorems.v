@@ -115,14 +115,6 @@ Global Instance N_has_bin_op : HasBinOp N := N.add.
 
 Global Instance N_has_null_op : HasNullOp N := N.zero.
 
-Check IsGrdAlg (A := N) (fun n : N => A) (fun n : N => tensor)
-  (N_has_bin_op) (N_has_null_op)
-  (fun n : N => Addition.add) (fun n : N => zero) (fun n : N => neg)
-  (fun n p : N => mul) one
-  (fun n : N => Add) (fun n : N => Zero) (fun n : N => Neg)
-  (fun n p : N => GrdMul)
-  (fun n p : N => LAct) (fun n p : N => RAct).
-
 (** Instant tensor algebra; just add water. *)
 
 Global Instance lensor_is_grd_alg :
