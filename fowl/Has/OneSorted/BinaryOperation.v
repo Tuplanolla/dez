@@ -11,8 +11,6 @@ Hint Mode HasBinOp ! : typeclass_instances.
 
 Typeclasses Transparent HasBinOp.
 
-Arguments bin_op {_ _} !_ !_.
-
 (** TODO Hint modes and arguments.
     Also check these superclasses.
     Will give the following error if omitted.

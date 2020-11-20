@@ -17,19 +17,19 @@ Class IsGrdAlg (A : Type) (P Q : A -> Type)
   `(P_has_add : forall i : A, HasAdd (P i))
   `(P_has_zero : forall i : A, HasZero (P i))
   `(P_has_neg : forall i : A, HasNeg (P i))
-  `(!@HasGrdMul A P bin_op) `(!@HasGrdOne A P null_op)
+  `(!HasGrdMul P bin_op) `(!HasGrdOne P null_op)
   `(Q_has_add : forall i : A, HasAdd (Q i))
   `(Q_has_zero : forall i : A, HasZero (Q i))
   `(Q_has_neg : forall i : A, HasNeg (Q i))
-  `(!@HasGrdMul A Q bin_op)
-  `(!@HasGrdLAct A P Q bin_op)
-  `(!@HasGrdRAct A P Q bin_op) : Prop := {
+  `(!HasGrdMul Q bin_op)
+  `(!HasGrdLAct P Q bin_op)
+  `(!HasGrdRAct P Q bin_op) : Prop := {
   P_add_zero_neg_grd_mul_grd_one_is_grd_ring :>
-    IsGrdRing P bin_op null_op P_has_add P_has_zero P_has_neg grd_mul grd_one;
+    @IsGrdRing A P bin_op null_op P_has_add P_has_zero P_has_neg grd_mul grd_one;
   P_Q_add_zero_neg_grd_mul_grd_one_add_zero_neg_grd_l_act_grd_r_act_is_two_grd_bimod
-    :> IsTwoGrdBimod P Q bin_op null_op P_has_add P_has_zero P_has_neg grd_mul grd_one
+    :> @IsTwoGrdBimod A P Q bin_op null_op P_has_add P_has_zero P_has_neg grd_mul grd_one
     Q_has_add Q_has_zero Q_has_neg grd_l_act grd_r_act;
   P_Q_add_zero_neg_grd_mul_grd_one_add_zero_neg_grd_l_act_grd_r_act_grd_mul_is_grd_bilin_op
-    :> IsGrdBilinOp P Q bin_op null_op P_has_add P_has_zero P_has_neg grd_mul grd_one
+    :> @IsGrdBilinOp A P Q bin_op null_op P_has_add P_has_zero P_has_neg grd_mul grd_one
     Q_has_add Q_has_zero Q_has_neg grd_l_act grd_r_act grd_mul;
 }.

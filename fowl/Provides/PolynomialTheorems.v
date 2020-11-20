@@ -4,6 +4,7 @@ From Coq Require Import
 From stdpp Require Import
   option finite fin_maps gmap gmultiset pmap.
 From Maniunfold.Has Require Export
+  OneSorted.Unsquashing
   OneSorted.Enumeration OneSorted.Cardinality TwoSorted.Isomorphism.
 From Maniunfold.Is Require Export
   OneSorted.Finite TwoSorted.Isomorphism
@@ -248,20 +249,11 @@ Definition poly_value_wf (n : N) (a : A) : Prop := a <> 0.
 Definition poly_wf (m : gmap N A) : Prop := map_Forall poly_value_wf m.
 Definition poly : Type := {m : gmap N A ! Squash (poly_wf m)}.
 
-Lemma squash_poly_wf (m : gmap N A) (w : poly_wf m) : Squash (poly_wf m).
-Proof. apply squash. apply w. Qed.
-
-Lemma unsquash_poly_wf (m : gmap N A) (s : Squash (poly_wf m)) : poly_wf m.
-Proof.
-  intros i x em ex.
-  enough sEmpty by contradiction. inversion s as [w].
-  pose proof w i x em ex as f. inversion f. Qed.
-
 Lemma poly_lookup_wf : forall (x : poly) (i : N),
   `x !! i <> Some 0.
 Proof.
   intros [x Wp] i. intros Hyp.
-  pose proof unsquash_poly_wf _ Wp as Wp'.
+  pose proof unsquash Wp as Wp'.
   pose proof map_Forall_lookup_1 poly_value_wf x i 0 Wp' Hyp as Wc.
   apply Wc. reflexivity. Defined.
 
@@ -300,7 +292,7 @@ Program Definition poly_add (x y : poly) : poly :=
   Sexists (Squash o poly_wf) (union_with (fun a b : A => let c := a + b in
     if decide (c <> 0) then Some c else None) (`x) (`y)) _.
 Next Obligation.
-  intros x y. apply squash_poly_wf.
+  intros x y. apply squash.
   intros i a Hyp. intros Ha. subst a.
   apply lookup_union_with_Some in Hyp. cbn in Hyp.
   destruct Hyp as [[Hx Hy] | [[Hx Hy] | [a [b [Hx [Hy Hxy]]]]]].
@@ -317,7 +309,7 @@ Next Obligation.
 
 Program Definition poly_zero : poly := Sexists (Squash o poly_wf) empty _.
 Next Obligation.
-  apply squash_poly_wf.
+  apply squash.
   intros i a Hyp. intros Ha. subst a.
   apply lookup_empty_Some in Hyp.
   destruct Hyp. Defined.
@@ -330,7 +322,7 @@ Next Obligation.
 Program Definition poly_neg (x : poly) : poly :=
   Sexists (Squash o poly_wf) (neg <$> `x) _.
 Next Obligation with conversions.
-  intros x. apply squash_poly_wf.
+  intros x. apply squash.
   intros i a Hyp. intros Ha. subst a.
   rewrite lookup_fmap in Hyp.
   pose proof fmap_Some_1 _ _ _ Hyp as Hyp'.
@@ -352,7 +344,7 @@ Program Definition poly_mul (x y : poly) : poly :=
     (set_sum <$> map_free_lan (prod_uncurry add (A := N))
       (prod_uncurry mul <$> map_free_prod (`x) (`y)))) _.
 Next Obligation.
-  intros x y. apply squash_poly_wf.
+  intros x y. apply squash.
   intros i a Hyp. intros Ha. subst a.
   apply map_filter_lookup_Some in Hyp.
   destruct Hyp as [Hyp Wc].
@@ -373,7 +365,7 @@ Program Definition poly_one : poly :=
   Sexists (Squash o poly_wf)
   (if decide (1 <> 0) then singletonM 0 1 else empty) _.
 Next Obligation.
-  apply squash_poly_wf.
+  apply squash.
   intros i a Hyp. intros Ha. subst a.
   destruct (decide (1 <> 0)) as [F10 | F10]; stabilize.
   - rewrite lookup_singleton_ne in Hyp.
@@ -397,7 +389,7 @@ Program Definition poly_l_act (a : A) (x : poly) : poly :=
   Sexists (Squash o poly_wf)
   (filter (prod_uncurry poly_value_wf) (mul a <$> `x)) _.
 Next Obligation with conversions.
-  intros a x. apply squash_poly_wf.
+  intros a x. apply squash.
   intros i b Hyp. intros Hb. subst b.
   apply map_filter_lookup_Some in Hyp.
   destruct Hyp as [Hyp Wc].
@@ -414,7 +406,7 @@ Program Definition poly_r_act (x : poly) (a : A) : poly :=
   Sexists (Squash o poly_wf)
   (filter (prod_uncurry poly_value_wf) (flip mul a <$> `x)) _.
 Next Obligation with conversions.
-  intros a x. apply squash_poly_wf.
+  intros a x. apply squash.
   intros i b Hyp. intros Hb. subst b.
   apply map_filter_lookup_Some in Hyp.
   destruct Hyp as [Hyp Wc].
@@ -826,13 +818,13 @@ Global Instance poly_has_grd_one : HasGrdOne poly_grd null_op :=
 (** TODO Should never reference implicitly named variables like this. *)
 
 Global Instance poly_is_grd_assoc :
-  IsGrdAssoc poly_grd Additive.N_has_bin_op grd_mul.
+  IsGrdAssoc (P := poly_grd) Additive.N_has_bin_op grd_mul.
 Proof.
   esplit. intros i j k x y z. cbv [poly_grd]. rewrite rew_const.
   cbv [grd_bin_op grd_mul poly_has_grd_mul]. apply assoc. Defined.
 
 Global Instance poly_is_grd_l_unl :
-  IsGrdLUnl poly_grd Additive.N_has_bin_op
+  IsGrdLUnl (P := poly_grd) Additive.N_has_bin_op
   Additive.N_has_null_op grd_mul grd_one.
 Proof.
   esplit. intros i x. cbv [poly_grd]. rewrite rew_const.
@@ -840,7 +832,7 @@ Proof.
     grd_null_op grd_one poly_has_grd_one]. apply l_unl. Defined.
 
 Global Instance poly_is_grd_r_unl :
-  IsGrdRUnl poly_grd Additive.N_has_bin_op
+  IsGrdRUnl (P := poly_grd) Additive.N_has_bin_op
   Additive.N_has_null_op grd_mul grd_one.
 Proof.
   esplit. intros i x. cbv [poly_grd]. rewrite rew_const.
@@ -848,20 +840,21 @@ Proof.
     grd_null_op grd_one poly_has_grd_one]. apply r_unl. Defined.
 
 Global Instance poly_is_grd_l_distr :
-  IsGrdLDistr poly_grd bin_op (fun i : N => add) grd_mul.
+  IsGrdLDistr (P := poly_grd) bin_op (fun i : N => add) grd_mul.
 Proof.
   intros i j x y z. cbv [grd_mul poly_has_grd_mul]. apply l_distr. Defined.
 
 Global Instance poly_is_grd_r_distr :
-  IsGrdRDistr poly_grd bin_op (fun i : N => add) grd_mul.
+  IsGrdRDistr (P := poly_grd) bin_op (fun i : N => add) grd_mul.
 Proof.
   intros i j x y z. cbv [grd_mul poly_has_grd_mul]. apply r_distr. Defined.
 
 Global Instance poly_is_grd_distr :
-  IsGrdDistr poly_grd bin_op (fun i : N => add) grd_mul.
+  IsGrdDistr (P := poly_grd) bin_op (fun i : N => add) grd_mul.
 Proof. split; try typeclasses eauto. Defined.
 
-Global Instance poly_is_grd_ring : IsGrdRing (fun i : N => A) bin_op null_op
+Global Instance poly_is_grd_ring : IsGrdRing (P := fun i : N => A)
+  bin_op null_op
   (fun i : N => add) (fun i : N => zero) (fun i : N => neg)
   (fun i j : N => mul) one.
 Proof. split; try typeclasses eauto. Admitted.

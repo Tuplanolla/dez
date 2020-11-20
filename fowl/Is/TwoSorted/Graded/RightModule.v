@@ -21,16 +21,16 @@ Class IsGrdRMod (A : Type) (P Q : A -> Type)
   `(Q_has_zero : forall i : A, HasZero (Q i))
   `(Q_has_neg : forall i : A, HasNeg (Q i))
   `(!@HasGrdRAct A P Q bin_op) : Prop := {
-  P_add_zero_neg_mul_one_is_grd_ring :>
-    IsGrdRing P bin_op null_op P_has_add P_has_zero P_has_neg grd_mul grd_one;
-  Q_add_zero_neg_is_ab_grp :> forall i : A,
+  add_zero_neg_mul_one_is_grd_ring :>
+    IsGrdRing bin_op null_op P_has_add P_has_zero P_has_neg grd_mul grd_one;
+  add_zero_neg_is_ab_grp :> forall i : A,
     IsAbGrp (Q_has_add i) (Q_has_zero i) (Q_has_neg i);
-  P_Q_add_add_grd_r_act_is_grd_two_r_distr :>
-    IsTwoGrdRLDistr P Q bin_op null_op P_has_add Q_has_add grd_r_act;
-  P_Q_grd_mul_grd_r_act_is_grd_r_compat :>
-    IsGrdRCompat P Q bin_op null_op grd_mul grd_r_act;
-  P_Q_zero_grd_r_act_is_grd_two_r_unl :>
-    IsTwoGrdRUnl P Q bin_op null_op grd_r_act grd_one;
-  P_Q_add_grd_r_act_is_grd_two_r_distr :>
-    IsTwoGrdRRDistr P Q bin_op null_op Q_has_add grd_r_act;
+  add_add_grd_r_act_is_grd_two_r_distr :>
+    @IsTwoGrdRLDistr A P Q bin_op null_op P_has_add Q_has_add grd_r_act;
+  grd_mul_grd_r_act_is_grd_r_compat :>
+    @IsGrdRCompat A P Q bin_op null_op grd_mul grd_r_act;
+  zero_grd_r_act_is_grd_two_r_unl :>
+    @IsTwoGrdRUnl A P Q bin_op null_op grd_r_act grd_one;
+  add_grd_r_act_is_grd_two_r_distr :>
+    @IsTwoGrdRRDistr A P Q bin_op null_op Q_has_add grd_r_act;
 }.

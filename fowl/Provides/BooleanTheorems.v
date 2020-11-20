@@ -143,7 +143,8 @@ Ltac smash := repeat match goal with
   end; try reflexivity.
 
 Local Instance Z_bool_is_grd_ring :
-  IsGrdRing (A := bool) (fun x : bool => if x then unit else Z) bin_op null_op
+  IsGrdRing (A := bool) (P := fun x : bool => if x then unit else Z)
+  bin_op null_op
   unit_Z_has_add unit_Z_has_zero unit_Z_has_neg grd_mul grd_one.
 Proof.
   repeat split.

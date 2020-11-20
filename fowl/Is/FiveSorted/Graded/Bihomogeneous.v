@@ -12,7 +12,7 @@ Class IsGrdBihomogen (A : Type) (P Q R S T : A -> Type)
   `(!@HasGrdLAct A P T bin_op) `(!@HasGrdRAct A Q T bin_op)
   `(!@HasGrdBinFn A R S T bin_op) : Prop := {
   P_R_S_T_grd_l_act_grd_l_act_grd_bin_fn_is_grd_l_bihomogen :>
-    IsGrdLBihomogen P R S T bin_op grd_l_act grd_l_act grd_bin_fn;
+    @IsGrdLBihomogen A P R S T bin_op grd_l_act grd_l_act grd_bin_fn;
   Q_R_S_T_grd_r_act_grd_r_act_grd_bin_fn_is_grd_r_bihomogen :>
-    IsGrdRBihomogen Q R S T bin_op grd_r_act grd_r_act grd_bin_fn;
+    @IsGrdRBihomogen A Q R S T bin_op grd_r_act grd_r_act grd_bin_fn;
 }.

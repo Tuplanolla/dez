@@ -118,7 +118,7 @@ Global Instance N_has_null_op : HasNullOp N := N.zero.
 (** Instant tensor algebra; just add water. *)
 
 Global Instance lensor_is_grd_alg :
-  IsGrdAlg (A := N) (fun n : N => A) (fun n : N => tensor)
+  IsGrdAlg (A := N) (P := fun n : N => A) (Q := fun n : N => tensor)
   (N_has_bin_op) (N_has_null_op)
   (fun n : N => Addition.add) (fun n : N => zero) (fun n : N => neg)
   (fun n p : N => mul) one

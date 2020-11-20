@@ -13,9 +13,8 @@ Local Open Scope grd_l_mod_scope.
 
 Class IsTwoGrdLUnl (A : Type) (P Q : A -> Type)
   `(HasBinOp A) `(HasNullOp A)
-  `(HasGrdLAct A P Q)
-  `(HasGrdOne A P) : Prop := {
-  A_bin_op_null_op_is_l_unl :> IsLUnl bin_op null_op;
+  `(!HasGrdLAct P Q bin_op) `(!HasGrdOne P null_op) : Prop := {
+  bin_op_null_op_is_l_unl :> IsLUnl bin_op null_op;
   grd_two_l_unl : forall (i : A) (x : Q i),
     rew l_unl i in (1 * x) = x;
 }.

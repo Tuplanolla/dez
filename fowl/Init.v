@@ -12,7 +12,7 @@ Global Set Maximal Implicit Insertion.
 Global Set Strict Implicit.
 Global Set Strongly Strict Implicit.
 Global Unset Contextual Implicit.
-Global Unset Reversible Pattern Implicit.
+Global Set Reversible Pattern Implicit.
 
 (** We disable universe polymorphism until we really need it,
     because it is experimental and

@@ -18,7 +18,7 @@ Local Instance B_A_has_iso : HasIso B A := (retr, sect).
 Local Instance B_A_iso_is_iso : IsIso iso.
 Proof.
   split.
-  - intros x. apply (sect_retr x).
-  - intros x. apply (retr_sect x). Defined.
+  - intros x. apply sect_retr.
+  - intros x. apply retr_sect. Defined.
 
 End Context.
