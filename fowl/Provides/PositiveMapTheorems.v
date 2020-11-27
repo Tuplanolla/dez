@@ -172,7 +172,7 @@ Fixpoint pos_reverse' (n p : positive) : positive :=
 
 Definition pos_reverse (n : positive) : positive := pos_reverse' xH n.
 
-(* Compute map pos_reverse [xH;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16]%positive. *)
+(* Compute map pos_reverse [xH;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16]. *)
 
 Fixpoint pos_tree_to_list' (A : Type) (n : positive)
   (a : list (positive * A)) (t : pos_tree A) : list (positive * A) :=
@@ -193,16 +193,6 @@ Definition pos_tree_to_list (A : Type) (t : pos_tree A) :
   pos_tree_to_list' xH nil t.
 
 Arguments pos_tree_to_list _ !_.
-
-Compute pos_tree_to_list (pos_branch (Some xH) pos_leaf pos_leaf).
-Compute pos_tree_to_list
-  (pos_branch None
-    (pos_branch (Some 2)
-      (pos_branch (Some 4) pos_leaf pos_leaf)
-      (pos_branch (Some 5) pos_leaf pos_leaf))
-    (pos_branch (Some 3)
-      pos_leaf
-      (pos_branch (Some 7) pos_leaf pos_leaf))).
 
 (** Merge sort passionately! *)
 
@@ -271,16 +261,6 @@ Definition pos_tree_to_sorted_list (A : Type) (t : pos_tree A) :
   pos_tree_to_sorted_list' xH t.
 
 Arguments pos_tree_to_sorted_list _ !_.
-
-Compute pos_tree_to_sorted_list (pos_branch (Some xH) pos_leaf pos_leaf).
-Compute pos_tree_to_sorted_list
-  (pos_branch None
-    (pos_branch (Some 2)
-      (pos_branch (Some 4) pos_leaf pos_leaf)
-      (pos_branch (Some 5) pos_leaf pos_leaf))
-    (pos_branch (Some 3)
-      pos_leaf
-      (pos_branch (Some 7) pos_leaf pos_leaf))).
 
 (** Now we struggle. *)
 
