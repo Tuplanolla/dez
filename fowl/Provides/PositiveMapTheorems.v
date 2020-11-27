@@ -1,6 +1,8 @@
 (** Positive maps based on Robbert Krebbers's implementation
     based on Xavier Leroy's implementation based on ancient history,
-    except there is a total order and a pruning function involved. *)
+    except there is a total order and a pruning function involved.
+    Parts of Hugo Herbelin's merge sort also make an appearance.
+    Full credits can be found in the transitive dependencies of this file. *)
 
 From Coq Require Import
   PArith.PArith.
@@ -289,23 +291,8 @@ Definition prod_bimap (A B C D : Type)
 Definition prod_map (A B : Type) (f : A -> B) (x : A * A) : B * B :=
   prod_bimap f f x.
 
-(**
-This is the Haskell way.
-
-<<
-data PosTree a = PosLeaf | PosBranch (Maybe a) (PosTree a) (PosTree a) deriving (Eq, Ord, Show)
-
-posBranch' x l r = case (x, l, r) of (Nothing, PosLeaf, PosLeaf) -> PosLeaf; _ -> PosBranch x l r
--- This one is suspect.
-posTreeOfSortedList n l = case l of [] -> PosLeaf; (p, x) : k -> case compare p n of LT -> posTreeOfSortedList n k; EQ -> PosBranch (Just x) (posTreeOfSortedList (2 * n) k) (posTreeOfSortedList (1 + 2 * n) k); GT -> posBranch' Nothing (posTreeOfSortedList (2 * n) l) (posTreeOfSortedList (1 + 2 * n) l)
-posTreeToList n a t = case t of PosLeaf -> a; PosBranch x l r -> let k = posTreeToList (2 * n) (posTreeToList (1 + 2 * n) a r) l in case x of Nothing -> k; Just y -> (n, y) : k
-mergeBy f l0 l1 = case (l0, l1) of ([], _) -> l1; (_, []) -> l0; (n0 : k0, n1 : k1) -> if f n0 <= f n1 then n0 : mergeBy f k0 l1 else n1 : mergeBy f l0 k1
-posTreeToSortedList n t = case t of PosLeaf -> []; PosBranch x l r -> let k = mergeBy fst (posTreeToSortedList (2 * n) l) (posTreeToSortedList (1 + 2 * n) r) in case x of Nothing -> k; Just y -> (n, y) : k
-
-> posTreeOfSortedList 1 [(2, 2), (3, 3), (4, 4), (5, 5), (7, 7)]
-> posTreeToSortedList 1 (posTreeOfSortedList 1 [(2, 2), (3, 3), (4, 4), (5, 5), (7, 7)])
->>
-*)
+(** Trichotomy from the Haskell land.
+    Actually works in more cases than the tri prefix would have you believe. *)
 
 Local Notation "'LT'" := (inleft (left _))
   (at level 0, no associativity, only parsing).
@@ -317,14 +304,6 @@ Local Notation "'GT'" := (inright _)
 Definition pos_trichotomy_inf (p q : positive) : {p < q} + {p = q} + {q < p}.
 Proof.
   destruct (dec (p < q)), (dec (p = q)), (dec (q < p)); auto || lia. Defined.
-
-Compute let (p, n) := (42, 13) in
-    match pos_trichotomy_inf p n with
-    | LT => 2
-    | EQ => 3
-    | GT => 4
-    end.
-(** This is dumb. *)
 
 Definition pos_max (l : list positive) : positive := fold_right max xH l.
 
@@ -366,17 +345,49 @@ Proof.
     apply Pos2Nat.inj_lt.
     lia. Defined.
 
+(** If this function is given a list that is not sorted,
+    its behavior will not be undefined!
+    It will merely consider the largest sorted sublist
+    (which, like a subsequence, is not necessarily contiguous).
+    For example [[(2, 2); (4, 4); (5, 5); (3, 3); (7, 7)]]
+    will be treated as [[(2, 2); (4, 4); (5, 5); (7, 7)]]. *)
+
 Definition pos_tree_of_sorted_list (A : Type) (l : list (positive * A)) :
   pos_tree A :=
   pos_tree_of_sorted_list' (l, xH).
 
-Compute pos_tree_of_sorted_list ((xH, xH) :: nil)%list.
-Compute pos_tree_of_sorted_list ((2, 2) :: nil)%list.
-Compute pos_tree_of_sorted_list ((2, 2) :: (3, 3) :: (4, 4) :: (5, 5) :: (7, 7) :: nil)%list.
-Compute pos_tree_to_sorted_list (pos_tree_of_sorted_list ((2, 2) :: (3, 3) :: (4, 4) :: (5, 5) :: (7, 7) :: nil)%list).
+Fixpoint merge_list_to_stack (A : Type)
+  (f : A -> positive) (a : list (option (list A))) (l : list A) :
+  list (option (list A)) :=
+  match a with
+  | [] => [Some l]
+  | None :: stack' => Some l :: stack'
+  | Some l' :: stack' =>
+    None :: @merge_list_to_stack A f stack' (merge_by f l' l)
+  end.
 
-Fail Definition pos_tree_of_list (A : Type) (l : list (positive * A)) :
-  pos_tree A := pos_tree_of_sorted_list (sort l).
+Fixpoint merge_stack (A : Type)
+  (f : A -> positive) (a : list (option (list A))) : list A :=
+  match a with
+  | [] => []
+  | None :: stack' => @merge_stack A f stack'
+  | Some l :: stack' => merge_by f l (@merge_stack A f stack')
+  end.
+
+Fixpoint iter_merge (A : Type)
+  (f : A -> positive) (a : list (option (list A))) (l : list A) : list A :=
+  match l with
+  | [] => merge_stack f a
+  | a' :: l' => @iter_merge A f (merge_list_to_stack f a [a']) l'
+  end.
+
+Definition sort_by (A : Type) (f : A -> positive) (l : list A) :
+  list A := iter_merge f nil l.
+
+Arguments sort_by _ _ !_.
+
+Definition pos_tree_of_list (A : Type) (l : list (positive * A)) :
+  pos_tree A := pos_tree_of_sorted_list (sort_by fst l).
 
 Fixpoint pos_tree_omap (A B : Type) (f : A -> option B)
   (t : pos_tree A) : pos_tree B :=
