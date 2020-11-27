@@ -198,7 +198,8 @@ Arguments pos_tree_to_list _ !_.
 
 Function merge' (l : list positive * list positive)
   {measure (fun l : list positive * list positive =>
-    length (app (fst l) (snd l))) l} : list positive :=
+    let (l0, l1) := l in
+    length l0 + length l1)%nat l} : list positive :=
   let (l0, l1) := l in
   match l0, l1 with
   | nil, _ => l1
@@ -209,7 +210,7 @@ Function merge' (l : list positive * list positive)
   end.
 Proof.
   - intros. cbn in *. lia.
-  - intros. repeat rewrite app_length. cbn in *. lia. Defined.
+  - intros. cbn in *. lia. Defined.
 
 Arguments merge' _ / : simpl nomatch.
 
@@ -220,7 +221,7 @@ Arguments merge !_ !_.
 Function merge_by' (A : Type) (f : A -> positive) (l : list A * list A)
   {measure (fun l : list A * list A =>
     let (l0, l1) := l in
-    length (app l0 l1)) l} : list A :=
+    length l0 + length l1)%nat l} : list A :=
   let (l0, l1) := l in
   match l0, l1 with
   | nil, _ => l1
@@ -231,7 +232,7 @@ Function merge_by' (A : Type) (f : A -> positive) (l : list A * list A)
   end.
 Proof.
   - intros. cbn in *. lia.
-  - intros. repeat rewrite app_length. cbn in *. lia. Defined.
+  - intros. cbn in *. lia. Defined.
 
 Arguments merge_by' _ _ _ / : simpl nomatch.
 
@@ -309,18 +310,20 @@ Function pos_tree_of_sorted_list' (A : Type)
   end.
 Proof.
   (** Structurally recursive cases. *)
-  - intros. cbn in *. cbv [pos_max]. lia.
-  - intros. cbn in *. cbv [pos_max]. lia.
-  - intros. cbn in *. cbv [pos_max]. lia.
+  - intros. cbv [pos_max]; cbn. lia.
+  - intros. cbv [pos_max]; cbn. lia.
+  - intros. cbv [pos_max]; cbn. lia.
   (** The tricky bits. *)
-  - intros. cbn in *.
-    (** Natural number wrangle. *)
+  - intros. cbv [pos_max]; cbn.
+    (** Natural number wrangling. *)
     apply Lt.lt_n_S. apply Plus.plus_lt_compat_l.
     apply Pos2Nat.inj_lt.
-    (** Positive number stuff. *)
+    (** Decision on positive numbers. *)
     lia.
-  (** Again. *)
-  - intros. cbn in *.
+  (** Repeat with [xI] in place of [xO].
+      The measure has [xI] to cancel both cases,
+      since [xO n <= xI n] and [xI n <= xI n]. *)
+  - intros. cbv [pos_max]; cbn.
     apply Lt.lt_n_S. apply Plus.plus_lt_compat_l.
     apply Pos2Nat.inj_lt.
     lia. Defined.
@@ -341,17 +344,17 @@ Fixpoint merge_list_to_stack (A : Type)
   list (option (list A)) :=
   match a with
   | [] => [Some l]
-  | None :: stack' => Some l :: stack'
-  | Some l' :: stack' =>
-    None :: @merge_list_to_stack A f stack' (merge_by f l' l)
+  | None :: a' => Some l :: a'
+  | Some l' :: a' =>
+    None :: @merge_list_to_stack A f a' (merge_by f l' l)
   end.
 
 Fixpoint merge_stack (A : Type)
   (f : A -> positive) (a : list (option (list A))) : list A :=
   match a with
   | [] => []
-  | None :: stack' => @merge_stack A f stack'
-  | Some l :: stack' => merge_by f l (@merge_stack A f stack')
+  | None :: a' => @merge_stack A f a'
+  | Some l :: a' => merge_by f l (@merge_stack A f a')
   end.
 
 Fixpoint iter_merge (A : Type)
@@ -411,8 +414,8 @@ Program Definition pos_map_empty (A : Type) : pos_map A :=
 Next Obligation. eauto. (* intros A. apply squash. reflexivity. *) Qed.
 
 Definition pos_map_lookup (A : Type)
-  (i : positive) (m : pos_map A) : option A :=
-  pos_tree_lookup i (Spr1 m).
+  (n : positive) (m : pos_map A) : option A :=
+  pos_tree_lookup n (Spr1 m).
 
 Program Definition pos_map_partial_alter (A : Type)
   (f : option A -> option A) (m : pos_map A) : pos_map A :=
@@ -470,12 +473,21 @@ Global Instance nat_map_has_eq_dec (A : Type) `(HasEqDec A) :
 Proof. cbv [HasEqDec]. decide equality.
   all: apply EqualityDecision.eq_dec. Defined.
 
-Definition nat_map_forall (A : Type) (P : A -> Prop) (m : nat_map A) : Prop :=
-  forall (i : positive) (x : A), (* nat_map_lookup i m = Some x -> *) P x.
+Definition nat_map_lookup (A : Type) (n : N) (m : nat_map A) : option A :=
+  match m with
+  | nat_stump x m' =>
+    match n with
+    | N0 => x
+    | Npos p => pos_map_lookup p m'
+    end
+  end.
 
-Definition nat_map_iforall (A : Type) (P : positive -> A -> Prop)
+Definition nat_map_forall (A : Type) (P : A -> Prop) (m : nat_map A) : Prop :=
+  forall (n : N) (x : A), nat_map_lookup n m = Some x -> P x.
+
+Definition nat_map_iforall (A : Type) (P : N -> A -> Prop)
   (m : nat_map A) : Prop :=
-  forall (i : positive) (x : A), (* nat_map_lookup i m = Some x -> *) P i x.
+  forall (n : N) (x : A), nat_map_lookup n m = Some x -> P n x.
 
 Definition cut_map_wf (A : Type) (P : A -> Prop) (m : nat_map A) : Prop :=
   nat_map_forall (not o P) m.
@@ -501,10 +513,7 @@ Definition dec_map (A : Type) (p : A -> bool) : Type :=
   {m : nat_map A ! Squash (dec_map_wf p m)}.
 
 Definition is_left (A B : Prop) (s : sumbool A B) : bool :=
-  match s with
-  | left _ => true
-  | right _ => false
-  end.
+  if s then true else false.
 
 Lemma Unnamed_goal' (A : Type) (p : A -> bool) (x y : dec_map p) :
   x = y <-> Spr1 x = Spr1 y.
