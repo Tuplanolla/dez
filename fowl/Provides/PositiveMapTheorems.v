@@ -19,22 +19,22 @@ Inductive pos_tree (A : Type) : Type :=
 Arguments pos_leaf {_}.
 
 Global Instance bool_has_eq_dec : HasEqDec bool.
-Proof. cbv [HasEqDec]. decide equality. Qed.
+Proof. cbv [HasEqDec]. decide equality. Defined.
 
 Global Instance positive_has_eq_dec : HasEqDec positive.
 Proof. cbv [HasEqDec] in *. decide equality. Defined.
 
 Global Instance positive_has_le_dec (n p : positive) : HasDec (n <= p).
 Proof.
-  cbv [HasDec] in *. destruct (Pos.leb_spec0 n p).
-  - left. assumption.
-  - right. assumption. Defined.
+  cbv [HasDec] in *. destruct (n <=? p) eqn : e.
+  - left. apply leb_le; auto.
+  - right. apply leb_nle; auto. Defined.
 
 Global Instance positive_has_lt_dec (n p : positive) : HasDec (n < p).
 Proof.
-  cbv [HasDec] in *. destruct (Pos.ltb_spec0 n p).
-  - left. assumption.
-  - right. assumption. Defined.
+  cbv [HasDec] in *. destruct (n <? p) eqn : e.
+  - left. apply ltb_lt; auto.
+  - right. apply ltb_nlt; auto. Defined.
 
 Global Instance option_has_eq_dec (A : Type) `(HasEqDec A) :
   HasEqDec (option A).
@@ -51,12 +51,12 @@ Fixpoint pos_tree_wf' (A : Type) (t : pos_tree A) : bool :=
   | pos_branch x l r => pos_tree_wf' l && pos_tree_wf' r
   end.
 
-Arguments pos_tree_wf' {_} !_.
+Arguments pos_tree_wf' _ !_.
 
 Definition pos_tree_wf (A : Type) (t : pos_tree A) : Prop :=
   is_true (pos_tree_wf' t).
 
-Arguments pos_tree_wf {_} !_.
+Arguments pos_tree_wf _ !_.
 
 (** Forward reasoning for well-formedness. *)
 
@@ -107,7 +107,7 @@ Fixpoint pos_tree_lookup (A : Type)
     end
   end.
 
-Arguments pos_tree_lookup {_} !_ !_.
+Arguments pos_tree_lookup _ !_ !_.
 
 Fixpoint pos_tree_singleton (A : Type) (n : positive) (x : A) : pos_tree A :=
   match n with
@@ -116,7 +116,7 @@ Fixpoint pos_tree_singleton (A : Type) (n : positive) (x : A) : pos_tree A :=
   | xI p => pos_branch None pos_leaf (@pos_tree_singleton A p x)
   end.
 
-Arguments pos_tree_singleton {_} !_ _.
+Arguments pos_tree_singleton _ !_ _.
 
 Lemma pos_tree_wf_singleton (A : Type) (n : positive) (x : A) :
   pos_tree_wf (pos_tree_singleton n x).
@@ -142,13 +142,13 @@ Fixpoint pos_tree_partial_alter' (A : Type) (f : option A -> option A)
      end
   end.
 
-Arguments pos_tree_partial_alter' {_} _ !_ !_.
+Arguments pos_tree_partial_alter' _ _ !_ !_.
 
 Definition pos_tree_partial_alter (A : Type) (f : option A -> option A)
   (t : pos_tree A) : pos_tree A :=
   pos_tree_partial_alter' f xH t.
 
-Arguments pos_tree_partial_alter {_} _ !_.
+Arguments pos_tree_partial_alter _ _ !_.
 
 Fixpoint pos_tree_map (A B : Type) (f : A -> B) (t : pos_tree A) : pos_tree B :=
   match t with
@@ -157,7 +157,7 @@ Fixpoint pos_tree_map (A B : Type) (f : A -> B) (t : pos_tree A) : pos_tree B :=
     (@pos_tree_map A B f l) (@pos_tree_map A B f r)
   end.
 
-Arguments pos_tree_map {_ _} _ !_.
+Arguments pos_tree_map _ _ _ !_.
 
 (** Replicating sequence A059893. *)
 
@@ -184,13 +184,13 @@ Fixpoint pos_tree_to_list' (A : Type) (n : positive)
     end
   end.
 
-Arguments pos_tree_to_list' {_} _ _ !_.
+Arguments pos_tree_to_list' _ _ _ !_.
 
 Definition pos_tree_to_list (A : Type) (t : pos_tree A) :
   list (positive * A) :=
   pos_tree_to_list' xH nil t.
 
-Arguments pos_tree_to_list {_} !_.
+Arguments pos_tree_to_list _ !_.
 
 Compute pos_tree_to_list (pos_branch (Some xH) pos_leaf pos_leaf).
 Compute pos_tree_to_list
@@ -227,7 +227,8 @@ Arguments merge !_ !_.
 
 Function merge_by' (A : Type) (f : A -> positive) (l : list A * list A)
   {measure (fun l : list A * list A =>
-    length (app (fst l) (snd l))) l} : list A :=
+    let (l0, l1) := l in
+    length (app l0 l1)) l} : list A :=
   let (l0, l1) := l in
   match l0, l1 with
   | nil, _ => l1
@@ -240,12 +241,12 @@ Proof.
   - intros. cbn in *. lia.
   - intros. repeat rewrite app_length. cbn in *. lia. Defined.
 
-Arguments merge_by' {_} _ _ / : simpl nomatch.
+Arguments merge_by' _ _ _ / : simpl nomatch.
 
 Definition merge_by (A : Type) (f : A -> positive) (l0 l1 : list A) :
   list A := merge_by' f (l0, l1).
 
-Arguments merge_by {_} _ !_ !_.
+Arguments merge_by _ _ !_ !_.
 
 Fixpoint pos_tree_to_sorted_list' (A : Type) (n : positive)
   (t : pos_tree A) : list (positive * A) :=
@@ -261,13 +262,13 @@ Fixpoint pos_tree_to_sorted_list' (A : Type) (n : positive)
     end
   end.
 
-Arguments pos_tree_to_sorted_list' {_} _ !_.
+Arguments pos_tree_to_sorted_list' _ _ !_.
 
 Definition pos_tree_to_sorted_list (A : Type) (t : pos_tree A) :
   list (positive * A) :=
   pos_tree_to_sorted_list' xH t.
 
-Arguments pos_tree_to_sorted_list {_} !_.
+Arguments pos_tree_to_sorted_list _ !_.
 
 Compute pos_tree_to_sorted_list (pos_branch (Some xH) pos_leaf pos_leaf).
 Compute pos_tree_to_sorted_list
@@ -306,31 +307,68 @@ posTreeToSortedList n t = case t of PosLeaf -> []; PosBranch x l r -> let k = me
 >>
 *)
 
+Local Notation "'LT'" := (inleft (left _))
+  (at level 0, no associativity, only parsing).
+Local Notation "'EQ'" := (inleft (right _))
+  (at level 0, no associativity, only parsing).
+Local Notation "'GT'" := (inright _)
+  (at level 0, no associativity, only parsing).
+
+Definition pos_trichotomy_inf (p q : positive) : {p < q} + {p = q} + {q < p}.
+Proof.
+  destruct (dec (p < q)), (dec (p = q)), (dec (q < p)); auto || lia. Defined.
+
+Compute let (p, n) := (42, 13) in
+    match pos_trichotomy_inf p n with
+    | LT => 2
+    | EQ => 3
+    | GT => 4
+    end.
 (** This is dumb. *)
 
-Fixpoint pos_tree_of_sorted_list' (A : Type) (n : positive)
-  (l : list (positive * A)) (fuel : nat) : pos_tree A :=
-  match fuel with
-  | O => pos_leaf
-  | S fumes =>
-    match l with
-    | nil => pos_leaf
-    | cons (p, x) k =>
-      if p <? n then
-        @pos_tree_of_sorted_list' A n k fumes else
-        if p =? n then
-          pos_branch (Some x)
-          (@pos_tree_of_sorted_list' A (xO n) k fumes)
-          (@pos_tree_of_sorted_list' A (xI n) k fumes) else
-          pos_branch' None
-          (@pos_tree_of_sorted_list' A (xO n) l fumes)
-          (@pos_tree_of_sorted_list' A (xI n) l fumes)
+Definition pos_max (l : list positive) : positive := fold_right max xH l.
+
+Function pos_tree_of_sorted_list' (A : Type)
+  (ln : list (positive * A) * positive)
+  {measure (fun ln : list (positive * A) * positive =>
+    let (l, n) := ln in
+    length l + to_nat (sub (xI (pos_max (map fst l))) n))%nat ln} :
+  pos_tree A :=
+  let (l, n) := ln in
+  match l with
+  | nil => pos_leaf
+  | cons (p, x) k =>
+    match pos_trichotomy_inf p n with
+    | LT => @pos_tree_of_sorted_list' A (k, n)
+    | EQ => pos_branch (Some x)
+      (@pos_tree_of_sorted_list' A (k, xO n))
+      (@pos_tree_of_sorted_list' A (k, xI n))
+    | GT => pos_branch' None
+      (@pos_tree_of_sorted_list' A (l, xO n))
+      (@pos_tree_of_sorted_list' A (l, xI n))
     end
   end.
+Proof.
+  (** Structurally recursive cases. *)
+  - intros. cbn in *. cbv [pos_max]. lia.
+  - intros. cbn in *. cbv [pos_max]. lia.
+  - intros. cbn in *. cbv [pos_max]. lia.
+  (** The tricky bits. *)
+  - intros. cbn in *.
+    (** Natural number wrangle. *)
+    apply Lt.lt_n_S. apply Plus.plus_lt_compat_l.
+    apply Pos2Nat.inj_lt.
+    (** Positive number stuff. *)
+    lia.
+  (** Again. *)
+  - intros. cbn in *.
+    apply Lt.lt_n_S. apply Plus.plus_lt_compat_l.
+    apply Pos2Nat.inj_lt.
+    lia. Defined.
 
 Definition pos_tree_of_sorted_list (A : Type) (l : list (positive * A)) :
   pos_tree A :=
-  pos_tree_of_sorted_list' xH l (list_max (map (to_nat o fst) l)).
+  pos_tree_of_sorted_list' (l, xH).
 
 Compute pos_tree_of_sorted_list ((xH, xH) :: nil)%list.
 Compute pos_tree_of_sorted_list ((2, 2) :: nil)%list.
@@ -411,7 +449,7 @@ Next Obligation. intros A B f [t w]. apply squash. cbn. apply unsquash in w.
     cbv [pos_tree_map]. assumption.
     cbn -[pos_tree_wf] in *. Admitted.
 
-Arguments pos_map_map {_ _} _ !_.
+Arguments pos_map_map _ _ _ !_.
 
 Definition pos_map_to_list (A : Type) (m : pos_map A) : list (positive * A) :=
   pos_tree_to_list (Spr1 m).
@@ -451,7 +489,7 @@ Definition nat_map_iforall (A : Type) (P : positive -> A -> Prop)
 Definition cut_map_wf (A : Type) (P : A -> Prop) (m : nat_map A) : Prop :=
   nat_map_forall (not o P) m.
 
-(* Arguments cut_map_wf {_ _} !_. *)
+(* Arguments cut_map_wf _ _ !_. *)
 
 Definition cut_map (A : Type) (P : A -> Prop) : Type :=
   {m : nat_map A ! Squash (cut_map_wf P m)}.
@@ -466,7 +504,7 @@ Proof. destruct x, y; cbn. split. intros. inversion H. auto.
 Definition dec_map_wf (A : Type) (p : A -> bool) (m : nat_map A) : Prop :=
   nat_map_forall (is_true o p) m.
 
-(* Arguments dec_map_wf {_ _} !_. *)
+(* Arguments dec_map_wf _ _ !_. *)
 
 Definition dec_map (A : Type) (p : A -> bool) : Type :=
   {m : nat_map A ! Squash (dec_map_wf p m)}.
