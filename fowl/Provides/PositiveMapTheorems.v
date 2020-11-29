@@ -5,7 +5,7 @@
     Full credits can be found in the transitive dependencies of this file. *)
 
 From Coq Require Import
-  PArith.PArith.
+  PArith.PArith Program.Wf.
 From Maniunfold.Has Require Export
   OneSorted.EqualityDecision OneSorted.Unsquashing.
 
@@ -104,8 +104,8 @@ Fixpoint pos_tree_lookup (A : Type)
   | pos_branch x l r =>
     match n with
     | xH => x
-    | xO p => @pos_tree_lookup A p l
-    | xI p => @pos_tree_lookup A p r
+    | xO p => pos_tree_lookup p l
+    | xI p => pos_tree_lookup p r
     end
   end.
 
@@ -114,8 +114,8 @@ Arguments pos_tree_lookup _ !_ !_.
 Fixpoint pos_tree_singleton (A : Type) (n : positive) (x : A) : pos_tree A :=
   match n with
   | xH => pos_branch (Some x) pos_leaf pos_leaf
-  | xO p => pos_branch None (@pos_tree_singleton A p x) pos_leaf
-  | xI p => pos_branch None pos_leaf (@pos_tree_singleton A p x)
+  | xO p => pos_branch None (pos_tree_singleton p x) pos_leaf
+  | xI p => pos_branch None pos_leaf (pos_tree_singleton p x)
   end.
 
 Arguments pos_tree_singleton _ !_ _.
@@ -139,8 +139,8 @@ Fixpoint pos_tree_partial_alter' (A : Type) (f : option A -> option A)
   | pos_branch x l r =>
      match n with
      | xH => pos_branch' (f x) l r
-     | xO p => pos_branch' x (@pos_tree_partial_alter' A f p l) r
-     | xI p => pos_branch' x l (@pos_tree_partial_alter' A f p r)
+     | xO p => pos_branch' x (pos_tree_partial_alter' f p l) r
+     | xI p => pos_branch' x l (pos_tree_partial_alter' f p r)
      end
   end.
 
@@ -156,7 +156,7 @@ Fixpoint pos_tree_map (A B : Type) (f : A -> B) (t : pos_tree A) : pos_tree B :=
   match t with
   | pos_leaf => pos_leaf
   | pos_branch x l r => pos_branch (option_map f x)
-    (@pos_tree_map A B f l) (@pos_tree_map A B f r)
+    (pos_tree_map f l) (pos_tree_map f r)
   end.
 
 Arguments pos_tree_map _ _ _ !_.
@@ -179,7 +179,7 @@ Fixpoint pos_tree_to_list' (A : Type) (n : positive)
   match t with
   | pos_leaf => a
   | pos_branch x l r =>
-    let k := @pos_tree_to_list' A (xO n) (@pos_tree_to_list' A (xI n) a r) l in
+    let k := pos_tree_to_list' (xO n) (pos_tree_to_list' (xI n) a r) l in
     match x with
     | Some y => cons (n, y) k
     | None => k
@@ -196,48 +196,50 @@ Arguments pos_tree_to_list _ !_.
 
 (** Merge sort passionately! *)
 
-Function merge' (l : list positive * list positive)
-  {measure (fun l : list positive * list positive =>
-    let (l0, l1) := l in
-    length l0 + length l1)%nat l} : list positive :=
-  let (l0, l1) := l in
+Program Fixpoint merge' (l0 l1 : list positive)
+  {measure (length l0 + length l1)%nat} : list positive :=
   match l0, l1 with
   | nil, _ => l1
   | _, nil => l0
   | cons n0 k0, cons n1 k1 => if n0 <=? n1 then
-    cons n0 (@merge' (k0, l1)) else
-    cons n1 (@merge' (l0, k1))
+    cons n0 (merge' k0 l1) else
+    cons n1 (merge' l0 k1)
   end.
-Proof.
-  - intros. cbn in *. lia.
-  - intros. cbn in *. lia. Defined.
+Next Obligation. intros. subst. cbn in *. lia. Qed.
+Next Obligation. intros. subst. cbn in *. lia. Qed.
+Next Obligation. intros.
+  intuition. subst. match goal with
+  | H : [] = _ |- _ => inversion H
+  end. Qed.
+Next Obligation. Tactics.program_solve_wf. Defined.
 
 Arguments merge' _ / : simpl nomatch.
 
-Definition merge (l0 l1 : list positive) : list positive := merge' (l0, l1).
+Definition merge (l0 l1 : list positive) : list positive := merge' l0 l1.
 
 Arguments merge !_ !_.
 
-Function merge_by' (A : Type) (f : A -> positive) (l : list A * list A)
-  {measure (fun l : list A * list A =>
-    let (l0, l1) := l in
-    length l0 + length l1)%nat l} : list A :=
-  let (l0, l1) := l in
+Program Fixpoint merge_by' (A : Type) (f : A -> positive) (l0 l1 : list A)
+  {measure (length l0 + length l1)%nat} : list A :=
   match l0, l1 with
   | nil, _ => l1
   | _, nil => l0
   | cons n0 k0, cons n1 k1 => if f n0 <=? f n1 then
-    cons n0 (@merge_by' A f (k0, l1)) else
-    cons n1 (@merge_by' A f (l0, k1))
+    cons n0 (merge_by' f k0 l1) else
+    cons n1 (merge_by' f l0 k1)
   end.
-Proof.
-  - intros. cbn in *. lia.
-  - intros. cbn in *. lia. Defined.
+Next Obligation. intros. subst. cbn in *. lia. Qed.
+Next Obligation. intros. subst. cbn in *. lia. Qed.
+Next Obligation. intros.
+  intuition. subst. match goal with
+  | H : [] = _ |- _ => inversion H
+  end. Qed.
+Next Obligation. Tactics.program_solve_wf. Defined.
 
 Arguments merge_by' _ _ _ / : simpl nomatch.
 
 Definition merge_by (A : Type) (f : A -> positive) (l0 l1 : list A) :
-  list A := merge_by' f (l0, l1).
+  list A := merge_by' f l0 l1.
 
 Arguments merge_by _ _ !_ !_.
 
@@ -247,8 +249,8 @@ Fixpoint pos_tree_to_sorted_list' (A : Type) (n : positive)
   | pos_leaf => nil
   | pos_branch x l r =>
     let k := merge_by fst
-    (@pos_tree_to_sorted_list' A (xO n) l)
-    (@pos_tree_to_sorted_list' A (xI n) r) in
+    (pos_tree_to_sorted_list' (xO n) l)
+    (pos_tree_to_sorted_list' (xI n) r) in
     match x with
     | Some y => cons (n, y) k
     | None => k
@@ -288,45 +290,44 @@ Proof.
 
 Definition pos_max (l : list positive) : positive := fold_right max xH l.
 
-Function pos_tree_of_sorted_list' (A : Type)
-  (ln : list (positive * A) * positive)
-  {measure (fun ln : list (positive * A) * positive =>
-    let (l, n) := ln in
-    length l + to_nat (sub (xI (pos_max (map fst l))) n))%nat ln} :
+Program Fixpoint pos_tree_of_sorted_list' (A : Type)
+  (l : list (positive * A)) (n : positive)
+  {measure (length l + to_nat (sub (xI (pos_max (map fst l))) n))%nat} :
   pos_tree A :=
-  let (l, n) := ln in
   match l with
   | nil => pos_leaf
   | cons (p, x) k =>
     match pos_trichotomy_inf p n with
-    | LT => @pos_tree_of_sorted_list' A (k, n)
+    | LT => pos_tree_of_sorted_list' k n
     | EQ => pos_branch (Some x)
-      (@pos_tree_of_sorted_list' A (k, xO n))
-      (@pos_tree_of_sorted_list' A (k, xI n))
+      (pos_tree_of_sorted_list' k (xO n))
+      (pos_tree_of_sorted_list' k (xI n))
     | GT => pos_branch' None
-      (@pos_tree_of_sorted_list' A (l, xO n))
-      (@pos_tree_of_sorted_list' A (l, xI n))
+      (pos_tree_of_sorted_list' l (xO n))
+      (pos_tree_of_sorted_list' l (xI n))
     end
   end.
-Proof.
-  (** Structurally recursive cases. *)
-  - intros. cbv [pos_max]; cbn. lia.
-  - intros. cbv [pos_max]; cbn. lia.
-  - intros. cbv [pos_max]; cbn. lia.
-  (** The tricky bits. *)
-  - intros. cbv [pos_max]; cbn.
-    (** Natural number wrangling. *)
-    apply Lt.lt_n_S. apply Plus.plus_lt_compat_l.
-    apply Pos2Nat.inj_lt.
-    (** Decision on positive numbers. *)
-    lia.
-  (** Repeat with [xI] in place of [xO].
-      The measure has [xI] to cancel both cases,
-      since [xO n <= xI n] and [xI n <= xI n]. *)
-  - intros. cbv [pos_max]; cbn.
-    apply Lt.lt_n_S. apply Plus.plus_lt_compat_l.
-    apply Pos2Nat.inj_lt.
-    lia. Defined.
+(** Structurally recursive cases. *)
+Next Obligation. intros. subst. cbv [pos_max]; cbn. lia. Qed.
+Next Obligation. intros. subst. cbv [pos_max]; cbn. lia. Qed.
+Next Obligation. intros. subst. cbv [pos_max]; cbn. lia. Qed.
+(** The tricky bits. *)
+Next Obligation.
+  intros. subst. cbv [pos_max]; cbn.
+  (** Natural number wrangling. *)
+  apply Lt.lt_n_S. apply Plus.plus_lt_compat_l.
+  apply Pos2Nat.inj_lt.
+  (** Decision on positive numbers. *)
+  lia. Qed.
+(** Repeat with [xI] in place of [xO].
+    The measure has [xI] to cancel both cases,
+    since [xO n <= xI n] and [xI n <= xI n]. *)
+Next Obligation.
+  intros. subst. cbv [pos_max]; cbn.
+  apply Lt.lt_n_S. apply Plus.plus_lt_compat_l.
+  apply Pos2Nat.inj_lt.
+  lia. Qed.
+Next Obligation. Tactics.program_solve_wf. Defined.
 
 (** If this function is given a list that is not sorted,
     its behavior will not be undefined!
@@ -337,7 +338,7 @@ Proof.
 
 Definition pos_tree_of_sorted_list (A : Type) (l : list (positive * A)) :
   pos_tree A :=
-  pos_tree_of_sorted_list' (l, xH).
+  pos_tree_of_sorted_list' l xH.
 
 Fixpoint merge_list_to_stack (A : Type)
   (f : A -> positive) (a : list (option (list A))) (l : list A) :
@@ -346,22 +347,22 @@ Fixpoint merge_list_to_stack (A : Type)
   | [] => [Some l]
   | None :: a' => Some l :: a'
   | Some l' :: a' =>
-    None :: @merge_list_to_stack A f a' (merge_by f l' l)
+    None :: merge_list_to_stack f a' (merge_by f l' l)
   end.
 
 Fixpoint merge_stack (A : Type)
   (f : A -> positive) (a : list (option (list A))) : list A :=
   match a with
   | [] => []
-  | None :: a' => @merge_stack A f a'
-  | Some l :: a' => merge_by f l (@merge_stack A f a')
+  | None :: a' => merge_stack f a'
+  | Some l :: a' => merge_by f l (merge_stack f a')
   end.
 
 Fixpoint iter_merge (A : Type)
   (f : A -> positive) (a : list (option (list A))) (l : list A) : list A :=
   match l with
   | [] => merge_stack f a
-  | a' :: l' => @iter_merge A f (merge_list_to_stack f a [a']) l'
+  | a' :: l' => iter_merge f (merge_list_to_stack f a [a']) l'
   end.
 
 Definition sort_by (A : Type) (f : A -> positive) (l : list A) :
@@ -380,7 +381,7 @@ Fixpoint pos_tree_omap (A B : Type) (f : A -> option B)
     pos_branch' match x with
     | Some y => f y
     | None => None
-    end (@pos_tree_omap A B f l) (@pos_tree_omap A B f r)
+    end (pos_tree_omap f l) (pos_tree_omap f r)
   end.
 
 Fixpoint pos_tree_merge (A B C : Type) (f : option A -> option B -> option C)
@@ -390,8 +391,8 @@ Fixpoint pos_tree_merge (A B C : Type) (f : option A -> option B -> option C)
   | t0, pos_leaf => pos_tree_omap (flip f None o Some) t0
   | pos_branch o0 l0 r0, pos_branch o1 l1 r1 =>
     pos_branch' (f o0 o1)
-    (@pos_tree_merge A B C f l0 l1)
-    (@pos_tree_merge A B C f r0 r1)
+    (pos_tree_merge f l0 l1)
+    (pos_tree_merge f r0 r1)
   end.
 
 Polymorphic Hint Resolve squash : core.
