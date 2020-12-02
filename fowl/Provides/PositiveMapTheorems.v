@@ -59,6 +59,57 @@ Definition option_extract (A : Type) (a : A) (x : option A) : A :=
 
 Arguments option_extract _ _ !_.
 
+Fixpoint list_omap (A B : Type) (f : A -> option B)
+  (l : list A) {struct l} : list B :=
+  match l with
+  | [] => []
+  | x :: l' =>
+    match f x with
+    | Some y => y :: list_omap f l'
+    | None => list_omap f l'
+    end
+  end.
+
+Arguments list_omap _ _ _ !_ : simpl nomatch.
+
+Definition fst_option (A B : Type) (x : option A * B) : option (A * B) :=
+  match x with
+  | (y, b) =>
+    match y with
+    | Some a => Some (a, b)
+    | None => None
+    end
+  end.
+
+Arguments fst_option _ _ !_ : simpl nomatch.
+
+Definition snd_option (A B : Type) (x : A * option B) : option (A * B) :=
+  match x with
+  | (a, y) =>
+    match y with
+    | Some b => Some (a, b)
+    | None => None
+    end
+  end.
+
+Arguments snd_option _ _ !_ : simpl nomatch.
+
+Definition pair_option (A B : Type)
+  (x : option A * option B) : option (A * B) :=
+  match x with
+  | (y, z) =>
+    match y, z with
+    | Some a, Some b => Some (a, b)
+    | _, _ => None
+    end
+  end.
+
+Arguments pair_option _ _ !_ : simpl nomatch.
+
+Definition pair_diag (A : Type) (a : A) : A * A := (a, a).
+
+Arguments pair_diag _ _ /.
+
 Inductive pos_tree (A : Type) : Type :=
   | pos_leaf : pos_tree A
   | pos_branch (x : option A) (l : pos_tree A) (r : pos_tree A) : pos_tree A.
@@ -470,6 +521,10 @@ Next Obligation.
     apply IHt1 in wl.
     apply IHt2 in wr. Admitted.
 
+Definition pos_map_insert (A : Type)
+  (n : positive) (a : A) (m : pos_map A) : pos_map A :=
+  pos_map_partial_alter (fun _ : option A => Some a) n m.
+
 Lemma option_map_Some (A B : Type) (f : A -> B) (x : option A) (b : B)
   (e : option_map f x = Some b) : {a : A | x = Some a /\ b = f a}.
 Proof.
@@ -577,6 +632,74 @@ Class IsCnt (A : Type) `(HasCode positive A) : Prop := {
 
 Arguments IsCnt _ {_}.
 
+Global Instance positive_positive_has_code : HasCode positive positive :=
+  (Some, id).
+
+Global Instance positive_is_cnt : IsCnt positive.
+Proof. split; auto. Qed.
+
+(** A deep dive into "efficient pairing functions". *)
+
+Local Notation "'1'" := xH : positive_scope.
+
+Definition rs_unpair (n p : positive) : positive :=
+  let q := max n p in
+  (** We now know [n <= q] and [p <= q], so [n < 1 + q].
+      Therefore [1 + n < 1 + 1 + q], leading to
+      [1 < 1 + 1 + q - n] and thus [1 <= 1 + q - n].
+      Similarly [1 <= 1 + q - p].
+      This is probably useless information. *)
+  let r := q * q in
+  (** We now know [q <= r], so [q < 1 + r].
+      Therefore [1 + q < 1 + 1 + r], leading to
+      [1 < 1 + 1 + r - q] and thus [1 <= 1 + r - q].
+      This is the tightest we can cut it. *)
+  1 + r - q + n - p.
+
+Definition rs_pair (n : positive) : positive * positive :=
+  match peanoView n with
+  | PeanoOne => (1, 1)
+  | PeanoSucc p _ =>
+    let q := sqrt p in
+    let r := q * q in
+    let s := 1 + q in
+    if n <=? q + r then
+    (n - r, s) else
+    (s, 2 * s + r - n)
+  end.
+
+Compute map (prod_uncurry rs_unpair o rs_pair) (map of_nat (seq (S O) 64%nat)).
+
+(* Definition up (n p : nat) : nat :=
+  let q := max n p in
+  q * q + q + n - p.
+
+Definition down (n : nat) : nat * nat :=
+  let m := sqrt n in
+  if n <? m * m + m then (n - m * m, m) else (m, m * m + 2 * m - n).
+
+Compute map (prod_uncurry up o down) (map id (seq O 64%nat)). *)
+
+Global Instance positive_prod_has_code :
+  HasCode positive (positive * positive) :=
+  (Some o rs_pair, prod_uncurry rs_unpair).
+
+(* Global Instance prod_has_code (A : Type) `(HasCode positive A) :
+  HasCode positive (A * A) :=
+  (pair_option o prod_map decode o pair_diag, encode o prod_map encode). *)
+
+Global Instance prod_has_code (A B : Type)
+  `(HasCode positive A) `(HasCode positive B) :
+  HasCode positive (A * B) :=
+  (pair_option o prod_bimap decode decode o pair_diag,
+  encode o prod_bimap encode encode).
+
+(* Global Instance prod_is_cnt (A : Type) `(IsCnt A) : IsCnt (A * A).
+Proof. split. intros [n p]. Admitted. *)
+
+Global Instance prod_is_cnt (A B : Type) `(IsCnt A) `(IsCnt B) : IsCnt (A * B).
+Proof. split. intros [n p]. Admitted.
+
 Section Context.
 
 Context (K : Type) `{IsCnt K}.
@@ -591,35 +714,6 @@ Definition fin_map (A : Type) : Type :=
 End Context.
 
 Arguments fin_map _ {_} _.
-
-Fixpoint list_omap (A B : Type) (f : A -> option B)
-  (l : list A) {struct l} : list B :=
-  match l with
-  | [] => []
-  | x :: l' =>
-    match f x with
-    | Some y => y :: list_omap f l'
-    | None => list_omap f l'
-    end
-  end.
-
-Definition fst_option (A B : Type) (x : option A * B) : option (A * B) :=
-  match x with
-  | (y, b) =>
-    match y with
-    | Some a => Some (a, b)
-    | None => None
-    end
-  end.
-
-Definition snd_option (A B : Type) (x : A * option B) : option (A * B) :=
-  match x with
-  | (a, y) =>
-    match y with
-    | Some b => Some (a, b)
-    | None => None
-    end
-  end.
 
 Section Context.
 
@@ -644,19 +738,31 @@ Program Definition fin_map_partial_alter (A : Type)
   (pos_map_partial_alter f (encode n) (Spr1 m)) _.
 Next Obligation. Admitted.
 
-End Context.
+Definition fin_map_insert (A : Type)
+  (n : K) (a : A) (m : fin_map K A) : fin_map K A :=
+  fin_map_partial_alter (fun _ : option A => Some a) n m.
 
-(** Finally, we can define the ordered left Kan extension along inclusion. *)
+End Context.
 
 Section Context.
 
 Context (K L : Type) `{IsCnt K} `{IsCnt L}.
+
+(** Finally, we can define the ordered left Kan extension along inclusion. *)
 
 Definition fin_map_free_lan (A : Type)
   (h : K -> L) (m : fin_map K A) : fin_map L (list A) :=
   fin_map_ifoldr (fun (n : K) (a : A) (m' : fin_map L (list A)) =>
     fin_map_partial_alter (fun x : option (list A) =>
       Some (a :: option_extract [] x)) (h n) m') (fin_map_empty (list A)) m.
+
+(** Also, the free product without tears. *)
+
+Definition fin_map_free_prod (A B : Type)
+  (m0 : fin_map K A) (m1 : fin_map L B) : fin_map (K * L) (A * B) :=
+  fin_map_ifoldr (fun (i : K) (a : A) (z : fin_map (K * L) (A * B)) =>
+    fin_map_ifoldr (fun (j : L) (b : B) (z : fin_map (K * L) (A * B)) =>
+      fin_map_insert (i, j) (a, b) z) z m1) (fin_map_empty (A * B)) m0.
 
 End Context.
 
