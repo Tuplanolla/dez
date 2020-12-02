@@ -14,6 +14,9 @@ Import ListNotations Pos.
 
 Local Open Scope positive_scope.
 
+Definition is_Some (A : Type) (x : option A) : bool :=
+  if x then true else false.
+
 Definition is_left (A B : Prop) (s : sumbool A B) : bool :=
   if s then true else false.
 
@@ -531,7 +534,131 @@ Definition pos_map_iforall (A : Type) (P : positive -> A -> Prop)
   (m : pos_map A) : Prop :=
   forall (n : positive) (x : A), pos_map_lookup n m = Some x -> P n x.
 
+(* Has.Coding *)
+
+(** Coding. *)
+
+Class HasCode (A B : Type) : Type := code : (A -> option B) * (B -> A).
+
+Typeclasses Transparent HasCode.
+
+Hint Mode HasCode - - : typeclass_instances.
+
+(* Offers.TwoSorted.CodeMappings *)
+
+Section Context.
+
+Context (A B : Type) `(HasCode A B).
+
+(** Decoding. *)
+
+Definition decode : A -> option B := fst code.
+
+(** Encoding. *)
+
+Definition encode : B -> A := snd code.
+
+End Context.
+
+Arguments decode {_ _ !_} _.
+Arguments encode {_ _ !_} _.
+
+(* Is.OneSorted.Countable *)
+
+Coercion is_true : bool >-> Sortclass.
+
+Class IsCnt (A : Type) `(HasCode positive A) : Prop := {
+  decode_encode : forall x : A, decode (encode x) = Some x;
+  (* encode_decode : forall n : positive,
+    option_map encode (decode n) = Some n; *)
+  lower_subset : forall n p : positive, p < n ->
+    is_Some (decode n) -> is_Some (decode p);
+}.
+
+Arguments IsCnt _ {_}.
+
+Section Context.
+
+Context (K : Type) `{IsCnt K}.
+
+Definition fin_map_wf (A : Type) (m : pos_map A) :=
+  pos_map_iforall (fun (n : positive) (_ : A) =>
+    option_map (A := K) (B := positive) encode (decode n) = Some n) m.
+
+Definition fin_map (A : Type) : Type :=
+  {m : pos_map A ! Squash (fin_map_wf m)}.
+
+End Context.
+
+Arguments fin_map _ {_} _.
+
+Fixpoint list_omap (A B : Type) (f : A -> option B)
+  (l : list A) {struct l} : list B :=
+  match l with
+  | [] => []
+  | x :: l' =>
+    match f x with
+    | Some y => y :: list_omap f l'
+    | None => list_omap f l'
+    end
+  end.
+
+Definition fst_option (A B : Type) (x : option A * B) : option (A * B) :=
+  match x with
+  | (y, b) =>
+    match y with
+    | Some a => Some (a, b)
+    | None => None
+    end
+  end.
+
+Definition snd_option (A B : Type) (x : A * option B) : option (A * B) :=
+  match x with
+  | (a, y) =>
+    match y with
+    | Some b => Some (a, b)
+    | None => None
+    end
+  end.
+
+Section Context.
+
+Context (K : Type) `{IsCnt K}.
+
+Definition fin_map_to_sorted_list (A : Type)
+   (m : fin_map K A) : list (K * A) :=
+  list_omap (fst_option o prod_bimap decode id)
+  (pos_map_to_sorted_list (Spr1 m)).
+
+Definition fin_map_ifoldr (A B : Type)
+  (f : K -> A -> B -> B) (b : B) (m : fin_map K A) : B :=
+  fold_right (prod_uncurry f) b (fin_map_to_sorted_list m).
+
+Program Definition fin_map_empty (A : Type) : fin_map K A :=
+  Sexists (Squash o fin_map_wf) (pos_map_empty A) _.
+Next Obligation. intros A. apply squash. intros n a e. inversion e. Qed.
+
+Program Definition fin_map_partial_alter (A : Type)
+  (f : option A -> option A) (n : K) (m : fin_map K A) : fin_map K A :=
+  Sexists (Squash o fin_map_wf)
+  (pos_map_partial_alter f (encode n) (Spr1 m)) _.
+Next Obligation. Admitted.
+
+End Context.
+
 (** Finally, we can define the ordered left Kan extension along inclusion. *)
+
+Section Context.
+
+Context (K L : Type) `{IsCnt K} `{IsCnt L}.
+
+Definition fin_map_free_lan (A : Type)
+  (h : K -> L) (m : fin_map K A) : fin_map L (list A) :=
+  fin_map_ifoldr (fun (n : K) (a : A) (m' : fin_map L (list A)) =>
+    fin_map_partial_alter (fun x : option (list A) =>
+      Some (a :: option_extract [] x)) (h n) m') (fin_map_empty (list A)) m.
+
+End Context.
 
 Definition pos_map_free_lan (A : Type)
   (h : positive -> positive) (m : pos_map A) : pos_map (list A) :=
@@ -548,37 +675,13 @@ Lemma pos_map_free_lan_nonempty (A : Type)
   pos_map_forall (not o eq []) (pos_map_free_lan h m).
 Proof. Admitted.
 
-Inductive nat_map (A : Type) : Type :=
-  | nat_stump : option A -> pos_map A -> nat_map A.
-
-Global Instance nat_map_has_eq_dec (A : Type) `(HasEqDec A) :
-  HasEqDec (nat_map A).
-Proof. cbv [HasEqDec]. decide equality.
-  all: apply EqualityDecision.eq_dec. Defined.
-
-Definition nat_map_lookup (A : Type) (n : N) (m : nat_map A) : option A :=
-  match m with
-  | nat_stump x m' =>
-    match n with
-    | N0 => x
-    | Npos p => pos_map_lookup p m'
-    end
-  end.
-
-Definition nat_map_forall (A : Type) (P : A -> Prop) (m : nat_map A) : Prop :=
-  forall (n : N) (x : A), nat_map_lookup n m = Some x -> P x.
-
-Definition nat_map_iforall (A : Type) (P : N -> A -> Prop)
-  (m : nat_map A) : Prop :=
-  forall (n : N) (x : A), nat_map_lookup n m = Some x -> P n x.
-
-Definition cut_map_wf (A : Type) (P : A -> Prop) (m : nat_map A) : Prop :=
-  nat_map_forall (not o P) m.
+Definition cut_map_wf (A : Type) (P : A -> Prop) (m : pos_map A) : Prop :=
+  pos_map_forall (not o P) m.
 
 (* Arguments cut_map_wf _ _ !_. *)
 
 Definition cut_map (A : Type) (P : A -> Prop) : Type :=
-  {m : nat_map A ! Squash (cut_map_wf P m)}.
+  {m : pos_map A ! Squash (cut_map_wf P m)}.
 
 Lemma Unnamed_goal (A : Type) (P : A -> Prop) (x y : cut_map P) :
   x = y <-> Spr1 x = Spr1 y.
@@ -587,13 +690,13 @@ Proof. destruct x, y; cbn. split. intros. inversion H. auto.
 
 (** We can now represent polynomials with [cut_map (eq 0)]. *)
 
-Definition dec_map_wf (A : Type) (p : A -> bool) (m : nat_map A) : Prop :=
-  nat_map_forall (is_true o p) m.
+Definition dec_map_wf (A : Type) (p : A -> bool) (m : pos_map A) : Prop :=
+  pos_map_forall (is_true o p) m.
 
 (* Arguments dec_map_wf _ _ !_. *)
 
 Definition dec_map (A : Type) (p : A -> bool) : Type :=
-  {m : nat_map A ! Squash (dec_map_wf p m)}.
+  {m : pos_map A ! Squash (dec_map_wf p m)}.
 
 Lemma Unnamed_goal' (A : Type) (p : A -> bool) (x y : dec_map p) :
   x = y <-> Spr1 x = Spr1 y.
