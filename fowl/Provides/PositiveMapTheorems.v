@@ -638,9 +638,101 @@ Global Instance positive_positive_has_code : HasCode positive positive :=
 Global Instance positive_is_cnt : IsCnt positive.
 Proof. split; auto. Qed.
 
-(** A deep dive into "efficient pairing functions". *)
+(** A deep dive into "efficient pairing functions".
+    Positive domain constraints make them even more horrifying. *)
 
+Local Notation "'1'" := (S O) : nat_scope.
 Local Notation "'1'" := xH : positive_scope.
+
+(** * Cantor *)
+
+(* Module Natty.
+
+Open Scope nat_scope. Import Nat.
+
+Definition tri (n : nat) : nat :=
+  n * (1 + n) / 2.
+
+Definition sumtri (n : nat) : nat :=
+  n * (1 + n) * (2 + n) / 6.
+
+Program Fixpoint sumtri_find_upper' (n p : nat) {measure n} : nat :=
+  if sumtri n <? p then
+  sumtri_find_upper' (2 * n) p else
+  n.
+Next Obligation. intros; subst. Admitted.
+Next Obligation. Tactics.program_solve_wf. Defined.
+
+Fail Fixpoint sumtri_search (n p q : nat) : nat :=
+  if p =? q then p else
+  if sumtri n <? p then
+  sumtri_search n p (2 * q) else
+  (* if p >? sumtri n then *)
+  sumtri_search n (2 * p) q.
+
+Definition sumtri_inverse n := sumtri_find_upper' 1 n.
+
+Compute map tri (seq O 32%nat).
+Compute map sumtri (seq O 32%nat).
+
+Definition c_unpair (n p : nat) : nat :=
+  div2 ((n + p) * (1 + n + p)) + p.
+
+Definition c_pair (n : nat) : nat * nat :=
+  (1, 1).
+
+End Natty. *)
+
+Definition tri (n : positive) : positive :=
+  div2 (n * (1 + n)).
+
+Definition sumtri (n : positive) : positive :=
+ (pred o BinNat.N.succ_pos o fst)
+ (Ndiv_def.Pdiv_eucl (n * (1 + n) * (2 + n)) 6).
+
+(* Compute map tri (map of_nat (seq 1%nat 32%nat)).
+Compute map sumtri (map of_nat (seq 1%nat 32%nat)). *)
+
+Definition c_unpair (n p : positive) : positive :=
+  div2 ((n + p) * (1 + n + p)) + p.
+
+Definition c_pair (n : positive) : positive * positive :=
+  (1, 1).
+
+(* Compute map (prod_uncurry c_unpair o c_pair) (map of_nat (seq 1%nat 64%nat)). *)
+
+(** * Szudzik *)
+
+(* Definition s_unpair (n p : nat) : nat :=
+  if p <? n then
+  n * n + p else
+  p * p + n + p.
+
+Definition s_pair (n : nat) : nat * nat :=
+  let q := sqrt n in
+  let r := q * q in
+  if n <? q + r then
+  (q, n - r) else
+  (n - r - q, q). *)
+
+Definition s_unpair (n p : positive) : positive :=
+  if p <? n then
+  1 + n * n + p - 2 * n else
+  p * p + n + p - 2 * p.
+
+Definition s_pair (n : positive) : positive * positive :=
+  match peanoView n with
+  | PeanoOne => (1, 1)
+  | PeanoSucc p _ =>
+    let q := sqrt p in
+    let r := q * q in
+    let s := 1 + q in
+    if n <? s + r then
+    (s, n - r) else
+    (n - r - q, s)
+  end.
+
+(** * Rosenberg--Strong *)
 
 Definition rs_unpair (n p : positive) : positive :=
   let q := max n p in
@@ -663,26 +755,27 @@ Definition rs_pair (n : positive) : positive * positive :=
     let q := sqrt p in
     let r := q * q in
     let s := 1 + q in
-    if n <=? q + r then
+    if n <? s + r then
     (n - r, s) else
     (s, 2 * s + r - n)
   end.
 
-Compute map (prod_uncurry rs_unpair o rs_pair) (map of_nat (seq (S O) 64%nat)).
+(* Compute map (prod_uncurry rs_unpair o rs_pair)
+  (map of_nat (seq (S O) 64%nat)). *)
 
-(* Definition up (n p : nat) : nat :=
+(* Definition rs_unpair (n p : nat) : nat :=
   let q := max n p in
   q * q + q + n - p.
 
-Definition down (n : nat) : nat * nat :=
+Definition rs_pair (n : nat) : nat * nat :=
   let m := sqrt n in
   if n <? m * m + m then (n - m * m, m) else (m, m * m + 2 * m - n).
 
-Compute map (prod_uncurry up o down) (map id (seq O 64%nat)). *)
+Compute map (prod_uncurry rs_unpair o rs_pair) (map id (seq O 64%nat)). *)
 
 Global Instance positive_prod_has_code :
   HasCode positive (positive * positive) :=
-  (Some o rs_pair, prod_uncurry rs_unpair).
+  (Some o s_pair, prod_uncurry s_unpair).
 
 (* Global Instance prod_has_code (A : Type) `(HasCode positive A) :
   HasCode positive (A * A) :=
