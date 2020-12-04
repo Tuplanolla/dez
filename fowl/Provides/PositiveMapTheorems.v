@@ -645,11 +645,10 @@ Local Notation "'0'" := O : nat_scope.
 Local Notation "'1'" := (S O) : nat_scope.
 Local Notation "'1'" := xH : positive_scope.
 
-(** * Cantor (triangle shell, nonalternating) *)
+(** * Cantor (triangle shell) *)
 
 (* Module Natty.
 
-Import Bool. Import BoolNotations.
 Open Scope nat_scope. Import PeanoNat Nat.
 
 Definition tri (n : nat) : nat :=
@@ -685,15 +684,32 @@ Compute map tri (seq O 32%nat).
 Compute map (tri_inverse o tri) (seq O 32%nat).
 
 Definition c_unpair (n p : nat) : nat :=
-  div2 ((n + p) * (1 + n + p)) + p.
+  let q := n + p in
+  div2 (q * (1 + q)) + p.
 
 Definition c_pair (n : nat) : nat * nat :=
   let p := tri_inverse n in
   let q := n - tri p in
   (p - q, q).
 
-Compute map c_pair (map id (seq 0%nat 64%nat)).
-Compute map (prod_uncurry c_unpair o c_pair) (map id (seq 0%nat 64%nat)).
+Compute map c_pair (seq 0%nat 64%nat).
+Compute map (prod_uncurry c_unpair o c_pair) (seq 0%nat 64%nat).
+
+Definition ca_unpair (n p : nat) : nat :=
+  let q := n + p in
+  if even q then
+  div2 (q * (1 + q)) + p else
+  div2 (q * (1 + q)) + n.
+
+Definition ca_pair (n : nat) : nat * nat :=
+  let p := tri_inverse n in
+  let q := n - tri p in
+  if even p then
+  (p - q, q) else
+  (q, p - q).
+
+Compute map ca_pair (seq 0%nat 64%nat).
+Compute map (prod_uncurry ca_unpair o ca_pair) (seq 0%nat 64%nat).
 
 End Natty. *)
 
@@ -727,9 +743,13 @@ Definition c_pair (n : positive) : positive * positive :=
 
 (* Compute map (prod_uncurry c_unpair o c_pair) (map of_nat (seq 1%nat 64%nat)). *)
 
-(** * Szudzik (square shell, nonalternating) *)
+(** * Szudzik (square shell) *)
 
-(* Definition s_unpair (n p : nat) : nat :=
+(* Module Natty.
+
+Open Scope nat_scope. Import PeanoNat Nat.
+
+Definition s_unpair (n p : nat) : nat :=
   if p <? n then
   n * n + p else
   p * p + n + p.
@@ -739,7 +759,35 @@ Definition s_pair (n : nat) : nat * nat :=
   let r := q * q in
   if n <? q + r then
   (q, n - r) else
-  (n - r - q, q). *)
+  (n - r - q, q).
+
+(* Compute map (prod_uncurry s_unpair o s_pair) (seq 0%nat 64%nat). *)
+
+Definition sa_unpair (n p : nat) : nat :=
+  let q := max n p in
+  if even q then
+  if p <? n then
+  n * n + p else
+  p * p + n + p else
+  if n <? p then
+  p * p + n else
+  n * n + p + n.
+
+Definition sa_pair (n : nat) : nat * nat :=
+  let q := sqrt n in
+  let r := q * q in
+  if even q then
+  if n <? q + r then
+  (q, n - r) else
+  (n - r - q, q) else
+  if n <? q + r then
+  (n - r, q) else
+  (q, n - r - q).
+
+Compute map sa_pair (seq 0%nat 64%nat).
+Compute map (prod_uncurry sa_unpair o sa_pair) (seq 0%nat 64%nat).
+
+End Natty. *)
 
 Definition s_unpair (n p : positive) : positive :=
   if p <? n then
@@ -758,7 +806,38 @@ Definition s_pair (n : positive) : positive * positive :=
     (n - r - q, s)
   end.
 
-(** * Rosenberg--Strong (square shell, nonalternating) *)
+(** * Rosenberg--Strong (square shell) *)
+
+(* Module Natty.
+
+Open Scope nat_scope. Import PeanoNat Nat.
+
+Definition rs_unpair (n p : nat) : nat :=
+  let q := max n p in
+  q * q + q + p - n.
+
+Definition rs_pair (n : nat) : nat * nat :=
+  let q := sqrt n in
+  if n <? q * q + q then (q, n - q * q) else (q * q + 2 * q - n, q).
+
+(* Compute map (prod_uncurry rs_unpair o rs_pair) (seq 0%nat 64%nat). *)
+
+Definition rsa_unpair (n p : nat) : nat :=
+  let q := max n p in
+  if even q then
+  q * q + q + p - n else
+  q * q + q + n - p.
+
+Definition rsa_pair (n : nat) : nat * nat :=
+  let q := sqrt n in
+  if even q then
+  if n <? q * q + q then (q, n - q * q) else (q * q + 2 * q - n, q) else
+  if n <? q * q + q then (n - q * q, q) else (q, q * q + 2 * q - n).
+
+Compute map rsa_pair (seq 0%nat 64%nat).
+Compute map (prod_uncurry rsa_unpair o rsa_pair) (seq 0%nat 64%nat).
+
+End Natty. *)
 
 Definition rs_unpair (n p : positive) : positive :=
   let q := max n p in
@@ -788,16 +867,6 @@ Definition rs_pair (n : positive) : positive * positive :=
 
 (* Compute map (prod_uncurry rs_unpair o rs_pair)
   (map of_nat (seq (S O) 64%nat)). *)
-
-(* Definition rs_unpair (n p : nat) : nat :=
-  let q := max n p in
-  q * q + q + p - n.
-
-Definition rs_pair (n : nat) : nat * nat :=
-  let m := sqrt n in
-  if n <? m * m + m then (m, n - m * m) else (m * m + 2 * m - n, m).
-
-Compute map (prod_uncurry rs_unpair o rs_pair) (map id (seq O 64%nat)). *)
 
 Global Instance positive_prod_has_code :
   HasCode positive (positive * positive) :=
