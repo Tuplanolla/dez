@@ -772,7 +772,7 @@ Definition rs_unpair (n p : positive) : positive :=
       Therefore [1 + q < 1 + 1 + r], leading to
       [1 < 1 + 1 + r - q] and thus [1 <= 1 + r - q].
       This is the tightest we can cut it. *)
-  1 + r - q + n - p.
+  1 + r - q + p - n.
 
 Definition rs_pair (n : positive) : positive * positive :=
   match peanoView n with
@@ -782,8 +782,8 @@ Definition rs_pair (n : positive) : positive * positive :=
     let r := q * q in
     let s := 1 + q in
     if n <? s + r then
-    (n - r, s) else
-    (s, 2 * s + r - n)
+    (s, n - r) else
+    (2 * s + r - n, s)
   end.
 
 (* Compute map (prod_uncurry rs_unpair o rs_pair)
@@ -791,11 +791,11 @@ Definition rs_pair (n : positive) : positive * positive :=
 
 (* Definition rs_unpair (n p : nat) : nat :=
   let q := max n p in
-  q * q + q + n - p.
+  q * q + q + p - n.
 
 Definition rs_pair (n : nat) : nat * nat :=
   let m := sqrt n in
-  if n <? m * m + m then (n - m * m, m) else (m, m * m + 2 * m - n).
+  if n <? m * m + m then (m, n - m * m) else (m * m + 2 * m - n, m).
 
 Compute map (prod_uncurry rs_unpair o rs_pair) (map id (seq O 64%nat)). *)
 
