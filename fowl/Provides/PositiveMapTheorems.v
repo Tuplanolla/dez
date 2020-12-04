@@ -641,67 +641,93 @@ Proof. split; auto. Qed.
 (** A deep dive into "efficient pairing functions".
     Positive domain constraints make them even more horrifying. *)
 
+Local Notation "'0'" := O : nat_scope.
 Local Notation "'1'" := (S O) : nat_scope.
 Local Notation "'1'" := xH : positive_scope.
 
-(** * Cantor *)
+(** * Cantor (triangle shell, nonalternating) *)
 
 (* Module Natty.
 
-Open Scope nat_scope. Import Nat.
+Import Bool. Import BoolNotations.
+Open Scope nat_scope. Import PeanoNat Nat.
 
 Definition tri (n : nat) : nat :=
   n * (1 + n) / 2.
 
-Definition sumtri (n : nat) : nat :=
-  n * (1 + n) * (2 + n) / 6.
+Definition tri_lb (n : nat) : nat :=
+  n ^ 2 / 2.
 
-Program Fixpoint sumtri_find_upper' (n p : nat) {measure n} : nat :=
-  if sumtri n <? p then
-  sumtri_find_upper' (2 * n) p else
-  n.
-Next Obligation. intros; subst. Admitted.
-Next Obligation. Tactics.program_solve_wf. Defined.
+Definition tri_ub (n : nat) : nat :=
+  (1 + n) ^ 2 / 2.
 
-Fail Fixpoint sumtri_search (n p q : nat) : nat :=
-  if p =? q then p else
-  if sumtri n <? p then
-  sumtri_search n p (2 * q) else
-  (* if p >? sumtri n then *)
-  sumtri_search n (2 * p) q.
+Lemma tri_bounded (n : nat) : tri_lb n <= tri n <= tri_ub n.
+Proof. cbv [tri tri_lb tri_ub]. split.
+  - rewrite pow_2_r. apply div_le_mono; lia.
+  - rewrite pow_2_r. apply div_le_mono; lia. Qed.
 
-Definition sumtri_inverse n := sumtri_find_upper' 1 n.
+Definition tri_inverse_lb (n : nat) : nat :=
+  sqrt (2 * n) - 1.
 
+Definition tri_inverse_ub (n : nat) : nat :=
+  sqrt (2 * n).
+
+Definition tri_search (n p q : nat) : nat :=
+  if q <? tri p then n else p.
+
+Definition tri_inverse (n : nat) : nat :=
+  tri_search (tri_inverse_lb n) (tri_inverse_ub n) n.
+
+Compute map tri_inverse_lb (seq O 32%nat).
+Compute map tri_inverse_ub (seq O 32%nat).
+Compute map tri_inverse (seq O 32%nat).
 Compute map tri (seq O 32%nat).
-Compute map sumtri (seq O 32%nat).
+Compute map (tri_inverse o tri) (seq O 32%nat).
 
 Definition c_unpair (n p : nat) : nat :=
   div2 ((n + p) * (1 + n + p)) + p.
 
 Definition c_pair (n : nat) : nat * nat :=
-  (1, 1).
+  let p := tri_inverse n in
+  let q := n - tri p in
+  (p - q, q).
+
+Compute map c_pair (map id (seq 0%nat 64%nat)).
+Compute map (prod_uncurry c_unpair o c_pair) (map id (seq 0%nat 64%nat)).
 
 End Natty. *)
 
 Definition tri (n : positive) : positive :=
   div2 (n * (1 + n)).
 
-Definition sumtri (n : positive) : positive :=
- (pred o BinNat.N.succ_pos o fst)
- (Ndiv_def.Pdiv_eucl (n * (1 + n) * (2 + n)) 6).
+Definition tri_inverse_lb (n : positive) : positive :=
+  sqrt (2 * n) - 1.
 
-(* Compute map tri (map of_nat (seq 1%nat 32%nat)).
-Compute map sumtri (map of_nat (seq 1%nat 32%nat)). *)
+Definition tri_inverse_ub (n : positive) : positive :=
+  sqrt (2 * n).
+
+Definition tri_search (n p q : positive) : positive :=
+  if q <? tri p then n else p.
+
+Definition tri_inverse (n : positive) : positive :=
+  tri_search (tri_inverse_lb n) (tri_inverse_ub n) n.
 
 Definition c_unpair (n p : positive) : positive :=
-  div2 ((n + p) * (1 + n + p)) + p.
+  div2 (3 + (n + p - 1) ^ 2 - n - p) + p - 1.
+  (* div2 (4 + (n + p) ^ 2 - 3 * (n + p)) + p - 1. *)
 
 Definition c_pair (n : positive) : positive * positive :=
-  (1, 1).
+  match peanoView n with
+  | PeanoOne => (1, 1)
+  | PeanoSucc p _ =>
+  let q := tri_inverse p in
+  let r := n - tri q in
+  (2 + q - r, r)
+  end.
 
 (* Compute map (prod_uncurry c_unpair o c_pair) (map of_nat (seq 1%nat 64%nat)). *)
 
-(** * Szudzik *)
+(** * Szudzik (square shell, nonalternating) *)
 
 (* Definition s_unpair (n p : nat) : nat :=
   if p <? n then
@@ -732,7 +758,7 @@ Definition s_pair (n : positive) : positive * positive :=
     (n - r - q, s)
   end.
 
-(** * Rosenberg--Strong *)
+(** * Rosenberg--Strong (square shell, nonalternating) *)
 
 Definition rs_unpair (n p : positive) : positive :=
   let q := max n p in
