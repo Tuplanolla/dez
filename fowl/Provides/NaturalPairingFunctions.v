@@ -1,110 +1,208 @@
 From Coq Require Import
   Lia Lists.List NArith.NArith.
-From Maniunfold Require Export
-  Init.
+From Maniunfold.Provides Require Export
+  OptionTheorems.
 
 Import ListNotations N.
 
 Local Open Scope N_scope.
 
+Local Opaque "+" "*" "^" "-" "/" sqrt.
+
 Local Definition seq (n p : N) : list N :=
   map of_nat (seq (to_nat n) (to_nat p)).
 
-(** Triangular numbers. *)
+(** Triangular number generator. *)
 
 Definition tri (n : N) : N :=
   n * (1 + n) / 2.
 
-Definition tri_lb (n : N) : N :=
-  n ^ 2 / 2.
+Arguments tri _ : assert.
 
-Definition tri_ub (n : N) : N :=
-  (1 + n) ^ 2 / 2.
+(** Inverse of the triangular number generator, with remainder. *)
 
-Lemma tri_bounded (n : N) : tri_lb n <= tri n <= tri_ub n.
-Proof. cbv [tri tri_lb tri_ub]. split.
-  - rewrite pow_2_r. apply div_le_mono; lia.
-  - rewrite pow_2_r. apply div_le_mono; lia. Qed.
+Definition untri_rem (n : N) : N * N :=
+  let ((* square root *) s, (* remainder *) r) := sqrtrem (1 + 8 * n) in
+  let ((* quotient *) q, (* remainder *) r') := div_eucl (s - 1) 2 in
+  (q, r + r'). (* wrong *)
 
-Definition tri_inverse_lb (n : N) : N :=
-  sqrt (2 * n) - 1.
+Compute map (untri_rem o tri) (seq 0 32).
+Compute map untri_rem (seq 0 32).
+Compute map ((fun '(p, r) => tri p + r) o untri_rem) (seq 0 32).
 
-Definition tri_inverse_ub (n : N) : N :=
-  sqrt (2 * n).
+Theorem untri_rem_tri (n : N) : snd (untri_rem (tri n)) = 0.
+Proof. Admitted.
 
-Definition tri_search (n p q : N) : N :=
-  if q <? tri p then n else p.
+Theorem tri_untri_rem (n : N) : (fun '(p, r) => tri p + r) (untri_rem n) = n.
+Proof. Admitted.
 
-Definition tri_inverse (n : N) : N :=
-  tri_search (tri_inverse_lb n) (tri_inverse_ub n) n.
+(** Inverse of the triangular number generator, rounding down. *)
 
-Definition tri_inverse' (n : N) : N :=
+Definition untri_down (n : N) : N :=
   (sqrt (1 + 8 * n) - 1) / 2.
 
-Compute map tri_inverse_lb (seq 0 32).
-Compute map tri_inverse_ub (seq 0 32).
-Compute map tri_inverse (seq 0 32).
-Compute map tri_inverse' (seq 0 32).
+Arguments untri_down _ : assert.
+
+Theorem untri_down_tri (n : N) : untri_down (tri n) = n.
+Proof.
+  induction n as [| p eip] using peano_ind.
+  - auto.
+  - cbv [untri_down tri] in *.
+    rewrite add_succ_r. rewrite mul_succ_r. rewrite add_succ_r.
+    rewrite mul_succ_l. rewrite <- divide_div_mul_exact.
+    rewrite (mul_comm 8). rewrite divide_div_mul_exact.
+    replace (8 / 2) with 4 by admit.
+    rewrite mul_succ_l. admit. Admitted.
+
+Theorem tri_untri_down (n : N) : tri (untri_down n) <= n.
+Proof. Admitted.
+
+(** Inverse of the triangular number generator, partial. *)
+
+Definition untri (n : N) : option N :=
+  let (* radicand *) r := 1 + 8 * n in
+  let (* root *) t := sqrt r in
+  if r =? t ^ 2 then Some ((t - 1) / 2) else None.
+
+Arguments untri _ : assert.
+
+Lemma tri_untri_succ (n : N) :
+  option_map tri (untri (succ n)) = option_map (succ o tri) (untri n).
+Proof. Admitted.
+
+Theorem untri_tri (n : N) : untri (tri n) = Some n.
+Proof.
+  induction n as [| p eip] using peano_ind.
+  - auto.
+  - cbv [untri tri] in *.
+    match goal with
+    | |- context [?x =? ?y] => destruct (eqb_spec x y) as [esp | fsp]
+    end;
+    match goal with
+    | _ : context [?x =? ?y] |- _ => destruct (eqb_spec x y) as [ep | fp]
+    end.
+    + injection eip; clear eip; intros eip.
+      f_equal. admit.
+    + inversion eip.
+    + injection eip; clear eip; intros eip.
+      exfalso. apply fsp; clear fsp. admit.
+    + inversion eip. Admitted.
+
+Theorem tri_untri (n p : N) (e : option_map tri (untri n) = Some p) :
+  n = p.
+Proof.
+  generalize dependent p.
+  induction n as [| i ei] using peano_ind; intros p enp.
+  - cbn in enp. injection enp. auto.
+  - rewrite tri_untri_succ in enp. rewrite option_map_compose in enp.
+    rewrite (ei (pred p)).
+    try match goal with
+    | _ : context [?x =? ?y] |- _ => destruct (eqb_spec x y) as [e | f]
+    end.
+    cbv [option_map] in enp. destruct (untri i) eqn : e.
+    + injection enp; clear enp; intros enp. rewrite <- enp at 2. admit.
+    + inversion enp. Admitted.
+
+(* Compute map untri (seq 0 32).
 Compute map tri (seq 0 32).
-Compute map (tri_inverse o tri) (seq 0 32).
+Compute map (untri o tri) (seq 0 32).
+Compute map (option_map tri o untri) (seq 0 32).
+Compute (filter is_Some o map (option_map tri o untri)) (seq 0 32). *)
 
-(** Nonalternating Cantor pairing function. *)
+Module Cantor.
 
-Definition c_pair (n : N) : N * N :=
-  let p := tri_inverse n in
+Module Nonalternating.
+
+Definition pair (n : N) : N * N :=
+  let p := untri_down n in
   let q := n - tri p in
   (p - q, q).
 
-Definition c_unpair (n p : N) : N :=
+Arguments pair _ : assert.
+
+Definition unpair (n p : N) : N :=
   let q := n + p in
-  div2 (q * (1 + q)) + p.
+  q * (1 + q) / 2 + p.
 
-Compute map c_pair (seq 0 64).
-Compute map (prod_uncurry c_unpair o c_pair) (seq 0 64).
+Arguments unpair _ _ : assert.
 
-Definition ca_unpair (n p : N) : N :=
-  let q := n + p in
-  if even q then
-  div2 (q * (1 + q)) + p else
-  div2 (q * (1 + q)) + n.
+(* Compute map pair (seq 0 64).
+Compute map (prod_uncurry unpair o pair) (seq 0 64). *)
 
-Definition ca_pair (n : N) : N * N :=
-  let p := tri_inverse n in
+Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
+Proof. cbv [prod_uncurry unpair pair]. cbn.  Admitted.
+
+Theorem pair_unpair (n p : N) : pair (prod_uncurry unpair (n, p)) = (n, p).
+Proof. Admitted.
+
+End Nonalternating.
+
+Module Alternating.
+
+Definition pair (n : N) : N * N :=
+  let p := untri_down n in
   let q := n - tri p in
   if even p then
   (p - q, q) else
   (q, p - q).
 
-Compute map ca_pair (seq 0 64).
-Compute map (prod_uncurry ca_unpair o ca_pair) (seq 0 64).
+Arguments pair _ : assert.
 
-(** * Szudzik (square shell) *)
+Definition unpair (n p : N) : N :=
+  let q := n + p in
+  if even q then
+  div2 (q * (1 + q)) + p else
+  div2 (q * (1 + q)) + n.
 
-Definition s_unpair (n p : N) : N :=
-  if p <? n then
-  n * n + p else
-  p * p + n + p.
+Arguments unpair _ _ : assert.
 
-Definition s_pair (n : N) : N * N :=
+(* Compute map pair (seq 0 64).
+Compute map (prod_uncurry unpair o pair) (seq 0 64). *)
+
+Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
+Proof. Admitted.
+
+Theorem pair_unpair (n p : N) : pair (prod_uncurry unpair (n, p)) = (n, p).
+Proof. Admitted.
+
+End Alternating.
+
+End Cantor.
+
+Module Szudzik.
+
+Module Nonalternating.
+
+Definition pair (n : N) : N * N :=
   let q := sqrt n in
   let r := q * q in
   if n <? q + r then
   (q, n - r) else
   (n - r - q, q).
 
-(* Compute map (prod_uncurry s_unpair o s_pair) (seq 0 64). *)
+Arguments pair _ : assert.
 
-Definition sa_unpair (n p : N) : N :=
-  let q := max n p in
-  if even q then
+Definition unpair (n p : N) : N :=
   if p <? n then
   n * n + p else
-  p * p + n + p else
-  if n <? p then
-  p * p + n else
-  n * n + p + n.
+  p * p + n + p.
 
-Definition sa_pair (n : N) : N * N :=
+Arguments unpair _ _ : assert.
+
+(* Compute map pair (seq 0 64).
+Compute map (prod_uncurry unpair o pair) (seq 0 64). *)
+
+Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
+Proof. Admitted.
+
+Theorem pair_unpair (n p : N) : pair (prod_uncurry unpair (n, p)) = (n, p).
+Proof. Admitted.
+
+End Nonalternating.
+
+Module Alternating.
+
+Definition pair (n : N) : N * N :=
   let q := sqrt n in
   let r := q * q in
   if even q then
@@ -115,32 +213,87 @@ Definition sa_pair (n : N) : N * N :=
   (n - r, q) else
   (q, n - r - q).
 
-Compute map sa_pair (seq 0 64).
-Compute map (prod_uncurry sa_unpair o sa_pair) (seq 0 64).
+Arguments pair _ : assert.
 
-(** * Rosenberg--Strong (square shell) *)
-
-Definition rs_unpair (n p : N) : N :=
+Definition unpair (n p : N) : N :=
   let q := max n p in
-  q * q + q + p - n.
+  if even q then
+  if p <? n then
+  n * n + p else
+  p * p + n + p else
+  if n <? p then
+  p * p + n else
+  n * n + p + n.
 
-Definition rs_pair (n : N) : N * N :=
+Arguments unpair _ _ : assert.
+
+(* Compute map pair (seq 0 64).
+Compute map (prod_uncurry unpair o pair) (seq 0 64). *)
+
+Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
+Proof. Admitted.
+
+Theorem pair_unpair (n p : N) : pair (prod_uncurry unpair (n, p)) = (n, p).
+Proof. Admitted.
+
+End Alternating.
+
+End Szudzik.
+
+Module RosenbergStrong.
+
+Module Nonalternating.
+
+Definition pair (n : N) : N * N :=
   let q := sqrt n in
   if n <? q * q + q then (q, n - q * q) else (q * q + 2 * q - n, q).
 
-(* Compute map (prod_uncurry rs_unpair o rs_pair) (seq 0 64). *)
+Arguments pair _ : assert.
 
-Definition rsa_unpair (n p : N) : N :=
+Definition unpair (n p : N) : N :=
   let q := max n p in
-  if even q then
-  q * q + q + p - n else
-  q * q + q + n - p.
+  q * q + q + p - n.
 
-Definition rsa_pair (n : N) : N * N :=
+Arguments unpair _ _ : assert.
+
+(* Compute map pair (seq 0 64).
+Compute map (prod_uncurry unpair o pair) (seq 0 64). *)
+
+Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
+Proof. Admitted.
+
+Theorem pair_unpair (n p : N) : pair (prod_uncurry unpair (n, p)) = (n, p).
+Proof. Admitted.
+
+End Nonalternating.
+
+Module Alternating.
+
+Definition pair (n : N) : N * N :=
   let q := sqrt n in
   if even q then
   if n <? q * q + q then (q, n - q * q) else (q * q + 2 * q - n, q) else
   if n <? q * q + q then (n - q * q, q) else (q, q * q + 2 * q - n).
 
-Compute map rsa_pair (seq 0 64).
-Compute map (prod_uncurry rsa_unpair o rsa_pair) (seq 0 64).
+Arguments pair _ : assert.
+
+Definition unpair (n p : N) : N :=
+  let q := max n p in
+  if even q then
+  q * q + q + p - n else
+  q * q + q + n - p.
+
+Arguments unpair _ _ : assert.
+
+(* Compute map pair (seq 0 64).
+Compute map (prod_uncurry unpair o pair) (seq 0 64). *)
+
+Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
+Proof. Admitted.
+
+Theorem pair_unpair (n p : N) : pair (prod_uncurry unpair (n, p)) = (n, p).
+Proof. Admitted.
+
+End Alternating.
+
+End RosenbergStrong.

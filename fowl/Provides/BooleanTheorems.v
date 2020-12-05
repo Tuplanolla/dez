@@ -8,6 +8,9 @@ From Maniunfold.Is Require Export
 From Maniunfold.Offers Require Export
   TwoSorted.IsomorphismMappings.
 
+Definition is_left (A B : Prop) (s : sumbool A B) : bool :=
+  if s then true else false.
+
 (** Here is some crap. *)
 
 Local Open Scope N_scope.

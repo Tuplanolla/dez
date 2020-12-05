@@ -147,6 +147,10 @@ Notation "'1'" := (Zpos xH) : Z_scope.
 
 Obligation Tactic := idtac.
 
+(** We might as well allow treating booleans as reflections of propositions. *)
+
+Coercion is_true : bool >-> Sortclass.
+
 (** We define some additional utility functions. *)
 
 (** Currying and uncurrying are swapped around in the standard library,

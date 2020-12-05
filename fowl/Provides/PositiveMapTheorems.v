@@ -9,18 +9,12 @@ From Coq Require Import
 From Maniunfold.Has Require Export
   OneSorted.EqualityDecision OneSorted.Unsquashing.
 From Maniunfold.Provides Require Import
-  NaturalPairingFunctions.
+  OptionTheorems PositivePairingFunctions.
 
 From Coq Require Import Lia List Recdef.
 Import ListNotations Pos.
 
 Local Open Scope positive_scope.
-
-Definition is_Some (A : Type) (x : option A) : bool :=
-  if x then true else false.
-
-Definition is_left (A B : Prop) (s : sumbool A B) : bool :=
-  if s then true else false.
 
 Global Instance bool_has_eq_dec : HasEqDec bool.
 Proof. cbv [HasEqDec]. decide equality. Defined.
@@ -621,8 +615,6 @@ Arguments decode {_ _ !_} _.
 Arguments encode {_ _ !_} _.
 
 (* Is.OneSorted.Countable *)
-
-Coercion is_true : bool >-> Sortclass.
 
 Class IsCnt (A : Type) `(HasCode positive A) : Prop := {
   decode_encode : forall x : A, decode (encode x) = Some x;
