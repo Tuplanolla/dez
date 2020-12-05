@@ -36,8 +36,10 @@ Add Search Blacklist "_obligation".
     use strict propositions without ceremony,
     export [Datatypes], [Specif] and [Basics] to
     make their utility functions available everywhere,
-    import [Logic] to gain access to the [EqNotations] submodule and
-    import [Setoid] to generalize the [rewrite] tactic. *)
+    import [Logic] to gain access to the [EqNotations] submodule,
+    import [Setoid] to generalize the [rewrite] tactic and
+    [PArith], [NArith] and [ZArith] to
+    redefine some of the numeral notations. *)
 
 From Coq Require Export
   Logic.StrictProp.
@@ -47,6 +49,8 @@ From Coq Require Import
   Init.Logic.
 From Coq Require Import
   Setoids.Setoid.
+From Coq Require Import
+  PArith.PArith NArith.NArith ZArith.ZArith.
 
 (** We export the [rew] notations to use them like a transport lemma. *)
 
@@ -122,6 +126,20 @@ Notation "'{' x '!' P '}'" := (Ssig (fun x : _ => P)) : type_scope.
 Notation "'{' x ':' A '!' P '}'" := (Ssig (fun x : A => P)) : type_scope.
 
 Notation "'{_!_}'" := Ssig (only parsing) : type_scope.
+
+(** Numeral keywords are not a subset of numeral notations,
+    which is why we must repeat them here. *)
+
+Notation "'1'" := xH : positive_scope.
+
+Notation "'0'" := O : nat_scope.
+Notation "'1'" := (S O) : nat_scope.
+
+Notation "'0'" := N0 : N_scope.
+Notation "'1'" := (Npos xH) : N_scope.
+
+Notation "'0'" := Z0 : Z_scope.
+Notation "'1'" := (Zpos xH) : Z_scope.
 
 (** We do not allow automatic solution of obligations,
     because we do not want the addition or removal of hints
