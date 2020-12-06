@@ -12,7 +12,7 @@ Local Opaque "+" "*" "^" "-" "/" sqrt.
 Local Definition seq (n p : N) : list N :=
   map of_nat (seq (to_nat n) (to_nat p)).
 
-(** Triangular number function. *)
+(** Triangular number function A000217. *)
 
 Definition tri (n : N) : N :=
   (* n * (1 + n) / 2 *)
@@ -20,7 +20,7 @@ Definition tri (n : N) : N :=
 
 Arguments tri _ : assert.
 
-(** Inverse of the triangular number function, rounding down. *)
+(** Inverse of the triangular number function, rounding down, A003056. *)
 
 Definition untri (n : N) : N :=
   (* (sqrt (1 + 8 * n) - 1) / 2 *)
@@ -149,8 +149,6 @@ Proof. Admitted.
 
 Module Cantor.
 
-Module Nonalternating.
-
 Definition pair_shell (n : N) : N := untri n.
 
 Arguments pair_shell _ : assert.
@@ -181,29 +179,22 @@ Proof. cbv [prod_uncurry unpair pair]. cbn. Admitted.
 Theorem pair_unpair (n p : N) : pair (prod_uncurry unpair (n, p)) = (n, p).
 Proof. Admitted.
 
-End Nonalternating.
-
 Module Alternating.
 
 Definition pair (n : N) : N * N :=
-  let p := untri n in
-  let q := n - tri p in
-  if even p then
-  (p - q, q) else
-  (q, p - q).
+  let ((* shell *) s, (* index *) i) := untri_rem n in
+  if even s then (s - i, i) else (i, s - i).
 
 Arguments pair _ : assert.
 
 Definition unpair (n p : N) : N :=
-  let q := n + p in
-  if even q then
-  shiftr (q * (1 + q)) 1 + p else
-  shiftr (q * (1 + q)) 1 + n.
+  let s := unpair_shell n p in
+  tri s + if even s then p else n.
 
 Arguments unpair _ _ : assert.
 
-(* Compute map pair (seq 0 64).
-Compute map (prod_uncurry unpair o pair) (seq 0 64). *)
+Compute map pair (seq 0 64).
+Compute map (prod_uncurry unpair o pair) (seq 0 64).
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.
@@ -217,15 +208,13 @@ End Cantor.
 
 Module Szudzik.
 
-Module Nonalternating.
-
 Definition pair_shell (n : N) : N := sqrt n.
 
 Arguments pair_shell _ : assert.
 
 Definition pair (n : N) : N * N :=
   let (* shell *) s := pair_shell n in
-  let (* starting point *) t := s ^ 2 in
+  let (* endpoint *) t := s ^ 2 in
   let (* midpoint *) m := t + s in
   let (* remainder *) r := n - t in
   if n <? m then
@@ -240,7 +229,7 @@ Arguments unpair_shell _ _ : assert.
 
 Definition unpair (n p : N) : N :=
   let (* shell *) s := unpair_shell n p in
-  let (* starting point *) t := s ^ 2 in
+  let (* endpoint *) t := s ^ 2 in
   let (* midpoint *) m := t + n in
   if p <? n then
   t + p else
@@ -260,37 +249,36 @@ Proof. Admitted.
 Theorem pair_unpair (n p : N) : pair (prod_uncurry unpair (n, p)) = (n, p).
 Proof. Admitted.
 
-End Nonalternating.
-
 Module Alternating.
 
 Definition pair (n : N) : N * N :=
-  let q := sqrt n in
-  let r := q * q in
-  if even q then
-  if n <? q + r then
-  (q, n - r) else
-  (n - r - q, q) else
-  if n <? q + r then
-  (n - r, q) else
-  (q, n - r - q).
+  let (* shell *) s := pair_shell n in
+  let (* endpoint *) e := s ^ 2 in
+  let (* midpoint *) m := e + s in
+  let (* remainder *) r := n - e in
+  if n <? m then
+  if even s then (s, r) else (r, s) else
+  if even s then (r - s, s) else (s, r - s).
 
 Arguments pair _ : assert.
 
 Definition unpair (n p : N) : N :=
-  let q := max n p in
-  if even q then
+  let (* shell *) s := unpair_shell n p in
+  let (* endpoint *) e := s ^ 2 in
+  if even s then
+  let (* midpoint *) m := e + n in
   if p <? n then
-  n * n + p else
-  p * p + n + p else
+  e + p else
+  m + p else
+  let (* midpoint *) m := e + p in
   if n <? p then
-  p * p + n else
-  n * n + p + n.
+  e + n else
+  m + n.
 
 Arguments unpair _ _ : assert.
 
-(* Compute map pair (seq 0 64).
-Compute map (prod_uncurry unpair o pair) (seq 0 64). *)
+Compute map pair (seq 0 64).
+Compute map (prod_uncurry unpair o pair) (seq 0 64).
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.
@@ -304,18 +292,18 @@ End Szudzik.
 
 Module RosenbergStrong.
 
-Module Nonalternating.
-
 Definition pair_shell (n : N) : N := sqrt n.
 
 Arguments pair_shell _ : assert.
 
+(** We could swap to [m - n + s] if [n <= sqrt n ^ 2 + sqrt n], but nope. *)
+
 Definition pair (n : N) : N * N :=
   let (* shell *) s := pair_shell n in
-  let (* starting point *) t := s ^ 2 in
-  let (* midpoint *) m := t + s in
+  let (* endpoint *) e := s ^ 2 in
+  let (* midpoint *) m := e + s in
   if n <? m then
-  (s, n - t) else
+  (s, n - e) else
   (m + s - n, s).
 
 Arguments pair _ : assert.
@@ -324,10 +312,13 @@ Definition unpair_shell (n p : N) : N := max n p.
 
 Arguments unpair_shell _ _ : assert.
 
+(** We first do [s - n], because the lowest it can go is [0]. Optimal! *)
+
 Definition unpair (n p : N) : N :=
   let (* shell *) s := unpair_shell n p in
-  let (* starting point *) t := s ^ 2 in
-  t + s + p - n.
+  let (* endpoint *) e := s ^ 2 in
+  let (* remainder *) r := s - n in
+  r + e + p.
 
 Arguments unpair _ _ : assert.
 
@@ -343,28 +334,31 @@ Proof. Admitted.
 Theorem pair_unpair (n p : N) : pair (prod_uncurry unpair (n, p)) = (n, p).
 Proof. Admitted.
 
-End Nonalternating.
-
 Module Alternating.
 
 Definition pair (n : N) : N * N :=
-  let q := sqrt n in
-  if even q then
-  if n <? q * q + q then (q, n - q * q) else (q * q + 2 * q - n, q) else
-  if n <? q * q + q then (n - q * q, q) else (q, q * q + 2 * q - n).
+  let (* shell *) s := pair_shell n in
+  let (* endpoint *) e := s ^ 2 in
+  let (* midpoint *) m := e + s in
+  if n <? m then
+  if even s then (s, n - e) else (n - e, s) else
+  if even s then (m + s - n, s) else (s, m + s - n).
 
 Arguments pair _ : assert.
 
 Definition unpair (n p : N) : N :=
-  let q := max n p in
-  if even q then
-  q * q + q + p - n else
-  q * q + q + n - p.
+  let (* shell *) s := unpair_shell n p in
+  let (* endpoint *) e := s ^ 2 in
+  if even s then
+  let (* remainder *) r := s - n in
+  r + e + p else
+  let (* remainder *) r := s - p in
+  r + e + n.
 
 Arguments unpair _ _ : assert.
 
-(* Compute map pair (seq 0 64).
-Compute map (prod_uncurry unpair o pair) (seq 0 64). *)
+Compute map pair (seq 0 64).
+Compute map (prod_uncurry unpair o pair) (seq 0 64).
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.
@@ -380,44 +374,48 @@ Module Hyperbolic.
 
 (** Yes, but does it have a name? *)
 
-Module Nonalternating.
+(** Binary logarithm, rounding up, A029837. *)
 
-Fixpoint A029837 (n : positive) : N :=
+Fixpoint log2_up (n : positive) : N :=
   match n with
-  | xI p => succ (A029837 p)
-  | xO p => succ (A029837 p)
+  | xI p => succ (log2_up p)
+  | xO p => succ (log2_up p)
   | xH => 0
   end.
 
 Definition pair_shell (n : N) : N :=
   (* log2_up (1 + n) *)
-  A029837 (succ_pos n).
+  log2_up (succ_pos n).
 
 Arguments pair_shell _ : assert.
 
-Fixpoint A000265 (n : positive) : N :=
+(** Largest odd number to divide the given number, A000265. *)
+
+Fixpoint oddpart (n : positive) : N :=
   match n with
   | xI p => Npos n
-  | xO p => A000265 p
+  | xO p => oddpart p
   | xH => Npos n
   end.
 
-Fixpoint A007814 (n : positive) : N :=
+(** Largest power of two to divide the given number, A007814. *)
+
+Fixpoint pow2part (n : positive) : N :=
   match n with
   | xI p => 0
-  | xO p => succ (A007814 p)
+  | xO p => succ (pow2part p)
   | xH => 0
   end.
 
 Definition pair (n : N) : N * N :=
-  (* (A007814 (1 + n), (A000265 (1 + n) - 1) / 2) *)
-  (A007814 (succ_pos n), shiftr (pred (A000265 (succ_pos n))) 1).
+  (* (pow2part (1 + n), (oddpart (1 + n) - 1) / 2) *)
+  (pow2part (succ_pos n), shiftr (pred (oddpart (succ_pos n))) 1).
 
 Arguments pair _ : assert.
 
 Definition unpair_shell (n p : N) : N :=
   (* n + log2_up (1 + 2 * n) *)
-  n + A029837 (succ_pos (shiftl p 1)).
+  n + log2_up (succ_pos (shiftl p 1)).
 
 Arguments unpair_shell _ _ : assert.
 
@@ -438,36 +436,5 @@ Proof. Admitted.
 
 Theorem pair_unpair (n p : N) : pair (prod_uncurry unpair (n, p)) = (n, p).
 Proof. Admitted.
-
-End Nonalternating.
-
-Module Alternating.
-
-Definition pair (n : N) : N * N :=
-  let q := sqrt n in
-  if even q then
-  if n <? q * q + q then (q, n - q * q) else (q * q + 2 * q - n, q) else
-  if n <? q * q + q then (n - q * q, q) else (q, q * q + 2 * q - n).
-
-Arguments pair _ : assert.
-
-Definition unpair (n p : N) : N :=
-  let q := max n p in
-  if even q then
-  q * q + q + p - n else
-  q * q + q + n - p.
-
-Arguments unpair _ _ : assert.
-
-(* Compute map pair (seq 0 64).
-Compute map (prod_uncurry unpair o pair) (seq 0 64). *)
-
-Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
-Proof. Admitted.
-
-Theorem pair_unpair (n p : N) : pair (prod_uncurry unpair (n, p)) = (n, p).
-Proof. Admitted.
-
-End Alternating.
 
 End Hyperbolic.
