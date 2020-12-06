@@ -28,11 +28,41 @@ Definition untri (n : N) : N :=
 
 Arguments untri _ : assert.
 
+Lemma tri_succ (n : N) : tri (succ n) = succ n + tri n.
+Proof.
+  cbv [tri].
+  repeat rewrite <- div2_spec.
+  repeat rewrite div2_div.
+  repeat rewrite <- add_1_l.
+  rewrite (add_assoc 1 1 n).
+  rewrite (add_1_l 1).
+  rewrite <- two_succ.
+  rewrite (mul_add_distr_l (1 + n) 2 n).
+  rewrite (div_add_l (1 + n) 2 ((1 + n) * n)).
+  - rewrite (mul_comm (1 + n) n). reflexivity.
+  - rewrite two_succ. apply (neq_succ_0 1). Qed.
+
 Theorem untri_tri (n : N) : untri (tri n) = n.
 Proof.
   induction n as [| p eip] using peano_ind.
-  - auto.
-  - cbv [untri tri] in *. Admitted.
+  - reflexivity.
+  - rewrite <- eip at 2. clear eip.
+    rewrite (tri_succ p).
+    cbv [tri untri].
+    repeat rewrite shiftl_mul_pow2.
+    repeat rewrite <- div2_spec.
+    repeat rewrite div2_div.
+    repeat rewrite <- add_1_l.
+    repeat rewrite <- sub_1_r.
+    repeat rewrite <- sqrtrem_sqrt.
+    repeat match goal with
+    | |- context [sqrtrem ?n] =>
+      let x := fresh in pose proof sqrtrem_spec n as x;
+      let e := fresh in destruct (sqrtrem n) eqn : e;
+      destruct x
+    end.
+    cbn in *.
+    Admitted.
 
 Theorem tri_untri (n : N) : tri (untri n) <= n.
 Proof. Admitted.
@@ -94,13 +124,18 @@ Compute map (untri_error o tri) (seq 0 32).
 Compute map (option_map tri o untri_error) (seq 0 32).
 Compute (filter is_Some o map (option_map tri o untri_error)) (seq 0 32). *)
 
-(** Inverse of the triangular number function, with remainder. *)
+(** Inverse of the triangular number function, with remainder.
+
+    The remainder is easily derived from [n - tri q]
+    by eliminating variables via [sqrtrem_spec] and [div_eucl_spec]. *)
 
 Definition untri_rem (n : N) : N * N :=
-  (* let (* quotient *) q := (sqrt (1 + 8 * n) - 1) / 2 in
-  (q, n - tri q) *)
-  let q := shiftr (pred (sqrt (succ (shiftl n 3)))) 1 in
-  (q, n - tri q).
+  (* let ((* square root *) s, (* remains *) r) := sqrtrem (1 + 8 * n) in
+  let ((* quotient *) q, (* remainder *) e) := div_eucl (s - 1) 2 in
+  (q, (r + (2 * s - 1) * e) / 8) *)
+  let (s, r) := sqrtrem (succ (shiftl n 3)) in
+  let (q, e) := div_eucl (pred s) 2 in
+  (q, shiftr (r + pred (shiftl s 1) * e) 3).
 
 Compute map (prod_uncurry (add o tri) o untri_rem) (seq 0 32).
 Compute map untri_rem (seq 0 32).
@@ -116,8 +151,7 @@ Module Cantor.
 
 Module Nonalternating.
 
-Definition pair_shell (n : N) : N :=
-  untri n.
+Definition pair_shell (n : N) : N := untri n.
 
 Arguments pair_shell _ : assert.
 
@@ -127,14 +161,11 @@ Definition pair (n : N) : N * N :=
 
 Arguments pair _ : assert.
 
-Definition unpair_shell (n p : N) : N :=
-  n + p.
+Definition unpair_shell (n p : N) : N := n + p.
 
 Arguments unpair_shell _ _ : assert.
 
-Definition unpair (n p : N) : N :=
-  let (* shell *) s := n + p in
-  s * (1 + s) / 2 + p.
+Definition unpair (n p : N) : N := tri (unpair_shell n p) + p.
 
 Arguments unpair _ _ : assert.
 
@@ -188,13 +219,12 @@ Module Szudzik.
 
 Module Nonalternating.
 
-Definition pair_shell (n : N) : N :=
-  sqrt n.
+Definition pair_shell (n : N) : N := sqrt n.
 
 Arguments pair_shell _ : assert.
 
 Definition pair (n : N) : N * N :=
-  let (* shell *) s := sqrt n in
+  let (* shell *) s := pair_shell n in
   let (* starting point *) t := s ^ 2 in
   let (* midpoint *) m := t + s in
   let (* remainder *) r := n - t in
@@ -204,13 +234,12 @@ Definition pair (n : N) : N * N :=
 
 Arguments pair _ : assert.
 
-Definition unpair_shell (n p : N) : N :=
-  max n p.
+Definition unpair_shell (n p : N) : N := max n p.
 
 Arguments unpair_shell _ _ : assert.
 
 Definition unpair (n p : N) : N :=
-  let (* shell *) s := max n p in
+  let (* shell *) s := unpair_shell n p in
   let (* starting point *) t := s ^ 2 in
   let (* midpoint *) m := t + n in
   if p <? n then
@@ -277,13 +306,12 @@ Module RosenbergStrong.
 
 Module Nonalternating.
 
-Definition pair_shell (n : N) : N :=
-  sqrt n.
+Definition pair_shell (n : N) : N := sqrt n.
 
 Arguments pair_shell _ : assert.
 
 Definition pair (n : N) : N * N :=
-  let (* shell *) s := sqrt n in
+  let (* shell *) s := pair_shell n in
   let (* starting point *) t := s ^ 2 in
   let (* midpoint *) m := t + s in
   if n <? m then
@@ -292,13 +320,12 @@ Definition pair (n : N) : N * N :=
 
 Arguments pair _ : assert.
 
-Definition unpair_shell (n p : N) : N :=
-  max n p.
+Definition unpair_shell (n p : N) : N := max n p.
 
 Arguments unpair_shell _ _ : assert.
 
 Definition unpair (n p : N) : N :=
-  let (* shell *) s := max n p in
+  let (* shell *) s := unpair_shell n p in
   let (* starting point *) t := s ^ 2 in
   t + s + p - n.
 
@@ -363,7 +390,7 @@ Fixpoint A029837 (n : positive) : N :=
   end.
 
 Definition pair_shell (n : N) : N :=
-  (* ceil (log2 (1 + n)) *)
+  (* log2_up (1 + n) *)
   A029837 (succ_pos n).
 
 Arguments pair_shell _ : assert.
@@ -389,14 +416,14 @@ Definition pair (n : N) : N * N :=
 Arguments pair _ : assert.
 
 Definition unpair_shell (n p : N) : N :=
-  (* n + ceil (log2 (1 + 2 * n)) *)
+  (* n + log2_up (1 + 2 * n) *)
   n + A029837 (succ_pos (shiftl p 1)).
 
 Arguments unpair_shell _ _ : assert.
 
 Definition unpair (n p : N) : N :=
   (* 2 ^ n * (2 * p + 1) - 1 *)
-  pred (shiftl 1 n * (succ (shiftl p 1))).
+  pred (shiftl 1 n * succ (shiftl p 1)).
 
 Arguments unpair _ _ : assert.
 
