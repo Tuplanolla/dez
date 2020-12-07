@@ -35,7 +35,8 @@ Fixpoint odd_part (n : positive) : N :=
   | xH => Npos n
   end.
 
-(** Largest power of two to divide the given number, A007814. *)
+(** Largest power of two to divide the given number, A007814.
+    Returns the power itself. *)
 
 Fixpoint pow2_part (n : positive) : N :=
   match n with
@@ -43,6 +44,10 @@ Fixpoint pow2_part (n : positive) : N :=
   | xO p => succ (pow2_part p)
   | xH => 0
   end.
+
+Lemma odd_part_pow2_part (n : positive) :
+  odd_part n = Npos n / 2 ^ pow2_part n.
+Proof. Admitted.
 
 (** Analogous to [div_eucl] and [sqrtrem]
     in the sense of "maximum with remainder". *)
@@ -89,13 +94,10 @@ Proof.
   - left. apply even_spec. assumption.
   - right. rewrite add_1_l. rewrite even_succ. apply odd_spec. assumption. Qed.
 
-Lemma succ_mod (n p : N) (l : succ n < p) : succ n mod p = succ n.
+Lemma succ_mod (n p : N) (l : 1 < n) : (succ p) mod n = succ (p mod n) mod n.
 Proof.
-  generalize dependent p. induction n as [| q eiq] using peano_ind; intros p e.
-  - repeat rewrite <- add_1_l in *.
-    rewrite add_0_r. rewrite mod_1_l by lia. lia.
-  - repeat rewrite <- add_1_l in *.
-    Admitted.
+  arithmetize.
+  rewrite add_mod by lia. rewrite mod_1_l by lia. reflexivity. Qed.
 
 Lemma tri_div2_mul2 (n : N) : 2 * (n * (1 + n) / 2) = n * (1 + n).
 Proof.
@@ -107,7 +109,11 @@ Proof.
   assert (e : n mod 2 = 0 \/ n mod 2 = 1).
   induction n as [| p eip] using peano_ind. left. reflexivity.
   destruct eip as [ei | ei].
-  right. Admitted.
+  right. rewrite succ_mod by lia. rewrite ei. reflexivity.
+  left. rewrite succ_mod by lia. rewrite ei. reflexivity.
+  destruct e as [e | e].
+  rewrite e. reflexivity.
+  rewrite e. reflexivity. Qed.
 
 Lemma tri_succ (n : N) : tri (succ n) = succ n + tri n.
 Proof.
@@ -145,6 +151,17 @@ Proof.
     repeat rewrite mul_1_l.
     repeat rewrite add_assoc.
     replace (1 + 8) with 9 by lia.
+    repeat rewrite (mul_comm _ 8).
+    replace 8 with (4 * 2) by lia.
+    repeat rewrite <- mul_assoc.
+    replace (p + p * p) with (p * (1 + p)) by lia.
+    rewrite tri_div2_mul2.
+    repeat rewrite mul_add_distr_l.
+    repeat rewrite mul_assoc.
+    repeat rewrite add_assoc.
+    replace (9 + 4 * 2 * p + 4 * p * 1 + 4 * p * p)
+    with (9 + 12 * p + 4 * p * p) by lia.
+    replace (1 + 4 * p * 1 + 4 * p * p) with (1 + 4 * p + 4 * p * p) by lia.
     Admitted.
 
 Theorem tri_untri (n : N) : tri (untri n) <= n.
@@ -504,53 +521,5 @@ Proof.
 
 Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
 Proof. Admitted.
-
-Module Compact.
-
-Definition pair_shell (n : N) : N :=
-  (* log2_down (1 + n) *)
-  log2_down (succ_pos n).
-
-Arguments pair_shell _ : assert.
-
-Definition pair (n : N) : N * N :=
-  (* (pow2_part (1 + n), (odd_part (1 + n) - 1) / 2) *)
-  let g := pair_shell n in
-  let kg := g in
-  (pow2_part (succ_pos n),
-    (modulo (odd_part (succ_pos n)) (2 ^ (1 + kg)) - 1) / 2).
-
-Arguments pair _ : assert.
-
-Definition unpair_shell (p q : N) : N :=
-  (* log2_down (1 + 2 * q) + p *)
-  log2_down (succ_pos (shiftl q 1)) + p.
-
-Arguments unpair_shell _ _ : assert.
-
-Definition unpair (p q : N) : N :=
-  (* (1 + 2 * q) * 2 ^ p - 1 *)
-  let g := unpair_shell p q in
-  let kg := g in
-  (2 ^ (1 + kg) * (succ q - 1) +
-    modulo (2 * succ p + 1) (2 ^ (1 + kg))) * 2 ^ g - 1.
-
-Arguments unpair _ _ : assert.
-
-Compute map pair (seq 0 64).
-Compute map (prod_uncurry unpair o pair) (seq 0 64).
-
-Compute map pair_shell (seq 0 64).
-Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
-
-Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
-Proof.
-  cbv [prod_uncurry unpair pair]. arithmetize. cbn.
-  rewrite mul_1_l. Admitted.
-
-Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
-Proof. Admitted.
-
-End Compact.
 
 End Hyperbolic.
