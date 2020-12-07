@@ -1,13 +1,60 @@
 From Coq Require Import
   Lia Lists.List NArith.NArith.
 From Maniunfold.Provides Require Export
-  OptionTheorems.
+  OptionTheorems ProductTheorems.
 
 Import ListNotations N.
 
 Local Open Scope N_scope.
 
 Local Opaque "+" "*" "^" "-" "/" sqrt.
+
+(** Binary logarithm, rounding down, A000523. *)
+
+Fixpoint log2_down (n : positive) : N :=
+  match n with
+  | xI p => succ (log2_down p)
+  | xO p => succ (log2_down p)
+  | xH => 0
+  end.
+
+(** Binary logarithm, rounding up, A029837. *)
+
+Definition log2_up (n : positive) : N :=
+  match peanoView n with
+  | PeanoOne => 0
+  | PeanoSucc p _ => succ (log2_down p)
+  end.
+
+(** Largest odd number to divide the given number, A000265. *)
+
+Fixpoint odd_part (n : positive) : N :=
+  match n with
+  | xI p => Npos n
+  | xO p => odd_part p
+  | xH => Npos n
+  end.
+
+(** Largest power of two to divide the given number, A007814. *)
+
+Fixpoint pow2_part (n : positive) : N :=
+  match n with
+  | xI p => 0
+  | xO p => succ (pow2_part p)
+  | xH => 0
+  end.
+
+(** Analogous to [div_eucl] and [sqrtrem]
+    in the sense of "maximum with remainder". *)
+
+Local Definition minmax (n p : N) : N * N :=
+  prod_sort_by leb (n, p).
+
+Local Lemma minmax_spec (n p : N) :
+  let (q, r) := minmax n p in
+  n <= p /\ q = n /\ r = p \/
+  p <= n /\ q = p /\ r = n.
+Proof. cbv [minmax prod_sort_by]. destruct (leb_spec n p); lia. Qed.
 
 Local Definition seq (n p : N) : list N :=
   map of_nat (seq (to_nat n) (to_nat p)).
@@ -28,12 +75,43 @@ Definition untri (n : N) : N :=
 
 Arguments untri _ : assert.
 
+Ltac arithmetize :=
+  repeat rewrite <- div2_spec;
+  repeat rewrite div2_div;
+  repeat rewrite shiftl_mul_pow2;
+  repeat rewrite <- add_1_l;
+  repeat rewrite <- sub_1_r.
+
+Lemma tri_subterm_Even (n : N) : Even (n * (1 + n)).
+Proof.
+  apply even_spec. rewrite even_mul. apply Bool.orb_true_intro.
+  destruct (Even_or_Odd n) as [E | E].
+  - left. apply even_spec. assumption.
+  - right. rewrite add_1_l. rewrite even_succ. apply odd_spec. assumption. Qed.
+
+Lemma succ_mod (n p : N) (l : succ n < p) : succ n mod p = succ n.
+Proof.
+  generalize dependent p. induction n as [| q eiq] using peano_ind; intros p e.
+  - repeat rewrite <- add_1_l in *.
+    rewrite add_0_r. rewrite mod_1_l by lia. lia.
+  - repeat rewrite <- add_1_l in *.
+    Admitted.
+
+Lemma tri_div2_mul2 (n : N) : 2 * (n * (1 + n) / 2) = n * (1 + n).
+Proof.
+  rewrite <- (add_0_r (2 * (_ / 2))).
+  replace 0 with (n * (1 + n) mod 2).
+  rewrite <- div_mod. reflexivity. lia.
+  rewrite mul_add_distr_l. rewrite mul_1_r.
+  rewrite add_mod by lia. rewrite mul_mod by lia.
+  assert (e : n mod 2 = 0 \/ n mod 2 = 1).
+  induction n as [| p eip] using peano_ind. left. reflexivity.
+  destruct eip as [ei | ei].
+  right. Admitted.
+
 Lemma tri_succ (n : N) : tri (succ n) = succ n + tri n.
 Proof.
-  cbv [tri].
-  repeat rewrite <- div2_spec.
-  repeat rewrite div2_div.
-  repeat rewrite <- add_1_l.
+  cbv [tri]. arithmetize.
   rewrite (add_assoc 1 1 n).
   rewrite (add_1_l 1).
   rewrite <- two_succ.
@@ -48,20 +126,25 @@ Proof.
   - reflexivity.
   - rewrite <- eip at 2. clear eip.
     rewrite (tri_succ p).
-    cbv [tri untri].
-    repeat rewrite shiftl_mul_pow2.
-    repeat rewrite <- div2_spec.
-    repeat rewrite div2_div.
-    repeat rewrite <- add_1_l.
-    repeat rewrite <- sub_1_r.
-    repeat rewrite <- sqrtrem_sqrt.
-    repeat match goal with
-    | |- context [sqrtrem ?n] =>
-      let x := fresh in pose proof sqrtrem_spec n as x;
-      let e := fresh in destruct (sqrtrem n) eqn : e;
-      destruct x
-    end.
-    cbn in *.
+    cbv [tri untri]. arithmetize.
+    rewrite <- (div_add_l 1 2 _) by lia.
+    rewrite mul_1_l.
+    rewrite add_sub_assoc.
+    2:{ apply sqrt_le_square.
+    match goal with
+    | |- _ <= 1 + ?x => let n := fresh in set (n := x)
+    end. lia. }
+    rewrite (add_comm 2 _).
+    rewrite <- add_sub_assoc by lia.
+    replace (2 - 1) with 1 by lia.
+    rewrite (add_comm _ 1).
+    replace (2 ^ 3) with 8 by admit.
+    repeat rewrite mul_add_distr_r.
+    repeat rewrite mul_add_distr_l.
+    repeat rewrite mul_1_r.
+    repeat rewrite mul_1_l.
+    repeat rewrite add_assoc.
+    replace (1 + 8) with 9 by lia.
     Admitted.
 
 Theorem tri_untri (n : N) : tri (untri n) <= n.
@@ -129,13 +212,19 @@ Compute (filter is_Some o map (option_map tri o untri_error)) (seq 0 32). *)
     The remainder is easily derived from [n - tri q]
     by eliminating variables via [sqrtrem_spec] and [div_eucl_spec]. *)
 
+(** Addition and multiplication are equally fast wrt both argument sizes,
+    but we pretend the first one should be smaller and "more constant".
+    Usually the choice is obvious,
+    but here [r <= e * (2 * s - 1)] by a very slim margin
+    (approaching 0 %, but from above). *)
+
 Definition untri_rem (n : N) : N * N :=
   (* let ((* square root *) s, (* remains *) r) := sqrtrem (1 + 8 * n) in
   let ((* quotient *) q, (* remainder *) e) := div_eucl (s - 1) 2 in
-  (q, (r + (2 * s - 1) * e) / 8) *)
+  (q, (r + e * (2 * s - 1)) / 8) *)
   let (s, r) := sqrtrem (succ (shiftl n 3)) in
   let (q, e) := div_eucl (pred s) 2 in
-  (q, shiftr (r + pred (shiftl s 1) * e) 3).
+  (q, shiftr (r + e * pred (shiftl s 1)) 3).
 
 Compute map (prod_uncurry (add o tri) o untri_rem) (seq 0 32).
 Compute map untri_rem (seq 0 32).
@@ -154,16 +243,20 @@ Definition pair_shell (n : N) : N := untri n.
 Arguments pair_shell _ : assert.
 
 Definition pair (n : N) : N * N :=
-  let ((* shell *) s, (* index *) i) := untri_rem n in
+  let ((* shell *) s, (* index in shell *) i) := untri_rem n in
   (s - i, i).
 
 Arguments pair _ : assert.
 
-Definition unpair_shell (n p : N) : N := n + p.
+Definition unpair_shell (p q : N) : N := p + q.
 
 Arguments unpair_shell _ _ : assert.
 
-Definition unpair (n p : N) : N := tri (unpair_shell n p) + p.
+Definition unpair (p q : N) : N :=
+  let (* shell *) s := p + q in
+  let (* index in shell *) i := q in
+  let (* endpoint *) e := tri s in
+  i + e.
 
 Arguments unpair _ _ : assert.
 
@@ -176,20 +269,25 @@ Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. cbv [prod_uncurry unpair pair]. cbn. Admitted.
 
-Theorem pair_unpair (n p : N) : pair (prod_uncurry unpair (n, p)) = (n, p).
+Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
 Proof. Admitted.
 
 Module Alternating.
 
 Definition pair (n : N) : N * N :=
-  let ((* shell *) s, (* index *) i) := untri_rem n in
-  if even s then (s - i, i) else (i, s - i).
+  let ((* shell *) s, (* index in shell *) i) := untri_rem n in
+  let (* continuation *) c := (s - i, i) in
+  (if even s then id else prod_swap) c.
 
 Arguments pair _ : assert.
 
-Definition unpair (n p : N) : N :=
-  let s := unpair_shell n p in
-  tri s + if even s then p else n.
+Definition unpair (p q : N) : N :=
+  let (* shell *) s := p + q in
+  let (* continuation *) c (p q : N) :=
+    let (* index in shell *) i := q in
+    let (* endpoint *) e := tri s in
+    i + e in
+  (if even s then id else flip) c p q.
 
 Arguments unpair _ _ : assert.
 
@@ -199,7 +297,7 @@ Compute map (prod_uncurry unpair o pair) (seq 0 64).
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.
 
-Theorem pair_unpair (n p : N) : pair (prod_uncurry unpair (n, p)) = (n, p).
+Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
 Proof. Admitted.
 
 End Alternating.
@@ -213,27 +311,26 @@ Definition pair_shell (n : N) : N := sqrt n.
 Arguments pair_shell _ : assert.
 
 Definition pair (n : N) : N * N :=
-  let (* shell *) s := pair_shell n in
-  let (* endpoint *) t := s ^ 2 in
-  let (* midpoint *) m := t + s in
-  let (* remainder *) r := n - t in
+  let ((* square root *) s, (* remains *) r) := sqrtrem n in
+  let (* endpoint of shell *) e := n - r in
+  let (* endpoint of leg *) m := s + e in
   if n <? m then
   (s, r) else
   (r - s, s).
 
 Arguments pair _ : assert.
 
-Definition unpair_shell (n p : N) : N := max n p.
+Definition unpair_shell (p q : N) : N := max p q.
 
 Arguments unpair_shell _ _ : assert.
 
-Definition unpair (n p : N) : N :=
-  let (* shell *) s := unpair_shell n p in
-  let (* endpoint *) t := s ^ 2 in
-  let (* midpoint *) m := t + n in
-  if p <? n then
-  t + p else
-  m + p.
+Definition unpair (p q : N) : N :=
+  let ((* index in leg *) i, (* shell *) s) := minmax p q in
+  let (* endpoint of shell *) e := s ^ 2 in
+  let (* endpoint of leg *) m := i + e in
+  if q <? p then
+  i + e else
+  s + m.
 
 Arguments unpair _ _ : assert.
 
@@ -246,34 +343,32 @@ Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.
 
-Theorem pair_unpair (n p : N) : pair (prod_uncurry unpair (n, p)) = (n, p).
+Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
 Proof. Admitted.
 
 Module Alternating.
 
 Definition pair (n : N) : N * N :=
-  let (* shell *) s := pair_shell n in
-  let (* endpoint *) e := s ^ 2 in
-  let (* midpoint *) m := e + s in
-  let (* remainder *) r := n - e in
-  if n <? m then
-  if even s then (s, r) else (r, s) else
-  if even s then (r - s, s) else (s, r - s).
+  let ((* square root *) s, (* remains *) r) := sqrtrem n in
+  let (* endpoint of shell *) e := n - r in
+  let (* endpoint of leg *) m := s + e in
+  let (* continuation *) c :=
+    if n <? m then
+    (s, r) else
+    (r - s, s) in
+  (if even s then id else prod_swap) c.
 
 Arguments pair _ : assert.
 
-Definition unpair (n p : N) : N :=
-  let (* shell *) s := unpair_shell n p in
-  let (* endpoint *) e := s ^ 2 in
-  if even s then
-  let (* midpoint *) m := e + n in
-  if p <? n then
-  e + p else
-  m + p else
-  let (* midpoint *) m := e + p in
-  if n <? p then
-  e + n else
-  m + n.
+Definition unpair (p q : N) : N :=
+  let ((* index in leg *) i, (* shell *) s) := minmax p q in
+  let (* endpoint of shell *) e := s ^ 2 in
+  let (* endpoint of leg *) m := i + e in
+  let (* continuation *) c (p q : N) :=
+    if q <? p then
+    i + e else
+    s + m in
+  (if even s then id else flip) c p q.
 
 Arguments unpair _ _ : assert.
 
@@ -283,7 +378,7 @@ Compute map (prod_uncurry unpair o pair) (seq 0 64).
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.
 
-Theorem pair_unpair (n p : N) : pair (prod_uncurry unpair (n, p)) = (n, p).
+Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
 Proof. Admitted.
 
 End Alternating.
@@ -296,29 +391,28 @@ Definition pair_shell (n : N) : N := sqrt n.
 
 Arguments pair_shell _ : assert.
 
-(** We could swap to [m - n + s] if [n <= sqrt n ^ 2 + sqrt n], but nope. *)
+(** We could swap to [m - n + s] if [n <= sqrt n ^ 2 + sqrt n], but nope.
+    Also [m + (s - n)], but nope. *)
 
 Definition pair (n : N) : N * N :=
-  let (* shell *) s := pair_shell n in
-  let (* endpoint *) e := s ^ 2 in
-  let (* midpoint *) m := e + s in
+  let ((* square root *) s, (* remains *) r) := sqrtrem n in
+  let (* endpoint of shell *) e := n - r in
+  let (* endpoint of leg *) m := s + e in
   if n <? m then
   (s, n - e) else
-  (m + s - n, s).
+  (s + m - n, s).
 
 Arguments pair _ : assert.
 
-Definition unpair_shell (n p : N) : N := max n p.
+Definition unpair_shell (p q : N) : N := max p q.
 
 Arguments unpair_shell _ _ : assert.
 
-(** We first do [s - n], because the lowest it can go is [0]. Optimal! *)
-
-Definition unpair (n p : N) : N :=
-  let (* shell *) s := unpair_shell n p in
-  let (* endpoint *) e := s ^ 2 in
-  let (* remainder *) r := s - n in
-  r + e + p.
+Definition unpair (p q : N) : N :=
+  let ((* index in leg *) i, (* shell *) s) := minmax p q in
+  let (* endpoint of shell *) e := s ^ 2 in
+  let (* endpoint of leg *) m := s + e in
+  m - p + q.
 
 Arguments unpair _ _ : assert.
 
@@ -331,29 +425,30 @@ Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.
 
-Theorem pair_unpair (n p : N) : pair (prod_uncurry unpair (n, p)) = (n, p).
+Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
 Proof. Admitted.
 
 Module Alternating.
 
 Definition pair (n : N) : N * N :=
-  let (* shell *) s := pair_shell n in
-  let (* endpoint *) e := s ^ 2 in
-  let (* midpoint *) m := e + s in
-  if n <? m then
-  if even s then (s, n - e) else (n - e, s) else
-  if even s then (m + s - n, s) else (s, m + s - n).
+  let ((* square root *) s, (* remains *) r) := sqrtrem n in
+  let (* endpoint of shell *) e := n - r in
+  let (* endpoint of leg *) m := s + e in
+  let (* continuation *) c :=
+    if n <? m then
+    (s, n - e) else
+    (s + m - n, s) in
+  (if even s then id else prod_swap) c.
 
 Arguments pair _ : assert.
 
-Definition unpair (n p : N) : N :=
-  let (* shell *) s := unpair_shell n p in
-  let (* endpoint *) e := s ^ 2 in
-  if even s then
-  let (* remainder *) r := s - n in
-  r + e + p else
-  let (* remainder *) r := s - p in
-  r + e + n.
+Definition unpair (p q : N) : N :=
+  let ((* index in leg *) i, (* shell *) s) := minmax p q in
+  let (* endpoint of shell *) e := s ^ 2 in
+  let (* endpoint of leg *) m := s + e in
+  let (* continuation *) c (p q : N) :=
+    m - p + q in
+  (if even s then id else flip) c p q.
 
 Arguments unpair _ _ : assert.
 
@@ -363,7 +458,7 @@ Compute map (prod_uncurry unpair o pair) (seq 0 64).
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.
 
-Theorem pair_unpair (n p : N) : pair (prod_uncurry unpair (n, p)) = (n, p).
+Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
 Proof. Admitted.
 
 End Alternating.
@@ -372,56 +467,27 @@ End RosenbergStrong.
 
 Module Hyperbolic.
 
-(** Yes, but does it have a name? *)
-
-(** Binary logarithm, rounding up, A029837. *)
-
-Fixpoint log2_up (n : positive) : N :=
-  match n with
-  | xI p => succ (log2_up p)
-  | xO p => succ (log2_up p)
-  | xH => 0
-  end.
-
 Definition pair_shell (n : N) : N :=
-  (* log2_up (1 + n) *)
-  log2_up (succ_pos n).
+  (* log2_down (1 + n) *)
+  log2_down (succ_pos n).
 
 Arguments pair_shell _ : assert.
 
-(** Largest odd number to divide the given number, A000265. *)
-
-Fixpoint oddpart (n : positive) : N :=
-  match n with
-  | xI p => Npos n
-  | xO p => oddpart p
-  | xH => Npos n
-  end.
-
-(** Largest power of two to divide the given number, A007814. *)
-
-Fixpoint pow2part (n : positive) : N :=
-  match n with
-  | xI p => 0
-  | xO p => succ (pow2part p)
-  | xH => 0
-  end.
-
 Definition pair (n : N) : N * N :=
-  (* (pow2part (1 + n), (oddpart (1 + n) - 1) / 2) *)
-  (pow2part (succ_pos n), shiftr (pred (oddpart (succ_pos n))) 1).
+  (* (pow2_part (1 + n), (odd_part (1 + n) - 1) / 2) *)
+  (pow2_part (succ_pos n), shiftr (pred (odd_part (succ_pos n))) 1).
 
 Arguments pair _ : assert.
 
-Definition unpair_shell (n p : N) : N :=
-  (* n + log2_up (1 + 2 * n) *)
-  n + log2_up (succ_pos (shiftl p 1)).
+Definition unpair_shell (p q : N) : N :=
+  (* log2_down (1 + 2 * q) + p *)
+  log2_down (succ_pos (shiftl q 1)) + p.
 
 Arguments unpair_shell _ _ : assert.
 
-Definition unpair (n p : N) : N :=
-  (* 2 ^ n * (2 * p + 1) - 1 *)
-  pred (shiftl 1 n * succ (shiftl p 1)).
+Definition unpair (p q : N) : N :=
+  (* (1 + 2 * q) * 2 ^ p - 1 *)
+  pred (succ (shiftl q 1) * shiftl 1 p).
 
 Arguments unpair _ _ : assert.
 
@@ -432,9 +498,59 @@ Compute map pair_shell (seq 0 64).
 Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
+Proof.
+  cbv [prod_uncurry unpair pair]. arithmetize. cbn.
+  rewrite mul_1_l. Admitted.
+
+Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
 Proof. Admitted.
 
-Theorem pair_unpair (n p : N) : pair (prod_uncurry unpair (n, p)) = (n, p).
+Module Compact.
+
+Definition pair_shell (n : N) : N :=
+  (* log2_down (1 + n) *)
+  log2_down (succ_pos n).
+
+Arguments pair_shell _ : assert.
+
+Definition pair (n : N) : N * N :=
+  (* (pow2_part (1 + n), (odd_part (1 + n) - 1) / 2) *)
+  let g := pair_shell n in
+  let kg := g in
+  (pow2_part (succ_pos n),
+    (modulo (odd_part (succ_pos n)) (2 ^ (1 + kg)) - 1) / 2).
+
+Arguments pair _ : assert.
+
+Definition unpair_shell (p q : N) : N :=
+  (* log2_down (1 + 2 * q) + p *)
+  log2_down (succ_pos (shiftl q 1)) + p.
+
+Arguments unpair_shell _ _ : assert.
+
+Definition unpair (p q : N) : N :=
+  (* (1 + 2 * q) * 2 ^ p - 1 *)
+  let g := unpair_shell p q in
+  let kg := g in
+  (2 ^ (1 + kg) * (succ q - 1) +
+    modulo (2 * succ p + 1) (2 ^ (1 + kg))) * 2 ^ g - 1.
+
+Arguments unpair _ _ : assert.
+
+Compute map pair (seq 0 64).
+Compute map (prod_uncurry unpair o pair) (seq 0 64).
+
+Compute map pair_shell (seq 0 64).
+Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
+
+Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
+Proof.
+  cbv [prod_uncurry unpair pair]. arithmetize. cbn.
+  rewrite mul_1_l. Admitted.
+
+Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
 Proof. Admitted.
+
+End Compact.
 
 End Hyperbolic.
