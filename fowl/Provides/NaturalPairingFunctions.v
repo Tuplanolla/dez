@@ -1,7 +1,7 @@
 From Coq Require Import
   Lia Lists.List NArith.NArith.
 From Maniunfold.Provides Require Export
-  OptionTheorems ProductTheorems.
+  OptionTheorems ProductTheorems TriangularNumbers.
 
 Import ListNotations N.
 
@@ -63,195 +63,6 @@ Proof. cbv [minmax prod_sort_by]. destruct (leb_spec n p); lia. Qed.
 
 Local Definition seq (n p : N) : list N :=
   map of_nat (seq (to_nat n) (to_nat p)).
-
-(** Triangular number function A000217. *)
-
-Definition tri (n : N) : N :=
-  (* n * (1 + n) / 2 *)
-  shiftr (n * succ n) 1.
-
-Arguments tri _ : assert.
-
-(** Inverse of the triangular number function, rounding down, A003056. *)
-
-Definition untri (n : N) : N :=
-  (* (sqrt (1 + 8 * n) - 1) / 2 *)
-  shiftr (pred (sqrt (succ (shiftl n 3)))) 1.
-
-Arguments untri _ : assert.
-
-Ltac arithmetize :=
-  repeat rewrite <- div2_spec;
-  repeat rewrite div2_div;
-  repeat rewrite shiftl_mul_pow2;
-  repeat rewrite <- add_1_l;
-  repeat rewrite <- sub_1_r.
-
-Lemma tri_subterm_Even (n : N) : Even (n * (1 + n)).
-Proof.
-  apply even_spec. rewrite even_mul. apply Bool.orb_true_intro.
-  destruct (Even_or_Odd n) as [E | E].
-  - left. apply even_spec. assumption.
-  - right. rewrite add_1_l. rewrite even_succ. apply odd_spec. assumption. Qed.
-
-Lemma succ_mod (n p : N) (l : 1 < n) : (succ p) mod n = succ (p mod n) mod n.
-Proof.
-  arithmetize.
-  rewrite add_mod by lia. rewrite mod_1_l by lia. reflexivity. Qed.
-
-Lemma tri_div2_mul2 (n : N) : 2 * (n * (1 + n) / 2) = n * (1 + n).
-Proof.
-  rewrite <- (add_0_r (2 * (_ / 2))).
-  replace 0 with (n * (1 + n) mod 2).
-  rewrite <- div_mod. reflexivity. lia.
-  rewrite mul_add_distr_l. rewrite mul_1_r.
-  rewrite add_mod by lia. rewrite mul_mod by lia.
-  assert (e : n mod 2 = 0 \/ n mod 2 = 1).
-  induction n as [| p eip] using peano_ind. left. reflexivity.
-  destruct eip as [ei | ei].
-  right. rewrite succ_mod by lia. rewrite ei. reflexivity.
-  left. rewrite succ_mod by lia. rewrite ei. reflexivity.
-  destruct e as [e | e].
-  rewrite e. reflexivity.
-  rewrite e. reflexivity. Qed.
-
-Lemma tri_succ (n : N) : tri (succ n) = succ n + tri n.
-Proof.
-  cbv [tri]. arithmetize.
-  rewrite (add_assoc 1 1 n).
-  rewrite (add_1_l 1).
-  rewrite <- two_succ.
-  rewrite (mul_add_distr_l (1 + n) 2 n).
-  rewrite (div_add_l (1 + n) 2 ((1 + n) * n)).
-  - rewrite (mul_comm (1 + n) n). reflexivity.
-  - rewrite two_succ. apply (neq_succ_0 1). Qed.
-
-Theorem untri_tri (n : N) : untri (tri n) = n.
-Proof.
-  induction n as [| p eip] using peano_ind.
-  - reflexivity.
-  - rewrite <- eip at 2. clear eip.
-    rewrite (tri_succ p).
-    cbv [tri untri]. arithmetize.
-    rewrite <- (div_add_l 1 2 _) by lia.
-    rewrite mul_1_l.
-    rewrite add_sub_assoc.
-    2:{ apply sqrt_le_square.
-    match goal with
-    | |- _ <= 1 + ?x => let n := fresh in set (n := x)
-    end. lia. }
-    rewrite (add_comm 2 _).
-    rewrite <- add_sub_assoc by lia.
-    replace (2 - 1) with 1 by lia.
-    rewrite (add_comm _ 1).
-    replace (2 ^ 3) with 8 by admit.
-    repeat rewrite mul_add_distr_r.
-    repeat rewrite mul_add_distr_l.
-    repeat rewrite mul_1_r.
-    repeat rewrite mul_1_l.
-    repeat rewrite add_assoc.
-    replace (1 + 8) with 9 by lia.
-    repeat rewrite (mul_comm _ 8).
-    replace 8 with (4 * 2) by lia.
-    repeat rewrite <- mul_assoc.
-    replace (p + p * p) with (p * (1 + p)) by lia.
-    rewrite tri_div2_mul2.
-    repeat rewrite mul_add_distr_l.
-    repeat rewrite mul_assoc.
-    repeat rewrite add_assoc.
-    replace (9 + 4 * 2 * p + 4 * p * 1 + 4 * p * p)
-    with (9 + 12 * p + 4 * p * p) by lia.
-    replace (1 + 4 * p * 1 + 4 * p * p) with (1 + 4 * p + 4 * p * p) by lia.
-    Admitted.
-
-Theorem tri_untri (n : N) : tri (untri n) <= n.
-Proof. Admitted.
-
-(** Inverse of the triangular number function, partial. *)
-
-Definition untri_error (n : N) : option N :=
-  (* let ((* square root *) s, (* remains *) r) := sqrtrem (1 + 8 * n) in
-  if r =? 0 then Some ((s - 1) / 2) else None *)
-  let (s, r) := sqrtrem (succ (shiftl n 3)) in
-  if r =? 0 then Some (shiftr (pred s) 1) else None.
-
-Arguments untri_error _ : assert.
-
-Lemma tri_untri_error_succ (n : N) :
-  option_map tri (untri_error (succ n)) =
-  option_map (succ o tri) (untri_error n).
-Proof. Admitted.
-
-Theorem untri_error_tri (n : N) : untri_error (tri n) = Some n.
-Proof.
-  induction n as [| p eip] using peano_ind.
-  - auto.
-  - cbv [untri_error tri] in *.
-    repeat match goal with
-    | |- context [sqrtrem ?x] => destruct (sqrtrem x) as [ss sr]
-    | _ : context [sqrtrem ?x] |- _ => destruct (sqrtrem x) as [s r]
-    end.
-    repeat match goal with
-    | |- context [?x =? ?y] => destruct (eqb_spec x y) as [esp | fsp]
-    | _ : context [?x =? ?y] |- _ => destruct (eqb_spec x y) as [ep | fp]
-    end.
-    + injection eip; clear eip; intros eip.
-      f_equal. admit.
-    + inversion eip.
-    + injection eip; clear eip; intros eip.
-      exfalso. apply fsp; clear fsp. admit.
-    + inversion eip. Admitted.
-
-Theorem tri_untri_error (n p : N)
-  (e : option_map tri (untri_error n) = Some p) :
-  n = p.
-Proof.
-  generalize dependent p.
-  induction n as [| i ei] using peano_ind; intros p enp.
-  - cbn in enp. injection enp. auto.
-  - rewrite tri_untri_error_succ in enp. rewrite option_map_compose in enp.
-    rewrite (ei (pred p)).
-    try match goal with
-    | _ : context [?x =? ?y] |- _ => destruct (eqb_spec x y) as [e | f]
-    end.
-    cbv [option_map] in enp. destruct (untri_error i) eqn : e.
-    + injection enp; clear enp; intros enp. rewrite <- enp at 2. admit.
-    + inversion enp. Admitted.
-
-(* Compute map untri (seq 0 32).
-Compute map tri (seq 0 32).
-Compute map (untri_error o tri) (seq 0 32).
-Compute map (option_map tri o untri_error) (seq 0 32).
-Compute (filter is_Some o map (option_map tri o untri_error)) (seq 0 32). *)
-
-(** Inverse of the triangular number function, with remainder.
-
-    The remainder is easily derived from [n - tri q]
-    by eliminating variables via [sqrtrem_spec] and [div_eucl_spec]. *)
-
-(** Addition and multiplication are equally fast wrt both argument sizes,
-    but we pretend the first one should be smaller and "more constant".
-    Usually the choice is obvious,
-    but here [r <= e * (2 * s - 1)] by a very slim margin
-    (approaching 0 %, but from above). *)
-
-Definition untri_rem (n : N) : N * N :=
-  (* let ((* square root *) s, (* remains *) r) := sqrtrem (1 + 8 * n) in
-  let ((* quotient *) q, (* remainder *) e) := div_eucl (s - 1) 2 in
-  (q, (r + e * (2 * s - 1)) / 8) *)
-  let (s, r) := sqrtrem (succ (shiftl n 3)) in
-  let (q, e) := div_eucl (pred s) 2 in
-  (q, shiftr (r + e * pred (shiftl s 1)) 3).
-
-Compute map (prod_uncurry (add o tri) o untri_rem) (seq 0 32).
-Compute map untri_rem (seq 0 32).
-Compute map (untri_rem o tri) (seq 0 32).
-
-Theorem untri_rem_tri (n : N) : snd (untri_rem (tri n)) = 0.
-Proof. Admitted.
-
-Theorem tri_untri_rem (n : N) : prod_uncurry (add o tri) (untri_rem n) = n.
-Proof. Admitted.
 
 Module Cantor.
 
@@ -523,3 +334,10 @@ Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
 Proof. Admitted.
 
 End Hyperbolic.
+
+(* Fixpoint steps (l : list (N * N)) : list N :=
+  match l with
+  | [] => []
+  | (p, q) :: ((p', q') :: _) as t => if q =? q' then steps t else p :: steps t
+  | (p, q) :: t => steps t
+  end. *)

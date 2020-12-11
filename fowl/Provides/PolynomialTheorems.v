@@ -26,6 +26,8 @@ From Maniunfold.ShouldHave Require
 From Maniunfold.ShouldOffer Require
   OneSorted.ArithmeticOperationNotations.
 
+Set Warnings "-ambiguous-paths".
+
 Generalizable All Variables.
 
 Section more_merge.
