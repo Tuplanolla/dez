@@ -327,8 +327,7 @@ Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof.
-  cbv [prod_uncurry unpair pair]. arithmetize. cbn.
-  rewrite mul_1_l. Admitted.
+  cbv [prod_uncurry unpair pair]. arithmetize. cbn. Admitted.
 
 Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
 Proof. Admitted.
