@@ -1,9 +1,12 @@
+(** A generating function for triangular numbers and
+    three variations of its inverse. *)
+
 From Coq Require Import
   Lia Lists.List NArith.NArith.
 From Maniunfold.Provides Require Export
   OptionTheorems ProductTheorems.
 
-Import ListNotations N.
+Import N.
 
 Local Open Scope N_scope.
 
@@ -37,27 +40,118 @@ Ltac arithmetize :=
   (** Eliminate [_ ^ 1]. *)
   repeat rewrite pow_1_r in *;
   (** Eliminate [0 ^ _]. *)
-  repeat rewrite pow_0_r in *.
+  repeat rewrite pow_0_r in *;
+  (** Compute constants (wrong). *)
+  repeat match goal with
+  | |- context [Npos ?n + Npos ?p] =>
+    let f := fresh in set (f := Npos n + Npos p); cbv in f; subst f
+  | |- context [Npos ?n * Npos ?p] =>
+    let f := fresh in set (f := Npos n * Npos p); cbv in f; subst f
+  | |- context [pow (Npos ?n) (Npos ?p)] =>
+    let f := fresh in set (f := pow (Npos n) (Npos p)); cbv in f; subst f
+  end;
+  (** Commute constants to the appropriate side (wrong). *)
+  repeat match goal with
+  | |- context [?n + Npos ?p] =>
+    let f := fresh in pose proof (add_comm n (Npos p)) as f; rewrite f; clear f
+  | |- context [?n * Npos ?p] =>
+    let f := fresh in pose proof (mul_comm n (Npos p)) as f; rewrite f; clear f
+  end.
 
-Local Definition seq (n p : N) : list N :=
-  map of_nat (seq (to_nat n) (to_nat p)).
+(** A specialization of [seq] for [positive]. *)
 
-(** Triangular number function, sequence A000217. *)
+Fixpoint Pos_seq (n : positive) (p : nat) : list positive :=
+  match p with
+  | O => nil
+  | S q => n :: Pos_seq (Pos.succ n) q
+  end.
+
+(** A specialization of [seq] for [N]. *)
+
+Fixpoint N_seq (n : N) (p : nat) : list N :=
+  match p with
+  | O => nil
+  | S q => n :: N_seq (succ n) q
+  end.
+
+(** Case analysis for the remainder of division by two. *)
+
+Lemma lt_2_cases (n : N) (l : n < 2) : n = 0 \/ n = 1.
+Proof. lia. Qed.
+
+(** A richer specification for [div_eucl].
+    Analogous in structure to [sqrtrem_spec]. *)
+
+Lemma div_eucl_spec' (n p : N) :
+  let (q, r) := div_eucl n p in n = p * q + r /\ (p <> 0 -> r < p).
+Proof.
+  destruct n as [| n'], p as [| p']; cbv [div_eucl] in *; try lia.
+  pose proof pos_div_eucl_spec n' (pos p') as en'p'.
+  pose proof pos_div_eucl_remainder n' (pos p') as ln'p'.
+  destruct (pos_div_eucl n' (pos p')) as [q r]; cbv [snd] in *; lia. Qed.
+
+(** What it means to be even or odd. *)
+
+Lemma factor_even_odd (n : N) : exists p : N, n = 2 * p \/ n = 1 + 2 * p.
+Proof.
+  induction n as [| q ei] using peano_ind.
+  - exists 0. lia.
+  - arithmetize. destruct ei as [r [e | e]].
+    + exists (q / 2). subst q. right.
+      replace (2 * r) with (r * 2) by lia.
+      rewrite div_mul by lia. lia.
+    + exists ((1 + q) / 2). subst q. left.
+      replace (1 + (1 + 2 * r)) with (2 * (1 + r)) by lia.
+      replace (2 * (1 + r)) with ((1 + r) * 2) by lia.
+      rewrite div_mul by lia. lia. Qed.
+
+(** Generating function.
+    Sequence A000217. *)
 
 Definition tri (n : N) : N :=
-  (* n * (1 + n) / 2 *)
   shiftr (n * succ n) 1.
 
 Arguments tri _ : assert.
 
-(** Inverse of the triangular number function, rounding down, A003056. *)
+Lemma tri_eqn (n : N) : tri n =
+  n * (1 + n) / 2.
+Proof. cbv [tri]. arithmetize. reflexivity. Qed.
+
+(** Inverse of generating function, rounding down.
+    Sequence A003056. *)
 
 Definition untri (n : N) : N :=
-  (* (sqrt (1 + 8 * n) - 1) / 2 *)
   shiftr (pred (sqrt (succ (shiftl n 3)))) 1.
 
 Arguments untri _ : assert.
 
+Lemma untri_eqn (n : N) : untri n =
+  (sqrt (1 + 8 * n) - 1) / 2.
+Proof. cbv [untri]. arithmetize. reflexivity. Qed.
+
+(** Inverse of generating function, rounding up. *)
+
+Definition untri_up (n : N) : N :=
+  match n with
+  | N0 => 0
+  | Npos p => succ (untri (Pos.pred_N p))
+  end.
+
+Arguments untri_up _ : assert.
+
+Lemma untri_up_eqn (n : N) : untri_up n =
+  if n =? 0 then 0 else 1 + (sqrt (1 + 8 * (n - 1)) - 1) / 2.
+Proof.
+  destruct (eqb_spec n 0) as [e | f].
+  - rewrite e. cbv [untri_up]. reflexivity.
+  - destruct n as [| p].
+    + contradiction.
+    + cbv [untri_up]. rewrite pos_pred_spec. arithmetize.
+      rewrite untri_eqn. reflexivity. Qed.
+
+Set Warnings "-unsupported-attributes".
+
+#[bad]
 Lemma tri_subterm_Even (n : N) : Even (n * (1 + n)).
 Proof.
   apply even_spec. rewrite even_mul. apply Bool.orb_true_intro.
@@ -65,11 +159,13 @@ Proof.
   - left. apply even_spec. assumption.
   - right. rewrite add_1_l. rewrite even_succ. apply odd_spec. assumption. Qed.
 
+#[bad]
 Lemma succ_mod (n p : N) (l : 1 < n) : (succ p) mod n = succ (p mod n) mod n.
 Proof.
   arithmetize.
   rewrite add_mod by lia. rewrite mod_1_l by lia. reflexivity. Qed.
 
+#[bad]
 Lemma tri_div2_mul2 (n : N) : 2 * (n * (1 + n) / 2) = n * (1 + n).
 Proof.
   rewrite <- (add_0_r (2 * (_ / 2))).
@@ -96,6 +192,14 @@ Proof.
   rewrite (div_add_l (1 + n) 2 ((1 + n) * n)).
   - rewrite (mul_comm (1 + n) n). reflexivity.
   - rewrite two_succ. apply (neq_succ_0 1). Qed.
+
+Lemma tri_pred (n : N) : tri (pred n) = tri n - n.
+Proof.
+  destruct n as [| p _] using peano_ind.
+  - reflexivity.
+  - rewrite (pred_succ p). rewrite (tri_succ p).
+    rewrite (add_comm (succ p) (tri p)). rewrite (add_sub (tri p) (succ p)).
+    reflexivity. Qed.
 
 Theorem untri_tri (n : N) : untri (tri n) = n.
 Proof.
@@ -135,59 +239,78 @@ Proof.
     replace (1 + 4 * p * 1 + 4 * p * p) with (1 + 4 * p + 4 * p * p) by lia.
     Admitted.
 
+Theorem untri_up_tri (n : N) : untri_up (tri n) = n.
+Proof.
+  destruct (tri n) as [| p] eqn : en.
+  - cbv [untri_up tri] in *. arithmetize.
+    apply (mul_cancel_l _ _ 2) in en; [| lia].
+    rewrite (tri_div2_mul2 _) in en. lia.
+  - cbv [untri_up]. rewrite pos_pred_spec. rewrite <- en.
+    pose proof tri_succ (pred n) as e.
+    assert (ex : tri n = succ (pred n + tri (pred n))). admit.
+    rewrite ex. rewrite pred_succ. rewrite tri_pred. Admitted.
+
 Theorem tri_untri (n : N) : tri (untri n) <= n.
 Proof. Admitted.
 
-(** Inverse of the triangular number function, with remainder.
-
-    The remainder is easily derived from [n - tri q]
-    by eliminating variables via [sqrtrem_spec] and [div_eucl_spec]. *)
+Theorem tri_untri_up (n : N) : n <= tri (untri_up n).
+Proof. Admitted.
 
 (** Addition and multiplication are equally fast wrt both argument sizes,
     but we pretend the first one should be smaller and "more constant".
     Usually the choice is obvious,
     but here [r <= e * (2 * s - 1)] by a very slim margin
-    (approaching 0 %, but from above). *)
+    (approaching 0 % from above). *)
+
+(** Inverse of generating function, with a remainder.
+
+    The remainder can be derived from [n - tri (untri n)]
+    by eliminating variables via [sqrtrem_spec] and [div_eucl_spec]. *)
 
 Definition untri_rem (n : N) : N * N :=
-  (* let ((* square root *) s, (* remains *) r) := sqrtrem (1 + 8 * n) in
-  let ((* quotient *) q, (* remainder *) e) := div_eucl (s - 1) 2 in
-  (q, (r + e * (2 * s - 1)) / 8) *)
   let (s, r) := sqrtrem (succ (shiftl n 3)) in
   let (q, e) := div_eucl (pred s) 2 in
   (q, shiftr (r + e * pred (shiftl s 1)) 3).
 
-Lemma div_eucl_spec' (n p : N) :
-  let (q, r) := div_eucl n p in n = p * q + r /\ (p <> 0 -> r < p).
-Proof.
-  destruct n as [| n'], p as [| p']; cbv [div_eucl] in *; try lia.
-  pose proof pos_div_eucl_spec n' (pos p') as en'p'.
-  pose proof pos_div_eucl_remainder n' (pos p') as ln'p'.
-  destruct (pos_div_eucl n' (pos p')) as [q r]; cbv [snd] in *; lia. Qed.
+(** Replace [sqrtrem] with its specification. *)
 
-Lemma lt_2 (n : N) (l : n < 2) : n = 0 \/ n = 1.
-Proof. lia. Qed.
+Ltac destruct_sqrtrem :=
+  match goal with
+  | |- context [let (a, b) := sqrtrem ?x in _] =>
+    let fa := fresh a in let fb := fresh b in
+    let faab := fresh "a" fa fb in pose proof sqrtrem_spec x as faab;
+    let fe := fresh "e" fa fb in destruct (sqrtrem x) as [fa fb] eqn : fe;
+    let fen := fresh "en" fa fb in let fl := fresh "l" fa fb in
+    destruct faab as [fen fl]
+  end.
+
+(** Replace [div_eucl] with its specification. *)
+
+Ltac destruct_div_eucl :=
+  match goal with
+  | |- context [let (a, b) := div_eucl ?x ?y in _] =>
+    let fa := fresh a in let fb := fresh b in
+    let faab := fresh "a" fa fb in pose proof div_eucl_spec' x y as faab;
+    let fe := fresh "e" fa fb in destruct (div_eucl x y) as [fa fb] eqn : fe;
+    let fen := fresh "en" fa fb in let fl := fresh "l" fa fb in
+    destruct faab as [fen fl]
+  end.
+
+Lemma untri_rem_eqn (n : N) : untri_rem n =
+  let ((* square root *) s, (* remains *) r) := sqrtrem (1 + 8 * n) in
+  let ((* quotient *) q, (* remainder *) e) := div_eucl (s - 1) 2 in
+  (q, (r + e * (2 * s - 1)) / 8).
+Proof.
+  cbv [untri_rem]. arithmetize. destruct_sqrtrem.
+  arithmetize. destruct_div_eucl. arithmetize. f_equal. Qed.
 
 Theorem untri_rem_tri (n : N) : untri_rem (tri n) = (n, 0).
 Proof.
-  cbv [untri_rem tri].
-  match goal with
-  | |- context [let (a, b) := sqrtrem ?x in _] =>
-    let fa := fresh "a" a b in pose proof sqrtrem_spec x as fa;
-    let fe := fresh "e" a b in destruct (sqrtrem x) as [a b] eqn : fe;
-    let fen := fresh "en" a b in let fl := fresh "l" a b in
-    destruct fa as [fen fl]
-  end.
-  match goal with
-  | |- context [let (a, b) := div_eucl ?x ?y in _] =>
-    let fa := fresh "a" a b in pose proof div_eucl_spec' x y as fa;
-    let fe := fresh "e" a b in destruct (div_eucl x y) as [a b] eqn : fe;
-    let fen := fresh "en" a b in let fl := fresh "l" a b in
-    destruct fa as [fen fl]
-  end.
-  arithmetize.
+  rewrite untri_rem_eqn.
+  destruct_sqrtrem.
+  destruct_div_eucl.
   specialize (lqe ltac:(lia)).
-  pose proof (lt_2 e lqe) as oe.
+  pose proof (lt_2_cases e lqe) as oe.
   clear lqe.
   destruct oe as [e0 | e1]; subst e.
   - f_equal.
@@ -215,36 +338,30 @@ Proof.
 
 Theorem tri_untri_rem (n : N) : prod_uncurry (add o tri) (untri_rem n) = n.
 Proof.
-  cbv [prod_uncurry compose tri untri_rem].
-  match goal with
-  | |- context [let (a, b) := sqrtrem ?x in _] =>
-    let fa := fresh "a" a b in pose proof sqrtrem_spec x as fa;
-    let fe := fresh "e" a b in destruct (sqrtrem x) as [a b] eqn : fe;
-    let fen := fresh "en" a b in let fl := fresh "l" a b in
-    destruct fa as [fen fl]
-  end.
-  match goal with
-  | |- context [let (a, b) := div_eucl ?x ?y in _] =>
-    let fa := fresh "a" a b in pose proof div_eucl_spec' x y as fa;
-    let fe := fresh "e" a b in destruct (div_eucl x y) as [a b] eqn : fe;
-    let fen := fresh "en" a b in let fl := fresh "l" a b in
-    destruct fa as [fen fl]
-  end.
+  cbv [prod_uncurry compose].
+  rewrite tri_eqn.
+  rewrite untri_rem_eqn.
+  destruct_sqrtrem.
+  destruct_div_eucl.
   cbv [fst snd].
-  arithmetize.
   specialize (lqe ltac:(lia)).
-  pose proof (lt_2 e lqe) as oe.
+  pose proof (lt_2_cases e lqe) as oe.
   clear lqe. Admitted.
 
-(** Inverse of the triangular number function, partial. *)
+(** Inverse of generating function, partial. *)
 
 Definition untri_error (n : N) : option N :=
-  (* let ((* square root *) s, (* remains *) r) := sqrtrem (1 + 8 * n) in
-  if r =? 0 then Some ((s - 1) / 2) else None *)
   let (s, r) := sqrtrem (succ (shiftl n 3)) in
   if r =? 0 then Some (shiftr (pred s) 1) else None.
 
 Arguments untri_error _ : assert.
+
+Lemma untri_error_eqn (n : N) : untri_error n =
+  let ((* square root *) s, (* remains *) r) := sqrtrem (1 + 8 * n) in
+  if r =? 0 then Some ((s - 1) / 2) else None.
+Proof.
+  cbv [untri_error]. arithmetize. destruct_sqrtrem.
+  arithmetize. reflexivity. Qed.
 
 Lemma tri_untri_error_succ (n : N) :
   option_map tri (untri_error (succ n)) =
@@ -271,22 +388,8 @@ Proof.
       exfalso. apply fsp; clear fsp. admit.
     + inversion eip. Admitted.
 
-Lemma factor_even_odd (n : N) : exists p : N, n = 2 * p \/ n = 1 + 2 * p.
-Proof.
-  induction n as [| q ei] using peano_ind.
-  - exists 0. lia.
-  - destruct ei as [r [e | e]].
-    + exists (q / 2). subst q. right.
-      replace (2 * r) with (r * 2) by lia.
-      rewrite div_mul by lia. lia.
-    + exists ((1 + q) / 2). subst q. left.
-      replace (1 + (1 + 2 * r)) with (2 * (1 + r)) by lia.
-      replace (2 * (1 + r)) with ((1 + r) * 2) by lia.
-      rewrite div_mul by lia. lia. Qed.
-
 Theorem tri_untri_error (n p : N)
-  (e : option_map tri (untri_error n) = Some p) :
-  n = p.
+  (e : option_map tri (untri_error n) = Some p) : n = p.
 Proof.
   generalize dependent p.
   induction n as [| i ei] using peano_ind; intros p enp.
@@ -301,13 +404,7 @@ Proof.
         arithmetize. rewrite enp. lia.
       * inversion enp.
     + cbv [tri untri_error] in *.
-      match goal with
-      | |- context [let (a, b) := sqrtrem ?x in _] =>
-        let fa := fresh "a" a b in pose proof sqrtrem_spec x as fa;
-        let fe := fresh "e" a b in destruct (sqrtrem x) as [a b] eqn : fe;
-        let fen := fresh "en" a b in let fl := fresh "l" a b in
-        destruct fa as [fen fl]
-      end.
+      destruct_sqrtrem.
       destruct (eqb_spec r 0) as [e | f].
       * cbv [option_map] in *. f_equal. arithmetize.
         assert (enp' : (1 + (s - 1) / 2 * (1 + (s - 1) / 2) / 2) = p)
