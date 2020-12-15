@@ -10,6 +10,67 @@ Import N.
 
 Local Open Scope N_scope.
 
+(** An experiment in tactical number theory! *)
+
+Ltac reduce_1 p0 f :=
+  match goal with
+  | |- context c [f ?x] => p0 x;
+    match eval cbv in (f x) with
+    | ?q => let r := context c [q] in change r
+    end
+  | h : context c [f ?x ?y] |- _ => p0 x;
+    match eval cbv in (f x y) with
+    | ?q => let r := context c [q] in change r in h
+    end
+  end.
+
+Ltac reduce_2 p0 p1 f :=
+  match goal with
+  | |- context c [f ?x ?y] => p0 x; p1 y;
+    match eval cbv in (f x y) with
+    | ?q => let r := context c [q] in change r
+    end
+  | h : context c [f ?x ?y] |- _ => p0 x; p1 y;
+    match eval cbv in (f x y) with
+    | ?q => let r := context c [q] in change r in h
+    end
+  end.
+
+Ltac commute_2_0 p f e :=
+  match goal with
+  | |- context c [f ?x ?y] => assert_fails (idtac; p x); p y;
+    let r := context c [f y x] in
+    let f := fresh in enough (f : r) by (rewrite (e x y); exact f)
+  | h : context c [f ?x ?y] |- _ => assert_fails (idtac; p x); p y;
+    let r := context c [f y x] in
+    let f := fresh in rewrite (e x y) in h
+  end.
+
+Ltac commute_2_1 p f e :=
+  match goal with
+  | |- context c [f ?x ?y] => p x; assert_fails (idtac; p y);
+    let r := context c [f y x] in
+    let f := fresh in enough (f : r) by (rewrite (e x y); exact f)
+  | h : context c [f ?x ?y] |- _ => p x; assert_fails (idtac; p y);
+    let r := context c [f y x] in
+    let f := fresh in rewrite (e x y) in h
+  end.
+
+Ltac is_positive n :=
+  match n with
+  | xI ?p => is_positive p
+  | xO ?p => is_positive p
+  | xH => idtac
+  | _ => fail "Not a value"
+  end.
+
+Ltac is_N n :=
+  match n with
+  | N0 => idtac
+  | Npos ?p => is_positive p
+  | _ => fail "Not a value"
+  end.
+
 Ltac arithmetize :=
   (** Eliminate [shiftl 0 _]. *)
   repeat rewrite shiftl_0_l in *;
@@ -41,22 +102,17 @@ Ltac arithmetize :=
   repeat rewrite pow_1_r in *;
   (** Eliminate [0 ^ _]. *)
   repeat rewrite pow_0_r in *;
-  (** Compute constants (wrong). *)
-  repeat match goal with
-  | |- context [Npos ?n + Npos ?p] =>
-    let f := fresh in set (f := Npos n + Npos p); cbv in f; subst f
-  | |- context [Npos ?n * Npos ?p] =>
-    let f := fresh in set (f := Npos n * Npos p); cbv in f; subst f
-  | |- context [pow (Npos ?n) (Npos ?p)] =>
-    let f := fresh in set (f := pow (Npos n) (Npos p)); cbv in f; subst f
-  end;
-  (** Commute constants to the appropriate side (wrong). *)
-  repeat match goal with
-  | |- context [?n + Npos ?p] =>
-    let f := fresh in pose proof (add_comm n (Npos p)) as f; rewrite f; clear f
-  | |- context [?n * Npos ?p] =>
-    let f := fresh in pose proof (mul_comm n (Npos p)) as f; rewrite f; clear f
-  end.
+  (** Reduce [succ], [_ + _], [_ * _], [_ ^ _], [pred], [_ - _] and [_ / _]. *)
+  repeat reduce_1 is_N succ;
+  repeat reduce_2 is_N is_N add;
+  repeat reduce_2 is_N is_N mul;
+  repeat reduce_2 is_N is_N pow;
+  repeat reduce_1 is_N pred;
+  repeat reduce_2 is_N is_N sub;
+  repeat reduce_2 is_N is_N div;
+  (** Commute [_ + _] and [_ * _]. *)
+  repeat commute_2_0 is_N add add_comm;
+  repeat commute_2_0 is_N mul mul_comm.
 
 (** A specialization of [seq] for [positive]. *)
 
@@ -219,7 +275,6 @@ Proof.
     rewrite <- add_sub_assoc by lia.
     replace (2 - 1) with 1 by lia.
     rewrite (add_comm _ 1).
-    replace (2 ^ 3) with 8 by admit.
     repeat rewrite mul_add_distr_r.
     repeat rewrite mul_add_distr_l.
     repeat rewrite mul_1_r.
