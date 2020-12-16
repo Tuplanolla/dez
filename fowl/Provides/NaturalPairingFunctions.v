@@ -230,7 +230,7 @@ Definition pair (n : N) : N * N :=
   let (* endpoint of shell *) e := n - r in
   let (* endpoint of leg *) m := s + e in
   if n <? m then
-  (s, n - e) else
+  (s, r) else
   (s + m - n, s).
 
 Arguments pair _ : assert.
@@ -267,7 +267,7 @@ Definition pair (n : N) : N * N :=
   let (* endpoint of leg *) m := s + e in
   let (* continuation *) c :=
     if n <? m then
-    (s, n - e) else
+    (s, r) else
     (s + m - n, s) in
   (if even s then id else prod_swap) c.
 
