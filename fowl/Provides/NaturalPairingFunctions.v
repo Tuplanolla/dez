@@ -390,6 +390,34 @@ Proof.
   - admit.
   - admit. Admitted.
 
+(** TODO This is bad, but works. *)
+
+Module Alternating.
+
+Definition pair (n : N) : N * N :=
+  let (* shell *) s := pair_shell n in
+  let (* endpoint of shell *) e := pred (shiftl 1 s) in
+  let (* index in shell *) i := n - e in
+  if even s then pair n else pair (e + (e - i)).
+
+Arguments pair _ : assert.
+
+Definition unpair (p q : N) : N :=
+  prod_uncurry Hyperbolic.unpair (pair (Hyperbolic.unpair p q)).
+
+Arguments unpair _ _ : assert.
+
+Compute map pair (N_seq 0 64).
+Compute map (prod_uncurry unpair o pair) (N_seq 0 64).
+
+Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
+Proof. Admitted.
+
+Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
+Proof. Admitted.
+
+End Alternating.
+
 End Hyperbolic.
 
 (* Fixpoint steps (l : list (N * N)) : list N :=
