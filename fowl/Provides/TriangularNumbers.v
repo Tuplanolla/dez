@@ -10,51 +10,496 @@ Import N.
 
 Local Open Scope N_scope.
 
-(** An experiment in tactical number theory! *)
+(* TODO Move this tactical mess elsewhere. *)
+
+(** Reduce a call to the given [1]-parameter function
+    in the goal and hypotheses.
+    The call to the function [f] is only reduced when
+    the argument at index [0]
+    satisfies the tactical predicate [p0]. *)
 
 Ltac reduce_1 p0 f :=
   match goal with
-  | |- context c [f ?x] => p0 x;
-    match eval cbv in (f x) with
-    | ?q => let r := context c [q] in change r
+  | |- context c [f ?x0] =>
+    p0 x0;
+    let a := context c [f x0] in
+    match eval cbv in (f x0) with
+    | ?y => let b := context c [y] in
+      change a with b
     end
-  | h : context c [f ?x ?y] |- _ => p0 x;
-    match eval cbv in (f x y) with
-    | ?q => let r := context c [q] in change r in h
+  | h : context c [f ?x0] |- _ =>
+    p0 x0;
+    let a := context c [f x0] in
+    match eval cbv in (f x0) with
+    | ?y => let b := context c [y] in
+      change a with b in h
     end
   end.
+
+(** Reduce a call to the given [2]-parameter function
+    in the goal and hypotheses.
+    The call to the function [f] is only reduced when
+    the arguments at indexes [0] and [1]
+    satisfy the tactical predicates [p0] and [p1]. *)
 
 Ltac reduce_2 p0 p1 f :=
   match goal with
-  | |- context c [f ?x ?y] => p0 x; p1 y;
-    match eval cbv in (f x y) with
-    | ?q => let r := context c [q] in change r
+  | |- context c [f ?x0 ?x1] =>
+    p0 x0; p1 x1;
+    let a := context c [f x0 x1] in
+    match eval cbv in (f x0 x1) with
+    | ?y => let b := context c [y] in
+      change a with b
     end
-  | h : context c [f ?x ?y] |- _ => p0 x; p1 y;
-    match eval cbv in (f x y) with
-    | ?q => let r := context c [q] in change r in h
+  | h : context c [f ?x0 ?x1] |- _ =>
+    p0 x0; p1 x1;
+    let a := context c [f x0 x1] in
+    match eval cbv in (f x0 x1) with
+    | ?y => let b := context c [y] in
+      change a with b in h
     end
   end.
 
-Ltac commute_2_0 p f e :=
+(** Reduce a call to the given [3]-parameter function
+    in the goal and hypotheses.
+    The call to the function [f] is only reduced when
+    the arguments at indexes [0], [1] and [2]
+    satisfy the tactical predicates [p0], [p1] and [p2]. *)
+
+Ltac reduce_3 p0 p1 p2 f :=
   match goal with
-  | |- context c [f ?x ?y] => assert_fails (idtac; p x); p y;
-    let r := context c [f y x] in
-    let f := fresh in enough (f : r) by (rewrite (e x y); exact f)
-  | h : context c [f ?x ?y] |- _ => assert_fails (idtac; p x); p y;
-    let r := context c [f y x] in
-    let f := fresh in rewrite (e x y) in h
+  | |- context c [f ?x0 ?x1 ?x2] =>
+    p0 x0; p1 x1; p2 x2;
+    let a := context c [f x0 x1 x2] in
+    match eval cbv in (f x0 x1 x2) with
+    | ?y => let b := context c [y] in
+      change a with b
+    end
+  | h : context c [f ?x0 ?x1 ?x2] |- _ =>
+    p0 x0; p1 x1; p2 x2;
+    let a := context c [f x0 x1 x2] in
+    match eval cbv in (f x0 x1 x2) with
+    | ?y => let b := context c [y] in
+      change a with b in h
+    end
   end.
 
-Ltac commute_2_1 p f e :=
+(** The tactics from [reduce_4] onwards can be defined analogously. *)
+
+Ltac reduce_4 p0 p1 p2 p3 f :=
+  fail "Not implemented".
+
+(** Sort the arguments of a call to the given [2]-parameter function
+    in the goal and hypotheses, so that the argument at index [0]
+    comes first (there are no other guarantees as the ordering is partial).
+    The arguments of the function [f] are only sorted when
+    it makes the argument at the appropriate index
+    satisfy the tactical predicate [p],
+    can be justified by the equality [e] and
+    makes progress in the proof.
+    The possible outcomes are the following.
+
+    - [replace (f 0 1) with (f 0 1) by idtac]
+    - [replace (f 0 y) with (f 0 y) by idtac]
+    - [replace (f x 1) with (f 1 x)]
+      - [by rewrite comm_0_1]
+      - [by rewrite cycle_2]
+    - [replace (f x y) with (f x y) by fail] *)
+
+Ltac sort_2_0 p f e :=
   match goal with
-  | |- context c [f ?x ?y] => p x; assert_fails (idtac; p y);
-    let r := context c [f y x] in
-    let f := fresh in enough (f : r) by (rewrite (e x y); exact f)
-  | h : context c [f ?x ?y] |- _ => p x; assert_fails (idtac; p y);
-    let r := context c [f y x] in
-    let f := fresh in rewrite (e x y) in h
+  | |- context c [f ?x0 ?x1] =>
+    assert_fails (idtac; p x0); p x1;
+    let a := context c [f x0 x1] in
+    let b := context c [f x1 x0] in
+    replace a with b by (rewrite (e x0 x1); reflexivity)
+  | h : context c [f ?x0 ?x1] |- _ =>
+    assert_fails (idtac; p x0); p x1;
+    let a := context c [f x0 x1] in
+    let b := context c [f x1 x0] in
+    replace a with b in h by (rewrite (e x0 x1); reflexivity)
   end.
+
+(** Sort the arguments of a call to the given [2]-parameter function
+    in the goal and hypotheses, so that the argument at index [1]
+    comes first (there are no other guarantees as the ordering is partial).
+    The arguments of the function [f] are only sorted when
+    it makes the argument at the appropriate index
+    satisfy the tactical predicate [p],
+    can be justified by the equality [e] and
+    makes progress in the proof. *)
+
+Ltac sort_2_1 p f e :=
+  match goal with
+  | |- context c [f ?x0 ?x1] =>
+    assert_fails (idtac; p x1); p x0;
+    let a := context c [f x0 x1] in
+    let b := context c [f x1 x0] in
+    replace a with b by (rewrite (e x0 x1); reflexivity)
+  | h : context c [f ?x0 ?x1] |- _ =>
+    assert_fails (idtac; p x1); p x0;
+    let a := context c [f x0 x1] in
+    let b := context c [f x1 x0] in
+    replace a with b in h by (rewrite (e x0 x1); reflexivity)
+  end.
+
+(** Sort the arguments of a call to the given [3]-parameter function
+    in the goal and hypotheses, so that the argument at index [0]
+    comes first (there are no other guarantees as the ordering is partial).
+    The arguments of the function [f] are only sorted when
+    it makes the argument at the appropriate index
+    satisfy the tactical predicate [p],
+    can be justified by the equality [e] and
+    makes progress in the proof.
+    The possible outcomes are the following.
+
+    - [replace (f 0 1 2) with (f 0 1 2) by idtac]
+    - [replace (f 0 1 z) with (f 0 1 z) by idtac]
+    - [replace (f 0 y 2) with (f 0 y 2) by idtac]
+    - [replace (f 0 y z) with (f 0 y z) by idtac]
+    - [replace (f x 1 2)]
+      - [with (f 1 x 2) by rewrite comm_0_1]
+      - [with (f 2 1 x) by rewrite comm_0_2]
+      - [with (f 2 x 1) by rewrite cycle_3]
+      - [with (f 1 2 x) by rewrite <- cycle_3]
+    - [replace (f x 1 z)]
+      - [with (f 1 x z) by rewrite comm_0_1]
+      - [with (f 1 z x) by rewrite <- cycle_3]
+    - [replace (f x y 2)]
+      - [with (f 2 y x) by rewrite comm_0_2]
+      - [with (f 2 x y) by rewrite cycle_3]
+    - [replace (f x y z) with (f x y z) by fail] *)
+
+Ltac sort_3_0 p f e :=
+  match goal with
+  | |- context c [f ?x0 ?x1 ?x2] => first [
+    assert_fails (idtac; p x0); p x1; first [
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x1 x0 x2] in
+    replace a with b by (rewrite (e x0 x1); reflexivity) |
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x1 x2 x0] in
+    replace a with b by (rewrite <- (e x1 x2 x0); reflexivity)] |
+    assert_fails (idtac; p x0); p x2; first [
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x2 x1 x0] in
+    replace a with b by (rewrite (e x0 x1 x2); reflexivity) |
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x2 x0 x1] in
+    replace a with b by (rewrite (e x0 x1 x2); reflexivity)]]
+  | h : context c [f ?x0 ?x1 ?x2] |- _ => first [
+    assert_fails (idtac; p x0); p x1; first [
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x1 x0 x2] in
+    replace a with b in h by (rewrite (e x0 x1); reflexivity) |
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x1 x2 x0] in
+    replace a with b in h by (rewrite <- (e x1 x2 x0); reflexivity)] |
+    assert_fails (idtac; p x0); p x2; first [
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x2 x1 x0] in
+    replace a with b in h by (rewrite (e x0 x1 x2); reflexivity) |
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x2 x0 x1] in
+    replace a with b in h by (rewrite (e x0 x1 x2); reflexivity)]]
+  end.
+
+(** Sort the arguments of a call to the given [3]-parameter function
+    in the goal and hypotheses, so that the argument at index [1]
+    comes first (there are no other guarantees as the ordering is partial).
+    The arguments of the function [f] are only sorted when
+    it makes the argument at the appropriate index
+    satisfy the tactical predicate [p],
+    can be justified by the equality [e] and
+    makes progress in the proof. *)
+
+Ltac sort_3_1 p f e :=
+  match goal with
+  | |- context c [f ?x0 ?x1 ?x2] => first [
+    assert_fails (idtac; p x1); p x0; first [
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x1 x0 x2] in
+    replace a with b by (rewrite (e x0 x1); reflexivity) |
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x2 x0 x1] in
+    replace a with b by (rewrite (e x0 x1 x2); reflexivity)] |
+    assert_fails (idtac; p x1); p x2; first [
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x0 x2 x1] in
+    replace a with b by (rewrite (e x0 x1 x2); reflexivity) |
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x1 x2 x0] in
+    replace a with b by (rewrite <- (e x1 x2 x0); reflexivity)]]
+  | h : context c [f ?x0 ?x1 ?x2] |- _ => first [
+    assert_fails (idtac; p x1); p x0; first [
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x1 x0 x2] in
+    replace a with b in h by (rewrite (e x0 x1); reflexivity) |
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x2 x0 x1] in
+    replace a with b in h by (rewrite (e x0 x1 x2); reflexivity)] |
+    assert_fails (idtac; p x1); p x2; first [
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x0 x2 x1] in
+    replace a with b in h by (rewrite (e x0 x1 x2); reflexivity) |
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x1 x2 x0] in
+    replace a with b in h by (rewrite <- (e x1 x2 x0); reflexivity)]]
+  end.
+
+(** Sort the arguments of a call to the given [3]-parameter function
+    in the goal and hypotheses, so that the argument at index [2]
+    comes first (there are no other guarantees as the ordering is partial).
+    The arguments of the function [f] are only sorted when
+    it makes the argument at the appropriate index
+    satisfy the tactical predicate [p],
+    can be justified by the equality [e] and
+    makes progress in the proof. *)
+
+Ltac sort_3_2 p f e :=
+  match goal with
+  | |- context c [f ?x0 ?x1 ?x2] => first [
+    assert_fails (idtac; p x2); p x0; first [
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x2 x1 x0] in
+    replace a with b by (rewrite (e x0 x1 x2); reflexivity) |
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x1 x2 x0] in
+    replace a with b by (rewrite <- (e x1 x2 x0); reflexivity)] |
+    assert_fails (idtac; p x2); p x1; first [
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x0 x2 x1] in
+    replace a with b by (rewrite (e x0 x1 x2); reflexivity) |
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x2 x0 x1] in
+    replace a with b by (rewrite (e x0 x1 x2); reflexivity)]]
+  | h : context c [f ?x0 ?x1 ?x2] |- _ => first [
+    assert_fails (idtac; p x2); p x0; first [
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x2 x1 x0] in
+    replace a with b in h by (rewrite (e x0 x1); reflexivity) |
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x1 x2 x0] in
+    replace a with b in h by (rewrite <- (e x1 x2 x0); reflexivity)] |
+    assert_fails (idtac; p x2); p x1; first [
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x0 x2 x1] in
+    replace a with b in h by (rewrite (e x0 x1 x2); reflexivity) |
+    let a := context c [f x0 x1 x2] in
+    let b := context c [f x2 x0 x1] in
+    replace a with b in h by (rewrite (e x0 x1 x2); reflexivity)]]
+  end.
+
+(** The tactics from [sort_4_0] onwards can be defined analogously. *)
+
+Ltac sort_4_0 p f e :=
+  fail "Not implemented".
+
+Ltac sort_4_1 p f e :=
+  fail "Not implemented".
+
+Ltac sort_4_2 p f e :=
+  fail "Not implemented".
+
+Ltac sort_4_3 p f e :=
+  fail "Not implemented".
+
+(** Reassociate the arguments of two nested calls
+    to the given [2]-parameter function in the goal and hypotheses,
+    so that the arguments at the deeper level come first
+    (there are no other guarantees as the ordering is partial).
+    The arguments of the function [f] are only reassociated when
+    it makes the arguments at the appropriate indexes
+    satisfy the tactical predicate [p],
+    can be justified by the equality [e] and
+    makes progress in the proof.
+    The possible outcomes are the following.
+
+    - [replace (f (f 0 1) 2)]
+      - [with (f (f 0 1) 2) by idtac]
+      - [with (f 0 (f 1 2)) by <- assoc_2_0_1]
+    - [replace (f (f 0 1) z) with (f (f 0 1) z) by idtac]
+    - [replace (f (f 0 y) 2) with (f (f 0 y) 2) by fail]
+    - [replace (f (f 0 y) z) with (f (f 0 y) z) by fail]
+    - [replace (f (f x 1) 2) with (f x (f 1 2)) by rewrite <- assoc_2_0_1]
+    - [replace (f (f x 1) z) with (f (f x 1) z) by fail]
+    - [replace (f (f x y) 2) with (f (f x y) 2) by fail]
+    - [replace (f (f x y) z) with (f (f x y) z) by fail]
+
+    - [replace (f 0 (f 1 2))]
+      - [with (f (f 0 1) 2) by assoc_2_0_1]
+      - [with (f 0 (f 1 2)) by idtac]
+    - [replace (f 0 (f 1 z)) with (f (f 0 1) z) by rewrite assoc_2_0_1]
+    - [replace (f 0 (f y 2)) with (f 0 (f y 2)) by fail]
+    - [replace (f 0 (f y z)) with (f 0 (f y z)) by fail]
+    - [replace (f x (f 1 2)) with (f x (f 1 2)) by idtac]
+    - [replace (f x (f 1 z)) with (f x (f 1 z)) by fail]
+    - [replace (f x (f y 2)) with (f x (f y 2)) by fail]
+    - [replace (f x (f y z)) with (f x (f y z)) by fail] *)
+
+Ltac reassoc_2 p f e :=
+  fail "Not implemented".
+
+(** Reassociate the arguments of two nested calls
+    to the given [3]-parameter function in the goal and hypotheses,
+    so that the arguments at the deeper level come first
+    (there are no other guarantees as the ordering is partial).
+    The arguments of the function [f] are only reassociated when
+    it makes the arguments at the appropriate indexes
+    satisfy the tactical predicate [p],
+    can be justified by the equality [e] and
+    makes progress in the proof.
+    The possible outcomes are the following.
+
+    - [replace (f (f 0 1 2) 3 4)]
+    - [replace (f (f 0 1 2) 3 b)]
+    - [replace (f (f 0 1 2) a 4)]
+    - [replace (f (f 0 1 2) a b)]
+    - [replace (f (f 0 1 z) 3 4)]
+    - [replace (f (f 0 1 z) 3 b)]
+    - [replace (f (f 0 1 z) a 4)]
+    - [replace (f (f 0 1 z) a b)]
+    - [replace (f (f 0 y 2) 3 4)]
+    - [replace (f (f 0 y 2) 3 b)]
+    - [replace (f (f 0 y 2) a 4)]
+    - [replace (f (f 0 y 2) a b)]
+    - [replace (f (f 0 y z) 3 4)]
+    - [replace (f (f 0 y z) 3 b)]
+    - [replace (f (f 0 y z) a 4)]
+    - [replace (f (f 0 y z) a b)]
+    - [replace (f (f x 1 2) 3 4)]
+    - [replace (f (f x 1 2) 3 b)]
+    - [replace (f (f x 1 2) a 4)]
+    - [replace (f (f x 1 2) a b)]
+    - [replace (f (f x 1 z) 3 4)]
+    - [replace (f (f x 1 z) 3 b)]
+    - [replace (f (f x 1 z) a 4)]
+    - [replace (f (f x 1 z) a b)]
+    - [replace (f (f x y 2) 3 4)]
+    - [replace (f (f x y 2) 3 b)]
+    - [replace (f (f x y 2) a 4)]
+    - [replace (f (f x y 2) a b)]
+    - [replace (f (f x y z) 3 4)]
+    - [replace (f (f x y z) 3 b)]
+    - [replace (f (f x y z) a 4)]
+    - [replace (f (f x y z) a b)] *)
+
+Ltac reassoc_3 p f e :=
+  fail "Not implemented".
+
+(** The tactics from [reassoc_4] onwards can be defined analogously. *)
+
+Ltac reassoc_4 p f e :=
+  fail "Not implemented".
+
+(* TODO There is this tower of cyclicity lemmas.
+
+<<
+    cycle_1_0
+      f 0 = f 0
+    cycle_2_0              cycle_2_1
+    f 0 1 = f 0 1          f 0 1 = f 1 0
+    cycle_3_0              cycle_3_1              cycle_3_2
+  f 0 1 2 = f 0 1 2      f 0 1 2 = f 2 0 1      f 0 1 2 = f 1 2 0
+    cycle_4_0              cycle_4_1              cycle_4_2              cycle_4_3
+f 0 1 2 3 = f 0 1 2 3  f 0 1 2 3 = f 2 0 1 3  f 0 1 2 3 = f 1 2 0 3  f 0 1 2 3 = f 1 2 3 0
+>>
+
+   The first column is trivial by reflexivity and
+   every column beyond the second one can be derived from it.
+   Thus, it is enough to have [cycle_2_1], [cycle_3_1], [cycle_4_1], ... and
+   we may omit the suffix [_1] from the names.
+   The number of independent lemmas is [fun n => if n < 2 then 0 else 1].
+
+<<
+    cycle_2
+    f 0 1 = f 1 0
+    cycle_3
+  f 0 1 2 = f 2 0 1
+    cycle_4
+f 0 1 2 3 = f 3 0 1 2
+>> *)
+
+(* TODO There is this tower of commutativity lemmas.
+
+<<
+     comm_2_0_1
+    f 0 1 = f 1 0
+     comm_3_0_1             comm_3_0_2                                    comm_3_1_2
+  f 0 1 2 = f 1 0 2      f 0 1 2 = f 2 1 0                             f 0 1 2 = f 0 2 1
+     comm_4_0_1             comm_4_0_2             comm_4_0_3             comm_4_1_2             comm_4_1_3             comm_4_2_3
+f 0 1 2 3 = f 1 0 2 3  f 0 1 2 3 = f 2 1 0 3  f 0 1 2 3 = f 3 1 2 0  f 0 1 2 3 = f 0 2 1 3  f 0 1 2 3 = f 0 3 2 1  f 0 1 2 3 = f 0 1 3 2
+>>
+
+   Every lemma on each row can be derived from the span of the row.
+   The first row on each column is enough to derive the rest of the column;
+   the other direction is also true with functional extensionality.
+   Thus, it is enough to have [comm_2_0_1], [comm_3_0_2], [comm_4_0_3], ... and
+   we may omit the prefix [_n] from the names.
+   The number of independent lemmas is [fun n => if n < 2 then 0 else 1].
+
+<<
+     comm_0_1
+    f 0 1 = f 1 0
+     comm_0_2
+  f 0 1 2 = f 2 1 0
+     comm_0_3
+f 0 1 2 3 = f 3 1 2 0
+>>
+
+   With functional extensionality, we can write the tower differently,
+   although we still cannot realize the limit.
+
+<<
+     comm_0_1    comm_1_2    comm_2_3
+f 0 1 2 3 = f 1 0 2 3 = f 1 2 0 3 = f 1 2 3 0
+>> *)
+
+(* TODO There is this tower of associativity lemmas.
+
+<<
+              assoc_2_0_1
+        f (f 0 1) 2 = f 0 (f 1 2)
+              assoc_3_0_1                                assoc_3_0_2                                                                           assoc_3_1_2
+    f (f 0 1 2) 3 4 = f 0 (f 1 2 3) 4          f (f 0 1 2) 3 4 = f 0 1 (f 2 3 4)                                                     f 0 (f 1 2 3) 4 = f 0 1 (f 2 3 4)
+              assoc_4_0_1                                assoc_4_0_2                                assoc_4_0_3                                assoc_4_1_2                                assoc_4_1_3                                assoc_4_2_3
+f (f 0 1 2 3) 4 5 6 = f 0 (f 1 2 3 4) 5 6  f (f 0 1 2 3) 4 5 6 = f 0 1 (f 2 3 4 5) 6  f (f 0 1 2 3) 4 5 6 = f 0 1 2 (f 3 4 5 6)  f 0 (f 1 2 3 4) 5 6 = f 0 1 (f 2 3 4 5) 6  f 0 (f 1 2 3 4) 5 6 = f 0 1 2 (f 3 4 5 6)  f 0 1 (f 2 3 4 5) 6 = f 0 1 2 (f 3 4 5 6)
+>>
+
+   Every lemma on each row can be derived from the span of the row.
+   Thus, it is enough to have [assoc_2_0_1], [assoc_3_0_1], [assoc_3_1_2],
+   [assoc_4_0_1], [assoc_4_1_2], [assoc_4_2_3], ... and
+   we could even omit the suffix [_i] from the names (although we do not,
+   because that would make the names asymmetric and confusing).
+   The number of independent lemmas is [fun n => if n < 2 then 0 else n - 1].
+
+<<
+                                    assoc_2_0_1
+                              f (f 0 1) 2 = f 0 (f 1 2)
+                             assoc_3_0_1       assoc_3_1_2
+                   f (f 0 1 2) 3 4 = f 0 (f 1 2 3) 4 = f 0 1 (f 2 3 4)
+              assoc_4_0_1           assoc_4_1_2           assoc_4_2_3
+f (f 0 1 2 3) 4 5 6 = f 0 (f 1 2 3 4) 5 6 = f 0 1 (f 2 3 4 5) 6 = f 0 1 2 (f 3 4 5 6)
+>> *)
+
+(** Succeed when the given term is a value of type [unit]. *)
+
+Ltac is_unit t :=
+  match t with
+  | tt => idtac
+  | _ => fail "Not a value"
+  end.
+
+(** Succeed when the given term is a value of type [bool]. *)
+
+Ltac is_bool b :=
+  match b with
+  | true => idtac
+  | false => idtac
+  | _ => fail "Not a value"
+  end.
+
+(** Succeed when the given term is a value of type [positive]. *)
 
 Ltac is_positive n :=
   match n with
@@ -64,12 +509,156 @@ Ltac is_positive n :=
   | _ => fail "Not a value"
   end.
 
+(** Succeed when the given term is a value of type [N]. *)
+
 Ltac is_N n :=
   match n with
   | N0 => idtac
   | Npos ?p => is_positive p
   | _ => fail "Not a value"
   end.
+
+(** Succeed when the given term is a value of type [Z]. *)
+
+Ltac is_Z n :=
+  match n with
+  | Z0 => idtac
+  | Zpos ?p => is_positive p
+  | Zneg ?p => is_positive p
+  | _ => fail "Not a value"
+  end.
+
+(** Succeed when the given term is a value of type [option A] and
+    its subterms are values of type [A]
+    as determined by the tactical predicate [is_A]. *)
+
+Ltac is_option is_A x :=
+  match x with
+  | Some ?a => is_A a
+  | None => idtac
+  | _ => fail "Not a value"
+  end.
+
+(** Succeed when the given term is a value of type [list A] and
+    its subterms are values of type [A]
+    as determined by the tactical predicate [is_A]. *)
+
+Ltac is_list is_A x :=
+  match x with
+  | nil => idtac
+  | cons ?a ?y => is_A a; is_list is_A y
+  | _ => fail "Not a value"
+  end.
+
+(** Succeed when the given term is a value of type [A + B] and
+    its subterms are values of type [A] and [B]
+    as determined by the tactical predicates [is_A] and [is_B]. *)
+
+Ltac is_sum is_A is_B x :=
+  match x with
+  | inl ?a => is_A a
+  | inr ?b => is_B b
+  | _ => fail "Not a value"
+  end.
+
+(** Succeed when the given term is a value of type [A * B] and
+    its subterms are values of type [A] and [B]
+    as determined by the tactical predicates [is_A] and [is_B]. *)
+
+Ltac is_prod is_A is_B x :=
+  match x with
+  | pair ?a ?b => is_A a; is_B b
+  | _ => fail "Not a value"
+  end.
+
+(** Succeed when the given term is a value of type [{x : A | P x}] and
+    its subterms are values of type [x : A] and [P x]
+    as determined by the tactical predicates [is_A] and [is_P]. *)
+
+Ltac is_sig is_A is_P x :=
+  match x with
+  | exist _ ?a ?b => is_A a; is_P a b
+  | _ => fail "Not a value"
+  end.
+
+(** Succeed when the given term is a value of type [A -> B] and
+    its subterms are values of type [B]
+    as determined by the tactical predicate [is_B]. *)
+
+Ltac is_fun is_B f :=
+  match f with
+  | fun _ => ?b => is_B b
+  | _ => fail "Not a value"
+  end.
+
+(** Succeed when the given term is a value of type [forall x : A, P x] and
+    its subterms are values of type [P x]
+    as determined by the tactical predicate [is_P]. *)
+
+Ltac is_pi is_P f :=
+  match f with
+  | fun a => ?b => is_P a b
+  | _ => fail "Not a value"
+  end.
+
+(* TODO Remove this. *)
+
+(** Show off. *)
+
+Example test
+  (f : N -> N -> N -> N)
+  (co : forall x y z : N, f x y z = f y x z)
+  (co' : forall x y z : N, f x y z = f z y x)
+  (co'' : forall x y z : N, f x y z = f x z y)
+  (cy : forall x y z : N, f x y z = f z x y)
+  (n p q r : N)
+  (d' : 2 + q = 3 + 2) (d : n + 2 = p + 2)
+  (e'' : f 2 3 p = f 2 q 3) (e' : f 2 q r = f 3 q 2)
+  (e : f n 2 q = f p r 2) (e''' : f n 2 3 = f p 3 2) :
+  2 + 3 = 3 + n -> n + 2 = p + 2 -> f n 2 q = f p r 2 -> f n 2 3 = f p 3 2.
+Proof.
+  assert (cy' : forall x y z : N, f x y z = f z x y) by eauto.
+  reduce_2 is_N is_N add. reduce_2 is_N is_N add.
+  sort_2_0 is_N add add_comm. sort_2_0 is_N add add_comm.
+  sort_2_0 is_N add add_comm. sort_2_0 is_N add add_comm.
+  sort_3_1 is_N f co'' || sort_3_1 is_N f co' || sort_3_1 is_N f co.
+  sort_3_1 is_N f co'' || sort_3_1 is_N f co' || sort_3_1 is_N f co.
+  sort_3_1 is_N f co'' || sort_3_1 is_N f co' || sort_3_1 is_N f co.
+  sort_3_1 is_N f co'' || sort_3_1 is_N f co' || sort_3_1 is_N f co.
+  sort_3_1 is_N f co'' || sort_3_1 is_N f co' || sort_3_1 is_N f co.
+  Undo. Undo. Undo. Undo. Undo. Undo. Undo. Undo.
+  sort_3_0 is_N f cy. sort_3_0 is_N f cy.
+  sort_3_0 is_N f cy. sort_3_0 is_N f cy.
+  sort_3_0 is_N f cy. sort_3_0 is_N f cy.
+  sort_3_0 is_N f cy. sort_3_0 is_N f cy.
+  sort_3_1 is_N f co. sort_3_1 is_N f co.
+  sort_3_1 is_N f co. sort_3_1 is_N f co.
+  sort_3_1 is_N f co. sort_3_1 is_N f co.
+  sort_3_1 is_N f co.
+  Undo. Undo. Undo. Undo. Undo. Undo. Undo.
+  sort_3_1 is_N f cy. sort_3_1 is_N f cy.
+  sort_3_1 is_N f cy. sort_3_1 is_N f cy.
+  sort_3_1 is_N f cy. sort_3_1 is_N f cy.
+  sort_3_1 is_N f cy.
+  sort_3_2 is_N f cy. sort_3_2 is_N f cy.
+  sort_3_2 is_N f cy. sort_3_2 is_N f cy.
+  sort_3_2 is_N f cy. sort_3_2 is_N f cy.
+  sort_3_2 is_N f cy. sort_3_2 is_N f cy.
+  sort_3_2 is_N f cy. sort_3_2 is_N f cy.
+  sort_3_2 is_N f cy. sort_3_2 is_N f cy.
+  Undo. Undo. Undo. Undo. Undo. Undo. Undo. Undo. Undo. Undo. Undo. Undo.
+  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
+  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
+  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
+  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
+  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
+  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
+  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
+  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
+  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
+  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
+  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
+  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co. Abort.
 
 Ltac arithmetize :=
   (** Eliminate [shiftl 0 _]. *)
@@ -82,7 +671,7 @@ Ltac arithmetize :=
   repeat rewrite shiftl_mul_pow2 in *;
   (** Eliminate [double _]. *)
   repeat rewrite double_spec in *;
-  (** Eliminate [succ]. *)
+  (** Eliminate [succ _]. *)
   repeat rewrite <- add_1_l in *;
   (** Eliminate [shiftr 0 _]. *)
   repeat rewrite shiftr_0_l in *;
@@ -111,8 +700,8 @@ Ltac arithmetize :=
   repeat reduce_2 is_N is_N sub;
   repeat reduce_2 is_N is_N div;
   (** Commute [_ + _] and [_ * _]. *)
-  repeat commute_2_0 is_N add add_comm;
-  repeat commute_2_0 is_N mul mul_comm.
+  repeat sort_2_0 is_N add add_comm;
+  repeat sort_2_0 is_N mul mul_comm.
 
 (** A specialization of [seq] for [positive]. *)
 
