@@ -89,9 +89,10 @@ Ltac reduce_3 p0 p1 p2 f :=
 Ltac reduce_4 p0 p1 p2 p3 f :=
   fail "Not implemented".
 
-(** Sort the arguments of a call to the given [2]-parameter function
-    in the goal and hypotheses, so that the argument at index [0]
-    comes first (there are no other guarantees as the ordering is partial).
+(** Sort the arguments of a call
+    to the given [2]-parameter function in the goal and hypotheses,
+    so that the argument at index [0] is passed in first
+    (there are no other guarantees as the ordering is partial).
     The arguments of the function [f] are only sorted when
     it makes the argument at the appropriate index
     satisfy the tactical predicate [p],
@@ -120,9 +121,10 @@ Ltac sort_2_0 p f e :=
     replace a with b in h by (rewrite (e x0 x1); reflexivity)
   end.
 
-(** Sort the arguments of a call to the given [2]-parameter function
-    in the goal and hypotheses, so that the argument at index [1]
-    comes first (there are no other guarantees as the ordering is partial).
+(** Sort the arguments of a call
+    to the given [2]-parameter function in the goal and hypotheses,
+    so that the argument at index [1] is passed in first
+    (there are no other guarantees as the ordering is partial).
     The arguments of the function [f] are only sorted when
     it makes the argument at the appropriate index
     satisfy the tactical predicate [p],
@@ -143,9 +145,10 @@ Ltac sort_2_1 p f e :=
     replace a with b in h by (rewrite (e x0 x1); reflexivity)
   end.
 
-(** Sort the arguments of a call to the given [3]-parameter function
-    in the goal and hypotheses, so that the argument at index [0]
-    comes first (there are no other guarantees as the ordering is partial).
+(** Sort the arguments of a call
+    to the given [3]-parameter function in the goal and hypotheses,
+    so that the argument at index [0] is passed in first
+    (there are no other guarantees as the ordering is partial).
     The arguments of the function [f] are only sorted when
     it makes the argument at the appropriate index
     satisfy the tactical predicate [p],
@@ -204,9 +207,10 @@ Ltac sort_3_0 p f e :=
     replace a with b in h by (rewrite (e x0 x1 x2); reflexivity)]]
   end.
 
-(** Sort the arguments of a call to the given [3]-parameter function
-    in the goal and hypotheses, so that the argument at index [1]
-    comes first (there are no other guarantees as the ordering is partial).
+(** Sort the arguments of a call
+    to the given [3]-parameter function in the goal and hypotheses,
+    so that the argument at index [1] is passed in first
+    (there are no other guarantees as the ordering is partial).
     The arguments of the function [f] are only sorted when
     it makes the argument at the appropriate index
     satisfy the tactical predicate [p],
@@ -247,9 +251,10 @@ Ltac sort_3_1 p f e :=
     replace a with b in h by (rewrite <- (e x1 x2 x0); reflexivity)]]
   end.
 
-(** Sort the arguments of a call to the given [3]-parameter function
-    in the goal and hypotheses, so that the argument at index [2]
-    comes first (there are no other guarantees as the ordering is partial).
+(** Sort the arguments of a call
+    to the given [3]-parameter function in the goal and hypotheses,
+    so that the argument at index [2] is passed in first
+    (there are no other guarantees as the ordering is partial).
     The arguments of the function [f] are only sorted when
     it makes the argument at the appropriate index
     satisfy the tactical predicate [p],
@@ -306,30 +311,30 @@ Ltac sort_4_3 p f e :=
 
 (** Reassociate the arguments of two nested calls
     to the given [2]-parameter function in the goal and hypotheses,
-    so that the arguments at the deeper level come first
+    so that the arguments at the deeper level are passed in first
     (there are no other guarantees as the ordering is partial).
     The arguments of the function [f] are only reassociated when
     it makes the arguments at the appropriate indexes
     satisfy the tactical predicate [p],
-    can be justified by the equality [e] and
+    can be justified by the equality [e10] and
     makes progress in the proof.
     The possible outcomes are the following.
 
     - [replace (f (f 0 1) 2)]
-      - [with (f (f 0 1) 2) by idtac]
-      - [with (f 0 (f 1 2)) by <- assoc_2_0_1]
+      - [with (f (f 0 1) 2) by idtac] (favored)
+      - [with (f 0 (f 1 2)) by assoc_2_0_1]
     - [replace (f (f 0 1) z) with (f (f 0 1) z) by idtac]
     - [replace (f (f 0 y) 2) with (f (f 0 y) 2) by fail]
     - [replace (f (f 0 y) z) with (f (f 0 y) z) by fail]
-    - [replace (f (f x 1) 2) with (f x (f 1 2)) by rewrite <- assoc_2_0_1]
+    - [replace (f (f x 1) 2) with (f x (f 1 2)) by rewrite assoc_2_0_1]
     - [replace (f (f x 1) z) with (f (f x 1) z) by fail]
     - [replace (f (f x y) 2) with (f (f x y) 2) by fail]
     - [replace (f (f x y) z) with (f (f x y) z) by fail]
 
     - [replace (f 0 (f 1 2))]
-      - [with (f (f 0 1) 2) by assoc_2_0_1]
-      - [with (f 0 (f 1 2)) by idtac]
-    - [replace (f 0 (f 1 z)) with (f (f 0 1) z) by rewrite assoc_2_0_1]
+      - [with (f (f 0 1) 2) by <- assoc_2_0_1]
+      - [with (f 0 (f 1 2)) by idtac] (favored)
+    - [replace (f 0 (f 1 z)) with (f (f 0 1) z) by rewrite <- assoc_2_0_1]
     - [replace (f 0 (f y 2)) with (f 0 (f y 2)) by fail]
     - [replace (f 0 (f y z)) with (f 0 (f y z)) by fail]
     - [replace (f x (f 1 2)) with (f x (f 1 2)) by idtac]
@@ -337,55 +342,149 @@ Ltac sort_4_3 p f e :=
     - [replace (f x (f y 2)) with (f x (f y 2)) by fail]
     - [replace (f x (f y z)) with (f x (f y z)) by fail] *)
 
-Ltac reassoc_2 p f e :=
-  fail "Not implemented".
+Ltac reassoc_2 p f e10 :=
+  match goal with
+  | |- context c [f (f ?x0 ?x1) ?x2] =>
+    assert_fails (idtac; p x0); p x1; p x2;
+    let a := context c [f (f x0 x1) x2] in
+    let b := context c [f x0 (f x1 x2)] in
+    replace a with b by (rewrite <- (e10 x0 x1 x2); reflexivity)
+  | |- context c [f ?x0 (f ?x1 ?x2)] =>
+    assert_fails (idtac; p x2); p x0; p x1;
+    let a := context c [f x0 (f x1 x2)] in
+    let b := context c [f (f x0 x1) x2] in
+    replace a with b by (rewrite (e10 x0 x1 x2); reflexivity)
+  | h : context c [f (f ?x0 ?x1) ?x2] |- _ =>
+    assert_fails (idtac; p x0); p x1; p x2;
+    let a := context c [f (f x0 x1) x2] in
+    let b := context c [f x0 (f x1 x2)] in
+    replace a with b in h by (rewrite <- (e10 x0 x1 x2); reflexivity)
+  | h : context c [f ?x0 (f ?x1 ?x2)] |- _ =>
+    assert_fails (idtac; p x2); p x0; p x1;
+    let a := context c [f x0 (f x1 x2)] in
+    let b := context c [f (f x0 x1) x2] in
+    replace a with b in h by (rewrite (e10 x0 x1 x2); reflexivity)
+  end.
 
 (** Reassociate the arguments of two nested calls
     to the given [3]-parameter function in the goal and hypotheses,
-    so that the arguments at the deeper level come first
+    so that the arguments at the deeper level are passed in first
     (there are no other guarantees as the ordering is partial).
     The arguments of the function [f] are only reassociated when
     it makes the arguments at the appropriate indexes
     satisfy the tactical predicate [p],
-    can be justified by the equality [e] and
+    can be justified by the equalities [e10] and [e21] and
     makes progress in the proof.
     The possible outcomes are the following.
 
     - [replace (f (f 0 1 2) 3 4)]
+      - [with (f (f 0 1 2) 3 4) by idtac] (favored)
+      - [with (f 0 (f 1 2 3) 4) by rewrite assoc_3_0_1]
+      - [with (f 0 1 (f 2 3 4)) by rewrite assoc_3_0_1, assoc_3_1_2]
     - [replace (f (f 0 1 2) 3 b)]
-    - [replace (f (f 0 1 2) a 4)]
-    - [replace (f (f 0 1 2) a b)]
-    - [replace (f (f 0 1 z) 3 4)]
-    - [replace (f (f 0 1 z) 3 b)]
-    - [replace (f (f 0 1 z) a 4)]
-    - [replace (f (f 0 1 z) a b)]
-    - [replace (f (f 0 y 2) 3 4)]
-    - [replace (f (f 0 y 2) 3 b)]
-    - [replace (f (f 0 y 2) a 4)]
-    - [replace (f (f 0 y 2) a b)]
-    - [replace (f (f 0 y z) 3 4)]
-    - [replace (f (f 0 y z) 3 b)]
-    - [replace (f (f 0 y z) a 4)]
-    - [replace (f (f 0 y z) a b)]
+      - [with (f (f 0 1 2) 3 b) by idtac] (favored)
+      - [with (f 0 (f 1 2 3) b) by rewrite assoc_3_0_1]
+    - [replace (f (f 0 1 2) a 4) with (f (f 0 1 2) a 4) by idtac]
+    - [replace (f (f 0 1 2) a b) with (f (f 0 1 2) a b) by idtac]
+    - [replace (f (f 0 1 z) 3 4) with (f (f 0 1 z) 3 4) by fail]
+    - [replace (f (f 0 1 z) 3 b) with (f (f 0 1 z) 3 b) by fail]
+    - [replace (f (f 0 1 z) a 4) with (f (f 0 1 z) a 4) by fail]
+    - [replace (f (f 0 1 z) a b) with (f (f 0 1 z) a b) by fail]
+    - [replace (f (f 0 y 2) 3 4) with (f 0 y (f 2 3 4))
+      by rewrite assoc_3_0_1, assoc_3_1_2]
+    - [replace (f (f 0 y 2) 3 b) with (f (f 0 y 2) 3 b) by fail]
+    - [replace (f (f 0 y 2) a 4) with (f (f 0 y 2) a 4) by fail]
+    - [replace (f (f 0 y 2) a b) with (f (f 0 y 2) a b) by fail]
+    - [replace (f (f 0 y z) 3 4) with (f (f 0 y z) 3 4) by fail]
+    - [replace (f (f 0 y z) 3 b) with (f (f 0 y z) 3 b) by fail]
+    - [replace (f (f 0 y z) a 4) with (f (f 0 y z) a 4) by fail]
+    - [replace (f (f 0 y z) a b) with (f (f 0 y z) a b) by fail]
     - [replace (f (f x 1 2) 3 4)]
-    - [replace (f (f x 1 2) 3 b)]
-    - [replace (f (f x 1 2) a 4)]
-    - [replace (f (f x 1 2) a b)]
-    - [replace (f (f x 1 z) 3 4)]
-    - [replace (f (f x 1 z) 3 b)]
-    - [replace (f (f x 1 z) a 4)]
-    - [replace (f (f x 1 z) a b)]
-    - [replace (f (f x y 2) 3 4)]
-    - [replace (f (f x y 2) 3 b)]
-    - [replace (f (f x y 2) a 4)]
-    - [replace (f (f x y 2) a b)]
-    - [replace (f (f x y z) 3 4)]
-    - [replace (f (f x y z) 3 b)]
-    - [replace (f (f x y z) a 4)]
-    - [replace (f (f x y z) a b)] *)
+      - [with (f x (f 1 2 3) 4) by rewrite assoc_3_0_1] (favored)
+      - [with (f x 1 (f 2 3 4)) by rewrite assoc_3_0_1, assoc_3_1_2]
+    - [replace (f (f x 1 2) 3 b) with (f x (f 1 2 3) b)
+      by rewrite assoc_3_0_1]
+    - [replace (f (f x 1 2) a 4) with (f (f x 1 2) a 4) by fail]
+    - [replace (f (f x 1 2) a b) with (f (f x 1 2) a b) by fail]
+    - [replace (f (f x 1 z) 3 4) with (f (f x 1 z) 3 4) by fail]
+    - [replace (f (f x 1 z) 3 b) with (f (f x 1 z) 3 b) by fail]
+    - [replace (f (f x 1 z) a 4) with (f (f x 1 z) a 4) by fail]
+    - [replace (f (f x 1 z) a b) with (f (f x 1 z) a b) by fail]
+    - [replace (f (f x y 2) 3 4) with (f x y (f 2 3 4))
+      by rewrite assoc_3_0_1, assoc_3_1_2]
+    - [replace (f (f x y 2) 3 b) with (f (f x y 2) 3 b) by fail]
+    - [replace (f (f x y 2) a 4) with (f (f x y 2) a 4) by fail]
+    - [replace (f (f x y 2) a b) with (f (f x y 2) a b) by fail]
+    - [replace (f (f x y z) 3 4) with (f (f x y z) 3 4) by fail]
+    - [replace (f (f x y z) 3 b) with (f (f x y z) 3 b) by fail]
+    - [replace (f (f x y z) a 4) with (f (f x y z) a 4) by fail]
+    - [replace (f (f x y z) a b) with (f (f x y z) a b) by fail]
 
-Ltac reassoc_3 p f e :=
-  fail "Not implemented".
+    - [replace (f 0 (f 1 2 3) 4)] ...
+
+    - [replace (f 0 1 (f 2 3 4))] ... *)
+
+Ltac reassoc_3 p f e10 e21 :=
+  match goal with
+  | |- context c [f (f ?x0 ?x1 ?x2) ?x3 ?x4] => first [
+    assert_fails (idtac; p x0); p x1; p x2; p x3;
+    let a := context c [f (f x0 x1 x2) x3 x4] in
+    let b := context c [f x0 (f x1 x2 x3) x4] in
+    replace a with b by (rewrite <- (e10 x0 x1 x2 x3 x4); reflexivity) |
+    assert_fails (idtac; p x1); p x2; p x3; p x4;
+    let a := context c [f (f x0 x1 x2) x3 x4] in
+    let b := context c [f x0 x1 (f x2 x3 x4)] in
+    replace a with b by (rewrite <- (e10 x0 x1 x2 x3 x4),
+    <- (e21 x0 x1 x2 x3 x4); reflexivity)]
+  | |- context c [f ?x0 (f ?x1 ?x2 ?x3) ?x4] => first [
+    assert_fails (idtac; p x3); p x0; p x1; p x2;
+    let a := context c [f x0 (f x1 x2 x3) x4] in
+    let b := context c [f (f x0 x1 x2) x3 x4] in
+    replace a with b by (rewrite (e10 x0 x1 x2 x3 x4); reflexivity) |
+    assert_fails (idtac; p x1); p x2; p x3; p x4;
+    let a := context c [f x0 (f x1 x2 x3) x4] in
+    let b := context c [f x0 x1 (f x2 x3 x4)] in
+    replace a with b by (rewrite <- (e21 x0 x1 x2 x3 x4); reflexivity)]
+  | |- context c [f ?x0 ?x1 (f ?x2 ?x3 ?x4)] => first [
+    assert_fails (idtac; p x4); p x0; p x1; p x2;
+    let a := context c [f x0 x1 (f x2 x3 x4)] in
+    let b := context c [f (f x0 x1 x2) x3 x4] in
+    replace a with b by (rewrite (e21 x0 x1 x2 x3 x4),
+    (e10 x0 x1 x2 x3 x4); reflexivity) |
+    assert_fails (idtac; p x4); p x1; p x2; p x3;
+    let a := context c [f x0 x1 (f x2 x3 x4)] in
+    let b := context c [f x0 (f x1 x2 x3) x4] in
+    replace a with b by (rewrite (e21 x0 x1 x2 x3 x4); reflexivity)]
+  | h : context c [f (f ?x0 ?x1 ?x2) ?x3 ?x4] |- _ => first [
+    assert_fails (idtac; p x0); p x1; p x2; p x3;
+    let a := context c [f (f x0 x1 x2) x3 x4] in
+    let b := context c [f x0 (f x1 x2 x3) x4] in
+    replace a with b in h by (rewrite <- (e10 x0 x1 x2 x3 x4); reflexivity) |
+    assert_fails (idtac; p x1); p x2; p x3; p x4;
+    let a := context c [f (f x0 x1 x2) x3 x4] in
+    let b := context c [f x0 x1 (f x2 x3 x4)] in
+    replace a with b in h by (rewrite <- (e10 x0 x1 x2 x3 x4),
+    <- (e21 x0 x1 x2 x3 x4); reflexivity)]
+  | h : context c [f ?x0 (f ?x1 ?x2 ?x3) ?x4] |- _ => first [
+    assert_fails (idtac; p x3); p x0; p x1; p x2;
+    let a := context c [f x0 (f x1 x2 x3) x4] in
+    let b := context c [f (f x0 x1 x2) x3 x4] in
+    replace a with b in h by (rewrite (e10 x0 x1 x2 x3 x4); reflexivity) |
+    assert_fails (idtac; p x1); p x2; p x3; p x4;
+    let a := context c [f x0 (f x1 x2 x3) x4] in
+    let b := context c [f x0 x1 (f x2 x3 x4)] in
+    replace a with b in h by (rewrite <- (e21 x0 x1 x2 x3 x4); reflexivity)]
+  | h : context c [f ?x0 ?x1 (f ?x2 ?x3 ?x4)] |- _ => first [
+    assert_fails (idtac; p x4); p x0; p x1; p x2;
+    let a := context c [f x0 x1 (f x2 x3 x4)] in
+    let b := context c [f (f x0 x1 x2) x3 x4] in
+    replace a with b in h by (rewrite (e21 x0 x1 x2 x3 x4),
+    (e10 x0 x1 x2 x3 x4); reflexivity) |
+    assert_fails (idtac; p x4); p x1; p x2; p x3;
+    let a := context c [f x0 x1 (f x2 x3 x4)] in
+    let b := context c [f x0 (f x1 x2 x3) x4] in
+    replace a with b in h by (rewrite (e21 x0 x1 x2 x3 x4); reflexivity)]
+  end.
 
 (** The tactics from [reassoc_4] onwards can be defined analogously. *)
 
@@ -539,6 +638,15 @@ Ltac is_option is_A x :=
   | _ => fail "Not a value"
   end.
 
+(** Succeed when the given term is a value of type [option A]. *)
+
+Ltac is_option' x :=
+  match x with
+  | Some _ => idtac
+  | None => idtac
+  | _ => fail "Not a value"
+  end.
+
 (** Succeed when the given term is a value of type [list A] and
     its subterms are values of type [A]
     as determined by the tactical predicate [is_A]. *)
@@ -547,6 +655,15 @@ Ltac is_list is_A x :=
   match x with
   | nil => idtac
   | cons ?a ?y => is_A a; is_list is_A y
+  | _ => fail "Not a value"
+  end.
+
+(** Succeed when the given term is a value of type [list A]. *)
+
+Ltac is_list' x :=
+  match x with
+  | nil => idtac
+  | cons _ ?y => is_list' y
   | _ => fail "Not a value"
   end.
 
@@ -561,6 +678,15 @@ Ltac is_sum is_A is_B x :=
   | _ => fail "Not a value"
   end.
 
+(** Succeed when the given term is a value of type [A + B]. *)
+
+Ltac is_sum' x :=
+  match x with
+  | inl _ => idtac
+  | inr _ => idtac
+  | _ => fail "Not a value"
+  end.
+
 (** Succeed when the given term is a value of type [A * B] and
     its subterms are values of type [A] and [B]
     as determined by the tactical predicates [is_A] and [is_B]. *)
@@ -568,6 +694,14 @@ Ltac is_sum is_A is_B x :=
 Ltac is_prod is_A is_B x :=
   match x with
   | pair ?a ?b => is_A a; is_B b
+  | _ => fail "Not a value"
+  end.
+
+(** Succeed when the given term is a value of type [A * B]. *)
+
+Ltac is_prod' x :=
+  match x with
+  | pair _ _ => idtac
   | _ => fail "Not a value"
   end.
 
@@ -581,13 +715,29 @@ Ltac is_sig is_A is_P x :=
   | _ => fail "Not a value"
   end.
 
+(** Succeed when the given term is a value of type [{x : A | P x}]. *)
+
+Ltac is_sig' x :=
+  match x with
+  | exist _ _ _ => idtac
+  | _ => fail "Not a value"
+  end.
+
 (** Succeed when the given term is a value of type [A -> B] and
     its subterms are values of type [B]
     as determined by the tactical predicate [is_B]. *)
 
 Ltac is_fun is_B f :=
   match f with
-  | fun _ => ?b => is_B b
+  | fun _ : _ => ?b => is_B b
+  | _ => fail "Not a value"
+  end.
+
+(** Succeed when the given term is a value of type [A -> B]. *)
+
+Ltac is_fun' f :=
+  match f with
+  | fun _ : _ => _ => idtac
   | _ => fail "Not a value"
   end.
 
@@ -597,7 +747,15 @@ Ltac is_fun is_B f :=
 
 Ltac is_pi is_P f :=
   match f with
-  | fun a => ?b => is_P a b
+  | fun a : _ => ?b => is_P a b
+  | _ => fail "Not a value"
+  end.
+
+(** Succeed when the given term is a value of type [forall x : A, P x]. *)
+
+Ltac is_pi' f :=
+  match f with
+  | fun _ : _ => _ => idtac
   | _ => fail "Not a value"
   end.
 
@@ -612,21 +770,31 @@ Example test
   (co'' : forall x y z : N, f x y z = f x z y)
   (cy : forall x y z : N, f x y z = f z x y)
   (n p q r : N)
+  (u''' : (1 + 2) + 3 = p + (q + r)) (u'' : (1 + 2) + r = p + (2 + 3))
+  (u' : 2 + (3 + q) = 3 + (r + 2)) (u : (n + 2) + 3 = (p + 2) + q)
   (d' : 2 + q = 3 + 2) (d : n + 2 = p + 2)
   (e'' : f 2 3 p = f 2 q 3) (e' : f 2 q r = f 3 q 2)
   (e : f n 2 q = f p r 2) (e''' : f n 2 3 = f p 3 2) :
   2 + 3 = 3 + n -> n + 2 = p + 2 -> f n 2 q = f p r 2 -> f n 2 3 = f p 3 2.
 Proof.
   assert (cy' : forall x y z : N, f x y z = f z x y) by eauto.
+  reassoc_2 is_N add add_assoc.
+  reassoc_2 is_N add add_assoc.
+  reduce_2 is_N is_N add. reduce_2 is_N is_N add.
+  reduce_2 is_N is_N add. reduce_2 is_N is_N add.
+  reduce_2 is_N is_N add. reduce_2 is_N is_N add.
   reduce_2 is_N is_N add. reduce_2 is_N is_N add.
   sort_2_0 is_N add add_comm. sort_2_0 is_N add add_comm.
   sort_2_0 is_N add add_comm. sort_2_0 is_N add add_comm.
+  sort_2_0 is_N add add_comm. sort_2_0 is_N add add_comm.
+  sort_2_0 is_N add add_comm. sort_2_0 is_N add add_comm.
+  reassoc_2 is_N add add_assoc. reduce_2 is_N is_N add.
   sort_3_1 is_N f co'' || sort_3_1 is_N f co' || sort_3_1 is_N f co.
   sort_3_1 is_N f co'' || sort_3_1 is_N f co' || sort_3_1 is_N f co.
   sort_3_1 is_N f co'' || sort_3_1 is_N f co' || sort_3_1 is_N f co.
   sort_3_1 is_N f co'' || sort_3_1 is_N f co' || sort_3_1 is_N f co.
   sort_3_1 is_N f co'' || sort_3_1 is_N f co' || sort_3_1 is_N f co.
-  Undo. Undo. Undo. Undo. Undo. Undo. Undo. Undo.
+  (* Undo. Undo. Undo. Undo. Undo. Undo. Undo. Undo.
   sort_3_0 is_N f cy. sort_3_0 is_N f cy.
   sort_3_0 is_N f cy. sort_3_0 is_N f cy.
   sort_3_0 is_N f cy. sort_3_0 is_N f cy.
@@ -658,7 +826,7 @@ Proof.
   sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
   sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
   sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
-  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co. Abort.
+  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co. *) Abort.
 
 Ltac arithmetize :=
   (** Eliminate [shiftl 0 _]. *)
