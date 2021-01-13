@@ -7,6 +7,34 @@ Import ListNotations N.
 
 Local Open Scope N_scope.
 
+Definition pos_div (n p : positive) : N := fst (pos_div_eucl n (Npos p)).
+
+Arguments pos_div _ _ : assert.
+
+(** Division, rounding down. *)
+
+Definition div_down (n : N) (p : positive) : N :=
+  match n with
+  | N0 => 0
+  | Npos q => pos_div q p
+  end.
+
+Arguments div_down !_ _.
+
+(** Division, rounding up. *)
+
+Definition div_up (n : N) (p : positive) : N :=
+  match n with
+  | N0 => 0
+  | Npos q =>
+    match peanoView q with
+    | PeanoOne => 1
+    | PeanoSucc r _ => succ (pos_div r p)
+    end
+  end.
+
+Arguments div_up _ _ : simpl nomatch.
+
 (** Binary logarithm, rounding down, A000523. *)
 
 Fixpoint log2_down (n : positive) : N :=

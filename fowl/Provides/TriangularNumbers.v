@@ -89,7 +89,7 @@ Ltac reduce_3 p0 p1 p2 f :=
 Ltac reduce_4 p0 p1 p2 p3 f :=
   fail "Not implemented".
 
-(** Sort the arguments of a call
+(** Commute the arguments of a call
     to the given [2]-parameter function in the goal and hypotheses,
     so that the argument at index [0] is passed in first
     (there are no other guarantees as the ordering is partial).
@@ -107,7 +107,7 @@ Ltac reduce_4 p0 p1 p2 p3 f :=
       - [by rewrite cycle_2]
     - [replace (f x y) with (f x y) by fail] *)
 
-Ltac sort_2_0 p f e :=
+Ltac recomm_2_0 p f e :=
   match goal with
   | |- context c [f ?x0 ?x1] =>
     assert_fails (idtac; p x0); p x1;
@@ -121,7 +121,7 @@ Ltac sort_2_0 p f e :=
     replace a with b in h by (rewrite (e x0 x1); reflexivity)
   end.
 
-(** Sort the arguments of a call
+(** Commute the arguments of a call
     to the given [2]-parameter function in the goal and hypotheses,
     so that the argument at index [1] is passed in first
     (there are no other guarantees as the ordering is partial).
@@ -131,7 +131,7 @@ Ltac sort_2_0 p f e :=
     can be justified by the equality [e] and
     makes progress in the proof. *)
 
-Ltac sort_2_1 p f e :=
+Ltac recomm_2_1 p f e :=
   match goal with
   | |- context c [f ?x0 ?x1] =>
     assert_fails (idtac; p x1); p x0;
@@ -145,7 +145,7 @@ Ltac sort_2_1 p f e :=
     replace a with b in h by (rewrite (e x0 x1); reflexivity)
   end.
 
-(** Sort the arguments of a call
+(** Commute the arguments of a call
     to the given [3]-parameter function in the goal and hypotheses,
     so that the argument at index [0] is passed in first
     (there are no other guarantees as the ordering is partial).
@@ -173,7 +173,7 @@ Ltac sort_2_1 p f e :=
       - [with (f 2 x y) by rewrite cycle_3]
     - [replace (f x y z) with (f x y z) by fail] *)
 
-Ltac sort_3_0 p f e :=
+Ltac recomm_3_0 p f e :=
   match goal with
   | |- context c [f ?x0 ?x1 ?x2] => first [
     assert_fails (idtac; p x0); p x1; first [
@@ -207,7 +207,7 @@ Ltac sort_3_0 p f e :=
     replace a with b in h by (rewrite (e x0 x1 x2); reflexivity)]]
   end.
 
-(** Sort the arguments of a call
+(** Commute the arguments of a call
     to the given [3]-parameter function in the goal and hypotheses,
     so that the argument at index [1] is passed in first
     (there are no other guarantees as the ordering is partial).
@@ -217,7 +217,7 @@ Ltac sort_3_0 p f e :=
     can be justified by the equality [e] and
     makes progress in the proof. *)
 
-Ltac sort_3_1 p f e :=
+Ltac recomm_3_1 p f e :=
   match goal with
   | |- context c [f ?x0 ?x1 ?x2] => first [
     assert_fails (idtac; p x1); p x0; first [
@@ -251,7 +251,7 @@ Ltac sort_3_1 p f e :=
     replace a with b in h by (rewrite <- (e x1 x2 x0); reflexivity)]]
   end.
 
-(** Sort the arguments of a call
+(** Commute the arguments of a call
     to the given [3]-parameter function in the goal and hypotheses,
     so that the argument at index [2] is passed in first
     (there are no other guarantees as the ordering is partial).
@@ -261,7 +261,7 @@ Ltac sort_3_1 p f e :=
     can be justified by the equality [e] and
     makes progress in the proof. *)
 
-Ltac sort_3_2 p f e :=
+Ltac recomm_3_2 p f e :=
   match goal with
   | |- context c [f ?x0 ?x1 ?x2] => first [
     assert_fails (idtac; p x2); p x0; first [
@@ -295,21 +295,21 @@ Ltac sort_3_2 p f e :=
     replace a with b in h by (rewrite (e x0 x1 x2); reflexivity)]]
   end.
 
-(** The tactics from [sort_4_0] onwards can be defined analogously. *)
+(** The tactics from [recomm_4_0] onwards can be defined analogously. *)
 
-Ltac sort_4_0 p f e :=
+Ltac recomm_4_0 p f e :=
   fail "Not implemented".
 
-Ltac sort_4_1 p f e :=
+Ltac recomm_4_1 p f e :=
   fail "Not implemented".
 
-Ltac sort_4_2 p f e :=
+Ltac recomm_4_2 p f e :=
   fail "Not implemented".
 
-Ltac sort_4_3 p f e :=
+Ltac recomm_4_3 p f e :=
   fail "Not implemented".
 
-(** Reassociate the arguments of two nested calls
+(** Associate the arguments of two nested calls
     to the given [2]-parameter function in the goal and hypotheses,
     so that the arguments at the deeper level are passed in first
     (there are no other guarantees as the ordering is partial).
@@ -318,10 +318,12 @@ Ltac sort_4_3 p f e :=
     satisfy the tactical predicate [p],
     can be justified by the equality [e10] and
     makes progress in the proof.
-    The possible outcomes are the following.
+    The possible outcomes are the following,
+    where the alternatives involving least work are favored
+    (including number of rewrites and uses of symmetry).
 
     - [replace (f (f 0 1) 2)]
-      - [with (f (f 0 1) 2) by idtac] (favored)
+      - [with (f (f 0 1) 2) by idtac]
       - [with (f 0 (f 1 2)) by assoc_2_0_1]
     - [replace (f (f 0 1) z) with (f (f 0 1) z) by idtac]
     - [replace (f (f 0 y) 2) with (f (f 0 y) 2) by fail]
@@ -333,7 +335,7 @@ Ltac sort_4_3 p f e :=
 
     - [replace (f 0 (f 1 2))]
       - [with (f (f 0 1) 2) by <- assoc_2_0_1]
-      - [with (f 0 (f 1 2)) by idtac] (favored)
+      - [with (f 0 (f 1 2)) by idtac]
     - [replace (f 0 (f 1 z)) with (f (f 0 1) z) by rewrite <- assoc_2_0_1]
     - [replace (f 0 (f y 2)) with (f 0 (f y 2)) by fail]
     - [replace (f 0 (f y z)) with (f 0 (f y z)) by fail]
@@ -366,7 +368,7 @@ Ltac reassoc_2 p f e10 :=
     replace a with b in h by (rewrite (e10 x0 x1 x2); reflexivity)
   end.
 
-(** Reassociate the arguments of two nested calls
+(** Associate the arguments of two nested calls
     to the given [3]-parameter function in the goal and hypotheses,
     so that the arguments at the deeper level are passed in first
     (there are no other guarantees as the ordering is partial).
@@ -375,14 +377,16 @@ Ltac reassoc_2 p f e10 :=
     satisfy the tactical predicate [p],
     can be justified by the equalities [e10] and [e21] and
     makes progress in the proof.
-    The possible outcomes are the following.
+    The possible outcomes are the following,
+    where the alternatives involving least work are favored
+    (including number of rewrites and uses of symmetry).
 
     - [replace (f (f 0 1 2) 3 4)]
-      - [with (f (f 0 1 2) 3 4) by idtac] (favored)
+      - [with (f (f 0 1 2) 3 4) by idtac]
       - [with (f 0 (f 1 2 3) 4) by rewrite assoc_3_0_1]
       - [with (f 0 1 (f 2 3 4)) by rewrite assoc_3_0_1, assoc_3_1_2]
     - [replace (f (f 0 1 2) 3 b)]
-      - [with (f (f 0 1 2) 3 b) by idtac] (favored)
+      - [with (f (f 0 1 2) 3 b) by idtac]
       - [with (f 0 (f 1 2 3) b) by rewrite assoc_3_0_1]
     - [replace (f (f 0 1 2) a 4) with (f (f 0 1 2) a 4) by idtac]
     - [replace (f (f 0 1 2) a b) with (f (f 0 1 2) a b) by idtac]
@@ -400,7 +404,7 @@ Ltac reassoc_2 p f e10 :=
     - [replace (f (f 0 y z) a 4) with (f (f 0 y z) a 4) by fail]
     - [replace (f (f 0 y z) a b) with (f (f 0 y z) a b) by fail]
     - [replace (f (f x 1 2) 3 4)]
-      - [with (f x (f 1 2 3) 4) by rewrite assoc_3_0_1] (favored)
+      - [with (f x (f 1 2 3) 4) by rewrite assoc_3_0_1]
       - [with (f x 1 (f 2 3 4)) by rewrite assoc_3_0_1, assoc_3_1_2]
     - [replace (f (f x 1 2) 3 b) with (f x (f 1 2 3) b)
       by rewrite assoc_3_0_1]
@@ -446,15 +450,15 @@ Ltac reassoc_3 p f e10 e21 :=
     let b := context c [f x0 x1 (f x2 x3 x4)] in
     replace a with b by (rewrite <- (e21 x0 x1 x2 x3 x4); reflexivity)]
   | |- context c [f ?x0 ?x1 (f ?x2 ?x3 ?x4)] => first [
+    assert_fails (idtac; p x4); p x1; p x2; p x3;
+    let a := context c [f x0 x1 (f x2 x3 x4)] in
+    let b := context c [f x0 (f x1 x2 x3) x4] in
+    replace a with b by (rewrite (e21 x0 x1 x2 x3 x4); reflexivity) |
     assert_fails (idtac; p x4); p x0; p x1; p x2;
     let a := context c [f x0 x1 (f x2 x3 x4)] in
     let b := context c [f (f x0 x1 x2) x3 x4] in
     replace a with b by (rewrite (e21 x0 x1 x2 x3 x4),
-    (e10 x0 x1 x2 x3 x4); reflexivity) |
-    assert_fails (idtac; p x4); p x1; p x2; p x3;
-    let a := context c [f x0 x1 (f x2 x3 x4)] in
-    let b := context c [f x0 (f x1 x2 x3) x4] in
-    replace a with b by (rewrite (e21 x0 x1 x2 x3 x4); reflexivity)]
+    (e10 x0 x1 x2 x3 x4); reflexivity)]
   | h : context c [f (f ?x0 ?x1 ?x2) ?x3 ?x4] |- _ => first [
     assert_fails (idtac; p x0); p x1; p x2; p x3;
     let a := context c [f (f x0 x1 x2) x3 x4] in
@@ -475,15 +479,15 @@ Ltac reassoc_3 p f e10 e21 :=
     let b := context c [f x0 x1 (f x2 x3 x4)] in
     replace a with b in h by (rewrite <- (e21 x0 x1 x2 x3 x4); reflexivity)]
   | h : context c [f ?x0 ?x1 (f ?x2 ?x3 ?x4)] |- _ => first [
+    assert_fails (idtac; p x4); p x1; p x2; p x3;
+    let a := context c [f x0 x1 (f x2 x3 x4)] in
+    let b := context c [f x0 (f x1 x2 x3) x4] in
+    replace a with b in h by (rewrite (e21 x0 x1 x2 x3 x4); reflexivity) |
     assert_fails (idtac; p x4); p x0; p x1; p x2;
     let a := context c [f x0 x1 (f x2 x3 x4)] in
     let b := context c [f (f x0 x1 x2) x3 x4] in
     replace a with b in h by (rewrite (e21 x0 x1 x2 x3 x4),
-    (e10 x0 x1 x2 x3 x4); reflexivity) |
-    assert_fails (idtac; p x4); p x1; p x2; p x3;
-    let a := context c [f x0 x1 (f x2 x3 x4)] in
-    let b := context c [f x0 (f x1 x2 x3) x4] in
-    replace a with b in h by (rewrite (e21 x0 x1 x2 x3 x4); reflexivity)]
+    (e10 x0 x1 x2 x3 x4); reflexivity)]
   end.
 
 (** The tactics from [reassoc_4] onwards can be defined analogously. *)
@@ -546,8 +550,9 @@ f 0 1 2 3 = f 1 0 2 3  f 0 1 2 3 = f 2 1 0 3  f 0 1 2 3 = f 3 1 2 0  f 0 1 2 3 =
 f 0 1 2 3 = f 3 1 2 0
 >>
 
-   With functional extensionality, we can write the tower differently,
-   although we still cannot realize the limit.
+   With functional extensionality,
+   we could write the tower differently,
+   although we still could not realize the limit.
 
 <<
      comm_0_1    comm_1_2    comm_2_3
@@ -759,117 +764,159 @@ Ltac is_pi' f :=
   | _ => fail "Not a value"
   end.
 
-(* TODO Remove this. *)
+(** These lemmas are missing from the standard library. *)
 
-(** Show off. *)
+Lemma shiftl_1_r (a : N) : shiftl a 1 = a * 2.
+Proof. rewrite shiftl_mul_pow2. rewrite pow_1_r. reflexivity. Qed.
 
-Example test
-  (f : N -> N -> N -> N)
-  (co : forall x y z : N, f x y z = f y x z)
-  (co' : forall x y z : N, f x y z = f z y x)
-  (co'' : forall x y z : N, f x y z = f x z y)
-  (cy : forall x y z : N, f x y z = f z x y)
-  (n p q r : N)
-  (u''' : (1 + 2) + 3 = p + (q + r)) (u'' : (1 + 2) + r = p + (2 + 3))
-  (u' : 2 + (3 + q) = 3 + (r + 2)) (u : (n + 2) + 3 = (p + 2) + q)
-  (d' : 2 + q = 3 + 2) (d : n + 2 = p + 2)
-  (e'' : f 2 3 p = f 2 q 3) (e' : f 2 q r = f 3 q 2)
-  (e : f n 2 q = f p r 2) (e''' : f n 2 3 = f p 3 2) :
-  2 + 3 = 3 + n -> n + 2 = p + 2 -> f n 2 q = f p r 2 -> f n 2 3 = f p 3 2.
-Proof.
-  assert (cy' : forall x y z : N, f x y z = f z x y) by eauto.
-  reassoc_2 is_N add add_assoc.
-  reassoc_2 is_N add add_assoc.
-  reduce_2 is_N is_N add. reduce_2 is_N is_N add.
-  reduce_2 is_N is_N add. reduce_2 is_N is_N add.
-  reduce_2 is_N is_N add. reduce_2 is_N is_N add.
-  reduce_2 is_N is_N add. reduce_2 is_N is_N add.
-  sort_2_0 is_N add add_comm. sort_2_0 is_N add add_comm.
-  sort_2_0 is_N add add_comm. sort_2_0 is_N add add_comm.
-  sort_2_0 is_N add add_comm. sort_2_0 is_N add add_comm.
-  sort_2_0 is_N add add_comm. sort_2_0 is_N add add_comm.
-  reassoc_2 is_N add add_assoc. reduce_2 is_N is_N add.
-  sort_3_1 is_N f co'' || sort_3_1 is_N f co' || sort_3_1 is_N f co.
-  sort_3_1 is_N f co'' || sort_3_1 is_N f co' || sort_3_1 is_N f co.
-  sort_3_1 is_N f co'' || sort_3_1 is_N f co' || sort_3_1 is_N f co.
-  sort_3_1 is_N f co'' || sort_3_1 is_N f co' || sort_3_1 is_N f co.
-  sort_3_1 is_N f co'' || sort_3_1 is_N f co' || sort_3_1 is_N f co.
-  (* Undo. Undo. Undo. Undo. Undo. Undo. Undo. Undo.
-  sort_3_0 is_N f cy. sort_3_0 is_N f cy.
-  sort_3_0 is_N f cy. sort_3_0 is_N f cy.
-  sort_3_0 is_N f cy. sort_3_0 is_N f cy.
-  sort_3_0 is_N f cy. sort_3_0 is_N f cy.
-  sort_3_1 is_N f co. sort_3_1 is_N f co.
-  sort_3_1 is_N f co. sort_3_1 is_N f co.
-  sort_3_1 is_N f co. sort_3_1 is_N f co.
-  sort_3_1 is_N f co.
-  Undo. Undo. Undo. Undo. Undo. Undo. Undo.
-  sort_3_1 is_N f cy. sort_3_1 is_N f cy.
-  sort_3_1 is_N f cy. sort_3_1 is_N f cy.
-  sort_3_1 is_N f cy. sort_3_1 is_N f cy.
-  sort_3_1 is_N f cy.
-  sort_3_2 is_N f cy. sort_3_2 is_N f cy.
-  sort_3_2 is_N f cy. sort_3_2 is_N f cy.
-  sort_3_2 is_N f cy. sort_3_2 is_N f cy.
-  sort_3_2 is_N f cy. sort_3_2 is_N f cy.
-  sort_3_2 is_N f cy. sort_3_2 is_N f cy.
-  sort_3_2 is_N f cy. sort_3_2 is_N f cy.
-  Undo. Undo. Undo. Undo. Undo. Undo. Undo. Undo. Undo. Undo. Undo. Undo.
-  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
-  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
-  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
-  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
-  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
-  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
-  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
-  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
-  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
-  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
-  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co.
-  sort_3_2 is_N f co'' || sort_3_2 is_N f co' || sort_3_2 is_N f co. *) Abort.
+Lemma shiftr_1_l (n : N) : shiftr 1 n = 1 / 2 ^ n.
+Proof. rewrite shiftr_div_pow2. reflexivity. Qed.
 
-Ltac arithmetize :=
-  (** Eliminate [shiftl 0 _]. *)
+Lemma shiftr_1_r (a : N) : shiftr a 1 = a / 2.
+Proof. rewrite <- div2_spec. rewrite div2_div. reflexivity. Qed.
+
+(** If you admit that subtraction is saturative (by [sub_0_l]),
+    you might as well admit that division and logarithm are total
+    (by [div_0_r] and [log2_0] respectively). *)
+
+Lemma div_0_r (a : N) : a / 0 = 0.
+Proof. destruct a as [| p]; reflexivity. Qed.
+
+Lemma log2_0 : log2 0 = 0.
+Proof. reflexivity. Qed.
+
+(** See [arithmetize]. *)
+
+Ltac arithmetize_by force :=
+  (** Eliminate [shiftl 0 _].
+      This shortcut is equivalent to [shiftl_mul_pow2]
+      followed by [mul_0_l]. *)
   repeat rewrite shiftl_0_l in *;
-  (** Eliminate [shiftl _ 0]. *)
+  (** Eliminate [shiftl _ 0].
+      This shortcut is equivalent to [shiftl_mul_pow2]
+      followed by [pow_0_r] and [mul_1_r]. *)
   repeat rewrite shiftl_0_r in *;
-  (** Eliminate [shiftl 1 _]. *)
+  (** Eliminate [shiftl 1 _] into [2 ^ _].
+      This shortcut is equivalent to [shiftl_mul_pow2]
+      followed by [mul_1_l]. *)
   repeat rewrite shiftl_1_l in *;
-  (** Eliminate [shiftl _ _]. *)
+  (** Eliminate [shiftl _ 1] into [_ * 2].
+      This shortcut is equivalent to [shiftl_mul_pow2]
+      followed by [pow_1_r]. *)
+  repeat rewrite shiftl_1_r in *;
+  (** Eliminate [shiftl _ _] into [_ * 2 ^ _]. *)
   repeat rewrite shiftl_mul_pow2 in *;
-  (** Eliminate [double _]. *)
+  (** Eliminate [double _] into [2 * _]. *)
   repeat rewrite double_spec in *;
-  (** Eliminate [succ _]. *)
+  (** Eliminate [succ _] into [1 + _]. *)
   repeat rewrite <- add_1_l in *;
-  (** Eliminate [shiftr 0 _]. *)
+  (** Eliminate [shiftr 0 _].
+      This shortcut is equivalent to [shiftr_div_pow2]
+      followed by [div_0_l] with [pow_nonzero]. *)
   repeat rewrite shiftr_0_l in *;
-  (** Eliminate [shiftr _ 0]. *)
+  (** Eliminate [shiftr _ 0].
+      This shortcut is equivalent to [shiftr_div_pow2]
+      followed by [pow_0_r] and [div_1_r]. *)
   repeat rewrite shiftr_0_r in *;
-  (** Eliminate [shiftr _ 1]. *)
-  repeat rewrite <- div2_spec in *;
-  (** Eliminate [shiftr _ _]. *)
+  (** Eliminate [shiftr 1 _] into [1 / 2 ^ _].
+      This shortcut is equivalent to [shiftr_div_pow2]. *)
+  repeat rewrite shiftr_1_l in *;
+  (** Eliminate [shiftr _ 1] into [_ / 2].
+      This shortcut is equivalent to [shiftr_div_pow2]
+      followed by [pow_1_r]. *)
+  repeat rewrite shiftr_1_r in *;
+  (** Eliminate [shiftr _ _] into [_ / 2 ^ _]. *)
   repeat rewrite shiftr_div_pow2 in *;
-  (** Eliminate [div2 _]. *)
+  (** Eliminate [div2 _] into [_ / 2]. *)
   repeat rewrite div2_div in *;
-  (** Eliminate [pred]. *)
+  (** Eliminate [pred] into [_ - 1]. *)
   repeat rewrite <- sub_1_r in *;
+  (** Try to eliminate [0 ^ _]. *)
+  repeat rewrite pow_0_l in * by force;
+  (** Eliminate [_ ^ 0]. *)
+  repeat rewrite pow_0_r in *;
   (** Eliminate [1 ^ _]. *)
   repeat rewrite pow_1_l in *;
   (** Eliminate [_ ^ 1]. *)
   repeat rewrite pow_1_r in *;
-  (** Eliminate [0 ^ _]. *)
-  repeat rewrite pow_0_r in *;
-  (** Reduce [succ], [_ + _], [_ * _], [_ ^ _], [pred], [_ - _] and [_ / _]. *)
-  repeat reduce_1 is_N succ;
-  repeat reduce_2 is_N is_N add;
-  repeat reduce_2 is_N is_N mul;
+  (** Do not try to eliminate [_ ^ _],
+      because it would be impossible. *)
+  (* repeat rewrite _ in *; *)
+  (** Eliminate [0 * _]. *)
+  repeat rewrite mul_0_l in *;
+  (** Eliminate [_ * 0]. *)
+  repeat rewrite mul_0_r in *;
+  (** Eliminate [1 * _]. *)
+  repeat rewrite mul_1_l in *;
+  (** Eliminate [_ * 1]. *)
+  repeat rewrite mul_1_r in *;
+  (** Do not try to eliminate [_ * _],
+      because it would be impossible. *)
+  (* repeat rewrite _ in *; *)
+  (** Eliminate [0 + _]. *)
+  repeat rewrite add_0_l in *;
+  (** Eliminate [_ + 0]. *)
+  repeat rewrite add_0_r in *;
+  (** Do not try to eliminate [_ + _],
+      because it would be impossible. *)
+  (* repeat rewrite _ in *; *)
+  (** Eliminate [log2 0]. *)
+  repeat rewrite log2_0 in *;
+  (** Eliminate [log2 1]. *)
+  repeat rewrite log2_1 in *;
+  (** Eliminate [log2 2]. *)
+  repeat rewrite log2_2 in *;
+  (** Do not eliminate [log2 _],
+      because it would be impossible. *)
+  (* repeat rewrite _ in *; *)
+  (** Try to eliminate [0 / _]. *)
+  repeat rewrite div_0_l in * by force;
+  (** Eliminate [_ / 0]. *)
+  repeat rewrite div_0_r in *;
+  (** Try to eliminate [1 / _]. *)
+  repeat rewrite div_1_l in * by force;
+  (** Eliminate [_ / 1]. *)
+  repeat rewrite div_1_r in *;
+  (** Do not try to eliminate [_ / _],
+      because it would be impossible. *)
+  (* repeat rewrite _ in *; *)
+  (** Eliminate [0 - _]. *)
+  repeat rewrite sub_0_l in *;
+  (** Eliminate [_ - 0]. *)
+  repeat rewrite sub_0_r in *;
+  (** Do not try to eliminate [_ - _],
+      because it would be impossible. *)
+  (* repeat rewrite _ in *; *)
+  (** Simplify [_ ^ _], [_ * _], [_ + _], [log2], [_ / _] and [_ - _]. *)
   repeat reduce_2 is_N is_N pow;
-  repeat reduce_1 is_N pred;
-  repeat reduce_2 is_N is_N sub;
+  repeat reduce_2 is_N is_N mul;
+  repeat reduce_2 is_N is_N add;
+  repeat reduce_1 is_N log2;
   repeat reduce_2 is_N is_N div;
-  (** Commute [_ + _] and [_ * _]. *)
-  repeat sort_2_0 is_N add add_comm;
-  repeat sort_2_0 is_N mul mul_comm.
+  repeat reduce_2 is_N is_N sub;
+  repeat recomm_2_0 is_N mul mul_comm;
+  repeat recomm_2_0 is_N add add_comm;
+  repeat reassoc_2 is_N mul mul_assoc;
+  repeat reassoc_2 is_N add add_assoc.
+
+(** Convert expressions involving bit manipulation
+    into expressions involving basic arithmetic.
+
+    The conversion repeats two steps
+    until they no longer make progress in the proof.
+    In the first step, we eliminate occurrences of
+    [shiftl], [double], [succ], [shiftr], [div2] and [pred].
+    In the second step, we simplify occurrences of
+    [_ ^ _], [_ * _], [_ + _], [log2], [_ / _] and [_ - _].
+    After the conversion,
+    no occurrence of [_ * _] and [_ + _]
+    will have constants appear on the right side,
+    no occurrence of [_ ^ _], [_ / _] and [_ - _]
+    will have constants appear on both sides,
+    no occurrence of [log2] will have constants appear anywhere and
+    no occurrence of [0], [1] or [2] will be vain. *)
+
+Ltac arithmetize := repeat arithmetize_by lia.
 
 (** A specialization of [seq] for [positive]. *)
 
@@ -998,9 +1045,6 @@ Proof.
 Lemma tri_succ (n : N) : tri (succ n) = succ n + tri n.
 Proof.
   cbv [tri]. arithmetize.
-  rewrite (add_assoc 1 1 n).
-  rewrite (add_1_l 1).
-  rewrite <- two_succ.
   rewrite (mul_add_distr_l (1 + n) 2 n).
   rewrite (div_add_l (1 + n) 2 ((1 + n) * n)).
   - rewrite (mul_comm (1 + n) n). reflexivity.
