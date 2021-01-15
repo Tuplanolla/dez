@@ -1,3 +1,5 @@
+(** * Initialization for all modules. *)
+
 (** We disable warnings about overriding notations,
     because the plan is to replace many basic notations like [<=] and [+]. *)
 
@@ -34,25 +36,22 @@ Add Search Blacklist "_obligation".
 
 (** We export [StrictProp] to be able to
     use strict propositions without ceremony,
-    export [Datatypes], [Specif] and [Basics] to
-    make their utility functions available everywhere,
-    import [Logic] to gain access to the [EqNotations] submodule,
+    export [Basics] to make their utility functions available everywhere,
     import [Setoid] to generalize the [rewrite] tactic and
-    [PArith], [NArith] and [ZArith] to
+    import [PArith], [NArith] and [ZArith] to
     redefine some of the numeral notations. *)
 
 From Coq Require Export
   Logic.StrictProp.
 From Coq Require Export
-  Init.Datatypes Init.Specif Program.Basics.
-From Coq Require Import
-  Init.Logic.
+  Program.Basics.
 From Coq Require Import
   Setoids.Setoid.
 From Coq Require Import
   PArith.PArith NArith.NArith ZArith.ZArith.
 
-(** We export the [rew] notations to use them like a transport lemma. *)
+(** We export the [rew] notations from [Init.Logic]
+    to use them like transport in homotopy type theory. *)
 
 Export EqNotations.
 

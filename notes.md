@@ -281,6 +281,99 @@ Find loose type signatures.
 find . -name '*.v' | xargs grep -n '[^ ]:\|:[^ =>]'
 ```
 
+### Towers of Arithmetic Lemmas
+
+There is this tower of cyclicity lemmas.
+
+```
+    cycle_1_0
+      f 0 = f 0
+    cycle_2_0              cycle_2_1
+    f 0 1 = f 0 1          f 0 1 = f 1 0
+    cycle_3_0              cycle_3_1              cycle_3_2
+  f 0 1 2 = f 0 1 2      f 0 1 2 = f 2 0 1      f 0 1 2 = f 1 2 0
+    cycle_4_0              cycle_4_1              cycle_4_2              cycle_4_3
+f 0 1 2 3 = f 0 1 2 3  f 0 1 2 3 = f 2 0 1 3  f 0 1 2 3 = f 1 2 0 3  f 0 1 2 3 = f 1 2 3 0
+```
+
+The first column is trivial by reflexivity and
+every column beyond the second one can be derived from it.
+Thus, it is enough to have `cycle_2_1`, `cycle_3_1`, `cycle_4_1`, ... and
+we may omit the suffix `_1` from the names.
+The number of independent lemmas is `fun n => if n < 2 then 0 else 1`.
+
+```
+    cycle_2
+    f 0 1 = f 1 0
+    cycle_3
+  f 0 1 2 = f 2 0 1
+    cycle_4
+f 0 1 2 3 = f 3 0 1 2
+```
+
+There is this tower of commutativity lemmas.
+
+```
+     comm_2_0_1
+    f 0 1 = f 1 0
+     comm_3_0_1             comm_3_0_2                                    comm_3_1_2
+  f 0 1 2 = f 1 0 2      f 0 1 2 = f 2 1 0                             f 0 1 2 = f 0 2 1
+     comm_4_0_1             comm_4_0_2             comm_4_0_3             comm_4_1_2             comm_4_1_3             comm_4_2_3
+f 0 1 2 3 = f 1 0 2 3  f 0 1 2 3 = f 2 1 0 3  f 0 1 2 3 = f 3 1 2 0  f 0 1 2 3 = f 0 2 1 3  f 0 1 2 3 = f 0 3 2 1  f 0 1 2 3 = f 0 1 3 2
+```
+
+Every lemma on each row can be derived from the span of the row.
+The first row on each column is enough to derive the rest of the column;
+the other direction is also true with functional extensionality.
+Thus, it is enough to have `comm_2_0_1`, `comm_3_0_2`, `comm_4_0_3`, ... and
+we may omit the prefix `_n` from the names.
+The number of independent lemmas is `fun n => if n < 2 then 0 else 1`.
+
+```
+     comm_0_1
+    f 0 1 = f 1 0
+     comm_0_2
+  f 0 1 2 = f 2 1 0
+     comm_0_3
+f 0 1 2 3 = f 3 1 2 0
+```
+
+With functional extensionality,
+we could write the tower differently,
+although we still could not realize the limit.
+
+```
+     comm_0_1    comm_1_2    comm_2_3
+f 0 1 2 3 = f 1 0 2 3 = f 1 2 0 3 = f 1 2 3 0
+```
+
+There is this tower of associativity lemmas.
+
+```
+              assoc_2_0_1
+        f (f 0 1) 2 = f 0 (f 1 2)
+              assoc_3_0_1                                assoc_3_0_2                                                                           assoc_3_1_2
+    f (f 0 1 2) 3 4 = f 0 (f 1 2 3) 4          f (f 0 1 2) 3 4 = f 0 1 (f 2 3 4)                                                     f 0 (f 1 2 3) 4 = f 0 1 (f 2 3 4)
+              assoc_4_0_1                                assoc_4_0_2                                assoc_4_0_3                                assoc_4_1_2                                assoc_4_1_3                                assoc_4_2_3
+f (f 0 1 2 3) 4 5 6 = f 0 (f 1 2 3 4) 5 6  f (f 0 1 2 3) 4 5 6 = f 0 1 (f 2 3 4 5) 6  f (f 0 1 2 3) 4 5 6 = f 0 1 2 (f 3 4 5 6)  f 0 (f 1 2 3 4) 5 6 = f 0 1 (f 2 3 4 5) 6  f 0 (f 1 2 3 4) 5 6 = f 0 1 2 (f 3 4 5 6)  f 0 1 (f 2 3 4 5) 6 = f 0 1 2 (f 3 4 5 6)
+```
+
+Every lemma on each row can be derived from the span of the row.
+Thus, it is enough to have `assoc_2_0_1`, `assoc_3_0_1`, `assoc_3_1_2`,
+`assoc_4_0_1`, `assoc_4_1_2`, `assoc_4_2_3`, ... and
+we could even omit the suffix `_i` from the names (although we do not,
+because that would make the names asymmetric and confusing).
+The number of independent lemmas is `fun n => if n < 2 then 0 else n - 1`.
+
+```
+                                    assoc_2_0_1
+                              f (f 0 1) 2 = f 0 (f 1 2)
+                             assoc_3_0_1       assoc_3_1_2
+                   f (f 0 1 2) 3 4 = f 0 (f 1 2 3) 4 = f 0 1 (f 2 3 4)
+              assoc_4_0_1           assoc_4_1_2           assoc_4_2_3
+f (f 0 1 2 3) 4 5 6 = f 0 (f 1 2 3 4) 5 6 = f 0 1 (f 2 3 4 5) 6 = f 0 1 2 (f 3 4 5 6)
+```
+
 ### Piles of Things to Do
 
 It would be easier to separate algebraic, relational,
