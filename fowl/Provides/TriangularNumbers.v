@@ -6,36 +6,16 @@ From Coq Require Import
 From Maniunfold Require Import
   DatatypeTactics RewritingTactics.
 From Maniunfold.Provides Require Export
-  OptionTheorems ProductTheorems.
+  NTheorems OptionTheorems ProductTheorems.
 
 Import N.
 
-Set Warnings "-unsupported-attributes".
-
 Local Open Scope N_scope.
 
-(** These lemmas are missing from the standard library. *)
-
-Lemma shiftl_1_r (a : N) : shiftl a 1 = a * 2.
-Proof. rewrite shiftl_mul_pow2. rewrite pow_1_r. reflexivity. Qed.
-
-Lemma shiftr_1_l (n : N) : shiftr 1 n = 1 / 2 ^ n.
-Proof. rewrite shiftr_div_pow2. reflexivity. Qed.
-
-Lemma shiftr_1_r (a : N) : shiftr a 1 = a / 2.
-Proof. rewrite <- div2_spec. rewrite div2_div. reflexivity. Qed.
-
-(** If you admit that subtraction is saturative (by [sub_0_l]),
-    you might as well admit that division and logarithm are total
-    (by [div_0_r] and [log2_0] respectively). *)
-
-Lemma div_0_r (a : N) : a / 0 = 0.
-Proof. destruct a as [| p]; reflexivity. Qed.
-
-Lemma log2_0 : log2 0 = 0.
-Proof. reflexivity. Qed.
-
-(** First step of [arithmetize]. *)
+(** Eliminate all occurrences of
+    [shiftl], [double], [succ], [shiftr], [div2] and [pred].
+    Rewrite rules that produce subgoals will fail,
+    unless they can be immediately proven with [force]. *)
 
 Ltac eliminate_by force :=
   (** Eliminate [shiftl 0 _].
@@ -180,35 +160,6 @@ Ltac arithmetize_by force := repeat (eliminate_by force; simplify).
 (** Specialization of [arithmetize_by] using [lia]. *)
 
 Ltac arithmetize := arithmetize_by lia.
-
-(** A specialization of [seq] for [positive]. *)
-
-#[misplaced]
-Fixpoint Pos_seq (n : positive) (p : nat) : list positive :=
-  match p with
-  | O => nil
-  | S q => n :: Pos_seq (Pos.succ n) q
-  end.
-
-(** A specialization of [seq] for [N]. *)
-
-#[misplaced]
-Fixpoint N_seq (n : N) (p : nat) : list N :=
-  match p with
-  | O => nil
-  | S q => n :: N_seq (succ n) q
-  end.
-
-(** A richer specification for [div_eucl].
-    Analogous in structure to [sqrtrem_spec]. *)
-
-Lemma div_eucl_spec' (n p : N) :
-  let (q, r) := div_eucl n p in n = p * q + r /\ (p <> 0 -> r < p).
-Proof.
-  destruct n as [| n'], p as [| p']; cbv [div_eucl] in *; try lia.
-  pose proof pos_div_eucl_spec n' (pos p') as en'p'.
-  pose proof pos_div_eucl_remainder n' (pos p') as ln'p'.
-  destruct (pos_div_eucl n' (pos p')) as [q r]; cbv [snd] in *; lia. Qed.
 
 (** Replace [sqrtrem] with its specification. *)
 

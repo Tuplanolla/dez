@@ -5,6 +5,11 @@
 
 Global Set Warnings "-notation-overridden".
 
+(** We disable warnings about unsupported attributes,
+    because we use some custom attributes as hints. *)
+
+Global Set Warnings "-unsupported-attributes".
+
 (** We turn on automatically inferred implicit arguments and
     make them maximally inserted and conservatively detected,
     since most type classes follow the same design pattern. *)

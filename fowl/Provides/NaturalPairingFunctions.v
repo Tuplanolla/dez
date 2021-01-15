@@ -7,56 +7,23 @@ Import ListNotations N.
 
 Local Open Scope N_scope.
 
-Definition pos_div (n p : positive) : N := fst (pos_div_eucl n (Npos p)).
+(** Binary part.
+    Largest power of two to divide the given number.
+    Number of trailing zeros in the binary representation.
+    Sequence A007814. *)
 
-Arguments pos_div _ _ : assert.
-
-(** Division, rounding down. *)
-
-Definition div_down (n : N) (p : positive) : N :=
+Fixpoint bin_part (n : positive) : N :=
   match n with
-  | N0 => 0
-  | Npos q => pos_div q p
-  end.
-
-Arguments div_down !_ _.
-
-(** Division, rounding up. *)
-
-Definition div_up (n : N) (p : positive) : N :=
-  match n with
-  | N0 => 0
-  | Npos q =>
-    match peanoView q with
-    | PeanoOne => 1
-    | PeanoSucc r _ => succ (pos_div r p)
-    end
-  end.
-
-Arguments div_up _ _ : simpl nomatch.
-
-(** Binary logarithm, rounding down, A000523. *)
-
-Fixpoint log2_down (n : positive) : N :=
-  match n with
-  | xI p => succ (log2_down p)
-  | xO p => succ (log2_down p)
+  | xI p => 0
+  | xO p => succ (bin_part p)
   | xH => 0
   end.
 
-Arguments log2_down !_.
+Arguments bin_part !_.
 
-(** Binary logarithm, rounding up, A029837. *)
-
-Definition log2_up (n : positive) : N :=
-  match peanoView n with
-  | PeanoOne => 0
-  | PeanoSucc p _ => succ (log2_down p)
-  end.
-
-Arguments log2_up _ : simpl nomatch.
-
-(** Largest odd number to divide the given number, A000265. *)
+(** Odd part.
+    Largest odd number to divide the given number.
+    Sequence A000265. *)
 
 Fixpoint odd_part (n : positive) : N :=
   match n with
@@ -67,25 +34,28 @@ Fixpoint odd_part (n : positive) : N :=
 
 Arguments odd_part !_.
 
-(** Largest power of two to divide the given number, A007814.
-    Returns the power itself. *)
+(** Binary part and odd part are related. *)
 
-Fixpoint pow2_part (n : positive) : N :=
-  match n with
-  | xI p => 0
-  | xO p => succ (pow2_part p)
-  | xH => 0
-  end.
-
-Arguments pow2_part !_.
-
-Lemma odd_part_pow2_part (n : positive) :
-  odd_part n = Npos n / 2 ^ pow2_part n.
-Proof. Admitted.
+Lemma odd_part_bin_part (n : positive) :
+  Npos n / 2 ^ bin_part n = odd_part n.
+Proof.
+  induction n as [q ei | q ei |].
+  + cbn [bin_part odd_part].
+    rewrite pow_0_r. rewrite div_1_r. reflexivity.
+  + cbn [bin_part odd_part].
+    rewrite pow_succ_r by lia.
+    assert (f : 2 ^ bin_part q <> 0).
+    { apply (pow_nonzero 2 (bin_part q)). lia. }
+    rewrite <- div_div by lia.
+    clear f.
+    replace (Npos (xO q)) with (Npos q * 2) by lia.
+    rewrite div_mul by lia. rewrite ei. reflexivity.
+  + reflexivity. Qed.
 
 (** Analogous to [div_eucl] and [sqrtrem]
     in the sense of "maximum with remainder". *)
 
+#[bad]
 Local Definition minmax (n p : N) : N * N :=
   prod_sort_by leb (n, p).
 
@@ -119,11 +89,11 @@ Definition unpair (p q : N) : N :=
 
 Arguments unpair _ _ : assert.
 
-Compute map pair (N_seq 0 64).
-Compute map (prod_uncurry unpair o pair) (N_seq 0 64).
+Compute map pair (seq 0 64).
+Compute map (prod_uncurry unpair o pair) (seq 0 64).
 
-Compute map pair_shell (N_seq 0 64).
-Compute map (prod_uncurry unpair_shell o pair) (N_seq 0 64).
+Compute map pair_shell (seq 0 64).
+Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. cbv [prod_uncurry unpair pair]. cbn. Admitted.
@@ -150,8 +120,8 @@ Definition unpair (p q : N) : N :=
 
 Arguments unpair _ _ : assert.
 
-Compute map pair (N_seq 0 64).
-Compute map (prod_uncurry unpair o pair) (N_seq 0 64).
+Compute map pair (seq 0 64).
+Compute map (prod_uncurry unpair o pair) (seq 0 64).
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.
@@ -193,11 +163,11 @@ Definition unpair (p q : N) : N :=
 
 Arguments unpair _ _ : assert.
 
-Compute map pair (N_seq 0 64).
-Compute map (prod_uncurry unpair o pair) (N_seq 0 64).
+Compute map pair (seq 0 64).
+Compute map (prod_uncurry unpair o pair) (seq 0 64).
 
-Compute map pair_shell (N_seq 0 64).
-Compute map (prod_uncurry unpair_shell o pair) (N_seq 0 64).
+Compute map pair_shell (seq 0 64).
+Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.
@@ -231,8 +201,8 @@ Definition unpair (p q : N) : N :=
 
 Arguments unpair _ _ : assert.
 
-Compute map pair (N_seq 0 64).
-Compute map (prod_uncurry unpair o pair) (N_seq 0 64).
+Compute map pair (seq 0 64).
+Compute map (prod_uncurry unpair o pair) (seq 0 64).
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.
@@ -275,11 +245,11 @@ Definition unpair (p q : N) : N :=
 
 Arguments unpair _ _ : assert.
 
-Compute map pair (N_seq 0 64).
-Compute map (prod_uncurry unpair o pair) (N_seq 0 64).
+Compute map pair (seq 0 64).
+Compute map (prod_uncurry unpair o pair) (seq 0 64).
 
-Compute map pair_shell (N_seq 0 64).
-Compute map (prod_uncurry unpair_shell o pair) (N_seq 0 64).
+Compute map pair_shell (seq 0 64).
+Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.
@@ -311,8 +281,8 @@ Definition unpair (p q : N) : N :=
 
 Arguments unpair _ _ : assert.
 
-Compute map pair (N_seq 0 64).
-Compute map (prod_uncurry unpair o pair) (N_seq 0 64).
+Compute map pair (seq 0 64).
+Compute map (prod_uncurry unpair o pair) (seq 0 64).
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.
@@ -331,35 +301,35 @@ Lemma part_factor (n : N) (f : n <> 0) :
 Proof.
   destruct n as [| p].
   - contradiction.
-  - exists (pow2_part p), ((odd_part p - 1) / 2). clear f.
+  - exists (bin_part p), ((odd_part p - 1) / 2). clear f.
     induction p as [q ei | q ei |].
-    + cbn [pow2_part odd_part]. rewrite pow_0_r. rewrite mul_1_r.
+    + cbn [bin_part odd_part]. rewrite pow_0_r. rewrite mul_1_r.
       rewrite <- divide_div_mul_exact. rewrite (mul_comm 2 _). rewrite div_mul.
       lia. lia. lia. cbn. replace (q~0)%positive with (2 * q)%positive by lia.
       replace (pos (2 * q)%positive) with (2 * pos q) by lia.
       apply divide_factor_l.
-    + cbn [pow2_part odd_part]. rewrite pow_succ_r by lia.
+    + cbn [bin_part odd_part]. rewrite pow_succ_r by lia.
       rewrite mul_assoc. lia.
     + reflexivity. Qed.
 
 Lemma part_urgh (n : positive) :
-  let p := pow2_part n in
+  let p := bin_part n in
   let q := (odd_part n - 1) / 2 in
   pos n = (1 + 2 * q) * 2 ^ p.
 Proof.
   intros p' q'. subst p' q'.
   induction n as [q ei | q ei |].
-  + cbn [pow2_part odd_part]. rewrite pow_0_r. rewrite mul_1_r.
+  + cbn [bin_part odd_part]. rewrite pow_0_r. rewrite mul_1_r.
     rewrite <- divide_div_mul_exact. rewrite (mul_comm 2 _). rewrite div_mul.
     lia. lia. lia. cbn. replace (q~0)%positive with (2 * q)%positive by lia.
     replace (pos (2 * q)%positive) with (2 * pos q) by lia.
     apply divide_factor_l.
-  + cbn [pow2_part odd_part]. rewrite pow_succ_r by lia.
+  + cbn [bin_part odd_part]. rewrite pow_succ_r by lia.
     rewrite mul_assoc. lia.
   + reflexivity. Qed.
 
 Definition pair_shell (n : N) : N :=
-  log2_down (succ_pos n).
+  pos_log2 (succ_pos n).
 
 Arguments pair_shell _ : assert.
 
@@ -371,21 +341,21 @@ Proof.
   - Admitted.
 
 Definition pair (n : N) : N * N :=
-  (pow2_part (succ_pos n), shiftr (pred (odd_part (succ_pos n))) 1).
+  (bin_part (succ_pos n), shiftr (pred (odd_part (succ_pos n))) 1).
 
 Arguments pair _ : assert.
 
 Lemma pair_eqn (n : N) : pair n =
-  (pow2_part (succ_pos n), (odd_part (succ_pos n) - 1) / 2).
+  (bin_part (succ_pos n), (odd_part (succ_pos n) - 1) / 2).
 Proof. cbv [pair]. arithmetize. reflexivity. Qed.
 
 Definition unpair_shell (p q : N) : N :=
-  log2_down (succ_pos (shiftl q 1)) + p.
+  pos_log2 (succ_pos (shiftl q 1)) + p.
 
 Arguments unpair_shell _ _ : assert.
 
 Lemma unpair_shell_eqn (p q : N) : unpair_shell p q =
-  log2_down (succ_pos (2 * q)) + p.
+  pos_log2 (succ_pos (2 * q)) + p.
 Proof. cbv [unpair_shell]. arithmetize. reflexivity. Qed.
 
 Definition unpair (p q : N) : N :=
@@ -397,11 +367,11 @@ Lemma unpair_eqn (p q : N) : unpair p q =
   (1 + 2 * q) * 2 ^ p - 1.
 Proof. cbv [unpair]. arithmetize. reflexivity. Qed.
 
-Compute map pair (N_seq 0 64).
-Compute map (prod_uncurry unpair o pair) (N_seq 0 64).
+Compute map pair (seq 0 64).
+Compute map (prod_uncurry unpair o pair) (seq 0 64).
 
-Compute map pair_shell (N_seq 0 64).
-Compute map (prod_uncurry unpair_shell o pair) (N_seq 0 64).
+Compute map pair_shell (seq 0 64).
+Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof.
@@ -435,8 +405,8 @@ Definition unpair (p q : N) : N :=
 
 Arguments unpair _ _ : assert.
 
-Compute map pair (N_seq 0 64).
-Compute map (prod_uncurry unpair o pair) (N_seq 0 64).
+Compute map pair (seq 0 64).
+Compute map (prod_uncurry unpair o pair) (seq 0 64).
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.
