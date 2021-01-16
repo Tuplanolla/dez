@@ -9,7 +9,7 @@ Local Open Scope N_scope.
 
 (** Binary part.
     Largest power of two to divide the given number.
-    Number of trailing zeros in the binary representation.
+    Number of trailing zeros in the binary representation of the given number.
     Sequence A007814. *)
 
 Fixpoint bin_part (n : positive) : N :=
@@ -55,15 +55,16 @@ Proof.
 (** Analogous to [div_eucl] and [sqrtrem]
     in the sense of "maximum with remainder". *)
 
-#[bad]
-Local Definition minmax (n p : N) : N * N :=
-  prod_sort_by leb (n, p).
+Local Definition min_max (n p : N) : N * N :=
+  if n <? p then (n, p) else (p, n).
 
-Local Lemma minmax_spec (n p : N) :
-  let (q, r) := minmax n p in
-  n <= p /\ q = n /\ r = p \/
-  p <= n /\ q = p /\ r = n.
-Proof. cbv [minmax prod_sort_by]. destruct (leb_spec n p); lia. Qed.
+(** Specification for [min_max].
+    Analogous in structure to [min_spec] and [max_spec]. *)
+
+Lemma min_max_spec (n p : N) :
+  n < p /\ min_max n p = (n, p) \/
+  p <= n /\ min_max n p = (p, n).
+Proof. cbv [min_max]. destruct (ltb_spec n p); auto. Qed.
 
 Module Cantor.
 
@@ -154,7 +155,7 @@ Definition unpair_shell (p q : N) : N := max p q.
 Arguments unpair_shell _ _ : assert.
 
 Definition unpair (p q : N) : N :=
-  let ((* index in leg *) i, (* shell *) s) := minmax p q in
+  let ((* index in leg *) i, (* shell *) s) := min_max p q in
   let (* endpoint of shell *) e := s ^ 2 in
   let (* endpoint of leg *) m := i + e in
   if q <? p then
@@ -190,7 +191,7 @@ Definition pair (n : N) : N * N :=
 Arguments pair _ : assert.
 
 Definition unpair (p q : N) : N :=
-  let ((* index in leg *) i, (* shell *) s) := minmax p q in
+  let ((* index in leg *) i, (* shell *) s) := min_max p q in
   let (* endpoint of shell *) e := s ^ 2 in
   let (* endpoint of leg *) m := i + e in
   let (* continuation *) c (p q : N) :=
@@ -238,7 +239,7 @@ Definition unpair_shell (p q : N) : N := max p q.
 Arguments unpair_shell _ _ : assert.
 
 Definition unpair (p q : N) : N :=
-  let ((* index in leg *) i, (* shell *) s) := minmax p q in
+  let ((* index in leg *) i, (* shell *) s) := min_max p q in
   let (* endpoint of shell *) e := s ^ 2 in
   let (* endpoint of leg *) m := s + e in
   m - p + q.
@@ -272,7 +273,7 @@ Definition pair (n : N) : N * N :=
 Arguments pair _ : assert.
 
 Definition unpair (p q : N) : N :=
-  let ((* index in leg *) i, (* shell *) s) := minmax p q in
+  let ((* index in leg *) i, (* shell *) s) := min_max p q in
   let (* endpoint of shell *) e := s ^ 2 in
   let (* endpoint of leg *) m := s + e in
   let (* continuation *) c (p q : N) :=
