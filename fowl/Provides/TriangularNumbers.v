@@ -12,206 +12,6 @@ Import N.
 
 Local Open Scope N_scope.
 
-(** Eliminate all occurrences of
-    [shiftl], [double], [succ], [shiftr], [div2] and [pred].
-    Rewrite rules that produce subgoals will fail,
-    unless they can be immediately proven with [force]. *)
-
-Ltac eliminate_by force :=
-  (** Eliminate [shiftl 0 _].
-      This shortcut is equivalent to [shiftl_mul_pow2]
-      followed by [mul_0_l]. *)
-  repeat rewrite shiftl_0_l in *;
-  (** Eliminate [shiftl _ 0].
-      This shortcut is equivalent to [shiftl_mul_pow2]
-      followed by [pow_0_r] and [mul_1_r]. *)
-  repeat rewrite shiftl_0_r in *;
-  (** Eliminate [shiftl 1 _] into [2 ^ _].
-      This shortcut is equivalent to [shiftl_mul_pow2]
-      followed by [mul_1_l]. *)
-  repeat rewrite shiftl_1_l in *;
-  (** Eliminate [shiftl _ 1] into [_ * 2].
-      This shortcut is equivalent to [shiftl_mul_pow2]
-      followed by [pow_1_r]. *)
-  repeat rewrite shiftl_1_r in *;
-  (** Eliminate [shiftl _ _] into [_ * 2 ^ _]. *)
-  repeat rewrite shiftl_mul_pow2 in *;
-  (** Eliminate [double _] into [2 * _]. *)
-  repeat rewrite double_spec in *;
-  (** Eliminate [succ _] into [1 + _]. *)
-  repeat rewrite <- add_1_l in *;
-  (** Eliminate [shiftr 0 _].
-      This shortcut is equivalent to [shiftr_div_pow2]
-      followed by [div_0_l] with [pow_nonzero]. *)
-  repeat rewrite shiftr_0_l in *;
-  (** Eliminate [shiftr _ 0].
-      This shortcut is equivalent to [shiftr_div_pow2]
-      followed by [pow_0_r] and [div_1_r]. *)
-  repeat rewrite shiftr_0_r in *;
-  (** Eliminate [shiftr 1 _] into [1 / 2 ^ _].
-      This shortcut is equivalent to [shiftr_div_pow2]. *)
-  repeat rewrite shiftr_1_l in *;
-  (** Eliminate [shiftr _ 1] into [_ / 2].
-      This shortcut is equivalent to [shiftr_div_pow2]
-      followed by [pow_1_r]. *)
-  repeat rewrite shiftr_1_r in *;
-  (** Eliminate [shiftr _ _] into [_ / 2 ^ _]. *)
-  repeat rewrite shiftr_div_pow2 in *;
-  (** Eliminate [div2 _] into [_ / 2]. *)
-  repeat rewrite div2_div in *;
-  (** Eliminate [pred] into [_ - 1]. *)
-  repeat rewrite <- sub_1_r in *;
-  (** Try to eliminate [0 ^ _]. *)
-  repeat rewrite pow_0_l in * by force;
-  (** Eliminate [_ ^ 0]. *)
-  repeat rewrite pow_0_r in *;
-  (** Eliminate [1 ^ _]. *)
-  repeat rewrite pow_1_l in *;
-  (** Eliminate [_ ^ 1]. *)
-  repeat rewrite pow_1_r in *;
-  (** Do not try to eliminate [_ ^ _],
-      because it would be impossible. *)
-  (* repeat rewrite _ in *; *)
-  (** Eliminate [0 * _]. *)
-  repeat rewrite mul_0_l in *;
-  (** Eliminate [_ * 0]. *)
-  repeat rewrite mul_0_r in *;
-  (** Eliminate [1 * _]. *)
-  repeat rewrite mul_1_l in *;
-  (** Eliminate [_ * 1]. *)
-  repeat rewrite mul_1_r in *;
-  (** Do not try to eliminate [_ * _],
-      because it would be impossible. *)
-  (* repeat rewrite _ in *; *)
-  (** Eliminate [0 + _]. *)
-  repeat rewrite add_0_l in *;
-  (** Eliminate [_ + 0]. *)
-  repeat rewrite add_0_r in *;
-  (** Do not try to eliminate [_ + _],
-      because it would be impossible. *)
-  (* repeat rewrite _ in *; *)
-  (** Eliminate [log2 0].
-      This is specific to the way [log2] is defined. *)
-  repeat rewrite log2_0 in *;
-  (** Eliminate [log2 1]. *)
-  repeat rewrite log2_1 in *;
-  (** Eliminate [log2 2]. *)
-  repeat rewrite log2_2 in *;
-  (** Do not eliminate [log2 _],
-      because it would be impossible. *)
-  (* repeat rewrite _ in *; *)
-  (** Try to eliminate [0 / _]. *)
-  repeat rewrite div_0_l in * by force;
-  (** Eliminate [_ / 0].
-      This is specific to the way [div] is defined. *)
-  repeat rewrite div_0_r in *;
-  (** Try to eliminate [1 / _]. *)
-  repeat rewrite div_1_l in * by force;
-  (** Eliminate [_ / 1]. *)
-  repeat rewrite div_1_r in *;
-  (** Do not try to eliminate [_ / _],
-      because it would be impossible. *)
-  (* repeat rewrite _ in *; *)
-  (** Eliminate [0 - _].
-      This is specific to the way [sub] is defined. *)
-  repeat rewrite sub_0_l in *;
-  (** Eliminate [_ - 0]. *)
-  repeat rewrite sub_0_r in *;
-  (** Do not try to eliminate [_ - _],
-      because it would be impossible. *)
-  (* repeat rewrite _ in *; *)
-  idtac.
-
-(** Second step of [arithmetize]. *)
-
-Ltac simplify :=
-  (** Simplify [_ ^ _], [_ * _], [_ + _], [log2], [_ / _] and [_ - _]. *)
-  repeat reduce_2 is_N is_N pow;
-  repeat reduce_2 is_N is_N mul;
-  repeat reduce_2 is_N is_N add;
-  repeat reduce_1 is_N log2;
-  repeat reduce_2 is_N is_N div;
-  repeat reduce_2 is_N is_N sub;
-  repeat recomm_2_0 is_N mul mul_comm;
-  repeat recomm_2_0 is_N add add_comm;
-  repeat reassoc_2 is_N mul mul_assoc;
-  repeat reassoc_2 is_N add add_assoc;
-  idtac.
-
-(** Convert expressions involving bit manipulation
-    into expressions involving basic arithmetic.
-
-    The conversion repeats two steps
-    until they no longer make progress in the proof.
-    In the first step, we eliminate occurrences of
-    [shiftl], [double], [succ], [shiftr], [div2] and [pred].
-    In the second step, we simplify occurrences of
-    [_ ^ _], [_ * _], [_ + _], [log2], [_ / _] and [_ - _].
-    After the conversion,
-    no occurrence of [_ * _] or [_ + _]
-    will have constants appear on the right side,
-    no occurrence of [_ ^ _], [_ / _] or [_ - _]
-    will have constants appear on both sides,
-    no occurrence of [log2] will have constants appear anywhere and
-    no occurrence of [0], [1] or [2] will be vain. *)
-
-Ltac arithmetize_by force := repeat (eliminate_by force; simplify).
-
-(** Specialization of [arithmetize_by] using [lia]. *)
-
-Ltac arithmetize := arithmetize_by lia.
-
-(** Replace [sqrtrem] with its specification. *)
-
-#[bad]
-Ltac destruct_sqrtrem :=
-  match goal with
-  | |- context [let (a, b) := sqrtrem ?x in _] =>
-    let fa := fresh a in let fb := fresh b in
-    let faab := fresh "a" fa fb in pose proof sqrtrem_spec x as faab;
-    let f := fresh "e" fa in let fe := fresh "e" fa fb in
-    destruct (sqrtrem x) as [fa fb] eqn : fe;
-    pose proof (eq_trans (z := fa) (eq_sym (sqrtrem_sqrt x)) (f_equal fst fe)) as f;
-    let fen := fresh "en" fa fb in let fl := fresh "l" fa fb in
-    destruct faab as [fen fl]
-  end.
-
-(** Analogous to [sqrtrem_sqrt]. *)
-
-Lemma div_eucl_div (a b : N) : fst (div_eucl a b) = a / b.
-Proof. reflexivity. Qed.
-
-(** Replace [div_eucl] with its specification. *)
-
-#[bad]
-Ltac destruct_div_eucl :=
-  match goal with
-  | |- context [let (a, b) := div_eucl ?x ?y in _] =>
-    let fa := fresh a in let fb := fresh b in
-    let faab := fresh "a" fa fb in pose proof div_eucl_spec' x y as faab;
-    let f := fresh "e" fa in let fe := fresh "e" fa fb in
-    destruct (div_eucl x y) as [fa fb] eqn : fe;
-    pose proof (eq_trans (z := fa) (eq_sym (div_eucl_div x y)) (f_equal fst fe)) as f;
-    let fen := fresh "en" fa fb in let fl := fresh "l" fa fb in
-    destruct faab as [fen fl]
-  end.
-
-(** What it means to be even or odd. *)
-
-#[bad]
-Lemma factor_even_odd (n : N) : exists p : N, n = 2 * p \/ n = 1 + 2 * p.
-Proof.
-  induction n as [| q ei] using peano_ind.
-  - exists 0. lia.
-  - arithmetize. destruct ei as [r [e | e]].
-    + exists (q / 2). subst q. right.
-      replace (2 * r) with (r * 2) by lia.
-      rewrite div_mul by lia. lia.
-    + exists ((1 + q) / 2). subst q. left.
-      replace (1 + (1 + 2 * r)) with (2 * (1 + r)) by lia.
-      replace (2 * (1 + r)) with ((1 + r) * 2) by lia.
-      rewrite div_mul by lia. lia. Qed.
-
 (** Generating function.
     Sequence A000217. *)
 
@@ -395,9 +195,9 @@ Proof.
   rename eq0 into eq. rewrite untri_eqn. cbv zeta. rewrite tri_eqn.
   f_equal.
   - rewrite <- eq. rewrite <- es. reflexivity.
-  - specialize (lqe ltac:(lia)).
+  - specialize (l1qe ltac:(lia)).
     assert (oe : e = 0 \/ e = 1) by lia.
-    clear lqe. destruct oe as [e0 | e1]; subst e; arithmetize.
+    clear l1qe. destruct oe as [e0 | e1]; subst e; arithmetize.
     + admit.
     + admit. Abort.
 
@@ -405,18 +205,18 @@ Theorem untri_rem_tri (n : N) : untri_rem (tri n) = (n, 0).
 Proof.
   rewrite tri_eqn. rewrite untri_rem_eqn.
   destruct_sqrtrem. destruct_div_eucl.
-  specialize (lqe ltac:(lia)).
+  specialize (l1qe ltac:(lia)).
   assert (oe : e = 0 \/ e = 1) by lia.
-  clear lqe.
+  clear l1qe.
   destruct oe as [e0 | e1]; subst e.
   - arithmetize. f_equal.
     + enough (2 * q = 2 * n) by lia.
-      rewrite <- enqe.
+      rewrite <- e0qe.
       enough (s = 1 + 2 * n) by lia.
       apply (pow_inj_l _ _ 2); [lia |].
       enough (s ^ 2 + r = (1 + 2 * n) ^ 2 + r) by lia.
       rewrite (pow_2_r s). rewrite (pow_2_r (1 + 2 * n)).
-      rewrite <- ensr.
+      rewrite <- e0sr.
       replace (8 * (n * (1 + n) / 2))
       with (4 * (2 * (n * (1 + n) / 2))) by lia.
       rewrite tri_div2_mul2. enough (r = 0) by lia.
@@ -435,7 +235,7 @@ Proof.
   destruct_sqrtrem.
   destruct_div_eucl.
   cbv [fst snd].
-  specialize (lqe ltac:(lia)). Admitted.
+  specialize (l1qe ltac:(lia)). Admitted.
 
 (** Inverse of generating function, partial. *)
 
@@ -462,7 +262,7 @@ Proof.
   cbv [untri_error tri] in *.
   destruct_sqrtrem.
   destruct (eqb_spec r 0) as [e | f].
-  - subst r. clear lsr. f_equal. arithmetize. rewrite <- es.
+  - subst r. clear l1sr. f_equal. arithmetize. rewrite <- es.
     rewrite <- tri_eqn. rewrite <- untri_eqn. apply untri_tri.
   - exfalso. apply f. clear f. arithmetize. Admitted.
 
@@ -488,7 +288,7 @@ Proof.
         assert (enp' : (1 + (s - 1) / 2 * (1 + (s - 1) / 2) / 2) = p)
         by now inversion enp.
         rewrite <- enp'.
-        pose proof factor_even_odd (s - 1) as eo.
+        pose proof exist_even_odd (s - 1) as eo.
         destruct eo as [t [eo | eo]].
         -- rewrite eo.
           repeat rewrite (mul_comm 2 _). rewrite div_mul by lia.

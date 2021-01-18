@@ -82,7 +82,7 @@ Ltac reduce_4 p0 p1 p2 p3 f :=
 
 (** Commute the arguments of a call
     to the given [2]-parameter function in the goal and hypotheses,
-    so that the argument at index [0] is passed in first
+    so that the argument at index [0] comes first
     (there are no other guarantees as the ordering is partial).
     The arguments of the function [f] are only sorted when
     it makes the argument at the appropriate index
@@ -114,7 +114,7 @@ Ltac recomm_2_0 p f e :=
 
 (** Commute the arguments of a call
     to the given [2]-parameter function in the goal and hypotheses,
-    so that the argument at index [1] is passed in first
+    so that the argument at index [1] comes first
     (there are no other guarantees as the ordering is partial).
     The arguments of the function [f] are only sorted when
     it makes the argument at the appropriate index
@@ -138,7 +138,7 @@ Ltac recomm_2_1 p f e :=
 
 (** Commute the arguments of a call
     to the given [3]-parameter function in the goal and hypotheses,
-    so that the argument at index [0] is passed in first
+    so that the argument at index [0] comes first
     (there are no other guarantees as the ordering is partial).
     The arguments of the function [f] are only sorted when
     it makes the argument at the appropriate index
@@ -200,7 +200,7 @@ Ltac recomm_3_0 p f e :=
 
 (** Commute the arguments of a call
     to the given [3]-parameter function in the goal and hypotheses,
-    so that the argument at index [1] is passed in first
+    so that the argument at index [1] comes first
     (there are no other guarantees as the ordering is partial).
     The arguments of the function [f] are only sorted when
     it makes the argument at the appropriate index
@@ -244,7 +244,7 @@ Ltac recomm_3_1 p f e :=
 
 (** Commute the arguments of a call
     to the given [3]-parameter function in the goal and hypotheses,
-    so that the argument at index [2] is passed in first
+    so that the argument at index [2] comes first
     (there are no other guarantees as the ordering is partial).
     The arguments of the function [f] are only sorted when
     it makes the argument at the appropriate index
@@ -302,7 +302,7 @@ Ltac recomm_4_3 p f e :=
 
 (** Associate the arguments of two nested calls
     to the given [2]-parameter function in the goal and hypotheses,
-    so that the arguments at the deeper level are passed in first
+    so that the arguments at the deeper level come first
     (there are no other guarantees as the ordering is partial).
     The arguments of the function [f] are only reassociated when
     it makes the arguments at the appropriate indexes
@@ -361,7 +361,7 @@ Ltac reassoc_2 p f e10 :=
 
 (** Associate the arguments of two nested calls
     to the given [3]-parameter function in the goal and hypotheses,
-    so that the arguments at the deeper level are passed in first
+    so that the arguments at the deeper level come first
     (there are no other guarantees as the ordering is partial).
     The arguments of the function [f] are only reassociated when
     it makes the arguments at the appropriate indexes

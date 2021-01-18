@@ -2,6 +2,8 @@
 
 From Coq Require Import
   Lia NArith.NArith.
+From Maniunfold Require Import
+  DatatypeTactics RewritingTactics.
 From Maniunfold.Is Require Export
   OneSorted.AbelianGroup OneSorted.CommutativeSemigroup
   OneSorted.CommutativeMonoid OneSorted.CommutativeSemiring.
@@ -69,6 +71,12 @@ Definition pos_log2_up (n : positive) : N :=
 
 Arguments pos_log2_up _ : simpl nomatch.
 
+(** Definition of [div] as an equation.
+    Analogous in structure to [sqrtrem_sqrt]. *)
+
+Lemma div_eucl_div (a b : N) : fst (div_eucl a b) = a / b.
+Proof. reflexivity. Qed.
+
 (** More elaborate specification for [div_eucl] than [div_eucl_spec].
     Analogous in structure to [sqrtrem_spec]. *)
 
@@ -82,6 +90,72 @@ Proof.
   - pose proof pos_div_eucl_spec n (pos p) as enp.
     pose proof pos_div_eucl_remainder n (pos p) as lnp.
     destruct (pos_div_eucl n (pos p)) as [q r]; cbv [fst snd] in *. lia. Qed.
+
+(** Replace a call to [div_eucl] with its specification
+    in the goal and hypotheses. *)
+
+Ltac destruct_div_eucl :=
+  match goal with
+  | |- context [let (a, b) := div_eucl ?x ?y in _] =>
+    let a' := fresh a in
+    let b' := fresh b in
+    let aab' := fresh "a" a' b' in
+    let ea' := fresh "e" a' in
+    let eab' := fresh "e" a' b' in
+    let e0ab' := fresh "e0" a' b' in
+    let l1ab' := fresh "l1" a' b' in
+    pose proof div_eucl_spec' x y as aab';
+    destruct (div_eucl x y) as [a' b'] eqn : eab';
+    pose proof (eq_trans (z := a') (eq_sym (div_eucl_div x y))
+      (f_equal fst eab')) as ea';
+    destruct aab' as [e0ab' l1ab']
+  | h : context [let (a, b) := div_eucl ?x ?y in _] |- _ =>
+    let a' := fresh a in
+    let b' := fresh b in
+    let aab' := fresh "a" a' b' in
+    let ea' := fresh "e" a' in
+    let eab' := fresh "e" a' b' in
+    let e0ab' := fresh "e0" a' b' in
+    let l1ab' := fresh "l1" a' b' in
+    pose proof div_eucl_spec' x y as aab';
+    destruct (div_eucl x y) as [a' b'] eqn : eab';
+    pose proof (eq_trans (z := a') (eq_sym (div_eucl_div x y))
+      (f_equal fst eab')) as ea';
+    destruct aab' as [e0ab' l1ab']
+  end.
+
+(** Replace a call to [sqrtrem] with its specification
+    in the goal and hypotheses. *)
+
+Ltac destruct_sqrtrem :=
+  match goal with
+  | |- context [let (a, b) := sqrtrem ?x in _] =>
+    let a' := fresh a in
+    let b' := fresh b in
+    let aab' := fresh "a" a' b' in
+    let ea' := fresh "e" a' in
+    let eab' := fresh "e" a' b' in
+    let e0ab' := fresh "e0" a' b' in
+    let l1ab' := fresh "l1" a' b' in
+    pose proof sqrtrem_spec x as aab';
+    destruct (sqrtrem x) as [a' b'] eqn : eab';
+    pose proof (eq_trans (z := a') (eq_sym (sqrtrem_sqrt x))
+      (f_equal fst eab')) as ea';
+    destruct aab' as [e0ab' l1ab']
+  | h : context [let (a, b) := sqrtrem ?x in _] |- _ =>
+    let a' := fresh a in
+    let b' := fresh b in
+    let aab' := fresh "a" a' b' in
+    let ea' := fresh "e" a' in
+    let eab' := fresh "e" a' b' in
+    let e0ab' := fresh "e0" a' b' in
+    let l1ab' := fresh "l1" a' b' in
+    pose proof sqrtrem_spec x as aab';
+    destruct (sqrtrem x) as [a' b'] eqn : eab';
+    pose proof (eq_trans (z := a') (eq_sym (sqrtrem_sqrt x))
+      (f_equal fst eab')) as ea';
+    destruct aab' as [e0ab' l1ab']
+  end.
 
 (** These lemmas are missing from the standard library. *)
 
@@ -103,6 +177,191 @@ Proof. destruct a as [| p]; reflexivity. Qed.
 
 Lemma log2_0 : log2 0 = 0.
 Proof. reflexivity. Qed.
+
+(** Every natural number is either even or odd.
+    Either the number itself or its predecessor can be halved. *)
+
+Lemma exist_even_odd (n : N) : exists p : N, n = 2 * p \/ n = 1 + 2 * p.
+Proof.
+  induction n as [| q ei] using peano_ind.
+  - exists 0. lia.
+  - destruct ei as [r [e | e]].
+    + exists (q / 2). subst q. right.
+      replace (2 * r) with (r * 2) by lia.
+      rewrite div_mul by lia. lia.
+    + exists ((1 + q) / 2). subst q. left.
+      replace (1 + (1 + 2 * r)) with ((1 + r) * 2) by lia.
+      rewrite div_mul by lia. lia. Qed.
+
+(** Eliminate all occurrences of
+    [shiftl], [double], [succ], [shiftr], [div2] and [pred]. *)
+
+Ltac eliminate :=
+  (** Eliminate [shiftl 0 _].
+      This shortcut is equivalent to [shiftl_mul_pow2]
+      followed by [mul_0_l]. *)
+  repeat rewrite shiftl_0_l in *;
+  (** Eliminate [shiftl _ 0].
+      This shortcut is equivalent to [shiftl_mul_pow2]
+      followed by [pow_0_r] and [mul_1_r]. *)
+  repeat rewrite shiftl_0_r in *;
+  (** Eliminate [shiftl 1 _] into [2 ^ _].
+      This shortcut is equivalent to [shiftl_mul_pow2]
+      followed by [mul_1_l]. *)
+  repeat rewrite shiftl_1_l in *;
+  (** Eliminate [shiftl _ 1] into [_ * 2].
+      This shortcut is equivalent to [shiftl_mul_pow2]
+      followed by [pow_1_r]. *)
+  repeat rewrite shiftl_1_r in *;
+  (** Eliminate [shiftl _ _] into [_ * 2 ^ _]. *)
+  repeat rewrite shiftl_mul_pow2 in *;
+  (** Eliminate [double _] into [2 * _]. *)
+  repeat rewrite double_spec in *;
+  (** Eliminate [succ _] into [1 + _]. *)
+  repeat rewrite <- add_1_l in *;
+  (** Eliminate [shiftr 0 _].
+      This shortcut is equivalent to [shiftr_div_pow2]
+      followed by [div_0_l] with [pow_nonzero]. *)
+  repeat rewrite shiftr_0_l in *;
+  (** Eliminate [shiftr _ 0].
+      This shortcut is equivalent to [shiftr_div_pow2]
+      followed by [pow_0_r] and [div_1_r]. *)
+  repeat rewrite shiftr_0_r in *;
+  (** Eliminate [shiftr 1 _] into [1 / 2 ^ _].
+      This shortcut is equivalent to [shiftr_div_pow2]. *)
+  repeat rewrite shiftr_1_l in *;
+  (** Eliminate [shiftr _ 1] into [_ / 2].
+      This shortcut is equivalent to [shiftr_div_pow2]
+      followed by [pow_1_r]. *)
+  repeat rewrite shiftr_1_r in *;
+  (** Eliminate [shiftr _ _] into [_ / 2 ^ _]. *)
+  repeat rewrite shiftr_div_pow2 in *;
+  (** Eliminate [div2 _] into [_ / 2]. *)
+  repeat rewrite div2_div in *;
+  (** Eliminate [pred] into [_ - 1]. *)
+  repeat rewrite <- sub_1_r in *;
+  idtac.
+
+(** Simplify occurrences of
+    [_ ^ _], [_ * _], [_ + _], [log2], [_ / _] and [_ - _].
+    Rewrite rules that produce subgoals will fail,
+    unless they can be immediately proven with [force]. *)
+
+Ltac simplify_by force :=
+  (** Reduce [_ ^ _], [_ * _], [_ + _], [log2], [_ / _] and [_ - _]. *)
+  (** Try to eliminate [0 ^ _]. *)
+  repeat rewrite pow_0_l in * by force;
+  (** Eliminate [_ ^ 0]. *)
+  repeat rewrite pow_0_r in *;
+  (** Eliminate [1 ^ _]. *)
+  repeat rewrite pow_1_l in *;
+  (** Eliminate [_ ^ 1]. *)
+  repeat rewrite pow_1_r in *;
+  (** Do not try to eliminate [_ ^ _],
+      because it would be impossible. *)
+  (* repeat rewrite _ in *; *)
+  (** Eliminate [0 * _]. *)
+  repeat rewrite mul_0_l in *;
+  (** Eliminate [_ * 0]. *)
+  repeat rewrite mul_0_r in *;
+  (** Eliminate [1 * _]. *)
+  repeat rewrite mul_1_l in *;
+  (** Eliminate [_ * 1]. *)
+  repeat rewrite mul_1_r in *;
+  (** Do not try to eliminate [_ * _],
+      because it would be impossible. *)
+  (* repeat rewrite _ in *; *)
+  (** Eliminate [0 + _]. *)
+  repeat rewrite add_0_l in *;
+  (** Eliminate [_ + 0]. *)
+  repeat rewrite add_0_r in *;
+  (** Do not try to eliminate [_ + _],
+      because it would be impossible. *)
+  (* repeat rewrite _ in *; *)
+  (** Eliminate [log2 0].
+      This is specific to the way [log2] is defined. *)
+  repeat rewrite log2_0 in *;
+  (** Eliminate [log2 1]. *)
+  repeat rewrite log2_1 in *;
+  (** Eliminate [log2 2]. *)
+  repeat rewrite log2_2 in *;
+  (** Do not eliminate [log2 _],
+      because it would be impossible. *)
+  (* repeat rewrite _ in *; *)
+  (** Try to eliminate [0 / _]. *)
+  repeat rewrite div_0_l in * by force;
+  (** Eliminate [_ / 0].
+      This is specific to the way [div] is defined. *)
+  repeat rewrite div_0_r in *;
+  (** Try to eliminate [1 / _]. *)
+  repeat rewrite div_1_l in * by force;
+  (** Eliminate [_ / 1]. *)
+  repeat rewrite div_1_r in *;
+  (** Do not try to eliminate [_ / _],
+      because it would be impossible. *)
+  (* repeat rewrite _ in *; *)
+  (** Eliminate [0 - _].
+      This is specific to the way [sub] is defined. *)
+  repeat rewrite sub_0_l in *;
+  (** Eliminate [_ - 0]. *)
+  repeat rewrite sub_0_r in *;
+  (** Do not try to eliminate [_ - _],
+      because it would be impossible. *)
+  (* repeat rewrite _ in *; *)
+  idtac.
+
+(** Prepare or reduce occurrences of
+    [_ ^ _], [_ * _], [_ + _], [log2], [_ / _] and [_ - _].
+    Rewrite rules that produce subgoals will fail,
+    unless they can be immediately proven with [force]. *)
+
+Ltac preduce :=
+  (** Reduce [_ ^ _], [_ * _], [_ + _], [log2], [_ / _] and [_ - _]. *)
+  repeat reduce_2 is_N is_N pow;
+  repeat reduce_2 is_N is_N mul;
+  repeat reduce_2 is_N is_N add;
+  repeat reduce_1 is_N log2;
+  repeat reduce_2 is_N is_N div;
+  repeat reduce_2 is_N is_N sub;
+  (** Commute [_ * _] and [_ + _],
+      so that constants always appear on the left side
+      (corresponding to the structurally recursive parameter). *)
+  repeat recomm_2_0 is_N mul mul_comm;
+  repeat recomm_2_0 is_N add add_comm;
+  (** Associate [_ * _] and [_ + _],
+      so that constants always appear on the deeper level
+      (and thus reduce). *)
+  repeat reassoc_2 is_N mul mul_assoc;
+  repeat reassoc_2 is_N add add_assoc;
+  idtac.
+
+(** Convert expressions involving bit manipulation
+    into expressions involving basic arithmetic.
+
+    The conversion repeats three steps
+    until they no longer make progress in the proof.
+    In the first step, we eliminate occurrences of
+    [shiftl], [double], [succ], [shiftr], [div2] and [pred], and
+    in the remaining steps, we simplify and reduce occurrences of
+    [_ ^ _], [_ * _], [_ + _], [log2], [_ / _] and [_ - _].
+
+    After the conversion,
+    we expect two kinds of properties to hold.
+    Most importantly,
+    no occurrence of [_ * _] or [_ + _]
+    will have constants appear on the right side,
+    no occurrence of [_ ^ _], [_ / _] or [_ - _]
+    will have constants appear on both sides and
+    no occurrence of [log2] will have constants appear anywhere.
+    Less importantly,
+    no occurrence of [0], [1] or [2] should be unnecessary
+    according to the algebraic structure of the operations. *)
+
+Ltac arithmetize_by force := eliminate; repeat (simplify_by force; preduce).
+
+(** Specialization of [arithmetize_by] using [lia]. *)
+
+Ltac arithmetize := arithmetize_by lia.
 
 End N.
 
