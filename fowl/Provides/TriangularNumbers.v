@@ -56,103 +56,122 @@ Proof.
     + cbv [untri_up]. rewrite pos_pred_spec. arithmetize.
       rewrite untri_eqn. reflexivity. Qed.
 
-#[bad]
-Lemma tri_subterm_Even (n : N) : Even (n * (1 + n)).
-Proof.
-  apply even_spec. rewrite even_mul. apply Bool.orb_true_intro.
-  destruct (Even_or_Odd n) as [E | E].
-  - left. apply even_spec. assumption.
-  - right. rewrite add_1_l. rewrite even_succ. apply odd_spec. assumption. Qed.
-
-#[bad]
-Lemma succ_mod (n p : N) (l : 1 < n) : (succ p) mod n = succ (p mod n) mod n.
-Proof.
-  arithmetize.
-  rewrite add_mod by lia. rewrite mod_1_l by lia. reflexivity. Qed.
-
-#[bad]
-Lemma tri_div2_mul2 (n : N) : 2 * (n * (1 + n) / 2) = n * (1 + n).
-Proof.
-  rewrite <- (add_0_r (2 * (_ / 2))).
-  replace 0 with (n * (1 + n) mod 2).
-  rewrite <- div_mod. reflexivity. lia.
-  rewrite mul_add_distr_l. rewrite mul_1_r.
-  rewrite add_mod by lia. rewrite mul_mod by lia.
-  assert (e : n mod 2 = 0 \/ n mod 2 = 1).
-  induction n as [| p eip] using peano_ind. left. reflexivity.
-  destruct eip as [ei | ei].
-  right. rewrite succ_mod by lia. rewrite ei. reflexivity.
-  left. rewrite succ_mod by lia. rewrite ei. reflexivity.
-  destruct e as [e | e].
-  rewrite e. reflexivity.
-  rewrite e. reflexivity. Qed.
-
-Lemma tri_succ (n : N) : tri (succ n) = succ n + tri n.
-Proof.
-  cbv [tri]. arithmetize.
-  rewrite (mul_add_distr_l (1 + n) 2 n).
-  rewrite (div_add_l (1 + n) 2 ((1 + n) * n)).
-  - rewrite (mul_comm (1 + n) n). reflexivity.
-  - rewrite two_succ. apply (neq_succ_0 1). Qed.
-
-Lemma tri_pred (n : N) : tri (pred n) = tri n - n.
-Proof.
-  destruct n as [| p _] using peano_ind.
-  - reflexivity.
-  - rewrite (pred_succ p). rewrite (tri_succ p).
-    rewrite (add_comm (succ p) (tri p)). rewrite (add_sub (tri p) (succ p)).
-    reflexivity. Qed.
-
 Theorem untri_tri (n : N) : untri (tri n) = n.
 Proof.
-  induction n as [| p eip] using peano_ind.
+  rewrite tri_eqn, untri_eqn.
+  replace (8 * (n * (1 + n) / 2)) with (4 * (2 * (n * (1 + n) / 2))) by lia.
+  rewrite double_mul_even_odd.
+  replace (1 + 4 * (n * (1 + n))) with ((1 + 2 * n) * (1 + 2 * n)) by lia.
+  rewrite sqrt_square.
+  replace (1 + 2 * n - 1) with (n * 2) by lia.
+  rewrite div_mul by lia. lia. Qed.
+
+Lemma tri_eq_0 (n : N) (e : tri n = 0) : n = 0.
+Proof.
+  destruct n as [| p ei] using peano_ind.
   - reflexivity.
-  - rewrite <- eip at 2. clear eip.
-    rewrite (tri_succ p).
-    cbv [tri untri]. arithmetize.
-    rewrite <- (div_add_l 1 2 _) by lia.
-    rewrite mul_1_l.
-    rewrite add_sub_assoc.
-    2:{ apply sqrt_le_square.
-    match goal with
-    | |- _ <= 1 + ?x => let n := fresh in set (n := x)
-    end. lia. }
-    rewrite (add_comm 2 _).
-    rewrite <- add_sub_assoc by lia.
-    replace (2 - 1) with 1 by lia.
-    rewrite (add_comm _ 1).
-    repeat rewrite mul_add_distr_r.
-    repeat rewrite mul_add_distr_l.
-    repeat rewrite mul_1_r.
-    repeat rewrite mul_1_l.
-    repeat rewrite add_assoc.
-    replace (1 + 8) with 9 by lia.
-    repeat rewrite (mul_comm _ 8).
-    replace 8 with (4 * 2) by lia.
-    repeat rewrite <- mul_assoc.
-    replace (p + p * p) with (p * (1 + p)) by lia.
-    rewrite tri_div2_mul2.
-    repeat rewrite mul_add_distr_l.
-    repeat rewrite mul_assoc.
-    repeat rewrite add_assoc.
-    replace (9 + 4 * 2 * p + 4 * p * 1 + 4 * p * p)
-    with (9 + 12 * p + 4 * p * p) by lia.
-    replace (1 + 4 * p * 1 + 4 * p * p) with (1 + 4 * p + 4 * p * p) by lia.
-    Admitted.
+  - exfalso. rewrite tri_eqn in *. arithmetize.
+    replace ((1 + p) * (2 + p)) with (1 * 2 + p * (3 + p)) in e by lia.
+    rewrite div_add_l in e by lia.
+    remember (p * (3 + p) / 2) as q eqn : eq. lia. Qed.
+
+Lemma tri_neq_0 (n : N) (e : tri n <> 0) : n <> 0.
+Proof.
+  destruct n as [| p ei] using peano_ind.
+  - rewrite tri_eqn in e. apply e.
+  - lia. Qed.
 
 Theorem untri_up_tri (n : N) : untri_up (tri n) = n.
 Proof.
-  destruct (tri n) as [| p] eqn : en.
-  - cbv [untri_up tri] in *. arithmetize.
-    apply (mul_cancel_l _ _ 2) in en; [| lia].
-    rewrite (tri_div2_mul2 _) in en. lia.
-  - cbv [untri_up]. rewrite pos_pred_spec. rewrite <- en.
-    pose proof tri_succ (pred n) as e.
-    assert (ex : tri n = succ (pred n + tri (pred n))). admit.
-    rewrite ex. rewrite pred_succ. rewrite tri_pred. Admitted.
+  rewrite untri_up_eqn.
+  destruct (eqb_spec (tri n) 0) as [e | f].
+  - symmetry. apply tri_eq_0. apply e.
+  - apply tri_neq_0 in f.
+    rewrite tri_eqn.
+    replace (8 * (n * (1 + n) / 2 - 1))
+    with (4 * (2 * (n * (1 + n) / 2) - 2)) by lia.
+    rewrite double_mul_even_odd.
+    replace (1 + 4 * (n * (1 + n) - 2))
+    with ((1 + 2 * n) * (1 + 2 * n) - 8) by lia.
+    Undo. Admitted. (*
+    rewrite <- pow_2_r.
+    remember (1 + 2 * n) as p eqn : ep.
+    repeat rewrite pow_2_r.
+    destruct (sqrt_spec' (p * p - 8)) as [l0 l1].
+    remember (sqrt ((1 + 2 * n) ^ 2 - 8)) as p eqn : ep.
+    enough ((p - 1) / 2 <= n - 1) by lia.
+    subst p. 
+    apply (mul_cancel_l _ _ 2); [lia |].
+    mul le
+    Check divide_div_mul_exact.
+    rewrite <- div_mod; try lia. subst p.
+    enough (sqrt ((1 + 2 * n) ^ 2 - 8) = 2 * n - 1) by lia.
+    destruct (sqrt_spec' ((1 + 2 * n) ^ 2 - 8)) as [l0 l1].
+    rewrite <- sqrt_square.
+    apply sqrt_le_mono.
+    apply (pow_inj_l _ _ 2); [lia |].
+    repeat rewrite <- pow_2_r in *.
+    repeat rewrite pow_2_r in *.
+    apply le_antisymm.
+    + rewrite l0.  lia.
+    1 + 4 * n + 4 * n ^ 2 - 8 <= 1 - 4 * n + 4 * n ^ 2
+    Search sqrt sub.
+    rewrite sqrt_square.
+    replace (1 + 2 * n - 1) with (n * 2) by lia.
+    rewrite div_mul by lia. lia. Qed.
+    remember (sqrt ((1 + 2 * n) ^ 2 - 8) - 1) as p eqn : ep.
+    enough (p / 2 = n - 1) by lia.
+    destruct (exist_even_odd p) as [q [eq | eq]].
+    rewrite eq. *)
+
+Instance mul_wd' :
+  Morphisms.Proper (Morphisms.respectful le (Morphisms.respectful le le)) mul.
+Proof.
+  intros n p l n' p' l'. apply mul_le_mono; [lia |]. lia. Qed.
+
+Instance add_wd' :
+  Morphisms.Proper (Morphisms.respectful le (Morphisms.respectful le le)) add.
+Proof.
+  intros n p l n' p' l'. apply add_le_mono; [lia |]. lia. Qed.
+
+Instance div2_wd' :
+  Morphisms.Proper (Morphisms.respectful le le) div2.
+Proof.
+  intros n p l. repeat rewrite div2_div. apply div_le_mono; [lia |]. lia. Qed.
 
 Theorem tri_untri (n : N) : tri (untri n) <= n.
-Proof. Admitted.
+Proof.
+  rewrite tri_eqn, untri_eqn.
+  remember (1 + 8 * n) as p eqn : ep.
+  destruct (exist_even_odd (sqrt p - 1)) as [q [eq | eq]].
+  - rewrite eq. replace (2 * q) with (q * 2) by lia. rewrite div_mul by lia.
+    destruct (exist_even_odd q) as [r [er | er]].
+    + rewrite er.
+      replace (2 * r * (1 + 2 * r))
+      with (r * (1 + 2 * r) * 2) by lia.
+      rewrite div_mul by lia. destruct (sqrt_spec' p) as [l0 l1]. lia.
+    + rewrite er.
+      replace ((1 + 2 * r) * (1 + (1 + 2 * r)))
+      with ((1 + 2 * r) * (1 + r) * 2) by lia.
+      rewrite div_mul by lia. destruct (sqrt_spec' p) as [l0 l1]. lia.
+  - rewrite eq.
+    assert (l : 1 + 2 * q <= 2 + 2 * q) by lia.
+    destruct (exist_even_odd q) as [r [er | er]].
+    +
+    replace (1 + (1 + 2 * q) / 2) with ((2 + (1 + 2 * q)) / 2).
+    2: { rewrite <- div_add_l by lia. replace (1 * 2 + (1 + 2 * q)) with (2 + (1 + 2 * q)) by lia. lia. }
+    (** This should "just work", except the majors depend on parity. *)
+    repeat rewrite <- div2_div. etransitivity. apply div2_wd'. apply mul_wd'. apply div2_wd'. rewrite l. reflexivity. reflexivity. repeat rewrite div2_div.
+    repeat rewrite <- div2_div. etransitivity. apply div2_wd'. apply mul_wd'. reflexivity. apply div2_wd'. rewrite l. reflexivity. repeat rewrite div2_div.
+    replace (2 + 2 * q) with ((1 + q) * 2) by lia.
+    replace (2 + (1 + q) * 2) with ((2 + q) * 2) by lia.
+    repeat rewrite div_mul by lia.
+    rewrite er.
+      replace ((1 + 2 * r) * (2 + 2 * r))
+      with ((1 + 2 * r) * (1 + r) * 2) by lia.
+      rewrite div_mul by lia. destruct (sqrt_spec' p) as [l0 l1]. Fail lia. admit.
+    + rewrite er. admit.
+      Admitted.
 
 Theorem tri_untri_up (n : N) : n <= tri (untri_up n).
 Proof. Admitted.
@@ -219,7 +238,7 @@ Proof.
       rewrite <- e0sr.
       replace (8 * (n * (1 + n) / 2))
       with (4 * (2 * (n * (1 + n) / 2))) by lia.
-      rewrite tri_div2_mul2. enough (r = 0) by lia.
+      rewrite double_mul_even_odd. enough (r = 0) by lia.
       admit.
     + apply le_0_r.
       admit.

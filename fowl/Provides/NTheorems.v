@@ -193,6 +193,24 @@ Proof.
       replace (1 + (1 + 2 * r)) with ((1 + r) * 2) by lia.
       rewrite div_mul by lia. lia. Qed.
 
+(** Product of two consecutive natural numbers is even. *)
+
+Lemma mod_mul_even_odd (n : N) : n * (1 + n) mod 2 = 0.
+Proof.
+  induction n as [| p ei] using peano_ind.
+  - reflexivity.
+  - replace (succ p * (1 + succ p)) with (p * (1 + p) + (1 + p) * 2) by lia.
+    rewrite mod_add by lia. apply ei. Qed.
+
+(** Another way to state [mod_mul_even_odd]. *)
+
+Lemma double_mul_even_odd (n : N) : 2 * (n * (1 + n) / 2) = n * (1 + n).
+Proof.
+  replace (2 * (n * (1 + n) / 2))
+  with (2 * (n * (1 + n) / 2) + n * (1 + n) mod 2)
+  by (rewrite mod_mul_even_odd; lia).
+  rewrite <- div_mod by lia. lia. Qed.
+
 (** Eliminate all occurrences of
     [shiftl], [double], [succ], [shiftr], [div2] and [pred]. *)
 
