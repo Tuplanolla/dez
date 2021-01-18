@@ -144,7 +144,7 @@ Proof.
   rewrite tri_eqn, untri_eqn.
   remember (1 + 8 * n) as p eqn : ep.
   destruct (exist_even_odd (sqrt p - 1)) as [q [eq | eq]].
-  - rewrite eq. replace (2 * q) with (q * 2) by lia. rewrite div_mul by lia.
+  - rewrite eq. rewrite div_even.
     destruct (exist_even_odd q) as [r [er | er]].
     + rewrite er.
       replace (2 * r * (1 + 2 * r))
@@ -154,27 +154,44 @@ Proof.
       replace ((1 + 2 * r) * (1 + (1 + 2 * r)))
       with ((1 + 2 * r) * (1 + r) * 2) by lia.
       rewrite div_mul by lia. destruct (sqrt_spec' p) as [l0 l1]. lia.
-  - rewrite eq.
-    assert (l : 1 + 2 * q <= 2 + 2 * q) by lia.
+  - rewrite eq. rewrite div_odd.
     destruct (exist_even_odd q) as [r [er | er]].
-    +
-    replace (1 + (1 + 2 * q) / 2) with ((2 + (1 + 2 * q)) / 2).
-    2: { rewrite <- div_add_l by lia. replace (1 * 2 + (1 + 2 * q)) with (2 + (1 + 2 * q)) by lia. lia. }
-    (** This should "just work", except the majors depend on parity. *)
-    repeat rewrite <- div2_div. etransitivity. apply div2_wd'. apply mul_wd'. apply div2_wd'. rewrite l. reflexivity. reflexivity. repeat rewrite div2_div.
-    repeat rewrite <- div2_div. etransitivity. apply div2_wd'. apply mul_wd'. reflexivity. apply div2_wd'. rewrite l. reflexivity. repeat rewrite div2_div.
-    replace (2 + 2 * q) with ((1 + q) * 2) by lia.
-    replace (2 + (1 + q) * 2) with ((2 + q) * 2) by lia.
-    repeat rewrite div_mul by lia.
-    rewrite er.
-      replace ((1 + 2 * r) * (2 + 2 * r))
+    + rewrite er.
+      replace (2 * r * (1 + 2 * r))
+      with (r * (1 + 2 * r) * 2) by lia.
+      rewrite div_mul by lia. destruct (sqrt_spec' p) as [l0 l1]. lia.
+    + rewrite er.
+      replace ((1 + 2 * r) * (1 + (1 + 2 * r)))
       with ((1 + 2 * r) * (1 + r) * 2) by lia.
-      rewrite div_mul by lia. destruct (sqrt_spec' p) as [l0 l1]. Fail lia. admit.
-    + rewrite er. admit.
-      Admitted.
+      rewrite div_mul by lia. destruct (sqrt_spec' p) as [l0 l1]. lia. Qed.
 
 Theorem tri_untri_up (n : N) : n <= tri (untri_up n).
-Proof. Admitted.
+Proof.
+  rewrite tri_eqn, untri_up_eqn.
+  destruct (eqb_spec n 0) as [e | f].
+  * rewrite div_0_l by lia. lia.
+  * remember (1 + 8 * (n - 1)) as p eqn : ep.
+    destruct (exist_even_odd (sqrt p - 1)) as [q [eq | eq]].
+    - rewrite eq. rewrite div_even.
+      destruct (exist_even_odd q) as [r [er | er]].
+      + rewrite er.
+        replace ((1 + 2 * r) * (1 + (1 + 2 * r)))
+        with ((1 + 2 * r) * (1 + r) * 2) by lia.
+        rewrite div_mul by lia. destruct (sqrt_spec' p) as [l0 l1]. lia || admit.
+      + rewrite er.
+        replace ((1 + (1 + 2 * r)) * (1 + (1 + (1 + 2 * r))))
+        with ((1 + r) * (3 + 2 * r) * 2) by lia.
+        rewrite div_mul by lia. destruct (sqrt_spec' p) as [l0 l1]. lia.
+    - rewrite eq. rewrite div_odd.
+      destruct (exist_even_odd q) as [r [er | er]].
+      + rewrite er.
+        replace ((1 + 2 * r) * (1 + (1 + 2 * r)))
+        with ((1 + 2 * r) * (1 + r) * 2) by lia.
+        rewrite div_mul by lia. destruct (sqrt_spec' p) as [l0 l1]. lia.
+      + rewrite er.
+        replace ((1 + (1 + 2 * r)) * (1 + (1 + (1 + 2 * r))))
+        with ((1 + r) * (3 + 2 * r) * 2) by lia.
+        rewrite div_mul by lia. destruct (sqrt_spec' p) as [l0 l1]. lia. Admitted.
 
 (** Addition and multiplication are equally fast wrt both argument sizes,
     but we pretend the first one should be smaller and "more constant".

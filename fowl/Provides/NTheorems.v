@@ -193,6 +193,24 @@ Proof.
       replace (1 + (1 + 2 * r)) with ((1 + r) * 2) by lia.
       rewrite div_mul by lia. lia. Qed.
 
+(** Dividing an even number by two. *)
+
+Lemma div_even (n : N) : 2 * n / 2 = n.
+Proof.
+  induction n as [| p ei] using peano_ind.
+  - reflexivity.
+  - replace (2 * succ p) with (1 * 2 + 2 * p) by lia.
+    rewrite div_add_l by lia. rewrite ei. lia. Qed.
+
+(** Dividing an odd number by two. *)
+
+Lemma div_odd (n : N) : (1 + 2 * n) / 2 = n.
+Proof.
+  induction n as [| p ei] using peano_ind.
+  - reflexivity.
+  - replace (1 + 2 * succ p) with (1 * 2 + (1 + 2 * p)) by lia.
+    rewrite div_add_l by lia. rewrite ei. lia. Qed.
+
 (** Product of two consecutive natural numbers is even. *)
 
 Lemma mod_mul_even_odd (n : N) : n * (1 + n) mod 2 = 0.
