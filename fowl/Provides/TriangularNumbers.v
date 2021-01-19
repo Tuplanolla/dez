@@ -100,7 +100,7 @@ Proof.
     destruct (sqrt_spec' (p * p - 8)) as [l0 l1].
     remember (sqrt ((1 + 2 * n) ^ 2 - 8)) as p eqn : ep.
     enough ((p - 1) / 2 <= n - 1) by lia.
-    subst p. 
+    subst p.
     apply (mul_cancel_l _ _ 2); [lia |].
     mul le
     Check divide_div_mul_exact.
@@ -169,19 +169,15 @@ Theorem tri_untri_up (n : N) : n <= tri (untri_up n).
 Proof.
   rewrite tri_eqn, untri_up_eqn.
   destruct (eqb_spec n 0) as [e | f].
-  * rewrite div_0_l by lia. lia.
+  * arithmetize. lia.
   * remember (1 + 8 * (n - 1)) as p eqn : ep.
     destruct (exist_even_odd (sqrt p - 1)) as [q [eq | eq]].
     - rewrite eq. rewrite div_even.
-      destruct (exist_even_odd q) as [r [er | er]].
-      + rewrite er.
-        replace ((1 + 2 * r) * (1 + (1 + 2 * r)))
-        with ((1 + 2 * r) * (1 + r) * 2) by lia.
-        rewrite div_mul by lia. destruct (sqrt_spec' p) as [l0 l1]. lia || admit.
-      + rewrite er.
-        replace ((1 + (1 + 2 * r)) * (1 + (1 + (1 + 2 * r))))
-        with ((1 + r) * (3 + 2 * r) * 2) by lia.
-        rewrite div_mul by lia. destruct (sqrt_spec' p) as [l0 l1]. lia.
+      replace ((1 + q) * (1 + (1 + q))) with (1 * 2 + q * (3 + q)) by lia.
+      rewrite div_add_l by lia.
+      destruct (exist_even_odd (q * (3 + q))) as [r [er | er]].
+      + rewrite er. rewrite div_even. destruct (sqrt_spec' p) as [l0 l1]. nia.
+      + rewrite er. rewrite div_odd. destruct (sqrt_spec' p) as [l0 l1]. lia.
     - rewrite eq. rewrite div_odd.
       destruct (exist_even_odd q) as [r [er | er]].
       + rewrite er.
@@ -191,7 +187,7 @@ Proof.
       + rewrite er.
         replace ((1 + (1 + 2 * r)) * (1 + (1 + (1 + 2 * r))))
         with ((1 + r) * (3 + 2 * r) * 2) by lia.
-        rewrite div_mul by lia. destruct (sqrt_spec' p) as [l0 l1]. lia. Admitted.
+        rewrite div_mul by lia. destruct (sqrt_spec' p) as [l0 l1]. lia. Qed.
 
 (** Addition and multiplication are equally fast wrt both argument sizes,
     but we pretend the first one should be smaller and "more constant".
