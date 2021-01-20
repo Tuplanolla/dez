@@ -12,6 +12,23 @@ Import N.
 
 Local Open Scope N_scope.
 
+(** TODO Move these missing instances elsewhere. *)
+
+Instance mul_wd' :
+  Morphisms.Proper (Morphisms.respectful le (Morphisms.respectful le le)) mul.
+Proof.
+  intros n p l n' p' l'. apply mul_le_mono; [lia |]. lia. Qed.
+
+Instance add_wd' :
+  Morphisms.Proper (Morphisms.respectful le (Morphisms.respectful le le)) add.
+Proof.
+  intros n p l n' p' l'. apply add_le_mono; [lia |]. lia. Qed.
+
+Instance div2_wd' :
+  Morphisms.Proper (Morphisms.respectful le le) div2.
+Proof.
+  intros n p l. repeat rewrite div2_div. apply div_le_mono; [lia |]. lia. Qed.
+
 (** Generating function.
     Sequence A000217. *)
 
@@ -56,6 +73,25 @@ Proof.
     + cbv [untri_up]. rewrite pos_pred_spec. arithmetize.
       rewrite untri_eqn. reflexivity. Qed.
 
+(** Generating function preserves zeroness. *)
+
+Lemma tri_eq_0 (n : N) (e : tri n = 0) : n = 0.
+Proof.
+  rewrite tri_eqn in e. destruct n as [| p _] using peano_ind.
+  - reflexivity.
+  - exfalso. arithmetize.
+    replace ((1 + p) * (2 + p)) with (1 * 2 + p * (3 + p)) in e by lia.
+    rewrite div_add_l in e by lia.
+    remember (p * (3 + p) / 2) as q eqn : eq. lia. Qed.
+
+(** Generating function preserves nonzeroness. *)
+
+Lemma tri_neq_0 (n : N) (e : tri n <> 0) : n <> 0.
+Proof.
+  rewrite tri_eqn in e. destruct n as [| p _] using peano_ind.
+  - arithmetize. lia.
+  - lia. Qed.
+
 Theorem untri_tri (n : N) : untri (tri n) = n.
 Proof.
   rewrite tri_eqn, untri_eqn.
@@ -67,21 +103,6 @@ Proof.
     replace (1 + 2 * n - 1) with (2 * n) by lia.
     rewrite div_even. reflexivity.
   - apply mod_divide; [lia |]. apply mod_mul_consecutive. Qed.
-
-Lemma tri_eq_0 (n : N) (e : tri n = 0) : n = 0.
-Proof.
-  rewrite tri_eqn in e. destruct n as [| p _] using peano_ind.
-  - reflexivity.
-  - exfalso. arithmetize.
-    replace ((1 + p) * (2 + p)) with (1 * 2 + p * (3 + p)) in e by lia.
-    rewrite div_add_l in e by lia.
-    remember (p * (3 + p) / 2) as q eqn : eq. lia. Qed.
-
-Lemma tri_neq_0 (n : N) (e : tri n <> 0) : n <> 0.
-Proof.
-  rewrite tri_eqn in e. destruct n as [| p _] using peano_ind.
-  - arithmetize. lia.
-  - lia. Qed.
 
 Theorem untri_up_tri (n : N) : untri_up (tri n) = n.
 Proof.
@@ -101,24 +122,7 @@ Proof.
         destruct (sqrt_spec' p) as [l0 l1]. nia.
     + apply mod_divide; [lia |]. apply mod_mul_consecutive. Qed.
 
-(** TODO Move these missing instances elsewhere. *)
-
-Instance mul_wd' :
-  Morphisms.Proper (Morphisms.respectful le (Morphisms.respectful le le)) mul.
-Proof.
-  intros n p l n' p' l'. apply mul_le_mono; [lia |]. lia. Qed.
-
-Instance add_wd' :
-  Morphisms.Proper (Morphisms.respectful le (Morphisms.respectful le le)) add.
-Proof.
-  intros n p l n' p' l'. apply add_le_mono; [lia |]. lia. Qed.
-
-Instance div2_wd' :
-  Morphisms.Proper (Morphisms.respectful le le) div2.
-Proof.
-  intros n p l. repeat rewrite div2_div. apply div_le_mono; [lia |]. lia. Qed.
-
-Theorem tri_untri (n : N) : tri (untri n) <= n.
+Lemma tri_untri (n : N) : tri (untri n) <= n.
 Proof.
   rewrite tri_eqn, untri_eqn.
   remember (1 + 8 * n) as p eqn : ep.
@@ -142,7 +146,7 @@ Proof.
       with (2 * ((1 + 2 * r) * (1 + r))) by lia.
       rewrite div_even. destruct (sqrt_spec' p) as [l0 l1]. nia. Qed.
 
-Theorem tri_untri_up (n : N) : n <= tri (untri_up n).
+Lemma tri_untri_up (n : N) : n <= tri (untri_up n).
 Proof.
   rewrite tri_eqn, untri_up_eqn.
   destruct (eqb_spec n 0) as [e | f].
@@ -172,6 +176,12 @@ Proof.
         with (2 * ((1 + 2 * r) * (1 + r))) by lia.
         rewrite div_even. destruct (sqrt_spec' p) as [l0 l1]. nia. Qed.
 
+Theorem tri_untri_untri_up (n : N) : tri (untri n) <= n <= tri (untri_up n).
+Proof.
+  split.
+  - apply tri_untri.
+  - apply tri_untri_up. Qed.
+
 (** Addition and multiplication are equally fast wrt both argument sizes,
     but we pretend the first one should be smaller and "more constant".
     Usually the choice is obvious,
@@ -194,20 +204,18 @@ Lemma untri_rem_eqn (n : N) : untri_rem n =
   (q, (t + r * (2 * s - 1)) / 8).
 Proof.
   cbv [untri_rem].
-  arithmetize. destruct_sqrtrem_anonymous.
-  arithmetize. destruct_div_eucl_anonymous.
+  arithmetize. destruct_sqrtrem_fresh.
+  arithmetize. destruct_div_eucl_fresh.
   arithmetize. reflexivity. Qed.
 
-(** TODO This lemma helps with the next ones. *)
+(** TODO This is tricky. *)
 
-Lemma untri_rem_eqn' (n : N) : untri_rem n =
-  let u := untri n in
-  (u, n - tri u).
+Lemma untri_rem_tri_untri (n : N) : untri_rem n = (untri n, n - tri (untri n)).
 Proof.
   rewrite untri_rem_eqn.
   destruct_sqrtrem s t est es e0st l1st.
   destruct_div_eucl q r eqr eq e0qr l1qr.
-  rewrite untri_eqn. cbv zeta. rewrite tri_eqn.
+  rewrite untri_eqn. rewrite tri_eqn.
   f_equal.
   - rewrite <- eq. rewrite <- es. reflexivity.
   - remember (1 + 8 * n) as p eqn : ep.
@@ -230,13 +238,12 @@ Proof.
         destruct (sqrt_spec' p) as [l0 l1]. admit. Admitted.
 
 Theorem untri_rem_tri (n : N) : untri_rem (tri n) = (n, 0).
-Proof.
-  rewrite untri_rem_eqn'. cbv zeta. rewrite untri_tri. f_equal. lia. Qed.
+Proof. rewrite untri_rem_tri_untri. rewrite untri_tri. f_equal. lia. Qed.
 
 Theorem tri_untri_rem (n : N) : prod_uncurry (add o tri) (untri_rem n) = n.
 Proof.
-  rewrite untri_rem_eqn'. cbv zeta.
-  cbv [prod_uncurry compose]. cbv [fst snd].
+  rewrite untri_rem_tri_untri.
+  cbv [prod_uncurry fst snd compose].
   rewrite add_sub_assoc.
   - lia.
   - apply tri_untri. Qed.
@@ -244,8 +251,8 @@ Proof.
 (** Inverse of generating function, partial. *)
 
 Definition untri_error (n : N) : option N :=
-  let (s, r) := sqrtrem (succ (shiftl n 3)) in
-  if r =? 0 then Some (shiftr (pred s) 1) else None.
+  let (s, t) := sqrtrem (succ (shiftl n 3)) in
+  if t =? 0 then Some (shiftr (pred s) 1) else None.
 
 Arguments untri_error _ : assert.
 
@@ -257,30 +264,45 @@ Proof.
   destruct_sqrtrem s t est es e0st l1st.
   arithmetize. reflexivity. Qed.
 
-Theorem untri_error_tri (n : N) : untri_error (tri n) = Some n.
+(** TODO This is tricky. *)
+
+Lemma untri_error_untri_rem (n : N) :
+  untri_error n =
+  let (u, v) := untri_rem n in
+  if v =? 0 then Some u else None.
 Proof.
-  pose proof untri_rem_tri n as e.
-  rewrite untri_error_eqn, tri_eqn.
-  rewrite untri_rem_eqn, tri_eqn in e.
+  rewrite untri_error_eqn. rewrite untri_rem_eqn.
   destruct_sqrtrem s t est es e0st l1st.
   destruct_div_eucl q r eqr eq e0qr l1qr.
-  pose proof f_equal fst e as e0; cbv [fst] in e0.
-  pose proof f_equal snd e as e1; cbv [snd] in e1.
-  destruct (eqb_spec t 0) as [et | ft].
-  - f_equal. subst. lia.
-  - exfalso. Admitted.
+  rewrite eq.
+  assert (or : r = 0 \/ r = 1) by lia. clear l1qr.
+  destruct or as [er | er]; subst r.
+  - arithmetize. destruct (eqb_spec t 0) as [et | ft].
+    + subst t. reflexivity.
+    + idtac.
+      (** Need to know [8 <= t]. *)
+      admit.
+  - arithmetize. destruct (eqb_spec t 0) as [et | ft].
+    + subst t. arithmetize.
+      replace (2 * s - 1) with (1 + 2 * (1 + s)) by lia.
+      replace 8 with (2 * 4) by lia.
+      rewrite <- div_div by lia.
+      rewrite div_odd.
+      (** Need to know [s <= 2]. *)
+      admit.
+    + idtac.
+      admit. Admitted.
+
+Theorem untri_error_tri (n : N) : untri_error (tri n) = Some n.
+Proof. rewrite untri_error_untri_rem. rewrite untri_rem_tri. reflexivity. Qed.
 
 Theorem tri_untri_error (n p : N)
   (e : option_map tri (untri_error n) = Some p) : n = p.
 Proof.
-  pose proof tri_untri_rem n as e'.
-  rewrite untri_rem_eqn in e'.
-  rewrite untri_error_eqn in e.
-  destruct_sqrtrem s t est es e0st l1st.
-  destruct_div_eucl q r eqr eq e0qr l1qr.
-  cbv [prod_uncurry compose] in e'. cbv [fst snd] in e'.
-  rewrite tri_eqn in e'.
-  destruct (eqb_spec t 0) as [et | ft].
+  rewrite untri_error_untri_rem in e.
+  rewrite untri_rem_tri_untri in e.
+  destruct (eqb_spec (n - tri (untri n)) 0) as [e' | f'].
   - cbv [option_map] in e.
     injection e; clear e; intros e.
-    rewrite tri_eqn in e. Admitted.
+    rewrite <- e. clear e. pose proof sub_add _ _ (tri_untri n) as e''. lia.
+  - cbv [option_map] in e. inversion e. Qed.

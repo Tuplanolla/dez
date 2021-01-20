@@ -91,35 +91,54 @@ Proof.
     pose proof pos_div_eucl_remainder n (pos p) as lnp.
     destruct (pos_div_eucl n (pos p)) as [q r]; cbv [fst snd] in *. lia. Qed.
 
-(** Replace a call to [div_eucl] with its specification
-    in the goal and hypotheses. *)
-
-Ltac destruct_div_eucl_anonymous :=
+Ltac destruct_div_eucl' a' b' eab' ea' e0ab' l1ab' :=
+  let aab' := fresh "a" a' b' in
   match goal with
-  | |- context [let (a, b) := div_eucl ?x ?y in _] =>
-    let a' := fresh a in
-    let b' := fresh b in
-    let aab' := fresh "a" a' b' in
-    let ea' := fresh "e" a' in
-    let eab' := fresh "e" a' b' in
-    let e0ab' := fresh "e0" a' b' in
-    let l1ab' := fresh "l1" a' b' in
+  | |- context [let (_, _) := div_eucl ?x ?y in _] =>
     pose proof div_eucl_spec' x y as aab';
     destruct (div_eucl x y) as [a' b'] eqn : eab';
     pose proof (eq_trans (z := a') (eq_sym (div_eucl_div x y))
       (f_equal fst eab')) as ea';
     destruct aab' as [e0ab' l1ab']
-  | h : context [let (a, b) := div_eucl ?x ?y in _] |- _ =>
-    let a' := fresh a in
-    let b' := fresh b in
-    let aab' := fresh "a" a' b' in
-    let ea' := fresh "e" a' in
-    let eab' := fresh "e" a' b' in
-    let e0ab' := fresh "e0" a' b' in
-    let l1ab' := fresh "l1" a' b' in
+  | h : context [let (_, _) := div_eucl ?x ?y in _] |- _ =>
     pose proof div_eucl_spec' x y as aab';
     destruct (div_eucl x y) as [a' b'] eqn : eab';
     pose proof (eq_trans (z := a') (eq_sym (div_eucl_div x y))
+      (f_equal fst eab')) as ea';
+    destruct aab' as [e0ab' l1ab']
+  end.
+
+(** Replace a call to [div_eucl] with its specification
+    in the goal and hypotheses. *)
+
+Tactic Notation "destruct_div_eucl"
+  ident(a') ident(b') ident(eab') ident(ea') ident(e0ab') ident(l1ab') :=
+  destruct_div_eucl' a' b' eab' ea' e0ab' l1ab'.
+
+(** Perform [destruct_div_eucl] with fresh variable names. *)
+
+Ltac destruct_div_eucl_fresh :=
+  let a' := fresh "a" in
+  let b' := fresh "b" in
+  let ea' := fresh "e" a' in
+  let eab' := fresh "e" a' b' in
+  let e0ab' := fresh "e0" a' b' in
+  let l1ab' := fresh "l1" a' b' in
+  destruct_div_eucl a' b' ea' eab' e0ab' l1ab'.
+
+Ltac destruct_sqrtrem' a' b' eab' ea' e0ab' l1ab' :=
+  let aab' := fresh "a" a' b' in
+  match goal with
+  | |- context [let (_, _) := sqrtrem ?x in _] =>
+    pose proof sqrtrem_spec x as aab';
+    destruct (sqrtrem x) as [a' b'] eqn : eab';
+    pose proof (eq_trans (z := a') (eq_sym (sqrtrem_sqrt x))
+      (f_equal fst eab')) as ea';
+    destruct aab' as [e0ab' l1ab']
+  | h : context [let (_, _) := sqrtrem ?x in _] |- _ =>
+    pose proof sqrtrem_spec x as aab';
+    destruct (sqrtrem x) as [a' b'] eqn : eab';
+    pose proof (eq_trans (z := a') (eq_sym (sqrtrem_sqrt x))
       (f_equal fst eab')) as ea';
     destruct aab' as [e0ab' l1ab']
   end.
@@ -127,81 +146,20 @@ Ltac destruct_div_eucl_anonymous :=
 (** Replace a call to [sqrtrem] with its specification
     in the goal and hypotheses. *)
 
-Ltac destruct_sqrtrem_anonymous :=
-  match goal with
-  | |- context [let (a, b) := sqrtrem ?x in _] =>
-    let a' := fresh a in
-    let b' := fresh b in
-    let aab' := fresh "a" a' b' in
-    let ea' := fresh "e" a' in
-    let eab' := fresh "e" a' b' in
-    let e0ab' := fresh "e0" a' b' in
-    let l1ab' := fresh "l1" a' b' in
-    pose proof sqrtrem_spec x as aab';
-    destruct (sqrtrem x) as [a' b'] eqn : eab';
-    pose proof (eq_trans (z := a') (eq_sym (sqrtrem_sqrt x))
-      (f_equal fst eab')) as ea';
-    destruct aab' as [e0ab' l1ab']
-  | h : context [let (a, b) := sqrtrem ?x in _] |- _ =>
-    let a' := fresh a in
-    let b' := fresh b in
-    let aab' := fresh "a" a' b' in
-    let ea' := fresh "e" a' in
-    let eab' := fresh "e" a' b' in
-    let e0ab' := fresh "e0" a' b' in
-    let l1ab' := fresh "l1" a' b' in
-    pose proof sqrtrem_spec x as aab';
-    destruct (sqrtrem x) as [a' b'] eqn : eab';
-    pose proof (eq_trans (z := a') (eq_sym (sqrtrem_sqrt x))
-      (f_equal fst eab')) as ea';
-    destruct aab' as [e0ab' l1ab']
-  end.
-
-(** TODO Investigate the use of [intropattern] in these tactics. *)
-
-Ltac destruct_div_eucl' a' b' eab' ea' e0ab' l1ab' :=
-  match goal with
-  | |- context [let (_, _) := div_eucl ?x ?y in _] =>
-    let aab' := fresh "a" a' b' in
-    pose proof div_eucl_spec' x y as aab';
-    destruct (div_eucl x y) as [a' b'] eqn : eab';
-    pose proof (eq_trans (z := a') (eq_sym (div_eucl_div x y))
-      (f_equal fst eab')) as ea';
-    destruct aab' as [e0ab' l1ab']
-  | h : context [let (_, _) := div_eucl ?x ?y in _] |- _ =>
-    let aab' := fresh "a" a' b' in
-    pose proof div_eucl_spec' x y as aab';
-    destruct (div_eucl x y) as [a' b'] eqn : eab';
-    pose proof (eq_trans (z := a') (eq_sym (div_eucl_div x y))
-      (f_equal fst eab')) as ea';
-    destruct aab' as [e0ab' l1ab']
-  end.
-
-Tactic Notation "destruct_div_eucl"
-  ident(a') ident(b') ident(eab') ident(ea') ident(e0ab') ident(l1ab') :=
-  destruct_div_eucl' a' b' eab' ea' e0ab' l1ab'.
-
-Ltac destruct_sqrtrem' a' b' eab' ea' e0ab' l1ab' :=
-  match goal with
-  | |- context [let (_, _) := sqrtrem ?x in _] =>
-    let aab' := fresh "a" a' b' in
-    pose proof sqrtrem_spec x as aab';
-    destruct (sqrtrem x) as [a' b'] eqn : eab';
-    pose proof (eq_trans (z := a') (eq_sym (sqrtrem_sqrt x))
-      (f_equal fst eab')) as ea';
-    destruct aab' as [e0ab' l1ab']
-  | h : context [let (_, _) := sqrtrem ?x in _] |- _ =>
-    let aab' := fresh "a" a' b' in
-    pose proof sqrtrem_spec x as aab';
-    destruct (sqrtrem x) as [a' b'] eqn : eab';
-    pose proof (eq_trans (z := a') (eq_sym (sqrtrem_sqrt x))
-      (f_equal fst eab')) as ea';
-    destruct aab' as [e0ab' l1ab']
-  end.
-
 Tactic Notation "destruct_sqrtrem"
   ident(a') ident(b') ident(eab') ident(ea') ident(e0ab') ident(l1ab') :=
   destruct_sqrtrem' a' b' eab' ea' e0ab' l1ab'.
+
+(** Perform [destruct_sqrtrem] with fresh variable names. *)
+
+Ltac destruct_sqrtrem_fresh :=
+  let a' := fresh "a" in
+  let b' := fresh "b" in
+  let ea' := fresh "e" a' in
+  let eab' := fresh "e" a' b' in
+  let e0ab' := fresh "e0" a' b' in
+  let l1ab' := fresh "l1" a' b' in
+  destruct_sqrtrem a' b' ea' eab' e0ab' l1ab'.
 
 (** These lemmas are missing from the standard library. *)
 
