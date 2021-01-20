@@ -60,25 +60,27 @@ Theorem untri_tri (n : N) : untri (tri n) = n.
 Proof.
   rewrite tri_eqn, untri_eqn.
   replace (8 * (n * (1 + n) / 2)) with (4 * (2 * (n * (1 + n) / 2))) by lia.
-  rewrite double_mul_even_odd.
-  replace (1 + 4 * (n * (1 + n))) with ((1 + 2 * n) * (1 + 2 * n)) by lia.
-  rewrite sqrt_square.
-  replace (1 + 2 * n - 1) with (n * 2) by lia.
-  rewrite div_mul by lia. lia. Qed.
+  rewrite <- divide_div_mul_exact; [| lia |].
+  - rewrite div_even.
+    replace (1 + 4 * (n * (1 + n))) with ((1 + 2 * n) * (1 + 2 * n)) by lia.
+    rewrite sqrt_square.
+    replace (1 + 2 * n - 1) with (2 * n) by lia.
+    rewrite div_even. reflexivity.
+  - apply mod_divide; [lia |]. apply mod_mul_consecutive. Qed.
 
 Lemma tri_eq_0 (n : N) (e : tri n = 0) : n = 0.
 Proof.
-  destruct n as [| p ei] using peano_ind.
+  rewrite tri_eqn in e. destruct n as [| p _] using peano_ind.
   - reflexivity.
-  - exfalso. rewrite tri_eqn in *. arithmetize.
+  - exfalso. arithmetize.
     replace ((1 + p) * (2 + p)) with (1 * 2 + p * (3 + p)) in e by lia.
     rewrite div_add_l in e by lia.
     remember (p * (3 + p) / 2) as q eqn : eq. lia. Qed.
 
 Lemma tri_neq_0 (n : N) (e : tri n <> 0) : n <> 0.
 Proof.
-  destruct n as [| p ei] using peano_ind.
-  - rewrite tri_eqn in e. apply e.
+  rewrite tri_eqn in e. destruct n as [| p _] using peano_ind.
+  - arithmetize. lia.
   - lia. Qed.
 
 Theorem untri_up_tri (n : N) : untri_up (tri n) = n.
@@ -86,43 +88,20 @@ Proof.
   rewrite untri_up_eqn.
   destruct (eqb_spec (tri n) 0) as [e | f].
   - symmetry. apply tri_eq_0. apply e.
-  - apply tri_neq_0 in f.
-    rewrite tri_eqn.
+  - apply tri_neq_0 in f. rewrite tri_eqn.
     replace (8 * (n * (1 + n) / 2 - 1))
     with (4 * (2 * (n * (1 + n) / 2) - 2)) by lia.
-    rewrite double_mul_even_odd.
-    replace (1 + 4 * (n * (1 + n) - 2))
-    with ((1 + 2 * n) * (1 + 2 * n) - 8) by lia.
-    Undo. Admitted. (*
-    rewrite <- pow_2_r.
-    remember (1 + 2 * n) as p eqn : ep.
-    repeat rewrite pow_2_r.
-    destruct (sqrt_spec' (p * p - 8)) as [l0 l1].
-    remember (sqrt ((1 + 2 * n) ^ 2 - 8)) as p eqn : ep.
-    enough ((p - 1) / 2 <= n - 1) by lia.
-    subst p.
-    apply (mul_cancel_l _ _ 2); [lia |].
-    mul le
-    Check divide_div_mul_exact.
-    rewrite <- div_mod; try lia. subst p.
-    enough (sqrt ((1 + 2 * n) ^ 2 - 8) = 2 * n - 1) by lia.
-    destruct (sqrt_spec' ((1 + 2 * n) ^ 2 - 8)) as [l0 l1].
-    rewrite <- sqrt_square.
-    apply sqrt_le_mono.
-    apply (pow_inj_l _ _ 2); [lia |].
-    repeat rewrite <- pow_2_r in *.
-    repeat rewrite pow_2_r in *.
-    apply le_antisymm.
-    + rewrite l0.  lia.
-    1 + 4 * n + 4 * n ^ 2 - 8 <= 1 - 4 * n + 4 * n ^ 2
-    Search sqrt sub.
-    rewrite sqrt_square.
-    replace (1 + 2 * n - 1) with (n * 2) by lia.
-    rewrite div_mul by lia. lia. Qed.
-    remember (sqrt ((1 + 2 * n) ^ 2 - 8) - 1) as p eqn : ep.
-    enough (p / 2 = n - 1) by lia.
-    destruct (exist_even_odd p) as [q [eq | eq]].
-    rewrite eq. *)
+    rewrite <- divide_div_mul_exact; [| lia |].
+    + rewrite div_even.
+      remember (1 + 4 * (n * (1 + n) - 2)) as p eqn : ep.
+      destruct (exist_even_odd (sqrt p - 1)) as [q [eq | eq]].
+      * rewrite eq. rewrite div_even.
+        destruct (sqrt_spec' p) as [l0 l1]. nia.
+      * rewrite eq. rewrite div_odd.
+        destruct (sqrt_spec' p) as [l0 l1]. nia.
+    + apply mod_divide; [lia |]. apply mod_mul_consecutive. Qed.
+
+(** TODO Move these missing instances elsewhere. *)
 
 Instance mul_wd' :
   Morphisms.Proper (Morphisms.respectful le (Morphisms.respectful le le)) mul.
@@ -147,47 +126,51 @@ Proof.
   - rewrite eq. rewrite div_even.
     destruct (exist_even_odd q) as [r [er | er]].
     + rewrite er.
-      replace (2 * r * (1 + 2 * r))
-      with (r * (1 + 2 * r) * 2) by lia.
-      rewrite div_mul by lia. destruct (sqrt_spec' p) as [l0 l1]. lia.
+      replace (2 * r * (1 + 2 * r)) with (2 * (r * (1 + 2 * r))) by lia.
+      rewrite div_even. destruct (sqrt_spec' p) as [l0 l1]. nia.
     + rewrite er.
       replace ((1 + 2 * r) * (1 + (1 + 2 * r)))
-      with ((1 + 2 * r) * (1 + r) * 2) by lia.
-      rewrite div_mul by lia. destruct (sqrt_spec' p) as [l0 l1]. lia.
+      with (2 * ((1 + 2 * r) * (1 + r))) by lia.
+      rewrite div_even. destruct (sqrt_spec' p) as [l0 l1]. nia.
   - rewrite eq. rewrite div_odd.
     destruct (exist_even_odd q) as [r [er | er]].
     + rewrite er.
-      replace (2 * r * (1 + 2 * r))
-      with (r * (1 + 2 * r) * 2) by lia.
-      rewrite div_mul by lia. destruct (sqrt_spec' p) as [l0 l1]. lia.
+      replace (2 * r * (1 + 2 * r)) with (2 * (r * (1 + 2 * r))) by lia.
+      rewrite div_even. destruct (sqrt_spec' p) as [l0 l1]. nia.
     + rewrite er.
       replace ((1 + 2 * r) * (1 + (1 + 2 * r)))
-      with ((1 + 2 * r) * (1 + r) * 2) by lia.
-      rewrite div_mul by lia. destruct (sqrt_spec' p) as [l0 l1]. lia. Qed.
+      with (2 * ((1 + 2 * r) * (1 + r))) by lia.
+      rewrite div_even. destruct (sqrt_spec' p) as [l0 l1]. nia. Qed.
 
 Theorem tri_untri_up (n : N) : n <= tri (untri_up n).
 Proof.
   rewrite tri_eqn, untri_up_eqn.
   destruct (eqb_spec n 0) as [e | f].
-  * arithmetize. lia.
-  * remember (1 + 8 * (n - 1)) as p eqn : ep.
-    destruct (exist_even_odd (sqrt p - 1)) as [q [eq | eq]].
-    - rewrite eq. rewrite div_even.
-      replace ((1 + q) * (1 + (1 + q))) with (1 * 2 + q * (3 + q)) by lia.
-      rewrite div_add_l by lia.
-      destruct (exist_even_odd (q * (3 + q))) as [r [er | er]].
-      + rewrite er. rewrite div_even. destruct (sqrt_spec' p) as [l0 l1]. nia.
-      + rewrite er. rewrite div_odd. destruct (sqrt_spec' p) as [l0 l1]. lia.
-    - rewrite eq. rewrite div_odd.
+  - arithmetize. lia.
+  - remember (1 + 8 * (n - 1)) as p eqn : ep.
+    rewrite <- div_add_l by lia.
+    assert (fp : sqrt p <> 0).
+    { destruct (sqrt_spec' p) as [l0 l1]. nia. }
+    replace (1 * 2 + (sqrt p - 1)) with (1 + sqrt p) by lia.
+    destruct (exist_even_odd (1 + sqrt p)) as [q [eq | eq]].
+    + rewrite eq. rewrite div_even.
       destruct (exist_even_odd q) as [r [er | er]].
-      + rewrite er.
+      * rewrite er.
+        replace (2 * r * (1 + 2 * r)) with (2 * (r * (1 + 2 * r))) by lia.
+        rewrite div_even. destruct (sqrt_spec' p) as [l0 l1]. nia.
+      * rewrite er.
         replace ((1 + 2 * r) * (1 + (1 + 2 * r)))
-        with ((1 + 2 * r) * (1 + r) * 2) by lia.
-        rewrite div_mul by lia. destruct (sqrt_spec' p) as [l0 l1]. lia.
-      + rewrite er.
-        replace ((1 + (1 + 2 * r)) * (1 + (1 + (1 + 2 * r))))
-        with ((1 + r) * (3 + 2 * r) * 2) by lia.
-        rewrite div_mul by lia. destruct (sqrt_spec' p) as [l0 l1]. lia. Qed.
+        with (2 * ((1 + 2 * r) * (1 + r))) by lia.
+        rewrite div_even. destruct (sqrt_spec' p) as [l0 l1]. nia.
+    + rewrite eq. rewrite div_odd.
+      destruct (exist_even_odd q) as [r [er | er]].
+      * rewrite er.
+        replace (2 * r * (1 + 2 * r)) with (2 * (r * (1 + 2 * r))) by lia.
+        rewrite div_even. destruct (sqrt_spec' p) as [l0 l1]. nia.
+      * rewrite er.
+        replace ((1 + 2 * r) * (1 + (1 + 2 * r)))
+        with (2 * ((1 + 2 * r) * (1 + r))) by lia.
+        rewrite div_even. destruct (sqrt_spec' p) as [l0 l1]. nia. Qed.
 
 (** Addition and multiplication are equally fast wrt both argument sizes,
     but we pretend the first one should be smaller and "more constant".
@@ -201,73 +184,62 @@ Proof.
     by eliminating variables via [sqrtrem_spec] and [div_eucl_spec]. *)
 
 Definition untri_rem (n : N) : N * N :=
-  let (s, r) := sqrtrem (succ (shiftl n 3)) in
-  let (q, e) := div_eucl (pred s) 2 in
-  (q, shiftr (r + e * pred (shiftl s 1)) 3).
+  let (s, t) := sqrtrem (succ (shiftl n 3)) in
+  let (q, r) := div_eucl (pred s) 2 in
+  (q, shiftr (t + r * pred (shiftl s 1)) 3).
 
 Lemma untri_rem_eqn (n : N) : untri_rem n =
-  let ((* square root *) s, (* remains *) r) := sqrtrem (1 + 8 * n) in
-  let ((* quotient *) q, (* remainder *) e) := div_eucl (s - 1) 2 in
-  (q, (r + e * (2 * s - 1)) / 8).
+  let (s, t) := sqrtrem (1 + 8 * n) in
+  let (q, r) := div_eucl (s - 1) 2 in
+  (q, (t + r * (2 * s - 1)) / 8).
 Proof.
   cbv [untri_rem].
-  (** No hypothesis starts with [e] or [l],
-      so the automatic variable names are stable. *)
-  arithmetize. destruct_sqrtrem.
-  arithmetize. destruct_div_eucl.
+  arithmetize. destruct_sqrtrem_anonymous.
+  arithmetize. destruct_div_eucl_anonymous.
   arithmetize. reflexivity. Qed.
 
-(** TODO This lemma helps with the next one. *)
+(** TODO This lemma helps with the next ones. *)
 
 Lemma untri_rem_eqn' (n : N) : untri_rem n =
-  let (* inverse *) i := untri n in
-  (i, n - tri i).
+  let u := untri n in
+  (u, n - tri u).
 Proof.
-  rewrite untri_rem_eqn. destruct_sqrtrem. destruct_div_eucl.
-  rename eq0 into eq. rewrite untri_eqn. cbv zeta. rewrite tri_eqn.
+  rewrite untri_rem_eqn.
+  destruct_sqrtrem s t est es e0st l1st.
+  destruct_div_eucl q r eqr eq e0qr l1qr.
+  rewrite untri_eqn. cbv zeta. rewrite tri_eqn.
   f_equal.
   - rewrite <- eq. rewrite <- es. reflexivity.
-  - specialize (l1qe ltac:(lia)).
-    assert (oe : e = 0 \/ e = 1) by lia.
-    clear l1qe. destruct oe as [e0 | e1]; subst e; arithmetize.
-    + admit.
-    + admit. Abort.
+  - remember (1 + 8 * n) as p eqn : ep.
+    (* rewrite <- div_add_l by lia.
+    assert (fp : sqrt p <> 0).
+    { destruct (sqrt_spec' p) as [l0 l1]. nia. }
+    replace (1 * 2 + (sqrt p - 1)) with (1 + sqrt p) by lia. *)
+    destruct (exist_even_odd (sqrt p - 1)) as [u [eu | eu]].
+    + rewrite eu. rewrite div_even.
+      destruct (exist_even_odd u) as [v [ev | ev]].
+      * rewrite ev.
+        replace (2 * v * (1 + 2 * v)) with (2 * (v * (1 + 2 * v))) by lia.
+        rewrite div_even.
+        (** Need to know [r' ^ 2 = r']. *)
+        destruct (sqrt_spec' p) as [l0 l1]. admit.
+      * rewrite ev.
+        replace ((1 + 2 * v) * (1 + (1 + 2 * v)))
+        with (2 * ((1 + 2 * v) * (1 + v))) by lia.
+        rewrite div_even.
+        destruct (sqrt_spec' p) as [l0 l1]. admit. Admitted.
 
 Theorem untri_rem_tri (n : N) : untri_rem (tri n) = (n, 0).
 Proof.
-  rewrite tri_eqn. rewrite untri_rem_eqn.
-  destruct_sqrtrem. destruct_div_eucl.
-  specialize (l1qe ltac:(lia)).
-  assert (oe : e = 0 \/ e = 1) by lia.
-  clear l1qe.
-  destruct oe as [e0 | e1]; subst e.
-  - arithmetize. f_equal.
-    + enough (2 * q = 2 * n) by lia.
-      rewrite <- e0qe.
-      enough (s = 1 + 2 * n) by lia.
-      apply (pow_inj_l _ _ 2); [lia |].
-      enough (s ^ 2 + r = (1 + 2 * n) ^ 2 + r) by lia.
-      rewrite (pow_2_r s). rewrite (pow_2_r (1 + 2 * n)).
-      rewrite <- e0sr.
-      replace (8 * (n * (1 + n) / 2))
-      with (4 * (2 * (n * (1 + n) / 2))) by lia.
-      rewrite double_mul_even_odd. enough (r = 0) by lia.
-      admit.
-    + apply le_0_r.
-      admit.
-  - arithmetize. f_equal.
-    + admit.
-    + admit. Admitted.
+  rewrite untri_rem_eqn'. cbv zeta. rewrite untri_tri. f_equal. lia. Qed.
 
 Theorem tri_untri_rem (n : N) : prod_uncurry (add o tri) (untri_rem n) = n.
 Proof.
-  cbv [prod_uncurry compose].
-  rewrite tri_eqn.
-  rewrite untri_rem_eqn.
-  destruct_sqrtrem.
-  destruct_div_eucl.
-  cbv [fst snd].
-  specialize (l1qe ltac:(lia)). Admitted.
+  rewrite untri_rem_eqn'. cbv zeta.
+  cbv [prod_uncurry compose]. cbv [fst snd].
+  rewrite add_sub_assoc.
+  - lia.
+  - apply tri_untri. Qed.
 
 (** Inverse of generating function, partial. *)
 
@@ -278,55 +250,37 @@ Definition untri_error (n : N) : option N :=
 Arguments untri_error _ : assert.
 
 Lemma untri_error_eqn (n : N) : untri_error n =
-  let ((* square root *) s, (* remains *) r) := sqrtrem (1 + 8 * n) in
-  if r =? 0 then Some ((s - 1) / 2) else None.
+  let (s, t) := sqrtrem (1 + 8 * n) in
+  if t =? 0 then Some ((s - 1) / 2) else None.
 Proof.
-  cbv [untri_error]. arithmetize. destruct_sqrtrem.
+  cbv [untri_error]. arithmetize.
+  destruct_sqrtrem s t est es e0st l1st.
   arithmetize. reflexivity. Qed.
-
-Lemma tri_untri_error_succ (n : N) :
-  option_map tri (untri_error (succ n)) =
-  option_map (succ o tri) (untri_error n).
-Proof. Admitted.
 
 Theorem untri_error_tri (n : N) : untri_error (tri n) = Some n.
 Proof.
-  cbv [untri_error tri] in *.
-  destruct_sqrtrem.
-  destruct (eqb_spec r 0) as [e | f].
-  - subst r. clear l1sr. f_equal. arithmetize. rewrite <- es.
-    rewrite <- tri_eqn. rewrite <- untri_eqn. apply untri_tri.
-  - exfalso. apply f. clear f. arithmetize. Admitted.
+  pose proof untri_rem_tri n as e.
+  rewrite untri_error_eqn, tri_eqn.
+  rewrite untri_rem_eqn, tri_eqn in e.
+  destruct_sqrtrem s t est es e0st l1st.
+  destruct_div_eucl q r eqr eq e0qr l1qr.
+  pose proof f_equal fst e as e0; cbv [fst] in e0.
+  pose proof f_equal snd e as e1; cbv [snd] in e1.
+  destruct (eqb_spec t 0) as [et | ft].
+  - f_equal. subst. lia.
+  - exfalso. Admitted.
 
 Theorem tri_untri_error (n p : N)
   (e : option_map tri (untri_error n) = Some p) : n = p.
 Proof.
-  generalize dependent p.
-  induction n as [| i ei] using peano_ind; intros p enp.
-  - cbn in enp. injection enp. auto.
-  - rewrite tri_untri_error_succ in enp. rewrite option_map_compose in enp.
-    rewrite (ei (pred p)).
-    + try match goal with
-      | _ : context [?x =? ?y] |- _ => destruct (eqb_spec x y) as [e | f]
-      end.
-      cbv [option_map] in enp. destruct (untri_error i) eqn : e.
-      * injection enp; clear enp; intros enp. rewrite <- enp at 2.
-        arithmetize. rewrite enp. lia.
-      * inversion enp.
-    + cbv [tri untri_error] in *.
-      destruct_sqrtrem.
-      destruct (eqb_spec r 0) as [e | f].
-      * cbv [option_map] in *. f_equal. arithmetize.
-        assert (enp' : (1 + (s - 1) / 2 * (1 + (s - 1) / 2) / 2) = p)
-        by now inversion enp.
-        rewrite <- enp'.
-        pose proof exist_even_odd (s - 1) as eo.
-        destruct eo as [t [eo | eo]].
-        -- rewrite eo.
-          repeat rewrite (mul_comm 2 _). rewrite div_mul by lia.
-          remember (t * (1 + t) / 2) as u eqn : eu.
-          lia.
-        -- rewrite eo.
-          remember ((1 + 2 * t) / 2 * (1 + (1 + 2 * t) / 2) / 2) as u eqn : eu.
-          lia.
-      * inversion enp. Qed.
+  pose proof tri_untri_rem n as e'.
+  rewrite untri_rem_eqn in e'.
+  rewrite untri_error_eqn in e.
+  destruct_sqrtrem s t est es e0st l1st.
+  destruct_div_eucl q r eqr eq e0qr l1qr.
+  cbv [prod_uncurry compose] in e'. cbv [fst snd] in e'.
+  rewrite tri_eqn in e'.
+  destruct (eqb_spec t 0) as [et | ft].
+  - cbv [option_map] in e.
+    injection e; clear e; intros e.
+    rewrite tri_eqn in e. Admitted.

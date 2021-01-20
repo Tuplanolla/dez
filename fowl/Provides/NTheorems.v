@@ -94,7 +94,7 @@ Proof.
 (** Replace a call to [div_eucl] with its specification
     in the goal and hypotheses. *)
 
-Ltac destruct_div_eucl :=
+Ltac destruct_div_eucl_anonymous :=
   match goal with
   | |- context [let (a, b) := div_eucl ?x ?y in _] =>
     let a' := fresh a in
@@ -127,7 +127,7 @@ Ltac destruct_div_eucl :=
 (** Replace a call to [sqrtrem] with its specification
     in the goal and hypotheses. *)
 
-Ltac destruct_sqrtrem :=
+Ltac destruct_sqrtrem_anonymous :=
   match goal with
   | |- context [let (a, b) := sqrtrem ?x in _] =>
     let a' := fresh a in
@@ -156,6 +156,52 @@ Ltac destruct_sqrtrem :=
       (f_equal fst eab')) as ea';
     destruct aab' as [e0ab' l1ab']
   end.
+
+(** TODO Investigate the use of [intropattern] in these tactics. *)
+
+Ltac destruct_div_eucl' a' b' eab' ea' e0ab' l1ab' :=
+  match goal with
+  | |- context [let (_, _) := div_eucl ?x ?y in _] =>
+    let aab' := fresh "a" a' b' in
+    pose proof div_eucl_spec' x y as aab';
+    destruct (div_eucl x y) as [a' b'] eqn : eab';
+    pose proof (eq_trans (z := a') (eq_sym (div_eucl_div x y))
+      (f_equal fst eab')) as ea';
+    destruct aab' as [e0ab' l1ab']
+  | h : context [let (_, _) := div_eucl ?x ?y in _] |- _ =>
+    let aab' := fresh "a" a' b' in
+    pose proof div_eucl_spec' x y as aab';
+    destruct (div_eucl x y) as [a' b'] eqn : eab';
+    pose proof (eq_trans (z := a') (eq_sym (div_eucl_div x y))
+      (f_equal fst eab')) as ea';
+    destruct aab' as [e0ab' l1ab']
+  end.
+
+Tactic Notation "destruct_div_eucl"
+  ident(a') ident(b') ident(eab') ident(ea') ident(e0ab') ident(l1ab') :=
+  destruct_div_eucl' a' b' eab' ea' e0ab' l1ab'.
+
+Ltac destruct_sqrtrem' a' b' eab' ea' e0ab' l1ab' :=
+  match goal with
+  | |- context [let (_, _) := sqrtrem ?x in _] =>
+    let aab' := fresh "a" a' b' in
+    pose proof sqrtrem_spec x as aab';
+    destruct (sqrtrem x) as [a' b'] eqn : eab';
+    pose proof (eq_trans (z := a') (eq_sym (sqrtrem_sqrt x))
+      (f_equal fst eab')) as ea';
+    destruct aab' as [e0ab' l1ab']
+  | h : context [let (_, _) := sqrtrem ?x in _] |- _ =>
+    let aab' := fresh "a" a' b' in
+    pose proof sqrtrem_spec x as aab';
+    destruct (sqrtrem x) as [a' b'] eqn : eab';
+    pose proof (eq_trans (z := a') (eq_sym (sqrtrem_sqrt x))
+      (f_equal fst eab')) as ea';
+    destruct aab' as [e0ab' l1ab']
+  end.
+
+Tactic Notation "destruct_sqrtrem"
+  ident(a') ident(b') ident(eab') ident(ea') ident(e0ab') ident(l1ab') :=
+  destruct_sqrtrem' a' b' eab' ea' e0ab' l1ab'.
 
 (** These lemmas are missing from the standard library. *)
 
@@ -211,23 +257,24 @@ Proof.
   - replace (1 + 2 * succ p) with (1 * 2 + (1 + 2 * p)) by lia.
     rewrite div_add_l by lia. rewrite ei. lia. Qed.
 
+(** Sum of two consecutive natural numbers is odd. *)
+
+Lemma mod_add_consecutive (n : N) : (n + (1 + n)) mod 2 = 1.
+Proof.
+  induction n as [| p ei] using peano_ind.
+  - reflexivity.
+  - replace (succ p + (1 + succ p)) with (2 + (p + (1 + p))) by lia.
+    rewrite <- add_mod_idemp_l by lia. rewrite mod_same by lia.
+    rewrite add_0_l. apply ei. Qed.
+
 (** Product of two consecutive natural numbers is even. *)
 
-Lemma mod_mul_even_odd (n : N) : n * (1 + n) mod 2 = 0.
+Lemma mod_mul_consecutive (n : N) : n * (1 + n) mod 2 = 0.
 Proof.
   induction n as [| p ei] using peano_ind.
   - reflexivity.
   - replace (succ p * (1 + succ p)) with (p * (1 + p) + (1 + p) * 2) by lia.
     rewrite mod_add by lia. apply ei. Qed.
-
-(** Another way to state [mod_mul_even_odd]. *)
-
-Lemma double_mul_even_odd (n : N) : 2 * (n * (1 + n) / 2) = n * (1 + n).
-Proof.
-  replace (2 * (n * (1 + n) / 2))
-  with (2 * (n * (1 + n) / 2) + n * (1 + n) mod 2)
-  by (rewrite mod_mul_even_odd; lia).
-  rewrite <- div_mod by lia. lia. Qed.
 
 (** Eliminate all occurrences of
     [shiftl], [double], [succ], [shiftr], [div2] and [pred]. *)
