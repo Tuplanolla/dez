@@ -1,7 +1,7 @@
-(** Lemmas and instances for [N]. *)
+(** * Lemmas and instances for [N]. *)
 
 From Coq Require Import
-  Lia NArith.NArith.
+  Classes.Morphisms Lia NArith.NArith Setoids.Setoid.
 From Maniunfold Require Import
   DatatypeTactics RewritingTactics.
 From Maniunfold.Is Require Export
@@ -15,6 +15,22 @@ Module N.
 Export BinNat.N.
 
 Local Open Scope N_scope.
+
+(** These instances are missing from the standard library. *)
+
+Global Instance le_add_wd : Proper (le ==> le ==> le) add.
+Proof. intros n p l n' p' l'. apply add_le_mono; [lia |]. lia. Qed.
+
+Global Instance le_mul_wd : Proper (le ==> le ==> le) mul.
+Proof. intros n p l n' p' l'. apply mul_le_mono; [lia |]. lia. Qed.
+
+Global Instance le_div2_wd : Proper (le ==> le) div2.
+Proof.
+  intros n p l. do 2 rewrite div2_div.
+  apply div_le_mono; [lia |]. lia. Qed.
+
+Global Instance le_sqrt_wd : Proper (le ==> le) sqrt.
+Proof. intros n p l. apply sqrt_le_mono. lia. Qed.
 
 (** A specialization of [seq] for [N]. *)
 
