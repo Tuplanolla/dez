@@ -110,13 +110,13 @@ Proof.
 Ltac destruct_div_eucl' a' b' eab' ea' e0ab' l1ab' :=
   let aab' := fresh "a" a' b' in
   match goal with
-  | |- context [let (_, _) := div_eucl ?x ?y in _] =>
+  | |- context [div_eucl ?x ?y] =>
     pose proof div_eucl_spec' x y as aab';
     destruct (div_eucl x y) as [a' b'] eqn : eab';
     pose proof (eq_trans (z := a') (eq_sym (div_eucl_div x y))
       (f_equal fst eab')) as ea';
     destruct aab' as [e0ab' l1ab']
-  | h : context [let (_, _) := div_eucl ?x ?y in _] |- _ =>
+  | h : context [div_eucl ?x ?y] |- _ =>
     pose proof div_eucl_spec' x y as aab';
     destruct (div_eucl x y) as [a' b'] eqn : eab';
     pose proof (eq_trans (z := a') (eq_sym (div_eucl_div x y))
@@ -136,22 +136,22 @@ Tactic Notation "destruct_div_eucl"
 Ltac destruct_div_eucl_fresh :=
   let a' := fresh "a" in
   let b' := fresh "b" in
-  let ea' := fresh "e" a' in
   let eab' := fresh "e" a' b' in
+  let ea' := fresh "e" a' in
   let e0ab' := fresh "e0" a' b' in
   let l1ab' := fresh "l1" a' b' in
-  destruct_div_eucl a' b' ea' eab' e0ab' l1ab'.
+  destruct_div_eucl a' b' eab' ea' e0ab' l1ab'.
 
 Ltac destruct_sqrtrem' a' b' eab' ea' e0ab' l1ab' :=
   let aab' := fresh "a" a' b' in
   match goal with
-  | |- context [let (_, _) := sqrtrem ?x in _] =>
+  | |- context [sqrtrem ?x] =>
     pose proof sqrtrem_spec x as aab';
     destruct (sqrtrem x) as [a' b'] eqn : eab';
     pose proof (eq_trans (z := a') (eq_sym (sqrtrem_sqrt x))
       (f_equal fst eab')) as ea';
     destruct aab' as [e0ab' l1ab']
-  | h : context [let (_, _) := sqrtrem ?x in _] |- _ =>
+  | h : context [sqrtrem ?x] |- _ =>
     pose proof sqrtrem_spec x as aab';
     destruct (sqrtrem x) as [a' b'] eqn : eab';
     pose proof (eq_trans (z := a') (eq_sym (sqrtrem_sqrt x))
@@ -171,11 +171,91 @@ Tactic Notation "destruct_sqrtrem"
 Ltac destruct_sqrtrem_fresh :=
   let a' := fresh "a" in
   let b' := fresh "b" in
-  let ea' := fresh "e" a' in
   let eab' := fresh "e" a' b' in
+  let ea' := fresh "e" a' in
   let e0ab' := fresh "e0" a' b' in
   let l1ab' := fresh "l1" a' b' in
-  destruct_sqrtrem a' b' ea' eab' e0ab' l1ab'.
+  destruct_sqrtrem a' b' eab' ea' e0ab' l1ab'.
+
+(** Minimum with a remainder.
+    Analogous in structure to [div_eucl] and [sqrtrem]. *)
+
+Definition min_max (n p : N) : N * N :=
+  if n <? p then (n, p) else (p, n).
+
+Arguments min_max _ _ : assert.
+
+(** Specification for [min_max].
+    Analogous in structure to [min_spec] and [max_spec]. *)
+
+Lemma min_max_spec (n p : N) :
+  n < p /\ min_max n p = (n, p) \/
+  p <= n /\ min_max n p = (p, n).
+Proof. cbv [min_max]. destruct (ltb_spec n p); auto. Qed.
+
+(** Definition of [min] as an equation.
+    Analogous in structure to [sqrtrem_sqrt]. *)
+
+Lemma min_max_min (a b : N) : fst (min_max a b) = min a b.
+Proof.
+  destruct (min_max_spec a b) as [[l e] | [l e]],
+  (min_spec a b) as [[l' e'] | [l' e']].
+  - rewrite e, e'. auto.
+  - rewrite e, e'. lia.
+  - rewrite e, e'. lia.
+  - rewrite e, e'. auto. Qed.
+
+(** Definition of [max] as an equation.
+    Analogous in structure to [sqrtrem_sqrt]. *)
+
+Lemma min_max_max (a b : N) : snd (min_max a b) = max a b.
+Proof.
+  destruct (min_max_spec a b) as [[l e] | [l e]],
+  (max_spec a b) as [[l' e'] | [l' e']].
+  - rewrite e, e'. auto.
+  - rewrite e, e'. lia.
+  - rewrite e, e'. lia.
+  - rewrite e, e'. auto. Qed.
+
+Ltac destruct_min_max' a' b' eab' ea' eb' l0ab' e1ab' :=
+  let aab' := fresh "a" a' b' in
+  match goal with
+  | |- context [min_max ?x ?y] =>
+    pose proof min_max_spec x y as aab';
+    destruct (min_max x y) as [a' b'] eqn : eab';
+    pose proof (eq_trans (z := a') (eq_sym (min_max_min x y))
+      (f_equal fst eab')) as ea';
+    pose proof (eq_trans (z := b') (eq_sym (min_max_max x y))
+      (f_equal snd eab')) as eb';
+    destruct aab' as [[l0ab' e1ab'] | [l0ab' e1ab']]
+  | h : context [min_max ?x ?y] |- _ =>
+    pose proof min_max_spec x y as aab';
+    destruct (min_max x y) as [a' b'] eqn : eab';
+    pose proof (eq_trans (z := a') (eq_sym (min_max_min x y))
+      (f_equal fst eab')) as ea';
+    pose proof (eq_trans (z := b') (eq_sym (min_max_max x y))
+      (f_equal snd eab')) as eb';
+    destruct aab' as [[l0ab' e1ab'] | [l0ab' e1ab']]
+  end.
+
+(** Replace a call to [min_max] with its specification
+    in the goal and hypotheses. *)
+
+Tactic Notation "destruct_min_max"
+  ident(a') ident(b') ident(eab') ident(ea') ident(eb') ident(l0ab') ident(e1ab') :=
+  destruct_min_max' a' b' eab' ea' eb' l0ab' e1ab'.
+
+(** Perform [destruct_min_max] with fresh variable names. *)
+
+Ltac destruct_min_max_fresh :=
+  let a' := fresh "a" in
+  let b' := fresh "b" in
+  let eab' := fresh "e" a' b' in
+  let ea' := fresh "e" a' in
+  let eb' := fresh "e" b' in
+  let l0ab' := fresh "l0" a' b' in
+  let e1ab' := fresh "e1" a' b' in
+  destruct_min_max a' b' eab' ea' eb' l0ab' e1ab'.
 
 (** These lemmas are missing from the standard library. *)
 
@@ -197,58 +277,6 @@ Proof. destruct a as [| p]; reflexivity. Qed.
 
 Lemma log2_0 : log2 0 = 0.
 Proof. reflexivity. Qed.
-
-(** Every natural number is either even or odd.
-    Either the number itself or its predecessor can be halved. *)
-
-Lemma exist_even_odd (n : N) : exists p : N, n = 2 * p \/ n = 1 + 2 * p.
-Proof.
-  induction n as [| q ei] using peano_ind.
-  - exists 0. lia.
-  - destruct ei as [r [e | e]].
-    + exists (q / 2). subst q. right.
-      replace (2 * r) with (r * 2) by lia.
-      rewrite div_mul by lia. lia.
-    + exists ((1 + q) / 2). subst q. left.
-      replace (1 + (1 + 2 * r)) with ((1 + r) * 2) by lia.
-      rewrite div_mul by lia. lia. Qed.
-
-(** Dividing an even number by two. *)
-
-Lemma div_even (n : N) : 2 * n / 2 = n.
-Proof.
-  induction n as [| p ei] using peano_ind.
-  - reflexivity.
-  - replace (2 * succ p) with (1 * 2 + 2 * p) by lia.
-    rewrite div_add_l by lia. rewrite ei. lia. Qed.
-
-(** Dividing an odd number by two. *)
-
-Lemma div_odd (n : N) : (1 + 2 * n) / 2 = n.
-Proof.
-  induction n as [| p ei] using peano_ind.
-  - reflexivity.
-  - replace (1 + 2 * succ p) with (1 * 2 + (1 + 2 * p)) by lia.
-    rewrite div_add_l by lia. rewrite ei. lia. Qed.
-
-(** Sum of two consecutive natural numbers is odd. *)
-
-Lemma mod_add_consecutive (n : N) : (n + (1 + n)) mod 2 = 1.
-Proof.
-  induction n as [| p ei] using peano_ind.
-  - reflexivity.
-  - replace (succ p + (1 + succ p)) with (2 + (p + (1 + p))) by lia.
-    rewrite <- add_mod_idemp_l by lia. rewrite mod_same by lia.
-    rewrite add_0_l. apply ei. Qed.
-
-(** Product of two consecutive natural numbers is even. *)
-
-Lemma mod_mul_consecutive (n : N) : n * (1 + n) mod 2 = 0.
-Proof.
-  induction n as [| p ei] using peano_ind.
-  - reflexivity.
-  - replace (succ p * (1 + succ p)) with (p * (1 + p) + (1 + p) * 2) by lia.
-    rewrite mod_add by lia. apply ei. Qed.
 
 (** Eliminate all occurrences of
     [shiftl], [double], [succ], [shiftr], [div2] and [pred]. *)
@@ -367,7 +395,7 @@ Ltac simplify_by force :=
   (* repeat rewrite _ in *; *)
   idtac.
 
-(** Prepare or reduce occurrences of
+(** Prepare for reduction or reduce occurrences of
     [_ ^ _], [_ * _], [_ + _], [log2], [_ / _] and [_ - _].
     Rewrite rules that produce subgoals will fail,
     unless they can be immediately proven with [force]. *)
@@ -419,6 +447,40 @@ Ltac arithmetize_by force := eliminate; repeat (simplify_by force; preduce).
 (** Specialization of [arithmetize_by] using [lia]. *)
 
 Ltac arithmetize := arithmetize_by lia.
+
+(** Dividing an even number by two. *)
+
+Lemma div_Even (n : N) : 2 * n / 2 = n.
+Proof.
+  induction n as [| p ei] using peano_ind; arithmetize.
+  - reflexivity.
+  - replace (2 * (1 + p)) with (1 * 2 + 2 * p) by lia.
+    rewrite div_add_l by lia. rewrite ei. lia. Qed.
+
+(** Dividing an odd number by two. *)
+
+Lemma div_Odd (n : N) : (1 + 2 * n) / 2 = n.
+Proof.
+  induction n as [| p ei] using peano_ind; arithmetize.
+  - reflexivity.
+  - replace (1 + 2 * (1 + p)) with (1 * 2 + (1 + 2 * p)) by lia.
+    rewrite div_add_l by lia. rewrite ei. lia. Qed.
+
+(** Sum of two consecutive natural numbers is odd. *)
+
+Lemma Odd_add_consecutive (n : N) : Odd (n + (1 + n)).
+Proof.
+  induction n as [| p xi] using peano_ind; arithmetize.
+  - exists 0. reflexivity.
+  - destruct xi as [q e]. exists (1 + q). lia. Qed.
+
+(** Product of two consecutive natural numbers is even. *)
+
+Lemma Even_mul_consecutive (n : N) : Even (n * (1 + n)).
+Proof.
+  destruct (Even_or_Odd n) as [x | x].
+  - destruct x as [p e]. exists (p * (1 + 2 * p)). lia.
+  - destruct x as [p e]. exists ((2 * p + 1) * (1 + p)). lia. Qed.
 
 End N.
 

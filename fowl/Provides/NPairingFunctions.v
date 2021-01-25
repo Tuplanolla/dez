@@ -1,7 +1,7 @@
 From Coq Require Import
   Lia Lists.List NArith.NArith.
 From Maniunfold.Provides Require Export
-  OptionTheorems ProductTheorems TriangularNumbers.
+  OptionTheorems ProductTheorems NTriangularNumbers.
 
 Import ListNotations N.
 
@@ -52,20 +52,6 @@ Proof.
     rewrite div_mul by lia. rewrite ei. reflexivity.
   + reflexivity. Qed.
 
-(** Analogous to [div_eucl] and [sqrtrem]
-    in the sense of "maximum with remainder". *)
-
-Local Definition min_max (n p : N) : N * N :=
-  if n <? p then (n, p) else (p, n).
-
-(** Specification for [min_max].
-    Analogous in structure to [min_spec] and [max_spec]. *)
-
-Lemma min_max_spec (n p : N) :
-  n < p /\ min_max n p = (n, p) \/
-  p <= n /\ min_max n p = (p, n).
-Proof. cbv [min_max]. destruct (ltb_spec n p); auto. Qed.
-
 Module Cantor.
 
 Definition pair_shell (n : N) : N := untri n.
@@ -73,8 +59,8 @@ Definition pair_shell (n : N) : N := untri n.
 Arguments pair_shell _ : assert.
 
 Definition pair (n : N) : N * N :=
-  let ((* shell *) s, (* index in shell *) i) := untri_rem n in
-  (s - i, i).
+  let ((* shell *) u, (* index in shell *) v) := untri_rem n in
+  (u - v, v).
 
 Arguments pair _ : assert.
 
@@ -96,11 +82,28 @@ Compute map (prod_uncurry unpair o pair) (seq 0 64).
 Compute map pair_shell (seq 0 64).
 Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
 
+Lemma tri_untri_untri_rem (n : N) : n - tri (untri n) <= untri n. Admitted.
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
-Proof. cbv [prod_uncurry unpair pair]. cbn. Admitted.
+Proof.
+  cbv [prod_uncurry fst snd unpair pair].
+  rewrite untri_rem_tri_untri.
+  pose proof tri_untri n as l.
+  pose proof tri_untri_untri_rem n as l'.
+  remember (n - tri (untri n)) as p.
+  replace (untri n - p + p) with (untri n) by lia. lia. Qed.
 
 Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
-Proof. Admitted.
+Proof.
+  cbv [pair prod_uncurry fst snd unpair].
+  rewrite untri_rem_tri_untri. f_equal.
+  - remember (q + tri (p + q)) as r eqn : er.
+    pose proof tri_untri r as l.
+    pose proof tri_untri_untri_rem r as l'.
+    admit.
+  - remember (q + tri (p + q)) as r eqn : er.
+    pose proof tri_untri r as l.
+    pose proof tri_untri_untri_rem r as l'.
+    admit. Admitted.
 
 Module Alternating.
 
