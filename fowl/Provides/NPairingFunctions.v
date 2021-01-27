@@ -82,7 +82,6 @@ Compute map (prod_uncurry unpair o pair) (seq 0 64).
 Compute map pair_shell (seq 0 64).
 Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
 
-Lemma tri_untri_untri_rem (n : N) : n - tri (untri n) <= untri n. Admitted.
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof.
   cbv [prod_uncurry fst snd unpair pair].

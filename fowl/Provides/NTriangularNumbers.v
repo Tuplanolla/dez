@@ -107,9 +107,9 @@ Proof.
   remember (1 + 8 * n) as p eqn : ep.
   destruct (Even_or_Odd (sqrt p - 1)) as [[q eq] | [q eq]]; arithmetize.
   - rewrite eq. rewrite div_Even.
-    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. nia.
+    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l1. nia.
   - rewrite eq. rewrite div_Odd.
-    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. nia. Qed.
+    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l1. nia. Qed.
 
 (** The function [untri] is an inverse of [tri]. *)
 
@@ -151,11 +151,11 @@ Proof.
   - rewrite eq. rewrite div_Even.
     destruct (Even_mul_consecutive q) as [r er].
     rewrite er. rewrite div_Even.
-    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. nia.
+    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l1. nia.
   - rewrite eq. rewrite div_Odd.
     destruct (Even_mul_consecutive q) as [r er].
     rewrite er. rewrite div_Even.
-    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. nia. Qed.
+    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l1. nia. Qed.
 
 (** The function [tri] provides an upper bound for inverses of [untri]. *)
 
@@ -169,11 +169,11 @@ Proof.
     + rewrite eq. rewrite div_Even.
       destruct (Even_mul_consecutive (1 + q)) as [r er]; arithmetize.
       rewrite er. rewrite div_Even.
-      destruct (sqrt_spec' p) as [l0 l1]; arithmetize. nia.
+      destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l0. nia.
     + rewrite eq. rewrite div_Odd.
       destruct (Even_mul_consecutive (1 + q)) as [r er]; arithmetize.
       rewrite er. rewrite div_Even.
-      destruct (sqrt_spec' p) as [l0 l1]; arithmetize. nia. Qed.
+      destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l0. nia. Qed.
 
 (** The function [tri] provides bounds
     for inverses of [untri] and [untri_up]. *)
@@ -207,58 +207,63 @@ Proof.
   rewrite untri_rem_eqn, tri_eqn, untri_eqn.
   repeat rewrite <- sqrtrem_sqrt. cbv [fst snd].
   destruct_sqrtrem s t est es e0st l1st.
+  clear est es l1st.
   repeat rewrite <- (div_eucl_div (s - 1) 2). cbv [fst snd].
   destruct_div_eucl q r eqr eq e0qr l1qr.
-  clear est es eqr eq. f_equal.
+  clear eqr eq. f_equal.
   destruct (Even_mul_consecutive q) as [u eu].
   rewrite eu. rewrite div_Even.
   assert (or : r = 0 \/ r = 1) by lia. clear l1qr.
+  (** This case analysis is technically unnecessary,
+      but speeds up [nia] considerably. *)
   destruct or as [er | er]; subst r; arithmetize.
-  { change 8 with (2 * (2 * 2)). do 2 rewrite <- div_div by lia.
-    destruct (Even_or_Odd t) as [[v ev] | [v ev]]; arithmetize.
-    - rewrite ev. rewrite div_Even.
-      destruct (Even_or_Odd v) as [[v' ev'] | [v' ev']]; arithmetize.
-      + rewrite ev'. rewrite div_Even.
-        destruct (Even_or_Odd v') as [[v'' ev''] | [v'' ev'']]; arithmetize.
-        * rewrite ev''. rewrite div_Even. subst v v'. nia.
-        * rewrite ev''. rewrite div_Odd. subst v v'. nia.
-      + rewrite ev'. rewrite div_Odd.
-        destruct (Even_or_Odd v') as [[v'' ev''] | [v'' ev'']]; arithmetize.
-        * rewrite ev''. rewrite div_Even. subst v v'. nia.
-        * rewrite ev''. rewrite div_Odd. subst v v'. nia.
-    - rewrite ev. rewrite div_Odd.
-      destruct (Even_or_Odd v) as [[v' ev'] | [v' ev']]; arithmetize.
-      + rewrite ev'. rewrite div_Even.
-        destruct (Even_or_Odd v') as [[v'' ev''] | [v'' ev'']]; arithmetize.
-        * rewrite ev''. rewrite div_Even. subst v v'. nia.
-        * rewrite ev''. rewrite div_Odd. subst v v'. nia.
-      + rewrite ev'. rewrite div_Odd.
-        destruct (Even_or_Odd v') as [[v'' ev''] | [v'' ev'']]; arithmetize.
-        * rewrite ev''. rewrite div_Even. subst v v'. nia.
-        * rewrite ev''. rewrite div_Odd. subst v v'. nia. }
-  { change 8 with (2 * (2 * 2)). do 2 rewrite <- div_div by lia.
+  - change 8 with (2 * (2 * 2)). repeat rewrite <- (div_div _ 2) by lia.
+    rename t into t0.
+    destruct (Even_or_Odd t0) as [[t1 et1] | [t1 et1]]; arithmetize.
+    + rewrite et1. rewrite div_Even.
+      destruct (Even_or_Odd t1) as [[t2 et2] | [t2 et2]]; arithmetize.
+      * rewrite et2. rewrite div_Even.
+        destruct (Even_or_Odd t2) as [[t3 et3] | [t3 et3]]; arithmetize.
+        -- rewrite et3. rewrite div_Even. subst t0 t1 t2. nia.
+        -- rewrite et3. rewrite div_Odd. subst t0 t1 t2. nia.
+      * rewrite et2. rewrite div_Odd.
+        destruct (Even_or_Odd t2) as [[t3 et3] | [t3 et3]]; arithmetize.
+        -- rewrite et3. rewrite div_Even. subst t0 t1 t2. nia.
+        -- rewrite et3. rewrite div_Odd. subst t0 t1 t2. nia.
+    + rewrite et1. rewrite div_Odd.
+      destruct (Even_or_Odd t1) as [[t2 et2] | [t2 et2]]; arithmetize.
+      * rewrite et2. rewrite div_Even.
+        destruct (Even_or_Odd t2) as [[t3 et3] | [t3 et3]]; arithmetize.
+        -- rewrite et3. rewrite div_Even. subst t0 t1 t2. nia.
+        -- rewrite et3. rewrite div_Odd. subst t0 t1 t2. nia.
+      * rewrite et2. rewrite div_Odd.
+        destruct (Even_or_Odd t2) as [[t3 et3] | [t3 et3]]; arithmetize.
+        -- rewrite et3. rewrite div_Even. subst t0 t1 t2. nia.
+        -- rewrite et3. rewrite div_Odd. subst t0 t1 t2. nia.
+  - change 8 with (2 * (2 * 2)). repeat rewrite <- (div_div _ 2) by lia.
     rewrite add_sub_assoc by lia.
-    destruct (Even_or_Odd (t + 2 * s - 1)) as [[v ev] | [v ev]]; arithmetize.
-    - rewrite ev. rewrite div_Even.
-      destruct (Even_or_Odd v) as [[v' ev'] | [v' ev']]; arithmetize.
-      + rewrite ev'. rewrite div_Even.
-        destruct (Even_or_Odd v') as [[v'' ev''] | [v'' ev'']]; arithmetize.
-        * rewrite ev''. rewrite div_Even. subst v v'. nia.
-        * rewrite ev''. rewrite div_Odd. subst v v'. nia.
-      + rewrite ev'. rewrite div_Odd.
-        destruct (Even_or_Odd v') as [[v'' ev''] | [v'' ev'']]; arithmetize.
-        * rewrite ev''. rewrite div_Even. subst v v'. nia.
-        * rewrite ev''. rewrite div_Odd. subst v v'. nia.
-    - rewrite ev. rewrite div_Odd.
-      destruct (Even_or_Odd v) as [[v' ev'] | [v' ev']]; arithmetize.
-      + rewrite ev'. rewrite div_Even.
-        destruct (Even_or_Odd v') as [[v'' ev''] | [v'' ev'']]; arithmetize.
-        * rewrite ev''. rewrite div_Even. subst v v'. nia.
-        * rewrite ev''. rewrite div_Odd. subst v v'. nia.
-      + rewrite ev'. rewrite div_Odd.
-        destruct (Even_or_Odd v') as [[v'' ev''] | [v'' ev'']]; arithmetize.
-        * rewrite ev''. rewrite div_Even. subst v v'. nia.
-        * rewrite ev''. rewrite div_Odd. subst v v'. nia. } Qed.
+    remember (t + 2 * s - 1) as t0 eqn : et0.
+    destruct (Even_or_Odd t0) as [[t1 et1] | [t1 et1]]; arithmetize.
+    + rewrite et1. rewrite div_Even.
+      destruct (Even_or_Odd t1) as [[t2 et2] | [t2 et2]]; arithmetize.
+      * rewrite et2. rewrite div_Even.
+        destruct (Even_or_Odd t2) as [[t3 et3] | [t3 et3]]; arithmetize.
+        -- rewrite et3. rewrite div_Even. subst t0 t1 t2. nia.
+        -- rewrite et3. rewrite div_Odd. subst t0 t1 t2. nia.
+      * rewrite et2. rewrite div_Odd.
+        destruct (Even_or_Odd t2) as [[t3 et3] | [t3 et3]]; arithmetize.
+        -- rewrite et3. rewrite div_Even. subst t0 t1 t2. nia.
+        -- rewrite et3. rewrite div_Odd. subst t0 t1 t2. nia.
+    + rewrite et1. rewrite div_Odd.
+      destruct (Even_or_Odd t1) as [[t2 et2] | [t2 et2]]; arithmetize.
+      * rewrite et2. rewrite div_Even.
+        destruct (Even_or_Odd t2) as [[t3 et3] | [t3 et3]]; arithmetize.
+        -- rewrite et3. rewrite div_Even. subst t0 t1 t2. nia.
+        -- rewrite et3. rewrite div_Odd. subst t0 t1 t2. nia.
+      * rewrite et2. rewrite div_Odd.
+        destruct (Even_or_Odd t2) as [[t3 et3] | [t3 et3]]; arithmetize.
+        -- rewrite et3. rewrite div_Even. subst t0 t1 t2. nia.
+        -- rewrite et3. rewrite div_Odd. subst t0 t1 t2. nia. Qed.
 
 (** The function [untri_rem] truly produces a remainder. *)
 
@@ -270,11 +275,11 @@ Proof.
   - rewrite eq. rewrite div_Even.
     destruct (Even_mul_consecutive q) as [r er].
     rewrite er. rewrite div_Even.
-    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. nia.
+    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l0; nia.
   - rewrite eq. rewrite div_Odd.
     destruct (Even_mul_consecutive q) as [r er].
     rewrite er. rewrite div_Even.
-    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. nia. Qed.
+    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l0; nia. Qed.
 
 (** The function [untri_rem] is an inverse of [tri]. *)
 
@@ -310,25 +315,26 @@ Proof.
 
 Lemma untri_error_untri_rem (n : N) :
   untri_error n =
-  let (u, v) := untri_rem n in
-  if v =? 0 then Some u else None.
+  let (u, t1) := untri_rem n in
+  if t1 =? 0 then Some u else None.
 Proof.
   pose proof tri_untri n as l. revert l.
   rewrite untri_error_eqn. rewrite untri_rem_tri_untri.
   rewrite untri_eqn. rewrite tri_eqn.
   rewrite <- sqrtrem_sqrt. cbv [fst snd].
   destruct_sqrtrem s t est es e0st l1st.
+  clear est es.
   rewrite <- (div_eucl_div (s - 1) 2). cbv [fst snd].
   destruct_div_eucl q r eqr eq e0qr l1qr.
-  clear est es eqr eq.
+  clear eqr eq.
   destruct (Even_mul_consecutive q) as [u eu].
   rewrite eu. rewrite div_Even. intros l.
   assert (or : r = 0 \/ r = 1) by lia. clear l1qr.
-  destruct (eqb_spec t 0) as [e | f],
-  (eqb_spec (n - u) 0) as [e' | f']; arithmetize.
+  destruct (eqb_spec t 0) as [e0 | f0],
+  (eqb_spec (n - u) 0) as [e1 | f1]; arithmetize.
   + auto.
-  + exfalso. nia.
-  + exfalso. nia.
+  + exfalso. clear l; nia.
+  + exfalso. clear l; nia.
   + auto. Qed.
 
 (** The function [untri_error] is a lifted inverse of [tri]. *)
@@ -343,10 +349,11 @@ Theorem tri_untri_error (n p : N)
 Proof.
   rewrite untri_error_untri_rem in e.
   rewrite untri_rem_tri_untri in e.
-  destruct (eqb_spec (n - tri (untri n)) 0) as [e' | f'].
+  destruct (eqb_spec (n - tri (untri n)) 0) as [e0 | f0].
   - cbv [option_map] in e.
-    injection e; clear e; intros e.
-    rewrite <- e. clear e. pose proof sub_add _ _ (tri_untri n) as e''. lia.
+    injection e; intros e1. clear e.
+    rewrite <- e1. clear e1.
+    pose proof sub_add _ _ (tri_untri n) as e2. lia.
   - cbv [option_map] in e.
     inversion e. Qed.
 
