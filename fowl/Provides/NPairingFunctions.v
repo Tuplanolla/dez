@@ -68,8 +68,7 @@ Definition unpair_shell (p q : N) : N := p + q.
 
 Arguments unpair_shell _ _ : assert.
 
-Definition unpair (p q : N) : N :=
-  q + tri (unpair_shell p q).
+Definition unpair (p q : N) : N := q + tri (unpair_shell p q).
 
 Arguments unpair _ _ : assert.
 
@@ -88,10 +87,9 @@ Proof.
   remember (n - tri (untri n)) as p eqn : ep.
   replace (untri n - p + p) with (untri n) by lia. lia. Qed.
 
-Theorem pair_shell_unpair (x : N * N) :
-  pair_shell (prod_uncurry unpair x) = prod_uncurry unpair_shell x.
+Theorem pair_shell_unpair (p q : N) :
+  pair_shell (unpair p q) = unpair_shell p q.
 Proof.
-  destruct x as [p q].
   cbv [prod_uncurry fst snd pair_shell unpair unpair_shell].
   rewrite tri_what. lia. Qed.
 
@@ -104,7 +102,7 @@ Proof.
   remember (n - tri (untri n)) as p eqn : ep.
   replace (untri n - p + p) with (untri n) by lia. lia. Qed.
 
-Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
+Theorem pair_unpair (p q : N) : pair (unpair p q) = (p, q).
 Proof.
   cbv [pair prod_uncurry fst snd unpair unpair_shell].
   rewrite untri_rem_tri_untri. f_equal.
@@ -129,10 +127,10 @@ Compute map (prod_uncurry unpair o pair) (seq 0 64).
 Theorem unpair_shell_pair (n : N) :
   prod_uncurry unpair_shell (pair n) = pair_shell n.
 Proof.
-  cbv [prod_uncurry fst snd unpair_shell pair pair_shell].
-  destruct (even (untri n)) eqn : e.
+  cbv [prod_uncurry fst snd pair].
+  destruct (even (pair_shell n)) eqn : e.
   - apply (unpair_shell_pair n).
-  - rewrite add_comm.
+  - cbv [unpair_shell]. rewrite add_comm.
     match goal with
     | |- context [?f
       (let (_, b) := prod_swap ?x in b)
@@ -140,23 +138,39 @@ Proof.
       replace (f
         (let (_, b) := prod_swap x in b)
         (let (a, _) := prod_swap x in a))
-      with (prod_uncurry f x) by (destruct x; reflexivity)
+      with (prod_uncurry f x) by (destruct x as [?a ?b]; reflexivity)
     end. apply (unpair_shell_pair n). Qed.
 
-Theorem pair_shell_unpair (x : N * N) :
-  pair_shell (prod_uncurry unpair x) = prod_uncurry unpair_shell x.
+Theorem pair_shell_unpair (p q : N) :
+  pair_shell (unpair p q) = unpair_shell p q.
 Proof.
-  destruct x as [p q].
-  cbv [prod_uncurry fst snd pair_shell unpair unpair_shell].
-  destruct (even (p + q)) eqn : e.
-  - apply (pair_shell_unpair (p, q)).
-  - rewrite add_comm. apply (pair_shell_unpair (q, p)). Qed.
+  cbv [prod_uncurry fst snd unpair].
+  destruct (even (unpair_shell p q)) eqn : e.
+  - apply (pair_shell_unpair p q).
+  - cbv [unpair_shell]. rewrite add_comm. apply (pair_shell_unpair q p). Qed.
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
-Proof. Admitted.
+Proof.
+  cbv [prod_uncurry fst snd unpair pair].
+  destruct (even (pair_shell n)) eqn : e;
+  destruct (even (unpair_shell
+    (let (x, _) := id (Cantor.pair n) in x)
+    (let (_, y) := id (Cantor.pair n) in y))) eqn : e'.
+  - apply (unpair_pair n).
+  - cbv [flip Cantor.unpair]. Admitted.
 
-Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
-Proof. Admitted.
+Theorem pair_unpair (p q : N) : pair (unpair p q) = (p, q).
+Proof.
+  cbv [pair prod_uncurry fst snd].
+  destruct (even (pair_shell (unpair p q))) eqn : e.
+  - cbv [unpair]. destruct (even (unpair_shell p q)) eqn : e'.
+    + apply (pair_unpair p q).
+    + enough (true = false) by congruence. rewrite <- e, <- e'.
+      rewrite <- pair_shell_unpair. reflexivity.
+  - cbv [unpair]. destruct (even (unpair_shell p q)) eqn : e'.
+    + enough (true = false) by congruence. rewrite <- e, <- e'.
+      rewrite <- pair_shell_unpair. reflexivity.
+    + cbv [prod_swap Cantor.pair flip Cantor.unpair]. Admitted.
 
 End Alternating.
 
@@ -201,7 +215,7 @@ Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.
 
-Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
+Theorem pair_unpair (p q : N) : pair (unpair p q) = (p, q).
 Proof. Admitted.
 
 Module Alternating.
@@ -236,7 +250,7 @@ Compute map (prod_uncurry unpair o pair) (seq 0 64).
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.
 
-Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
+Theorem pair_unpair (p q : N) : pair (unpair p q) = (p, q).
 Proof. Admitted.
 
 End Alternating.
@@ -283,7 +297,7 @@ Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.
 
-Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
+Theorem pair_unpair (p q : N) : pair (unpair p q) = (p, q).
 Proof. Admitted.
 
 Module Alternating.
@@ -316,7 +330,7 @@ Compute map (prod_uncurry unpair o pair) (seq 0 64).
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.
 
-Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
+Theorem pair_unpair (p q : N) : pair (unpair p q) = (p, q).
 Proof. Admitted.
 
 End Alternating.
@@ -410,7 +424,7 @@ Proof.
   - pose proof (part_urgh (succ_pos n)) as e. rewrite <- e.
     rewrite succ_pos_spec. lia. Qed.
 
-Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
+Theorem pair_unpair (p q : N) : pair (unpair p q) = (p, q).
 Proof.
   cbv [prod_uncurry]. rewrite pair_eqn. rewrite unpair_eqn. cbv [fst snd].
   f_equal.
@@ -440,7 +454,7 @@ Compute map (prod_uncurry unpair o pair) (seq 0 64).
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.
 
-Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
+Theorem pair_unpair (p q : N) : pair (unpair p q) = (p, q).
 Proof. Admitted.
 
 End Alternating.
