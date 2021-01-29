@@ -59,7 +59,7 @@ Definition pair_shell (n : N) : N := untri n.
 Arguments pair_shell _ : assert.
 
 Definition pair (n : N) : N * N :=
-  let ((* shell *) u, (* index in shell *) v) := untri_rem n in
+  let (u, v) := untri_rem n in
   (u - v, v).
 
 Arguments pair _ : assert.
@@ -69,10 +69,7 @@ Definition unpair_shell (p q : N) : N := p + q.
 Arguments unpair_shell _ _ : assert.
 
 Definition unpair (p q : N) : N :=
-  let (* shell *) s := p + q in
-  let (* index in shell *) i := q in
-  let (* endpoint *) e := tri s in
-  i + e.
+  q + tri (unpair_shell p q).
 
 Arguments unpair _ _ : assert.
 
@@ -82,49 +79,78 @@ Compute map (prod_uncurry unpair o pair) (seq 0 64).
 Compute map pair_shell (seq 0 64).
 Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
 
+Theorem unpair_shell_pair (n : N) :
+  prod_uncurry unpair_shell (pair n) = pair_shell n.
+Proof.
+  cbv [prod_uncurry fst snd unpair_shell pair pair_shell].
+  rewrite untri_rem_tri_untri.
+  pose proof tri_untri_untri_rem n as l.
+  remember (n - tri (untri n)) as p eqn : ep.
+  replace (untri n - p + p) with (untri n) by lia. lia. Qed.
+
+Theorem pair_shell_unpair (x : N * N) :
+  pair_shell (prod_uncurry unpair x) = prod_uncurry unpair_shell x.
+Proof.
+  destruct x as [p q].
+  cbv [prod_uncurry fst snd pair_shell unpair unpair_shell].
+  rewrite tri_what. lia. Qed.
+
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof.
-  cbv [prod_uncurry fst snd unpair pair].
+  cbv [prod_uncurry fst snd unpair unpair_shell pair].
   rewrite untri_rem_tri_untri.
   pose proof tri_untri n as l.
   pose proof tri_untri_untri_rem n as l'.
-  remember (n - tri (untri n)) as p.
+  remember (n - tri (untri n)) as p eqn : ep.
   replace (untri n - p + p) with (untri n) by lia. lia. Qed.
 
 Theorem pair_unpair (p q : N) : pair (prod_uncurry unpair (p, q)) = (p, q).
 Proof.
-  cbv [pair prod_uncurry fst snd unpair].
+  cbv [pair prod_uncurry fst snd unpair unpair_shell].
   rewrite untri_rem_tri_untri. f_equal.
-  - remember (q + tri (p + q)) as r eqn : er.
-    pose proof tri_untri r as l.
-    pose proof tri_untri_untri_rem r as l'.
-    admit.
-  - remember (q + tri (p + q)) as r eqn : er.
-    pose proof tri_untri r as l.
-    pose proof tri_untri_untri_rem r as l'.
-    admit. Admitted.
+  - rewrite tri_what. lia.
+  - rewrite tri_what. lia. Qed.
 
 Module Alternating.
 
 Definition pair (n : N) : N * N :=
-  let ((* shell *) s, (* index in shell *) i) := untri_rem n in
-  let (* continuation *) c := (s - i, i) in
-  (if even s then id else prod_swap) c.
+  (if even (pair_shell n) then id else prod_swap) (pair n).
 
 Arguments pair _ : assert.
 
 Definition unpair (p q : N) : N :=
-  let (* shell *) s := p + q in
-  let (* continuation *) c (p q : N) :=
-    let (* index in shell *) i := q in
-    let (* endpoint *) e := tri s in
-    i + e in
-  (if even s then id else flip) c p q.
+  (if even (unpair_shell p q) then id else flip) unpair p q.
 
 Arguments unpair _ _ : assert.
 
 Compute map pair (seq 0 64).
 Compute map (prod_uncurry unpair o pair) (seq 0 64).
+
+Theorem unpair_shell_pair (n : N) :
+  prod_uncurry unpair_shell (pair n) = pair_shell n.
+Proof.
+  cbv [prod_uncurry fst snd unpair_shell pair pair_shell].
+  destruct (even (untri n)) eqn : e.
+  - apply (unpair_shell_pair n).
+  - rewrite add_comm.
+    match goal with
+    | |- context [?f
+      (let (_, b) := prod_swap ?x in b)
+      (let (a, _) := prod_swap ?x in a)] =>
+      replace (f
+        (let (_, b) := prod_swap x in b)
+        (let (a, _) := prod_swap x in a))
+      with (prod_uncurry f x) by (destruct x; reflexivity)
+    end. apply (unpair_shell_pair n). Qed.
+
+Theorem pair_shell_unpair (x : N * N) :
+  pair_shell (prod_uncurry unpair x) = prod_uncurry unpair_shell x.
+Proof.
+  destruct x as [p q].
+  cbv [prod_uncurry fst snd pair_shell unpair unpair_shell].
+  destruct (even (p + q)) eqn : e.
+  - apply (pair_shell_unpair (p, q)).
+  - rewrite add_comm. apply (pair_shell_unpair (q, p)). Qed.
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.

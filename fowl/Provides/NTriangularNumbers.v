@@ -53,6 +53,29 @@ Proof.
   - cbv [untri_up]. rewrite pos_pred_spec.
     arithmetize. rewrite untri_eqn. auto. Qed.
 
+(** This is obvious. *)
+
+Lemma tri_succ (n : N) : tri (1 + n) = (1 + n) + tri n.
+Proof.
+  do 2 rewrite tri_eqn. destruct (Even_mul_consecutive (1 + n)) as [p ep].
+  rewrite ep. rewrite div_Even.
+  destruct (Even_mul_consecutive n) as [q eq].
+  rewrite eq. rewrite div_Even. lia. Qed.
+
+(** This is strange. *)
+
+Lemma tri_what (n p : N) : untri (p + tri (n + p)) = n + p.
+Proof.
+  rewrite untri_eqn, tri_eqn.
+  destruct (Even_mul_consecutive (n + p)) as [q eq].
+  rewrite eq. rewrite div_Even.
+  remember (1 + 8 * (p + q)) as r eqn : er.
+  destruct (Even_or_Odd (sqrt r - 1)) as [[s es] | [s es]]; arithmetize.
+  - rewrite es. rewrite div_Even.
+    destruct (sqrt_spec' r) as [l0 l1]; arithmetize. nia.
+  - rewrite es. rewrite div_Odd.
+    destruct (sqrt_spec' r) as [l0 l1]; arithmetize. nia. Qed.
+
 (** The function [tri] is injective. *)
 
 Lemma tri_inj (n p : N) (e : tri n = tri p) : n = p.
@@ -107,9 +130,9 @@ Proof.
   remember (1 + 8 * n) as p eqn : ep.
   destruct (Even_or_Odd (sqrt p - 1)) as [[q eq] | [q eq]]; arithmetize.
   - rewrite eq. rewrite div_Even.
-    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l1. nia.
+    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l1; nia.
   - rewrite eq. rewrite div_Odd.
-    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l1. nia. Qed.
+    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l1; nia. Qed.
 
 (** The function [untri] is an inverse of [tri]. *)
 
@@ -151,11 +174,11 @@ Proof.
   - rewrite eq. rewrite div_Even.
     destruct (Even_mul_consecutive q) as [r er].
     rewrite er. rewrite div_Even.
-    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l1. nia.
+    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l1; nia.
   - rewrite eq. rewrite div_Odd.
     destruct (Even_mul_consecutive q) as [r er].
     rewrite er. rewrite div_Even.
-    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l1. nia. Qed.
+    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l1; nia. Qed.
 
 (** The function [tri] provides an upper bound for inverses of [untri]. *)
 
@@ -169,11 +192,11 @@ Proof.
     + rewrite eq. rewrite div_Even.
       destruct (Even_mul_consecutive (1 + q)) as [r er]; arithmetize.
       rewrite er. rewrite div_Even.
-      destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l0. nia.
+      destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l0; nia.
     + rewrite eq. rewrite div_Odd.
       destruct (Even_mul_consecutive (1 + q)) as [r er]; arithmetize.
       rewrite er. rewrite div_Even.
-      destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l0. nia. Qed.
+      destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l0; nia. Qed.
 
 (** The function [tri] provides bounds
     for inverses of [untri] and [untri_up]. *)
