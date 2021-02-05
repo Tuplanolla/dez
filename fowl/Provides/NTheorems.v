@@ -32,6 +32,22 @@ Proof.
 Global Instance le_sqrt_wd : Proper (le ==> le) sqrt.
 Proof. intros n p l. apply sqrt_le_mono. lia. Qed.
 
+(** Distance between two natural numbers. *)
+
+Definition dist (n p : N) : N :=
+  max n p - min n p.
+
+Arguments dist _ _ : assert.
+
+Lemma dist_eqn (n p : N) : dist n p =
+  if n <=? p then p - n else n - p.
+Proof. cbv [dist]. destruct (leb_spec n p) as [l | l]; lia. Qed.
+
+(** Distance is commutative. *)
+
+Lemma dist_comm (n p : N) : dist n p = dist p n.
+Proof. cbv [dist]. lia. Qed.
+
 (** A specialization of [seq] for [N]. *)
 
 Fixpoint seq (n : N) (p : nat) : list N :=

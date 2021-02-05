@@ -7,7 +7,7 @@ From Maniunfold Require Import
 From Maniunfold.Provides Require Export
   LogicalTheorems NTheorems OptionTheorems ProductTheorems.
 
-Import N.
+Import ListNotations N.
 
 Local Open Scope N_scope.
 
@@ -22,6 +22,25 @@ Arguments tri _ : assert.
 Lemma tri_eqn (n : N) : tri n =
   n * (1 + n) / 2.
 Proof. cbv [tri]. arithmetize. auto. Qed.
+
+(** An inverse of the generating function, with a remainder. *)
+
+Definition untri_rem (n : N) : N * N :=
+  let (s, t) := sqrtrem (succ (shiftl n 3)) in
+  let (q, r) := div_eucl (pred s) 2 in
+  (q, shiftr (t + r * pred (shiftl s 1)) 3).
+
+Arguments untri_rem _ : assert.
+
+Lemma untri_rem_eqn (n : N) : untri_rem n =
+  let (s, t) := sqrtrem (1 + 8 * n) in
+  let (q, r) := div_eucl (s - 1) 2 in
+  (q, (t + r * (2 * s - 1)) / 8).
+Proof.
+  cbv [untri_rem].
+  arithmetize. destruct_sqrtrem s t est es e0st l1st.
+  arithmetize. destruct_div_eucl q r eqr eq e0qr l1qr.
+  arithmetize. auto. Qed.
 
 (** A weak inverse of the generating function, rounding down.
     Sequence A003056. *)
@@ -43,7 +62,7 @@ Definition untri_up (n : N) : N :=
   | Npos p => succ (untri (Pos.pred_N p))
   end.
 
-Arguments untri_up !_ : assert.
+Arguments untri_up !_.
 
 Lemma untri_up_eqn (n : N) : untri_up n =
   if n =? 0 then 0 else 1 + (sqrt (1 + 8 * (n - 1)) - 1) / 2.
@@ -52,6 +71,38 @@ Proof.
   - auto.
   - cbv [untri_up]. rewrite pos_pred_spec.
     arithmetize. rewrite untri_eqn. auto. Qed.
+
+(** A partial inverse of the generating function. *)
+
+Definition untri_error (n : N) : option N :=
+  let (s, t) := sqrtrem (succ (shiftl n 3)) in
+  if t =? 0 then Some (shiftr (pred s) 1) else None.
+
+Arguments untri_error _ : assert.
+
+Lemma untri_error_eqn (n : N) : untri_error n =
+  let (s, t) := sqrtrem (1 + 8 * n) in
+  if t =? 0 then Some ((s - 1) / 2) else None.
+Proof.
+  cbv [untri_error].
+  arithmetize. destruct_sqrtrem s t est es e0st l1st.
+  arithmetize. auto. Qed.
+
+(** Just to see if it can be done. *)
+
+From Coq Require Import Program.Wf.
+
+Program Fixpoint untri_rem' (a n : N) {measure (to_nat n)} : N * N :=
+  match untri_error n with
+  | Some p => (p, a)
+  | None => untri_rem' (1 + a) (n - 1)
+  end.
+Next Obligation.
+  intros a n f x e.
+  destruct n as [| p].
+  - subst x. inversion e.
+  - lia. Qed.
+Next Obligation. Tactics.program_solve_wf. Defined.
 
 (** This is obvious. *)
 
@@ -104,12 +155,41 @@ Proof.
   apply mul_le_mono; [lia |].
   apply add_le_mono; [lia |]. lia. Qed.
 
+Local Lemma tri_le_expand_le (n p : N) (l : n <= p) :
+  dist n p <= dist (tri n) (tri p).
+Proof.
+  pose proof tri_le_mono n p l as l'.
+  do 2 rewrite dist_eqn.
+  destruct (leb_spec n p) as [_ | ?l]; [| lia].
+  destruct (leb_spec (tri n) (tri p)) as [_ | ?l]; [| lia].
+  revert l'.
+  do 2 rewrite tri_eqn.
+  destruct (Even_mul_consecutive n) as [q eq],
+  (Even_mul_consecutive p) as [r er].
+  rewrite eq, er. do 2 rewrite div_Even.
+  intros l'.
+  nia. Qed.
+
 (** The function [tri] is expansive. *)
 
-Lemma tri_le_expand (n : N) : n <= tri n.
+Lemma tri_le_expand (n p : N) : dist n p <= dist (tri n) (tri p).
 Proof.
-  rewrite tri_eqn. destruct (Even_mul_consecutive n) as [p ep].
-  rewrite ep. rewrite div_Even. nia. Qed.
+  destruct (leb_spec n p) as [l | l].
+  - apply tri_le_expand_le.
+    lia.
+  - rewrite (dist_comm n p), (dist_comm (tri n) (tri p)).
+    apply tri_le_expand_le.
+    lia. Qed.
+
+(** The function [tri] is expansive around zero. *)
+
+Lemma tri_le_expand_0 (n : N) : n <= tri n.
+Proof.
+  pose proof tri_le_expand n 0 as l.
+  cbv [dist] in l.
+  change (tri 0) with 0 in l.
+  do 2 rewrite max_0_r in l. do 2 rewrite min_0_r in l.
+  lia. Qed.
 
 (** The function [untri] is monotonic. *)
 
@@ -124,7 +204,15 @@ Proof.
 
 (** The function [untri] is contractive. *)
 
-Lemma untri_le_contract (n : N) : untri n <= n.
+Lemma untri_le_contract (n p : N) : dist (untri n) (untri p) <= dist n p.
+Proof.
+  do 2 rewrite untri_eqn.
+  remember (1 + 8 * n) as q eqn : eq.
+  remember (1 + 8 * p) as r eqn : er. Admitted.
+
+(** The function [untri] is contractive around zero. *)
+
+Lemma untri_le_contract_0 (n : N) : untri n <= n.
 Proof.
   rewrite untri_eqn.
   remember (1 + 8 * n) as p eqn : ep.
@@ -203,25 +291,6 @@ Proof.
 
 Theorem tri_untri_untri_up (n : N) : tri (untri n) <= n <= tri (untri_up n).
 Proof. auto using tri_untri, tri_untri_up. Qed.
-
-(** An inverse of the generating function, with a remainder. *)
-
-Definition untri_rem (n : N) : N * N :=
-  let (s, t) := sqrtrem (succ (shiftl n 3)) in
-  let (q, r) := div_eucl (pred s) 2 in
-  (q, shiftr (t + r * pred (shiftl s 1)) 3).
-
-Arguments untri_rem _ : assert.
-
-Lemma untri_rem_eqn (n : N) : untri_rem n =
-  let (s, t) := sqrtrem (1 + 8 * n) in
-  let (q, r) := div_eucl (s - 1) 2 in
-  (q, (t + r * (2 * s - 1)) / 8).
-Proof.
-  cbv [untri_rem].
-  arithmetize. destruct_sqrtrem s t est es e0st l1st.
-  arithmetize. destruct_div_eucl q r eqr eq e0qr l1qr.
-  arithmetize. auto. Qed.
 
 (** The function [untri_rem] can be defined in terms of [tri] and [untri]. *)
 
@@ -318,22 +387,6 @@ Proof.
   pose proof tri_untri n as l.
   rewrite add_sub_assoc by lia. lia. Qed.
 
-(** A partial inverse of the generating function. *)
-
-Definition untri_error (n : N) : option N :=
-  let (s, t) := sqrtrem (succ (shiftl n 3)) in
-  if t =? 0 then Some (shiftr (pred s) 1) else None.
-
-Arguments untri_error _ : assert.
-
-Lemma untri_error_eqn (n : N) : untri_error n =
-  let (s, t) := sqrtrem (1 + 8 * n) in
-  if t =? 0 then Some ((s - 1) / 2) else None.
-Proof.
-  cbv [untri_error].
-  arithmetize. destruct_sqrtrem s t est es e0st l1st.
-  arithmetize. auto. Qed.
-
 (** The function [untri_error] can be defined in terms of [untri_rem]. *)
 
 Lemma untri_error_untri_rem (n : N) :
@@ -386,8 +439,8 @@ Proof. intros n p e. auto using f_equal. Qed.
 Global Instance untri_wd : Proper (Logic.eq ==> Logic.eq) untri.
 Proof. intros n p e. auto using f_equal. Qed.
 
-Global Instance le_tri_wd : Proper (le ==> le) tri.
+Global Instance le_tri_wd : Proper (N.le ==> N.le) tri.
 Proof. intros n p l. apply tri_le_mono. lia. Qed.
 
-Global Instance le_untri_wd : Proper (le ==> le) untri.
+Global Instance le_untri_wd : Proper (N.le ==> N.le) untri.
 Proof. intros n p l. apply untri_le_mono. lia. Qed.
