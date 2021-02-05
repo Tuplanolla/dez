@@ -74,7 +74,7 @@ Proof.
     reflexivity.
   + cbn [bin_part odd_part].
     rewrite <- ei.
-    replace (pos q~0) with (2 * pos q) by lia.
+    replace (pos q~0) with (2 * Npos q) by lia.
     rewrite <- log2_double.
     * f_equal. admit.
     * apply div_str_pos_iff. admit. admit.
@@ -268,11 +268,13 @@ Proof.
   clear est es.
   destruct (leb_spec s t) as [lst | lst].
   - destruct (leb_spec p q) as [lpq | lpq].
-    + f_equal. admit. nia.
-    + f_equal. admit. admit.
+    + assert (e : s = q) by nia. subst s. f_equal; nia.
+    + assert (f : s <> q) by nia. exfalso.
+      assert (l : p <= s) by nia. nia.
   - destruct (leb_spec p q) as [lpq | lpq].
-    + f_equal. admit. admit.
-    + f_equal. nia. admit. Admitted.
+    + assert (f : s <> p) by nia. exfalso.
+      assert (l : q < s) by nia. nia.
+    + assert (e : s = p) by nia. subst s. f_equal; nia. Qed.
 
 Module Alternating.
 
@@ -375,11 +377,13 @@ Proof.
   clear est es.
   destruct (leb_spec s t) as [lst | lst].
   - destruct (leb_spec p q) as [lpq | lpq].
-    + f_equal. admit. nia.
-    + f_equal. admit. admit.
+    + assert (e : s = q) by nia. subst s. f_equal; nia.
+    + assert (f : s <> q) by nia. exfalso.
+      assert (l : p <= s) by nia. nia.
   - destruct (leb_spec p q) as [lpq | lpq].
-    + f_equal. admit. admit.
-    + f_equal. nia. admit. Admitted.
+    + assert (f : s <> p) by nia. exfalso.
+      assert (l : q < s) by nia. nia.
+    + assert (e : s = p) by nia. subst s. f_equal; nia. Qed.
 
 Module Alternating.
 
@@ -440,7 +444,7 @@ Proof.
     + cbn [bin_part odd_part]. rewrite pow_0_r. rewrite mul_1_r.
       rewrite <- divide_div_mul_exact. rewrite (mul_comm 2 _). rewrite div_mul.
       lia. lia. lia. cbn. replace (q~0)%positive with (2 * q)%positive by lia.
-      replace (pos (2 * q)%positive) with (2 * pos q) by lia.
+      replace (pos (2 * q)%positive) with (2 * Npos q) by lia.
       apply divide_factor_l.
     + cbn [bin_part odd_part]. rewrite pow_succ_r by lia.
       rewrite mul_assoc. lia.
@@ -453,14 +457,14 @@ Proof. exists ((1 + 2 * q) * 2 ^ p). reflexivity. Qed.
 Lemma part_urgh (n : positive) :
   let p := bin_part n in
   let q := (odd_part n - 1) / 2 in
-  pos n = (1 + 2 * q) * 2 ^ p.
+  Npos n = (1 + 2 * q) * 2 ^ p.
 Proof.
   intros p' q'. subst p' q'.
   induction n as [q ei | q ei |].
   + cbn [bin_part odd_part]. rewrite pow_0_r. rewrite mul_1_r.
     rewrite <- divide_div_mul_exact. rewrite (mul_comm 2 _). rewrite div_mul.
     lia. lia. lia. cbn. replace (q~0)%positive with (2 * q)%positive by lia.
-    replace (pos (2 * q)%positive) with (2 * pos q) by lia.
+    replace (pos (2 * q)%positive) with (2 * Npos q) by lia.
     apply divide_factor_l.
   + cbn [bin_part odd_part]. rewrite pow_succ_r by lia.
     rewrite mul_assoc. lia.
@@ -531,7 +535,14 @@ Proof.
   f_equal.
   - pose proof odd_part_bin_part'' (succ_pos ((1 + 2 * q) * 2 ^ p - 1)) as e'.
     admit.
-  - admit. Admitted.
+  - rewrite <- odd_part_bin_part'. rewrite succ_pos_spec. arithmetize.
+    replace (1 + ((1 + 2 * q) * 2 ^ p - 1))
+    with ((1 + 2 * q) * 2 ^ p). 2:{ rewrite add_sub_assoc. lia.
+    replace 1 with (1 * 1) by lia.
+    apply mul_le_mono.
+    lia.
+    pose proof pow_nonzero 2 p. lia. }
+    admit. Admitted.
 
 (** TODO This is bad, but works. *)
 
