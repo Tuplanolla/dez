@@ -103,6 +103,25 @@ Definition pos_log2_up (n : positive) : N :=
 
 Arguments pos_log2_up _ : simpl nomatch.
 
+(** Binary logarithm, with a remainder. *)
+
+Fixpoint pos_log2rem (n : positive) : N * N :=
+  match n with
+  | xI p => let (l, m) := pos_log2rem p in (succ l, succ (double m))
+  | xO p => let (l, m) := pos_log2rem p in (succ l, double m)
+  | xH => (0, 0)
+  end.
+
+Arguments pos_log2rem !_.
+
+Definition log2rem (n : N) : N * N :=
+  match n with
+  | N0 => (0, 0)
+  | Npos p => pos_log2rem p
+  end.
+
+Arguments pos_log2rem !_.
+
 (** Definition of [div] as an equation.
     Analogous in structure to [sqrtrem_sqrt]. *)
 
