@@ -120,7 +120,49 @@ Definition log2rem (n : N) : N * N :=
   | Npos p => pos_log2rem p
   end.
 
-Arguments pos_log2rem !_.
+Arguments log2rem !_.
+
+(** Specification for [pos_log2rem].
+    Analogous in structure to [sqrtrem_spec]. *)
+
+#[ugly]
+Lemma pos_log2rem_spec (n : positive) :
+  let (l, m) := pos_log2rem n in Npos n = 2 ^ l + m /\ m < 2 ^ l.
+Proof.
+  induction n as [p ei | p ei |].
+  - cbn. destruct (pos_log2rem p) as [q r] eqn : e. split.
+    + destruct ei as [e0 e1].
+      rewrite pow_succ_r by lia.
+      rewrite (double_spec r).
+      replace (2 * 2 ^ q + succ (2 * r))
+      with (1 + 2 * (2 ^ q + r)) by lia.
+      rewrite <- e0. lia.
+    + destruct ei as [e0 e1].
+      rewrite pow_succ_r by lia.
+      rewrite (double_spec r). lia.
+  - cbn. destruct (pos_log2rem p) as [q r] eqn : e. split.
+    + destruct ei as [e0 e1].
+      rewrite pow_succ_r by lia.
+      rewrite (double_spec r).
+      replace (2 * 2 ^ q + 2 * r)
+      with (2 * (2 ^ q + r)) by lia.
+      rewrite <- e0. lia.
+    + destruct ei as [e0 e1].
+      rewrite pow_succ_r by lia.
+      rewrite (double_spec r).
+      lia.
+  - cbn. lia. Qed.
+
+(** Specification for [log2rem].
+    Analogous in structure to [sqrtrem_spec]. *)
+
+#[ugly]
+Lemma log2rem_spec (n : N) (l : 0 < n) :
+  let (l, m) := log2rem n in n = 2 ^ l + m /\ m < 2 ^ l.
+Proof.
+  destruct n as [| p].
+  - lia.
+  - cbv [log2rem]. apply (pos_log2rem_spec p). Qed.
 
 (** Definition of [div] as an equation.
     Analogous in structure to [sqrtrem_sqrt]. *)

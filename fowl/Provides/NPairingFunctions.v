@@ -195,9 +195,6 @@ Definition pair_shell (n : N) : N := sqrt n.
 
 Arguments pair_shell _ : assert.
 
-(** We could swap to [m - n + s] if [n <= sqrt n ^ 2 + sqrt n], but nope.
-    Also [m + (s - n)], but nope. *)
-
 Definition pair (n : N) : N * N :=
   let (s, r) := sqrtrem n in
   if s <=? r then (s - (r - s), s) else (s, r).
@@ -212,12 +209,6 @@ Definition unpair (p q : N) : N :=
   if p <=? q then (q - p) + q * (1 + q) else q + p * p.
 
 Arguments unpair _ _ : assert.
-
-Compute map pair (seq 0 64).
-Compute map (prod_uncurry unpair o pair) (seq 0 64).
-
-Compute map pair_shell (seq 0 64).
-Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
 
 Theorem unpair_shell_pair (n : N) :
   prod_uncurry unpair_shell (pair n) = pair_shell n.
@@ -264,24 +255,12 @@ Proof.
 Module Alternating.
 
 Definition pair (n : N) : N * N :=
-  let ((* square root *) s, (* remains *) r) := sqrtrem n in
-  let (* endpoint of shell *) e := n - r in
-  let (* endpoint of leg *) m := s + e in
-  let (* continuation *) c :=
-    if n <? m then
-    (s, r) else
-    (s + m - n, s) in
-  (if even s then id else prod_swap) c.
+  (if even (pair_shell n) then id else prod_swap) (pair n).
 
 Arguments pair _ : assert.
 
 Definition unpair (p q : N) : N :=
-  let ((* index in leg *) i, (* shell *) s) := min_max p q in
-  let (* endpoint of shell *) e := s ^ 2 in
-  let (* endpoint of leg *) m := s + e in
-  let (* continuation *) c (p q : N) :=
-    m - p + q in
-  (if even s then id else flip) c p q.
+  (if even (unpair_shell p q) then id else flip) unpair p q.
 
 Arguments unpair _ _ : assert.
 
@@ -373,26 +352,12 @@ Proof.
 Module Alternating.
 
 Definition pair (n : N) : N * N :=
-  let ((* square root *) s, (* remains *) r) := sqrtrem n in
-  let (* endpoint of shell *) e := n - r in
-  let (* endpoint of leg *) m := s + e in
-  let (* continuation *) c :=
-    if n <? m then
-    (s, r) else
-    (r - s, s) in
-  (if even s then id else prod_swap) c.
+  (if even (pair_shell n) then id else prod_swap) (pair n).
 
 Arguments pair _ : assert.
 
 Definition unpair (p q : N) : N :=
-  let ((* index in leg *) i, (* shell *) s) := min_max p q in
-  let (* endpoint of shell *) e := s ^ 2 in
-  let (* endpoint of leg *) m := i + e in
-  let (* continuation *) c (p q : N) :=
-    if q <? p then
-    i + e else
-    s + m in
-  (if even s then id else flip) c p q.
+  (if even (unpair_shell p q) then id else flip) unpair p q.
 
 Arguments unpair _ _ : assert.
 
@@ -409,6 +374,7 @@ End Alternating.
 
 End Szudzik.
 
+#[ugly]
 Module Hyperbolic.
 
 Lemma pos_bin_part_even (n : positive) :
@@ -682,17 +648,15 @@ Lemma pair_eqn (n : N) : pair n =
   (pos_bin_part (succ_pos n), (pos_odd_part (succ_pos n) - 1) / 2).
 Proof. cbv [pair]. arithmetize. reflexivity. Qed.
 
-Definition unpair_shell (p q : N) : N :=
-  pos_log2 (succ_pos (shiftl q 1)) + p.
+Definition unpair_shell (p q : N) : N := p + pos_log2 (succ_pos (shiftl q 1)).
 
 Arguments unpair_shell _ _ : assert.
 
 Lemma unpair_shell_eqn (p q : N) : unpair_shell p q =
-  pos_log2 (succ_pos (2 * q)) + p.
+  p + pos_log2 (succ_pos (2 * q)).
 Proof. cbv [unpair_shell]. arithmetize. reflexivity. Qed.
 
-Definition unpair (p q : N) : N :=
-  pred (succ (shiftl q 1) * shiftl 1 p).
+Definition unpair (p q : N) : N := pred (succ (shiftl q 1) * shiftl 1 p).
 
 Arguments unpair _ _ : assert.
 
@@ -723,22 +687,44 @@ Proof.
     replace (1 + 2 * q - 1) with (2 * q) by lia.
     rewrite div_Even. reflexivity. Qed.
 
-(** TODO This is bad, but works. *)
-
 Module Alternating.
 
 Definition pair (n : N) : N * N :=
-  let (* shell *) s := pair_shell n in
-  let (* endpoint of shell *) e := pred (shiftl 1 s) in
-  let (* index in shell *) i := n - e in
-  if even s then pair n else pair (e + (e - i)).
+  let (l, m) := pos_log2rem (succ_pos n) in
+  if even l then pair n else pair (shiftl (n - m) 1 - m).
 
 Arguments pair _ : assert.
 
+#[ugly]
+Lemma pair_eqn (n : N) : pair n =
+  let (l, m) := log2rem (1 + n) in
+  if even l then Hyperbolic.pair n else Hyperbolic.pair (2 * (n - m) - m).
+Proof.
+  cbv [pair]. replace (log2rem (1 + n)) with (pos_log2rem (succ_pos n)).
+  - arithmetize. reflexivity.
+  - induction n; try reflexivity.
+    rewrite add_1_l. rewrite <- succ_pos_spec. reflexivity. Qed.
+
 Definition unpair (p q : N) : N :=
-  prod_uncurry Hyperbolic.unpair (pair (Hyperbolic.unpair p q)).
+  let (l, m) := pos_log2rem (succ_pos (shiftl q 1)) in
+  let (l', m') := (p + l, shiftl 1 p * m) in
+  if even l' then unpair p q else shiftl (unpair p q - m') 1 - m'.
+
+Compute let x := 256%nat in
+  Nat.eqb (length (filter id (map (fun n : N =>
+  n =? (prod_uncurry unpair o pair) n) (seq 0 x)))) x.
 
 Arguments unpair _ _ : assert.
+
+#[ugly]
+Lemma unpair_eqn (p q : N) : unpair p q =
+  let (l, m) := log2rem (1 + 2 * q) in
+  let (l', m') := (p + l, 2 ^ p * m) in
+  if even l' then Hyperbolic.unpair p q else 2 * (Hyperbolic.unpair p q - m') - m'.
+Proof.
+  cbv [unpair]. replace (log2rem (1 + 2 * q)) with (pos_log2rem (succ_pos (2 * q))).
+  - arithmetize. reflexivity.
+  - induction q; try reflexivity. Qed.
 
 Compute map pair (seq 0 64).
 Compute map (prod_uncurry unpair o pair) (seq 0 64).

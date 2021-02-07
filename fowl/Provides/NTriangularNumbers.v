@@ -433,6 +433,20 @@ Proof.
   - cbv [option_map] in e.
     inversion e. Qed.
 
+(** An inverse of the generating function,
+    with a remainder as an exact quotient. *)
+
+Program Definition untri_quotrem (n : N) :
+  {x : N * N ! Squash (let (p, q) := x in tri p + q < tri (1 + p))} :=
+  Sexists _ (untri_rem n) _.
+Next Obligation.
+  intros n. cbv beta. apply squash. rewrite untri_rem_tri_untri.
+  rewrite tri_succ.
+  pose proof tri_untri_untri_rem n as e.
+  lia. Qed.
+
+Arguments untri_quotrem _ : assert.
+
 Global Instance tri_wd : Proper (Logic.eq ==> Logic.eq) tri.
 Proof. intros n p e. auto using f_equal. Qed.
 
