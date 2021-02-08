@@ -64,45 +64,30 @@ Context (unf_error_spec :
   (forall (x : A), unf_error (f x) = Some x) /\
   (forall (x y : B) (e : option_map f (unf_error x) = Some y), x = y)).
 
-(** Now, let us have a poor attempt at some interrelations. *)
-
-Lemma unf_down_unf_remdown (x : B) :
-  unf_down x = let (y, z) := unf_remdown x in y.
-Proof.
-  destruct unf_remdown_spec as [e0 [e1 e2]].
-  destruct unf_down_spec as [e3 e4].
-  (* specialize (e0 (unf_down x)). *)
-  specialize (e1 x).
-  specialize (e2 x).
-  destruct (unf_remdown x) as [y z].
-  specialize (e0 y).
-  specialize (e3 y).
-  specialize (e4 (f y)).
-  destruct e4 as [e5 e6].
-  cbv [prod_uncurry compose fst snd] in e1.
-  clear e5.
-  rewrite <- e3. f_equal. rewrite <- e1. rewrite <- r_unl. f_equal.
-  (* z = 0 *) Admitted.
-
-Lemma unf_error_unf_remdown (x : B) :
-  unf_error x = let (y, z) := unf_remdown x in
-  if eq_dec z 0 then Some y else None.
-Proof. Admitted.
-
-Lemma unf_remdown_unf_down (x : B) :
-  let y := unf_down x in
-  (** A contortion to say [z = x - f y]. *)
-  forall z : B, z + f y = x ->
-  unf_remdown x = (y, z).
-Proof. Admitted.
-
-Lemma unf_error_unf_down (x : B) :
-  let y := unf_down x in
-  unf_error x = if eq_dec (f y) x then Some y else None.
-Proof. Admitted.
-
-(** Only these really require well-foundedness and decidable equality.
+(** Implement things in terms of each other.
+    Only these really require subtraction,
+    decidable equality and some remnant of well-foundedness.
     Everything else can be forced into more general form. *)
+
+(** Possibly-saturative subtraction,
+    since monoids have too little and groups have too much. *)
+
+Context (bsub : forall (x y : B), B).
+
+Definition unf_down_unf_remdown (x : B) : A :=
+  let (y, z) := unf_remdown x in y.
+
+Definition unf_error_unf_remdown (x : B) : option A :=
+  let (y, z) := unf_remdown x in
+  if eq_dec z 0 then Some y else None.
+
+Definition unf_remdown_unf_down (x : B) : A * B :=
+  let y := unf_down x in
+  (y, bsub x (f y)).
+
+Definition unf_error_unf_down (x : B) : option A :=
+  let y := unf_down x in
+  if eq_dec (f y) x then Some y else None.
 
 Program Fixpoint unf_remdown_unf_error (a n : B) {measure n _<=_} : A * B :=
   match unf_error n with
@@ -127,5 +112,50 @@ Next Obligation.
   - inversion e.
   - apply bpre_ord. Qed.
 Next Obligation. Tactics.program_solve_wf. Defined.
+
+(** Now, let us have a poor attempt at more general interrelations. *)
+
+Lemma eq_unf_down_unf_remdown (x : B) :
+  let (y, z) := unf_remdown x in
+  unf_down x = y.
+Proof.
+  destruct unf_remdown_spec as [e0 [e1 e2]].
+  destruct unf_down_spec as [e3 e4].
+  (* specialize (e0 (unf_down x)). *)
+  specialize (e1 x).
+  specialize (e2 x).
+  destruct (unf_remdown x) as [y z].
+  specialize (e0 y).
+  specialize (e3 y).
+  specialize (e4 (f y)).
+  destruct e4 as [e5 e6].
+  cbv [prod_uncurry compose fst snd] in e1.
+  clear e5.
+  rewrite <- e3. f_equal. rewrite <- e1. rewrite <- r_unl. f_equal.
+  (* z = 0 *) Admitted.
+
+Lemma eq_unf_error_unf_remdown (x : B) :
+  let (y, z) := unf_remdown x in
+  (z = 0 -> unf_error x = Some y) /\
+  (z <> 0 -> unf_error x = None).
+Proof. Admitted.
+
+Lemma eq_unf_remdown_unf_down (x : B) :
+  let y := unf_down x in
+  forall z : B, f y + z = x ->
+  unf_remdown x = (y, z).
+Proof. Admitted.
+
+Lemma eq_unf_error_unf_down (x : B) :
+  let y := unf_down x in
+  (f y = x -> unf_error x = Some y) /\
+  (f y <> x -> unf_error x = None).
+Proof. Admitted.
+
+Lemma eq_unf_remdown_unf_error (x : B) : True.
+Proof. Admitted.
+
+Lemma eq_unf_down_unf_error (x : B) : True.
+Proof. Admitted.
 
 End Context.
