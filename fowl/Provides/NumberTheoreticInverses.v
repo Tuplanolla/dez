@@ -23,8 +23,11 @@ Context (A B : Type) (f : A -> B).
 
 Context `{IsTotOrd A} `{IsTotOrd B} `{IsMon B} `{HasEqDec B}.
 
+Context (ord_mon : forall (x y z w : B) (l : x <= y) (l' : z <= w), x + z <= y + w).
+
 (** We do not have type classes for successors and predecessors alone,
-    which is why we postulate them here. *)
+    which is why we postulate them here.
+    We might really just want ring structure on [B]. *)
 
 Context (asuc : forall (x : A), A).
 Context (bsuc : forall (x : B), B).
@@ -50,21 +53,85 @@ Context (f_mono : forall (x y : A) (l : x <= y), f x <= f y).
 Context (unf_remdown : forall (x : B), A * B).
 Context (unf_remdown_spec :
   (forall (x : A), unf_remdown (f x) = (x, 0)) /\
-  (forall (x : B), prod_uncurry (_+_ o f) (unf_remdown x) = x) /\
+  (forall (x : B), prod_uncurry (flip _+_ o f) (unf_remdown x) = x) /\
   (forall (x : B), let (y, z) := unf_remdown x in
-  bsuc (f y + z) <= f (asuc y))).
+    0 <= z /\ z + f y <= f (asuc y) /\ z + f y <> f (asuc y))).
+    (* 0 <= z /\ bsuc (z + f y) <= f (asuc y))). *)
 
 Context (unf_down : forall (x : B), A).
 Context (unf_down_spec :
   (forall (x : A), unf_down (f x) = x) /\
-  (forall (x : B), f (unf_down x) <= x /\ bsuc x <= f (unf_down (bsuc x)))).
+  (forall (x : B), f (unf_down x) <= x /\
+    x <= f (asuc (unf_down x)) /\ x <> f (asuc (unf_down x)))).
+  (* (forall (x : B), f (unf_down x) <= x /\ bsuc x <= f (asuc (unf_down x)))). *)
 
 Context (unf_error : forall (x : B), option A).
 Context (unf_error_spec :
   (forall (x : A), unf_error (f x) = Some x) /\
   (forall (x y : B) (e : option_map f (unf_error x) = Some y), x = y)).
 
-(** Implement things in terms of each other.
+(** Knowing these should suffice to relate the definitions. *)
+
+Context (rel_down_remdown :
+  forall (x : B), let (y, z) := unf_remdown x in
+  unf_down x = y).
+Context (rel_error_remdown :
+  forall (x : B), let (y, z) := unf_remdown x in
+  (z <> 0 -> unf_error x = Some y) /\
+  (z = 0 -> unf_error x = None)).
+
+(** We should be able to prove [unf_down_spec]
+    from [unf_remdown_spec] and [rel_down_remdown] and [rel_error_remdown].
+    ...and all the five other directions too. *)
+
+Lemma case_0 : (forall (x : A), unf_down (f x) = x) /\
+  (forall (x : B), f (unf_down x) <= x /\
+    x <= f (asuc (unf_down x)) /\ x <> f (asuc (unf_down x))).
+Proof. clear unf_down_spec unf_error_spec.
+  split.
+  - intros x.
+    destruct unf_remdown_spec as [e0 [e1 e2]].
+    pose proof rel_down_remdown as e3.
+    specialize (e0 x).
+    specialize (e1 (f x)).
+    specialize (e2 (f x)).
+    specialize (e3 (f x)).
+    destruct (unf_remdown (f x)) as [y z] eqn : e.
+    rewrite e3. inversion e0. auto.
+  - intros x. repeat split.
+    + destruct unf_remdown_spec as [e0 [e1 e2]].
+      pose proof rel_down_remdown as e3.
+      specialize (e0 (unf_down x)).
+      specialize (e1 x).
+      specialize (e2 x).
+      specialize (e3 x).
+      cbv [prod_uncurry compose flip fst snd] in e1.
+      destruct (unf_remdown x) as [y z] eqn : e.
+      destruct e2 as [e4 e5].
+      rewrite e3. rewrite <- e1. rewrite <- (l_unl (f y)) at 1.
+      apply ord_mon. apply e4. apply refl.
+    + destruct unf_remdown_spec as [e0 [e1 e2]].
+      pose proof rel_down_remdown as e3.
+      specialize (e1 x).
+      specialize (e2 x).
+      specialize (e3 x).
+      cbv [prod_uncurry compose flip fst snd] in e1.
+      destruct (unf_remdown x) as [y z] eqn : e.
+      specialize (e0 y).
+      destruct e2 as [e4 [e5 e6]].
+      rewrite e1 in e5, e6. rewrite e3. apply e5.
+    + destruct unf_remdown_spec as [e0 [e1 e2]].
+      pose proof rel_down_remdown as e3.
+      specialize (e1 x).
+      specialize (e2 x).
+      specialize (e3 x).
+      cbv [prod_uncurry compose flip fst snd] in e1.
+      destruct (unf_remdown x) as [y z] eqn : e.
+      specialize (e0 y).
+      destruct e2 as [e4 [e5 e6]].
+      rewrite e1 in e5, e6. rewrite e3. apply e6. Qed.
+
+(** We implement things in terms of each other.
     Only these really require subtraction,
     decidable equality and some remnant of well-foundedness.
     Everything else can be forced into more general form. *)
@@ -73,6 +140,8 @@ Context (unf_error_spec :
     since monoids have too little and groups have too much. *)
 
 Context (bsub : forall (x y : B), B).
+
+Notation "a '-' b" := (bsub a b).
 
 Definition unf_down_unf_remdown (x : B) : A :=
   let (y, z) := unf_remdown x in y.
@@ -83,16 +152,16 @@ Definition unf_error_unf_remdown (x : B) : option A :=
 
 Definition unf_remdown_unf_down (x : B) : A * B :=
   let y := unf_down x in
-  (y, bsub x (f y)).
+  (y, x - f y).
 
 Definition unf_error_unf_down (x : B) : option A :=
   let y := unf_down x in
   if eq_dec (f y) x then Some y else None.
 
-Program Fixpoint unf_remdown_unf_error (a n : B) {measure n _<=_} : A * B :=
+Program Fixpoint unf_remdown_unf_error' (a n : B) {measure n _<=_} : A * B :=
   match unf_error n with
   | Some p => (p, a)
-  | None => unf_remdown_unf_error (bsuc a) (bpre n)
+  | None => unf_remdown_unf_error' (bsuc a) (bpre n)
   end.
 Next Obligation.
   intros a n g x e.
@@ -100,6 +169,8 @@ Next Obligation.
   - inversion e.
   - apply bpre_ord. Qed.
 Next Obligation. Tactics.program_solve_wf. Defined.
+
+Definition unf_remdown_unf_error (n : B) : A * B := unf_remdown_unf_error' 0 n.
 
 Program Fixpoint unf_down_unf_error (n : B) {measure n _<=_} : A :=
   match unf_error n with
@@ -113,49 +184,30 @@ Next Obligation.
   - apply bpre_ord. Qed.
 Next Obligation. Tactics.program_solve_wf. Defined.
 
-(** Now, let us have a poor attempt at more general interrelations. *)
+(** Secretly, we know these to be true. *)
 
 Lemma eq_unf_down_unf_remdown (x : B) :
-  let (y, z) := unf_remdown x in
-  unf_down x = y.
-Proof.
-  destruct unf_remdown_spec as [e0 [e1 e2]].
-  destruct unf_down_spec as [e3 e4].
-  (* specialize (e0 (unf_down x)). *)
-  specialize (e1 x).
-  specialize (e2 x).
-  destruct (unf_remdown x) as [y z].
-  specialize (e0 y).
-  specialize (e3 y).
-  specialize (e4 (f y)).
-  destruct e4 as [e5 e6].
-  cbv [prod_uncurry compose fst snd] in e1.
-  clear e5.
-  rewrite <- e3. f_equal. rewrite <- e1. rewrite <- r_unl. f_equal.
-  (* z = 0 *) Admitted.
+  unf_down_unf_remdown x = unf_down x.
+Proof. Admitted.
 
 Lemma eq_unf_error_unf_remdown (x : B) :
-  let (y, z) := unf_remdown x in
-  (z = 0 -> unf_error x = Some y) /\
-  (z <> 0 -> unf_error x = None).
+  unf_error_unf_remdown x = unf_error x.
 Proof. Admitted.
 
 Lemma eq_unf_remdown_unf_down (x : B) :
-  let y := unf_down x in
-  forall z : B, f y + z = x ->
-  unf_remdown x = (y, z).
+  unf_remdown_unf_down x = unf_remdown x.
 Proof. Admitted.
 
 Lemma eq_unf_error_unf_down (x : B) :
-  let y := unf_down x in
-  (f y = x -> unf_error x = Some y) /\
-  (f y <> x -> unf_error x = None).
+  unf_error_unf_down x = unf_error x.
 Proof. Admitted.
 
-Lemma eq_unf_remdown_unf_error (x : B) : True.
+Lemma eq_unf_remdown_unf_error (x : B) :
+  unf_remdown_unf_error x = unf_remdown x.
 Proof. Admitted.
 
-Lemma eq_unf_down_unf_error (x : B) : True.
+Lemma eq_unf_down_unf_error (x : B) :
+  unf_down_unf_error x = unf_down x.
 Proof. Admitted.
 
 End Context.

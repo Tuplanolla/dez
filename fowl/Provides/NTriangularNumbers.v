@@ -392,12 +392,12 @@ Proof. rewrite untri_rem_tri_untri. rewrite untri_tri. f_equal. lia. Qed.
 
 (** The function [tri] is an inverse of [untri_rem]. *)
 
-Theorem tri_untri_rem (n : N) : prod_uncurry (add o tri) (untri_rem n) = n.
+Theorem tri_untri_rem (n : N) : prod_uncurry (flip add o tri) (untri_rem n) = n.
 Proof.
   rewrite untri_rem_tri_untri.
-  cbv [prod_uncurry fst snd compose].
+  cbv [prod_uncurry compose flip fst snd].
   pose proof tri_untri n as l.
-  rewrite add_sub_assoc by lia. lia. Qed.
+  lia. Qed.
 
 (** The function [untri_error] can be defined in terms of [untri_rem]. *)
 
