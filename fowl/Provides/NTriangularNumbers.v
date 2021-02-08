@@ -104,6 +104,18 @@ Next Obligation.
   - lia. Qed.
 Next Obligation. Tactics.program_solve_wf. Defined.
 
+Program Fixpoint untri_down' (n : N) {measure (to_nat n)} : N :=
+  match untri_error n with
+  | Some p => p
+  | None => untri_down' (n - 1)
+  end.
+Next Obligation.
+  intros n f x e.
+  destruct n as [| p].
+  - subst x. inversion e.
+  - lia. Qed.
+Next Obligation. Tactics.program_solve_wf. Defined.
+
 (** This is obvious. *)
 
 Lemma tri_succ (n : N) : tri (1 + n) = (1 + n) + tri n.

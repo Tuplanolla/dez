@@ -264,9 +264,6 @@ Definition unpair (p q : N) : N :=
 
 Arguments unpair _ _ : assert.
 
-Compute map pair (seq 0 64).
-Compute map (prod_uncurry unpair o pair) (seq 0 64).
-
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.
 
@@ -297,12 +294,6 @@ Definition unpair (p q : N) : N :=
   if p <=? q then p + q * (1 + q) else q + p * p.
 
 Arguments unpair _ _ : assert.
-
-Compute map pair (seq 0 64).
-Compute map (prod_uncurry unpair o pair) (seq 0 64).
-
-Compute map pair_shell (seq 0 64).
-Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
 
 (** Note how the three following proofs are
     nearly exactly the same as in [RosenbergStrong]. *)
@@ -360,9 +351,6 @@ Definition unpair (p q : N) : N :=
   (if even (unpair_shell p q) then id else flip) unpair p q.
 
 Arguments unpair _ _ : assert.
-
-Compute map pair (seq 0 64).
-Compute map (prod_uncurry unpair o pair) (seq 0 64).
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof. Admitted.
@@ -664,12 +652,6 @@ Lemma unpair_eqn (p q : N) : unpair p q =
   (1 + 2 * q) * 2 ^ p - 1.
 Proof. cbv [unpair]. arithmetize. reflexivity. Qed.
 
-Compute map pair (seq 0 64).
-Compute map (prod_uncurry unpair o pair) (seq 0 64).
-
-Compute map pair_shell (seq 0 64).
-Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
-
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof.
   cbv [prod_uncurry]. rewrite unpair_eqn. rewrite pair_eqn. cbv [fst snd].
@@ -707,7 +689,7 @@ Proof.
 
 Definition unpair (p q : N) : N :=
   let (l, m) := pos_log2rem (succ_pos (shiftl q 1)) in
-  let (l', m') := (p + l, shiftl 1 p * m) in
+  let (l', m') := (p + l, m * shiftl 1 p) in
   if even l' then unpair p q else shiftl (unpair p q - m') 1 - m'.
 
 Compute let x := 256%nat in
@@ -719,7 +701,7 @@ Arguments unpair _ _ : assert.
 #[ugly]
 Lemma unpair_eqn (p q : N) : unpair p q =
   let (l, m) := log2rem (1 + 2 * q) in
-  let (l', m') := (p + l, 2 ^ p * m) in
+  let (l', m') := (p + l, m * 2 ^ p) in
   if even l' then Hyperbolic.unpair p q else 2 * (Hyperbolic.unpair p q - m') - m'.
 Proof.
   cbv [unpair]. replace (log2rem (1 + 2 * q)) with (pos_log2rem (succ_pos (2 * q))).
