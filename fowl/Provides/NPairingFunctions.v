@@ -80,32 +80,62 @@ Proof.
 
 (** TODO This combination of [pos_bin_part] and [pos_odd_part]. *)
 
-Fixpoint pos_partrem (n : positive) : positive * N :=
+Fixpoint pos_partrem (n : positive) : N * positive :=
   match n with
-  | xI p => (n, 0)
-  | xO p => let (q, r) := pos_partrem p in (q, succ r)
-  | xH => (n, 0)
+  | xI p => (0, n)
+  | xO p => let (q, r) := pos_partrem p in (succ q, r)
+  | xH => (0, n)
   end.
 
 Arguments pos_partrem !_.
 
-Lemma eq_pos_partrem (n : positive) :
-  let (q, r) := pos_partrem n in
-  Npos q * 2 ^ r = Npos n.
-Proof. Abort.
-
 Definition partrem (n : N) : N * N :=
   match n with
   | N0 => (0, 0)
-  | Npos p => let (q, r) := pos_partrem p in (Npos q, r)
+  | Npos p => let (q, r) := pos_partrem p in (q, Npos r)
   end.
 
 Arguments partrem !_.
 
-Lemma eq_partrem (n : N) :
-  let (q, r) := partrem n in
-  q * 2 ^ r = n.
-Proof. Abort.
+Definition unpartrem (q r : N) : N := r * shiftl 1 q.
+
+Arguments unpartrem _ _ : assert.
+
+Lemma unpartrem_eqn (q r : N) : unpartrem q r = r * 2 ^ q.
+Proof. cbv [unpartrem]. arithmetize. reflexivity. Qed.
+
+Definition binpart (n : N) : N := fst (partrem n).
+
+Arguments binpart _ : assert.
+
+Definition oddpart (n : N) : N := snd (partrem n).
+
+Arguments oddpart _ : assert.
+
+Lemma unpartrem_partrem (n : N) : prod_uncurry unpartrem (partrem n) = n.
+Proof.
+  destruct n as [| p].
+  - reflexivity.
+  - cbv [partrem].
+    destruct (pos_partrem p) as [q r] eqn : e.
+    cbv [prod_uncurry fst snd]. rewrite unpartrem_eqn.
+    generalize dependent q. induction p as [s es | s es |]; intros q e.
+    + cbv [pos_partrem] in e.
+      injection e. clear e. intros eq er. subst q r.
+      rewrite pow_0_r. rewrite mul_1_r.
+      reflexivity.
+    + cbn [pos_partrem] in e.
+      destruct (pos_partrem s) as [q' r'] eqn : e'.
+      injection e. clear e. intros eq er. subst q r.
+      rewrite pow_succ_r'. rewrite mul_shuffle3.
+      rewrite es by reflexivity. reflexivity.
+    + cbv [pos_partrem] in e.
+      injection e. clear e. intros eq er. subst q r.
+      reflexivity. Qed.
+
+Lemma not_partrem_unpartrem : ~ forall q r : N,
+  partrem (unpartrem q r) = (q, r).
+Proof. intros e. specialize (e 2 2). cbv in e. inversion e. Qed.
 
 Module Cantor.
 
@@ -699,25 +729,43 @@ Definition unpair_shell (p q : N) : N := p + pos_log2 (succ_pos (shiftl q 1)).
 Arguments unpair_shell _ _ : assert.
 
 Lemma unpair_shell_eqn (p q : N) : unpair_shell p q =
-  p + pos_log2 (succ_pos (2 * q)).
-Proof. cbv [unpair_shell]. arithmetize. reflexivity. Qed.
+  log2 (unpartrem p (1 + 2 * q)).
+Proof. cbv [unpair_shell]. arithmetize. Admitted.
 
 Definition pair (n : N) : N * N :=
-  (pos_bin_part (succ_pos n), shiftr (pred (pos_odd_part (succ_pos n))) 1).
+  let (p, q) := partrem (succ n) in
+  (p, shiftr (pred q) 1).
+  (* (pos_bin_part (succ_pos n), shiftr (pred (pos_odd_part (succ_pos n))) 1). *)
 
 Arguments pair _ : assert.
 
 Lemma pair_eqn (n : N) : pair n =
   (pos_bin_part (succ_pos n), (pos_odd_part (succ_pos n) - 1) / 2).
-Proof. cbv [pair]. arithmetize. reflexivity. Qed.
+Proof. Admitted.
 
-Definition unpair (p q : N) : N := pred (succ (shiftl q 1) * shiftl 1 p).
+Definition unpair (p q : N) : N := pred (unpartrem p (succ (shiftl q 1))).
 
 Arguments unpair _ _ : assert.
 
 Lemma unpair_eqn (p q : N) : unpair p q =
   (1 + 2 * q) * 2 ^ p - 1.
-Proof. cbv [unpair]. arithmetize. reflexivity. Qed.
+Proof. cbv [unpair unpartrem]. arithmetize. reflexivity. Qed.
+
+Compute map pair (seq 0 64).
+Compute map (prod_uncurry unpair o pair) (seq 0 64).
+
+Compute map pair_shell (seq 0 64).
+Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
+
+Theorem unpair_shell_pair (n : N) :
+  prod_uncurry unpair_shell (pair n) = pair_shell n.
+Proof.
+  cbv [prod_uncurry fst snd unpair_shell pair pair_shell]. Admitted.
+
+Theorem pair_shell_unpair (p q : N) :
+  pair_shell (unpair p q) = unpair_shell p q.
+Proof.
+  cbv [pair_shell unpair unpair_shell]. Admitted.
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof.
