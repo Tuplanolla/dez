@@ -80,6 +80,19 @@ Proof.
 
 (** TODO This combination of [pos_bin_part] and [pos_odd_part]. *)
 
+Definition pos_even (n : positive) : bool :=
+  match n with
+  | xI p => false
+  | xO p => true
+  | xH => false
+  end.
+
+Arguments pos_even !_.
+
+Definition pos_odd (n : positive) : bool := negb (pos_even n).
+
+Arguments pos_odd !_.
+
 Fixpoint pos_factorrem (n : positive) : N * positive :=
   match n with
   | xI p => (0, n)
@@ -89,6 +102,29 @@ Fixpoint pos_factorrem (n : positive) : N * positive :=
 
 Arguments pos_factorrem !_.
 
+Definition pos_unfactorrem (q : N) (r : positive) : positive :=
+  r * Pos.shiftl 1 q.
+
+Arguments pos_unfactorrem _ _ : assert.
+
+Program Definition pos_factorrem_dep (n : positive) :
+  {x : N * positive ! Squash (pos_odd (snd x))} :=
+  Sexists _ (pos_factorrem n) _.
+Next Obligation.
+  intros n. apply squash.
+  induction n as [p ep | p ep |]; [reflexivity | | reflexivity].
+  cbn [pos_factorrem].
+  destruct (pos_factorrem p) as [q r] eqn : eqr.
+  apply ep. Qed.
+
+Arguments pos_factorrem_dep _ : assert.
+
+Definition pos_unfactorrem_dep (q : N)
+  (x : {r : positive ! Squash (pos_odd r)}) : positive :=
+  pos_unfactorrem q (Spr1 x).
+
+Arguments pos_unfactorrem_dep _ !_ : assert.
+
 Definition factorrem (n : N) : N * N :=
   match n with
   | N0 => (0, 0)
@@ -97,12 +133,12 @@ Definition factorrem (n : N) : N * N :=
 
 Arguments factorrem !_.
 
-Definition unfactorrem (q r : N) : N := r * shiftl 1 q.
+Definition unfactorrem' (q r : N) : N := r * shiftl 1 q.
 
-Arguments unfactorrem _ _ : assert.
+Arguments unfactorrem' _ _ : assert.
 
-Lemma unfactorrem_eqn (q r : N) : unfactorrem q r = r * 2 ^ q.
-Proof. cbv [unfactorrem]. arithmetize. reflexivity. Qed.
+Lemma unfactorrem_eqn' (q r : N) : unfactorrem' q r = r * 2 ^ q.
+Proof. cbv [unfactorrem']. arithmetize. reflexivity. Qed.
 
 Definition binfactor (n : N) : N := fst (factorrem n).
 
@@ -112,13 +148,14 @@ Definition oddfactor (n : N) : N := snd (factorrem n).
 
 Arguments oddfactor _ : assert.
 
-Lemma unfactorrem_factorrem (n : N) : prod_uncurry unfactorrem (factorrem n) = n.
+Lemma unfactorrem_factorrem' (n : N) :
+  prod_uncurry unfactorrem' (factorrem n) = n.
 Proof.
   destruct n as [| p].
   - reflexivity.
   - cbv [factorrem].
     destruct (pos_factorrem p) as [q r] eqn : e.
-    cbv [prod_uncurry fst snd]. rewrite unfactorrem_eqn.
+    cbv [prod_uncurry fst snd]. rewrite unfactorrem_eqn'.
     generalize dependent q. induction p as [s es | s es |]; intros q e.
     + cbv [pos_factorrem] in e.
       injection e. clear e. intros eq er. subst q r.
@@ -134,8 +171,32 @@ Proof.
       reflexivity. Qed.
 
 Lemma not_factorrem_unfactorrem : ~ forall q r : N,
-  factorrem (unfactorrem q r) = (q, r).
+  factorrem (unfactorrem' q r) = (q, r).
 Proof. intros e. specialize (e 2 2). cbv in e. inversion e. Qed.
+
+Definition unfactorrem (q r : N) : N :=
+  match r with
+  | N0 => 0
+  | Npos p => Npos (pos_unfactorrem q p)
+  end.
+
+Arguments unfactorrem _ _ : assert.
+
+Lemma unfactorrem_eqn (q r : N) : unfactorrem q r = r * 2 ^ q.
+Proof.
+  destruct r as [| s].
+  - reflexivity.
+  - cbv [unfactorrem pos_unfactorrem].
+    rewrite <- shiftl_1_l.
+    reflexivity. Qed.
+
+Lemma unfactorrem_factorrem (n : N) :
+  prod_uncurry unfactorrem (factorrem n) = n.
+Proof. Admitted.
+
+Lemma factorrem_unfactorrem' (q r : N) (x : odd r) :
+  factorrem (unfactorrem q r) = (q, r).
+Proof. Admitted.
 
 Module Cantor.
 
@@ -162,6 +223,38 @@ Compute map (prod_uncurry unpair o pair) (seq 0 64).
 
 Compute map pair_shell (seq 0 64).
 Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
+
+(** Just to see if it can be done. *)
+
+Definition pair_shell_rem (n : N) : N * N := untri_rem n.
+
+Arguments pair_shell_rem _ : assert.
+
+Import Program.Wf.
+
+Definition counpair_shell (p q : N) : N := q + tri p.
+
+Definition shell_size (i : N) : N :=
+  counpair_shell (1 + i) 0 - counpair_shell i 0.
+
+Definition shell_wf (i j : N) : Prop := j < shell_size i.
+
+Definition shell_codom : Type :=
+  {x : N * N ! Squash (prod_uncurry shell_wf x)}.
+
+(** This shall now be a bijection proper. *)
+
+Program Definition pair_shell' (n : N) : shell_codom :=
+  Sexists _ (pair_shell_rem n) _.
+Next Obligation.
+  intros n. apply squash.
+  cbv [prod_uncurry fst snd shell_wf pair_shell_rem shell_size counpair_shell].
+  destruct (untri_rem n) as [p q] eqn : e.
+  rewrite tri_succ.
+  enough (q < 1 + p) by lia.
+  rewrite untri_rem_tri_untri in e.
+  injection e. clear e. intros eq ep. subst q p.
+  pose proof tri_untri_untri_rem n as l. lia. Qed.
 
 Theorem unpair_shell_pair (n : N) :
   prod_uncurry unpair_shell (pair n) = pair_shell n.
@@ -194,77 +287,6 @@ Proof.
   rewrite untri_rem_tri_untri. f_equal.
   - replace (q + p) with (p + q) by lia. rewrite tri_what. lia.
   - replace (q + p) with (p + q) by lia. rewrite tri_what. lia. Qed.
-
-Module Alternating.
-
-Definition pair (n : N) : N * N :=
-  let (u, v) := untri_rem n in
-  if even u then (u - v, v) else (v, u - v).
-  (* if even (pair_shell n) then pair n else prod_swap (pair n). *)
-
-Arguments pair _ : assert.
-
-Definition unpair (p q : N) : N :=
-  let s := q + p in
-  if even s then q + tri s else p + tri s.
-  (* if even (unpair_shell p q) then unpair p q else flip unpair p q. *)
-
-Arguments unpair _ _ : assert.
-
-Compute map pair (seq 0 64).
-Compute map (prod_uncurry unpair o pair) (seq 0 64).
-
-Theorem unpair_shell_pair (n : N) :
-  prod_uncurry unpair_shell (pair n) = pair_shell n.
-Proof.
-  cbv [prod_uncurry fst snd pair]. (*
-  destruct (even (pair_shell n)) eqn : e.
-  - apply (unpair_shell_pair n).
-  - cbv [unpair_shell]. rewrite add_comm.
-    match goal with
-    | |- context [?f
-      (let (a, _) := prod_swap ?x in a)
-      (let (_, b) := prod_swap ?x in b)] =>
-      replace (f
-        (let (a, _) := prod_swap x in a)
-        (let (_, b) := prod_swap x in b))
-      with (prod_uncurry (flip f) x) by (destruct x as [?a ?b]; reflexivity)
-    end. apply (unpair_shell_pair n). Qed. *)
-  Abort.
-
-Theorem pair_shell_unpair (p q : N) :
-  pair_shell (unpair p q) = unpair_shell p q.
-Proof.
-  cbv [prod_uncurry fst snd unpair]. (*
-  destruct (even (unpair_shell p q)) eqn : e.
-  - apply (pair_shell_unpair p q).
-  - cbv [unpair_shell]. rewrite add_comm. apply (pair_shell_unpair q p). Qed. *)
-  Abort.
-
-Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
-Proof.
-  cbv [prod_uncurry fst snd unpair pair]. (*
-  destruct (even (pair_shell n)) eqn : e;
-  destruct (even (unpair_shell
-    (let (x, _) := id (Cantor.pair n) in x)
-    (let (_, y) := id (Cantor.pair n) in y))) eqn : e'. Admitted. *)
-  Abort.
-
-Theorem pair_unpair (p q : N) : pair (unpair p q) = (p, q).
-Proof.
-  cbv [pair prod_uncurry fst snd]. (*
-  destruct (even (pair_shell (unpair p q))) eqn : e.
-  - cbv [unpair]. destruct (even (unpair_shell p q)) eqn : e'.
-    + apply (pair_unpair p q).
-    + enough (true = false) by congruence. rewrite <- e, <- e'.
-      rewrite <- pair_shell_unpair. reflexivity.
-  - cbv [unpair]. destruct (even (unpair_shell p q)) eqn : e'.
-    + enough (true = false) by congruence. rewrite <- e, <- e'.
-      rewrite <- pair_shell_unpair. reflexivity.
-    + cbv [prod_swap Cantor.pair flip Cantor.unpair]. Admitted. *)
-  Abort.
-
-End Alternating.
 
 End Cantor.
 
@@ -330,34 +352,6 @@ Proof.
     + assert (f : s <> p) by nia. exfalso.
       assert (l : q < s) by nia. nia.
     + assert (e : s = p) by nia. subst s. f_equal; nia. Qed.
-
-Module Alternating.
-
-Definition pair (n : N) : N * N :=
-  let (s, t) := sqrtrem n in
-  if even s then
-  if s <=? t then (s - (t - s), s) else (s, t) else
-  if s <=? t then (s, s - (t - s)) else (t, s).
-
-Arguments pair _ : assert.
-
-Definition unpair (p q : N) : N :=
-  if p <=? q then
-  if even q then (q - p) + q * (1 + q) else p + q * q else
-  if even p then q + p * p else (p - q) + p * (1 + p).
-
-Arguments unpair _ _ : assert.
-
-Compute map pair (seq 0 64).
-Compute map (prod_uncurry unpair o pair) (seq 0 64).
-
-Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
-Proof. Admitted.
-
-Theorem pair_unpair (p q : N) : pair (unpair p q) = (p, q).
-Proof. Admitted.
-
-End Alternating.
 
 End RosenbergStrong.
 
@@ -426,36 +420,6 @@ Proof.
     + assert (f : s <> p) by nia. exfalso.
       assert (l : q < s) by nia. nia.
     + assert (e : s = p) by nia. subst s. f_equal; nia. Qed.
-
-Module Alternating.
-
-Definition pair (n : N) : N * N :=
-  let (s, t) := sqrtrem n in
-  if even s then
-  if s <=? t then (t - s, s) else (s, t) else
-  if s <=? t then (s, t - s) else (t, s).
-
-Arguments pair _ : assert.
-
-Definition unpair (p q : N) : N :=
-  match compare p q with
-  | Eq => p * (2 + p)
-  | Lt => if even q then p + q * (1 + q) else p + q * q
-  | Gt => if even p then q + p * p else q + p * (1 + p)
-  end.
-
-Arguments unpair _ _ : assert.
-
-Compute map pair (seq 0 64).
-Compute map (prod_uncurry unpair o pair) (seq 0 64).
-
-Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
-Proof. Admitted.
-
-Theorem pair_unpair (p q : N) : pair (unpair p q) = (p, q).
-Proof. Admitted.
-
-End Alternating.
 
 End Szudzik.
 
@@ -729,11 +693,11 @@ Definition unpair_shell (p q : N) : N := p + pos_log2 (succ_pos (shiftl q 1)).
 Arguments unpair_shell _ _ : assert.
 
 Lemma unpair_shell_eqn (p q : N) : unpair_shell p q =
-  log2 (unpartrem p (1 + 2 * q)).
+  log2 (unfactorrem p (1 + 2 * q)).
 Proof. cbv [unpair_shell]. arithmetize. Admitted.
 
 Definition pair (n : N) : N * N :=
-  let (p, q) := partrem (succ n) in
+  let (p, q) := factorrem (succ n) in
   (p, shiftr (pred q) 1).
   (* (pos_bin_part (succ_pos n), shiftr (pred (pos_odd_part (succ_pos n))) 1). *)
 
@@ -743,13 +707,13 @@ Lemma pair_eqn (n : N) : pair n =
   (pos_bin_part (succ_pos n), (pos_odd_part (succ_pos n) - 1) / 2).
 Proof. Admitted.
 
-Definition unpair (p q : N) : N := pred (unpartrem p (succ (shiftl q 1))).
+Definition unpair (p q : N) : N := pred (unfactorrem p (succ (shiftl q 1))).
 
 Arguments unpair _ _ : assert.
 
 Lemma unpair_eqn (p q : N) : unpair p q =
   (1 + 2 * q) * 2 ^ p - 1.
-Proof. cbv [unpair unpartrem]. arithmetize. reflexivity. Qed.
+Proof. cbv [unpair]. rewrite unfactorrem_eqn. arithmetize. reflexivity. Qed.
 
 Compute map pair (seq 0 64).
 Compute map (prod_uncurry unpair o pair) (seq 0 64).
@@ -783,55 +747,5 @@ Proof.
   - rewrite pos_odd_part_trivial.
     replace (1 + 2 * q - 1) with (2 * q) by lia.
     rewrite div_Even. reflexivity. Qed.
-
-Module Alternating.
-
-Definition pair (n : N) : N * N :=
-  let (l, m) := pos_log2rem (succ_pos n) in
-  if even l then pair n else pair (shiftl (n - m) 1 - m).
-
-Arguments pair _ : assert.
-
-#[ugly]
-Lemma pair_eqn (n : N) : pair n =
-  let (l, m) := log2rem (1 + n) in
-  if even l then Hyperbolic.pair n else Hyperbolic.pair (2 * (n - m) - m).
-Proof.
-  cbv [pair]. replace (log2rem (1 + n)) with (pos_log2rem (succ_pos n)).
-  - arithmetize. reflexivity.
-  - induction n; try reflexivity.
-    rewrite add_1_l. rewrite <- succ_pos_spec. reflexivity. Qed.
-
-Definition unpair (p q : N) : N :=
-  let (l, m) := pos_log2rem (succ_pos (shiftl q 1)) in
-  let (l', m') := (p + l, m * shiftl 1 p) in
-  if even l' then unpair p q else shiftl (unpair p q - m') 1 - m'.
-
-Compute let x := 256%nat in
-  Nat.eqb (length (filter id (map (fun n : N =>
-  n =? (prod_uncurry unpair o pair) n) (seq 0 x)))) x.
-
-Arguments unpair _ _ : assert.
-
-#[ugly]
-Lemma unpair_eqn (p q : N) : unpair p q =
-  let (l, m) := log2rem (1 + 2 * q) in
-  let (l', m') := (p + l, m * 2 ^ p) in
-  if even l' then Hyperbolic.unpair p q else 2 * (Hyperbolic.unpair p q - m') - m'.
-Proof.
-  cbv [unpair]. replace (log2rem (1 + 2 * q)) with (pos_log2rem (succ_pos (2 * q))).
-  - arithmetize. reflexivity.
-  - induction q; try reflexivity. Qed.
-
-Compute map pair (seq 0 64).
-Compute map (prod_uncurry unpair o pair) (seq 0 64).
-
-Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
-Proof. Admitted.
-
-Theorem pair_unpair (p q : N) : pair (unpair p q) = (p, q).
-Proof. Admitted.
-
-End Alternating.
 
 End Hyperbolic.
