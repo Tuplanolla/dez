@@ -80,61 +80,61 @@ Proof.
 
 (** TODO This combination of [pos_bin_part] and [pos_odd_part]. *)
 
-Fixpoint pos_partrem (n : positive) : N * positive :=
+Fixpoint pos_factorrem (n : positive) : N * positive :=
   match n with
   | xI p => (0, n)
-  | xO p => let (q, r) := pos_partrem p in (succ q, r)
+  | xO p => let (q, r) := pos_factorrem p in (succ q, r)
   | xH => (0, n)
   end.
 
-Arguments pos_partrem !_.
+Arguments pos_factorrem !_.
 
-Definition partrem (n : N) : N * N :=
+Definition factorrem (n : N) : N * N :=
   match n with
   | N0 => (0, 0)
-  | Npos p => let (q, r) := pos_partrem p in (q, Npos r)
+  | Npos p => let (q, r) := pos_factorrem p in (q, Npos r)
   end.
 
-Arguments partrem !_.
+Arguments factorrem !_.
 
-Definition unpartrem (q r : N) : N := r * shiftl 1 q.
+Definition unfactorrem (q r : N) : N := r * shiftl 1 q.
 
-Arguments unpartrem _ _ : assert.
+Arguments unfactorrem _ _ : assert.
 
-Lemma unpartrem_eqn (q r : N) : unpartrem q r = r * 2 ^ q.
-Proof. cbv [unpartrem]. arithmetize. reflexivity. Qed.
+Lemma unfactorrem_eqn (q r : N) : unfactorrem q r = r * 2 ^ q.
+Proof. cbv [unfactorrem]. arithmetize. reflexivity. Qed.
 
-Definition binpart (n : N) : N := fst (partrem n).
+Definition binfactor (n : N) : N := fst (factorrem n).
 
-Arguments binpart _ : assert.
+Arguments binfactor _ : assert.
 
-Definition oddpart (n : N) : N := snd (partrem n).
+Definition oddfactor (n : N) : N := snd (factorrem n).
 
-Arguments oddpart _ : assert.
+Arguments oddfactor _ : assert.
 
-Lemma unpartrem_partrem (n : N) : prod_uncurry unpartrem (partrem n) = n.
+Lemma unfactorrem_factorrem (n : N) : prod_uncurry unfactorrem (factorrem n) = n.
 Proof.
   destruct n as [| p].
   - reflexivity.
-  - cbv [partrem].
-    destruct (pos_partrem p) as [q r] eqn : e.
-    cbv [prod_uncurry fst snd]. rewrite unpartrem_eqn.
+  - cbv [factorrem].
+    destruct (pos_factorrem p) as [q r] eqn : e.
+    cbv [prod_uncurry fst snd]. rewrite unfactorrem_eqn.
     generalize dependent q. induction p as [s es | s es |]; intros q e.
-    + cbv [pos_partrem] in e.
+    + cbv [pos_factorrem] in e.
       injection e. clear e. intros eq er. subst q r.
       rewrite pow_0_r. rewrite mul_1_r.
       reflexivity.
-    + cbn [pos_partrem] in e.
-      destruct (pos_partrem s) as [q' r'] eqn : e'.
+    + cbn [pos_factorrem] in e.
+      destruct (pos_factorrem s) as [q' r'] eqn : e'.
       injection e. clear e. intros eq er. subst q r.
       rewrite pow_succ_r'. rewrite mul_shuffle3.
       rewrite es by reflexivity. reflexivity.
-    + cbv [pos_partrem] in e.
+    + cbv [pos_factorrem] in e.
       injection e. clear e. intros eq er. subst q r.
       reflexivity. Qed.
 
-Lemma not_partrem_unpartrem : ~ forall q r : N,
-  partrem (unpartrem q r) = (q, r).
+Lemma not_factorrem_unfactorrem : ~ forall q r : N,
+  factorrem (unfactorrem q r) = (q, r).
 Proof. intros e. specialize (e 2 2). cbv in e. inversion e. Qed.
 
 Module Cantor.
