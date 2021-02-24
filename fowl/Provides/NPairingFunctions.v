@@ -80,32 +80,82 @@ Proof.
 
 (** TODO This combination of [pos_bin_part] and [pos_odd_part]. *)
 
-Fixpoint pos_partrem (n : positive) : positive * N :=
+Definition pos_even (n : positive) : bool :=
   match n with
-  | xI p => (n, 0)
-  | xO p => let (q, r) := pos_partrem p in (q, succ r)
-  | xH => (n, 0)
+  | xI p => false
+  | xO p => true
+  | xH => false
   end.
 
-Arguments pos_partrem !_.
+Arguments pos_even !_.
 
-Lemma eq_pos_partrem (n : positive) :
-  let (q, r) := pos_partrem n in
-  Npos q * 2 ^ r = Npos n.
-Proof. Abort.
+Definition pos_odd (n : positive) : bool := negb (pos_even n).
 
-Definition partrem (n : N) : N * N :=
+Arguments pos_odd !_.
+
+Fixpoint pos_factorrem (n : positive) : N * positive :=
+  match n with
+  | xI p => (0, n)
+  | xO p => let (q, r) := pos_factorrem p in (succ q, r)
+  | xH => (0, n)
+  end.
+
+Arguments pos_factorrem !_.
+
+Definition pos_unfactorrem (q : N) (r : positive) : positive :=
+  r * Pos.shiftl 1 q.
+
+Arguments pos_unfactorrem _ _ : assert.
+
+Program Definition pos_factorrem_dep (n : positive) :
+  {x : N * positive ! Squash (pos_odd (snd x))} :=
+  Sexists _ (pos_factorrem n) _.
+Next Obligation.
+  intros n. apply squash.
+  induction n as [p ep | p ep |]; [reflexivity | | reflexivity].
+  cbn [pos_factorrem].
+  destruct (pos_factorrem p) as [q r] eqn : eqr.
+  apply ep. Qed.
+
+Arguments pos_factorrem_dep _ : assert.
+
+Definition pos_unfactorrem_dep (q : N)
+  (x : {r : positive ! Squash (pos_odd r)}) : positive :=
+  pos_unfactorrem q (Spr1 x).
+
+Arguments pos_unfactorrem_dep _ !_ : assert.
+
+Definition factorrem (n : N) : N * N :=
   match n with
   | N0 => (0, 0)
-  | Npos p => let (q, r) := pos_partrem p in (Npos q, r)
+  | Npos p => let (q, r) := pos_factorrem p in (q, Npos r)
   end.
 
-Arguments partrem !_.
+Arguments factorrem !_.
 
-Lemma eq_partrem (n : N) :
-  let (q, r) := partrem n in
-  q * 2 ^ r = n.
-Proof. Abort.
+Definition unfactorrem (q r : N) : N :=
+  match r with
+  | N0 => 0
+  | Npos p => Npos (pos_unfactorrem q p)
+  end.
+
+Arguments unfactorrem _ _ : assert.
+
+Lemma unfactorrem_eqn (q r : N) : unfactorrem q r = r * 2 ^ q.
+Proof.
+  destruct r as [| s].
+  - reflexivity.
+  - cbv [unfactorrem pos_unfactorrem].
+    rewrite <- shiftl_1_l.
+    reflexivity. Qed.
+
+Lemma unfactorrem_factorrem (n : N) :
+  prod_uncurry unfactorrem (factorrem n) = n.
+Proof. Admitted.
+
+Lemma factorrem_unfactorrem' (q r : N) (x : odd r) :
+  factorrem (unfactorrem q r) = (q, r).
+Proof. Admitted.
 
 Module Cantor.
 
