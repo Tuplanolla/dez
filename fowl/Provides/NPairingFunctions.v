@@ -1,97 +1,13 @@
 From Coq Require Import
   Lia Lists.List NArith.NArith.
 From Maniunfold.Provides Require Export
-  OptionTheorems ProductTheorems NTriangularNumbers.
+  OptionTheorems PositiveTheorems ProductTheorems NTriangularNumbers.
 
 Import ListNotations N.
 
 Local Open Scope N_scope.
 
-(** Binary part.
-    Largest power of two to divide the given number.
-    Number of trailing zeros in the binary representation of the given number.
-    Sequence A007814. *)
-
-Fixpoint pos_bin_part (n : positive) : N :=
-  match n with
-  | xI p => 0
-  | xO p => succ (pos_bin_part p)
-  | xH => 0
-  end.
-
-Arguments pos_bin_part !_.
-
-Definition bin_part (n : N) : N :=
-  match n with
-  | N0 => 0
-  | Npos p => pos_bin_part p
-  end.
-
-Arguments bin_part !_.
-
-Module Pos'.
-
-Fixpoint odd_part (n : positive) : positive :=
-  match n with
-  | xI p => n
-  | xO p => odd_part p
-  | xH => n
-  end.
-
-Arguments odd_part !_.
-
-End Pos'.
-
-(** Odd part.
-    Largest odd number to divide the given number.
-    Sequence A000265. *)
-
-Fixpoint pos_odd_part (n : positive) : N :=
-  match n with
-  | xI p => Npos n
-  | xO p => pos_odd_part p
-  | xH => Npos n
-  end.
-
-Arguments pos_odd_part !_.
-
-Definition odd_part (n : N) : N :=
-  match n with
-  | N0 => 0
-  | Npos p => pos_odd_part p
-  end.
-
-Arguments odd_part !_.
-
-(** Binary part and odd part are related. *)
-
-Lemma pos_odd_part_pos_bin_part (n : positive) :
-  pos_odd_part n * 2 ^ pos_bin_part n = Npos n.
-Proof.
-  induction n as [q ei | q ei |].
-  + cbn [pos_bin_part pos_odd_part].
-    rewrite pow_0_r. rewrite mul_1_r. reflexivity.
-  + cbn [pos_bin_part pos_odd_part].
-    rewrite pow_succ_r by lia.
-    rewrite mul_shuffle3.
-    rewrite ei.
-    reflexivity.
-  + reflexivity. Qed.
-
-(** TODO This combination of [pos_bin_part] and [pos_odd_part]. *)
-
-Definition pos_even (n : positive) : bool :=
-  match n with
-  | xI p => false
-  | xO p => true
-  | xH => false
-  end.
-
-Arguments pos_even !_.
-
-Definition pos_odd (n : positive) : bool := negb (pos_even n).
-
-Arguments pos_odd !_.
+(** Binary factoring of [positive] numbers. *)
 
 Fixpoint pos_factorrem (n : positive) : N * positive :=
   match n with
@@ -123,7 +39,17 @@ Definition pos_unfactorrem_dep (q : N)
   (x : {r : positive ! Squash (pos_odd r)}) : positive :=
   pos_unfactorrem q (Spr1 x).
 
-Arguments pos_unfactorrem_dep _ !_ : assert.
+Arguments pos_unfactorrem_dep _ !_.
+
+Definition pos_binfactor (n : positive) : N := fst (pos_factorrem n).
+
+Arguments pos_binfactor _ : assert.
+
+Definition pos_oddfactor (n : positive) : positive := snd (pos_factorrem n).
+
+Arguments pos_oddfactor _ : assert.
+
+(** Binary factoring of [N]atural numbers. *)
 
 Definition factorrem (n : N) : N * N :=
   match n with
@@ -133,29 +59,49 @@ Definition factorrem (n : N) : N * N :=
 
 Arguments factorrem !_.
 
-Definition unfactorrem' (q r : N) : N := r * shiftl 1 q.
+Definition unfactorrem (q r : N) : N :=
+  match r with
+  | N0 => 0
+  | Npos p => Npos (pos_unfactorrem q p)
+  end.
 
-Arguments unfactorrem' _ _ : assert.
+Arguments unfactorrem _ !_.
 
-Lemma unfactorrem_eqn' (q r : N) : unfactorrem' q r = r * 2 ^ q.
-Proof. cbv [unfactorrem']. arithmetize. reflexivity. Qed.
+Lemma unfactorrem_eqn (q r : N) : unfactorrem q r = r * 2 ^ q.
+Proof.
+  destruct r as [| s].
+  - reflexivity.
+  - cbv [unfactorrem pos_unfactorrem].
+    rewrite <- shiftl_1_l.
+    reflexivity. Qed.
+
+(** Binary factor.
+    Largest power of two to divide the given number.
+    Number of trailing zeros in the binary representation of the given number.
+    Sequence A007814. *)
 
 Definition binfactor (n : N) : N := fst (factorrem n).
 
 Arguments binfactor _ : assert.
 
+(** Odd factor.
+    Largest odd number to divide the given number.
+    Whatever remains of the given number
+    after removing trailing zeros from its binary representation.
+    Sequence A000265. *)
+
 Definition oddfactor (n : N) : N := snd (factorrem n).
 
 Arguments oddfactor _ : assert.
 
-Lemma unfactorrem_factorrem' (n : N) :
-  prod_uncurry unfactorrem' (factorrem n) = n.
+Lemma unfactorrem_factorrem (n : N) :
+  prod_uncurry unfactorrem (factorrem n) = n.
 Proof.
   destruct n as [| p].
   - reflexivity.
   - cbv [factorrem].
     destruct (pos_factorrem p) as [q r] eqn : e.
-    cbv [prod_uncurry fst snd]. rewrite unfactorrem_eqn'.
+    cbv [prod_uncurry fst snd]. rewrite unfactorrem_eqn.
     generalize dependent q. induction p as [s es | s es |]; intros q e.
     + cbv [pos_factorrem] in e.
       injection e. clear e. intros eq er. subst q r.
@@ -170,33 +116,23 @@ Proof.
       injection e. clear e. intros eq er. subst q r.
       reflexivity. Qed.
 
-Lemma not_factorrem_unfactorrem : ~ forall q r : N,
-  factorrem (unfactorrem' q r) = (q, r).
+Remark not_factorrem_unfactorrem : ~ forall q r : N,
+  factorrem (unfactorrem q r) = (q, r).
 Proof. intros e. specialize (e 2 2). cbv in e. inversion e. Qed.
 
-Definition unfactorrem (q r : N) : N :=
-  match r with
-  | N0 => 0
-  | Npos p => Npos (pos_unfactorrem q p)
-  end.
-
-Arguments unfactorrem _ _ : assert.
-
-Lemma unfactorrem_eqn (q r : N) : unfactorrem q r = r * 2 ^ q.
-Proof.
-  destruct r as [| s].
-  - reflexivity.
-  - cbv [unfactorrem pos_unfactorrem].
-    rewrite <- shiftl_1_l.
-    reflexivity. Qed.
-
-Lemma unfactorrem_factorrem (n : N) :
-  prod_uncurry unfactorrem (factorrem n) = n.
-Proof. Admitted.
-
-Lemma factorrem_unfactorrem' (q r : N) (x : odd r) :
+Lemma odd_factorrem_unfactorrem (q r : N) (b : odd r) :
   factorrem (unfactorrem q r) = (q, r).
-Proof. Admitted.
+Proof.
+  destruct r as [| r].
+  - inversion b.
+  - rewrite unfactorrem_eqn.
+    destruct (pos r * 2 ^ q) as [| p] eqn : ep.
+    + pose proof pow_nonzero 2 q as f. lia.
+    + cbv [factorrem].
+      destruct (pos_factorrem p) as [q' r'] eqn : e'.
+      induction p as [s es | s es |].
+      * cbn in e'. apply es.
+    Admitted.
 
 Module Cantor.
 
@@ -424,25 +360,25 @@ Proof.
 End Szudzik.
 
 #[ugly]
-Module Hyperbolic.
+Module Hausdorff.
 
-Lemma pos_bin_part_even (n : positive) :
-  pos_bin_part (2 * n) = 1 + pos_bin_part n.
+Lemma pos_binfactor_even (n : positive) :
+  pos_binfactor (2 * n) = 1 + pos_binfactor n.
 Proof.
   induction n as [p ei | p ei |].
   - reflexivity.
-  - cbn [pos_bin_part].
-    replace (1 + succ (pos_bin_part p)) with (succ (1 + pos_bin_part p)) by lia.
+  - cbn [pos_binfactor].
+    replace (1 + succ (pos_binfactor p)) with (succ (1 + pos_binfactor p)) by lia.
     rewrite <- ei. reflexivity.
   - reflexivity. Qed.
 
-Lemma pos_bin_part_even_succ (n : positive) :
-  pos_bin_part (succ_pos (2 * Npos n - 1)) = 1 + pos_bin_part n.
+Lemma pos_binfactor_even_succ (n : positive) :
+  pos_binfactor (succ_pos (2 * Npos n - 1)) = 1 + pos_binfactor n.
 Proof.
   induction n as [p ei | p ei |].
   - reflexivity.
-  - cbn [pos_bin_part].
-    replace (1 + succ (pos_bin_part p)) with (succ (1 + pos_bin_part p)) by lia.
+  - cbn [pos_binfactor].
+    replace (1 + succ (pos_binfactor p)) with (succ (1 + pos_binfactor p)) by lia.
     rewrite <- ei. reflexivity.
   - reflexivity. Qed.
 
@@ -451,14 +387,14 @@ Lemma part_factor (n : N) (f : n <> 0) :
 Proof.
   destruct n as [| p].
   - contradiction.
-  - exists (pos_bin_part p), ((pos_odd_part p - 1) / 2). clear f.
+  - exists (pos_binfactor p), ((pos_oddfactor p - 1) / 2). clear f.
     induction p as [q ei | q ei |].
-    + cbn [pos_bin_part pos_odd_part]. rewrite pow_0_r. rewrite mul_1_r.
+    + cbn [pos_binfactor pos_oddfactor]. rewrite pow_0_r. rewrite mul_1_r.
       rewrite <- divide_div_mul_exact. rewrite (mul_comm 2 _). rewrite div_mul.
       lia. lia. lia. cbn. replace (q~0)%positive with (2 * q)%positive by lia.
       replace (pos (2 * q)%positive) with (2 * Npos q) by lia.
       apply divide_factor_l.
-    + cbn [pos_bin_part pos_odd_part]. rewrite pow_succ_r by lia.
+    + cbn [pos_binfactor pos_oddfactor]. rewrite pow_succ_r by lia.
       rewrite mul_assoc. lia.
     + reflexivity. Qed.
 
@@ -467,22 +403,22 @@ Lemma part_factor_again (p q : N) :
 Proof. exists ((1 + 2 * q) * 2 ^ p). reflexivity. Qed.
 
 Lemma part_urgh (n : positive) :
-  let p := pos_bin_part n in
-  let q := (pos_odd_part n - 1) / 2 in
+  let p := pos_binfactor n in
+  let q := (pos_oddfactor n - 1) / 2 in
   Npos n = (1 + 2 * q) * 2 ^ p.
 Proof.
   intros p' q'. subst p' q'.
   induction n as [q ei | q ei |].
-  + cbn [pos_bin_part pos_odd_part]. rewrite pow_0_r. rewrite mul_1_r.
+  + cbn [pos_binfactor pos_oddfactor]. rewrite pow_0_r. rewrite mul_1_r.
     rewrite <- divide_div_mul_exact. rewrite (mul_comm 2 _). rewrite div_mul.
     lia. lia. lia. cbn. replace (q~0)%positive with (2 * q)%positive by lia.
     replace (pos (2 * q)%positive) with (2 * Npos q) by lia.
     apply divide_factor_l.
-  + cbn [pos_bin_part pos_odd_part]. rewrite pow_succ_r by lia.
+  + cbn [pos_binfactor pos_oddfactor]. rewrite pow_succ_r by lia.
     rewrite mul_assoc. lia.
   + reflexivity. Qed.
 
-Lemma bin_part_odd (n : N) : bin_part (1 + 2 * n) = 0.
+Lemma binfactor_odd (n : N) : binfactor (1 + 2 * n) = 0.
 Proof.
   destruct n as [| p].
   - arithmetize. reflexivity.
@@ -491,15 +427,15 @@ Proof.
     + reflexivity.
     + reflexivity. Qed.
 
-Lemma bin_part_even (n : N) (f : n <> 0) :
-  bin_part (2 * n) = 1 + bin_part n.
+Lemma binfactor_even (n : N) (f : n <> 0) :
+  binfactor (2 * n) = 1 + binfactor n.
 Proof.
   destruct n as [| p].
   - arithmetize. cbn. lia.
-  - apply (pos_bin_part_even p). Qed.
+  - apply (pos_binfactor_even p). Qed.
 
-Lemma bin_part_pow_2 (n p : N) (f : p <> 0) :
-  bin_part (2 ^ n * p) = n + bin_part p.
+Lemma binfactor_pow_2 (n p : N) (f : p <> 0) :
+  binfactor (2 ^ n * p) = n + binfactor p.
 Proof.
   destruct n as [| q].
   - arithmetize. reflexivity.
@@ -507,7 +443,7 @@ Proof.
     + replace (pos r~1) with (succ (2 * pos r)) by lia.
       rewrite pow_succ_r'.
       rewrite <- mul_assoc.
-      rewrite bin_part_even.
+      rewrite binfactor_even.
       replace (2 * pos r) with (pos r + pos r) by lia.
       rewrite pow_add_r.
       rewrite <- mul_assoc.
@@ -530,23 +466,23 @@ Proof.
       lia.
     + arithmetize.
       destruct p. lia.
-      rewrite bin_part_even.
+      rewrite binfactor_even.
       lia. lia. Qed.
 
-Lemma bin_part_trivial (p q : N) :
-  bin_part ((1 + 2 * q) * 2 ^ p) = p.
+Lemma binfactor_trivial (p q : N) :
+  binfactor ((1 + 2 * q) * 2 ^ p) = p.
 Proof.
   destruct p as [| r].
-  - arithmetize. apply bin_part_odd.
+  - arithmetize. apply binfactor_odd.
   - generalize dependent q. induction r as [s ei | s ei |]; intros q.
     + replace (pos s~1) with (succ (2 * pos s)) by lia.
       rewrite pow_succ_r'.
       replace (2 * pos s) with (pos s + pos s) by lia.
       rewrite pow_add_r.
       rewrite mul_shuffle3.
-      rewrite bin_part_even.
+      rewrite binfactor_even.
       rewrite mul_shuffle3.
-      rewrite bin_part_pow_2.
+      rewrite binfactor_pow_2.
       rewrite ei. lia.
       pose proof pow_nonzero 2 (pos s).
       lia.
@@ -556,19 +492,19 @@ Proof.
       replace (2 * pos s) with (pos s + pos s) by lia.
       rewrite pow_add_r.
       rewrite mul_shuffle3.
-      rewrite bin_part_pow_2.
+      rewrite binfactor_pow_2.
       rewrite ei. lia.
       pose proof pow_nonzero 2 (pos s).
       lia.
     + arithmetize.
-      rewrite bin_part_even.
-      rewrite bin_part_odd.
+      rewrite binfactor_even.
+      rewrite binfactor_odd.
       lia. lia. Qed.
 
-Lemma pos_bin_part_trivial (p q : N) :
-  pos_bin_part (succ_pos ((1 + 2 * q) * 2 ^ p - 1)) = p.
+Lemma pos_binfactor_trivial (p q : N) :
+  pos_binfactor (succ_pos ((1 + 2 * q) * 2 ^ p - 1)) = p.
 Proof.
-  pose proof bin_part_trivial p q as e.
+  pose proof binfactor_trivial p q as e.
   remember ((1 + 2 * q) * 2 ^ p) as r eqn : er.
   destruct r as [| s].
   - arithmetize. cbn. rewrite <- e. reflexivity.
@@ -578,7 +514,7 @@ Proof.
     cbn. rewrite Pos.pred_double_spec. rewrite Pos.succ_pred; lia.
     reflexivity. Qed.
 
-Lemma odd_part_odd (n : N) : odd_part (1 + 2 * n) = 1 + 2 * n.
+Lemma oddfactor_odd (n : N) : oddfactor (1 + 2 * n) = 1 + 2 * n.
 Proof.
   destruct n as [| p].
   - arithmetize. reflexivity.
@@ -587,15 +523,15 @@ Proof.
     + reflexivity.
     + reflexivity. Qed.
 
-Lemma odd_part_even (n : N) :
-  odd_part (2 * n) = odd_part n.
+Lemma oddfactor_even (n : N) :
+  oddfactor (2 * n) = oddfactor n.
 Proof.
   destruct n as [| p].
   - arithmetize. cbn. lia.
   - reflexivity. Qed.
 
-Lemma odd_part_pow_2 (n p : N) (f : p <> 0) :
-  odd_part (2 ^ n * p) = odd_part p.
+Lemma oddfactor_pow_2 (n p : N) (f : p <> 0) :
+  oddfactor (2 ^ n * p) = oddfactor p.
 Proof.
   destruct n as [| q].
   - arithmetize. cbn. lia.
@@ -605,7 +541,7 @@ Proof.
       replace (2 * pos s) with (pos s + pos s) by lia.
       rewrite pow_add_r.
       rewrite <- mul_assoc.
-      rewrite odd_part_even.
+      rewrite oddfactor_even.
       rewrite <- mul_assoc.
       rewrite ei.
       rewrite ei.
@@ -624,23 +560,23 @@ Proof.
       pose proof pow_nonzero 2 (pos s).
       lia.
     + arithmetize.
-      rewrite odd_part_even.
+      rewrite oddfactor_even.
       lia. Qed.
 
-Lemma odd_part_trivial (p q : N) :
-  odd_part ((1 + 2 * q) * 2 ^ p) = 1 + 2 * q.
+Lemma oddfactor_trivial (p q : N) :
+  oddfactor ((1 + 2 * q) * 2 ^ p) = 1 + 2 * q.
 Proof.
   destruct p as [| r].
-  - arithmetize. apply odd_part_odd.
+  - arithmetize. apply oddfactor_odd.
   - generalize dependent q. induction r as [s ei | s ei |]; intros q.
     + replace (pos s~1) with (succ (2 * pos s)) by lia.
       rewrite pow_succ_r'.
       replace (2 * pos s) with (pos s + pos s) by lia.
       rewrite pow_add_r.
       rewrite mul_shuffle3.
-      rewrite odd_part_even.
+      rewrite oddfactor_even.
       rewrite mul_shuffle3.
-      rewrite odd_part_pow_2.
+      rewrite oddfactor_pow_2.
       rewrite ei. lia.
       pose proof pow_nonzero 2 (pos s).
       lia.
@@ -648,19 +584,19 @@ Proof.
       replace (2 * pos s) with (pos s + pos s) by lia.
       rewrite pow_add_r.
       rewrite mul_shuffle3.
-      rewrite odd_part_pow_2.
+      rewrite oddfactor_pow_2.
       rewrite ei. lia.
       pose proof pow_nonzero 2 (pos s).
       lia.
     + arithmetize.
-      rewrite odd_part_even.
-      rewrite odd_part_odd.
+      rewrite oddfactor_even.
+      rewrite oddfactor_odd.
       lia. Qed.
 
-Lemma pos_odd_part_trivial (p q : N) :
-  pos_odd_part (succ_pos ((1 + 2 * q) * 2 ^ p - 1)) = 1 + 2 * q.
+Lemma pos_oddfactor_trivial (p q : N) :
+  pos_oddfactor (succ_pos ((1 + 2 * q) * 2 ^ p - 1)) = 1 + 2 * q.
 Proof.
-  pose proof odd_part_trivial p q as e.
+  pose proof oddfactor_trivial p q as e.
   remember ((1 + 2 * q) * 2 ^ p) as r eqn : er.
   destruct r as [| s].
   - arithmetize. rewrite <- e. cbn. pose proof pow_nonzero 2 p. lia.
@@ -699,12 +635,12 @@ Proof. cbv [unpair_shell]. arithmetize. Admitted.
 Definition pair (n : N) : N * N :=
   let (p, q) := factorrem (succ n) in
   (p, shiftr (pred q) 1).
-  (* (pos_bin_part (succ_pos n), shiftr (pred (pos_odd_part (succ_pos n))) 1). *)
+  (* (pos_binfactor (succ_pos n), shiftr (pred (pos_oddfactor (succ_pos n))) 1). *)
 
 Arguments pair _ : assert.
 
 Lemma pair_eqn (n : N) : pair n =
-  (pos_bin_part (succ_pos n), (pos_odd_part (succ_pos n) - 1) / 2).
+  (pos_binfactor (succ_pos n), (pos_oddfactor (succ_pos n) - 1) / 2).
 Proof. Admitted.
 
 Definition unpair (p q : N) : N := pred (unfactorrem p (succ (shiftl q 1))).
@@ -743,9 +679,9 @@ Theorem pair_unpair (p q : N) : pair (unpair p q) = (p, q).
 Proof.
   cbv [prod_uncurry]. rewrite pair_eqn. rewrite unpair_eqn.
   f_equal.
-  - rewrite pos_bin_part_trivial. reflexivity.
-  - rewrite pos_odd_part_trivial.
+  - rewrite pos_binfactor_trivial. reflexivity.
+  - rewrite pos_oddfactor_trivial.
     replace (1 + 2 * q - 1) with (2 * q) by lia.
     rewrite div_Even. reflexivity. Qed.
 
-End Hyperbolic.
+End Hausdorff.

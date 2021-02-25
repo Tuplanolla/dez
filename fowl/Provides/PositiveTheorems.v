@@ -4,6 +4,23 @@ From Maniunfold.Is Require Export
   OneSorted.AbelianGroup OneSorted.CommutativeSemigroup
   OneSorted.CommutativeMonoid.
 
+(** Whether the given number even or not. *)
+
+Definition pos_even (n : positive) : bool :=
+  match n with
+  | xI p => false
+  | xO p => true
+  | xH => false
+  end.
+
+Arguments pos_even !_.
+
+(** Whether the given number odd or not. *)
+
+Definition pos_odd (n : positive) : bool := negb (pos_even n).
+
+Arguments pos_odd !_.
+
 Module Additive.
 
 Global Instance positive_has_bin_op : HasBinOp positive := Pos.add.
