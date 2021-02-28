@@ -30,8 +30,8 @@ Let B : Type := Z.
 
 Context (f : A -> B).
 Arguments f _%N.
-Context (f_inj : forall (a b : A) (e : f a = f b), a = b).
-Context (f_mono : forall (a b : A) (l : (a <= b)%N), f a <= f b).
+Context (f_inj : forall (x y : A) (e : f x = f y), x = y).
+Context (f_mono : forall (x y : A) (l : (x <= y)%N), f x <= f y).
 Fail Fail Context (f_surj : forall b : B, exists a : A, b = f a).
 
 (** We care about three of its pseudoinverses,
@@ -130,120 +130,124 @@ Proof.
   rewrite e in l.
   lia. Qed.
 
-Definition C : Type := A + {x : A * B ! let (a, b) := x in
-  Squash (f a < b + f a < f (1 + a))}.
-Definition f_remdowndep (x : C) : B :=
+Definition P (a : A) (b : B) : Prop := f a < b + f a < f (1 + a).
+Definition A_sub : Type := A + {x : A * B ! Squash (prod_uncurry P x)}.
+Definition f_remdowndep (x : A_sub) : B :=
   match x with
   | inl a => f a
   | inr (Sexists _ (a, b) _) => b + f a
   end.
-Context (unf_remdowndep : B -> C).
+Context (unf_remdowndep : B -> A_sub).
 Class unf_remdowndep_spec : Prop := {
-  here_remdowndep : forall a : A, unf_remdowndep (f a) = inl a;
+  here_remdowndep : forall x : A_sub, unf_remdowndep (f_remdowndep x) = x;
   there_remdowndep : forall b : B, f_remdowndep (unf_remdowndep b) = b;
 }.
-Corollary elsehere_remdowndep `{unf_remdowndep_spec} :
-  forall x : C, unf_remdowndep (f_remdowndep x) = x.
-Proof.
-  intros [a | [[a b] e]].
-  - cbv [f_remdowndep]. rewrite here_remdowndep. reflexivity.
-  - cbv [f_remdowndep].
-    destruct (unf_remdowndep (b + f a)) as [a' | [[a' b'] e']] eqn : e''.
-    exfalso. admit. f_equal. apply Spr1_inj. cbv [Spr1]. admit. Abort.
+
+End Context.
+
+Section Context.
+
+Local Open Scope N_scope.
+Local Open Scope Z_scope.
+
+Let A : Type := N.
+Let B : Type := Z.
+
+Context (f : A -> B).
+Arguments f _%N.
+Context (f_inj : forall (x y : A) (e : f x = f y), x = y).
+Context (f_mono : forall (x y : A) (l : (x <= y)%N), f x <= f y).
+Fail Fail Context (f_surj : forall b : B, exists a : A, b = f a).
 
 (** We implement things in terms of each other.
     Only these really require subtraction,
     decidable equality and some remnant of well-foundedness.
     Everything else can be forced into more general form. *)
 
-(** Possibly-saturative subtraction,
-    since monoids have too little and groups have too much. *)
-
-Context (bsub : forall (x y : B), B).
-
-Notation "a '-' b" := (bsub a b).
-
-Definition unf_down_unf_remdown (x : B) : A :=
+Definition unf_down_unf_remdown
+  (unf_remdown : B -> A + A * B) `{unf_remdown_spec f unf_remdown}
+  (x : B) : A :=
   match unf_remdown x with
   | inl y => y
   | inr (y, z) => y
   end.
 
-Definition unf_error_unf_remdown (x : B) : option A :=
+Lemma unf_down_unf_remdown_spec
+  (unf_remdown : B -> A + A * B) `{unf_remdown_spec f unf_remdown} :
+  unf_down_spec f unf_down_unf_remdown.
+Proof.
+  cbv [unf_down_unf_remdown]. constructor.
+  - intros a. rewrite here_remdown. reflexivity.
+  - intros x. pose proof refine_remdown x.
+    destruct (unf_remdown x) as [a | [a b]] eqn : e.
+    + rewrite <- here_remdown in e.
+      pose proof f_equal (f_remdown f) e as p.
+      repeat rewrite there_remdown in p. rewrite p. split.
+      * lia.
+      * specialize (@f_mono a (1 + a)%N ltac:(lia)).
+        destruct (Z.eqb_spec (f a) (f (1 + a)%N)).
+        specialize (@f_inj a (1 + a)%N ltac:(lia)).
+        lia. lia.
+    + pose proof f_equal (f_remdown f) e as p.
+      repeat rewrite there_remdown in p. rewrite p. cbv [f_remdown]. lia. Qed.
+
+Definition unf_error_unf_remdown
+  (unf_remdown : B -> A + A * B) `{unf_remdown_spec f unf_remdown}
+  (x : B) : option A :=
   match unf_remdown x with
   | inl y => Some y
   | inr (y, z) => None
   end.
 
-Definition unf_remdown_unf_down (x : B) : A + A * B :=
-  let y := unf_down x in
-  let z := x - f y in
-  if eq_dec z 0 then inl y else inr (y, z).
+Definition unf_remdown_unf_down
+  (unf_down : B -> A) `{unf_down_spec f unf_down}
+  (x : B) : A + A * B :=
+  let a := unf_down x in
+  let b := x - f a in
+  if b =? 0 then inl a else inr (a, b).
 
-Definition unf_error_unf_down (x : B) : option A :=
-  let y := unf_down x in
-  if eq_dec (f y) x then Some y else None.
+Definition unf_error_unf_down
+  (unf_down : B -> A) `{unf_down_spec f unf_down}
+  (b : B) : option A :=
+  let a := unf_down b in
+  if f a =? b then Some a else None.
 
-Program Fixpoint unf_remdown_unf_error' (y : option B) (x : B)
-  {measure x _<=_} : A + A * B :=
+Program Fixpoint unf_remdown_unf_error'
+  (unf_error : B -> option A) `{unf_error_spec f unf_error}
+  (y : option B) (x : B)
+  {measure x (Z.le)} : A + A * B :=
   match unf_error x with
   | Some a =>
     match y with
     | Some b => inr (a, b)
     | None => inl a
     end
-  | None => unf_remdown_unf_error' (option_map bsuc y) (bpre x)
+  | None => unf_remdown_unf_error' (option_map Z.succ y) (x - 1)
   end.
 Next Obligation.
-  intros a n g x e.
+  intros ? ? a n g x e.
   destruct x as [c |].
   - inversion e.
-  - apply bpre_ord. Qed.
-Next Obligation. Tactics.program_solve_wf. Defined.
+  - lia. Qed.
+Next Obligation. Tactics.program_solve_wf. Admitted.
 
-Definition unf_remdown_unf_error (b : B) : A + A * B :=
+Definition unf_remdown_unf_error
+  (unf_error : B -> option A) `{unf_error_spec f unf_error}
+  (b : B) : A + A * B :=
   unf_remdown_unf_error' None b.
 
-Lemma termination (b : B) : exists a : A, f a < b /\ unf_error b = Some a.
-Proof. Admitted.
-
-Program Fixpoint unf_down_unf_error (b : B) {measure b _<=_} : A :=
+Program Fixpoint unf_down_unf_error
+  (unf_error : B -> option A) `{unf_error_spec f unf_error}
+  (b : B) {measure b (Z.le)} : A :=
   match unf_error b with
   | Some a => a
-  | None => unf_down_unf_error (bpre b)
+  | None => unf_down_unf_error (b - 1)
   end.
 Next Obligation.
-  intros b g x e.
+  intros ? ? b g x e.
   destruct x as [c |].
   - inversion e.
-  - apply bpre_ord. Qed.
-Next Obligation. Tactics.program_solve_wf. Defined.
-
-(** Secretly, we know these to be true. *)
-
-Lemma eq_unf_down_unf_remdown (x : B) :
-  unf_down_unf_remdown x = unf_down x.
-Proof. Admitted.
-
-Lemma eq_unf_error_unf_remdown (x : B) :
-  unf_error_unf_remdown x = unf_error x.
-Proof. Admitted.
-
-Lemma eq_unf_remdown_unf_down (x : B) :
-  unf_remdown_unf_down x = unf_remdown x.
-Proof. Admitted.
-
-Lemma eq_unf_error_unf_down (x : B) :
-  unf_error_unf_down x = unf_error x.
-Proof. Admitted.
-
-Lemma eq_unf_remdown_unf_error (x : B) :
-  unf_remdown_unf_error x = unf_remdown x.
-Proof. Admitted.
-
-Lemma eq_unf_down_unf_error (x : B) :
-  unf_down_unf_error x = unf_down x.
-Proof. Admitted.
+  - lia. Qed.
+Next Obligation. Tactics.program_solve_wf. Admitted.
 
 End Context.
- 
