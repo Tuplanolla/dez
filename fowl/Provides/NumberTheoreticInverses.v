@@ -19,26 +19,26 @@ Import ListNotations.
 
 Section Context.
 
-Local Open Scope N_scope.
 Local Open Scope Z_scope.
+Local Open Scope N_scope.
 
-Let A : Type := N.
-Let B : Type := Z.
+Let A : Type := Z.
+Let B : Type := N.
 
 (** Our function of interest probably has to be a monotonic injection,
     but this is mere conjecture. *)
 
 Context (f : A -> B).
-Arguments f _%N.
+Arguments f _%Z.
 Context (f_inj : forall (x y : A) (e : f x = f y), x = y).
-Context (f_mono : forall (x y : A) (l : (x <= y)%N), f x <= f y).
+Context (f_mono : forall (x y : A) (l : (x <= y)%Z), f x <= f y).
 Fail Fail Context (f_surj : forall b : B, exists a : A, b = f a).
 
 (** We care about three of its pseudoinverses,
     that are specified as follows. *)
 
 Context (unf_error : B -> option A).
-Arguments unf_error _%Z.
+Arguments unf_error _%N.
 Class unf_error_spec : Prop := {
   here_error : forall a : A, unf_error (f a) = Some a;
   there_error : forall (x y : B) (e : option_map f (unf_error x) = Some y),
@@ -89,7 +89,7 @@ Proof.
     Foiled again! *)
 
 Context (unf_down : B -> A).
-Arguments unf_down _%Z.
+Arguments unf_down _%N.
 Class unf_down_spec : Prop := {
   here_down : forall a : A, unf_down (f a) = a;
   there_down : forall b : B, f (unf_down b) <= b < f (1 + unf_down b);
@@ -111,6 +111,7 @@ Definition f_remdown (x : A + A * B) : B :=
   | inr (a, b) => b + f a
   end.
 Context (unf_remdown : B -> A + A * B).
+Arguments unf_remdown _%N.
 Class unf_remdown_spec : Prop := {
   refine_remdown : forall x : B,
     match unf_remdown x with
@@ -125,8 +126,8 @@ Remark not_elsehere_remdowndep `{unf_remdown_spec} :
 Proof.
   intros e.
   assert (a : A) by constructor.
-  specialize (e (inr (a, 0%Z))).
-  pose proof refine_remdown (f_remdown (inr (a, 0%Z))) as l.
+  specialize (e (inr (a, 0))).
+  pose proof refine_remdown (f_remdown (inr (a, 0))) as l.
   rewrite e in l.
   lia. Qed.
 
@@ -147,16 +148,16 @@ End Context.
 
 Section Context.
 
-Local Open Scope N_scope.
 Local Open Scope Z_scope.
+Local Open Scope N_scope.
 
-Let A : Type := N.
-Let B : Type := Z.
+Let A : Type := Z.
+Let B : Type := N.
 
 Context (f : A -> B).
-Arguments f _%N.
+Arguments f _%Z.
 Context (f_inj : forall (x y : A) (e : f x = f y), x = y).
-Context (f_mono : forall (x y : A) (l : (x <= y)%N), f x <= f y).
+Context (f_mono : forall (x y : A) (l : (x <= y)%Z), f x <= f y).
 Fail Fail Context (f_surj : forall b : B, exists a : A, b = f a).
 
 (** We implement things in terms of each other.
@@ -184,9 +185,9 @@ Proof.
       pose proof f_equal (f_remdown f) e as p.
       repeat rewrite there_remdown in p. rewrite p. split.
       * lia.
-      * specialize (@f_mono a (1 + a)%N ltac:(lia)).
-        destruct (Z.eqb_spec (f a) (f (1 + a)%N)).
-        specialize (@f_inj a (1 + a)%N ltac:(lia)).
+      * specialize (@f_mono a (1 + a)%Z ltac:(lia)).
+        destruct (N.eqb_spec (f a) (f (1 + a)%Z)).
+        specialize (@f_inj a (1 + a)%Z ltac:(assumption)).
         lia. lia.
     + pose proof f_equal (f_remdown f) e as p.
       repeat rewrite there_remdown in p. rewrite p. cbv [f_remdown]. lia. Qed.
@@ -226,13 +227,13 @@ Lemma unf_remdown_unf_down_spec
   unf_remdown_spec f unf_remdown_unf_down.
 Proof.
   cbv [unf_remdown_unf_down]. constructor.
-  - intros x. destruct (Z.eqb_spec (x - f (unf_down x)) 0) as [e' | f'].
+  - intros x. destruct (N.eqb_spec (x - f (unf_down x)) 0) as [e' | f'].
     + constructor.
     + pose proof there_down x as l. lia.
-  - intros a. rewrite here_down. rewrite Z.sub_diag, Z.eqb_refl. reflexivity.
+  - intros a. rewrite here_down. rewrite N.sub_diag, N.eqb_refl. reflexivity.
   - intros b. cbv [f_remdown].
-    destruct (Z.eqb_spec (b - f (unf_down b)) 0) as [e' | f'].
-    + lia.
+    destruct (N.eqb_spec (b - f (unf_down b)) 0) as [e' | f'].
+    + pose proof there_down b. lia.
     + lia. Qed.
 
 Definition unf_error_unf_down
@@ -246,40 +247,61 @@ Lemma unf_error_unf_down_spec
   unf_error_spec f unf_error_unf_down.
 Proof.
   cbv [unf_error_unf_down]. constructor.
-  - intros a. rewrite here_down. rewrite Z.eqb_refl. reflexivity.
+  - intros a. rewrite here_down. rewrite N.eqb_refl. reflexivity.
   - intros x y e.
-    destruct (Z.eqb_spec (f (unf_down x)) x) as [e' | f'].
+    destruct (N.eqb_spec (f (unf_down x)) x) as [e' | f'].
     + cbv [option_map] in e.
       injection e. clear e. intros e. transitivity (f (unf_down x)); auto.
     + inversion e. Qed.
 
 Program Fixpoint unf_remdown_unf_error'
+  (unf_down : B -> A) `{unf_down_spec f unf_down}
   (unf_error : B -> option A) `{unf_error_spec f unf_error}
   (y : option B) (x : B)
-  {measure x (Z.le)} : A + A * B :=
+  {measure (N.to_nat (x - f (unf_down x)))} : A + A * B :=
   match unf_error x with
   | Some a =>
     match y with
     | Some b => inr (a, b)
     | None => inl a
     end
-  | None => unf_remdown_unf_error' (option_map Z.succ y) (x - 1)
+  | None => unf_remdown_unf_error'
+    match y with
+    | Some b => Some (1 + b)
+    | None => Some 1
+    end (x - 1)
   end.
 Next Obligation.
-  intros ? ? a n g x e.
-  destruct x as [c |].
-  - inversion e.
-  - lia. Qed.
-Next Obligation. Tactics.program_solve_wf. Admitted.
+  intros ? ? ? ? x b g y e.
+  enough (b - 1 - f (unf_down (b - 1)) < b - f (unf_down b)) by lia.
+  pose proof there_down b as l.
+  pose proof there_down (b - 1) as l'.
+  destruct (N.eqb_spec b 0) as [e' | f'].
+  subst b. replace (0 - 1) with 0 in * by lia. admit.
+  apply N.le_succ_l.
+  enough (b - f (unf_down (b - 1)) <= b - f (unf_down b)) by lia.
+  enough (f (unf_down b) <= f (unf_down (b - 1))) by lia. Admitted.
+Next Obligation. Tactics.program_solve_wf. Defined.
 
 Definition unf_remdown_unf_error
+  (unf_down : B -> A) `{unf_down_spec f unf_down}
   (unf_error : B -> option A) `{unf_error_spec f unf_error}
   (b : B) : A + A * B :=
   unf_remdown_unf_error' None b.
 
+Lemma unf_remdown_unf_error_spec
+  (unf_down : B -> A) `{unf_down_spec f unf_down}
+  (unf_error : B -> option A) `{unf_error_spec f unf_error} :
+  unf_remdown_spec f unf_remdown_unf_error.
+Proof.
+  cbv [unf_remdown_unf_error]. constructor.
+  - intros x. destruct (unf_remdown_unf_error' None x) as [a | [a b]] eqn : e.
+    + constructor.
+    + Abort.
+
 Program Fixpoint unf_down_unf_error
   (unf_error : B -> option A) `{unf_error_spec f unf_error}
-  (b : B) {measure b (Z.le)} : A :=
+  (b : B) {measure b (N.le)} : A :=
   match unf_error b with
   | Some a => a
   | None => unf_down_unf_error (b - 1)
@@ -290,5 +312,23 @@ Next Obligation.
   - inversion e.
   - lia. Qed.
 Next Obligation. Tactics.program_solve_wf. Admitted.
+
+Lemma unf_down_unf_error_spec
+  (unf_error : B -> option A) `{unf_error_spec f unf_error} :
+  unf_down_spec f unf_down_unf_error.
+Proof.
+  constructor.
+  - intros a. replace (unf_down_unf_error (f a))
+    with match unf_error (f a) with
+    | Some a => a
+    | None => unf_down_unf_error (f a - 1)
+    end by admit. rewrite here_error. reflexivity.
+  - intros b. replace (unf_down_unf_error b)
+    with match unf_error b with
+    | Some a => a
+    | None => unf_down_unf_error (b - 1)
+    end by admit. induction b using N.peano_ind.
+    + destruct (unf_error 0). admit. admit.
+    + admit. Abort.
 
 End Context.
