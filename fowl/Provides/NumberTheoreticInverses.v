@@ -199,6 +199,21 @@ Definition unf_error_unf_remdown
   | inr (y, z) => None
   end.
 
+Lemma unf_error_unf_remdown_spec
+  (unf_remdown : B -> A + A * B) `{unf_remdown_spec f unf_remdown} :
+  unf_error_spec f unf_error_unf_remdown.
+Proof.
+  cbv [unf_error_unf_remdown]. constructor.
+  - intros a. rewrite here_remdown. reflexivity.
+  - intros x y e'. pose proof refine_remdown x.
+    destruct (unf_remdown x) as [a | [a b]] eqn : e.
+    + rewrite <- here_remdown in e.
+      pose proof f_equal (f_remdown f) e as p.
+      repeat rewrite there_remdown in p. rewrite p.
+      cbv [option_map] in e'.
+      injection e'. clear e'. intros e'. transitivity (f a); auto.
+    + inversion e'. Qed.
+
 Definition unf_remdown_unf_down
   (unf_down : B -> A) `{unf_down_spec f unf_down}
   (x : B) : A + A * B :=
@@ -206,11 +221,37 @@ Definition unf_remdown_unf_down
   let b := x - f a in
   if b =? 0 then inl a else inr (a, b).
 
+Lemma unf_remdown_unf_down_spec
+  (unf_down : B -> A) `{unf_down_spec f unf_down} :
+  unf_remdown_spec f unf_remdown_unf_down.
+Proof.
+  cbv [unf_remdown_unf_down]. constructor.
+  - intros x. destruct (Z.eqb_spec (x - f (unf_down x)) 0) as [e' | f'].
+    + constructor.
+    + pose proof there_down x as l. lia.
+  - intros a. rewrite here_down. rewrite Z.sub_diag, Z.eqb_refl. reflexivity.
+  - intros b. cbv [f_remdown].
+    destruct (Z.eqb_spec (b - f (unf_down b)) 0) as [e' | f'].
+    + lia.
+    + lia. Qed.
+
 Definition unf_error_unf_down
   (unf_down : B -> A) `{unf_down_spec f unf_down}
   (b : B) : option A :=
   let a := unf_down b in
   if f a =? b then Some a else None.
+
+Lemma unf_error_unf_down_spec
+  (unf_down : B -> A) `{unf_down_spec f unf_down} :
+  unf_error_spec f unf_error_unf_down.
+Proof.
+  cbv [unf_error_unf_down]. constructor.
+  - intros a. rewrite here_down. rewrite Z.eqb_refl. reflexivity.
+  - intros x y e.
+    destruct (Z.eqb_spec (f (unf_down x)) x) as [e' | f'].
+    + cbv [option_map] in e.
+      injection e. clear e. intros e. transitivity (f (unf_down x)); auto.
+    + inversion e. Qed.
 
 Program Fixpoint unf_remdown_unf_error'
   (unf_error : B -> option A) `{unf_error_spec f unf_error}
