@@ -170,6 +170,39 @@ Fail Fail Context (f_surj : forall b : B, exists a : A, b = f a).
 
 (** From [remdowndep]. *)
 
+Definition unf_remdown_unf_remdowndep
+  (unf_remdowndep : B -> A_sub f) `{unf_remdowndep_spec f unf_remdowndep}
+  (x : B) : A + A * B :=
+  match unf_remdowndep x with
+  | inl y => inl y
+  | inr (Sexists _ y _) => inr y
+  end.
+
+Lemma unf_remdown_unf_remdowndep_spec
+  (unf_remdowndep : B -> A_sub f) `{unf_remdowndep_spec f unf_remdowndep} :
+  unf_remdown_spec f unf_remdown_unf_remdowndep.
+Proof.
+  cbv [unf_remdown_unf_remdowndep]. constructor.
+  - intros x. destruct (unf_remdowndep x) as [a | [[a b] s]] eqn : e.
+    + constructor.
+    + cbv [prod_uncurry fst snd P] in s.
+      assert (HasDec (f a < b + f a < f (1 + a))).
+      { hnf. destruct (N.ltb_spec0 (f a) (b + f a)),
+        (N.ltb_spec0 (b + f a) (f (1 + a))).
+        left. lia.
+        right. lia.
+        right. lia.
+        right. lia. }
+      pose proof unsquash s. lia.
+  - intros a.
+    pose proof here_remdowndep (inl a) as p. cbv [f_remdowndep] in p.
+    rewrite p. reflexivity.
+  - intros b. cbv [f_remdown].
+    pose proof there_remdowndep b as p. cbv [f_remdowndep] in p.
+    destruct (unf_remdowndep b) as [a | [[a b'] s]] eqn : e.
+    + assumption.
+    + assumption. Qed.
+
 Definition unf_down_unf_remdowndep
   (unf_remdowndep : B -> A_sub f) `{unf_remdowndep_spec f unf_remdowndep}
   (x : B) : A :=
@@ -219,7 +252,22 @@ Lemma unf_downdep_unf_remdowndep_spec
   @unf_downdep_spec f unf_down_unf_remdowndep
   unf_downdep_unf_remdowndep unf_down_unf_remdowndep_spec.
 Proof.
-  cbv [unf_downdep_unf_remdowndep]. Admitted.
+  cbv [unf_downdep_unf_remdowndep]. constructor.
+  - intros a. cbv [Spr1 B_pr]. cbv [unf_down_unf_remdowndep].
+    pose proof here_remdowndep (inl a) as p. cbv [f_remdowndep] in p.
+    repeat rewrite p. reflexivity.
+  - intros [b s']. apply Spr1_inj. cbv [Spr1 B_pr].
+    cbv [unf_down_unf_remdowndep].
+    pose proof there_remdowndep b as p. cbv [f_remdowndep] in p.
+    destruct (unf_remdowndep b) as [a | [[a b'] s]] eqn : e.
+    + pose proof here_remdowndep (inl a) as q. cbv [f_remdowndep] in q.
+      repeat rewrite q. assumption.
+    + cbv [prod_uncurry fst snd P] in s.
+      assert (HasDec (f a = b)).
+      { hnf. repeat decide equality. }
+      cbv [unf_down_unf_remdowndep] in s'.
+      rewrite e in s'.
+      pose proof unsquash s' as w. rewrite w. rewrite e. assumption. Qed.
 
 Definition unf_error_unf_remdowndep
   (unf_remdowndep : B -> A_sub f) `{unf_remdowndep_spec f unf_remdowndep}
@@ -253,12 +301,40 @@ Program Definition unf_remdowndep_unf_remdown
   | inl y => inl y
   | inr (y, z) => inr (Sexists _ (y, z) _)
   end.
-Next Obligation. Admitted.
+Next Obligation.
+  intros ? ? x w y z e.
+  pose proof refine_remdown x.
+  destruct (unf_remdown x) as [a | [a b]] eqn : e'.
+  - inversion e.
+  - inversion e; subst. apply squash. cbv [prod_uncurry fst snd P]. lia. Qed.
+
+(** One would expect this to not be derivable. *)
 
 Lemma unf_remdowndep_unf_remdown_spec
   (unf_remdown : B -> A + A * B) `{unf_remdown_spec f unf_remdown} :
   unf_remdowndep_spec f unf_remdowndep_unf_remdown.
-Proof. Admitted.
+Proof.
+  constructor.
+  - intros [a | [[a b] s]].
+    + cbv [f_remdowndep]. pose proof here_remdown a as p.
+      cbv [unf_remdowndep_unf_remdown]. admit.
+    + cbv [f_remdowndep].
+      pose proof there_remdown (b + f a) as p.
+      cbv [f_remdown] in p.
+      cbv [prod_uncurry fst snd P] in s.
+      assert (HasDec (f a < b + f a < f (1 + a))).
+      { hnf. destruct (N.ltb_spec0 (f a) (b + f a)),
+        (N.ltb_spec0 (b + f a) (f (1 + a))).
+        left. lia.
+        right. lia.
+        right. lia.
+        right. lia. }
+      pose proof unsquash s.
+      assert (0 < b) by lia.
+      (** If [unf_remdown _ = inl _], contradiction by [p];
+          otherwise proof by reflexivity. *) shelve.
+  - intros b. cbv [f_remdowndep]. pose proof there_remdown b as p.
+    cbv [unf_remdowndep_unf_remdown]. shelve. Abort.
 
 Definition unf_down_unf_remdown
   (unf_remdown : B -> A + A * B) `{unf_remdown_spec f unf_remdown}
@@ -300,8 +376,21 @@ Lemma unf_downdep_unf_remdown_spec
   @unf_downdep_spec f unf_down_unf_remdown
   unf_downdep_unf_remdown unf_down_unf_remdown_spec.
 Proof.
-  cbv [unf_down_unf_remdown]. constructor.
-  - intros a. Admitted.
+  cbv [unf_downdep_unf_remdown]. constructor.
+  - intros a. cbv [Spr1 B_pr]. cbv [unf_down_unf_remdown].
+    pose proof here_remdown a as p.
+    repeat rewrite p. reflexivity.
+  - intros [b s']. apply Spr1_inj. cbv [Spr1 B_pr].
+    cbv [unf_down_unf_remdown].
+    pose proof there_remdown b as p. cbv [f_remdown] in p.
+    destruct (unf_remdown b) as [a | [a b']] eqn : e.
+    + pose proof here_remdown a as q.
+      repeat rewrite q. assumption.
+    + assert (HasDec (f a = b)).
+      { hnf. repeat decide equality. }
+      cbv [unf_down_unf_remdown] in s'.
+      rewrite e in s'.
+      pose proof unsquash s' as w. rewrite w. rewrite e. assumption. Qed.
 
 Definition unf_error_unf_remdown
   (unf_remdown : B -> A + A * B) `{unf_remdown_spec f unf_remdown}
@@ -327,6 +416,8 @@ Proof.
     + inversion e'. Qed.
 
 (** From [downdep]. *)
+
+(** These should be the same as below. *)
 
 (** From [down]. *)
 
@@ -356,13 +447,41 @@ Program Definition unf_remdowndep_unf_down
   (x : B) : A_sub f :=
   let a := unf_down x in
   let b := x - f a in
-  if b =? 0 then inl a else inr (Sexists _ (a, b) _).
-Next Obligation. Admitted.
+  _ (* if b =? 0 then inl a else inr (Sexists _ (a, b) _) *).
+Next Obligation.
+  intros.
+  destruct (N.eqb_spec b 0) as [e | f'].
+  - exact (inl a).
+  - refine (inr (Sexists _ (a, b) _)).
+    apply squash. cbv [prod_uncurry fst snd P].
+    subst a b.
+    pose proof there_down x.
+    lia. Qed.
+
+(** One would expect this to not be derivable. *)
 
 Lemma unf_remdowndep_unf_down_spec
   (unf_down : B -> A) `{unf_down_spec f unf_down} :
   unf_remdowndep_spec f unf_remdowndep_unf_down.
 Proof. Admitted.
+
+Definition unf_downdep_unf_down
+  (unf_down : B -> A) `{unf_down_spec f unf_down}
+  (x : B_quot f unf_down) : A :=
+  unf_down (Spr1 x).
+
+Lemma unf_downdep_unf_down_spec
+  (unf_down : B -> A) `{unf_down_spec f unf_down} :
+  @unf_downdep_spec f unf_down
+  unf_downdep_unf_down _.
+Proof.
+  cbv [unf_downdep_unf_down]. constructor.
+  - intros a. cbv [Spr1 B_pr]. repeat rewrite here_down. reflexivity.
+  - intros [b s']. apply Spr1_inj. cbv [Spr1 B_pr].
+    repeat rewrite here_down.
+    assert (HasDec (f (unf_down b) = b)).
+    { hnf. repeat decide equality. }
+    pose proof unsquash s' as w. assumption. Qed.
 
 Definition unf_error_unf_down
   (unf_down : B -> A) `{unf_down_spec f unf_down}
@@ -461,8 +580,11 @@ Proof.
     with match unf_error b with
     | Some a => a
     | None => unf_down_unf_error (b - 1)
-    end by admit. induction b using N.peano_ind.
-    + destruct (unf_error 0). admit. admit.
-    + admit. Abort.
+    end by admit. split.
+    + induction b using N.peano_ind.
+      * destruct (unf_error 0). admit.
+        change (0 - 1) with 0. replace (unf_down_unf_error 0) with 0%Z by admit.
+        change (1 + 0)%Z with 1%Z. admit.
+      * destruct (unf_error (N.succ b)) eqn : e. admit. Abort.
 
 End Context.
