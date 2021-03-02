@@ -143,6 +143,9 @@ Class unf_remdowndep_spec : Prop := {
   here_remdowndep : forall x : A_sub, unf_remdowndep (f_remdowndep x) = x;
   there_remdowndep : forall b : B, f_remdowndep (unf_remdowndep b) = b;
 }.
+Corollary here_remdowndep' `{unf_remdowndep_spec} :
+  forall a : A, unf_remdowndep (f a) = inl a.
+Proof. intros a. apply (here_remdowndep (inl a)). Qed.
 
 End Context.
 
@@ -164,6 +167,98 @@ Fail Fail Context (f_surj : forall b : B, exists a : A, b = f a).
     Only these really require subtraction,
     decidable equality and some remnant of well-foundedness.
     Everything else can be forced into more general form. *)
+
+(** From [remdowndep]. *)
+
+Definition unf_down_unf_remdowndep
+  (unf_remdowndep : B -> A_sub f) `{unf_remdowndep_spec f unf_remdowndep}
+  (x : B) : A :=
+  match unf_remdowndep x with
+  | inl y => y
+  | inr (Sexists _ (y, z) _) => y
+  end.
+
+Lemma unf_down_unf_remdowndep_spec
+  (unf_remdowndep : B -> A_sub f) `{unf_remdowndep_spec f unf_remdowndep} :
+  unf_down_spec f unf_down_unf_remdowndep.
+Proof.
+  cbv [unf_down_unf_remdowndep]. constructor.
+  - intros a. rewrite here_remdowndep'. reflexivity.
+  - intros x.
+    destruct (unf_remdowndep x) as [a | [[a b] s]] eqn : e.
+    + rewrite <- here_remdowndep' in e.
+      pose proof f_equal (f_remdowndep f) e as p.
+      repeat rewrite there_remdowndep in p. rewrite p. split.
+      * lia.
+      * specialize (@f_mono a (1 + a)%Z ltac:(lia)).
+        destruct (N.eqb_spec (f a) (f (1 + a)%Z)).
+        specialize (@f_inj a (1 + a)%Z ltac:(assumption)).
+        lia. lia.
+    + cbv [prod_uncurry fst snd P] in s.
+      assert (HasDec (f a < b + f a < f (1 + a))).
+      { hnf. destruct (N.ltb_spec0 (f a) (b + f a)),
+        (N.ltb_spec0 (b + f a) (f (1 + a))).
+        left. lia.
+        right. lia.
+        right. lia.
+        right. lia. }
+      pose proof unsquash s. pose proof f_equal (f_remdowndep f) e as p.
+      repeat rewrite there_remdowndep in p.
+      rewrite p. cbv [f_remdowndep]. lia. Qed.
+
+Definition unf_downdep_unf_remdowndep
+  (unf_remdowndep : B -> A_sub f) `{unf_remdowndep_spec f unf_remdowndep}
+  (x : B_quot f unf_down_unf_remdowndep) : A :=
+  match unf_remdowndep (Spr1 x) with
+  | inl y => y
+  | inr (Sexists _ (y, z) _) => y
+  end.
+
+Lemma unf_downdep_unf_remdowndep_spec
+  (unf_remdowndep : B -> A_sub f) `{unf_remdowndep_spec f unf_remdowndep} :
+  @unf_downdep_spec f unf_down_unf_remdowndep
+  unf_downdep_unf_remdowndep unf_down_unf_remdowndep_spec.
+Proof.
+  cbv [unf_downdep_unf_remdowndep]. Admitted.
+
+Definition unf_error_unf_remdowndep
+  (unf_remdowndep : B -> A_sub f) `{unf_remdowndep_spec f unf_remdowndep}
+  (x : B) : option A :=
+  match unf_remdowndep x with
+  | inl y => Some y
+  | inr (Sexists _ (y, z) _) => None
+  end.
+
+Lemma unf_error_unf_remdowndep_spec
+  (unf_remdowndep : B -> A_sub f) `{unf_remdowndep_spec f unf_remdowndep} :
+  unf_error_spec f unf_error_unf_remdowndep.
+Proof.
+  cbv [unf_error_unf_remdowndep]. constructor.
+  - intros a. rewrite here_remdowndep'. reflexivity.
+  - intros x y e'.
+    destruct (unf_remdowndep x) as [a | [[a b] s]] eqn : e.
+    + rewrite <- here_remdowndep' in e.
+      pose proof f_equal (f_remdowndep f) e as p.
+      repeat rewrite there_remdowndep in p. rewrite p.
+      cbv [option_map] in e'.
+      injection e'. clear e'. intros e'. transitivity (f a); auto.
+    + inversion e'. Qed.
+
+(** From [remdown]. *)
+
+Program Definition unf_remdowndep_unf_remdown
+  (unf_remdown : B -> A + A * B) `{unf_remdown_spec f unf_remdown}
+  (x : B) : A_sub f :=
+  match unf_remdown x with
+  | inl y => inl y
+  | inr (y, z) => inr (Sexists _ (y, z) _)
+  end.
+Next Obligation. Admitted.
+
+Lemma unf_remdowndep_unf_remdown_spec
+  (unf_remdown : B -> A + A * B) `{unf_remdown_spec f unf_remdown} :
+  unf_remdowndep_spec f unf_remdowndep_unf_remdown.
+Proof. Admitted.
 
 Definition unf_down_unf_remdown
   (unf_remdown : B -> A + A * B) `{unf_remdown_spec f unf_remdown}
@@ -192,6 +287,22 @@ Proof.
     + pose proof f_equal (f_remdown f) e as p.
       repeat rewrite there_remdown in p. rewrite p. cbv [f_remdown]. lia. Qed.
 
+Definition unf_downdep_unf_remdown
+  (unf_remdown : B -> A + A * B) `{unf_remdown_spec f unf_remdown}
+  (x : B_quot f unf_down_unf_remdown) : A :=
+  match unf_remdown (Spr1 x) with
+  | inl y => y
+  | inr (y, z) => y
+  end.
+
+Lemma unf_downdep_unf_remdown_spec
+  (unf_remdown : B -> A + A * B) `{unf_remdown_spec f unf_remdown} :
+  @unf_downdep_spec f unf_down_unf_remdown
+  unf_downdep_unf_remdown unf_down_unf_remdown_spec.
+Proof.
+  cbv [unf_down_unf_remdown]. constructor.
+  - intros a. Admitted.
+
 Definition unf_error_unf_remdown
   (unf_remdown : B -> A + A * B) `{unf_remdown_spec f unf_remdown}
   (x : B) : option A :=
@@ -215,6 +326,10 @@ Proof.
       injection e'. clear e'. intros e'. transitivity (f a); auto.
     + inversion e'. Qed.
 
+(** From [downdep]. *)
+
+(** From [down]. *)
+
 Definition unf_remdown_unf_down
   (unf_down : B -> A) `{unf_down_spec f unf_down}
   (x : B) : A + A * B :=
@@ -236,6 +351,19 @@ Proof.
     + pose proof there_down b. lia.
     + lia. Qed.
 
+Program Definition unf_remdowndep_unf_down
+  (unf_down : B -> A) `{unf_down_spec f unf_down}
+  (x : B) : A_sub f :=
+  let a := unf_down x in
+  let b := x - f a in
+  if b =? 0 then inl a else inr (Sexists _ (a, b) _).
+Next Obligation. Admitted.
+
+Lemma unf_remdowndep_unf_down_spec
+  (unf_down : B -> A) `{unf_down_spec f unf_down} :
+  unf_remdowndep_spec f unf_remdowndep_unf_down.
+Proof. Admitted.
+
 Definition unf_error_unf_down
   (unf_down : B -> A) `{unf_down_spec f unf_down}
   (b : B) : option A :=
@@ -253,6 +381,8 @@ Proof.
     + cbv [option_map] in e.
       injection e. clear e. intros e. transitivity (f (unf_down x)); auto.
     + inversion e. Qed.
+
+(** From [error]. *)
 
 Program Fixpoint unf_remdown_unf_error'
   (unf_down : B -> A) `{unf_down_spec f unf_down}
@@ -273,14 +403,18 @@ Program Fixpoint unf_remdown_unf_error'
   end.
 Next Obligation.
   intros ? ? ? ? x b g y e.
+  assert (f0 : f 0 = 0) by admit.
+  pose proof here_down 0 as unf0.
+  rewrite f0 in unf0.
   enough (b - 1 - f (unf_down (b - 1)) < b - f (unf_down b)) by lia.
   pose proof there_down b as l.
   pose proof there_down (b - 1) as l'.
   destruct (N.eqb_spec b 0) as [e' | f'].
-  subst b. replace (0 - 1) with 0 in * by lia. admit.
+  subst b. replace (0 - 1) with 0 in * by lia. rewrite unf0 in *. admit.
   apply N.le_succ_l.
   enough (b - f (unf_down (b - 1)) <= b - f (unf_down b)) by lia.
-  enough (f (unf_down b) <= f (unf_down (b - 1))) by lia. Admitted.
+  enough (f (unf_down b) <= f (unf_down (b - 1))) by lia.
+  apply f_mono. Admitted.
 Next Obligation. Tactics.program_solve_wf. Defined.
 
 Definition unf_remdown_unf_error
