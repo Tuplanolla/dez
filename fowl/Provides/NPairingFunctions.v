@@ -232,6 +232,18 @@ Definition pair_shell (n : N) : N := sqrt n.
 
 Arguments pair_shell _ : assert.
 
+(* Definition z (x : N) : N := 1 + 2 * x.
+Definition sum_z (x : N) : N := x ^ 2.
+Compute map z (seq 0 32).
+Compute map sum_z (seq 0 32).
+Compute map (fun x : N => (z x, sum_z (1 + x) - sum_z x)) (seq 0 32).
+Program Fixpoint s (tot ix : N) (x : N) {measure (N.to_nat x)} : N * N :=
+  if x <? z ix + tot then (ix, x - tot) else s (z ix + tot) (1 + ix) x.
+Next Obligation. Admitted.
+Next Obligation. Tactics.program_solve_wf. Defined.
+Compute map (s 0 0) (seq 0 32).
+Compute map sqrtrem (seq 0 32). *)
+
 Definition unpair_shell (p q : N) : N := max q p.
 
 Arguments unpair_shell _ _ : assert.
