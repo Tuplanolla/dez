@@ -67,8 +67,8 @@ Export EqNotations.
 Reserved Notation "g 'o' f" (at level 40, left associativity).
 Reserved Notation "'id'" (at level 0, no associativity).
 Reserved Notation "f '^-1'" (at level 25, left associativity).
-Reserved Notation "'{' x '!' B '}'" (at level 0, x at level 99).
-Reserved Notation "'{' x ':' A '!' B '}'" (at level 0, x at level 99).
+Reserved Notation "'{' x '$' B '}'" (at level 0, x at level 99).
+Reserved Notation "'{' x ':' A '$' B '}'" (at level 0, x at level 99).
 Reserved Notation "x '\/' y" (at level 85, right associativity).
 Reserved Notation "'_|_'" (at level 0, no associativity).
 Reserved Notation "x '/\' y" (at level 80, right associativity).
@@ -98,7 +98,7 @@ Reserved Notation "'1'" (at level 0, no associativity).
 Reserved Notation "'_o_'" (at level 0, no associativity).
 Reserved Notation "'_o'_'" (at level 0, no associativity).
 Reserved Notation "'_^-1'" (at level 0, no associativity).
-Reserved Notation "'{_!_}'" (at level 0, no associativity).
+Reserved Notation "'{_$_}'" (at level 0, no associativity).
 Reserved Notation "'_\/_'" (at level 0, no associativity).
 Reserved Notation "'_/\_'" (at level 0, no associativity).
 Reserved Notation "'_~~_'" (at level 0, no associativity).
@@ -124,12 +124,18 @@ Arguments existT {_} _ _ _.
 Arguments Ssig {_} _.
 Arguments Sexists {_} _ _ _.
 
-(** We should have similar notations for [Ssig] as there are for [sig]. *)
+(** We should have similar notations for [Ssig] as there are for [sig].
 
-Notation "'{' x '!' B '}'" := (Ssig (fun x : _ => B)) : type_scope.
-Notation "'{' x ':' A '!' B '}'" := (Ssig (fun x : A => B)) : type_scope.
+    The mnemonic for [$] in the notation is that it is a combination of
+    [|] from the notation for [sig] and
+    [S] from the name of [Ssig].
+    Besides, using [!] would conflict with
+    lonely notations of the [Equations] plugin. *)
 
-Notation "'{_!_}'" := Ssig (only parsing) : type_scope.
+Notation "'{' x '$' B '}'" := (Ssig (fun x : _ => B)) : type_scope.
+Notation "'{' x ':' A '$' B '}'" := (Ssig (fun x : A => B)) : type_scope.
+
+Notation "'{_$_}'" := Ssig (only parsing) : type_scope.
 
 (** Numeral keywords are not a subset of numeral notations,
     which is why we must repeat them here. *)
@@ -217,23 +223,23 @@ Definition sigT_uncurry_dep
   f (projT1 x) (projT2 x).
 
 Definition Ssig_curry (A : Type) (P : A -> SProp) (B : Type)
-  (f : {a : A ! P a} -> B) (a : A) (b : P a) : B :=
+  (f : {a : A $ P a} -> B) (a : A) (b : P a) : B :=
   f (Sexists P a b).
 
 Definition Ssig_uncurry (A : Type) (P : A -> SProp) (B : Type)
-  (f : forall a : A, P a -> B) (x : {a : A ! P a}) : B :=
+  (f : forall a : A, P a -> B) (x : {a : A $ P a}) : B :=
   f (Spr1 x) (Spr2 x).
 
 Definition Ssig_curry_dep
   (A : Type) (P : A -> SProp) (Q : forall a : A, P a -> Type)
-  (f : forall x : {a : A ! P a}, Q (Spr1 x) (Spr2 x))
+  (f : forall x : {a : A $ P a}, Q (Spr1 x) (Spr2 x))
   (a : A) (b : P a) : Q a b :=
   f (Sexists P a b).
 
 Definition Ssig_uncurry_dep
   (A : Type) (P : A -> SProp) (Q : forall a : A, P a -> Type)
   (f : forall (a : A) (b : P a), Q a b)
-  (x : {a : A ! P a}) : Q (Spr1 x) (Spr2 x) :=
+  (x : {a : A $ P a}) : Q (Spr1 x) (Spr2 x) :=
   f (Spr1 x) (Spr2 x).
 
 (** Composition, constancy, flipping and application
@@ -378,12 +384,12 @@ Fact eq_sigT_uncurry_nondep (A : Type) (P : A -> Type) (B : Type)
 Proof. destruct x as [a b]. reflexivity. Qed.
 
 Fact eq_Ssig_curry_nondep (A : Type) (P : A -> SProp) (B : Type)
-  (f : {a : A ! P a} -> B) (a : A) (b : P a) :
+  (f : {a : A $ P a} -> B) (a : A) (b : P a) :
   Ssig_curry_dep f a b = Ssig_curry f a b.
 Proof. reflexivity. Qed.
 
 Fact eq_Ssig_uncurry_nondep (A : Type) (P : A -> SProp) (B : Type)
-  (f : forall a : A, P a -> B) (x : {a : A ! P a}) :
+  (f : forall a : A, P a -> B) (x : {a : A $ P a}) :
   Ssig_uncurry_dep f x = Ssig_uncurry f x.
 Proof. destruct x as [a b]. reflexivity. Qed.
 
@@ -445,8 +451,8 @@ Proof. reflexivity. Qed.
 
 Lemma eq_Ssig_uncurry_curry
   (A : Type) (P : A -> SProp) (Q : forall a : A, P a -> Type)
-  (f : forall x : {a : A ! P a}, Q (Spr1 x) (Spr2 x))
-  (x : {a : A ! P a}) :
+  (f : forall x : {a : A $ P a}, Q (Spr1 x) (Spr2 x))
+  (x : {a : A $ P a}) :
   Ssig_uncurry_dep (Ssig_curry_dep f) x = f x.
 Proof. destruct x as [a b]. reflexivity. Qed.
 

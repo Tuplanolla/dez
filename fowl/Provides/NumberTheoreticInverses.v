@@ -95,7 +95,7 @@ Class unf_down_spec : Prop := {
   there_down : forall b : B, f (unf_down b) <= b < f (1 + unf_down b);
 }.
 
-Definition B_quot : Type := {b : B ! Squash (f (unf_down b) = b)}.
+Definition B_quot : Type := {b : B $ Squash (f (unf_down b) = b)}.
 Program Definition B_pr `{unf_down_spec} (b : B) : B_quot :=
   Sexists _ (f (unf_down b)) _.
 Next Obligation. intros ? b. apply squash. rewrite here_down. reflexivity. Qed.
@@ -132,7 +132,7 @@ Proof.
   lia. Qed.
 
 Definition P (a : A) (b : B) : Prop := f a < b + f a < f (1 + a).
-Definition A_sub : Type := A + {x : A * B ! Squash (prod_uncurry P x)}.
+Definition A_sub : Type := A + {x : A * B $ Squash (prod_uncurry P x)}.
 Definition f_remdowndep (x : A_sub) : B :=
   match x with
   | inl a => f a

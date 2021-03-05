@@ -449,7 +449,7 @@ Proof.
     with a remainder as an exact quotient. *)
 
 Program Definition untri_quotrem (n : N) :
-  {x : N * N ! Squash (let (p, q) := x in tri p + q < tri (1 + p))} :=
+  {x : N * N $ Squash (let (p, q) := x in tri p + q < tri (1 + p))} :=
   Sexists _ (untri_rem n) _.
 Next Obligation.
   intros n. cbv beta. apply squash. rewrite untri_rem_tri_untri.

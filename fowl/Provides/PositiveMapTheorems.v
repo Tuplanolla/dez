@@ -483,7 +483,7 @@ Fixpoint pos_tree_merge (A B C : Type) (f : option A -> option B -> option C)
 Polymorphic Hint Resolve squash : core.
 
 Definition pos_map (A : Type) : Type :=
-  {t : pos_tree A ! Squash (pos_tree_wf t)}.
+  {t : pos_tree A $ Squash (pos_tree_wf t)}.
 
 Global Instance Ssig_has_eq_dec (A : Type) (P : A -> SProp) `(HasEqDec A) :
   HasEqDec (Ssig P).
@@ -661,7 +661,7 @@ Definition fin_map_wf (A : Type) (m : pos_map A) :=
     option_map (A := K) (B := positive) encode (decode n) = Some n) m.
 
 Definition fin_map (A : Type) : Type :=
-  {m : pos_map A ! Squash (fin_map_wf m)}.
+  {m : pos_map A $ Squash (fin_map_wf m)}.
 
 End Context.
 
@@ -739,7 +739,7 @@ Definition cut_map_wf (A : Type) (P : A -> Prop) (m : pos_map A) : Prop :=
 (* Arguments cut_map_wf _ _ !_. *)
 
 Definition cut_map (A : Type) (P : A -> Prop) : Type :=
-  {m : pos_map A ! Squash (cut_map_wf P m)}.
+  {m : pos_map A $ Squash (cut_map_wf P m)}.
 
 Lemma Unnamed_goal (A : Type) (P : A -> Prop) (x y : cut_map P) :
   x = y <-> Spr1 x = Spr1 y.
@@ -754,7 +754,7 @@ Definition dec_map_wf (A : Type) (p : A -> bool) (m : pos_map A) : Prop :=
 (* Arguments dec_map_wf _ _ !_. *)
 
 Definition dec_map (A : Type) (p : A -> bool) : Type :=
-  {m : pos_map A ! Squash (dec_map_wf p m)}.
+  {m : pos_map A $ Squash (dec_map_wf p m)}.
 
 Lemma Unnamed_goal' (A : Type) (p : A -> bool) (x y : dec_map p) :
   x = y <-> Spr1 x = Spr1 y.

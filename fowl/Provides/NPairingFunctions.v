@@ -1,3 +1,5 @@
+From Equations Require Import
+  Equations.
 From Coq Require Import
   Lia Lists.List NArith.NArith.
 From Maniunfold.Provides Require Export
@@ -7,47 +9,50 @@ Import ListNotations N.
 
 Local Open Scope N_scope.
 
-(** Binary factoring of [positive] numbers. *)
+(** Factor a [positive] number into a binary part and an odd part.
+    See [pos_binfactor] and [pos_oddfactor] for more information. *)
 
-Fixpoint pos_factorrem (n : positive) : N * positive :=
-  match n with
-  | xI p => (0, n)
-  | xO p => let (q, r) := pos_factorrem p in (succ q, r)
-  | xH => (0, n)
-  end.
+Equations pos_factorrem (n : positive) : N * positive :=
+  pos_factorrem (xI p) := (0, xI p);
+  pos_factorrem (xO p) := let (q, r) := pos_factorrem p in (succ q, r);
+  pos_factorrem xH := (0, xH).
 
-Arguments pos_factorrem !_.
+Equations pos_unfactorrem (q : N) (r : positive) : positive :=
+  pos_unfactorrem q r := r * Pos.shiftl 1 q.
 
-Definition pos_unfactorrem (q : N) (r : positive) : positive :=
-  r * Pos.shiftl 1 q.
-
-Arguments pos_unfactorrem _ _ : assert.
-
-Program Definition pos_factorrem_dep (n : positive) :
-  {x : N * positive ! Squash (pos_odd (snd x))} :=
-  Sexists _ (pos_factorrem n) _.
+Equations pos_factorrem_dep (n : positive) :
+  {x : N * positive $ Squash (pos_odd (snd x))} :=
+  pos_factorrem_dep n := Sexists _ (pos_factorrem n) _.
 Next Obligation.
-  intros n. apply squash.
-  induction n as [p ep | p ep |]; [reflexivity | | reflexivity].
-  cbn [pos_factorrem].
-  destruct (pos_factorrem p) as [q r] eqn : eqr.
-  apply ep. Qed.
+  intros n.
+  apply squash.
+  induction n as [p ep | p ep |].
+  - reflexivity.
+  - rewrite pos_factorrem_equation_2.
+    destruct (pos_factorrem p) as [q r].
+    apply ep.
+  - reflexivity. Qed.
 
-Arguments pos_factorrem_dep _ : assert.
+Equations pos_unfactorrem_dep (q : N)
+  (x : {r : positive $ Squash (pos_odd r)}) : positive :=
+  pos_unfactorrem_dep q x := pos_unfactorrem q (Spr1 x).
 
-Definition pos_unfactorrem_dep (q : N)
-  (x : {r : positive ! Squash (pos_odd r)}) : positive :=
-  pos_unfactorrem q (Spr1 x).
+(** Binary factor.
+    Largest power of two to divide the given number.
+    Number of trailing zeros in the binary representation of the given number.
+    Sequence A007814. *)
 
-Arguments pos_unfactorrem_dep _ !_.
+Equations pos_binfactor (n : positive) : N :=
+  pos_binfactor n := fst (pos_factorrem n).
 
-Definition pos_binfactor (n : positive) : N := fst (pos_factorrem n).
+(** Odd factor.
+    Largest odd number to divide the given number.
+    Whatever remains of the given number
+    after removing trailing zeros from its binary representation.
+    Sequence A000265. *)
 
-Arguments pos_binfactor _ : assert.
-
-Definition pos_oddfactor (n : positive) : positive := snd (pos_factorrem n).
-
-Arguments pos_oddfactor _ : assert.
+Equations pos_oddfactor (n : positive) : positive :=
+  pos_oddfactor n := snd (pos_factorrem n).
 
 (** Binary factoring of [N]atural numbers. *)
 
@@ -71,24 +76,13 @@ Lemma unfactorrem_eqn (q r : N) : unfactorrem q r = r * 2 ^ q.
 Proof.
   destruct r as [| s].
   - reflexivity.
-  - cbv [unfactorrem pos_unfactorrem].
+  - cbv [unfactorrem]. rewrite pos_unfactorrem_equation_1.
     rewrite <- shiftl_1_l.
     reflexivity. Qed.
-
-(** Binary factor.
-    Largest power of two to divide the given number.
-    Number of trailing zeros in the binary representation of the given number.
-    Sequence A007814. *)
 
 Definition binfactor (n : N) : N := fst (factorrem n).
 
 Arguments binfactor _ : assert.
-
-(** Odd factor.
-    Largest odd number to divide the given number.
-    Whatever remains of the given number
-    after removing trailing zeros from its binary representation.
-    Sequence A000265. *)
 
 Definition oddfactor (n : N) : N := snd (factorrem n).
 
@@ -176,7 +170,7 @@ Definition shell_size (i : N) : N :=
 Definition shell_wf (i j : N) : Prop := j < shell_size i.
 
 Definition shell_codom : Type :=
-  {x : N * N ! Squash (prod_uncurry shell_wf x)}.
+  {x : N * N $ Squash (prod_uncurry shell_wf x)}.
 
 (** This shall now be a bijection proper. *)
 

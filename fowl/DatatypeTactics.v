@@ -188,7 +188,7 @@ Ltac is_sigT' x :=
   | _ => fail "Not a constant"
   end.
 
-(** Succeed when the given term is a constant of type [{x : A ! P x}] and
+(** Succeed when the given term is a constant of type [{x : A $ P x}] and
     its subterms are constants of type [x : A] and [P x]
     as determined by the tactical predicates [is_A] and [is_P]. *)
 
@@ -198,7 +198,7 @@ Ltac is_Ssig is_A is_P x :=
   | _ => fail "Not a constant"
   end.
 
-(** Succeed when the given term is a constant of type [{x : A ! P x}]. *)
+(** Succeed when the given term is a constant of type [{x : A $ P x}]. *)
 
 Ltac is_Ssig' x :=
   match x with
