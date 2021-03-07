@@ -249,7 +249,7 @@ Context (A : Type) `{IsRing A} `{EqDecision A} `{Countable A}.
 
 Definition poly_value_wf (n : N) (a : A) : Prop := a <> 0.
 Definition poly_wf (m : gmap N A) : Prop := map_Forall poly_value_wf m.
-Definition poly : Type := {m : gmap N A $ Squash (poly_wf m)}.
+Definition poly : Type := Ssig (fun m : gmap N A => Squash (poly_wf m)).
 
 Lemma poly_lookup_wf : forall (x : poly) (i : N),
   `x !! i <> Some 0.
