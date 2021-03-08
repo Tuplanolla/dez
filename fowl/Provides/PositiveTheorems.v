@@ -1,10 +1,12 @@
 From Coq Require Import
   PArith.PArith.
+From Maniunfold.Has Require Export
+  OneSorted.One.
 From Maniunfold.Is Require Export
   OneSorted.AbelianGroup OneSorted.CommutativeSemigroup
   OneSorted.CommutativeMonoid.
 
-(** Whether the given number even or not. *)
+(** Whether the given number is even or not. *)
 
 Definition pos_even (n : positive) : bool :=
   match n with
@@ -15,7 +17,7 @@ Definition pos_even (n : positive) : bool :=
 
 Arguments pos_even !_.
 
-(** Whether the given number odd or not. *)
+(** Whether the given number is odd or not. *)
 
 Definition pos_odd (n : positive) : bool := negb (pos_even n).
 
@@ -78,3 +80,7 @@ Global Instance positive_bin_op_null_op_is_comm_mon : IsCommMon (bin_op (A := po
 Proof. split; typeclasses eauto. Defined.
 
 End Multiplicative.
+
+(** We need this just for notations. *)
+
+Global Instance positive_has_one : HasOne positive := xH.
