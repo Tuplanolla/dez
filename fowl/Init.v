@@ -10,11 +10,6 @@ Global Set Warnings "-notation-overridden".
 
 Global Set Warnings "-unsupported-attributes".
 
-(** We would turn on strict hint scope checking
-    if it did not break setoid rewriting. *)
-
-Global Set Loose Hint Behavior "Lax".
-
 (** We turn on automatically inferred implicit arguments and
     make them maximally inserted and conservatively detected,
     since most type classes follow the same design pattern. *)

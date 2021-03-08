@@ -133,8 +133,8 @@ Next Obligation.
 (** This function is a dependent version of [pos_binoddprod]. *)
 
 Equations pos_binoddprod_dep
-  (b : N) (c : positive) (s : Squash (pos_odd c)) : positive :=
-  pos_binoddprod_dep b c s := pos_binoddprod b c.
+  (b : N) (c : positive) (e : Squash (pos_odd c)) : positive :=
+  pos_binoddprod_dep b c e := pos_binoddprod b c.
 
 (** Find the binary factor of the given positive number.
 
@@ -288,8 +288,8 @@ Proof. apply pos_binoddprod_pos_binoddfactor. Qed.
     of [pos_binoddprod_dep]. *)
 
 Lemma pos_binoddfactor_dep_pos_binoddprod_dep
-  (b : N) (c : positive) (s : Squash (pos_odd c)) :
-  pos_binoddfactor_dep (pos_binoddprod_dep b c s) = Sexists _ (b, c) s.
+  (b : N) (c : positive) (e : Squash (pos_odd c)) :
+  pos_binoddfactor_dep (pos_binoddprod_dep b c e) = Sexists _ (b, c) e.
 Proof.
   simp pos_binoddprod_dep.
   simp pos_binoddfactor_dep.
@@ -298,7 +298,7 @@ Proof.
   (** TODO Instances! *)
   assert (HasDec (pos_odd c)).
   { hnf. cbv [pos_odd negb pos_even]. destruct c. all: intuition. }
-  apply unsquash in s. auto. Qed.
+  apply unsquash in e. auto. Qed.
 
 (** Split the given natural number into a binary factor and an odd factor,
     except for the degenerate case at zero.
@@ -399,93 +399,152 @@ Proof.
 
 Module Cantor.
 
-Definition pair_shell (n : N) : N := untri n.
+Equations size (a : N) : positive :=
+  size a := succ_pos a.
 
-Arguments pair_shell _ : assert.
+Equations shell_pair (n : N) : N * N :=
+  shell_pair n := untri_rem n.
 
-Definition unpair_shell (p q : N) : N := q + p.
+Equations shell_pair_dep (n : N) :
+  {x : N * N $ Squash (snd x < Npos (size (fst x)))} :=
+  shell_pair_dep n := Sexists _ (shell_pair n) _.
+Next Obligation.
+  intros n.
+  apply squash.
+  simp size.
+  rewrite succ_pos_spec.
+  simp shell_pair.
+  rewrite untri_rem_tri_untri.
+  simp fst snd.
+  pose proof tri_untri_untri_rem n as l.
+  lia. Qed.
 
-Arguments unpair_shell _ _ : assert.
+Equations unshell_pair (a b : N) : N :=
+  unshell_pair a b := b + tri a.
 
-Definition pair (n : N) : N * N :=
-  let (u, v) := untri_rem n in
-  (u - v, v).
+Equations unshell_pair_dep
+  (a b : N) (l : Squash (b < Npos (size a))) : N :=
+  unshell_pair_dep a b l := unshell_pair a b.
 
-Arguments pair _ : assert.
+Lemma unshell_pair_dep_shell_pair_dep (n : N) :
+  Ssig_uncurry (prod_uncurry_dep unshell_pair_dep) (shell_pair_dep n) = n.
+Proof.
+  cbv [Ssig_uncurry Spr1 Spr2].
+  simp shell_pair_dep.
+  cbv [prod_uncurry_dep].
+  simp unshell_pair_dep.
+  simp unshell_pair.
+  simp shell_pair.
+  rewrite untri_rem_tri_untri.
+  cbv [fst snd].
+  pose proof tri_untri n as l.
+  lia. Qed.
 
-Definition unpair (p q : N) : N := q + tri (unpair_shell p q).
+(** This needs a new carry lemma. *)
 
-Arguments unpair _ _ : assert.
+Lemma shell_pair_dep_unshell_pair_dep
+  (a b : N) (l : Squash (b < Npos (size a))) :
+  shell_pair_dep (unshell_pair_dep a b l) = Sexists _ (a, b) l.
+Proof.
+  simp shell_pair_dep.
+  apply Spr1_inj.
+  cbv [Spr1].
+  simp shell_pair.
+  simp unshell_pair_dep.
+  simp unshell_pair.
+  eapply unsquash in l.
+  simp size in l.
+  rewrite succ_pos_spec in l.
+  rewrite untri_rem_tri_untri.
+  assert (l' : b <= a) by lia.
+  f_equal.
+  - admit.
+  - admit. Admitted.
+
+Equations shell_unpair (x y : N) : N * N :=
+  shell_unpair x y := (y + x, y).
+
+Equations shell_unpair_dep (x y : N) :
+  {x : N * N $ Squash (snd x < Npos (size (fst x)))} :=
+  shell_unpair_dep x y := Sexists _ (shell_unpair x y) _.
+Next Obligation.
+  intros x y.
+  apply squash.
+  simp size.
+  rewrite succ_pos_spec.
+  simp shell_unpair.
+  simp fst snd.
+  lia. Qed.
+
+Equations unshell_unpair (a b : N) : N * N :=
+  unshell_unpair a b := (a - b, b).
+
+Equations unshell_unpair_dep (a b : N)
+  (l : Squash (b < Npos (size a))) : N * N :=
+  unshell_unpair_dep a b l := unshell_unpair a b.
+
+Lemma unshell_unpair_dep_shell_unpair_dep (x y : N) :
+  Ssig_uncurry (prod_uncurry_dep unshell_unpair_dep) (shell_unpair_dep x y) =
+  (x, y).
+Proof.
+  cbv [Ssig_uncurry Spr1 Spr2].
+  simp shell_unpair_dep.
+  cbv [prod_uncurry_dep].
+  simp unshell_unpair_dep.
+  simp unshell_unpair.
+  simp shell_unpair.
+  cbv [fst snd].
+  f_equal.
+  lia. Qed.
+
+Lemma shell_unpair_dep_unshell_unpair_dep
+  (a b : N) (l : Squash (b < Npos (size a))) :
+  prod_uncurry shell_unpair_dep (unshell_unpair_dep a b l) =
+  Sexists _ (a, b) l.
+Proof.
+  cbv [prod_uncurry].
+  simp shell_unpair_dep.
+  apply Spr1_inj.
+  cbv [Spr1].
+  simp unshell_unpair_dep.
+  simp unshell_unpair.
+  simp shell_unpair.
+  cbv [fst snd].
+  f_equal.
+  eapply unsquash in l.
+  simp size in l.
+  rewrite succ_pos_spec in l.
+  lia. Unshelve.
+  (** TODO Instances! *)
+  apply A_has_unsquash. destruct (N.ltb_spec0 b (Npos (size a))).
+  - left. lia.
+  - right. lia. Qed.
+
+Fail Fail Equations pair (n : N) : N * N :=
+  pair n := prod_uncurry unshell_unpair (shell_pair n).
+Equations pair (n : N) : N * N :=
+  pair n := Ssig_uncurry (prod_uncurry_dep unshell_unpair_dep)
+    (shell_pair_dep n).
+
+Fail Fail Equations unpair (x y : N) : N :=
+  unpair x y := prod_uncurry unshell_pair (shell_unpair x y).
+Equations unpair (x y : N) : N :=
+  unpair x y := Ssig_uncurry (prod_uncurry_dep unshell_pair_dep)
+    (shell_unpair_dep x y).
 
 Compute map pair (seq 0 64).
 Compute map (prod_uncurry unpair o pair) (seq 0 64).
 
-Compute map pair_shell (seq 0 64).
-Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
-
-(** Just to see if it can be done. *)
-
-Definition pair_shell_rem (n : N) : N * N := untri_rem n.
-
-Arguments pair_shell_rem _ : assert.
-
-Import Program.Wf.
-
-Definition counpair_shell (p q : N) : N := q + tri p.
-
-Definition shell_size (i : N) : N :=
-  counpair_shell (1 + i) 0 - counpair_shell i 0.
-
-Definition shell_wf (i j : N) : Prop := j < shell_size i.
-
-Definition shell_codom : Type :=
-  {x : N * N $ Squash (prod_uncurry shell_wf x)}.
-
-(** This shall now be a bijection proper. *)
-
-Program Definition pair_shell' (n : N) : shell_codom :=
-  Sexists _ (pair_shell_rem n) _.
-Next Obligation.
-  intros n. apply squash.
-  cbv [prod_uncurry fst snd shell_wf pair_shell_rem shell_size counpair_shell].
-  destruct (untri_rem n) as [p q] eqn : e.
-  rewrite tri_succ.
-  enough (q < 1 + p) by lia.
-  rewrite untri_rem_tri_untri in e.
-  injection e. clear e. intros eq ep. subst q p.
-  pose proof tri_untri_untri_rem n as l. lia. Qed.
-
-Theorem unpair_shell_pair (n : N) :
-  prod_uncurry unpair_shell (pair n) = pair_shell n.
-Proof.
-  cbv [prod_uncurry fst snd unpair_shell pair pair_shell].
-  rewrite untri_rem_tri_untri.
-  pose proof tri_untri_untri_rem n as l.
-  remember (n - tri (untri n)) as p eqn : ep.
-  replace (untri n - p + p) with (untri n) by lia. lia. Qed.
-
-Theorem pair_shell_unpair (p q : N) :
-  pair_shell (unpair p q) = unpair_shell p q.
-Proof.
-  cbv [pair_shell unpair unpair_shell].
-  replace (q + p) with (p + q) by lia.
-  rewrite tri_what. lia. Qed.
+(** These should now become diagram chasing. *)
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof.
-  cbv [prod_uncurry fst snd unpair unpair_shell pair].
-  rewrite untri_rem_tri_untri.
-  pose proof tri_untri n as l.
-  pose proof tri_untri_untri_rem n as l'.
-  remember (n - tri (untri n)) as p eqn : ep.
-  replace (p + (untri n - p)) with (untri n) by lia. lia. Qed.
+  cbv [prod_uncurry].
+  simp unpair. simp pair. Admitted.
 
-Theorem pair_unpair (p q : N) : pair (unpair p q) = (p, q).
+Theorem pair_unpair (x y : N) : pair (unpair x y) = (x, y).
 Proof.
-  cbv [pair unpair unpair_shell].
-  rewrite untri_rem_tri_untri. f_equal.
-  - replace (q + p) with (p + q) by lia. rewrite tri_what. lia.
-  - replace (q + p) with (p + q) by lia. rewrite tri_what. lia. Qed.
+  simp pair. simp unpair. Admitted.
 
 End Cantor.
 
