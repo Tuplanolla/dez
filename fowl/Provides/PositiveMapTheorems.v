@@ -507,7 +507,8 @@ Program Definition pos_map_partial_alter (A : Type)
   (f : option A -> option A) (n : positive) (m : pos_map A) : pos_map A :=
   Sexists (Squash o pos_tree_wf) (pos_tree_partial_alter f n (Spr1 m)) _.
 Next Obligation.
-  intros A f n [t w]. apply squash. cbn -[pos_tree_wf]. apply unsquash in w.
+  intros A f n [t w]. apply squash. cbn -[pos_tree_wf].
+  pose proof unsquash w as w'. clear w. rename w' into w.
   induction t.
     cbv [pos_tree_partial_alter pos_tree_partial_alter']. destruct (f None).
     apply pos_tree_wf_singleton.
@@ -538,7 +539,8 @@ Proof.
 Program Definition pos_map_map (A B : Type)
   (f : A -> B) (m : pos_map A) : pos_map B :=
   Sexists (Squash o pos_tree_wf) (pos_tree_map f (Spr1 m)) _.
-Next Obligation. intros A B f [t w]. apply squash. cbn. apply unsquash in w.
+Next Obligation. intros A B f [t w]. apply squash. cbn.
+  pose proof unsquash w as w'. clear w. rename w' into w.
   induction t.
     cbv [pos_tree_map]. assumption.
     pose proof pos_tree_wf_l _ _ _ w as wl.
@@ -564,15 +566,15 @@ Definition pos_map_to_sorted_list (A : Type)
 Program Definition pos_map_omap (A B : Type) (f : A -> option B)
   (m : pos_map A) : pos_map B :=
   Sexists (Squash o pos_tree_wf) (pos_tree_omap f (Spr1 m)) _.
-Next Obligation. intros A B f [t w]. apply squash. cbn. apply unsquash in w.
+Next Obligation. intros A B f [t w]. apply squash. cbn.
+  pose proof unsquash w as w'. clear w. rename w' into w.
   Admitted.
 
 Program Definition pos_map_merge (A B C : Type)
   (f : option A -> option B -> option C)
   (m0 : pos_map A) (m1 : pos_map B) : pos_map C :=
   Sexists (Squash o pos_tree_wf) (pos_tree_merge f (Spr1 m0) (Spr1 m1)) _.
-Next Obligation. intros A B C f [t0 w0] [t1 w1]. apply squash. cbn.
-  apply unsquash in w0. apply unsquash in w1. Admitted.
+Next Obligation. intros A B C f [t0 w0] [t1 w1]. apply squash. cbn. Admitted.
 
 Definition pos_map_ifoldr (A B : Type)
   (f : positive -> A -> B -> B) (b : B) (m : pos_map A) : B :=
