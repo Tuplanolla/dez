@@ -11,6 +11,10 @@ From Maniunfold.Provides Require Export
 From Maniunfold.ShouldHave Require Import
   OneSorted.AdditiveNotations.
 
+(** TODO Why does this break? *)
+
+Unset Universe Polymorphism.
+
 Import ListNotations.
 
 (** An adventure in reverse mathematics

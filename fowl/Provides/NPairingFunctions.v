@@ -152,7 +152,7 @@ Lemma pos_binoddprod_pos_binoddfactor (n : positive) :
   prod_uncurry pos_binoddprod (pos_binoddfactor n) = n.
 Proof.
   destruct (pos_binoddfactor n) as [b c] eqn : e.
-  cbv [prod_uncurry fst snd]. simp pos_binoddprod.
+  simp prod_uncurry. simp pos_binoddprod.
   generalize dependent b. induction n as [p ep | p ep |]; intros b e.
   - simp pos_binoddfactor in e.
     injection e. clear e. intros ec eb. subst b c.
@@ -217,9 +217,9 @@ Lemma pos_binoddfactor_dep_pos_binoddprod_dep
   (b : N) (c : positive) (e : Squash (pos_odd c)) :
   pos_binoddfactor_dep (pos_binoddprod_dep b c e) = Sexists _ (b, c) e.
 Proof.
-  simp pos_binoddprod_dep.
-  simp pos_binoddfactor_dep.
-  apply Spr1_inj. cbv [Spr1].
+  simp pos_binoddprod_dep. simp pos_binoddfactor_dep.
+  apply Spr1_inj.
+  simp Spr1.
   apply pos_binoddfactor_pos_binoddprod.
   (** TODO Instances! *)
   assert (HasDec (pos_odd c)).

@@ -21,11 +21,12 @@ Global Set Strongly Strict Implicit.
 Global Unset Contextual Implicit.
 Global Set Reversible Pattern Implicit.
 
-(** We disable universe polymorphism until we really need it,
-    because it is experimental and
+(** We need to enable universe polymorphism
+    for unification of strict propositions,
+    even though the feature is experimental and
     incurs a considerable performance penalty on type checking. *)
 
-Global Unset Universe Polymorphism.
+Global Set Universe Polymorphism.
 
 (** We do not use implicit generalization,
     because the consequences of accidental misuse
@@ -133,7 +134,8 @@ Arguments Sexists {_} _ _ _.
     lonely notations of the [Equations] plugin. *)
 
 Notation "'{' x '$' B '}'" := (Ssig (fun x : _ => B)) : type_scope.
-Notation "'{' x ':' A '$' B '}'" := (Ssig (fun x : A => B)) : type_scope.
+Notation "'{' x ':' A '$' B '}'" := (Ssig (A := A) (fun x : _ => B)) :
+  type_scope.
 
 Notation "'{_$_}'" := Ssig (only parsing) : type_scope.
 
@@ -353,59 +355,67 @@ Notation "'id'" := Datatypes.id : core_scope.
 
 Notation "'_o_'" := compose (only parsing) : core_scope.
 
+(** This is another way to state [Spr1_inj]
+    without breaking unification when universe polymorphism is turned off. *)
+
+Lemma eq_Ssig (A : Type) (P : A -> SProp)
+  (a0 : A) (b0 : P a0) (a1 : A) (b1 : P a1)
+  (e : a0 = a1) : Sexists P a0 b0 = Sexists P a1 b1.
+Proof. apply Spr1_inj. auto. Qed.
+
 (** The dependent and nondependent versions are related as follows. *)
 
-Fact eq_prod_curry_nondep (A B C : Type) (f : A * B -> C) (a : A) (b : B) :
+Lemma eq_prod_curry_nondep (A B C : Type) (f : A * B -> C) (a : A) (b : B) :
   prod_curry_dep f a b = prod_curry f a b.
 Proof. reflexivity. Qed.
 
-Fact eq_prod_uncurry_nondep (A B C : Type) (f : A -> B -> C) (x : A * B) :
+Lemma eq_prod_uncurry_nondep (A B C : Type) (f : A -> B -> C) (x : A * B) :
   prod_uncurry_dep f x = prod_uncurry f x.
 Proof. destruct x as [a b]. reflexivity. Qed.
 
-Fact eq_sig_curry_nondep (A : Type) (P : A -> Prop) (B : Type)
+Lemma eq_sig_curry_nondep (A : Type) (P : A -> Prop) (B : Type)
   (f : {a : A | P a} -> B) (a : A) (b : P a) :
   sig_curry_dep f a b = sig_curry f a b.
 Proof. reflexivity. Qed.
 
-Fact eq_sig_uncurry_nondep (A : Type) (P : A -> Prop) (B : Type)
+Lemma eq_sig_uncurry_nondep (A : Type) (P : A -> Prop) (B : Type)
   (f : forall a : A, P a -> B) (x : {a : A | P a}) :
   sig_uncurry_dep f x = sig_uncurry f x.
 Proof. destruct x as [a b]. reflexivity. Qed.
 
-Fact eq_sigT_curry_nondep (A : Type) (P : A -> Type) (B : Type)
+Lemma eq_sigT_curry_nondep (A : Type) (P : A -> Type) (B : Type)
   (f : {a : A & P a} -> B) (a : A) (b : P a) :
   sigT_curry_dep f a b = sigT_curry f a b.
 Proof. reflexivity. Qed.
 
-Fact eq_sigT_uncurry_nondep (A : Type) (P : A -> Type) (B : Type)
+Lemma eq_sigT_uncurry_nondep (A : Type) (P : A -> Type) (B : Type)
   (f : forall a : A, P a -> B) (x : {a : A & P a}) :
   sigT_uncurry_dep f x = sigT_uncurry f x.
 Proof. destruct x as [a b]. reflexivity. Qed.
 
-Fact eq_Ssig_curry_nondep (A : Type) (P : A -> SProp) (B : Type)
+Lemma eq_Ssig_curry_nondep (A : Type) (P : A -> SProp) (B : Type)
   (f : {a : A $ P a} -> B) (a : A) (b : P a) :
   Ssig_curry_dep f a b = Ssig_curry f a b.
 Proof. reflexivity. Qed.
 
-Fact eq_Ssig_uncurry_nondep (A : Type) (P : A -> SProp) (B : Type)
+Lemma eq_Ssig_uncurry_nondep (A : Type) (P : A -> SProp) (B : Type)
   (f : forall a : A, P a -> B) (x : {a : A $ P a}) :
   Ssig_uncurry_dep f x = Ssig_uncurry f x.
 Proof. destruct x as [a b]. reflexivity. Qed.
 
-Fact eq_compose_nondep (A B C : Type) (g : B -> C) (f : A -> B) (a : A) :
+Lemma eq_compose_nondep (A B C : Type) (g : B -> C) (f : A -> B) (a : A) :
   compose_dep (const g) f a = compose g f a.
 Proof. reflexivity. Qed.
 
-Fact eq_const_nondep (A B : Type) (a : A) (b : B) :
+Lemma eq_const_nondep (A B : Type) (a : A) (b : B) :
   const_dep a b = const a b.
 Proof. reflexivity. Qed.
 
-Fact eq_flip_nondep (A B C : Type) (f : A -> B -> C) (b : B) (a : A) :
+Lemma eq_flip_nondep (A B C : Type) (f : A -> B -> C) (b : B) (a : A) :
   flip_dep f b a = flip f b a.
 Proof. reflexivity. Qed.
 
-Fact eq_apply_nondep (A B : Type) (f : A -> B) (a : A) :
+Lemma eq_apply_nondep (A B : Type) (f : A -> B) (a : A) :
   apply_dep f a = apply f a.
 Proof. reflexivity. Qed.
 

@@ -14,6 +14,10 @@ From Maniunfold.Provides Require Import
 From Coq Require Import Lia List Recdef.
 Import ListNotations Pos.
 
+(** TODO Why does this break? *)
+
+Unset Universe Polymorphism.
+
 Local Open Scope positive_scope.
 
 Global Instance bool_has_eq_dec : HasEqDec bool.

@@ -27,12 +27,12 @@ Proof. reflexivity. Qed.
 Corollary succ_equation_2 (p : positive) : succ (Npos p) = Npos (Pos.succ p).
 Proof. reflexivity. Qed.
 
-Global Hint Rewrite @succ_equation_1 @succ_equation_2 : succ.
+Hint Rewrite @succ_equation_1 @succ_equation_2 : succ.
 
 (** These lemmas are missing from the standard library. *)
 
 Lemma pos_shiftl_succ_r' (a : positive) (b : N) :
-  Pos.shiftl a (N.succ b) = xO (Pos.shiftl a b).
+  Pos.shiftl a (succ b) = xO (Pos.shiftl a b).
 Proof.
   destruct b as [| p].
   - reflexivity.

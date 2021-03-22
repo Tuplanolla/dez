@@ -44,20 +44,15 @@ Proof. reflexivity. Qed.
 
 (** Whether the given number is even or not. *)
 
-Definition pos_even (n : positive) : bool :=
-  match n with
-  | xI p => false
-  | xO p => true
-  | xH => false
-  end.
-
-Arguments pos_even !_.
+Equations pos_even (n : positive) : bool :=
+  pos_even (xI p) := false;
+  pos_even (xO p) := true;
+  pos_even xH := false.
 
 (** Whether the given number is odd or not. *)
 
-Definition pos_odd (n : positive) : bool := negb (pos_even n).
-
-Arguments pos_odd !_.
+Equations pos_odd (n : positive) : bool :=
+  pos_odd n := negb (pos_even n).
 
 Module Additive.
 
