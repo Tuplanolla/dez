@@ -307,9 +307,9 @@ Arguments prod_uncurry {_ _ _} _ !_.
 Arguments length {_} !_.
 Arguments app {_} !_ _.
 Arguments ID /.
-Arguments Datatypes.id _ _ /.
+Arguments Datatypes.id {_} _ /.
 Arguments IDProp /.
-Arguments idProp _ _ /.
+Arguments idProp {_} _ /.
 
 Arguments proj1_sig {_ _} !_.
 Arguments proj2_sig {_ _} !_.
