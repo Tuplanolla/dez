@@ -139,6 +139,14 @@ Proof.
   - rewrite es. rewrite div_Odd.
     destruct (sqrt_spec' r) as [l0 l1]; arithmetize. nia. Qed.
 
+(** This is also strange. *)
+
+Lemma tri_why (a b : N) (l : b <= a) : untri (b + tri a) = a.
+Proof.
+  assert (x : exists c : N, a = c + b).
+  { exists (a - b). lia. }
+  destruct x as [c e]. rewrite e. apply tri_what. Qed.
+
 (** The function [tri] is injective. *)
 
 Lemma tri_inj (n p : N) (e : tri n = tri p) : n = p.

@@ -90,7 +90,7 @@ Lemma pair_pos_binoddfactor (n : positive) :
   pos_binoddfactor n = (pos_binfactor n, pos_oddfactor n).
 Proof.
   simp pos_binfactor. simp pos_oddfactor.
-  destruct (pos_binoddfactor n).
+  destruct (pos_binoddfactor n) as [b c].
   reflexivity. Qed.
 
 (** The binary factor of a power of two is
@@ -366,8 +366,6 @@ Proof.
   pose proof tri_untri n as l.
   lia. Qed.
 
-(** This needs a new carry lemma. *)
-
 Lemma shell_pair_dep_unshell_pair_dep
   (a b : N) (l : Squash (b < Npos (size a))) :
   shell_pair_dep (unshell_pair_dep a b l) = Sexists _ (a, b) l.
@@ -383,9 +381,14 @@ Proof.
   rewrite succ_pos_spec in l.
   rewrite untri_rem_tri_untri.
   assert (l' : b <= a) by lia.
-  f_equal.
-  - admit.
-  - admit. Admitted.
+  pose proof tri_why a b l' as e.
+  rewrite e.
+  f_equal. lia.
+  Unshelve.
+  (** TODO Instances! *)
+  apply A_has_unsquash. destruct (N.ltb_spec0 b (Npos (size a))).
+  - left. lia.
+  - right. lia. Qed.
 
 Equations shell_unpair (x y : N) : N * N :=
   shell_unpair x y := (y + x, y).
@@ -461,16 +464,47 @@ Equations unpair (x y : N) : N :=
 Compute map pair (seq 0 64).
 Compute map (prod_uncurry unpair o pair) (seq 0 64).
 
-(** These should now become diagram chasing. *)
+(** These are now diagram chasing. *)
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof.
-  cbv [prod_uncurry].
-  simp unpair. simp pair. Admitted.
+  destruct (pair n) as [x y] eqn : exy.
+  simp pair in exy.
+  destruct (shell_pair_dep n) as [[a b] l] eqn : eab.
+  simp Ssig_uncurry in exy. simp prod_uncurry_dep in exy.
+  simp prod_uncurry. simp unpair.
+  destruct (shell_unpair_dep x y) as [[a' b'] l'] eqn : eab'.
+  simp Ssig_uncurry. simp prod_uncurry_dep.
+  pose proof shell_unpair_dep_unshell_unpair_dep a b l as loop_t.
+  pose proof unshell_pair_dep_shell_pair_dep n as loop_s.
+  (** Contract [t ^-1]. *)
+  rewrite exy in loop_t.
+  simp prod_uncurry in loop_t. rewrite eab' in loop_t.
+  inversion loop_t; subst a' b'.
+  (* assert (l' = l) by reflexivity; subst l'. *)
+  clear loop_t.
+  (** Contract [s]. *)
+  rewrite eab in loop_s.
+  simp Ssig_uncurry in loop_s. Qed.
 
 Theorem pair_unpair (x y : N) : pair (unpair x y) = (x, y).
 Proof.
-  simp pair. simp unpair. Admitted.
+  simp pair.
+  destruct (shell_pair_dep (unpair x y)) as [[a b] l] eqn : eab.
+  simp unpair in eab.
+  destruct (shell_unpair_dep x y) as [[a' b'] l'] eqn : eab'.
+  simp Ssig_uncurry in eab. simp prod_uncurry_dep in eab.
+  simp Ssig_uncurry. simp prod_uncurry_dep.
+  pose proof shell_pair_dep_unshell_pair_dep a' b' l' as loop_s.
+  pose proof unshell_unpair_dep_shell_unpair_dep x y as loop_t.
+  (** Contract [s ^-1]. *)
+  rewrite eab in loop_s.
+  inversion loop_s; subst a' b'.
+  (* assert (l' = l) by reflexivity; subst l'. *)
+  clear loop_s.
+  (** Contract [t]. *)
+  rewrite eab' in loop_t.
+  simp Ssig_uncurry in loop_t. Qed.
 
 End Cantor.
 
