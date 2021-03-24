@@ -323,6 +323,153 @@ Proof.
     rewrite pos_binoddfactor_pos_binoddprod by assumption.
     reflexivity. Qed.
 
+Module PairingFunction.
+
+Class HasSize : Type := size (a : N) : positive.
+
+Class HasShellPair : Type := shell_pair (n : N) : N * N.
+
+Class HasShellPairDep `(HasSize) : Type :=
+  shell_pair_dep (n : N) : {x : N * N $ Squash (snd x < Npos (size (fst x)))}.
+
+Global Instance has_shell_pair `(HasSize) `(!HasShellPairDep size) :
+  HasShellPair := fun n : N =>
+  Spr1 (shell_pair_dep n).
+
+Class HasUnshellPair : Type := unshell_pair (a b : N) : N.
+
+Class HasUnshellPairDep `(HasSize) : Type :=
+  unshell_pair_dep (a b : N) (l : Squash (b < Npos (size a))) : N.
+
+Global Instance has_unshell_pair_dep `(HasSize) `(HasUnshellPair) :
+  HasUnshellPairDep size := fun (a b : N) (l : Squash (b < pos (size a))) =>
+  unshell_pair a b.
+
+Class HasShellUnpair : Type := shell_unpair (x y : N) : N * N.
+
+Class HasShellUnpairDep `(HasSize) : Type :=
+  shell_unpair_dep (x y : N) :
+  {x : N * N $ Squash (snd x < Npos (size (fst x)))}.
+
+Global Instance has_shell_unpair `(HasSize) `(!HasShellUnpairDep size) :
+  HasShellUnpair := fun x y : N =>
+  Spr1 (shell_unpair_dep x y).
+
+Class HasUnshellUnpair : Type := unshell_unpair (a b : N) : N * N.
+
+Class HasUnshellUnpairDep `(HasSize) : Type :=
+  unshell_unpair_dep (a b : N) (l : Squash (b < Npos (size a))) : N * N.
+
+Global Instance has_unshell_unpair_dep `(HasSize) `(HasUnshellUnpair) :
+  HasUnshellUnpairDep size := fun (a b : N) (l : Squash (b < pos (size a))) =>
+  unshell_unpair a b.
+
+Class HasPairing `(HasSize)
+  `(!HasShellPairDep size) `(!HasUnshellPairDep size)
+  `(!HasShellUnpairDep size) `(!HasUnshellUnpairDep size) : Type :=
+  pairing : unit.
+
+Global Instance has_pairing `(HasSize)
+  `(!HasShellPairDep size) `(!HasUnshellPairDep size)
+  `(!HasShellUnpairDep size) `(!HasUnshellUnpairDep size) : HasPairing size
+  shell_pair_dep unshell_pair_dep shell_unpair_dep unshell_unpair_dep := tt.
+
+Class IsUnshellPairDepShellPairDep `(HasPairing) : Prop :=
+  unshell_pair_dep_shell_pair_dep (n : N) :
+  Ssig_uncurry (prod_uncurry_dep unshell_pair_dep) (shell_pair_dep n) = n.
+
+Class IsShellPairDepUnshellPairDep `(HasPairing) : Prop :=
+  shell_pair_dep_unshell_pair_dep (a b : N) (l : Squash (b < Npos (size a))) :
+  shell_pair_dep (unshell_pair_dep a b l) = Sexists _ (a, b) l.
+
+Class IsUnshellUnpairDepShellUnpairDep `(HasPairing) : Prop :=
+  unshell_unpair_dep_shell_unpair_dep (x y : N) :
+  Ssig_uncurry (prod_uncurry_dep unshell_unpair_dep) (shell_unpair_dep x y) =
+  (x, y).
+
+Class IsShellUnpairDepUnshellUnpairDep `(HasPairing) : Prop :=
+  shell_unpair_dep_unshell_unpair_dep
+  (a b : N) (l : Squash (b < Npos (size a))) :
+  prod_uncurry shell_unpair_dep (unshell_unpair_dep a b l) =
+  Sexists _ (a, b) l.
+
+Class IsPairing `(HasPairing) : Prop := {
+  pairing_is_unshell_pair_dep_shell_pair_dep :>
+    IsUnshellPairDepShellPairDep pairing;
+  pairing_is_shell_pair_dep_unshell_pair_dep :>
+    IsShellPairDepUnshellPairDep pairing;
+  pairing_is_unshell_unpair_dep_shell_unpair_dep :>
+    IsUnshellUnpairDepShellUnpairDep pairing;
+  pairing_is_shell_unpair_dep_unshell_unpair_dep :>
+    IsShellUnpairDepUnshellUnpairDep pairing;
+}.
+
+Section Context.
+
+Context `{IsPairing}.
+
+Fail Equations pair (n : N) : N * N :=
+  pair n := prod_uncurry unshell_unpair (shell_pair n).
+
+Equations pair (n : N) : N * N :=
+  pair n := Ssig_uncurry (prod_uncurry_dep unshell_unpair_dep)
+    (shell_pair_dep n).
+
+Fail Equations unpair (x y : N) : N :=
+  unpair x y := prod_uncurry unshell_pair (shell_unpair x y).
+
+Equations unpair (x y : N) : N :=
+  unpair x y := Ssig_uncurry (prod_uncurry_dep unshell_pair_dep)
+    (shell_unpair_dep x y).
+
+Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
+Proof.
+  destruct (pair n) as [x y] eqn : exy.
+  simp pair in exy.
+  destruct (shell_pair_dep n) as [[a b] l] eqn : eab.
+  simp Ssig_uncurry in exy. simp prod_uncurry_dep in exy.
+  simp prod_uncurry. simp unpair.
+  destruct (shell_unpair_dep x y) as [[a' b'] l'] eqn : eab'.
+  simp Ssig_uncurry. simp prod_uncurry_dep.
+  pose proof shell_unpair_dep_unshell_unpair_dep a b l as loop_t.
+  pose proof unshell_pair_dep_shell_pair_dep n as loop_s.
+  (** We need to reduce implicit arguments before rewriting. *)
+  unfold size in loop_t.
+  (** Contract [t ^-1]. *)
+  rewrite exy in loop_t.
+  simp prod_uncurry in loop_t. rewrite eab' in loop_t.
+  inversion loop_t; subst a' b'.
+  (* assert (l' = l) by reflexivity; subst l'. *)
+  clear loop_t.
+  (** Contract [s]. *)
+  rewrite eab in loop_s.
+  simp Ssig_uncurry in loop_s. Qed.
+
+Theorem pair_unpair (x y : N) : pair (unpair x y) = (x, y).
+Proof.
+  simp pair.
+  destruct (shell_pair_dep (unpair x y)) as [[a b] l] eqn : eab.
+  simp unpair in eab.
+  destruct (shell_unpair_dep x y) as [[a' b'] l'] eqn : eab'.
+  simp Ssig_uncurry in eab. simp prod_uncurry_dep in eab.
+  simp Ssig_uncurry. simp prod_uncurry_dep.
+  pose proof shell_pair_dep_unshell_pair_dep a' b' l' as loop_s.
+  pose proof unshell_unpair_dep_shell_unpair_dep x y as loop_t.
+  (** We need to reduce implicit arguments before rewriting. *)
+  unfold size in loop_s.
+  (** Contract [s ^-1]. *)
+  rewrite eab in loop_s.
+  inversion loop_s; subst a' b'.
+  (* assert (l' = l) by reflexivity; subst l'. *)
+  clear loop_s.
+  (** Contract [t]. *)
+  rewrite eab' in loop_t.
+  simp Ssig_uncurry in loop_t. Qed.
+
+End Context.
+
+End PairingFunction.
+
 Module Cantor.
 
 Equations size (a : N) : positive :=
@@ -449,62 +596,28 @@ Proof.
   - left. lia.
   - right. lia. Qed.
 
-Fail Fail Equations pair (n : N) : N * N :=
-  pair n := prod_uncurry unshell_unpair (shell_pair n).
-Equations pair (n : N) : N * N :=
-  pair n := Ssig_uncurry (prod_uncurry_dep unshell_unpair_dep)
-    (shell_pair_dep n).
+Module PF := PairingFunction.
 
-Fail Fail Equations unpair (x y : N) : N :=
-  unpair x y := prod_uncurry unshell_pair (shell_unpair x y).
-Equations unpair (x y : N) : N :=
-  unpair x y := Ssig_uncurry (prod_uncurry_dep unshell_pair_dep)
-    (shell_unpair_dep x y).
+Global Instance has_size : PF.HasSize := size.
+Global Instance has_shell_pair_dep : PF.HasShellPairDep size := shell_pair_dep.
+Global Instance has_unshell_pair_dep : PF.HasUnshellPairDep size := unshell_pair_dep.
+Global Instance has_shell_unpair_dep : PF.HasShellUnpairDep size := shell_unpair_dep.
+Global Instance has_unshell_unpair_dep : PF.HasUnshellUnpairDep size := unshell_unpair_dep.
+Global Instance has_pairing : PF.HasPairing size shell_pair_dep unshell_pair_dep shell_unpair_dep unshell_unpair_dep := tt.
 
-Compute map pair (seq 0 64).
-Compute map (prod_uncurry unpair o pair) (seq 0 64).
+Global Instance is_unshell_pair_dep_shell_pair_dep : PF.IsUnshellPairDepShellPairDep PF.pairing.
+Proof. exact @unshell_pair_dep_shell_pair_dep. Qed.
+Global Instance is_shell_pair_dep_unshell_pair_dep : PF.IsShellPairDepUnshellPairDep PF.pairing.
+Proof. exact @shell_pair_dep_unshell_pair_dep. Qed.
+Global Instance is_unshell_unpair_dep_shell_unpair_dep : PF.IsUnshellUnpairDepShellUnpairDep PF.pairing.
+Proof. exact @unshell_unpair_dep_shell_unpair_dep. Qed.
+Global Instance is_shell_unpair_dep_unshell_unpair_dep : PF.IsShellUnpairDepUnshellUnpairDep PF.pairing.
+Proof. exact @shell_unpair_dep_unshell_unpair_dep. Qed.
+Global Instance is_pairing : PF.IsPairing PF.pairing.
+Proof. esplit; typeclasses eauto. Qed.
 
-(** These are now diagram chasing. *)
-
-Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
-Proof.
-  destruct (pair n) as [x y] eqn : exy.
-  simp pair in exy.
-  destruct (shell_pair_dep n) as [[a b] l] eqn : eab.
-  simp Ssig_uncurry in exy. simp prod_uncurry_dep in exy.
-  simp prod_uncurry. simp unpair.
-  destruct (shell_unpair_dep x y) as [[a' b'] l'] eqn : eab'.
-  simp Ssig_uncurry. simp prod_uncurry_dep.
-  pose proof shell_unpair_dep_unshell_unpair_dep a b l as loop_t.
-  pose proof unshell_pair_dep_shell_pair_dep n as loop_s.
-  (** Contract [t ^-1]. *)
-  rewrite exy in loop_t.
-  simp prod_uncurry in loop_t. rewrite eab' in loop_t.
-  inversion loop_t; subst a' b'.
-  (* assert (l' = l) by reflexivity; subst l'. *)
-  clear loop_t.
-  (** Contract [s]. *)
-  rewrite eab in loop_s.
-  simp Ssig_uncurry in loop_s. Qed.
-
-Theorem pair_unpair (x y : N) : pair (unpair x y) = (x, y).
-Proof.
-  simp pair.
-  destruct (shell_pair_dep (unpair x y)) as [[a b] l] eqn : eab.
-  simp unpair in eab.
-  destruct (shell_unpair_dep x y) as [[a' b'] l'] eqn : eab'.
-  simp Ssig_uncurry in eab. simp prod_uncurry_dep in eab.
-  simp Ssig_uncurry. simp prod_uncurry_dep.
-  pose proof shell_pair_dep_unshell_pair_dep a' b' l' as loop_s.
-  pose proof unshell_unpair_dep_shell_unpair_dep x y as loop_t.
-  (** Contract [s ^-1]. *)
-  rewrite eab in loop_s.
-  inversion loop_s; subst a' b'.
-  (* assert (l' = l) by reflexivity; subst l'. *)
-  clear loop_s.
-  (** Contract [t]. *)
-  rewrite eab' in loop_t.
-  simp Ssig_uncurry in loop_t. Qed.
+Compute map PF.pair (seq 0 64).
+Compute map (prod_uncurry PF.unpair o PF.pair) (seq 0 64).
 
 End Cantor.
 
