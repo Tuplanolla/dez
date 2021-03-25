@@ -558,6 +558,18 @@ Proof.
   rewrite eab' in loop_t.
   simp Ssig_uncurry in loop_t. Qed.
 
+Theorem mono_shell (n n' a a' b b' : N)
+  (ln : n < n') (la : a < a') (lb : b < b') :
+  fst (Spr1 (shell_dep n)) < fst (Spr1 (shell_dep n')) \/
+  snd (Spr1 (shell_dep n)) < snd (Spr1 (shell_dep n')).
+Proof. Abort.
+
+Theorem lex_shell (n a b : N)
+  (e : (a, b) = Spr1 (shell_dep n)) :
+  (a, 1 + b) = Spr1 (shell_dep (1 + n)) \/
+  (1 + a, 0) = Spr1 (shell_dep (1 + n)).
+Proof. Abort.
+
 End Context.
 
 End PairingFunction.
@@ -587,8 +599,7 @@ Next Obligation.
 Equations unshell (a b : N) : N :=
   unshell a b := b + tri a.
 
-Equations unshell_dep
-  (a b : N) (l : Squash (b < Npos (size a))) : N :=
+Equations unshell_dep (a b : N) (l : Squash (b < Npos (size a))) : N :=
   unshell_dep a b l := unshell a b.
 
 Lemma sect_shell_dep (n : N) :
@@ -605,8 +616,7 @@ Proof.
   pose proof tri_untri n as l.
   lia. Qed.
 
-Lemma retr_shell_dep
-  (a b : N) (l : Squash (b < Npos (size a))) :
+Lemma retr_shell_dep (a b : N) (l : Squash (b < Npos (size a))) :
   shell_dep (unshell_dep a b l) = Sexists _ (a, b) l.
 Proof.
   simp shell_dep.
@@ -647,13 +657,11 @@ Next Obligation.
 Equations untaco (a b : N) : N * N :=
   untaco a b := (a - b, b).
 
-Equations untaco_dep (a b : N)
-  (l : Squash (b < Npos (size a))) : N * N :=
+Equations untaco_dep (a b : N) (l : Squash (b < Npos (size a))) : N * N :=
   untaco_dep a b l := untaco a b.
 
 Lemma sect_taco_dep (x y : N) :
-  Ssig_uncurry (prod_uncurry_dep untaco_dep) (taco_dep x y) =
-  (x, y).
+  Ssig_uncurry (prod_uncurry_dep untaco_dep) (taco_dep x y) = (x, y).
 Proof.
   cbv [Ssig_uncurry Spr1 Spr2].
   simp taco_dep.
@@ -665,10 +673,8 @@ Proof.
   f_equal.
   lia. Qed.
 
-Lemma retr_taco_dep
-  (a b : N) (l : Squash (b < Npos (size a))) :
-  prod_uncurry taco_dep (untaco_dep a b l) =
-  Sexists _ (a, b) l.
+Lemma retr_taco_dep (a b : N) (l : Squash (b < Npos (size a))) :
+  prod_uncurry taco_dep (untaco_dep a b l) = Sexists _ (a, b) l.
 Proof.
   cbv [prod_uncurry].
   simp taco_dep.
