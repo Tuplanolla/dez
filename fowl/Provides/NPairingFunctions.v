@@ -325,19 +325,6 @@ Proof.
 
 Module PairingFunction.
 
-(** There is this logic in reducing [b] to call the dependent version. *)
-
-Section Digression.
-
-Let z r := 1 + 2 * r.
-Let sqrem r s := s + r ^ 2.
-
-Compute let (r, s) := sqrtrem 52 in ((r, s), sqrem r s).
-Compute let (r, s) := (6, 16) in let (r', s') := (1 + r, s - z r) in ((r', s'), sqrem r' s').
-Compute let (r, s) := (5, 27) in let (r', s') := (2 + r, s - (z r + z (1 + r))) in ((r', s'), sqrem r' s').
-
-End Digression.
-
 Class HasSize : Type := size (a : N) : positive.
 
 Class HasShell : Type := shell (n : N) : N * N.
@@ -345,62 +332,20 @@ Class HasShell : Type := shell (n : N) : N * N.
 Class HasShellDep `(HasSize) : Type :=
   shell_dep (n : N) : {x : N * N $ Squash (snd x < Npos (size (fst x)))}.
 
-Global Instance has_shell `(HasSize) `(!HasShellDep size) : HasShell :=
-  fun n : N => Spr1 (shell_dep n).
-
 Class HasUnshell : Type := unshell (a b : N) : N.
 
 Class HasUnshellDep `(HasSize) : Type :=
   unshell_dep (a b : N) (l : Squash (b < Npos (size a))) : N.
-
-(** This is a bad instance, because the size function is arbitrary. *)
-
-Fail Fail Instance has_unshell_dep `(HasSize) `(HasUnshell) :
-  HasUnshellDep size :=
-  fun (a b : N) (l : Squash (b < pos (size a))) => unshell a b.
-
-Program Fixpoint funshell `(HasSize) `(!HasUnshellDep size) (a b : N)
-  {measure (N.to_nat b)} : N := _.
-Next Obligation.
-  intros ? ? a b f.
-  destruct (ltb_spec0 b (Npos (size a))) as [l | l].
-  - apply (unshell_dep a b). apply squash. apply l.
-  - apply (f _ _ (1 + a) (b - Npos (size a))). lia. Defined.
-Next Obligation. Tactics.program_solve_wf. Defined.
-
-Global Instance has_unshell `(HasSize) `(!HasUnshellDep size) : HasUnshell :=
-  funshell size unshell_dep.
 
 Class HasTaco : Type := taco (x y : N) : N * N.
 
 Class HasTacoDep `(HasSize) : Type :=
   taco_dep (x y : N) : {x : N * N $ Squash (snd x < Npos (size (fst x)))}.
 
-Global Instance has_taco `(HasSize) `(!HasTacoDep size) : HasTaco :=
-  fun x y : N => Spr1 (taco_dep x y).
-
 Class HasUntaco : Type := untaco (a b : N) : N * N.
 
 Class HasUntacoDep `(HasSize) : Type :=
   untaco_dep (a b : N) (l : Squash (b < Npos (size a))) : N * N.
-
-(** This is a bad instance, because the size function is arbitrary. *)
-
-Fail Fail Instance has_untaco_dep `(HasSize) `(HasUntaco) :
-  HasUntacoDep size :=
-  fun (a b : N) (l : Squash (b < pos (size a))) => untaco a b.
-
-Equations funtaco `(HasSize) `(!HasUntacoDep size) (a b : N) : N * N
-  by wf (N.to_nat b) :=
-  funtaco _ _ _ _ := _.
-Next Obligation.
-  intros ? ? a b f.
-  destruct (ltb_spec0 b (Npos (size a))) as [l | l].
-  - apply (untaco_dep a b). apply squash. apply l.
-  - apply (f _ _ (1 + a) (b - Npos (size a))). lia. Defined.
-
-Global Instance has_untaco `(HasSize) `(!HasUntacoDep size) : HasUntaco :=
-  funtaco size untaco_dep.
 
 Class HasLifting `(HasShell) `(HasUnshell) `(HasTaco) `(HasUntaco) : Type :=
   lifting : unit.
@@ -417,6 +362,88 @@ Global Instance has_lifting_dep `(HasSize)
   `(!HasTacoDep size) `(!HasUntacoDep size) :
   HasLiftingDep size shell_dep unshell_dep taco_dep untaco_dep := tt.
 
+Section Down.
+
+(** These are bad instances,
+    because the choice of size function is arbitrary. *)
+
+Equations fshell_dep_help `(HasSize) `(HasShell) (a b : N) :
+  {x : N * N $ Squash (snd x < Npos (size (fst x)))}
+  by wf (N.to_nat b) :=
+  fshell_dep_help _ _ a b := _.
+Next Obligation.
+  intros ? ? a b f.
+  destruct (ltb_spec0 b (Npos (size a))) as [l | l].
+  - exists (a, b). apply squash. apply l.
+  - destruct (f _ _ (1 + a) (b - Npos (size a))) as [[a' b'] l'].
+    + lia.
+    + exists (a', b'). apply l'. Defined.
+
+Equations fshell_dep `(HasSize) `(HasShell) (n : N) :
+  {x : N * N $ Squash (snd x < Npos (size (fst x)))} :=
+  fshell_dep _ _ n := prod_uncurry (fshell_dep_help size shell) (shell n).
+
+Instance has_unshell_dep `(HasSize) `(HasUnshell) : HasUnshellDep size :=
+  fun (a b : N) (l : Squash (b < Npos (size a))) => unshell a b.
+
+Equations ftaco_dep_help `(HasSize) `(HasTaco) (a b : N) :
+  {x : N * N $ Squash (snd x < Npos (size (fst x)))}
+  by wf (N.to_nat b) :=
+  ftaco_dep_help _ _ a b := _.
+Next Obligation.
+  intros ? ? a b f.
+  destruct (ltb_spec0 b (Npos (size a))) as [l | l].
+  - exists (a, b). apply squash. apply l.
+  - destruct (f _ _ (1 + a) (b - Npos (size a))) as [[a' b'] l'].
+    + lia.
+    + exists (a', b'). apply l'. Defined.
+
+Equations ftaco_dep `(HasSize) `(HasTaco) (x y : N) :
+  {x : N * N $ Squash (snd x < Npos (size (fst x)))} :=
+  ftaco_dep _ _ x y := prod_uncurry (ftaco_dep_help size taco) (taco x y).
+
+Instance has_taco_dep `(HasSize) `(HasTaco) : HasTacoDep size :=
+  ftaco_dep size taco.
+
+Instance has_untaco_dep `(HasSize) `(HasUntaco) : HasUntacoDep size :=
+  fun (a b : N) (l : Squash (b < Npos (size a))) => untaco a b.
+
+End Down.
+
+Section Up.
+
+Instance has_shell `(HasSize) `(!HasShellDep size) : HasShell :=
+  fun n : N => Spr1 (shell_dep n).
+
+Equations funshell `(HasSize) `(!HasUnshellDep size) (a b : N) : N
+  by wf (N.to_nat b) :=
+  funshell _ _ a b := _.
+Next Obligation.
+  intros ? ? a b f.
+  destruct (ltb_spec0 b (Npos (size a))) as [l | l].
+  - apply (unshell_dep a b). apply squash. apply l.
+  - apply (f _ _ (1 + a) (b - Npos (size a))). lia. Defined.
+
+Instance has_unshell `(HasSize) `(!HasUnshellDep size) : HasUnshell :=
+  funshell size unshell_dep.
+
+Instance has_taco `(HasSize) `(!HasTacoDep size) : HasTaco :=
+  fun x y : N => Spr1 (taco_dep x y).
+
+Equations funtaco `(HasSize) `(!HasUntacoDep size) (a b : N) : N * N
+  by wf (N.to_nat b) :=
+  funtaco _ _ _ _ := _.
+Next Obligation.
+  intros ? ? a b f.
+  destruct (ltb_spec0 b (Npos (size a))) as [l | l].
+  - apply (untaco_dep a b). apply squash. apply l.
+  - apply (f _ _ (1 + a) (b - Npos (size a))). lia. Defined.
+
+Instance has_untaco `(HasSize) `(!HasUntacoDep size) : HasUntaco :=
+  funtaco size untaco_dep.
+
+End Up.
+
 (** We want to say that [unshell] is a retraction of [shell] and
     [shell] is a section of [unshell]. *)
 
@@ -427,12 +454,10 @@ Class IsSectShellDep `(HasLiftingDep) : Prop :=
   sect_shell_dep (n : N) :
   Ssig_uncurry (prod_uncurry_dep unshell_dep) (shell_dep n) = n.
 
-Global Instance is_sect_shell `{IsSectShellDep} : IsSectShell lifting_dep.
-Proof. Admitted.
+(* Global Instance is_sect_shell `{IsSectShellDep} : IsSectShell lifting_dep.
+Proof. Admitted. *)
 
-(** This is a bad class, because it cannot be given instances. *)
-
-Fail Fail Class IsRetrShell `(HasLifting) : Prop :=
+Class IsRetrShell `(HasLifting) : Prop :=
   retr_shell (a b : N) : shell (unshell a b) = (a, b).
 
 Class IsRetrShellDep `(HasLiftingDep) : Prop :=
@@ -446,12 +471,10 @@ Class IsSectTacoDep `(HasLiftingDep) : Prop :=
   sect_taco_dep (x y : N) :
   Ssig_uncurry (prod_uncurry_dep untaco_dep) (taco_dep x y) = (x, y).
 
-Global Instance is_sect_taco `{IsSectTacoDep} : IsSectTaco lifting_dep.
-Proof. Admitted.
+(* Global Instance is_sect_taco `{IsSectTacoDep} : IsSectTaco lifting_dep.
+Proof. Admitted. *)
 
-(** This is a bad class, because it cannot be given instances. *)
-
-Fail Fail Class IsRetrTaco `(HasLifting) : Prop :=
+Class IsRetrTaco `(HasLifting) : Prop :=
   retr_taco (a b : N) : prod_uncurry taco (untaco a b) = (a, b).
 
 Class IsRetrTacoDep `(HasLiftingDep) : Prop :=
@@ -470,26 +493,28 @@ Class IsLiftingDep `(HasLiftingDep) : Prop := {
   lifting_dep_is_retr_taco_dep :> IsRetrTacoDep lifting_dep;
 }.
 
-Global Instance is_lifting `{IsLiftingDep} : IsLifting lifting_dep.
-Proof. esplit; try typeclasses eauto. Qed.
+(* Global Instance is_lifting `{IsLiftingDep} : IsLifting lifting_dep.
+Proof. esplit; try typeclasses eauto. Qed. *)
 
 Section Context.
 
-Context `{IsLiftingDep}.
+Context `(HasLiftingDep).
 
-Fail Fail Equations pair (n : N) : N * N :=
+Fail Equations pair (n : N) : N * N :=
   pair n := prod_uncurry untaco (shell n).
 
 Equations pair (n : N) : N * N :=
   pair n := Ssig_uncurry (prod_uncurry_dep untaco_dep) (shell_dep n).
 
-Fail Fail Equations unpair (x y : N) : N :=
+Fail Equations unpair (x y : N) : N :=
   unpair x y := prod_uncurry unshell (taco x y).
 
 Equations unpair (x y : N) : N :=
   unpair x y := Ssig_uncurry (prod_uncurry_dep unshell_dep) (taco_dep x y).
 
-Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
+Context `{!IsLiftingDep lifting_dep}.
+
+Theorem retr_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof.
   destruct (pair n) as [x y] eqn : exy.
   simp pair in exy.
@@ -512,7 +537,7 @@ Proof.
   rewrite eab in loop_s.
   simp Ssig_uncurry in loop_s. Qed.
 
-Theorem pair_unpair (x y : N) : pair (unpair x y) = (x, y).
+Theorem sect_pair (x y : N) : pair (unpair x y) = (x, y).
 Proof.
   simp pair.
   destruct (shell_dep (unpair x y)) as [[a b] l] eqn : eab.
@@ -721,7 +746,7 @@ Definition unpair (p q : N) : N :=
 
 Arguments unpair _ _ : assert.
 
-Theorem unpair_shell (n : N) :
+Theorem unpair_pair' (n : N) :
   prod_uncurry unpair_shell (pair n) = pair_shell n.
 Proof.
   cbv [prod_uncurry fst snd unpair_shell pair pair_shell].
@@ -730,7 +755,7 @@ Proof.
   clear est es.
   destruct (leb_spec s t) as [lst | lst]; lia. Qed.
 
-Theorem pair_taco (p q : N) :
+Theorem pair_unpair' (p q : N) :
   pair_shell (unpair p q) = unpair_shell p q.
 Proof.
   cbv [pair_shell unpair unpair_shell].
@@ -789,7 +814,7 @@ Arguments unpair _ _ : assert.
 (** Note how the three following proofs are
     nearly exactly the same as in [RosenbergStrong]. *)
 
-Theorem unpair_shell (n : N) :
+Theorem unpair_shell' (n : N) :
   prod_uncurry unpair_shell (pair n) = pair_shell n.
 Proof.
   cbv [prod_uncurry fst snd unpair_shell pair pair_shell].
