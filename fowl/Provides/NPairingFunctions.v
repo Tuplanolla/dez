@@ -341,7 +341,9 @@ Class HasUnshellPair : Type := unshell_pair (a b : N) : N.
 Class HasUnshellPairDep `(HasSize) : Type :=
   unshell_pair_dep (a b : N) (l : Squash (b < Npos (size a))) : N.
 
-Global Instance has_unshell_pair_dep `(HasSize) `(HasUnshellPair) :
+(** This is a bad instance, because the size function is arbitrary. *)
+
+Fail Fail Instance has_unshell_pair_dep `(HasSize) `(HasUnshellPair) :
   HasUnshellPairDep size := fun (a b : N) (l : Squash (b < pos (size a))) =>
   unshell_pair a b.
 
@@ -360,53 +362,90 @@ Class HasUnshellUnpair : Type := unshell_unpair (a b : N) : N * N.
 Class HasUnshellUnpairDep `(HasSize) : Type :=
   unshell_unpair_dep (a b : N) (l : Squash (b < Npos (size a))) : N * N.
 
-Global Instance has_unshell_unpair_dep `(HasSize) `(HasUnshellUnpair) :
+(** This is a bad instance, because the size function is arbitrary. *)
+
+Fail Fail Instance has_unshell_unpair_dep `(HasSize) `(HasUnshellUnpair) :
   HasUnshellUnpairDep size := fun (a b : N) (l : Squash (b < pos (size a))) =>
   unshell_unpair a b.
 
-Class HasPairing `(HasSize)
-  `(!HasShellPairDep size) `(!HasUnshellPairDep size)
-  `(!HasShellUnpairDep size) `(!HasUnshellUnpairDep size) : Type :=
+Class HasPairing `(HasShellPair) `(HasUnshellPair)
+  `(HasShellUnpair) `(HasUnshellUnpair) : Type :=
   pairing : unit.
 
-Global Instance has_pairing `(HasSize)
+Global Instance has_pairing `(HasShellPair) `(HasUnshellPair)
+  `(HasShellUnpair) `(HasUnshellUnpair) : HasPairing
+  shell_pair unshell_pair shell_unpair unshell_unpair := tt.
+
+Class HasPairingDep `(HasSize)
   `(!HasShellPairDep size) `(!HasUnshellPairDep size)
-  `(!HasShellUnpairDep size) `(!HasUnshellUnpairDep size) : HasPairing size
+  `(!HasShellUnpairDep size) `(!HasUnshellUnpairDep size) : Type :=
+  pairing_dep : unit.
+
+Global Instance has_pairing_dep `(HasSize)
+  `(!HasShellPairDep size) `(!HasUnshellPairDep size)
+  `(!HasShellUnpairDep size) `(!HasUnshellUnpairDep size) : HasPairingDep size
   shell_pair_dep unshell_pair_dep shell_unpair_dep unshell_unpair_dep := tt.
 
-Class IsUnshellPairDepShellPairDep `(HasPairing) : Prop :=
+Class IsUnshellPairShellPair `(HasPairing) : Prop :=
+  unshell_pair_shell_pair (n : N) :
+  prod_uncurry unshell_pair (shell_pair n) = n.
+
+Class IsUnshellPairDepShellPairDep `(HasPairingDep) : Prop :=
   unshell_pair_dep_shell_pair_dep (n : N) :
   Ssig_uncurry (prod_uncurry_dep unshell_pair_dep) (shell_pair_dep n) = n.
 
-Class IsShellPairDepUnshellPairDep `(HasPairing) : Prop :=
+(** This is a bad class, because it cannot be given instances. *)
+
+Fail Fail Class IsShellPairUnshellPair `(HasPairing) : Prop :=
+  shell_pair_unshell_pair (a b : N) :
+  shell_pair (unshell_pair a b) = (a, b).
+
+Class IsShellPairDepUnshellPairDep `(HasPairingDep) : Prop :=
   shell_pair_dep_unshell_pair_dep (a b : N) (l : Squash (b < Npos (size a))) :
   shell_pair_dep (unshell_pair_dep a b l) = Sexists _ (a, b) l.
 
-Class IsUnshellUnpairDepShellUnpairDep `(HasPairing) : Prop :=
+Class IsUnshellUnpairShellUnpair `(HasPairing) : Prop :=
+  unshell_unpair_shell_unpair (x y : N) :
+  prod_uncurry unshell_unpair (shell_unpair x y) = (x, y).
+
+Class IsUnshellUnpairDepShellUnpairDep `(HasPairingDep) : Prop :=
   unshell_unpair_dep_shell_unpair_dep (x y : N) :
   Ssig_uncurry (prod_uncurry_dep unshell_unpair_dep) (shell_unpair_dep x y) =
   (x, y).
 
-Class IsShellUnpairDepUnshellUnpairDep `(HasPairing) : Prop :=
+(** This is a bad class, because it cannot be given instances. *)
+
+Fail Fail Class IsShellUnpairUnshellUnpair `(HasPairing) : Prop :=
+  shell_unpair_unshell_unpair (a b : N) :
+  prod_uncurry shell_unpair (unshell_unpair a b) = (a, b).
+
+Class IsShellUnpairDepUnshellUnpairDep `(HasPairingDep) : Prop :=
   shell_unpair_dep_unshell_unpair_dep
   (a b : N) (l : Squash (b < Npos (size a))) :
   prod_uncurry shell_unpair_dep (unshell_unpair_dep a b l) =
   Sexists _ (a, b) l.
 
+(** This is a bad class, because it cannot be given instances. *)
+
 Class IsPairing `(HasPairing) : Prop := {
+  pairing_is_unshell_pair_shell_pair :> IsUnshellPairShellPair pairing;
+  pairing_is_unshell_unpair_shell_unpair :> IsUnshellUnpairShellUnpair pairing;
+}.
+
+Class IsPairingDep `(HasPairingDep) : Prop := {
   pairing_is_unshell_pair_dep_shell_pair_dep :>
-    IsUnshellPairDepShellPairDep pairing;
+  IsUnshellPairDepShellPairDep pairing_dep;
   pairing_is_shell_pair_dep_unshell_pair_dep :>
-    IsShellPairDepUnshellPairDep pairing;
+  IsShellPairDepUnshellPairDep pairing_dep;
   pairing_is_unshell_unpair_dep_shell_unpair_dep :>
-    IsUnshellUnpairDepShellUnpairDep pairing;
+  IsUnshellUnpairDepShellUnpairDep pairing_dep;
   pairing_is_shell_unpair_dep_unshell_unpair_dep :>
-    IsShellUnpairDepUnshellUnpairDep pairing;
+  IsShellUnpairDepUnshellUnpairDep pairing_dep;
 }.
 
 Section Context.
 
-Context `{IsPairing}.
+Context `{IsPairingDep}.
 
 Fail Equations pair (n : N) : N * N :=
   pair n := prod_uncurry unshell_unpair (shell_pair n).
@@ -603,17 +642,17 @@ Global Instance has_shell_pair_dep : PF.HasShellPairDep size := shell_pair_dep.
 Global Instance has_unshell_pair_dep : PF.HasUnshellPairDep size := unshell_pair_dep.
 Global Instance has_shell_unpair_dep : PF.HasShellUnpairDep size := shell_unpair_dep.
 Global Instance has_unshell_unpair_dep : PF.HasUnshellUnpairDep size := unshell_unpair_dep.
-Global Instance has_pairing : PF.HasPairing size shell_pair_dep unshell_pair_dep shell_unpair_dep unshell_unpair_dep := tt.
+Global Instance has_pairing_dep : PF.HasPairingDep size shell_pair_dep unshell_pair_dep shell_unpair_dep unshell_unpair_dep := tt.
 
-Global Instance is_unshell_pair_dep_shell_pair_dep : PF.IsUnshellPairDepShellPairDep PF.pairing.
+Global Instance is_unshell_pair_dep_shell_pair_dep : PF.IsUnshellPairDepShellPairDep PF.pairing_dep.
 Proof. exact @unshell_pair_dep_shell_pair_dep. Qed.
-Global Instance is_shell_pair_dep_unshell_pair_dep : PF.IsShellPairDepUnshellPairDep PF.pairing.
+Global Instance is_shell_pair_dep_unshell_pair_dep : PF.IsShellPairDepUnshellPairDep PF.pairing_dep.
 Proof. exact @shell_pair_dep_unshell_pair_dep. Qed.
-Global Instance is_unshell_unpair_dep_shell_unpair_dep : PF.IsUnshellUnpairDepShellUnpairDep PF.pairing.
+Global Instance is_unshell_unpair_dep_shell_unpair_dep : PF.IsUnshellUnpairDepShellUnpairDep PF.pairing_dep.
 Proof. exact @unshell_unpair_dep_shell_unpair_dep. Qed.
-Global Instance is_shell_unpair_dep_unshell_unpair_dep : PF.IsShellUnpairDepUnshellUnpairDep PF.pairing.
+Global Instance is_shell_unpair_dep_unshell_unpair_dep : PF.IsShellUnpairDepUnshellUnpairDep PF.pairing_dep.
 Proof. exact @shell_unpair_dep_unshell_unpair_dep. Qed.
-Global Instance is_pairing : PF.IsPairing PF.pairing.
+Global Instance is_pairing_dep : PF.IsPairingDep PF.pairing_dep.
 Proof. esplit; typeclasses eauto. Qed.
 
 Compute map PF.pair (seq 0 64).
