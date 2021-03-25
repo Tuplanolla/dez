@@ -155,7 +155,12 @@ Notation "'1'" := (Zpos xH) : Z_scope.
 
 (** We do not allow automatic solution of obligations,
     because we do not want the addition or removal of hints
-    to change the total number of obligations. *)
+    to change the total number of obligations.
+
+    The default tactic is
+    [Tactics.program_simplify;
+    try typeclasses eauto 10 with program;
+    try Tactics.program_solve_wf]. *)
 
 Obligation Tactic := idtac.
 

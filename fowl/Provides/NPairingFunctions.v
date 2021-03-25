@@ -325,153 +325,181 @@ Proof.
 
 Module PairingFunction.
 
+(** There is this logic in reducing [b] to call the dependent version. *)
+
+Section Digression.
+
+Let z r := 1 + 2 * r.
+Let sqrem r s := s + r ^ 2.
+
+Compute let (r, s) := sqrtrem 52 in ((r, s), sqrem r s).
+Compute let (r, s) := (6, 16) in let (r', s') := (1 + r, s - z r) in ((r', s'), sqrem r' s').
+Compute let (r, s) := (5, 27) in let (r', s') := (2 + r, s - (z r + z (1 + r))) in ((r', s'), sqrem r' s').
+
+End Digression.
+
 Class HasSize : Type := size (a : N) : positive.
 
-Class HasShellPair : Type := shell_pair (n : N) : N * N.
+Class HasShell : Type := shell (n : N) : N * N.
 
-Class HasShellPairDep `(HasSize) : Type :=
-  shell_pair_dep (n : N) : {x : N * N $ Squash (snd x < Npos (size (fst x)))}.
+Class HasShellDep `(HasSize) : Type :=
+  shell_dep (n : N) : {x : N * N $ Squash (snd x < Npos (size (fst x)))}.
 
-Global Instance has_shell_pair `(HasSize) `(!HasShellPairDep size) :
-  HasShellPair := fun n : N =>
-  Spr1 (shell_pair_dep n).
+Global Instance has_shell `(HasSize) `(!HasShellDep size) : HasShell :=
+  fun n : N => Spr1 (shell_dep n).
 
-Class HasUnshellPair : Type := unshell_pair (a b : N) : N.
+Class HasUnshell : Type := unshell (a b : N) : N.
 
-Class HasUnshellPairDep `(HasSize) : Type :=
-  unshell_pair_dep (a b : N) (l : Squash (b < Npos (size a))) : N.
-
-(** This is a bad instance, because the size function is arbitrary. *)
-
-Fail Fail Instance has_unshell_pair_dep `(HasSize) `(HasUnshellPair) :
-  HasUnshellPairDep size := fun (a b : N) (l : Squash (b < pos (size a))) =>
-  unshell_pair a b.
-
-Class HasShellUnpair : Type := shell_unpair (x y : N) : N * N.
-
-Class HasShellUnpairDep `(HasSize) : Type :=
-  shell_unpair_dep (x y : N) :
-  {x : N * N $ Squash (snd x < Npos (size (fst x)))}.
-
-Global Instance has_shell_unpair `(HasSize) `(!HasShellUnpairDep size) :
-  HasShellUnpair := fun x y : N =>
-  Spr1 (shell_unpair_dep x y).
-
-Class HasUnshellUnpair : Type := unshell_unpair (a b : N) : N * N.
-
-Class HasUnshellUnpairDep `(HasSize) : Type :=
-  unshell_unpair_dep (a b : N) (l : Squash (b < Npos (size a))) : N * N.
+Class HasUnshellDep `(HasSize) : Type :=
+  unshell_dep (a b : N) (l : Squash (b < Npos (size a))) : N.
 
 (** This is a bad instance, because the size function is arbitrary. *)
 
-Fail Fail Instance has_unshell_unpair_dep `(HasSize) `(HasUnshellUnpair) :
-  HasUnshellUnpairDep size := fun (a b : N) (l : Squash (b < pos (size a))) =>
-  unshell_unpair a b.
+Fail Fail Instance has_unshell_dep `(HasSize) `(HasUnshell) :
+  HasUnshellDep size :=
+  fun (a b : N) (l : Squash (b < pos (size a))) => unshell a b.
 
-Class HasPairing `(HasShellPair) `(HasUnshellPair)
-  `(HasShellUnpair) `(HasUnshellUnpair) : Type :=
-  pairing : unit.
+Program Fixpoint funshell `(HasSize) `(!HasUnshellDep size) (a b : N)
+  {measure (N.to_nat b)} : N := _.
+Next Obligation.
+  intros ? ? a b f.
+  destruct (ltb_spec0 b (Npos (size a))) as [l | l].
+  - apply (unshell_dep a b). apply squash. apply l.
+  - apply (f _ _ (1 + a) (b - Npos (size a))). lia. Defined.
+Next Obligation. Tactics.program_solve_wf. Defined.
 
-Global Instance has_pairing `(HasShellPair) `(HasUnshellPair)
-  `(HasShellUnpair) `(HasUnshellUnpair) : HasPairing
-  shell_pair unshell_pair shell_unpair unshell_unpair := tt.
+Global Instance has_unshell `(HasSize) `(!HasUnshellDep size) : HasUnshell :=
+  funshell size unshell_dep.
 
-Class HasPairingDep `(HasSize)
-  `(!HasShellPairDep size) `(!HasUnshellPairDep size)
-  `(!HasShellUnpairDep size) `(!HasUnshellUnpairDep size) : Type :=
-  pairing_dep : unit.
+Class HasTaco : Type := taco (x y : N) : N * N.
 
-Global Instance has_pairing_dep `(HasSize)
-  `(!HasShellPairDep size) `(!HasUnshellPairDep size)
-  `(!HasShellUnpairDep size) `(!HasUnshellUnpairDep size) : HasPairingDep size
-  shell_pair_dep unshell_pair_dep shell_unpair_dep unshell_unpair_dep := tt.
+Class HasTacoDep `(HasSize) : Type :=
+  taco_dep (x y : N) : {x : N * N $ Squash (snd x < Npos (size (fst x)))}.
 
-Class IsUnshellPairShellPair `(HasPairing) : Prop :=
-  unshell_pair_shell_pair (n : N) :
-  prod_uncurry unshell_pair (shell_pair n) = n.
+Global Instance has_taco `(HasSize) `(!HasTacoDep size) : HasTaco :=
+  fun x y : N => Spr1 (taco_dep x y).
 
-Class IsUnshellPairDepShellPairDep `(HasPairingDep) : Prop :=
-  unshell_pair_dep_shell_pair_dep (n : N) :
-  Ssig_uncurry (prod_uncurry_dep unshell_pair_dep) (shell_pair_dep n) = n.
+Class HasUntaco : Type := untaco (a b : N) : N * N.
+
+Class HasUntacoDep `(HasSize) : Type :=
+  untaco_dep (a b : N) (l : Squash (b < Npos (size a))) : N * N.
+
+(** This is a bad instance, because the size function is arbitrary. *)
+
+Fail Fail Instance has_untaco_dep `(HasSize) `(HasUntaco) :
+  HasUntacoDep size :=
+  fun (a b : N) (l : Squash (b < pos (size a))) => untaco a b.
+
+Equations funtaco `(HasSize) `(!HasUntacoDep size) (a b : N) : N * N
+  by wf (N.to_nat b) :=
+  funtaco _ _ _ _ := _.
+Next Obligation.
+  intros ? ? a b f.
+  destruct (ltb_spec0 b (Npos (size a))) as [l | l].
+  - apply (untaco_dep a b). apply squash. apply l.
+  - apply (f _ _ (1 + a) (b - Npos (size a))). lia. Defined.
+
+Global Instance has_untaco `(HasSize) `(!HasUntacoDep size) : HasUntaco :=
+  funtaco size untaco_dep.
+
+Class HasLifting `(HasShell) `(HasUnshell) `(HasTaco) `(HasUntaco) : Type :=
+  lifting : unit.
+
+Global Instance has_lifting `(HasShell) `(HasUnshell) `(HasTaco) `(HasUntaco) :
+  HasLifting shell unshell taco untaco := tt.
+
+Class HasLiftingDep `(HasSize)
+  `(!HasShellDep size) `(!HasUnshellDep size)
+  `(!HasTacoDep size) `(!HasUntacoDep size) : Type := lifting_dep : unit.
+
+Global Instance has_lifting_dep `(HasSize)
+  `(!HasShellDep size) `(!HasUnshellDep size)
+  `(!HasTacoDep size) `(!HasUntacoDep size) :
+  HasLiftingDep size shell_dep unshell_dep taco_dep untaco_dep := tt.
+
+(** We want to say that [unshell] is a retraction of [shell] and
+    [shell] is a section of [unshell]. *)
+
+Class IsSectShell `(HasLifting) : Prop :=
+  sect_shell (n : N) : prod_uncurry unshell (shell n) = n.
+
+Class IsSectShellDep `(HasLiftingDep) : Prop :=
+  sect_shell_dep (n : N) :
+  Ssig_uncurry (prod_uncurry_dep unshell_dep) (shell_dep n) = n.
+
+Global Instance is_sect_shell `{IsSectShellDep} : IsSectShell lifting_dep.
+Proof. Admitted.
 
 (** This is a bad class, because it cannot be given instances. *)
 
-Fail Fail Class IsShellPairUnshellPair `(HasPairing) : Prop :=
-  shell_pair_unshell_pair (a b : N) :
-  shell_pair (unshell_pair a b) = (a, b).
+Fail Fail Class IsRetrShell `(HasLifting) : Prop :=
+  retr_shell (a b : N) : shell (unshell a b) = (a, b).
 
-Class IsShellPairDepUnshellPairDep `(HasPairingDep) : Prop :=
-  shell_pair_dep_unshell_pair_dep (a b : N) (l : Squash (b < Npos (size a))) :
-  shell_pair_dep (unshell_pair_dep a b l) = Sexists _ (a, b) l.
+Class IsRetrShellDep `(HasLiftingDep) : Prop :=
+  retr_shell_dep (a b : N) (l : Squash (b < Npos (size a))) :
+  shell_dep (unshell_dep a b l) = Sexists _ (a, b) l.
 
-Class IsUnshellUnpairShellUnpair `(HasPairing) : Prop :=
-  unshell_unpair_shell_unpair (x y : N) :
-  prod_uncurry unshell_unpair (shell_unpair x y) = (x, y).
+Class IsSectTaco `(HasLifting) : Prop :=
+  sect_taco (x y : N) : prod_uncurry untaco (taco x y) = (x, y).
 
-Class IsUnshellUnpairDepShellUnpairDep `(HasPairingDep) : Prop :=
-  unshell_unpair_dep_shell_unpair_dep (x y : N) :
-  Ssig_uncurry (prod_uncurry_dep unshell_unpair_dep) (shell_unpair_dep x y) =
-  (x, y).
+Class IsSectTacoDep `(HasLiftingDep) : Prop :=
+  sect_taco_dep (x y : N) :
+  Ssig_uncurry (prod_uncurry_dep untaco_dep) (taco_dep x y) = (x, y).
 
-(** This is a bad class, because it cannot be given instances. *)
-
-Fail Fail Class IsShellUnpairUnshellUnpair `(HasPairing) : Prop :=
-  shell_unpair_unshell_unpair (a b : N) :
-  prod_uncurry shell_unpair (unshell_unpair a b) = (a, b).
-
-Class IsShellUnpairDepUnshellUnpairDep `(HasPairingDep) : Prop :=
-  shell_unpair_dep_unshell_unpair_dep
-  (a b : N) (l : Squash (b < Npos (size a))) :
-  prod_uncurry shell_unpair_dep (unshell_unpair_dep a b l) =
-  Sexists _ (a, b) l.
+Global Instance is_sect_taco `{IsSectTacoDep} : IsSectTaco lifting_dep.
+Proof. Admitted.
 
 (** This is a bad class, because it cannot be given instances. *)
 
-Class IsPairing `(HasPairing) : Prop := {
-  pairing_is_unshell_pair_shell_pair :> IsUnshellPairShellPair pairing;
-  pairing_is_unshell_unpair_shell_unpair :> IsUnshellUnpairShellUnpair pairing;
+Fail Fail Class IsRetrTaco `(HasLifting) : Prop :=
+  retr_taco (a b : N) : prod_uncurry taco (untaco a b) = (a, b).
+
+Class IsRetrTacoDep `(HasLiftingDep) : Prop :=
+  retr_taco_dep (a b : N) (l : Squash (b < Npos (size a))) :
+  prod_uncurry taco_dep (untaco_dep a b l) = Sexists _ (a, b) l.
+
+Class IsLifting `(HasLifting) : Prop := {
+  lifting_is_sect_shell :> IsSectShell lifting;
+  lifting_is_sect_taco :> IsSectTaco lifting;
 }.
 
-Class IsPairingDep `(HasPairingDep) : Prop := {
-  pairing_is_unshell_pair_dep_shell_pair_dep :>
-  IsUnshellPairDepShellPairDep pairing_dep;
-  pairing_is_shell_pair_dep_unshell_pair_dep :>
-  IsShellPairDepUnshellPairDep pairing_dep;
-  pairing_is_unshell_unpair_dep_shell_unpair_dep :>
-  IsUnshellUnpairDepShellUnpairDep pairing_dep;
-  pairing_is_shell_unpair_dep_unshell_unpair_dep :>
-  IsShellUnpairDepUnshellUnpairDep pairing_dep;
+Class IsLiftingDep `(HasLiftingDep) : Prop := {
+  lifting_dep_is_sect_shell_dep :> IsSectShellDep lifting_dep;
+  lifting_dep_is_retr_shell_dep :> IsRetrShellDep lifting_dep;
+  lifting_dep_is_sect_taco_dep :> IsSectTacoDep lifting_dep;
+  lifting_dep_is_retr_taco_dep :> IsRetrTacoDep lifting_dep;
 }.
+
+Global Instance is_lifting `{IsLiftingDep} : IsLifting lifting_dep.
+Proof. esplit; try typeclasses eauto. Qed.
 
 Section Context.
 
-Context `{IsPairingDep}.
+Context `{IsLiftingDep}.
 
-Fail Equations pair (n : N) : N * N :=
-  pair n := prod_uncurry unshell_unpair (shell_pair n).
+Fail Fail Equations pair (n : N) : N * N :=
+  pair n := prod_uncurry untaco (shell n).
 
 Equations pair (n : N) : N * N :=
-  pair n := Ssig_uncurry (prod_uncurry_dep unshell_unpair_dep)
-    (shell_pair_dep n).
+  pair n := Ssig_uncurry (prod_uncurry_dep untaco_dep) (shell_dep n).
 
-Fail Equations unpair (x y : N) : N :=
-  unpair x y := prod_uncurry unshell_pair (shell_unpair x y).
+Fail Fail Equations unpair (x y : N) : N :=
+  unpair x y := prod_uncurry unshell (taco x y).
 
 Equations unpair (x y : N) : N :=
-  unpair x y := Ssig_uncurry (prod_uncurry_dep unshell_pair_dep)
-    (shell_unpair_dep x y).
+  unpair x y := Ssig_uncurry (prod_uncurry_dep unshell_dep) (taco_dep x y).
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof.
   destruct (pair n) as [x y] eqn : exy.
   simp pair in exy.
-  destruct (shell_pair_dep n) as [[a b] l] eqn : eab.
+  destruct (shell_dep n) as [[a b] l] eqn : eab.
   simp Ssig_uncurry in exy. simp prod_uncurry_dep in exy.
   simp prod_uncurry. simp unpair.
-  destruct (shell_unpair_dep x y) as [[a' b'] l'] eqn : eab'.
+  destruct (taco_dep x y) as [[a' b'] l'] eqn : eab'.
   simp Ssig_uncurry. simp prod_uncurry_dep.
-  pose proof shell_unpair_dep_unshell_unpair_dep a b l as loop_t.
-  pose proof unshell_pair_dep_shell_pair_dep n as loop_s.
+  pose proof retr_taco_dep a b l as loop_t.
+  pose proof sect_shell_dep n as loop_s.
   (** We need to reduce implicit arguments before rewriting. *)
   unfold size in loop_t.
   (** Contract [t ^-1]. *)
@@ -487,13 +515,13 @@ Proof.
 Theorem pair_unpair (x y : N) : pair (unpair x y) = (x, y).
 Proof.
   simp pair.
-  destruct (shell_pair_dep (unpair x y)) as [[a b] l] eqn : eab.
+  destruct (shell_dep (unpair x y)) as [[a b] l] eqn : eab.
   simp unpair in eab.
-  destruct (shell_unpair_dep x y) as [[a' b'] l'] eqn : eab'.
+  destruct (taco_dep x y) as [[a' b'] l'] eqn : eab'.
   simp Ssig_uncurry in eab. simp prod_uncurry_dep in eab.
   simp Ssig_uncurry. simp prod_uncurry_dep.
-  pose proof shell_pair_dep_unshell_pair_dep a' b' l' as loop_s.
-  pose proof unshell_unpair_dep_shell_unpair_dep x y as loop_t.
+  pose proof retr_shell_dep a' b' l' as loop_s.
+  pose proof sect_taco_dep x y as loop_t.
   (** We need to reduce implicit arguments before rewriting. *)
   unfold size in loop_s.
   (** Contract [s ^-1]. *)
@@ -514,54 +542,54 @@ Module Cantor.
 Equations size (a : N) : positive :=
   size a := succ_pos a.
 
-Equations shell_pair (n : N) : N * N :=
-  shell_pair n := untri_rem n.
+Equations shell (n : N) : N * N :=
+  shell n := untri_rem n.
 
-Equations shell_pair_dep (n : N) :
+Equations shell_dep (n : N) :
   {x : N * N $ Squash (snd x < Npos (size (fst x)))} :=
-  shell_pair_dep n := Sexists _ (shell_pair n) _.
+  shell_dep n := Sexists _ (shell n) _.
 Next Obligation.
   intros n.
   apply squash.
   simp size.
   rewrite succ_pos_spec.
-  simp shell_pair.
+  simp shell.
   rewrite untri_rem_tri_untri.
   simp fst snd.
   pose proof tri_untri_untri_rem n as l.
   lia. Qed.
 
-Equations unshell_pair (a b : N) : N :=
-  unshell_pair a b := b + tri a.
+Equations unshell (a b : N) : N :=
+  unshell a b := b + tri a.
 
-Equations unshell_pair_dep
+Equations unshell_dep
   (a b : N) (l : Squash (b < Npos (size a))) : N :=
-  unshell_pair_dep a b l := unshell_pair a b.
+  unshell_dep a b l := unshell a b.
 
-Lemma unshell_pair_dep_shell_pair_dep (n : N) :
-  Ssig_uncurry (prod_uncurry_dep unshell_pair_dep) (shell_pair_dep n) = n.
+Lemma sect_shell_dep (n : N) :
+  Ssig_uncurry (prod_uncurry_dep unshell_dep) (shell_dep n) = n.
 Proof.
   cbv [Ssig_uncurry Spr1 Spr2].
-  simp shell_pair_dep.
+  simp shell_dep.
   cbv [prod_uncurry_dep].
-  simp unshell_pair_dep.
-  simp unshell_pair.
-  simp shell_pair.
+  simp unshell_dep.
+  simp unshell.
+  simp shell.
   rewrite untri_rem_tri_untri.
   cbv [fst snd].
   pose proof tri_untri n as l.
   lia. Qed.
 
-Lemma shell_pair_dep_unshell_pair_dep
+Lemma retr_shell_dep
   (a b : N) (l : Squash (b < Npos (size a))) :
-  shell_pair_dep (unshell_pair_dep a b l) = Sexists _ (a, b) l.
+  shell_dep (unshell_dep a b l) = Sexists _ (a, b) l.
 Proof.
-  simp shell_pair_dep.
+  simp shell_dep.
   apply Spr1_inj.
   cbv [Spr1].
-  simp shell_pair.
-  simp unshell_pair_dep.
-  simp unshell_pair.
+  simp shell.
+  simp unshell_dep.
+  simp unshell.
   eapply unsquash in l.
   simp size in l.
   rewrite succ_pos_spec in l.
@@ -576,54 +604,54 @@ Proof.
   - left. lia.
   - right. lia. Qed.
 
-Equations shell_unpair (x y : N) : N * N :=
-  shell_unpair x y := (y + x, y).
+Equations taco (x y : N) : N * N :=
+  taco x y := (y + x, y).
 
-Equations shell_unpair_dep (x y : N) :
+Equations taco_dep (x y : N) :
   {x : N * N $ Squash (snd x < Npos (size (fst x)))} :=
-  shell_unpair_dep x y := Sexists _ (shell_unpair x y) _.
+  taco_dep x y := Sexists _ (taco x y) _.
 Next Obligation.
   intros x y.
   apply squash.
   simp size.
   rewrite succ_pos_spec.
-  simp shell_unpair.
+  simp taco.
   simp fst snd.
   lia. Qed.
 
-Equations unshell_unpair (a b : N) : N * N :=
-  unshell_unpair a b := (a - b, b).
+Equations untaco (a b : N) : N * N :=
+  untaco a b := (a - b, b).
 
-Equations unshell_unpair_dep (a b : N)
+Equations untaco_dep (a b : N)
   (l : Squash (b < Npos (size a))) : N * N :=
-  unshell_unpair_dep a b l := unshell_unpair a b.
+  untaco_dep a b l := untaco a b.
 
-Lemma unshell_unpair_dep_shell_unpair_dep (x y : N) :
-  Ssig_uncurry (prod_uncurry_dep unshell_unpair_dep) (shell_unpair_dep x y) =
+Lemma sect_taco_dep (x y : N) :
+  Ssig_uncurry (prod_uncurry_dep untaco_dep) (taco_dep x y) =
   (x, y).
 Proof.
   cbv [Ssig_uncurry Spr1 Spr2].
-  simp shell_unpair_dep.
+  simp taco_dep.
   cbv [prod_uncurry_dep].
-  simp unshell_unpair_dep.
-  simp unshell_unpair.
-  simp shell_unpair.
+  simp untaco_dep.
+  simp untaco.
+  simp taco.
   cbv [fst snd].
   f_equal.
   lia. Qed.
 
-Lemma shell_unpair_dep_unshell_unpair_dep
+Lemma retr_taco_dep
   (a b : N) (l : Squash (b < Npos (size a))) :
-  prod_uncurry shell_unpair_dep (unshell_unpair_dep a b l) =
+  prod_uncurry taco_dep (untaco_dep a b l) =
   Sexists _ (a, b) l.
 Proof.
   cbv [prod_uncurry].
-  simp shell_unpair_dep.
+  simp taco_dep.
   apply Spr1_inj.
   cbv [Spr1].
-  simp unshell_unpair_dep.
-  simp unshell_unpair.
-  simp shell_unpair.
+  simp untaco_dep.
+  simp untaco.
+  simp taco.
   cbv [fst snd].
   f_equal.
   eapply unsquash in l.
@@ -638,21 +666,21 @@ Proof.
 Module PF := PairingFunction.
 
 Global Instance has_size : PF.HasSize := size.
-Global Instance has_shell_pair_dep : PF.HasShellPairDep size := shell_pair_dep.
-Global Instance has_unshell_pair_dep : PF.HasUnshellPairDep size := unshell_pair_dep.
-Global Instance has_shell_unpair_dep : PF.HasShellUnpairDep size := shell_unpair_dep.
-Global Instance has_unshell_unpair_dep : PF.HasUnshellUnpairDep size := unshell_unpair_dep.
-Global Instance has_pairing_dep : PF.HasPairingDep size shell_pair_dep unshell_pair_dep shell_unpair_dep unshell_unpair_dep := tt.
+Global Instance has_shell_dep : PF.HasShellDep size := shell_dep.
+Global Instance has_unshell_dep : PF.HasUnshellDep size := unshell_dep.
+Global Instance has_taco_dep : PF.HasTacoDep size := taco_dep.
+Global Instance has_untaco_dep : PF.HasUntacoDep size := untaco_dep.
+Global Instance has_lifting_dep : PF.HasLiftingDep size shell_dep unshell_dep taco_dep untaco_dep := tt.
 
-Global Instance is_unshell_pair_dep_shell_pair_dep : PF.IsUnshellPairDepShellPairDep PF.pairing_dep.
-Proof. exact @unshell_pair_dep_shell_pair_dep. Qed.
-Global Instance is_shell_pair_dep_unshell_pair_dep : PF.IsShellPairDepUnshellPairDep PF.pairing_dep.
-Proof. exact @shell_pair_dep_unshell_pair_dep. Qed.
-Global Instance is_unshell_unpair_dep_shell_unpair_dep : PF.IsUnshellUnpairDepShellUnpairDep PF.pairing_dep.
-Proof. exact @unshell_unpair_dep_shell_unpair_dep. Qed.
-Global Instance is_shell_unpair_dep_unshell_unpair_dep : PF.IsShellUnpairDepUnshellUnpairDep PF.pairing_dep.
-Proof. exact @shell_unpair_dep_unshell_unpair_dep. Qed.
-Global Instance is_pairing_dep : PF.IsPairingDep PF.pairing_dep.
+Global Instance is_sect_shell_dep : PF.IsSectShellDep PF.lifting_dep.
+Proof. exact @sect_shell_dep. Qed.
+Global Instance is_retr_shell_dep : PF.IsRetrShellDep PF.lifting_dep.
+Proof. exact @retr_shell_dep. Qed.
+Global Instance is_sect_taco_dep : PF.IsSectTacoDep PF.lifting_dep.
+Proof. exact @sect_taco_dep. Qed.
+Global Instance is_retr_taco_dep : PF.IsRetrTacoDep PF.lifting_dep.
+Proof. exact @retr_taco_dep. Qed.
+Global Instance is_lifting_dep : PF.IsLiftingDep PF.lifting_dep.
 Proof. esplit; typeclasses eauto. Qed.
 
 Compute map PF.pair (seq 0 64).
@@ -693,7 +721,7 @@ Definition unpair (p q : N) : N :=
 
 Arguments unpair _ _ : assert.
 
-Theorem unpair_shell_pair (n : N) :
+Theorem unpair_shell (n : N) :
   prod_uncurry unpair_shell (pair n) = pair_shell n.
 Proof.
   cbv [prod_uncurry fst snd unpair_shell pair pair_shell].
@@ -702,7 +730,7 @@ Proof.
   clear est es.
   destruct (leb_spec s t) as [lst | lst]; lia. Qed.
 
-Theorem pair_shell_unpair (p q : N) :
+Theorem pair_taco (p q : N) :
   pair_shell (unpair p q) = unpair_shell p q.
 Proof.
   cbv [pair_shell unpair unpair_shell].
@@ -761,7 +789,7 @@ Arguments unpair _ _ : assert.
 (** Note how the three following proofs are
     nearly exactly the same as in [RosenbergStrong]. *)
 
-Theorem unpair_shell_pair (n : N) :
+Theorem unpair_shell (n : N) :
   prod_uncurry unpair_shell (pair n) = pair_shell n.
 Proof.
   cbv [prod_uncurry fst snd unpair_shell pair pair_shell].
@@ -770,7 +798,7 @@ Proof.
   clear est es.
   destruct (leb_spec s t) as [lst | lst]; lia. Qed.
 
-Theorem pair_shell_unpair (p q : N) :
+Theorem pair_taco (p q : N) :
   pair_shell (unpair p q) = unpair_shell p q.
 Proof.
   cbv [pair_shell unpair unpair_shell].
@@ -1103,12 +1131,12 @@ Compute map (prod_uncurry unpair o pair) (seq 0 64).
 Compute map pair_shell (seq 0 64).
 Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
 
-Theorem unpair_shell_pair (n : N) :
+Theorem unpair_shell (n : N) :
   prod_uncurry unpair_shell (pair n) = pair_shell n.
 Proof.
   cbv [prod_uncurry fst snd unpair_shell pair pair_shell]. Admitted.
 
-Theorem pair_shell_unpair (p q : N) :
+Theorem pair_taco (p q : N) :
   pair_shell (unpair p q) = unpair_shell p q.
 Proof.
   cbv [pair_shell unpair unpair_shell]. Admitted.
