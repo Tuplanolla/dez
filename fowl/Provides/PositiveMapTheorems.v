@@ -622,6 +622,9 @@ Arguments encode {_ _ !_} _.
 
 (* Is.OneSorted.Countable *)
 
+(** Change [N] here and then lift the [positive] properties,
+    just like in the standard library. *)
+
 Class IsCnt (A : Type) `(HasCode positive A) : Prop := {
   decode_encode : forall x : A, decode (encode x) = Some x;
   (* encode_decode : forall n : positive,

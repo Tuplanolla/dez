@@ -362,90 +362,91 @@ Global Instance has_lifting_dep `(HasSize)
   `(!HasTacoDep size) `(!HasUntacoDep size) :
   HasLiftingDep size shell_dep unshell_dep taco_dep untaco_dep := tt.
 
-Section Down.
+(** We avoid defining instances involving interplay
+    between dependent and nondependent versions of the same type classes,
+    because they quickly lead into circular dependencies. *)
 
-(** These are bad instances,
-    because the choice of size function is arbitrary. *)
+(** We can derive dependent versions from nondependent ones. *)
 
-Equations fshell_dep_help `(HasSize) `(HasShell) (a b : N) :
-  {x : N * N $ Squash (snd x < Npos (size (fst x)))}
-  by wf (N.to_nat b) :=
-  fshell_dep_help _ _ a b := _.
+Equations shell_dep_fix `(HasSize) `(HasShell) (a b : N) :
+  {x : N * N $ Squash (snd x < Npos (size (fst x)))} by wf (to_nat b) :=
+  shell_dep_fix _ _ a b := _.
 Next Obligation.
   intros ? ? a b f.
   destruct (ltb_spec0 b (Npos (size a))) as [l | l].
-  - exists (a, b). apply squash. apply l.
+  - exists (a, b). apply squash. assumption.
   - destruct (f _ _ (1 + a) (b - Npos (size a))) as [[a' b'] l'].
     + lia.
-    + exists (a', b'). apply l'. Defined.
+    + exists (a', b'). assumption. Defined.
 
-Equations fshell_dep `(HasSize) `(HasShell) (n : N) :
+Equations shell_dep_def `(HasSize) `(HasShell) (n : N) :
   {x : N * N $ Squash (snd x < Npos (size (fst x)))} :=
-  fshell_dep _ _ n := prod_uncurry (fshell_dep_help size shell) (shell n).
+  shell_dep_def _ _ n := prod_uncurry (shell_dep_fix size shell) (shell n).
 
-Instance has_unshell_dep `(HasSize) `(HasUnshell) : HasUnshellDep size :=
+Definition has_shell_dep `(HasSize) `(HasShell) : HasShellDep size :=
+  fun n : N => shell_dep_def size shell n.
+
+Definition has_unshell_dep `(HasSize) `(HasUnshell) : HasUnshellDep size :=
   fun (a b : N) (l : Squash (b < Npos (size a))) => unshell a b.
 
-Equations ftaco_dep_help `(HasSize) `(HasTaco) (a b : N) :
-  {x : N * N $ Squash (snd x < Npos (size (fst x)))}
-  by wf (N.to_nat b) :=
-  ftaco_dep_help _ _ a b := _.
+Equations taco_dep_fix `(HasSize) `(HasTaco) (a b : N) :
+  {x : N * N $ Squash (snd x < Npos (size (fst x)))} by wf (N.to_nat b) :=
+  taco_dep_fix _ _ a b := _.
 Next Obligation.
   intros ? ? a b f.
   destruct (ltb_spec0 b (Npos (size a))) as [l | l].
-  - exists (a, b). apply squash. apply l.
+  - exists (a, b). apply squash. assumption.
   - destruct (f _ _ (1 + a) (b - Npos (size a))) as [[a' b'] l'].
     + lia.
-    + exists (a', b'). apply l'. Defined.
+    + exists (a', b'). assumption. Defined.
 
-Equations ftaco_dep `(HasSize) `(HasTaco) (x y : N) :
+Equations taco_dep_def `(HasSize) `(HasTaco) (x y : N) :
   {x : N * N $ Squash (snd x < Npos (size (fst x)))} :=
-  ftaco_dep _ _ x y := prod_uncurry (ftaco_dep_help size taco) (taco x y).
+  taco_dep_def _ _ x y :=
+  prod_uncurry (taco_dep_fix size taco) (taco x y).
 
-Instance has_taco_dep `(HasSize) `(HasTaco) : HasTacoDep size :=
-  ftaco_dep size taco.
+Definition has_taco_dep `(HasSize) `(HasTaco) : HasTacoDep size :=
+  taco_dep_def size taco.
 
-Instance has_untaco_dep `(HasSize) `(HasUntaco) : HasUntacoDep size :=
+Definition has_untaco_dep `(HasSize) `(HasUntaco) : HasUntacoDep size :=
   fun (a b : N) (l : Squash (b < Npos (size a))) => untaco a b.
 
-End Down.
+(** We can also derive nondependent versions from dependent ones. *)
 
-Section Up.
-
-Instance has_shell `(HasSize) `(!HasShellDep size) : HasShell :=
+Definition has_shell `(HasSize) `(!HasShellDep size) : HasShell :=
   fun n : N => Spr1 (shell_dep n).
 
-Equations funshell `(HasSize) `(!HasUnshellDep size) (a b : N) : N
-  by wf (N.to_nat b) :=
-  funshell _ _ a b := _.
+Equations unshell_fix `(HasSize) `(!HasUnshellDep size) (a b : N) :
+  N by wf (N.to_nat b) :=
+  unshell_fix _ _ a b := _.
 Next Obligation.
   intros ? ? a b f.
   destruct (ltb_spec0 b (Npos (size a))) as [l | l].
-  - apply (unshell_dep a b). apply squash. apply l.
+  - apply (unshell_dep a b). apply squash. assumption.
   - apply (f _ _ (1 + a) (b - Npos (size a))). lia. Defined.
 
-Instance has_unshell `(HasSize) `(!HasUnshellDep size) : HasUnshell :=
-  funshell size unshell_dep.
+Definition has_unshell `(HasSize) `(!HasUnshellDep size) : HasUnshell :=
+  unshell_fix size unshell_dep.
 
-Instance has_taco `(HasSize) `(!HasTacoDep size) : HasTaco :=
+Definition has_taco `(HasSize) `(!HasTacoDep size) : HasTaco :=
   fun x y : N => Spr1 (taco_dep x y).
 
-Equations funtaco `(HasSize) `(!HasUntacoDep size) (a b : N) : N * N
-  by wf (N.to_nat b) :=
-  funtaco _ _ _ _ := _.
+Equations untaco_fix `(HasSize) `(!HasUntacoDep size) (a b : N) :
+  N * N by wf (N.to_nat b) :=
+  untaco_fix _ _ _ _ := _.
 Next Obligation.
   intros ? ? a b f.
   destruct (ltb_spec0 b (Npos (size a))) as [l | l].
-  - apply (untaco_dep a b). apply squash. apply l.
+  - apply (untaco_dep a b). apply squash. assumption.
   - apply (f _ _ (1 + a) (b - Npos (size a))). lia. Defined.
 
-Instance has_untaco `(HasSize) `(!HasUntacoDep size) : HasUntaco :=
-  funtaco size untaco_dep.
+Definition has_untaco `(HasSize) `(!HasUntacoDep size) : HasUntaco :=
+  untaco_fix size untaco_dep.
 
-End Up.
+(** TODO Lexicographic ordering of the shell-taco space. *)
 
 (** We want to say that [unshell] is a retraction of [shell] and
-    [shell] is a section of [unshell]. *)
+    [shell] is a section of [unshell] and then vice versa. *)
 
 Class IsSectShell `(HasLifting) : Prop :=
   sect_shell (n : N) : prod_uncurry unshell (shell n) = n.
@@ -453,9 +454,6 @@ Class IsSectShell `(HasLifting) : Prop :=
 Class IsSectShellDep `(HasLiftingDep) : Prop :=
   sect_shell_dep (n : N) :
   Ssig_uncurry (prod_uncurry_dep unshell_dep) (shell_dep n) = n.
-
-(* Global Instance is_sect_shell `{IsSectShellDep} : IsSectShell lifting_dep.
-Proof. Admitted. *)
 
 Class IsRetrShell `(HasLifting) : Prop :=
   retr_shell (a b : N) : shell (unshell a b) = (a, b).
@@ -471,9 +469,6 @@ Class IsSectTacoDep `(HasLiftingDep) : Prop :=
   sect_taco_dep (x y : N) :
   Ssig_uncurry (prod_uncurry_dep untaco_dep) (taco_dep x y) = (x, y).
 
-(* Global Instance is_sect_taco `{IsSectTacoDep} : IsSectTaco lifting_dep.
-Proof. Admitted. *)
-
 Class IsRetrTaco `(HasLifting) : Prop :=
   retr_taco (a b : N) : prod_uncurry taco (untaco a b) = (a, b).
 
@@ -483,7 +478,9 @@ Class IsRetrTacoDep `(HasLiftingDep) : Prop :=
 
 Class IsLifting `(HasLifting) : Prop := {
   lifting_is_sect_shell :> IsSectShell lifting;
+  lifting_is_retr_shell :> IsRetrShell lifting;
   lifting_is_sect_taco :> IsSectTaco lifting;
+  lifting_is_retr_taco :> IsRetrTaco lifting;
 }.
 
 Class IsLiftingDep `(HasLiftingDep) : Prop := {
@@ -493,8 +490,25 @@ Class IsLiftingDep `(HasLiftingDep) : Prop := {
   lifting_dep_is_retr_taco_dep :> IsRetrTacoDep lifting_dep;
 }.
 
-(* Global Instance is_lifting `{IsLiftingDep} : IsLifting lifting_dep.
-Proof. esplit; try typeclasses eauto. Qed. *)
+(** Try this! *)
+
+Section Context.
+
+Existing Instance has_shell.
+Existing Instance has_unshell.
+Existing Instance has_taco.
+Existing Instance has_untaco.
+
+Global Instance is_sect_shell `{IsSectShellDep} : IsSectShell lifting_dep.
+Proof.
+  intros n.
+  pose proof sect_shell_dep n as e.
+  unfold shell, has_shell, unshell, has_unshell.
+  destruct (shell_dep n) as [[a b] l].
+  simp Ssig_uncurry in e. simp prod_uncurry_dep in e.
+  unfold Spr1. simp prod_uncurry. Abort.
+
+End Context.
 
 Section Context.
 
