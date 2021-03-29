@@ -909,20 +909,13 @@ Module Hausdorff.
 Lemma pos_binfactor_even (n : positive) :
   pos_binfactor (2 * n) = 1 + pos_binfactor n.
 Proof.
+  simp pos_binfactor.
   induction n as [p ei | p ei |].
   - reflexivity.
-  - cbn [pos_binfactor].
-    replace (1 + succ (pos_binfactor p)) with (succ (1 + pos_binfactor p)) by lia.
-    rewrite <- ei. reflexivity.
-  - reflexivity. Qed.
-
-Lemma pos_binfactor_even_succ (n : positive) :
-  pos_binfactor (succ_pos (2 * Npos n - 1)) = 1 + pos_binfactor n.
-Proof.
-  induction n as [p ei | p ei |].
-  - reflexivity.
-  - cbn [pos_binfactor].
-    replace (1 + succ (pos_binfactor p)) with (succ (1 + pos_binfactor p)) by lia.
+  - simp pos_binoddfactor in *.
+    destruct (pos_binoddfactor p) as [b c].
+    change (fst (succ b, c)) with (succ (fst (b, c))).
+    replace (1 + succ (fst (b, c))) with (succ (1 + fst (b, c))) by lia.
     rewrite <- ei. reflexivity.
   - reflexivity. Qed.
 
@@ -931,14 +924,17 @@ Lemma part_factor (n : N) (f : n <> 0) :
 Proof.
   destruct n as [| p].
   - contradiction.
-  - exists (pos_binfactor p), ((pos_oddfactor p - 1) / 2). clear f.
+  - exists (pos_binfactor p), ((Npos (pos_oddfactor p) - 1) / 2). clear f.
     induction p as [q ei | q ei |].
     + cbn [pos_binfactor pos_oddfactor]. rewrite pow_0_r. rewrite mul_1_r.
       rewrite <- divide_div_mul_exact. rewrite (mul_comm 2 _). rewrite div_mul.
-      lia. lia. lia. cbn. replace (q~0)%positive with (2 * q)%positive by lia.
+      reflexivity.
+      lia. lia. cbn. replace (q~0)%positive with (2 * q)%positive by lia.
       replace (pos (2 * q)%positive) with (2 * Npos q) by lia.
       apply divide_factor_l.
-    + cbn [pos_binfactor pos_oddfactor]. rewrite pow_succ_r by lia.
+    + simp pos_binfactor pos_oddfactor pos_binoddfactor in *.
+      destruct (pos_binoddfactor q) as [b c]. simp fst snd in *.
+      rewrite pow_succ_r by lia.
       rewrite mul_assoc. lia.
     + reflexivity. Qed.
 
@@ -948,17 +944,19 @@ Proof. exists ((1 + 2 * q) * 2 ^ p). reflexivity. Qed.
 
 Lemma part_urgh (n : positive) :
   let p := pos_binfactor n in
-  let q := (pos_oddfactor n - 1) / 2 in
+  let q := (Npos (pos_oddfactor n) - 1) / 2 in
   Npos n = (1 + 2 * q) * 2 ^ p.
 Proof.
   intros p' q'. subst p' q'.
   induction n as [q ei | q ei |].
   + cbn [pos_binfactor pos_oddfactor]. rewrite pow_0_r. rewrite mul_1_r.
     rewrite <- divide_div_mul_exact. rewrite (mul_comm 2 _). rewrite div_mul.
-    lia. lia. lia. cbn. replace (q~0)%positive with (2 * q)%positive by lia.
+    reflexivity. lia. lia. cbn. replace (q~0)%positive with (2 * q)%positive by lia.
     replace (pos (2 * q)%positive) with (2 * Npos q) by lia.
     apply divide_factor_l.
-  + cbn [pos_binfactor pos_oddfactor]. rewrite pow_succ_r by lia.
+  + simp pos_binfactor pos_oddfactor pos_binoddfactor in *.
+    destruct (pos_binoddfactor q) as [b c]. simp fst snd in *.
+    rewrite pow_succ_r by lia.
     rewrite mul_assoc. lia.
   + reflexivity. Qed.
 
@@ -976,7 +974,8 @@ Lemma binfactor_even (n : N) (f : n <> 0) :
 Proof.
   destruct n as [| p].
   - arithmetize. cbn. lia.
-  - apply (pos_binfactor_even p). Qed.
+  - simp binfactor binoddfactor.
+    rewrite (pos_binfactor_even p). Qed.
 
 Lemma binfactor_pow_2 (n p : N) (f : p <> 0) :
   binfactor (2 ^ n * p) = n + binfactor p.
@@ -1138,7 +1137,7 @@ Proof.
       lia. Qed.
 
 Lemma pos_oddfactor_trivial (p q : N) :
-  pos_oddfactor (succ_pos ((1 + 2 * q) * 2 ^ p - 1)) = 1 + 2 * q.
+  Npos (pos_oddfactor (succ_pos ((1 + 2 * q) * 2 ^ p - 1))) = 1 + 2 * q.
 Proof.
   pose proof oddfactor_trivial p q as e.
   remember ((1 + 2 * q) * 2 ^ p) as r eqn : er.
@@ -1184,7 +1183,7 @@ Definition pair (n : N) : N * N :=
 Arguments pair _ : assert.
 
 Lemma pair_eqn (n : N) : pair n =
-  (pos_binfactor (succ_pos n), (pos_oddfactor (succ_pos n) - 1) / 2).
+  (pos_binfactor (succ_pos n), (Npos (pos_oddfactor (succ_pos n)) - 1) / 2).
 Proof. Admitted.
 
 Definition unpair (p q : N) : N := pred (binoddprod p (succ (shiftl q 1))).
@@ -1201,7 +1200,7 @@ Compute map (prod_uncurry unpair o pair) (seq 0 64).
 Compute map pair_shell (seq 0 64).
 Compute map (prod_uncurry unpair_shell o pair) (seq 0 64).
 
-Theorem unpair_shell (n : N) :
+Theorem unpair_shell' (n : N) :
   prod_uncurry unpair_shell (pair n) = pair_shell n.
 Proof.
   cbv [prod_uncurry fst snd unpair_shell pair pair_shell]. Admitted.
