@@ -4,7 +4,7 @@ From Coq Require Import
 From stdpp Require Import
   option finite fin_maps gmap gmultiset pmap.
 From Maniunfold.Has Require Export
-  OneSorted.Unsquashing
+  Unsquashing
   OneSorted.Enumeration OneSorted.Cardinality TwoSorted.Isomorphism.
 From Maniunfold.Is Require Export
   OneSorted.Finite TwoSorted.Isomorphism

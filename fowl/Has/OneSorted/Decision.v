@@ -1,8 +1,9 @@
 From Maniunfold.Has Require Export
-  OneSorted.Unsquashing.
+  Unsquashing.
 
 (** Decision, decidable proposition. *)
 
+#[deprecated]
 Class HasDec (A : Prop) : Type := dec : {A} + {~ A}.
 
 Hint Mode HasDec ! : typeclass_instances.

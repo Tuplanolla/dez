@@ -1,5 +1,5 @@
 From Coq Require Import
-  Logic.Eqdep_dec.
+  Classes.DecidableClass Logic.Eqdep_dec.
 From Maniunfold.Has Require Export
   OneSorted.Decision OneSorted.ProofIrrelevance.
 
@@ -21,5 +21,20 @@ Global Instance eq_has_dec (x y : A) : HasDec (x = y) := eq_dec x y.
 
 Global Instance eq_has_prf_irrel (x y : A) : HasPrfIrrel (x = y).
 Proof. intros ? ?. apply UIP_dec. assumption. Qed.
+
+End Context.
+
+Section Context.
+
+Context (A : Type) `(HasEqDec A).
+
+Global Program Instance eq_has_decidable (x y : A) : Decidable (x = y) := {
+  Decidable_witness := proj1_sig (Sumbool.bool_of_sumbool (eq_dec x y));
+  Decidable_spec := _;
+}.
+Next Obligation.
+  intros x y. destruct (eq_dec x y).
+  - split; auto.
+  - split; cbn; congruence. Qed.
 
 End Context.

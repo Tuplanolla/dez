@@ -5,11 +5,11 @@
     Full credits can be found in the transitive dependencies of this file. *)
 
 From Coq Require Import
-  PArith.PArith Program.Wf.
+  Classes.DecidableClass PArith.PArith Program.Wf.
 From Maniunfold.Has Require Export
-  OneSorted.EqualityDecision OneSorted.Unsquashing.
+  OneSorted.EqualityDecision Unsquashing.
 From Maniunfold.Provides Require Import
-  OptionTheorems PositivePairingFunctions.
+  LogicalTheorems OptionTheorems PositiveTheorems PositivePairingFunctions.
 
 From Coq Require Import Lia List Recdef.
 Import ListNotations Pos.
@@ -18,46 +18,9 @@ Import ListNotations Pos.
 
 Unset Universe Polymorphism.
 
-Local Open Scope positive_scope.
-
-Global Instance bool_has_eq_dec : HasEqDec bool.
-Proof. cbv [HasEqDec]. decide equality. Defined.
-
-Global Instance positive_has_eq_dec : HasEqDec positive.
-Proof. cbv [HasEqDec] in *. decide equality. Defined.
-
-Global Instance positive_has_le_dec (n p : positive) : HasDec (n <= p).
-Proof.
-  cbv [HasDec] in *. destruct (n <=? p) eqn : e.
-  - left. apply leb_le; auto.
-  - right. apply leb_nle; auto. Defined.
-
-Global Instance positive_has_lt_dec (n p : positive) : HasDec (n < p).
-Proof.
-  cbv [HasDec] in *. destruct (n <? p) eqn : e.
-  - left. apply ltb_lt; auto.
-  - right. apply ltb_nlt; auto. Defined.
-
 Global Instance option_has_eq_dec (A : Type) `(HasEqDec A) :
   HasEqDec (option A).
 Proof. cbv [HasEqDec] in *. decide equality. Defined.
-
-Definition option_bind (A B : Type)
-  (f : A -> option B) (x : option A) : option B :=
-  match x with
-  | Some a => f a
-  | None => None
-  end.
-
-Arguments option_bind _ _ _ !_.
-
-Definition option_extract (A : Type) (a : A) (x : option A) : A :=
-  match x with
-  | Some b => b
-  | None => a
-  end.
-
-Arguments option_extract _ _ !_.
 
 Fixpoint list_omap (A B : Type) (f : A -> option B)
   (l : list A) {struct l} : list B :=
@@ -71,40 +34,6 @@ Fixpoint list_omap (A B : Type) (f : A -> option B)
   end.
 
 Arguments list_omap _ _ _ !_ : simpl nomatch.
-
-Definition fst_option (A B : Type) (x : option A * B) : option (A * B) :=
-  match x with
-  | (y, b) =>
-    match y with
-    | Some a => Some (a, b)
-    | None => None
-    end
-  end.
-
-Arguments fst_option _ _ !_ : simpl nomatch.
-
-Definition snd_option (A B : Type) (x : A * option B) : option (A * B) :=
-  match x with
-  | (a, y) =>
-    match y with
-    | Some b => Some (a, b)
-    | None => None
-    end
-  end.
-
-Arguments snd_option _ _ !_ : simpl nomatch.
-
-Definition pair_option (A B : Type)
-  (x : option A * option B) : option (A * B) :=
-  match x with
-  | (y, z) =>
-    match y, z with
-    | Some a, Some b => Some (a, b)
-    | _, _ => None
-    end
-  end.
-
-Arguments pair_option _ _ !_ : simpl nomatch.
 
 Definition pair_diag (A : Type) (a : A) : A * A := (a, a).
 
@@ -285,6 +214,8 @@ Definition pos_tree_to_list (A : Type) (t : pos_tree A) :
 
 Arguments pos_tree_to_list _ !_.
 
+Local Open Scope positive_scope.
+
 (** Merge sort passionately! *)
 
 Program Fixpoint merge' (l0 l1 : list positive)
@@ -376,8 +307,7 @@ Local Notation "'GT'" := (inright _)
   (at level 0, no associativity, only parsing).
 
 Definition pos_trichotomy_inf (p q : positive) : {p < q} + {p = q} + {q < p}.
-Proof.
-  destruct (dec (p < q)), (dec (p = q)), (dec (q < p)); auto || lia. Defined.
+Proof. decide (p < q); decide (p = q); decide (q < p); auto || lia. Defined.
 
 Definition pos_max (l : list positive) : positive := fold_right max xH l.
 
@@ -506,6 +436,8 @@ Next Obligation. eauto. (* intros A. apply squash. reflexivity. *) Qed.
 Definition pos_map_lookup (A : Type)
   (n : positive) (m : pos_map A) : option A :=
   pos_tree_lookup n (Spr1 m).
+
+Set Universe Polymorphism.
 
 Program Definition pos_map_partial_alter (A : Type)
   (f : option A -> option A) (n : positive) (m : pos_map A) : pos_map A :=
@@ -735,11 +667,9 @@ Definition pos_map_free_lan (A : Type)
 
 (** The scopes are messed up. *)
 
-Import Logic.
-
 Lemma pos_map_free_lan_nonempty (A : Type)
   (h : positive -> positive) (m : pos_map A) :
-  pos_map_forall (not o eq []) (pos_map_free_lan h m).
+  pos_map_forall (not o Logic.eq []) (pos_map_free_lan h m).
 Proof. Admitted.
 
 Definition cut_map_wf (A : Type) (P : A -> Prop) (m : pos_map A) : Prop :=

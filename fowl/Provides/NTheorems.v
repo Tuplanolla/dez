@@ -1,7 +1,7 @@
 (** * Lemmas and instances for [N]. *)
 
 From Coq Require Import
-  Classes.Morphisms Lia NArith.NArith Setoids.Setoid.
+  Classes.DecidableClass Classes.Morphisms Lia NArith.NArith Setoids.Setoid.
 From Maniunfold Require Import
   DatatypeTactics Equations RewritingTactics.
 From Maniunfold.Is Require Export
@@ -41,6 +41,24 @@ Proof.
     reflexivity. Qed.
 
 (** These instances are missing from the standard library. *)
+
+Global Program Instance Decidable_eq_N (x y : N) : Decidable (x = y) := {
+  Decidable_witness := eqb x y;
+  Decidable_spec := _;
+}.
+Next Obligation. intros x y. apply eqb_eq. Qed.
+
+Global Program Instance Decidable_le_N (x y : N) : Decidable (x <= y) := {
+  Decidable_witness := leb x y;
+  Decidable_spec := _;
+}.
+Next Obligation. intros x y. apply leb_le. Qed.
+
+Global Program Instance Decidable_lt_N (x y : N) : Decidable (x < y) := {
+  Decidable_witness := ltb x y;
+  Decidable_spec := _;
+}.
+Next Obligation. intros x y. apply ltb_lt. Qed.
 
 Global Instance le_add_wd : Proper (le ==> le ==> le) add.
 Proof. intros n p l n' p' l'. apply add_le_mono; [lia |]. lia. Qed.

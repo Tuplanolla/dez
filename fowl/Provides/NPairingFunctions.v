@@ -1,5 +1,5 @@
 From Coq Require Import
-  Lia Lists.List NArith.NArith.
+  Lia Lists.List NArith.NArith Bool.Sumbool.
 From Maniunfold Require Import
   Equations.
 From Maniunfold.Has Require Export
@@ -221,9 +221,6 @@ Proof.
   apply Spr1_inj.
   simp Spr1.
   apply pos_binoddfactor_pos_binoddprod.
-  (** TODO Instances! *)
-  assert (HasDec (pos_odd c)).
-  { hnf. cbv [pos_odd negb pos_even]. destruct c. all: intuition. }
   apply unsquash in e. auto. Qed.
 
 (** Split the given natural number into a binary factor and an odd factor,
@@ -368,45 +365,61 @@ Global Instance has_lifting_dep `(HasSize)
 
 (** We can derive dependent versions from nondependent ones. *)
 
-Equations shell_dep_fix `(HasSize) `(HasShell) (a b : N) :
+Section Context.
+
+Context `(HasSize) `(HasShell).
+
+Equations shell_dep_fix (a b : N) :
   {x : N * N $ Squash (snd x < Npos (size (fst x)))} by wf (to_nat b) :=
-  shell_dep_fix _ _ a b := _.
+  shell_dep_fix a b := if sumbool_of_bool (b <? Npos (size a)) then
+  Sexists _ (a, b) _ else shell_dep_fix (1 + a) (b - Npos (size a)).
 Next Obligation.
-  intros ? ? a b f.
-  destruct (ltb_spec0 b (Npos (size a))) as [l | l].
-  - exists (a, b). apply squash. assumption.
-  - destruct (f _ _ (1 + a) (b - Npos (size a))) as [[a' b'] l'].
-    + lia.
-    + exists (a', b'). assumption. Defined.
+  intros a b f e.
+  apply squash.
+  simp fst snd.
+  destruct (ltb_spec0 b (Npos (size a))) as [l | l]; lia. Qed.
+Next Obligation.
+  intros a b f e.
+  destruct (ltb_spec0 b (Npos (size a))) as [l | l]; lia. Qed.
 
-Equations shell_dep_def `(HasSize) `(HasShell) (n : N) :
+Equations shell_dep_def (n : N) :
   {x : N * N $ Squash (snd x < Npos (size (fst x)))} :=
-  shell_dep_def _ _ n := prod_uncurry (shell_dep_fix size shell) (shell n).
+  shell_dep_def n := prod_uncurry shell_dep_fix (shell n).
 
-Definition has_shell_dep `(HasSize) `(HasShell) : HasShellDep size :=
-  fun n : N => shell_dep_def size shell n.
+Definition has_shell_dep : HasShellDep size :=
+  fun n : N => shell_dep_def n.
+
+End Context.
 
 Definition has_unshell_dep `(HasSize) `(HasUnshell) : HasUnshellDep size :=
   fun (a b : N) (l : Squash (b < Npos (size a))) => unshell a b.
 
-Equations taco_dep_fix `(HasSize) `(HasTaco) (a b : N) :
-  {x : N * N $ Squash (snd x < Npos (size (fst x)))} by wf (N.to_nat b) :=
-  taco_dep_fix _ _ a b := _.
+Section Context.
+
+Context `(HasSize) `(HasTaco).
+
+Equations taco_dep_fix (a b : N) :
+  {x : N * N $ Squash (snd x < Npos (size (fst x)))} by wf (to_nat b) :=
+  taco_dep_fix a b := if sumbool_of_bool (b <? Npos (size a)) then
+  Sexists _ (a, b) _ else taco_dep_fix (1 + a) (b - Npos (size a)).
 Next Obligation.
-  intros ? ? a b f.
-  destruct (ltb_spec0 b (Npos (size a))) as [l | l].
-  - exists (a, b). apply squash. assumption.
-  - destruct (f _ _ (1 + a) (b - Npos (size a))) as [[a' b'] l'].
-    + lia.
-    + exists (a', b'). assumption. Defined.
+  intros a b f e.
+  apply squash.
+  simp fst snd.
+  destruct (ltb_spec0 b (Npos (size a))) as [l | l]; lia. Qed.
+Next Obligation.
+  intros a b f e.
+  destruct (ltb_spec0 b (Npos (size a))) as [l | l]; lia. Qed.
 
-Equations taco_dep_def `(HasSize) `(HasTaco) (x y : N) :
+Equations taco_dep_def (x y : N) :
   {x : N * N $ Squash (snd x < Npos (size (fst x)))} :=
-  taco_dep_def _ _ x y :=
-  prod_uncurry (taco_dep_fix size taco) (taco x y).
+  taco_dep_def x y :=
+  prod_uncurry taco_dep_fix (taco x y).
 
-Definition has_taco_dep `(HasSize) `(HasTaco) : HasTacoDep size :=
-  taco_dep_def size taco.
+Definition has_taco_dep : HasTacoDep size :=
+  taco_dep_def.
+
+End Context.
 
 Definition has_untaco_dep `(HasSize) `(HasUntaco) : HasUntacoDep size :=
   fun (a b : N) (l : Squash (b < Npos (size a))) => untaco a b.
@@ -416,32 +429,47 @@ Definition has_untaco_dep `(HasSize) `(HasUntaco) : HasUntacoDep size :=
 Definition has_shell `(HasSize) `(!HasShellDep size) : HasShell :=
   fun n : N => Spr1 (shell_dep n).
 
-Equations unshell_fix `(HasSize) `(!HasUnshellDep size) (a b : N) :
-  N by wf (N.to_nat b) :=
-  unshell_fix _ _ a b := _.
-Next Obligation.
-  intros ? ? a b f.
-  destruct (ltb_spec0 b (Npos (size a))) as [l | l].
-  - apply (unshell_dep a b). apply squash. assumption.
-  - apply (f _ _ (1 + a) (b - Npos (size a))). lia. Defined.
+Section Context.
 
-Definition has_unshell `(HasSize) `(!HasUnshellDep size) : HasUnshell :=
-  unshell_fix size unshell_dep.
+Context `(HasSize) `(!HasUnshellDep size).
+
+Equations unshell_fix (a b : N) : N by wf (to_nat b) :=
+  unshell_fix a b := if sumbool_of_bool (b <? Npos (size a)) then
+  unshell_dep a b _ else unshell_fix (1 + a) (b - Npos (size a)).
+Next Obligation.
+  intros a b f e.
+  apply squash.
+  destruct (ltb_spec b (Npos (size a))) as [l | l]; lia. Qed.
+Next Obligation.
+  intros a b f e.
+  destruct (ltb_spec b (Npos (size a))) as [l | l]; lia. Qed.
+
+Definition has_unshell : HasUnshell := unshell_fix.
+
+End Context.
 
 Definition has_taco `(HasSize) `(!HasTacoDep size) : HasTaco :=
   fun x y : N => Spr1 (taco_dep x y).
 
-Equations untaco_fix `(HasSize) `(!HasUntacoDep size) (a b : N) :
-  N * N by wf (N.to_nat b) :=
-  untaco_fix _ _ _ _ := _.
+Section Context.
+
+Context `(HasSize) `(!HasUntacoDep size).
+
+Equations untaco_fix (a b : N) : N * N by wf (to_nat b) :=
+  untaco_fix a b := if sumbool_of_bool (b <? Npos (size a)) then
+  untaco_dep a b _ else untaco_fix (1 + a) (b - Npos (size a)).
 Next Obligation.
-  intros ? ? a b f.
-  destruct (ltb_spec0 b (Npos (size a))) as [l | l].
-  - apply (untaco_dep a b). apply squash. assumption.
-  - apply (f _ _ (1 + a) (b - Npos (size a))). lia. Defined.
+  intros a b f e.
+  apply squash.
+  destruct (ltb_spec b (Npos (size a))) as [l | l]; lia. Qed.
+Next Obligation.
+  intros a b f e.
+  destruct (ltb_spec b (Npos (size a))) as [l | l]; lia. Qed.
 
 Definition has_untaco `(HasSize) `(!HasUntacoDep size) : HasUntaco :=
-  untaco_fix size untaco_dep.
+  untaco_fix.
+
+End Context.
 
 (** TODO Lexicographic ordering of the shell-taco space. *)
 
@@ -490,8 +518,6 @@ Class IsLiftingDep `(HasLiftingDep) : Prop := {
   lifting_dep_is_retr_taco_dep :> IsRetrTacoDep lifting_dep;
 }.
 
-(** Try this! *)
-
 Section Context.
 
 Existing Instance has_shell.
@@ -499,14 +525,22 @@ Existing Instance has_unshell.
 Existing Instance has_taco.
 Existing Instance has_untaco.
 
-Global Instance is_sect_shell `{IsSectShellDep} : IsSectShell lifting_dep.
+(** This can be done, but retractions should not be possible. *)
+
+Global Instance is_sect_shell `(IsSectShellDep) : IsSectShell lifting_dep.
 Proof.
   intros n.
   pose proof sect_shell_dep n as e.
   unfold shell, has_shell, unshell, has_unshell.
   destruct (shell_dep n) as [[a b] l].
   simp Ssig_uncurry in e. simp prod_uncurry_dep in e.
-  unfold Spr1. simp prod_uncurry. Abort.
+  unfold Spr1. simp prod_uncurry.
+  epose proof unsquash l as l'.
+  simp fst snd in l'.
+  rewrite unshell_fix_equation_1.
+  destruct (sumbool_of_bool (b <? pos (size a))) as [e' | e'].
+  - apply e.
+  - apply ltb_ge in e'. pose proof lt_le_trans _ _ _ l' e'. lia. Qed.
 
 End Context.
 
@@ -526,7 +560,7 @@ Fail Equations unpair (x y : N) : N :=
 Equations unpair (x y : N) : N :=
   unpair x y := Ssig_uncurry (prod_uncurry_dep unshell_dep) (taco_dep x y).
 
-Context `{!IsLiftingDep lifting_dep}.
+Context `(!IsLiftingDep lifting_dep).
 
 Theorem retr_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof.
@@ -646,12 +680,7 @@ Proof.
   assert (l' : b <= a) by lia.
   pose proof tri_why a b l' as e.
   rewrite e.
-  f_equal. lia.
-  Unshelve.
-  (** TODO Instances! *)
-  apply A_has_unsquash. destruct (N.ltb_spec0 b (Npos (size a))).
-  - left. lia.
-  - right. lia. Qed.
+  f_equal. lia. Qed.
 
 Equations taco (x y : N) : N * N :=
   taco x y := (y + x, y).
@@ -702,11 +731,7 @@ Proof.
   eapply unsquash in l.
   simp size in l.
   rewrite succ_pos_spec in l.
-  lia. Unshelve.
-  (** TODO Instances! *)
-  apply A_has_unsquash. destruct (N.ltb_spec0 b (Npos (size a))).
-  - left. lia.
-  - right. lia. Qed.
+  lia. Qed.
 
 Module PF := PairingFunction.
 
