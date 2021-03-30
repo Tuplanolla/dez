@@ -324,6 +324,36 @@ Module PairingFunction.
 
 Class HasSize : Type := size (a : N) : positive.
 
+Class HasTotal : Type := total (a : N) : N.
+
+Section Context.
+
+Context `(HasSize).
+
+Equations total_fix (a : N) : N by wf (to_nat a) :=
+  total_fix N0 := 0;
+  total_fix (Npos n) := let p := pred (Npos n) in Npos (size p) + total_fix p.
+Next Obligation. intros a f p. lia. Qed.
+
+Definition has_total : HasTotal := total_fix.
+
+End Context.
+
+Section Context.
+
+Context `(HasTotal).
+
+Equations size_fix (a : N) : positive by wf (to_nat a) :=
+  size_fix a :=
+  match total (succ a) - total a with
+  | N0 => xH
+  | Npos n => n
+  end%N.
+
+Definition has_size : HasSize := size_fix.
+
+End Context.
+
 Class HasShell : Type := shell (n : N) : N * N.
 
 Class HasShellDep `(HasSize) : Type :=
@@ -471,8 +501,6 @@ Definition has_untaco `(HasSize) `(!HasUntacoDep size) : HasUntaco :=
 
 End Context.
 
-(** TODO Lexicographic ordering of the shell-taco space. *)
-
 (** We want to say that [unshell] is a retraction of [shell] and
     [shell] is a section of [unshell] and then vice versa. *)
 
@@ -504,11 +532,22 @@ Class IsRetrTacoDep `(HasLiftingDep) : Prop :=
   retr_taco_dep (a b : N) (l : Squash (b < Npos (size a))) :
   prod_uncurry taco_dep (untaco_dep a b l) = Sexists _ (a, b) l.
 
+Class IsLexShell `(HasLifting) : Prop :=
+  lex_shell (n a b : N) (e : shell n = (a, b)) :
+  shell (1 + n) = (a, 1 + b) \/
+  shell (1 + n) = (1 + a, 0).
+
+Class IsLexShellDep `(HasLiftingDep) : Prop :=
+  lex_shell_dep (n a b : N) (e : Spr1 (shell_dep n) = (a, b)) :
+  Spr1 (shell_dep (1 + n)) = (a, 1 + b) \/
+  Spr1 (shell_dep (1 + n)) = (1 + a, 0).
+
 Class IsLifting `(HasLifting) : Prop := {
   lifting_is_sect_shell :> IsSectShell lifting;
-  lifting_is_retr_shell :> IsRetrShell lifting;
+  (* lifting_is_retr_shell :> IsRetrShell lifting; *)
   lifting_is_sect_taco :> IsSectTaco lifting;
-  lifting_is_retr_taco :> IsRetrTaco lifting;
+  (* lifting_is_retr_taco :> IsRetrTaco lifting; *)
+  lifting_is_lex_shell :> IsLexShell lifting;
 }.
 
 Class IsLiftingDep `(HasLiftingDep) : Prop := {
@@ -516,6 +555,7 @@ Class IsLiftingDep `(HasLiftingDep) : Prop := {
   lifting_dep_is_retr_shell_dep :> IsRetrShellDep lifting_dep;
   lifting_dep_is_sect_taco_dep :> IsSectTacoDep lifting_dep;
   lifting_dep_is_retr_taco_dep :> IsRetrTacoDep lifting_dep;
+  lifting_dep_is_lex_shell_dep :> IsLexShellDep lifting_dep;
 }.
 
 Section Context.
@@ -527,7 +567,7 @@ Existing Instance has_untaco.
 
 (** This can be done, but retractions should not be possible. *)
 
-Global Instance is_sect_shell `(IsSectShellDep) : IsSectShell lifting_dep.
+Definition is_sect_shell `(IsSectShellDep) : IsSectShell lifting_dep.
 Proof.
   intros n.
   pose proof sect_shell_dep n as e.
@@ -606,17 +646,38 @@ Proof.
   rewrite eab' in loop_t.
   simp Ssig_uncurry in loop_t. Qed.
 
-Theorem mono_shell (n n' a a' b b' : N)
-  (ln : n < n') (la : a < a') (lb : b < b') :
-  fst (Spr1 (shell_dep n)) < fst (Spr1 (shell_dep n')) \/
-  snd (Spr1 (shell_dep n)) < snd (Spr1 (shell_dep n')).
-Proof. Abort.
+(* Theorem mono_shell (p n : N) (l : p < n) :
+  fst (shell p) < fst (shell n) \/
+  snd (shell p) < snd (shell n). *)
 
-Theorem lex_shell (n a b : N)
-  (e : (a, b) = Spr1 (shell_dep n)) :
-  (a, 1 + b) = Spr1 (shell_dep (1 + n)) \/
-  (1 + a, 0) = Spr1 (shell_dep (1 + n)).
-Proof. Abort.
+Theorem mono_shell_dep (p n : N) (l : p < n) :
+  fst (Spr1 (shell_dep p)) < fst (Spr1 (shell_dep n)) \/
+  snd (Spr1 (shell_dep p)) < snd (Spr1 (shell_dep n)).
+Proof.
+  assert (x : exists q : N, n = (1 + q) + p).
+  { exists ((n - p) - 1). lia. }
+  destruct x as [q e]. subst n.
+  clear l.
+  generalize dependent p.
+  induction q as [| r e] using peano_ind; intros p.
+  - arithmetize.
+    destruct (Spr1 (shell_dep p)) as [c d] eqn : ec.
+    epose proof lex_shell_dep _ ec as e''.
+    destruct e'' as [e'' | e''].
+    simp fst snd in *. rewrite e''. simp fst snd. right; lia.
+    simp fst snd in *. rewrite e''. simp fst snd. left; lia.
+  - arithmetize.
+    specialize (e (1 + p)).
+    destruct (Spr1 (shell_dep p)) as [c d] eqn : ec.
+    epose proof lex_shell_dep _ ec as e''.
+    repeat rewrite add_assoc in *.
+    replace (1 + 1 + r + p) with (1 + r + 1 + p) by lia.
+    destruct e as [e | e];
+    destruct e'' as [e'' | e''].
+    simp fst snd in *. rewrite e'' in e. simp fst snd in *. left; lia.
+    simp fst snd in *. rewrite e'' in e. simp fst snd in *. left; lia.
+    simp fst snd in *. rewrite e'' in e. simp fst snd in *. right; lia.
+    simp fst snd in *. rewrite e'' in e. simp fst snd in *. Admitted.
 
 End Context.
 
@@ -733,6 +794,22 @@ Proof.
   rewrite succ_pos_spec in l.
   lia. Qed.
 
+Lemma lex_shell_dep (n a b : N) (e : Spr1 (shell_dep n) = (a, b)) :
+  Spr1 (shell_dep (1 + n)) = (a, 1 + b) \/
+  Spr1 (shell_dep (1 + n)) = (1 + a, 0).
+Proof.
+  simp shell_dep in *. unfold Spr1 in *. simp shell in *.
+  rewrite untri_rem_tri_untri in *.
+  injection e. clear e. intros ea eb.
+  subst a b.
+  destruct (eqb_spec (1 + n) (tri (untri (1 + n)))) as [e | f].
+  - right. f_equal.
+    + admit.
+    + rewrite <- e. lia.
+  - left. f_equal.
+    + admit.
+    + admit. Admitted.
+
 Module PF := PairingFunction.
 
 Global Instance has_size : PF.HasSize := size.
@@ -750,6 +827,8 @@ Global Instance is_sect_taco_dep : PF.IsSectTacoDep PF.lifting_dep.
 Proof. exact @sect_taco_dep. Qed.
 Global Instance is_retr_taco_dep : PF.IsRetrTacoDep PF.lifting_dep.
 Proof. exact @retr_taco_dep. Qed.
+Global Instance is_lex_shell_dep : PF.IsLexShellDep PF.lifting_dep.
+Proof. exact @lex_shell_dep. Qed.
 Global Instance is_lifting_dep : PF.IsLiftingDep PF.lifting_dep.
 Proof. esplit; typeclasses eauto. Qed.
 
