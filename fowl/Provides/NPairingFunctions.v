@@ -322,57 +322,111 @@ Proof.
 
 Module PairingFunction.
 
-Class HasSize : Type := size (a : N) : positive.
+Class HasStride : Type := stride (a : N) : positive.
 
-Class HasTotal : Type := total (a : N) : N.
+Class HasBase : Type := base (a : N) : N.
+
+Class IsMonoBase `(HasBase) : Prop :=
+  mono_base (a b : N) (l : a < b) : base a < base b.
+
+Class IsPartialSum `(HasStride) `(HasBase) : Prop :=
+  partial_sum (a : N) : base (1 + a) = Npos (stride a) + base a.
+
+(** Stride can be derived from base and vice versa,
+    but it is more computationally feasible to define base.
+    The motivation is that [base] is a "definite integral" of [stride] and
+    integrals are harder to compute than derivatives. *)
 
 Section Context.
 
-Context `(HasSize).
+Context `(HasStride).
 
-Equations total_fix (a : N) : N by wf (to_nat a) :=
-  total_fix N0 := 0;
-  total_fix (Npos n) := let p := pred (Npos n) in Npos (size p) + total_fix p.
+Equations base_fix (a : N) : N by wf (to_nat a) :=
+  base_fix N0 := 0;
+  base_fix (Npos n) := let p := pred (Npos n) in
+  Npos (stride p) + base_fix p.
 Next Obligation. intros a f p. lia. Qed.
 
-Definition has_total : HasTotal := total_fix.
+Local Instance has_base : HasBase := base_fix.
+
+Local Instance is_partial_sum : IsPartialSum stride base.
+Proof.
+  intros a.
+  unfold base, has_base.
+  destruct a as [| n].
+  - rewrite add_0_r.
+    simp base_fix.
+    cbv zeta.
+    simp pred. simp pred_N.
+    simp base_fix.
+    rewrite add_0_r.
+    rewrite add_0_r.
+    reflexivity.
+  - replace (1 + Npos n) with (Npos (Pos.succ n)) by lia.
+    simp base_fix.
+    cbv zeta.
+    simp pred.
+    rewrite Pos.pred_N_succ.
+    simp base_fix.
+    cbv zeta.
+    change (pred (Npos n)) with (Pos.pred_N n).
+    reflexivity. Qed.
 
 End Context.
 
 Section Context.
 
-Context `(HasTotal).
+Context `(HasBase).
 
-Equations size_fix (a : N) : positive by wf (to_nat a) :=
-  size_fix a :=
-  match total (succ a) - total a with
+Equations stride_def (a : N) : positive by wf (to_nat a) :=
+  stride_def a :=
+  match base (succ a) - base a with
   | N0 => xH
   | Npos n => n
   end%N.
 
-Definition has_size : HasSize := size_fix.
+Local Instance has_stride : HasStride := stride_def.
+
+Context `(!IsMonoBase base).
+
+Local Instance is_partial_sum' : IsPartialSum stride base.
+Proof.
+  intros a.
+  unfold stride, has_stride.
+  destruct a as [| p].
+  - rewrite add_0_r.
+    simp stride_def.
+    change (succ 0) with 1.
+    destruct (base 1 - base 0) as [| n] eqn : e.
+    + pose proof mono_base 0 1 as l. lia.
+    + change (@base H) with H. lia.
+  - simp stride_def.
+    replace (succ (Npos p)) with (1 + Npos p) by lia.
+    destruct (base (1 + Npos p) - base (Npos p)) as [| n] eqn : e.
+    + pose proof mono_base (Npos p) (1 + Npos p) as l. lia.
+    + change (@base H) with H. lia. Qed.
 
 End Context.
 
 Class HasShell : Type := shell (n : N) : N * N.
 
-Class HasShellDep `(HasSize) : Type :=
-  shell_dep (n : N) : {x : N * N $ Squash (snd x < Npos (size (fst x)))}.
+Class HasShellDep `(HasStride) : Type :=
+  shell_dep (n : N) : {x : N * N $ Squash (snd x < Npos (stride (fst x)))}.
 
 Class HasUnshell : Type := unshell (a b : N) : N.
 
-Class HasUnshellDep `(HasSize) : Type :=
-  unshell_dep (a b : N) (l : Squash (b < Npos (size a))) : N.
+Class HasUnshellDep `(HasStride) : Type :=
+  unshell_dep (a b : N) (l : Squash (b < Npos (stride a))) : N.
 
 Class HasTaco : Type := taco (x y : N) : N * N.
 
-Class HasTacoDep `(HasSize) : Type :=
-  taco_dep (x y : N) : {x : N * N $ Squash (snd x < Npos (size (fst x)))}.
+Class HasTacoDep `(HasStride) : Type :=
+  taco_dep (x y : N) : {x : N * N $ Squash (snd x < Npos (stride (fst x)))}.
 
 Class HasUntaco : Type := untaco (a b : N) : N * N.
 
-Class HasUntacoDep `(HasSize) : Type :=
-  untaco_dep (a b : N) (l : Squash (b < Npos (size a))) : N * N.
+Class HasUntacoDep `(HasStride) : Type :=
+  untaco_dep (a b : N) (l : Squash (b < Npos (stride a))) : N * N.
 
 Class HasLifting `(HasShell) `(HasUnshell) `(HasTaco) `(HasUntaco) : Type :=
   lifting : unit.
@@ -380,14 +434,14 @@ Class HasLifting `(HasShell) `(HasUnshell) `(HasTaco) `(HasUntaco) : Type :=
 Global Instance has_lifting `(HasShell) `(HasUnshell) `(HasTaco) `(HasUntaco) :
   HasLifting shell unshell taco untaco := tt.
 
-Class HasLiftingDep `(HasSize)
-  `(!HasShellDep size) `(!HasUnshellDep size)
-  `(!HasTacoDep size) `(!HasUntacoDep size) : Type := lifting_dep : unit.
+Class HasLiftingDep `(HasStride)
+  `(!HasShellDep stride) `(!HasUnshellDep stride)
+  `(!HasTacoDep stride) `(!HasUntacoDep stride) : Type := lifting_dep : unit.
 
-Global Instance has_lifting_dep `(HasSize)
-  `(!HasShellDep size) `(!HasUnshellDep size)
-  `(!HasTacoDep size) `(!HasUntacoDep size) :
-  HasLiftingDep size shell_dep unshell_dep taco_dep untaco_dep := tt.
+Global Instance has_lifting_dep `(HasStride)
+  `(!HasShellDep stride) `(!HasUnshellDep stride)
+  `(!HasTacoDep stride) `(!HasUntacoDep stride) :
+  HasLiftingDep stride shell_dep unshell_dep taco_dep untaco_dep := tt.
 
 (** We avoid defining instances involving interplay
     between dependent and nondependent versions of the same type classes,
@@ -397,106 +451,104 @@ Global Instance has_lifting_dep `(HasSize)
 
 Section Context.
 
-Context `(HasSize) `(HasShell).
+Context `(HasStride) `(HasShell) `(HasUnshell).
 
 Equations shell_dep_fix (a b : N) :
-  {x : N * N $ Squash (snd x < Npos (size (fst x)))} by wf (to_nat b) :=
-  shell_dep_fix a b := if sumbool_of_bool (b <? Npos (size a)) then
-  Sexists _ (a, b) _ else shell_dep_fix (1 + a) (b - Npos (size a)).
+  {x : N * N $ Squash (snd x < Npos (stride (fst x)))} by wf (to_nat b) :=
+  shell_dep_fix a b := if sumbool_of_bool (b <? Npos (stride a)) then
+  Sexists _ (a, b) _ else shell_dep_fix (1 + a) (b - Npos (stride a)).
 Next Obligation.
   intros a b f e.
   apply squash.
   simp fst snd.
-  destruct (ltb_spec0 b (Npos (size a))) as [l | l]; lia. Qed.
+  destruct (ltb_spec0 b (Npos (stride a))) as [l | l]; lia. Qed.
 Next Obligation.
   intros a b f e.
-  destruct (ltb_spec0 b (Npos (size a))) as [l | l]; lia. Qed.
+  destruct (ltb_spec0 b (Npos (stride a))) as [l | l]; lia. Qed.
 
 Equations shell_dep_def (n : N) :
-  {x : N * N $ Squash (snd x < Npos (size (fst x)))} :=
+  {x : N * N $ Squash (snd x < Npos (stride (fst x)))} :=
   shell_dep_def n := prod_uncurry shell_dep_fix (shell n).
 
-Definition has_shell_dep : HasShellDep size :=
+Local Instance has_shell_dep : HasShellDep stride :=
   fun n : N => shell_dep_def n.
+
+Local Instance has_unshell_dep : HasUnshellDep stride :=
+  fun (a b : N) (l : Squash (b < Npos (stride a))) => unshell a b.
 
 End Context.
 
-Definition has_unshell_dep `(HasSize) `(HasUnshell) : HasUnshellDep size :=
-  fun (a b : N) (l : Squash (b < Npos (size a))) => unshell a b.
-
 Section Context.
 
-Context `(HasSize) `(HasTaco).
+Context `(HasStride) `(HasTaco) `(HasUntaco).
 
 Equations taco_dep_fix (a b : N) :
-  {x : N * N $ Squash (snd x < Npos (size (fst x)))} by wf (to_nat b) :=
-  taco_dep_fix a b := if sumbool_of_bool (b <? Npos (size a)) then
-  Sexists _ (a, b) _ else taco_dep_fix (1 + a) (b - Npos (size a)).
+  {x : N * N $ Squash (snd x < Npos (stride (fst x)))} by wf (to_nat b) :=
+  taco_dep_fix a b := if sumbool_of_bool (b <? Npos (stride a)) then
+  Sexists _ (a, b) _ else taco_dep_fix (1 + a) (b - Npos (stride a)).
 Next Obligation.
   intros a b f e.
   apply squash.
   simp fst snd.
-  destruct (ltb_spec0 b (Npos (size a))) as [l | l]; lia. Qed.
+  destruct (ltb_spec0 b (Npos (stride a))) as [l | l]; lia. Qed.
 Next Obligation.
   intros a b f e.
-  destruct (ltb_spec0 b (Npos (size a))) as [l | l]; lia. Qed.
+  destruct (ltb_spec0 b (Npos (stride a))) as [l | l]; lia. Qed.
 
 Equations taco_dep_def (x y : N) :
-  {x : N * N $ Squash (snd x < Npos (size (fst x)))} :=
+  {x : N * N $ Squash (snd x < Npos (stride (fst x)))} :=
   taco_dep_def x y :=
   prod_uncurry taco_dep_fix (taco x y).
 
-Definition has_taco_dep : HasTacoDep size :=
+Local Instance has_taco_dep : HasTacoDep stride :=
   taco_dep_def.
 
-End Context.
+Local Instance has_untaco_dep `(HasStride) `(HasUntaco) : HasUntacoDep stride :=
+  fun (a b : N) (l : Squash (b < Npos (stride a))) => untaco a b.
 
-Definition has_untaco_dep `(HasSize) `(HasUntaco) : HasUntacoDep size :=
-  fun (a b : N) (l : Squash (b < Npos (size a))) => untaco a b.
+End Context.
 
 (** We can also derive nondependent versions from dependent ones. *)
 
-Definition has_shell `(HasSize) `(!HasShellDep size) : HasShell :=
-  fun n : N => Spr1 (shell_dep n).
-
 Section Context.
 
-Context `(HasSize) `(!HasUnshellDep size).
+Context `(HasStride) `(!HasShellDep stride) `(!HasUnshellDep stride).
+
+Local Instance has_shell : HasShell := fun n : N => Spr1 (shell_dep n).
 
 Equations unshell_fix (a b : N) : N by wf (to_nat b) :=
-  unshell_fix a b := if sumbool_of_bool (b <? Npos (size a)) then
-  unshell_dep a b _ else unshell_fix (1 + a) (b - Npos (size a)).
+  unshell_fix a b := if sumbool_of_bool (b <? Npos (stride a)) then
+  unshell_dep a b _ else unshell_fix (1 + a) (b - Npos (stride a)).
 Next Obligation.
   intros a b f e.
   apply squash.
-  destruct (ltb_spec b (Npos (size a))) as [l | l]; lia. Qed.
+  destruct (ltb_spec b (Npos (stride a))) as [l | l]; lia. Qed.
 Next Obligation.
   intros a b f e.
-  destruct (ltb_spec b (Npos (size a))) as [l | l]; lia. Qed.
+  destruct (ltb_spec b (Npos (stride a))) as [l | l]; lia. Qed.
 
-Definition has_unshell : HasUnshell := unshell_fix.
+Local Instance has_unshell : HasUnshell := unshell_fix.
 
 End Context.
 
-Definition has_taco `(HasSize) `(!HasTacoDep size) : HasTaco :=
-  fun x y : N => Spr1 (taco_dep x y).
-
 Section Context.
 
-Context `(HasSize) `(!HasUntacoDep size).
+Context `(HasStride) `(!HasTacoDep stride) `(!HasUntacoDep stride).
+
+Local Instance has_taco : HasTaco := fun x y : N => Spr1 (taco_dep x y).
 
 Equations untaco_fix (a b : N) : N * N by wf (to_nat b) :=
-  untaco_fix a b := if sumbool_of_bool (b <? Npos (size a)) then
-  untaco_dep a b _ else untaco_fix (1 + a) (b - Npos (size a)).
+  untaco_fix a b := if sumbool_of_bool (b <? Npos (stride a)) then
+  untaco_dep a b _ else untaco_fix (1 + a) (b - Npos (stride a)).
 Next Obligation.
   intros a b f e.
   apply squash.
-  destruct (ltb_spec b (Npos (size a))) as [l | l]; lia. Qed.
+  destruct (ltb_spec b (Npos (stride a))) as [l | l]; lia. Qed.
 Next Obligation.
   intros a b f e.
-  destruct (ltb_spec b (Npos (size a))) as [l | l]; lia. Qed.
+  destruct (ltb_spec b (Npos (stride a))) as [l | l]; lia. Qed.
 
-Definition has_untaco `(HasSize) `(!HasUntacoDep size) : HasUntaco :=
+Local Instance has_untaco `(HasStride) `(!HasUntacoDep stride) : HasUntaco :=
   untaco_fix.
 
 End Context.
@@ -515,7 +567,7 @@ Class IsRetrShell `(HasLifting) : Prop :=
   retr_shell (a b : N) : shell (unshell a b) = (a, b).
 
 Class IsRetrShellDep `(HasLiftingDep) : Prop :=
-  retr_shell_dep (a b : N) (l : Squash (b < Npos (size a))) :
+  retr_shell_dep (a b : N) (l : Squash (b < Npos (stride a))) :
   shell_dep (unshell_dep a b l) = Sexists _ (a, b) l.
 
 Class IsSectTaco `(HasLifting) : Prop :=
@@ -529,14 +581,29 @@ Class IsRetrTaco `(HasLifting) : Prop :=
   retr_taco (a b : N) : prod_uncurry taco (untaco a b) = (a, b).
 
 Class IsRetrTacoDep `(HasLiftingDep) : Prop :=
-  retr_taco_dep (a b : N) (l : Squash (b < Npos (size a))) :
+  retr_taco_dep (a b : N) (l : Squash (b < Npos (stride a))) :
   prod_uncurry taco_dep (untaco_dep a b l) = Sexists _ (a, b) l.
 
+(** We should make a distinction
+    between lexicographic ordering and enumeration. *)
+
+Class IsLexOrdShell `(HasLifting) : Prop :=
+  lex_ord_shell (p n : N) :
+  fst (shell p) < fst (shell n) \/
+  snd (shell p) < snd (shell n).
+
+Class IsLexEnumShell `(HasLifting) : Prop :=
+  lex_enum_shell (p n : N) :
+  (fst (shell p) < fst (shell n) /\ snd (shell n) = 0) \/
+  (fst (shell n) = fst (shell p) /\ snd (shell p) < snd (shell n)).
+
+#[bad]
 Class IsLexShell `(HasLifting) : Prop :=
   lex_shell (n a b : N) (e : shell n = (a, b)) :
   shell (1 + n) = (a, 1 + b) \/
   shell (1 + n) = (1 + a, 0).
 
+#[bad]
 Class IsLexShellDep `(HasLiftingDep) : Prop :=
   lex_shell_dep (n a b : N) (e : Spr1 (shell_dep n) = (a, b)) :
   Spr1 (shell_dep (1 + n)) = (a, 1 + b) \/
@@ -547,7 +614,7 @@ Class IsLifting `(HasLifting) : Prop := {
   (* lifting_is_retr_shell :> IsRetrShell lifting; *)
   lifting_is_sect_taco :> IsSectTaco lifting;
   (* lifting_is_retr_taco :> IsRetrTaco lifting; *)
-  lifting_is_lex_shell :> IsLexShell lifting;
+  (* lifting_is_lex_shell :> IsLexShell lifting; *)
 }.
 
 Class IsLiftingDep `(HasLiftingDep) : Prop := {
@@ -555,19 +622,19 @@ Class IsLiftingDep `(HasLiftingDep) : Prop := {
   lifting_dep_is_retr_shell_dep :> IsRetrShellDep lifting_dep;
   lifting_dep_is_sect_taco_dep :> IsSectTacoDep lifting_dep;
   lifting_dep_is_retr_taco_dep :> IsRetrTacoDep lifting_dep;
-  lifting_dep_is_lex_shell_dep :> IsLexShellDep lifting_dep;
+  (* lifting_dep_is_lex_shell_dep :> IsLexShellDep lifting_dep; *)
 }.
 
 Section Context.
 
-Existing Instance has_shell.
-Existing Instance has_unshell.
-Existing Instance has_taco.
-Existing Instance has_untaco.
+Local Existing Instance has_shell.
+Local Existing Instance has_unshell.
+Local Existing Instance has_taco.
+Local Existing Instance has_untaco.
 
 (** This can be done, but retractions should not be possible. *)
 
-Definition is_sect_shell `(IsSectShellDep) : IsSectShell lifting_dep.
+Local Instance is_sect_shell `(IsSectShellDep) : IsSectShell lifting_dep.
 Proof.
   intros n.
   pose proof sect_shell_dep n as e.
@@ -578,7 +645,7 @@ Proof.
   epose proof unsquash l as l'.
   simp fst snd in l'.
   rewrite unshell_fix_equation_1.
-  destruct (sumbool_of_bool (b <? pos (size a))) as [e' | e'].
+  destruct (sumbool_of_bool (b <? pos (stride a))) as [e' | e'].
   - apply e.
   - apply ltb_ge in e'. pose proof lt_le_trans _ _ _ l' e'. lia. Qed.
 
@@ -614,7 +681,7 @@ Proof.
   pose proof retr_taco_dep a b l as loop_t.
   pose proof sect_shell_dep n as loop_s.
   (** We need to reduce implicit arguments before rewriting. *)
-  unfold size in loop_t.
+  unfold stride in loop_t.
   (** Contract [t ^-1]. *)
   rewrite exy in loop_t.
   simp prod_uncurry in loop_t. rewrite eab' in loop_t.
@@ -636,7 +703,7 @@ Proof.
   pose proof retr_shell_dep a' b' l' as loop_s.
   pose proof sect_taco_dep x y as loop_t.
   (** We need to reduce implicit arguments before rewriting. *)
-  unfold size in loop_s.
+  unfold stride in loop_s.
   (** Contract [s ^-1]. *)
   rewrite eab in loop_s.
   inversion loop_s; subst a' b'.
@@ -685,19 +752,28 @@ End PairingFunction.
 
 Module Cantor.
 
-Equations size (a : N) : positive :=
-  size a := succ_pos a.
+Equations stride (a : N) : positive :=
+  stride a := succ_pos a.
+
+Equations base (a : N) : N :=
+  base a := tri a.
+
+Lemma mono_base (a b : N) (l : a < b) : base a < base b.
+Proof. apply tri_lt_mono. auto. Qed.
+
+Lemma partial_sum (a : N) : base (1 + a) = Npos (stride a) + base a.
+Proof. unfold stride, base. rewrite tri_succ. rewrite succ_pos_spec. lia. Qed.
 
 Equations shell (n : N) : N * N :=
   shell n := untri_rem n.
 
 Equations shell_dep (n : N) :
-  {x : N * N $ Squash (snd x < Npos (size (fst x)))} :=
+  {x : N * N $ Squash (snd x < Npos (stride (fst x)))} :=
   shell_dep n := Sexists _ (shell n) _.
 Next Obligation.
   intros n.
   apply squash.
-  simp size.
+  simp stride.
   rewrite succ_pos_spec.
   simp shell.
   rewrite untri_rem_tri_untri.
@@ -708,7 +784,7 @@ Next Obligation.
 Equations unshell (a b : N) : N :=
   unshell a b := b + tri a.
 
-Equations unshell_dep (a b : N) (l : Squash (b < Npos (size a))) : N :=
+Equations unshell_dep (a b : N) (l : Squash (b < Npos (stride a))) : N :=
   unshell_dep a b l := unshell a b.
 
 Lemma sect_shell_dep (n : N) :
@@ -725,7 +801,7 @@ Proof.
   pose proof tri_untri n as l.
   lia. Qed.
 
-Lemma retr_shell_dep (a b : N) (l : Squash (b < Npos (size a))) :
+Lemma retr_shell_dep (a b : N) (l : Squash (b < Npos (stride a))) :
   shell_dep (unshell_dep a b l) = Sexists _ (a, b) l.
 Proof.
   simp shell_dep.
@@ -735,7 +811,7 @@ Proof.
   simp unshell_dep.
   simp unshell.
   eapply unsquash in l.
-  simp size in l.
+  simp stride in l.
   rewrite succ_pos_spec in l.
   rewrite untri_rem_tri_untri.
   assert (l' : b <= a) by lia.
@@ -747,12 +823,12 @@ Equations taco (x y : N) : N * N :=
   taco x y := (y + x, y).
 
 Equations taco_dep (x y : N) :
-  {x : N * N $ Squash (snd x < Npos (size (fst x)))} :=
+  {x : N * N $ Squash (snd x < Npos (stride (fst x)))} :=
   taco_dep x y := Sexists _ (taco x y) _.
 Next Obligation.
   intros x y.
   apply squash.
-  simp size.
+  simp stride.
   rewrite succ_pos_spec.
   simp taco.
   simp fst snd.
@@ -761,7 +837,7 @@ Next Obligation.
 Equations untaco (a b : N) : N * N :=
   untaco a b := (a - b, b).
 
-Equations untaco_dep (a b : N) (l : Squash (b < Npos (size a))) : N * N :=
+Equations untaco_dep (a b : N) (l : Squash (b < Npos (stride a))) : N * N :=
   untaco_dep a b l := untaco a b.
 
 Lemma sect_taco_dep (x y : N) :
@@ -777,7 +853,7 @@ Proof.
   f_equal.
   lia. Qed.
 
-Lemma retr_taco_dep (a b : N) (l : Squash (b < Npos (size a))) :
+Lemma retr_taco_dep (a b : N) (l : Squash (b < Npos (stride a))) :
   prod_uncurry taco_dep (untaco_dep a b l) = Sexists _ (a, b) l.
 Proof.
   cbv [prod_uncurry].
@@ -790,9 +866,11 @@ Proof.
   cbv [fst snd].
   f_equal.
   eapply unsquash in l.
-  simp size in l.
+  simp stride in l.
   rewrite succ_pos_spec in l.
   lia. Qed.
+
+Local Notation pred_N := Pos.pred_N.
 
 Lemma lex_shell_dep (n a b : N) (e : Spr1 (shell_dep n) = (a, b)) :
   Spr1 (shell_dep (1 + n)) = (a, 1 + b) \/
@@ -812,13 +890,18 @@ Proof.
 
 Module PF := PairingFunction.
 
-Global Instance has_size : PF.HasSize := size.
-Global Instance has_shell_dep : PF.HasShellDep size := shell_dep.
-Global Instance has_unshell_dep : PF.HasUnshellDep size := unshell_dep.
-Global Instance has_taco_dep : PF.HasTacoDep size := taco_dep.
-Global Instance has_untaco_dep : PF.HasUntacoDep size := untaco_dep.
-Global Instance has_lifting_dep : PF.HasLiftingDep size shell_dep unshell_dep taco_dep untaco_dep := tt.
+Global Instance has_stride : PF.HasStride := stride.
+Global Instance has_base : PF.HasBase := base.
+Global Instance has_shell_dep : PF.HasShellDep stride := shell_dep.
+Global Instance has_unshell_dep : PF.HasUnshellDep stride := unshell_dep.
+Global Instance has_taco_dep : PF.HasTacoDep stride := taco_dep.
+Global Instance has_untaco_dep : PF.HasUntacoDep stride := untaco_dep.
+Global Instance has_lifting_dep : PF.HasLiftingDep stride shell_dep unshell_dep taco_dep untaco_dep := tt.
 
+Global Instance is_mono_base : PF.IsMonoBase PF.base.
+Proof. exact @mono_base. Qed.
+Global Instance is_partial_sum : PF.IsPartialSum PF.stride PF.base.
+Proof. exact @partial_sum. Qed.
 Global Instance is_sect_shell_dep : PF.IsSectShellDep PF.lifting_dep.
 Proof. exact @sect_shell_dep. Qed.
 Global Instance is_retr_shell_dep : PF.IsRetrShellDep PF.lifting_dep.
@@ -827,8 +910,6 @@ Global Instance is_sect_taco_dep : PF.IsSectTacoDep PF.lifting_dep.
 Proof. exact @sect_taco_dep. Qed.
 Global Instance is_retr_taco_dep : PF.IsRetrTacoDep PF.lifting_dep.
 Proof. exact @retr_taco_dep. Qed.
-Global Instance is_lex_shell_dep : PF.IsLexShellDep PF.lifting_dep.
-Proof. exact @lex_shell_dep. Qed.
 Global Instance is_lifting_dep : PF.IsLiftingDep PF.lifting_dep.
 Proof. esplit; typeclasses eauto. Qed.
 

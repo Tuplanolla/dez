@@ -175,6 +175,18 @@ Proof.
   apply mul_le_mono; [lia |].
   apply add_le_mono; [lia |]. lia. Qed.
 
+(** The function [tri] is strictly monotonic. *)
+
+Lemma tri_lt_mono (n p : N) (l : n < p) : tri n < tri p.
+Proof.
+  assert (l' : n <= p) by lia.
+  pose proof tri_le_mono n p l' as l''.
+  destruct (eqb_spec (tri n) (tri p)) as [e | f].
+  - apply tri_inj in e.
+    subst p.
+    lia.
+  - lia. Qed.
+
 Local Lemma tri_le_expand_le (n p : N) (l : n <= p) :
   dist n p <= dist (tri n) (tri p).
 Proof.

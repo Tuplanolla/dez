@@ -29,6 +29,14 @@ Proof. reflexivity. Qed.
 
 Hint Rewrite @succ_equation_1 @succ_equation_2 : succ.
 
+Corollary pred_equation_1 : pred 0 = 0.
+Proof. reflexivity. Qed.
+
+Corollary pred_equation_2 (p : positive) : pred (Npos p) = Pos.pred_N p.
+Proof. reflexivity. Qed.
+
+Hint Rewrite @pred_equation_1 @pred_equation_2 : pred.
+
 (** These lemmas are missing from the standard library. *)
 
 Lemma pos_shiftl_succ_r' (a : positive) (b : N) :
