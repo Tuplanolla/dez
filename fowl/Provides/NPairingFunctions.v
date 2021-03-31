@@ -337,6 +337,8 @@ Class IsPartialSum `(HasStride) `(HasBase) : Prop :=
     The motivation is that [base] is a "definite integral" of [stride] and
     integrals are harder to compute than derivatives. *)
 
+Module BaseFromStride.
+
 Section Context.
 
 Context `(HasStride).
@@ -374,6 +376,10 @@ Proof.
 
 End Context.
 
+End BaseFromStride.
+
+Module StrideFromBase.
+
 Section Context.
 
 Context `(HasBase).
@@ -407,6 +413,8 @@ Proof.
     + change (@base H) with H. lia. Qed.
 
 End Context.
+
+End StrideFromBase.
 
 Class HasShell : Type := shell (n : N) : N * N.
 
@@ -448,6 +456,8 @@ Global Instance has_lifting_dep `(HasStride)
     because they quickly lead into circular dependencies. *)
 
 (** We can derive dependent versions from nondependent ones. *)
+
+Module DepFromNondep.
 
 Section Context.
 
@@ -503,12 +513,16 @@ Equations taco_dep_def (x y : N) :
 Local Instance has_taco_dep : HasTacoDep stride :=
   taco_dep_def.
 
-Local Instance has_untaco_dep `(HasStride) `(HasUntaco) : HasUntacoDep stride :=
+Local Instance has_untaco_dep : HasUntacoDep stride :=
   fun (a b : N) (l : Squash (b < Npos (stride a))) => untaco a b.
 
 End Context.
 
+End DepFromNondep.
+
 (** We can also derive nondependent versions from dependent ones. *)
+
+Module NondepFromDep.
 
 Section Context.
 
@@ -548,10 +562,11 @@ Next Obligation.
   intros a b f e.
   destruct (ltb_spec b (Npos (stride a))) as [l | l]; lia. Qed.
 
-Local Instance has_untaco `(HasStride) `(!HasUntacoDep stride) : HasUntaco :=
-  untaco_fix.
+Local Instance has_untaco : HasUntaco := untaco_fix.
 
 End Context.
+
+End NondepFromDep.
 
 (** We want to say that [unshell] is a retraction of [shell] and
     [shell] is a section of [unshell] and then vice versa. *)
@@ -584,37 +599,47 @@ Class IsRetrTacoDep `(HasLiftingDep) : Prop :=
   retr_taco_dep (a b : N) (l : Squash (b < Npos (stride a))) :
   prod_uncurry taco_dep (untaco_dep a b l) = Sexists _ (a, b) l.
 
-(** We should make a distinction
-    between lexicographic ordering and enumeration. *)
+(** Lexicographic enumeration implies lexicographic ordering. *)
 
 Class IsLexOrdShell `(HasLifting) : Prop :=
   lex_ord_shell (p n : N) :
   fst (shell p) < fst (shell n) \/
   snd (shell p) < snd (shell n).
 
+Class IsLexOrdShellDep `(HasLiftingDep) : Prop :=
+  lex_ord_shell_dep (p n : N) :
+  fst (Spr1 (shell_dep p)) < fst (Spr1 (shell_dep n)) \/
+  snd (Spr1 (shell_dep p)) < snd (Spr1 (shell_dep n)).
+
 Class IsLexEnumShell `(HasLifting) : Prop :=
   lex_enum_shell (p n : N) :
-  (fst (shell p) < fst (shell n) /\ snd (shell n) = 0) \/
-  (fst (shell n) = fst (shell p) /\ snd (shell p) < snd (shell n)).
+  fst (shell p) < fst (shell n) /\ snd (shell n) = 0 \/
+  fst (shell n) = fst (shell p) /\ snd (shell p) < snd (shell n).
 
-#[bad]
-Class IsLexShell `(HasLifting) : Prop :=
-  lex_shell (n a b : N) (e : shell n = (a, b)) :
-  shell (1 + n) = (a, 1 + b) \/
-  shell (1 + n) = (1 + a, 0).
+Class IsLexEnumShellDep `(HasLiftingDep) : Prop :=
+  lex_enum_shell_dep (p n : N) :
+  fst (Spr1 (shell_dep p)) < fst (Spr1 (shell_dep n)) /\
+  snd (Spr1 (shell_dep n)) = 0 \/
+  fst (Spr1 (shell_dep n)) = fst (Spr1 (shell_dep p)) /\
+  snd (Spr1 (shell_dep p)) < snd (Spr1 (shell_dep n)).
 
-#[bad]
-Class IsLexShellDep `(HasLiftingDep) : Prop :=
-  lex_shell_dep (n a b : N) (e : Spr1 (shell_dep n) = (a, b)) :
-  Spr1 (shell_dep (1 + n)) = (a, 1 + b) \/
-  Spr1 (shell_dep (1 + n)) = (1 + a, 0).
+Global Instance is_lex_ord_shell `(IsLexEnumShell) : IsLexOrdShell lifting.
+Proof.
+  intros p n.
+  destruct (lex_enum_shell p n) as [[l0 l1] | [l0 l1]]; auto. Qed.
+
+Global Instance is_lex_ord_shell_dep `(IsLexEnumShellDep) :
+  IsLexOrdShellDep lifting_dep.
+Proof.
+  intros p n.
+  destruct (lex_enum_shell_dep p n) as [[l0 l1] | [l0 l1]]; auto. Qed.
 
 Class IsLifting `(HasLifting) : Prop := {
   lifting_is_sect_shell :> IsSectShell lifting;
   (* lifting_is_retr_shell :> IsRetrShell lifting; *)
   lifting_is_sect_taco :> IsSectTaco lifting;
   (* lifting_is_retr_taco :> IsRetrTaco lifting; *)
-  (* lifting_is_lex_shell :> IsLexShell lifting; *)
+  (* lifting_is_lex_enum_shell :> IsLexEnumShell lifting; *)
 }.
 
 Class IsLiftingDep `(HasLiftingDep) : Prop := {
@@ -622,10 +647,12 @@ Class IsLiftingDep `(HasLiftingDep) : Prop := {
   lifting_dep_is_retr_shell_dep :> IsRetrShellDep lifting_dep;
   lifting_dep_is_sect_taco_dep :> IsSectTacoDep lifting_dep;
   lifting_dep_is_retr_taco_dep :> IsRetrTacoDep lifting_dep;
-  (* lifting_dep_is_lex_shell_dep :> IsLexShellDep lifting_dep; *)
+  (* lifting_dep_is_lex_enum_shell_dep :> IsLexEnumShellDep lifting_dep; *)
 }.
 
 Section Context.
+
+Import NondepFromDep.
 
 Local Existing Instance has_shell.
 Local Existing Instance has_unshell.
@@ -651,6 +678,29 @@ Proof.
 
 End Context.
 
+Class HasPair : Type := pair (n : N) : N * N.
+
+Class HasUnpair : Type := unpair (x y : N) : N.
+
+Class HasPairing `(HasPair) `(HasUnpair) : Type :=
+  pairing : unit.
+
+Global Instance has_pairing `(HasPair) `(HasUnpair) :
+  HasPairing pair unpair := tt.
+
+Class IsSectPair `(HasPairing) : Prop :=
+  sect_pair (n : N) : prod_uncurry unpair (pair n) = n.
+
+Class IsRetrPair `(HasPairing) : Prop :=
+  retr_pair (x y : N) : pair (unpair x y) = (x, y).
+
+Class IsPairing `(HasPairing) : Prop := {
+  pairing_is_sect_pair :> IsSectPair pairing;
+  pairing_is_retr_pair :> IsRetrPair pairing;
+}.
+
+Module PairingFromLifting.
+
 Section Context.
 
 Context `(HasLiftingDep).
@@ -667,10 +717,16 @@ Fail Equations unpair (x y : N) : N :=
 Equations unpair (x y : N) : N :=
   unpair x y := Ssig_uncurry (prod_uncurry_dep unshell_dep) (taco_dep x y).
 
+Local Instance has_pair : HasPair := pair.
+Local Instance has_unpair : HasUnpair := unpair.
+Local Instance has_pairing : HasPairing pair unpair := tt.
+
 Context `(!IsLiftingDep lifting_dep).
 
-Theorem retr_pair (n : N) : prod_uncurry unpair (pair n) = n.
+Local Instance is_sect_pair : IsSectPair pairing.
 Proof.
+  intros n.
+  unfold PairingFunction.pair, has_pair, PairingFunction.unpair, has_unpair.
   destruct (pair n) as [x y] eqn : exy.
   simp pair in exy.
   destruct (shell_dep n) as [[a b] l] eqn : eab.
@@ -692,8 +748,10 @@ Proof.
   rewrite eab in loop_s.
   simp Ssig_uncurry in loop_s. Qed.
 
-Theorem sect_pair (x y : N) : pair (unpair x y) = (x, y).
+Local Instance is_retr_pair : IsRetrPair pairing.
 Proof.
+  intros x y.
+  unfold PairingFunction.pair, has_pair, PairingFunction.unpair, has_unpair.
   simp pair.
   destruct (shell_dep (unpair x y)) as [[a b] l] eqn : eab.
   simp unpair in eab.
@@ -713,40 +771,9 @@ Proof.
   rewrite eab' in loop_t.
   simp Ssig_uncurry in loop_t. Qed.
 
-(* Theorem mono_shell (p n : N) (l : p < n) :
-  fst (shell p) < fst (shell n) \/
-  snd (shell p) < snd (shell n). *)
-
-Theorem mono_shell_dep (p n : N) (l : p < n) :
-  fst (Spr1 (shell_dep p)) < fst (Spr1 (shell_dep n)) \/
-  snd (Spr1 (shell_dep p)) < snd (Spr1 (shell_dep n)).
-Proof.
-  assert (x : exists q : N, n = (1 + q) + p).
-  { exists ((n - p) - 1). lia. }
-  destruct x as [q e]. subst n.
-  clear l.
-  generalize dependent p.
-  induction q as [| r e] using peano_ind; intros p.
-  - arithmetize.
-    destruct (Spr1 (shell_dep p)) as [c d] eqn : ec.
-    epose proof lex_shell_dep _ ec as e''.
-    destruct e'' as [e'' | e''].
-    simp fst snd in *. rewrite e''. simp fst snd. right; lia.
-    simp fst snd in *. rewrite e''. simp fst snd. left; lia.
-  - arithmetize.
-    specialize (e (1 + p)).
-    destruct (Spr1 (shell_dep p)) as [c d] eqn : ec.
-    epose proof lex_shell_dep _ ec as e''.
-    repeat rewrite add_assoc in *.
-    replace (1 + 1 + r + p) with (1 + r + 1 + p) by lia.
-    destruct e as [e | e];
-    destruct e'' as [e'' | e''].
-    simp fst snd in *. rewrite e'' in e. simp fst snd in *. left; lia.
-    simp fst snd in *. rewrite e'' in e. simp fst snd in *. left; lia.
-    simp fst snd in *. rewrite e'' in e. simp fst snd in *. right; lia.
-    simp fst snd in *. rewrite e'' in e. simp fst snd in *. Admitted.
-
 End Context.
+
+End PairingFromLifting.
 
 End PairingFunction.
 
@@ -912,6 +939,11 @@ Global Instance is_retr_taco_dep : PF.IsRetrTacoDep PF.lifting_dep.
 Proof. exact @retr_taco_dep. Qed.
 Global Instance is_lifting_dep : PF.IsLiftingDep PF.lifting_dep.
 Proof. esplit; typeclasses eauto. Qed.
+
+Import PF.PairingFromLifting.
+
+Local Existing Instance has_pair.
+Local Existing Instance has_unpair.
 
 Compute map PF.pair (seq 0 64).
 Compute map (prod_uncurry PF.unpair o PF.pair) (seq 0 64).
