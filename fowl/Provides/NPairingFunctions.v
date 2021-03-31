@@ -322,20 +322,29 @@ Proof.
 
 Module PairingFunction.
 
+(** Stride refers to the size of each shell. *)
+
 Class HasStride : Type := stride (a : N) : positive.
+
+(** Base refers to the first index of each shell. *)
 
 Class HasBase : Type := base (a : N) : N.
 
-Class IsMonoBase `(HasBase) : Prop :=
-  mono_base (a b : N) (l : a < b) : base a < base b.
+(** Base is strictly monotonic as shells are nonempty. *)
 
-Class IsPartialSum `(HasStride) `(HasBase) : Prop :=
+Class IsMonoBase `(HasBase) : Prop :=
+  mono_base (a a' : N) (l : a < a') : base a < base a'.
+
+Class HasIndexing `(HasStride) `(HasBase) : Type := indexing : unit.
+
+(** Base is a partial sum of stride. *)
+
+Class IsPartialSum `(HasIndexing) : Prop :=
   partial_sum (a : N) : base (1 + a) = Npos (stride a) + base a.
 
-(** Stride can be derived from base and vice versa,
-    but it is more computationally feasible to define base.
-    The motivation is that [base] is a "definite integral" of [stride] and
-    integrals are harder to compute than derivatives. *)
+(** Base can be derived from stride and vice versa.
+    It is more computationally feasible to derive stride from base,
+    since partial sums are harder to compute than differences. *)
 
 Module BaseFromStride.
 
@@ -351,7 +360,28 @@ Next Obligation. intros a f p. lia. Qed.
 
 Local Instance has_base : HasBase := base_fix.
 
-Local Instance is_partial_sum : IsPartialSum stride base.
+Local Instance is_mono_base : IsMonoBase base.
+Proof.
+  intros a a' l.
+  unfold base, has_base.
+  generalize dependent a.
+  induction a' as [| p' li] using peano_ind; intros a l.
+  - lia.
+  - rewrite <- succ_pos_spec.
+    simp base_fix.
+    cbv zeta.
+    rewrite succ_pos_spec.
+    rewrite pred_succ.
+    destruct (eqb_spec a p') as [e | f].
+    + subst a. lia.
+    + assert (l' : a < p') by lia.
+      apply li in l'.
+      clear li.
+      lia. Qed.
+
+Local Instance has_indexing : HasIndexing stride base := tt.
+
+Local Instance is_partial_sum : IsPartialSum indexing.
 Proof.
   intros a.
   unfold base, has_base.
@@ -361,7 +391,6 @@ Proof.
     cbv zeta.
     simp pred. simp pred_N.
     simp base_fix.
-    rewrite add_0_r.
     rewrite add_0_r.
     reflexivity.
   - replace (1 + Npos n) with (Npos (Pos.succ n)) by lia.
@@ -393,9 +422,11 @@ Equations stride_def (a : N) : positive by wf (to_nat a) :=
 
 Local Instance has_stride : HasStride := stride_def.
 
+Local Instance has_indexing : HasIndexing stride base := tt.
+
 Context `(!IsMonoBase base).
 
-Local Instance is_partial_sum' : IsPartialSum stride base.
+Local Instance is_partial_sum : IsPartialSum indexing.
 Proof.
   intros a.
   unfold stride, has_stride.
@@ -405,12 +436,12 @@ Proof.
     change (succ 0) with 1.
     destruct (base 1 - base 0) as [| n] eqn : e.
     + pose proof mono_base 0 1 as l. lia.
-    + change (@base H) with H. lia.
+    + lia.
   - simp stride_def.
     replace (succ (Npos p)) with (1 + Npos p) by lia.
     destruct (base (1 + Npos p) - base (Npos p)) as [| n] eqn : e.
     + pose proof mono_base (Npos p) (1 + Npos p) as l. lia.
-    + change (@base H) with H. lia. Qed.
+    + lia. Qed.
 
 End Context.
 
@@ -438,6 +469,9 @@ Class HasUntacoDep `(HasStride) : Type :=
 
 Class HasLifting `(HasShell) `(HasUnshell) `(HasTaco) `(HasUntaco) : Type :=
   lifting : unit.
+
+(** TODO These instances may be bad,
+    because they can mix any available components. *)
 
 Global Instance has_lifting `(HasShell) `(HasUnshell) `(HasTaco) `(HasUntaco) :
   HasLifting shell unshell taco untaco := tt.
