@@ -470,20 +470,9 @@ Class HasUntacoDep `(HasStride) : Type :=
 Class HasLifting `(HasShell) `(HasUnshell) `(HasTaco) `(HasUntaco) : Type :=
   lifting : unit.
 
-(** TODO These instances may be bad,
-    because they can mix any available components. *)
-
-Global Instance has_lifting `(HasShell) `(HasUnshell) `(HasTaco) `(HasUntaco) :
-  HasLifting shell unshell taco untaco := tt.
-
 Class HasLiftingDep `(HasStride)
   `(!HasShellDep stride) `(!HasUnshellDep stride)
   `(!HasTacoDep stride) `(!HasUntacoDep stride) : Type := lifting_dep : unit.
-
-Global Instance has_lifting_dep `(HasStride)
-  `(!HasShellDep stride) `(!HasUnshellDep stride)
-  `(!HasTacoDep stride) `(!HasUntacoDep stride) :
-  HasLiftingDep stride shell_dep unshell_dep taco_dep untaco_dep := tt.
 
 (** We avoid defining instances involving interplay
     between dependent and nondependent versions of the same type classes,
@@ -495,7 +484,7 @@ Module DepFromNondep.
 
 Section Context.
 
-Context `(HasStride) `(HasShell) `(HasUnshell).
+Context `(HasStride) `(HasShell) `(HasUnshell) `(HasTaco) `(HasUntaco).
 
 Equations shell_dep_fix (a b : N) :
   {x : N * N $ Squash (snd x < Npos (stride (fst x)))} by wf (to_nat b) :=
@@ -519,12 +508,6 @@ Local Instance has_shell_dep : HasShellDep stride :=
 
 Local Instance has_unshell_dep : HasUnshellDep stride :=
   fun (a b : N) (l : Squash (b < Npos (stride a))) => unshell a b.
-
-End Context.
-
-Section Context.
-
-Context `(HasStride) `(HasTaco) `(HasUntaco).
 
 Equations taco_dep_fix (a b : N) :
   {x : N * N $ Squash (snd x < Npos (stride (fst x)))} by wf (to_nat b) :=
@@ -550,6 +533,9 @@ Local Instance has_taco_dep : HasTacoDep stride :=
 Local Instance has_untaco_dep : HasUntacoDep stride :=
   fun (a b : N) (l : Squash (b < Npos (stride a))) => untaco a b.
 
+Local Instance has_lifting_dep :
+  HasLiftingDep stride shell_dep unshell_dep taco_dep untaco_dep := tt.
+
 End Context.
 
 End DepFromNondep.
@@ -560,7 +546,9 @@ Module NondepFromDep.
 
 Section Context.
 
-Context `(HasStride) `(!HasShellDep stride) `(!HasUnshellDep stride).
+Context `(HasStride)
+  `(!HasShellDep stride) `(!HasUnshellDep stride)
+  `(!HasTacoDep stride) `(!HasUntacoDep stride).
 
 Local Instance has_shell : HasShell := fun n : N => Spr1 (shell_dep n).
 
@@ -577,12 +565,6 @@ Next Obligation.
 
 Local Instance has_unshell : HasUnshell := unshell_fix.
 
-End Context.
-
-Section Context.
-
-Context `(HasStride) `(!HasTacoDep stride) `(!HasUntacoDep stride).
-
 Local Instance has_taco : HasTaco := fun x y : N => Spr1 (taco_dep x y).
 
 Equations untaco_fix (a b : N) : N * N by wf (to_nat b) :=
@@ -597,6 +579,8 @@ Next Obligation.
   destruct (ltb_spec b (Npos (stride a))) as [l | l]; lia. Qed.
 
 Local Instance has_untaco : HasUntaco := untaco_fix.
+
+Local Instance has_lifting : HasLifting shell unshell taco untaco := tt.
 
 End Context.
 
@@ -692,6 +676,7 @@ Local Existing Instance has_shell.
 Local Existing Instance has_unshell.
 Local Existing Instance has_taco.
 Local Existing Instance has_untaco.
+Local Existing Instance has_lifting.
 
 (** This can be done, but retractions should not be possible. *)
 
@@ -719,9 +704,6 @@ Class HasUnpair : Type := unpair (x y : N) : N.
 Class HasPairing `(HasPair) `(HasUnpair) : Type :=
   pairing : unit.
 
-Global Instance has_pairing `(HasPair) `(HasUnpair) :
-  HasPairing pair unpair := tt.
-
 Class IsSectPair `(HasPairing) : Prop :=
   sect_pair (n : N) : prod_uncurry unpair (pair n) = n.
 
@@ -739,20 +721,20 @@ Section Context.
 
 Context `(HasLiftingDep).
 
-Fail Equations pair (n : N) : N * N :=
-  pair n := prod_uncurry untaco (shell n).
+Fail Equations pair_def (n : N) : N * N :=
+  pair_def n := prod_uncurry untaco (shell n).
 
-Equations pair (n : N) : N * N :=
-  pair n := Ssig_uncurry (prod_uncurry_dep untaco_dep) (shell_dep n).
+Equations pair_def (n : N) : N * N :=
+  pair_def n := Ssig_uncurry (prod_uncurry_dep untaco_dep) (shell_dep n).
 
-Fail Equations unpair (x y : N) : N :=
-  unpair x y := prod_uncurry unshell (taco x y).
+Fail Equations unpair_def (x y : N) : N :=
+  unpair_def x y := prod_uncurry unshell (taco x y).
 
-Equations unpair (x y : N) : N :=
-  unpair x y := Ssig_uncurry (prod_uncurry_dep unshell_dep) (taco_dep x y).
+Equations unpair_def (x y : N) : N :=
+  unpair_def x y := Ssig_uncurry (prod_uncurry_dep unshell_dep) (taco_dep x y).
 
-Local Instance has_pair : HasPair := pair.
-Local Instance has_unpair : HasUnpair := unpair.
+Local Instance has_pair : HasPair := pair_def.
+Local Instance has_unpair : HasUnpair := unpair_def.
 Local Instance has_pairing : HasPairing pair unpair := tt.
 
 Context `(!IsLiftingDep lifting_dep).
@@ -760,12 +742,12 @@ Context `(!IsLiftingDep lifting_dep).
 Local Instance is_sect_pair : IsSectPair pairing.
 Proof.
   intros n.
-  unfold PairingFunction.pair, has_pair, PairingFunction.unpair, has_unpair.
-  destruct (pair n) as [x y] eqn : exy.
-  simp pair in exy.
+  unfold pair, has_pair, unpair, has_unpair.
+  destruct (pair_def n) as [x y] eqn : exy.
+  simp pair_def in exy.
   destruct (shell_dep n) as [[a b] l] eqn : eab.
   simp Ssig_uncurry in exy. simp prod_uncurry_dep in exy.
-  simp prod_uncurry. simp unpair.
+  simp prod_uncurry. simp unpair_def.
   destruct (taco_dep x y) as [[a' b'] l'] eqn : eab'.
   simp Ssig_uncurry. simp prod_uncurry_dep.
   pose proof retr_taco_dep a b l as loop_t.
@@ -785,10 +767,10 @@ Proof.
 Local Instance is_retr_pair : IsRetrPair pairing.
 Proof.
   intros x y.
-  unfold PairingFunction.pair, has_pair, PairingFunction.unpair, has_unpair.
-  simp pair.
-  destruct (shell_dep (unpair x y)) as [[a b] l] eqn : eab.
-  simp unpair in eab.
+  unfold pair, has_pair, unpair, has_unpair.
+  simp pair_def.
+  destruct (shell_dep (unpair_def x y)) as [[a b] l] eqn : eab.
+  simp unpair_def in eab.
   destruct (taco_dep x y) as [[a' b'] l'] eqn : eab'.
   simp Ssig_uncurry in eab. simp prod_uncurry_dep in eab.
   simp Ssig_uncurry. simp prod_uncurry_dep.
@@ -804,6 +786,9 @@ Proof.
   (** Contract [t]. *)
   rewrite eab' in loop_t.
   simp Ssig_uncurry in loop_t. Qed.
+
+Local Instance is_pairing : IsPairing pairing.
+Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
 
@@ -953,15 +938,17 @@ Module PF := PairingFunction.
 
 Global Instance has_stride : PF.HasStride := stride.
 Global Instance has_base : PF.HasBase := base.
+Global Instance has_indexing : PF.HasIndexing stride base := tt.
 Global Instance has_shell_dep : PF.HasShellDep stride := shell_dep.
 Global Instance has_unshell_dep : PF.HasUnshellDep stride := unshell_dep.
 Global Instance has_taco_dep : PF.HasTacoDep stride := taco_dep.
 Global Instance has_untaco_dep : PF.HasUntacoDep stride := untaco_dep.
-Global Instance has_lifting_dep : PF.HasLiftingDep stride shell_dep unshell_dep taco_dep untaco_dep := tt.
+Global Instance has_lifting_dep :
+  PF.HasLiftingDep stride shell_dep unshell_dep taco_dep untaco_dep := tt.
 
 Global Instance is_mono_base : PF.IsMonoBase PF.base.
 Proof. exact @mono_base. Qed.
-Global Instance is_partial_sum : PF.IsPartialSum PF.stride PF.base.
+Global Instance is_partial_sum : PF.IsPartialSum PF.indexing.
 Proof. exact @partial_sum. Qed.
 Global Instance is_sect_shell_dep : PF.IsSectShellDep PF.lifting_dep.
 Proof. exact @sect_shell_dep. Qed.
@@ -978,11 +965,31 @@ Import PF.PairingFromLifting.
 
 Local Existing Instance has_pair.
 Local Existing Instance has_unpair.
+Local Existing Instance has_pairing.
+
+Global Instance has_pair : PF.HasPair := PF.pair.
+Global Instance has_unpair : PF.HasUnpair := PF.unpair.
+Global Instance has_pairing : PF.HasPairing PF.pair PF.unpair := tt.
+
+Local Existing Instance is_sect_pair.
+Local Existing Instance is_retr_pair.
+Local Existing Instance is_pairing.
+
+(** TODO Why does type class resolution fail here? *)
+
+Global Instance is_sect_pair : PF.IsSectPair PF.pairing.
+Proof. apply is_pairing; typeclasses eauto. Qed.
+Global Instance is_retr_pair : PF.IsRetrPair PF.pairing.
+Proof. apply is_pairing; typeclasses eauto. Qed.
+Global Instance is_pairing : PF.IsPairing PF.pairing.
+Proof. esplit; typeclasses eauto. Qed.
+
+End Cantor.
+
+Module PF := PairingFunction.
 
 Compute map PF.pair (seq 0 64).
 Compute map (prod_uncurry PF.unpair o PF.pair) (seq 0 64).
-
-End Cantor.
 
 Module RosenbergStrong.
 
