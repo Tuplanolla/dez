@@ -1,7 +1,5 @@
 From Coq Require Import
   Classes.DecidableClass Classes.Morphisms Lia PArith.PArith.
-From Maniunfold Require Import
-  Equations.
 From Maniunfold.Has Require Export
   OneSorted.One.
 From Maniunfold.Is Require Export
@@ -37,20 +35,26 @@ Proof. reflexivity. Qed.
 
 Hint Rewrite @pos_shiftl_equation_1 @pos_shiftl_equation_2 : shiftl.
 
-Corollary pos_iter_equation_1 (A : Type) (f : A -> A) (x : A) (n' : positive) :
+Corollary iter_equation_1 (A : Type) (f : A -> A) (x : A) (n' : positive) :
   iter f x (xI n') = f (iter f (iter f x n') n').
 Proof. reflexivity. Qed.
 
-Corollary pos_iter_equation_2 (A : Type) (f : A -> A) (x : A) (n' : positive) :
+Corollary iter_equation_2 (A : Type) (f : A -> A) (x : A) (n' : positive) :
   iter f x (xO n') = iter f (iter f x n') n'.
 Proof. reflexivity. Qed.
 
-Corollary pos_iter_equation_3 (A : Type) (f : A -> A) (x : A) :
+Corollary iter_equation_3 (A : Type) (f : A -> A) (x : A) :
   iter f x xH = f x.
 Proof. reflexivity. Qed.
 
-Hint Rewrite @pos_iter_equation_1 @pos_iter_equation_2
-  @pos_iter_equation_3 : iter.
+Hint Rewrite @iter_equation_1 @iter_equation_2 @iter_equation_3 : iter.
+
+(** Whether the given number is a power of two or not. *)
+
+Equations pos_bin (n : positive) : bool :=
+  pos_bin (xO p) := pos_bin p;
+  pos_bin (xI p) := false;
+  pos_bin xH := true.
 
 (** These lemmas are missing from the standard library. *)
 

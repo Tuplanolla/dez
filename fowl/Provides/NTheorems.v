@@ -3,7 +3,7 @@
 From Coq Require Import
   Classes.DecidableClass Classes.Morphisms Lia NArith.NArith Setoids.Setoid.
 From Maniunfold Require Import
-  DatatypeTactics Equations RewritingTactics.
+  DatatypeTactics RewritingTactics.
 From Maniunfold.Is Require Export
   OneSorted.AbelianGroup OneSorted.CommutativeSemigroup
   OneSorted.CommutativeMonoid OneSorted.CommutativeSemiring.
@@ -36,6 +36,12 @@ Corollary pred_equation_2 (p : positive) : pred (Npos p) = Pos.pred_N p.
 Proof. reflexivity. Qed.
 
 Hint Rewrite @pred_equation_1 @pred_equation_2 : pred.
+
+(** Whether the given number is a power of two or not. *)
+
+Equations bin (n : N) : bool :=
+  bin N0 := false;
+  bin (Npos p) := pos_bin p.
 
 (** These lemmas are missing from the standard library. *)
 

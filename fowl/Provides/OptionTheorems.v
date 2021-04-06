@@ -66,37 +66,6 @@ Lemma option_map_compose (A B C : Type)
   option_map (g o f) x = option_map g (option_map f x).
 Proof. destruct x as [a |]; auto. Qed.
 
-(** TODO Why does this exist? *)
-
-Global Program Instance EqDec_option (A : Type) `(!EqDec (eq_setoid A)) :
-  EqDec (eq_setoid (option A)) :=
-  fun x y : option A => match x, y with
-  | Some a, Some b => _
-  | None, Some _ => right _
-  | Some _, None => right _
-  | None, None => left _
-  end.
-Next Obligation.
-  intros A ? x y a b ex ey.
-  subst x y.
-  destruct (equiv_dec a b) as [e | f].
-  - left. rewrite e. reflexivity.
-  - right. intros e. apply f.
-    injection e. clear e. intros e.
-    rewrite e. reflexivity. Qed.
-Next Obligation.
-  intros A ? x y a b ex ey.
-  subst x y.
-  inversion ey. Qed.
-Next Obligation.
-  intros A ? x y a b ex ey.
-  subst x y.
-  inversion ey. Qed.
-Next Obligation.
-  intros A ? x y ex ey.
-  subst x y.
-  reflexivity. Qed.
-
 Global Program Instance Decidable_option (A : Type)
   `(forall a b : A, Decidable (a = b)) (x y : option A) :
   Decidable (x = y) := {
