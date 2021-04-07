@@ -141,7 +141,7 @@ Proof.
   generalize dependent b. induction n as [p ep | p ep |]; intros b e.
   - simp pos_binoddfactor in e.
     injection e. clear e. intros ec eb. subst b c.
-    rewrite pos_shiftl_0_r. rewrite Pos.mul_1_r.
+    rewrite Pos.shiftl_0_r. rewrite Pos.mul_1_r.
     reflexivity.
   - simp pos_binoddfactor in e.
     destruct (pos_binoddfactor p) as [b' c'] eqn : e'.
@@ -167,7 +167,7 @@ Lemma pos_binoddfactor_pos_binoddprod (b : N) (c : positive) (e : pos_odd c) :
 Proof.
   simp pos_binoddprod.
   destruct b as [| p].
-  - rewrite pos_shiftl_0_r. rewrite Pos.mul_1_r.
+  - rewrite Pos.shiftl_0_r. rewrite Pos.mul_1_r.
     rewrite pair_pos_binoddfactor.
     rewrite odd_pos_binfactor by assumption.
     rewrite odd_pos_oddfactor by assumption.
