@@ -55,17 +55,15 @@ Hint Rewrite @iter_equation_1 @iter_equation_2 @iter_equation_3 : iter.
 
 (** Whether the given number is a power of two or not. *)
 
-Equations pos_bin (n : positive) : bool :=
-  pos_bin (xO p) := pos_bin p;
-  pos_bin (xI p) := false;
-  pos_bin xH := true.
+Equations bin (n : positive) : bool :=
+  bin (xO p) := bin p;
+  bin (xI p) := false;
+  bin xH := true.
 
 (** These lemmas are missing from the standard library. *)
 
 Lemma shiftl_0_r (a : positive) : shiftl a 0 = a.
 Proof. reflexivity. Qed.
-
-End Pos.
 
 (** These instances are missing from the standard library. *)
 
@@ -106,15 +104,17 @@ Proof.
 
 (** Whether the given number is even or not. *)
 
-Equations pos_even (n : positive) : bool :=
-  pos_even (xI p) := false;
-  pos_even (xO p) := true;
-  pos_even xH := false.
+Equations even (n : positive) : bool :=
+  even (xI p) := false;
+  even (xO p) := true;
+  even xH := false.
 
 (** Whether the given number is odd or not. *)
 
-Equations pos_odd (n : positive) : bool :=
-  pos_odd n := negb (pos_even n).
+Equations odd (n : positive) : bool :=
+  odd n := negb (even n).
+
+End Pos.
 
 Module Additive.
 

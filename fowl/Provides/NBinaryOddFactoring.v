@@ -29,7 +29,7 @@ Equations pos_binoddprod (b : N) (c : positive) : positive :=
 (** This function is a dependent version of [pos_binoddfactor]. *)
 
 Equations pos_binoddfactor_dep (n : positive) :
-  {x : N * positive $ Squash (pos_odd (snd x))} :=
+  {x : N * positive $ Squash (Pos.odd (snd x))} :=
   pos_binoddfactor_dep n := Sexists _ (pos_binoddfactor n) _.
 Next Obligation.
   intros n.
@@ -44,7 +44,7 @@ Next Obligation.
 (** This function is a dependent version of [pos_binoddprod]. *)
 
 Equations pos_binoddprod_dep
-  (b : N) (c : positive) (e : Squash (pos_odd c)) : positive :=
+  (b : N) (c : positive) (e : Squash (Pos.odd c)) : positive :=
   pos_binoddprod_dep b c e := pos_binoddprod b c.
 
 (** Find the binary factor of the given positive number.
@@ -81,13 +81,13 @@ Proof.
 (** The binary factor of a power of two is
     the binary logarithm of the number. *)
 
-Lemma bin_pos_binfactor (n : positive) (e : pos_bin n) :
+Lemma bin_pos_binfactor (n : positive) (e : Pos.bin n) :
   pos_binfactor n = pos_log2 n.
 Proof.
   induction n as [p ep | p ep |].
   - inversion e.
   - simp pos_binfactor. simp pos_binoddfactor.
-    assert (e' : pos_bin p) by assumption.
+    assert (e' : Pos.bin p) by assumption.
     specialize (ep e').
     simp pos_binfactor in ep.
     destruct (pos_binoddfactor p) as [b c].
@@ -98,7 +98,7 @@ Proof.
 
 (** The odd factor of an odd number is the number itself. *)
 
-Lemma odd_pos_oddfactor (n : positive) (e : pos_odd n) :
+Lemma odd_pos_oddfactor (n : positive) (e : Pos.odd n) :
   pos_oddfactor n = n.
 Proof.
   destruct n as [p | p |].
@@ -108,7 +108,7 @@ Proof.
 
 (** The binary factor of an odd number is zero. *)
 
-Lemma odd_pos_binfactor (n : positive) (e : pos_odd n) :
+Lemma odd_pos_binfactor (n : positive) (e : Pos.odd n) :
   pos_binfactor n = 0.
 Proof.
   destruct n as [p | p |].
@@ -118,13 +118,13 @@ Proof.
 
 (** The odd factor of a power of two is one. *)
 
-Lemma bin_pos_oddfactor (n : positive) (e : pos_bin n) :
+Lemma bin_pos_oddfactor (n : positive) (e : Pos.bin n) :
   pos_oddfactor n = 1%positive.
 Proof.
   induction n as [p ep | p ep |].
   - inversion e.
   - simp pos_oddfactor. simp pos_binoddfactor.
-    assert (e' : pos_bin p) by assumption.
+    assert (e' : Pos.bin p) by assumption.
     specialize (ep e').
     simp pos_oddfactor in ep.
     destruct (pos_binoddfactor p) as [b c].
@@ -162,7 +162,7 @@ Proof. intros e. specialize (e 2%N 2%positive). cbv in e. inversion e. Qed.
 (** The function [pos_binoddfactor] is an inverse of [pos_binoddprod],
     when the second factor is odd. *)
 
-Lemma pos_binoddfactor_pos_binoddprod (b : N) (c : positive) (e : pos_odd c) :
+Lemma pos_binoddfactor_pos_binoddprod (b : N) (c : positive) (e : Pos.odd c) :
   pos_binoddfactor (pos_binoddprod b c) = (b, c).
 Proof.
   simp pos_binoddprod.
@@ -202,7 +202,7 @@ Proof.
     of [pos_binoddprod_dep]. *)
 
 Lemma pos_binoddfactor_dep_pos_binoddprod_dep
-  (b : N) (c : positive) (e : Squash (pos_odd c)) :
+  (b : N) (c : positive) (e : Squash (Pos.odd c)) :
   pos_binoddfactor_dep (pos_binoddprod_dep b c e) = Sexists _ (b, c) e.
 Proof.
   pose proof pos_binoddfactor_pos_binoddprod b c as f.

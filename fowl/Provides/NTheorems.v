@@ -41,7 +41,7 @@ Hint Rewrite @pred_equation_1 @pred_equation_2 : pred.
 
 Equations bin (n : N) : bool :=
   bin N0 := false;
-  bin (Npos p) := pos_bin p.
+  bin (Npos p) := Pos.bin p.
 
 (** These lemmas are missing from the standard library. *)
 
