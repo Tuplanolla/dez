@@ -278,58 +278,19 @@ Class IsPlacementDep `(HasPlacementDep) : Prop := {
   (* placement_dep_is_lex_enum_shell_dep :> IsLexEnumShellDep placement_dep; *)
 }.
 
-(** Restricted versions can be derived from unrestricted ones and vice versa.
-    Both ways are quite unsatisfactory,
-    because bijectivity cannot be proven in either case. *)
+(** Some restricted versions can be derived
+    from unrestricted ones and vice versa.
+    Also, restricted shells can be derived from strides. *)
 
 Module DepFromNondep.
 
 Section Context.
 
-Context `(HasStride) `(HasPlacement).
-
-Equations shell_dep_fix (a b : N) :
-  {x : N * N $ Squash (snd x < Npos (stride (fst x)))} by wf (to_nat b) :=
-  shell_dep_fix a b :=
-    if sumbool_of_bool (b <? Npos (stride a)) then
-    Sexists _ (a, b) _ else shell_dep_fix (1 + a) (b - Npos (stride a)).
-Next Obligation.
-  intros a b f e.
-  apply squash.
-  unfold fst, snd.
-  destruct (ltb_spec0 b (Npos (stride a))) as [l | l]; lia. Qed.
-Next Obligation.
-  intros a b f e.
-  destruct (ltb_spec0 b (Npos (stride a))) as [l | l]; lia. Qed.
-
-Equations shell_dep_def (n : N) :
-  {x : N * N $ Squash (snd x < Npos (stride (fst x)))} :=
-  shell_dep_def n := prod_uncurry shell_dep_fix (shell n).
-
-Local Instance has_shell_dep : HasShellDep stride := shell_dep_def.
+Context `(HasPlacement).
+Context `(HasStride) `(!HasShellDep stride) `(!HasTacoDep stride).
 
 Local Instance has_unshell_dep : HasUnshellDep stride :=
   fun (a b : N) (l : Squash (b < Npos (stride a))) => unshell a b.
-
-Equations taco_dep_fix (a b : N) :
-  {x : N * N $ Squash (snd x < Npos (stride (fst x)))} by wf (to_nat b) :=
-  taco_dep_fix a b :=
-    if sumbool_of_bool (b <? Npos (stride a)) then
-    Sexists _ (a, b) _ else taco_dep_fix (1 + a) (b - Npos (stride a)).
-Next Obligation.
-  intros a b f e.
-  apply squash.
-  unfold fst, snd.
-  destruct (ltb_spec0 b (Npos (stride a))) as [l | l]; lia. Qed.
-Next Obligation.
-  intros a b f e.
-  destruct (ltb_spec0 b (Npos (stride a))) as [l | l]; lia. Qed.
-
-Equations taco_dep_def (x y : N) :
-  {x : N * N $ Squash (snd x < Npos (stride (fst x)))} :=
-  taco_dep_def x y := prod_uncurry taco_dep_fix (taco x y).
-
-Local Instance has_taco_dep : HasTacoDep stride := taco_dep_def.
 
 Local Instance has_untaco_dep : HasUntacoDep stride :=
   fun (a b : N) (l : Squash (b < Npos (stride a))) => untaco a b.
@@ -339,27 +300,8 @@ Local Instance has_placement_dep :
 
 Context `(!IsPlacement placement).
 
-(** TODO This can be done, but the definition must be different (and worse). *)
-
 Local Instance is_sect_shell_dep : IsSectShellDep placement_dep.
-Proof.
-  intros n.
-  pose proof sect_shell n as en.
-  unfold prod_uncurry in en.
-  unfold shell_dep, has_shell_dep, shell_dep_def.
-  unfold prod_uncurry.
-  destruct (shell n) as [a b] eqn : eab.
-  unfold fst, snd in *.
-  unfold Ssig_uncurry. unfold prod_uncurry_dep.
-  unfold unshell_dep, has_unshell_dep.
-  destruct (shell_dep_fix a b) as [[a' b'] l'] eqn : e'.
-  unfold Spr1. unfold fst, snd in *.
-  rewrite shell_dep_fix_equation_1 in e'.
-  destruct (sumbool_of_bool (b <? Npos (stride a))) as [e | e].
-  - injection e'. intros eb ea. clear e'.
-    subst a' b'.
-    apply en.
-  - clear e'. apply unsquash in l'. apply ltb_nlt in e. Abort.
+Proof. Abort.
 
 Local Instance is_retr_shell_dep : IsRetrShellDep placement_dep.
 Proof. Abort.
@@ -382,57 +324,18 @@ Module NondepFromDep.
 Section Context.
 
 Context `(HasPlacementDep).
-
-Local Instance has_shell : HasShell := fun n : N => Spr1 (shell_dep n).
-
-Equations unshell_fix (a b : N) : N by wf (to_nat b) :=
-  unshell_fix a b :=
-    if sumbool_of_bool (b <? Npos (stride a)) then
-    unshell_dep a b _ else unshell_fix (1 + a) (b - Npos (stride a)).
-Next Obligation.
-  intros a b f e.
-  apply squash.
-  destruct (ltb_spec b (Npos (stride a))) as [l | l]; lia. Qed.
-Next Obligation.
-  intros a b f e.
-  destruct (ltb_spec b (Npos (stride a))) as [l | l]; lia. Qed.
-
-Local Instance has_unshell : HasUnshell := unshell_fix.
+Context `(HasUnshell) `(HasUntaco).
 
 Local Instance has_taco : HasTaco := fun x y : N => Spr1 (taco_dep x y).
 
-Equations untaco_fix (a b : N) : N * N by wf (to_nat b) :=
-  untaco_fix a b :=
-    if sumbool_of_bool (b <? Npos (stride a)) then
-    untaco_dep a b _ else untaco_fix (1 + a) (b - Npos (stride a)).
-Next Obligation.
-  intros a b f e.
-  apply squash.
-  destruct (ltb_spec b (Npos (stride a))) as [l | l]; lia. Qed.
-Next Obligation.
-  intros a b f e.
-  destruct (ltb_spec b (Npos (stride a))) as [l | l]; lia. Qed.
-
-Local Instance has_untaco : HasUntaco := untaco_fix.
+Local Instance has_shell : HasShell := fun n : N => Spr1 (shell_dep n).
 
 Local Instance has_placement : HasPlacement shell unshell taco untaco := tt.
 
 Context `(!IsPlacementDep placement_dep).
 
 Local Instance is_sect_shell : IsSectShell placement.
-Proof.
-  intros n.
-  pose proof sect_shell_dep n as e.
-  unfold shell, has_shell, unshell, has_unshell.
-  destruct (shell_dep n) as [[a b] l].
-  simp Ssig_uncurry in e. simp prod_uncurry_dep in e.
-  unfold Spr1. simp prod_uncurry.
-  epose proof unsquash l as l'.
-  simp fst snd in l'.
-  rewrite unshell_fix_equation_1.
-  destruct (sumbool_of_bool (b <? pos (stride a))) as [e' | e'].
-  - apply e.
-  - apply ltb_ge in e'. pose proof lt_le_trans _ _ _ l' e'. lia. Qed.
+Proof. Abort.
 
 Local Instance is_retr_shell : IsRetrShell placement.
 Proof. Abort.
