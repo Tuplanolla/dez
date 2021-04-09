@@ -76,7 +76,7 @@ Equations base_fix (a : N) : N by wf (to_nat a) :=
   base_fix (Npos n) :=
     let p := pred (Npos n) in
     Npos (stride p) + base_fix p.
-Next Obligation. intros a f p. lia. Qed.
+Next Obligation. intros n f p. lia. Qed.
 
 Local Instance has_base : HasBase := base_fix.
 
@@ -150,7 +150,7 @@ Context `(IsBase).
 Equations stride_def (a : N) : positive :=
   stride_def a :=
     match base (succ a) - base a with
-    (** This case is impossible. *)
+    (** This case is absurd by [mono_base]. *)
     | N0 => xH
     | Npos n => n
     end%N.
@@ -339,6 +339,8 @@ Next Obligation.
 Equations shell (n : N) : N * N :=
   shell n := shell_fix 0 n.
 
+Local Instance has_shell : HasShell := shell.
+
 Equations shell_dep (n : N) :
   {x : N * N $ Squash (snd x < Npos (stride (fst x)))} :=
   shell_dep n := Sexists _ (shell n) _.
@@ -354,18 +356,26 @@ Next Obligation.
     lia.
   - auto. Qed.
 
-Equations unshell_fix (b a : N) : N by wf (to_nat a) :=
-  unshell_fix b N0 := b;
-  unshell_fix b (Npos n) :=
+Local Instance has_shell_dep : HasShellDep stride := shell_dep.
+
+Equations unshell_fix (a b : N) : N by wf (to_nat a) :=
+  unshell_fix N0 b := b;
+  unshell_fix (Npos n) b :=
     let p := pred (Npos n) in
-    Npos (stride p) + unshell_fix b p.
-Next Obligation. intros a f p. lia. Qed.
+    Npos (stride p) + unshell_fix p b.
+Next Obligation. intros n b f p. lia. Qed.
 
 Equations unshell (a b : N) : N :=
   unshell a b := unshell_fix b a.
 
+Local Instance has_unshell : HasUnshell := unshell.
+
 Equations unshell_dep (a b : N) (l : Squash (b < Npos (stride a))) : N :=
   unshell_dep a b l := unshell a b.
+
+Local Instance has_unshell_dep : HasUnshellDep stride := unshell_dep.
+
+(** TODO Relax constraints of [IsSectShell] etc and instantiate them here. *)
 
 End Context.
 
@@ -376,17 +386,14 @@ Module ShellFromBase.
 Section Context.
 
 Context `(IsBase).
-(* Local Instance has_stride : HasStride := succ_pos.
-Local Instance is_stride : IsStride stride.
-Proof. Qed.
-Import BaseFromStride.
-Local Existing Instance has_base.
-Local Existing Instance is_mono_base.
-Local Existing Instance is_fixed_base.
-Local Existing Instance is_base.
+
+Import StrideFromBase.
+
+Local Existing Instance has_stride.
+Local Existing Instance is_stride.
 Local Existing Instance has_partition.
 Local Existing Instance is_partial_sum.
-Local Existing Instance is_partition. *)
+Local Existing Instance is_partition.
 
 Equations shell_fix (a b : N) : N * N by wf (to_nat (b - base a)) :=
   shell_fix a b :=
@@ -402,7 +409,7 @@ Equations shell (n : N) : N * N :=
   shell n := shell_fix 0 n.
 
 Equations shell_dep (n : N) :
-  {x : N * N $ Squash (snd x < base (1 + fst x) - base (fst x))} :=
+  {x : N * N $ Squash (snd x < Npos (stride (fst x)))} :=
   shell_dep n := Sexists _ (shell n) _.
 Next Obligation.
   intros n.
@@ -411,6 +418,7 @@ Next Obligation.
   apply shell_fix_elim.
   intros a b lab.
   pose proof mono_base a (1 + a) as la.
+  pose proof partial_sum a as ea.
   destruct (sumbool_of_bool (b <? base (1 + a))) as [l | l].
   - unfold fst, snd.
     apply ltb_lt in l.
@@ -420,8 +428,10 @@ Next Obligation.
 Equations unshell (a b : N) : N :=
   unshell a b := b + base a.
 
-Equations unshell_dep (a b : N) (l : Squash (b + base a < base (1 + a))) : N :=
+Equations unshell_dep (a b : N) (l : Squash (b < Npos (stride a))) : N :=
   unshell_dep a b l := unshell a b.
+
+(** TODO ...and here. *)
 
 End Context.
 
