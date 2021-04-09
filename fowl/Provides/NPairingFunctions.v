@@ -117,6 +117,7 @@ Context `(HasBase).
 Equations stride_def (a : N) : positive :=
   stride_def a :=
     match base (succ a) - base a with
+    (** This case is impossible. *)
     | N0 => xH
     | Npos n => n
     end%N.
@@ -277,6 +278,54 @@ Class IsPlacementDep `(HasPlacementDep) : Prop := {
   placement_dep_is_retr_taco_dep :> IsRetrTacoDep placement_dep;
   (* placement_dep_is_lex_enum_shell_dep :> IsLexEnumShellDep placement_dep; *)
 }.
+
+Module ShellFromStride.
+
+Class HasUnbase : Type := unbase (n : N) : N.
+
+Section Context.
+
+Fail Fail Context `(HasStride).
+
+Local Instance has_stride : HasStride := succ_pos.
+Local Instance has_base : HasBase := tri.
+
+Equations f2 (i s n : N) : N * N by wf (to_nat (n - s)) :=
+  f2 i s n :=
+    let s' := Npos (stride i) + s in
+    if n <? s' then
+    (i, n - s) else
+    f2 (1 + i) s' n.
+Next Obligation. intros. subst s'. Admitted.
+
+Equations f1 (i n : N) : N * N by wf (to_nat (n - base i)) :=
+  f1 i n :=
+    if n <? base (1 + i) then
+    (i, n - base i) else
+    f1 (1 + i) n.
+Next Obligation. intros. Admitted.
+
+Equations f0 (i d : N) : N * N by wf (to_nat d) :=
+  f0 i d :=
+    if d <? Npos (stride i) then
+    (i, d) else
+    f0 (1 + i) (d - Npos (stride i)).
+Next Obligation. intros. Admitted.
+
+(** What is the role of the inverse of [base]? *)
+
+Equations shell_fix (a : N) (b : positive) (n : N) : N * N by wf (to_nat n) :=
+  shell_fix a b n :=
+    if sumbool_of_bool (n <? Npos b) then
+    (a, Npos b - n) else shell_fix (1 + a) (stride (1 + a) + b) n.
+Next Obligation. Admitted.
+
+Equations shell (n : N) : N * N :=
+  shell n := shell_fix 0 (stride 0) n.
+
+End Context.
+
+End ShellFromStride.
 
 (** Some restricted versions can be derived
     from unrestricted ones and vice versa.
