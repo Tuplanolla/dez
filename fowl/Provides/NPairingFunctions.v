@@ -15,19 +15,32 @@ Local Open Scope N_scope.
 
 Module PairingFunction.
 
-(** We call the sizes of the shells strides. *)
+(** We call the sizes of shells strides. *)
 
 Class HasStride : Type := stride (a : N) : positive.
 
-(** We call first indexes of the shells bases. *)
+Class IsStride `(HasStride) : Prop := {}.
+
+(** We call the first indexes of shells bases. *)
 
 Class HasBase : Type := base (a : N) : N.
 
-(** Bases have to be strictly increasing,
-    since shells are always nonempty. *)
+(** Bases should be strictly increasing,
+    because shells are supposed to be nonempty. *)
 
 Class IsMonoBase `(HasBase) : Prop :=
-  mono_base (a a' : N) (l : a < a') : base a < base a'.
+  mono_base (a b : N) (l : a < b) : base a < base b.
+
+(** Bases should have a fixed point at zero,
+    because shells are supposed to be a covering. *)
+
+Class IsFixedBase `(HasBase) : Prop :=
+  fixed_base : base 0 = 0.
+
+Class IsBase `(HasBase) : Prop := {
+  base_is_mono_base :> IsMonoBase base;
+  base_is_fixed_base :> IsFixedBase base;
+}.
 
 (** Strides and bases both partition the natural numbers. *)
 
@@ -38,16 +51,23 @@ Class HasPartition `(HasStride) `(HasBase) : Type := partition : unit.
 Class IsPartialSum `(HasPartition) : Prop :=
   partial_sum (a : N) : base (1 + a) = Npos (stride a) + base a.
 
+Class IsPartition `(HasPartition) : Prop := {
+  stride_is_stride :> IsStride stride;
+  base_is_base :> IsBase base;
+  partition_is_partial_sum :> IsPartialSum partition;
+}.
+
 (** Bases can be derived from strides and vice versa.
-    It is generally more sensible to derive strides from bases,
-    since partial sums (discrete integrals) are harder to compute
-    than differences (discrete derivatives). *)
+    Even though strides are easier to define than bases,
+    it is generally more sensible to derive strides from bases,
+    because differences (discrete derivatives) are easier to compute
+    than partial sums (discrete integrals). *)
 
 Module BaseFromStride.
 
 Section Context.
 
-Context `(HasStride).
+Context `(IsStride).
 
 (** Calculate the partial sum up to the given shell. *)
 
@@ -77,6 +97,16 @@ Proof.
       apply li in l'. clear li.
       lia. Qed.
 
+Local Instance is_fixed_base : IsFixedBase base.
+Proof.
+  unfold IsFixedBase.
+  unfold base, has_base.
+  simp base_fix.
+  reflexivity. Qed.
+
+Local Instance is_base : IsBase base.
+Proof. esplit; typeclasses eauto. Qed.
+
 Local Instance has_partition : HasPartition stride base := tt.
 
 Local Instance is_partial_sum : IsPartialSum partition.
@@ -102,6 +132,9 @@ Proof.
     unfold pred.
     reflexivity. Qed.
 
+Local Instance is_partition : IsPartition partition.
+Proof. esplit; typeclasses eauto. Qed.
+
 End Context.
 
 End BaseFromStride.
@@ -110,7 +143,7 @@ Module StrideFromBase.
 
 Section Context.
 
-Context `(HasBase).
+Context `(IsBase).
 
 (** Calculate the difference up from the given shell. *)
 
@@ -123,6 +156,9 @@ Equations stride_def (a : N) : positive :=
     end%N.
 
 Local Instance has_stride : HasStride := stride_def.
+
+Local Instance is_stride : IsStride stride.
+Proof. Qed.
 
 Local Instance has_partition : HasPartition stride base := tt.
 
@@ -143,6 +179,9 @@ Proof.
     destruct (base (1 + Npos p) - base (Npos p)) as [| n] eqn : e.
     + pose proof mono_base (Npos p) (1 + Npos p) as l. lia.
     + lia. Qed.
+
+Local Instance is_partition : IsPartition partition.
+Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
 
@@ -279,53 +318,114 @@ Class IsPlacementDep `(HasPlacementDep) : Prop := {
   (* placement_dep_is_lex_enum_shell_dep :> IsLexEnumShellDep placement_dep; *)
 }.
 
-Module ShellFromStride.
+(** Shells can be derived from strides and bases, but tacos cannot.
+    Once again, tacos prove to be the ultimate form of food. *)
 
-Class HasUnbase : Type := unbase (n : N) : N.
+Module ShellFromStride.
 
 Section Context.
 
-Fail Fail Context `(HasStride).
+Context `(IsStride).
 
-Local Instance has_stride : HasStride := succ_pos.
-Local Instance has_base : HasBase := tri.
-
-Equations f2 (i s n : N) : N * N by wf (to_nat (n - s)) :=
-  f2 i s n :=
-    let s' := Npos (stride i) + s in
-    if n <? s' then
-    (i, n - s) else
-    f2 (1 + i) s' n.
-Next Obligation. intros. subst s'. Admitted.
-
-Equations f1 (i n : N) : N * N by wf (to_nat (n - base i)) :=
-  f1 i n :=
-    if n <? base (1 + i) then
-    (i, n - base i) else
-    f1 (1 + i) n.
-Next Obligation. intros. Admitted.
-
-Equations f0 (i d : N) : N * N by wf (to_nat d) :=
-  f0 i d :=
-    if d <? Npos (stride i) then
-    (i, d) else
-    f0 (1 + i) (d - Npos (stride i)).
-Next Obligation. intros. Admitted.
-
-(** What is the role of the inverse of [base]? *)
-
-Equations shell_fix (a : N) (b : positive) (n : N) : N * N by wf (to_nat n) :=
-  shell_fix a b n :=
-    if sumbool_of_bool (n <? Npos b) then
-    (a, Npos b - n) else shell_fix (1 + a) (stride (1 + a) + b) n.
-Next Obligation. Admitted.
+Equations shell_fix (a b : N) : N * N by wf (to_nat b) :=
+  shell_fix a b :=
+    if sumbool_of_bool (b <? Npos (stride a)) then
+    (a, b) else shell_fix (1 + a) (b - Npos (stride a)).
+Next Obligation.
+  intros a b f l.
+  apply ltb_ge in l.
+  lia. Qed.
 
 Equations shell (n : N) : N * N :=
-  shell n := shell_fix 0 (stride 0) n.
+  shell n := shell_fix 0 n.
+
+Equations shell_dep (n : N) :
+  {x : N * N $ Squash (snd x < Npos (stride (fst x)))} :=
+  shell_dep n := Sexists _ (shell n) _.
+Next Obligation.
+  intros n.
+  apply squash.
+  unfold shell.
+  apply shell_fix_elim.
+  intros a b lab.
+  destruct (sumbool_of_bool (b <? Npos (stride a))) as [l | l].
+  - unfold fst, snd.
+    apply ltb_lt in l.
+    lia.
+  - auto. Qed.
+
+Equations unshell_fix (b a : N) : N by wf (to_nat a) :=
+  unshell_fix b N0 := b;
+  unshell_fix b (Npos n) :=
+    let p := pred (Npos n) in
+    Npos (stride p) + unshell_fix b p.
+Next Obligation. intros a f p. lia. Qed.
+
+Equations unshell (a b : N) : N :=
+  unshell a b := unshell_fix b a.
+
+Equations unshell_dep (a b : N) (l : Squash (b < Npos (stride a))) : N :=
+  unshell_dep a b l := unshell a b.
 
 End Context.
 
 End ShellFromStride.
+
+Module ShellFromBase.
+
+Section Context.
+
+Context `(IsBase).
+(* Local Instance has_stride : HasStride := succ_pos.
+Local Instance is_stride : IsStride stride.
+Proof. Qed.
+Import BaseFromStride.
+Local Existing Instance has_base.
+Local Existing Instance is_mono_base.
+Local Existing Instance is_fixed_base.
+Local Existing Instance is_base.
+Local Existing Instance has_partition.
+Local Existing Instance is_partial_sum.
+Local Existing Instance is_partition. *)
+
+Equations shell_fix (a b : N) : N * N by wf (to_nat (b - base a)) :=
+  shell_fix a b :=
+    if sumbool_of_bool (b <? base (1 + a)) then
+    (a, b - base a) else shell_fix (1 + a) b.
+Next Obligation.
+  intros a b f l.
+  apply ltb_ge in l.
+  pose proof mono_base a (1 + a) as l'.
+  lia. Qed.
+
+Equations shell (n : N) : N * N :=
+  shell n := shell_fix 0 n.
+
+Equations shell_dep (n : N) :
+  {x : N * N $ Squash (snd x < base (1 + fst x) - base (fst x))} :=
+  shell_dep n := Sexists _ (shell n) _.
+Next Obligation.
+  intros n.
+  apply squash.
+  unfold shell.
+  apply shell_fix_elim.
+  intros a b lab.
+  pose proof mono_base a (1 + a) as la.
+  destruct (sumbool_of_bool (b <? base (1 + a))) as [l | l].
+  - unfold fst, snd.
+    apply ltb_lt in l.
+    lia.
+  - auto. Qed.
+
+Equations unshell (a b : N) : N :=
+  unshell a b := b + base a.
+
+Equations unshell_dep (a b : N) (l : Squash (b + base a < base (1 + a))) : N :=
+  unshell_dep a b l := unshell a b.
+
+End Context.
+
+End ShellFromBase.
 
 (** Some restricted versions can be derived
     from unrestricted ones and vice versa.
