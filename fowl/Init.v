@@ -44,6 +44,17 @@ Global Set Universe Polymorphism.
 
 Global Set Equations Transparent.
 
+(** We do not allow automatic solution of obligations,
+    because we do not want the addition or removal of hints
+    to change the total number of obligations.
+
+    The default tactic is
+    [program_simplify;
+    try typeclasses eauto 10 with program;
+    try program_solve_wf]. *)
+
+Obligation Tactic := idtac.
+
 (** We do not use implicit generalization,
     because the consequences of accidental misuse
     are worse than the convenience it permits. *)
@@ -172,17 +183,6 @@ Notation "'1'" := (Npos xH) : N_scope.
 
 Notation "'0'" := Z0 : Z_scope.
 Notation "'1'" := (Zpos xH) : Z_scope.
-
-(** We do not allow automatic solution of obligations,
-    because we do not want the addition or removal of hints
-    to change the total number of obligations.
-
-    The default tactic is
-    [program_simplify;
-    try typeclasses eauto 10 with program;
-    try program_solve_wf]. *)
-
-Obligation Tactic := idtac.
 
 (** We might as well allow treating booleans as reflections of propositions. *)
 
