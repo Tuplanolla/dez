@@ -39,8 +39,8 @@ Global Set Reversible Pattern Implicit.
 Global Set Universe Polymorphism.
 
 (** We mark equations transparent,
-    because it is sometimes convenient
-    to reduce them with [cbv] while exploring things. *)
+    because it is sometimes necessary to [unfold] them,
+    particularly when [simp] would either fail to progress or diverge. *)
 
 Global Set Equations Transparent.
 

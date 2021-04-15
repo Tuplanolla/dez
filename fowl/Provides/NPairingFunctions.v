@@ -101,7 +101,7 @@ Proof.
 
 Local Instance is_fixed_base : IsFixedBase base.
 Proof.
-  unfold IsFixedBase.
+  hnf.
   unfold base, has_base.
   simp base_fix.
   reflexivity. Qed.
@@ -179,9 +179,11 @@ Lemma eq_stride_def (a : N) : stride_def' a = stride_def a.
 Proof.
   simp stride_def' stride_def.
   cbv zeta.
-  generalize (eq_refl (base (succ a) - base a)).
-  case: {2 3 7} (base (succ a) - base a).
+  set (n := base (succ a) - base a).
+  generalize (eq_refl n).
+  case: {2 3 7} n.
   - intros e.
+    subst n.
     pose proof mono_base a (succ a) as l.
     lia.
   - intros p e.
@@ -232,10 +234,11 @@ Class HasUnshell : Type := unshell (a b : N) : N.
 Class HasUnshellDep `(HasStride) : Type :=
   unshell_dep (a b : N) (l : Squash (b < Npos (stride a))) : N.
 
-(** We place each pair of natural numbers on a shell as well,
-    except this time we call the shells tacos instead.
-    Tacos are just more delicious kinds of shells, as you would expect.
-    We will prove this fact later. *)
+(** We place each pair of natural numbers on a shell as well.
+    Since the placement of pairs is intrinsically different
+    from that of numbers, we call the shells tacos instead.
+    The motive is that tacos are just more delicious kinds of shells,
+    as you would expect, which we will prove later. *)
 
 Class HasTaco : Type := taco (x y : N) : N * N.
 
@@ -285,52 +288,88 @@ Class IsRetrShellDep `(HasStride)
 (** The shell placement function produces a lexicographic enumeration. *)
 
 Class IsLexEnumShell `(HasShell) `(HasUnshell) : Prop :=
-  lex_enum_shell (p n : N) :
-  succ (fst (shell p)) = fst (shell n) /\ snd (shell n) = 0 \/
-  fst (shell n) = fst (shell p) /\ succ (snd (shell p)) = snd (shell n).
+  lex_enum_shell (n : N) :
+  fst (shell (succ n)) = fst (shell n) /\
+  snd (shell (succ n)) = succ (snd (shell n)) \/
+  fst (shell (succ n)) = succ (fst (shell n)) /\
+  snd (shell (succ n)) = 0.
 
 Class IsLexEnumShellDep `(HasStride)
   `(!HasShellDep stride) `(!HasUnshellDep stride) : Prop :=
-  lex_enum_shell_dep (p n : N) :
-  succ (fst (Spr1 (shell_dep p))) = fst (Spr1 (shell_dep n)) /\
-  snd (Spr1 (shell_dep n)) = 0 \/
-  fst (Spr1 (shell_dep n)) = fst (Spr1 (shell_dep p)) /\
-  succ (snd (Spr1 (shell_dep p))) = snd (Spr1 (shell_dep n)).
+  lex_enum_shell_dep (n : N) :
+  fst (Spr1 (shell_dep (succ n))) = fst (Spr1 (shell_dep n)) /\
+  snd (Spr1 (shell_dep (succ n))) = succ (snd (Spr1 (shell_dep n))) \/
+  fst (Spr1 (shell_dep (succ n))) = succ (fst (Spr1 (shell_dep n))) /\
+  snd (Spr1 (shell_dep (succ n))) = 0.
 
 (** Lexicographic enumerations are just
     particular kinds of lexicographic orderings. *)
 
 Class IsLexOrdShell `(HasShell) `(HasUnshell) : Prop :=
-  lex_ord_shell (p n : N) :
+  lex_ord_shell (p n : N) (l : p < n) :
   fst (shell p) < fst (shell n) \/
   snd (shell p) < snd (shell n).
 
 Class IsLexOrdShellDep `(HasStride)
   `(!HasShellDep stride) `(!HasUnshellDep stride) : Prop :=
-  lex_ord_shell_dep (p n : N) :
+  lex_ord_shell_dep (p n : N) (l : p < n) :
   fst (Spr1 (shell_dep p)) < fst (Spr1 (shell_dep n)) \/
   snd (Spr1 (shell_dep p)) < snd (Spr1 (shell_dep n)).
 
 Global Instance is_lex_ord_shell `(IsLexEnumShell) :
   IsLexOrdShell shell unshell.
 Proof.
-  intros p n.
-  pose proof (lex_enum_shell p n) as l.
-  destruct (shell p) as [p0 p1], (shell n) as [n0 n1].
-  unfold fst, snd in *.
-  lia. Qed.
+  intros p n l.
+  assert (x : exists q : N, n = p + succ q).
+  { exists (n - p - 1). lia. }
+  destruct x as [q e].
+  subst n.
+  generalize dependent p.
+  induction q as [| r li] using peano_ind; intros p l.
+  - clear l.
+    replace (p + succ 0) with (succ p) by lia.
+    pose proof (lex_enum_shell p) as e.
+    destruct (shell p) as [p0 p1], (shell (succ p)) as [q0 q1].
+    unfold fst, snd in *.
+    lia.
+  - destruct (eqb_spec p (p + succ r)) as [e | f].
+    + lia.
+    + assert (l' : p < p + succ r) by lia. clear l f.
+      apply li in l'. rename l' into l.
+      destruct l as [l0 | l1].
+      * left.
+        pose proof (lex_enum_shell (p + succ r)) as e.
+        replace (succ (p + succ r)) with (p + succ (succ r)) in * by lia.
+        repeat match goal with
+        | x : context [@shell (@shell ?f)] |- _ =>
+          change (@shell (@shell f)) with (@shell f) in x
+        end.
+        destruct (shell p) as [p0 p1],
+        (shell (p + succ r)) as [q0 q1],
+        (shell (p + succ (succ r))) as [r0 r1].
+        unfold fst, snd in *.
+        lia.
+      * right.
+        pose proof (lex_enum_shell (p + succ r)) as e.
+        replace (succ (p + succ r)) with (p + succ (succ r)) in * by lia.
+        repeat match goal with
+        | x : context [@shell (@shell ?f)] |- _ =>
+          change (@shell (@shell f)) with (@shell f) in x
+        end.
+        destruct (shell p) as [p0 p1],
+        (shell (p + succ r)) as [q0 q1],
+        (shell (p + succ (succ r))) as [r0 r1].
+        unfold fst, snd in *.
+        destruct e as [[e0 e1] | [e0 e1]].
+        -- lia.
+        -- subst. Abort.
 
 Global Instance is_lex_ord_shell_dep `(IsLexEnumShellDep) :
   IsLexOrdShellDep stride shell_dep unshell_dep.
 Proof.
-  intros p n.
-  pose proof (lex_enum_shell_dep p n) as l.
-  destruct (shell_dep p) as [[p0 p1] lp], (shell_dep n) as [[n0 n1] ln].
-  unfold Spr1 in *.
-  unfold fst, snd in *.
-  lia. Qed.
+  intros p n l. Abort.
 
-(** The taco placement function has the same properties
+(** The taco placement function has the same basic properties
     as the shell placement function,
     except for the emergence of a lexicographic enumeration. *)
 
@@ -372,7 +411,8 @@ Class IsPlacementDep `(HasPlacementDep) : Prop := {
 }.
 
 (** Shells can be derived from strides or bases, but tacos cannot.
-    Once again, tacos prove to be the ultimate untamed form of food. *)
+    Once again, tacos prove to be the ultimate form of food
+    that remains largely untamed. *)
 
 Module ShellFromStride.
 
@@ -404,9 +444,9 @@ Equations shell_def (n : N) : N * N :=
 
 Local Instance has_shell : HasShell := shell_def.
 
-Equations shell_dep (n : N) :
+Equations shell_dep_def (n : N) :
   {x : N * N $ Squash (snd x < Npos (stride (fst x)))} :=
-  shell_dep n := Sexists _ (shell n) _.
+  shell_dep_def n := Sexists _ (shell n) _.
 Next Obligation.
   intros n.
   apply squash.
@@ -420,24 +460,24 @@ Next Obligation.
     lia.
   - auto. Qed.
 
-Local Instance has_shell_dep : HasShellDep stride := shell_dep.
+Local Instance has_shell_dep : HasShellDep stride := shell_dep_def.
 
-Equations unshell (a b : N) : N :=
-  unshell a b := b + base a.
+Equations unshell_def (a b : N) : N :=
+  unshell_def a b := b + base a.
 
-Local Instance has_unshell : HasUnshell := unshell.
+Local Instance has_unshell : HasUnshell := unshell_def.
 
-Equations unshell_dep (a b : N) (l : Squash (b < Npos (stride a))) : N :=
-  unshell_dep a b l := unshell a b.
+Equations unshell_dep_def (a b : N) (l : Squash (b < Npos (stride a))) : N :=
+  unshell_dep_def a b l := unshell a b.
 
-Local Instance has_unshell_dep : HasUnshellDep stride := unshell_dep.
+Local Instance has_unshell_dep : HasUnshellDep stride := unshell_dep_def.
 
 Local Instance is_sect_shell : IsSectShell shell unshell.
 Proof.
   intros n.
   unfold prod_uncurry.
   unfold PairingFunction.shell, shell, has_shell, shell_def,
-  PairingFunction.unshell, unshell.
+  PairingFunction.unshell, unshell, has_unshell, unshell_def.
   induction n as [| p e] using peano_ind.
   - reflexivity.
   - rewrite shell_fix_equation_1 in *.
@@ -477,8 +517,7 @@ Proof.
 
 Local Instance is_lex_enum_shell : IsLexEnumShell shell unshell.
 Proof.
-  intros p n.
-  unfold PairingFunction.shell, shell. Abort.
+  intros n. Abort.
 
 Local Instance is_lex_enum_shell_dep :
   IsLexEnumShellDep stride shell_dep unshell_dep.
@@ -512,16 +551,18 @@ Next Obligation.
   pose proof mono_base a (succ a) as l'.
   lia. Qed.
 
-Equations shell (n : N) : N * N :=
-  shell n := shell_fix 0 n.
+Equations shell_def (n : N) : N * N :=
+  shell_def n := shell_fix 0 n.
 
-Equations shell_dep (n : N) :
+Local Instance has_shell : HasShell := shell_def.
+
+Equations shell_dep_def (n : N) :
   {x : N * N $ Squash (snd x < Npos (stride (fst x)))} :=
-  shell_dep n := Sexists _ (shell n) _.
+  shell_dep_def n := Sexists _ (shell n) _.
 Next Obligation.
   intros n.
   apply squash.
-  unfold shell.
+  unfold shell, has_shell, shell_def.
   apply shell_fix_elim.
   intros a b lab.
   pose proof mono_base a (succ a) as la.
@@ -532,11 +573,17 @@ Next Obligation.
     lia.
   - auto. Qed.
 
-Equations unshell (a b : N) : N :=
-  unshell a b := b + base a.
+Local Instance has_shell_dep : HasShellDep stride := shell_dep_def.
 
-Equations unshell_dep (a b : N) (l : Squash (b < Npos (stride a))) : N :=
-  unshell_dep a b l := unshell a b.
+Equations unshell_def (a b : N) : N :=
+  unshell_def a b := b + base a.
+
+Local Instance has_unshell : HasUnshell := unshell_def.
+
+Equations unshell_dep_def (a b : N) (l : Squash (b < Npos (stride a))) : N :=
+  unshell_dep_def a b l := unshell a b.
+
+Local Instance has_unshell_dep : HasUnshellDep stride := unshell_dep_def.
 
 Local Instance is_sect_shell : IsSectShell shell unshell.
 Proof. Abort.
@@ -559,29 +606,41 @@ End Context.
 End ShellFromBase.
 
 (** Some restricted versions can be derived
-    from unrestricted ones and vice versa.
-    Also, restricted shells can be derived from strides. *)
+    from unrestricted ones and vice versa. *)
 
-Module DepFromNondep.
+Module DepAndNondep.
 
 Section Context.
 
-Context `(HasPlacement).
-Context `(HasStride) `(!HasShellDep stride) `(!HasTacoDep stride).
+Local Instance has_shell `(HasShellDep) : HasShell :=
+  fun n : N => Spr1 (shell_dep n).
 
-Local Instance has_unshell_dep : HasUnshellDep stride :=
+Local Instance has_unshell_dep `(HasStride) `(HasUnshell) :
+  HasUnshellDep stride :=
   fun (a b : N) (l : Squash (b < Npos (stride a))) => unshell a b.
 
-Local Instance has_untaco_dep : HasUntacoDep stride :=
+Local Instance has_taco `(HasTacoDep) : HasTaco :=
+  fun x y : N => Spr1 (taco_dep x y).
+
+Local Instance has_untaco_dep `(HasStride) `(HasUntaco) :
+  HasUntacoDep stride :=
   fun (a b : N) (l : Squash (b < Npos (stride a))) => untaco a b.
 
-Local Instance has_placement_dep :
+Local Instance has_placement `(HasStride)
+  `(!HasShellDep stride) `(HasUnshell) `(!HasTacoDep stride) `(HasUntaco) :
+  HasPlacement shell unshell taco untaco := tt.
+
+Fail Local Instance has_placement_dep `(HasStride)
+  `(!HasShellDep stride) `(HasUnshell) `(!HasTacoDep stride) `(HasUntaco) :
   HasPlacementDep stride shell_dep unshell_dep taco_dep untaco_dep := tt.
 
-Context `(!IsPlacement placement).
+Local Instance has_placement_dep `(HasStride)
+  `(!HasShellDep stride) `(HasUnshell) `(!HasTacoDep stride) `(HasUntaco) :
+  HasPlacementDep stride
+  shell_dep (@unshell_dep stride (@has_unshell_dep stride unshell))
+  taco_dep (@untaco_dep stride (@has_untaco_dep stride untaco)) := tt.
 
-(** TODO Need to merge these sections to prove anything. *)
-
+(*
 Local Instance is_sect_shell_dep : IsSectShellDep stride shell_dep unshell_dep.
 Proof.
   intros n.
@@ -601,44 +660,11 @@ Proof. Abort.
 
 Local Instance is_placement_dep : IsPlacementDep placement_dep.
 Proof. Abort.
+*)
 
 End Context.
 
-End DepFromNondep.
-
-Module NondepFromDep.
-
-Section Context.
-
-Context `(HasPlacementDep).
-Context `(HasUnshell) `(HasUntaco).
-
-Local Instance has_taco : HasTaco := fun x y : N => Spr1 (taco_dep x y).
-
-Local Instance has_shell : HasShell := fun n : N => Spr1 (shell_dep n).
-
-Local Instance has_placement : HasPlacement shell unshell taco untaco := tt.
-
-Context `(!IsPlacementDep placement_dep).
-
-Local Instance is_sect_shell : IsSectShell shell unshell.
-Proof. Abort.
-
-Local Instance is_retr_shell : IsRetrShell shell unshell.
-Proof. Abort.
-
-Local Instance is_sect_taco : IsSectTaco taco untaco.
-Proof. Abort.
-
-Local Instance is_retr_taco : IsRetrTaco taco untaco.
-Proof. Abort.
-
-Local Instance is_placement : IsPlacement placement.
-Proof. Abort.
-
-End Context.
-
-End NondepFromDep.
+End DepAndNondep.
 
 Class HasPair : Type := pair (n : N) : N * N.
 
@@ -662,7 +688,7 @@ Module PairingFromPlacement.
 
 Section Context.
 
-Context `(HasPlacementDep).
+Context `(IsPlacementDep).
 
 Fail Equations pair_def (n : N) : N * N :=
   pair_def n := prod_uncurry untaco (shell n).
@@ -679,8 +705,6 @@ Equations unpair_def (x y : N) : N :=
 Local Instance has_pair : HasPair := pair_def.
 Local Instance has_unpair : HasUnpair := unpair_def.
 Local Instance has_pairing : HasPairing pair unpair := tt.
-
-Context `(!IsPlacementDep placement_dep).
 
 Local Instance is_sect_pair : IsSectPair pairing.
 Proof.
@@ -741,28 +765,39 @@ End PairingFunction.
 
 Module Cantor.
 
-Equations stride (a : N) : positive :=
-  stride a := succ_pos a.
+Import PairingFunction.
 
-Equations base (a : N) : N :=
-  base a := tri a.
+Equations stride_def (a : N) : positive :=
+  stride_def a := succ_pos a.
 
-Lemma mono_base (a b : N) (l : a < b) : base a < base b.
-Proof. apply tri_lt_mono. auto. Qed.
+Global Instance has_stride : HasStride := stride_def.
 
-Lemma partial_sum (a : N) : base (succ a) = Npos (stride a) + base a.
+Equations base_def (a : N) : N :=
+  base_def a := tri a.
+
+Global Instance has_base : HasBase := base_def.
+
+Global Instance has_partition : HasPartition stride base := tt.
+
+Global Instance is_mono_base : IsMonoBase base.
+Proof. intros a b l. apply tri_lt_mono. auto. Qed.
+
+Global Instance is_partial_sum : IsPartialSum partition.
 Proof.
-  unfold stride, base.
+  intros a.
+  unfold stride, has_stride, stride_def, base, has_base, base_def.
   rewrite <- add_1_l.
   rewrite tri_succ. rewrite succ_pos_spec.
   lia. Qed.
 
-Equations shell (n : N) : N * N :=
-  shell n := untri_rem n.
+Equations shell_def (n : N) : N * N :=
+  shell_def n := untri_rem n.
 
-Equations shell_dep (n : N) :
+Global Instance has_shell : HasShell := shell_def.
+
+Equations shell_dep_def (n : N) :
   {x : N * N $ Squash (snd x < Npos (stride (fst x)))} :=
-  shell_dep n := Sexists _ (shell n) _.
+  shell_dep_def n := Sexists _ (shell n) _.
 Next Obligation.
   intros n.
   apply squash.
@@ -774,36 +809,44 @@ Next Obligation.
   pose proof tri_untri_untri_rem n as l.
   lia. Qed.
 
-Equations unshell (a b : N) : N :=
-  unshell a b := b + tri a.
+Global Instance has_shell_dep : HasShellDep stride := shell_dep_def.
 
-Equations unshell_dep (a b : N) (l : Squash (b < Npos (stride a))) : N :=
-  unshell_dep a b l := unshell a b.
+Equations unshell_def (a b : N) : N :=
+  unshell_def a b := b + tri a.
 
-Lemma sect_shell_dep (n : N) :
-  Ssig_uncurry (prod_uncurry_dep unshell_dep) (shell_dep n) = n.
+Global Instance has_unshell : HasUnshell := unshell_def.
+
+Equations unshell_dep_def (a b : N) (l : Squash (b < Npos (stride a))) : N :=
+  unshell_dep_def a b l := unshell a b.
+
+Global Instance has_unshell_dep : HasUnshellDep stride := unshell_dep_def.
+
+Global Instance is_sect_shell_dep :
+  IsSectShellDep stride shell_dep unshell_dep.
 Proof.
+  intros n.
   cbv [Ssig_uncurry Spr1 Spr2].
-  simp shell_dep.
+  unfold shell_dep, has_shell_dep, shell_dep_def.
   cbv [prod_uncurry_dep].
-  simp unshell_dep.
-  simp unshell.
-  simp shell.
+  unfold unshell_dep, has_unshell_dep, unshell_dep_def.
+  unfold unshell, has_unshell, unshell_def.
+  unfold shell, has_shell, shell_def.
   rewrite untri_rem_tri_untri.
   cbv [fst snd].
   pose proof tri_untri n as l.
   lia. Qed.
 
-Lemma retr_shell_dep (a b : N) (l : Squash (b < Npos (stride a))) :
-  shell_dep (unshell_dep a b l) = Sexists _ (a, b) l.
+Global Instance is_retr_shell_dep :
+  IsRetrShellDep stride shell_dep unshell_dep.
 Proof.
-  simp shell_dep.
+  intros a b l.
+  unfold shell_dep, has_shell_dep, shell_dep_def.
   apply Spr1_inj.
   cbv [Spr1].
-  simp shell.
-  simp unshell_dep.
-  simp unshell.
-  eapply unsquash in l.
+  unfold shell, has_shell, shell_def.
+  unfold unshell_dep, has_unshell_dep, unshell_dep_def.
+  unfold unshell, has_unshell, unshell_def.
+  apply unsquash in l.
   simp stride in l.
   rewrite succ_pos_spec in l.
   rewrite untri_rem_tri_untri.
@@ -812,50 +855,61 @@ Proof.
   rewrite e.
   f_equal. lia. Qed.
 
-Equations taco (x y : N) : N * N :=
-  taco x y := (y + x, y).
+Equations taco_def (x y : N) : N * N :=
+  taco_def x y := (y + x, y).
 
-Equations taco_dep (x y : N) :
+Global Instance has_taco : HasTaco := taco_def.
+
+Equations taco_dep_def (x y : N) :
   {x : N * N $ Squash (snd x < Npos (stride (fst x)))} :=
-  taco_dep x y := Sexists _ (taco x y) _.
+  taco_dep_def x y := Sexists _ (taco x y) _.
 Next Obligation.
   intros x y.
   apply squash.
-  simp stride.
+  unfold stride, has_stride, stride_def.
   rewrite succ_pos_spec.
-  simp taco.
+  unfold taco, has_taco, taco_def.
   simp fst snd.
   lia. Qed.
 
-Equations untaco (a b : N) : N * N :=
-  untaco a b := (a - b, b).
+Global Instance has_taco_dep : HasTacoDep stride := taco_dep_def.
 
-Equations untaco_dep (a b : N) (l : Squash (b < Npos (stride a))) : N * N :=
-  untaco_dep a b l := untaco a b.
+Equations untaco_def (a b : N) : N * N :=
+  untaco_def a b := (a - b, b).
 
-Lemma sect_taco_dep (x y : N) :
-  Ssig_uncurry (prod_uncurry_dep untaco_dep) (taco_dep x y) = (x, y).
+Global Instance has_untaco : HasUntaco := untaco_def.
+
+Equations untaco_dep_def (a b : N) (l : Squash (b < Npos (stride a))) : N * N :=
+  untaco_dep_def a b l := untaco a b.
+
+Global Instance has_untaco_dep : HasUntacoDep stride := untaco_dep_def.
+
+Global Instance has_placement_dep :
+  HasPlacementDep stride shell_dep unshell_dep taco_dep untaco_dep := tt.
+
+Global Instance is_sect_taco_dep : IsSectTacoDep stride taco_dep untaco_dep.
 Proof.
+  intros x y.
   cbv [Ssig_uncurry Spr1 Spr2].
-  simp taco_dep.
+  unfold untaco_dep, has_untaco_dep, untaco_dep_def.
   cbv [prod_uncurry_dep].
-  simp untaco_dep.
-  simp untaco.
-  simp taco.
+  unfold taco_dep, has_taco_dep, taco_dep_def.
+  unfold taco, has_taco, taco_def.
+  unfold untaco, has_untaco, untaco_def.
   cbv [fst snd].
   f_equal.
   lia. Qed.
 
-Lemma retr_taco_dep (a b : N) (l : Squash (b < Npos (stride a))) :
-  prod_uncurry taco_dep (untaco_dep a b l) = Sexists _ (a, b) l.
+Global Instance is_retr_taco_dep : IsRetrTacoDep stride taco_dep untaco_dep.
 Proof.
+  intros a b l.
   cbv [prod_uncurry].
-  simp taco_dep.
+  unfold taco_dep, has_taco_dep, taco_dep_def.
   apply Spr1_inj.
   cbv [Spr1].
-  simp untaco_dep.
-  simp untaco.
-  simp taco.
+  unfold untaco_dep, has_untaco_dep, untaco_dep_def.
+  unfold untaco, has_untaco, untaco_def.
+  unfold taco, has_taco, taco_def.
   cbv [fst snd].
   f_equal.
   eapply unsquash in l.
@@ -863,60 +917,30 @@ Proof.
   rewrite succ_pos_spec in l.
   lia. Qed.
 
-Local Notation pred_N := Pos.pred_N.
-
-Lemma lex_shell_dep (n a b : N) (e : Spr1 (shell_dep n) = (a, b)) :
-  Spr1 (shell_dep (1 + n)) = (a, 1 + b) \/
-  Spr1 (shell_dep (1 + n)) = (1 + a, 0).
+Local Instance is_lex_enum_shell_dep :
+  IsLexEnumShellDep stride shell_dep unshell_dep.
 Proof.
-  simp shell_dep in *. unfold Spr1 in *. simp shell in *.
-  rewrite untri_rem_tri_untri in *.
-  injection e. clear e. intros ea eb.
-  subst a b.
-  destruct (eqb_spec (1 + n) (tri (untri (1 + n)))) as [e | f].
-  - right. f_equal.
-    + admit.
-    + rewrite <- e. lia.
-  - left. f_equal.
-    + admit.
-    + admit. Admitted.
+  intros n.
+  unfold shell_dep, has_shell_dep, shell_dep_def.
+  unfold Spr1.
+  unfold shell, has_shell, shell_def.
+  do 2 rewrite untri_rem_tri_untri.
+  unfold fst, snd.
+  destruct (eqb_spec (tri (untri (succ n))) (succ n)) as [e | f].
+  Admitted.
 
-Module PF := PairingFunction.
+Global Instance is_placement_dep : IsPlacementDep placement_dep.
+Proof. esplit; typeclasses eauto. Qed.
 
-Global Instance has_stride : PF.HasStride := stride.
-Global Instance has_base : PF.HasBase := base.
-Global Instance has_partition : PF.HasPartition stride base := tt.
-Global Instance has_shell_dep : PF.HasShellDep stride := shell_dep.
-Global Instance has_unshell_dep : PF.HasUnshellDep stride := unshell_dep.
-Global Instance has_taco_dep : PF.HasTacoDep stride := taco_dep.
-Global Instance has_untaco_dep : PF.HasUntacoDep stride := untaco_dep.
-Global Instance has_placement_dep :
-  PF.HasPlacementDep stride shell_dep unshell_dep taco_dep untaco_dep := tt.
-
-Global Instance is_mono_base : PF.IsMonoBase base.
-Proof. exact @mono_base. Qed.
-Global Instance is_partial_sum : PF.IsPartialSum PF.partition.
-Proof. exact @partial_sum. Qed.
-Global Instance is_sect_shell_dep : PF.IsSectShellDep _ _ _.
-Proof. exact @sect_shell_dep. Qed.
-Global Instance is_retr_shell_dep : PF.IsRetrShellDep _ _ _.
-Proof. exact @retr_shell_dep. Qed.
-Global Instance is_sect_taco_dep : PF.IsSectTacoDep _ _ _.
-Proof. exact @sect_taco_dep. Qed.
-Global Instance is_retr_taco_dep : PF.IsRetrTacoDep _ _ _.
-Proof. exact @retr_taco_dep. Qed.
-Global Instance is_placement_dep : PF.IsPlacementDep PF.placement_dep.
-Proof. Fail esplit; typeclasses eauto. Admitted.
-
-Import PF.PairingFromPlacement.
+Import PairingFromPlacement.
 
 Local Existing Instance has_pair.
 Local Existing Instance has_unpair.
 Local Existing Instance has_pairing.
 
-Global Instance has_pair : PF.HasPair := PF.pair.
-Global Instance has_unpair : PF.HasUnpair := PF.unpair.
-Global Instance has_pairing : PF.HasPairing PF.pair PF.unpair := tt.
+Global Instance has_pair : HasPair := pair.
+Global Instance has_unpair : HasUnpair := unpair.
+Global Instance has_pairing : HasPairing pair unpair := tt.
 
 Local Existing Instance is_sect_pair.
 Local Existing Instance is_retr_pair.
@@ -924,11 +948,11 @@ Local Existing Instance is_pairing.
 
 (** TODO Why does type class resolution fail here? *)
 
-Global Instance is_sect_pair : PF.IsSectPair PF.pairing.
+Global Instance is_sect_pair : IsSectPair pairing.
 Proof. apply is_pairing; typeclasses eauto. Qed.
-Global Instance is_retr_pair : PF.IsRetrPair PF.pairing.
+Global Instance is_retr_pair : IsRetrPair pairing.
 Proof. apply is_pairing; typeclasses eauto. Qed.
-Global Instance is_pairing : PF.IsPairing PF.pairing.
+Global Instance is_pairing : IsPairing pairing.
 Proof. esplit; typeclasses eauto. Qed.
 
 End Cantor.
