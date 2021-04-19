@@ -158,30 +158,27 @@ Equations stride_def (a : N) : positive :=
 (** We could also write the definition without the absurd case,
     but its equations would become unnecessarily complicated. *)
 
+Section Context.
+
 Equations stride_def' (a : N) : positive :=
-  stride_def' a :=
-    let n := base (succ a) - base a in
-    match n with
-    | N0 => fun e : n = N0 => _
-    | Npos p => fun e : n = Npos p => p
-    end (eq_refl n).
+  stride_def' a with exist _ (base (succ a) - base a) (eq_refl _) := {
+    | exist _ N0 _ => _;
+    | exist _ (Npos p) _ => p
+  }.
 Next Obligation.
-  intros a n e.
-  subst n.
+  intros a e.
   pose proof mono_base a (succ a) as l.
   lia. Qed.
 
-Section Context.
-
 Import ssreflect.
 
-Lemma eq_stride_def (a : N) : stride_def' a = stride_def a.
+Lemma eq_stride_def' (a : N) : stride_def' a = stride_def a.
 Proof.
   simp stride_def' stride_def.
   cbv zeta.
   set (n := base (succ a) - base a).
   generalize (eq_refl n).
-  case: {2 3 7} n.
+  case : {2 4 5} n.
   - intros e.
     subst n.
     pose proof mono_base a (succ a) as l.
@@ -411,8 +408,8 @@ Class IsPlacementDep `(HasPlacementDep) : Prop := {
 }.
 
 (** Shells can be derived from strides or bases, but tacos cannot.
-    Once again, tacos prove to be the ultimate form of food
-    that remains largely untamed. *)
+    Once again, tacos prove to be the ultimate form of food,
+    remaining largely untamed. *)
 
 Module ShellFromStride.
 
@@ -431,11 +428,12 @@ Local Existing Instance is_partial_sum.
 Local Existing Instance is_partition.
 
 Equations shell_fix (a b : N) : N * N by wf (to_nat b) :=
-  shell_fix a b :=
-    if sumbool_of_bool (b <? Npos (stride a)) then
-    (a, b) else shell_fix (1 + a) (b - Npos (stride a)).
+  shell_fix a b with sumbool_of_bool (b <? Npos (stride a)) => {
+    | left _ => (a, b);
+    | right _ => shell_fix (1 + a) (b - Npos (stride a))
+  }.
 Next Obligation.
-  intros a b f l.
+  intros a b l f.
   apply ltb_ge in l.
   lia. Qed.
 
@@ -452,13 +450,14 @@ Next Obligation.
   apply squash.
   unfold shell, has_shell, shell_def.
   apply shell_fix_elim.
-  clear n.
-  intros a b lab.
-  destruct (sumbool_of_bool (b <? Npos (stride a))) as [l | l].
-  - unfold fst, snd.
+  - clear n.
+    intros a b l _.
+    unfold fst, snd.
     apply ltb_lt in l.
     lia.
-  - auto. Qed.
+  - clear n.
+    intros a b _ l _.
+    auto. Qed.
 
 Local Instance has_shell_dep : HasShellDep stride := shell_dep_def.
 
@@ -482,7 +481,8 @@ Proof.
   - reflexivity.
   - rewrite shell_fix_equation_1 in *.
     destruct (sumbool_of_bool (p <? Npos (stride 0))),
-    (sumbool_of_bool (succ p <? Npos (stride 0))).
+    (sumbool_of_bool (succ p <? Npos (stride 0)));
+    unfold shell_fix_unfold_clause_1 in *.
     + unfold base, has_base.
       simp base_fix.
       rewrite add_0_r.
@@ -542,11 +542,12 @@ Local Existing Instance is_partial_sum.
 Local Existing Instance is_partition.
 
 Equations shell_fix (a b : N) : N * N by wf (to_nat (b - base a)) :=
-  shell_fix a b :=
-    if sumbool_of_bool (b <? base (succ a)) then
-    (a, b - base a) else shell_fix (succ a) b.
+  shell_fix a b with sumbool_of_bool (b <? base (succ a)) => {
+    | left _ => (a, b - base a);
+    | right _ => shell_fix (succ a) b
+  }.
 Next Obligation.
-  intros a b f l.
+  intros a b l _.
   apply ltb_ge in l.
   pose proof mono_base a (succ a) as l'.
   lia. Qed.
@@ -564,14 +565,14 @@ Next Obligation.
   apply squash.
   unfold shell, has_shell, shell_def.
   apply shell_fix_elim.
-  intros a b lab.
-  pose proof mono_base a (succ a) as la.
-  pose proof partial_sum a as ea.
-  destruct (sumbool_of_bool (b <? base (succ a))) as [l | l].
-  - unfold fst, snd.
+  - intros a b l _.
+    pose proof mono_base a (succ a) as la.
+    pose proof partial_sum a as ea.
+    unfold fst, snd.
     apply ltb_lt in l.
     lia.
-  - auto. Qed.
+  - intros a b _ l _.
+    auto. Qed.
 
 Local Instance has_shell_dep : HasShellDep stride := shell_dep_def.
 
