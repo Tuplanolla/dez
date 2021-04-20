@@ -284,87 +284,102 @@ Class IsRetrShellDep `(HasStride)
 
 (** The shell placement function produces a lexicographic enumeration. *)
 
-Class IsLexEnumShell `(HasShell) `(HasUnshell) : Prop :=
-  lex_enum_shell (n : N) :
-  fst (shell (succ n)) = fst (shell n) /\
-  snd (shell (succ n)) = succ (snd (shell n)) \/
-  fst (shell (succ n)) = succ (fst (shell n)) /\
-  snd (shell (succ n)) = 0.
+Class IsLexEnumShell `(HasShell) : Prop := {
+  lex_enum_zero_shell : shell 0 = (0, 0);
+  lex_enum_succ_shell (n : N) :
+  let (a, b) := shell n in
+  shell (succ n) = (a, succ b) \/ shell (succ n) = (succ a, 0);
+}.
 
-Class IsLexEnumShellDep `(HasStride)
-  `(!HasShellDep stride) `(!HasUnshellDep stride) : Prop :=
-  lex_enum_shell_dep (n : N) :
-  fst (Spr1 (shell_dep (succ n))) = fst (Spr1 (shell_dep n)) /\
-  snd (Spr1 (shell_dep (succ n))) = succ (snd (Spr1 (shell_dep n))) \/
-  fst (Spr1 (shell_dep (succ n))) = succ (fst (Spr1 (shell_dep n))) /\
-  snd (Spr1 (shell_dep (succ n))) = 0.
+Class IsLexEnumShellDep `(HasStride) `(!HasShellDep stride) : Prop := {
+  lex_enum_zero_shell_dep : Spr1 (shell_dep 0) = (0, 0);
+  lex_enum_succ_shell_dep (n : N) :
+  let (a, b) := Spr1 (shell_dep n) in
+  Spr1 (shell_dep (succ n)) = (a, succ b) \/
+  Spr1 (shell_dep (succ n)) = (succ a, 0);
+}.
 
-(** Lexicographic enumerations are just
+(** Lexicographic enumerations are
     particular kinds of lexicographic orderings. *)
 
-Class IsLexOrdShell `(HasShell) `(HasUnshell) : Prop :=
+Class IsLexOrdShell `(HasShell) : Prop :=
   lex_ord_shell (p n : N) (l : p < n) :
   fst (shell p) < fst (shell n) \/
-  snd (shell p) < snd (shell n).
+  fst (shell p) = fst (shell n) /\ snd (shell p) < snd (shell n).
 
-Class IsLexOrdShellDep `(HasStride)
-  `(!HasShellDep stride) `(!HasUnshellDep stride) : Prop :=
+Class IsLexOrdShellDep `(HasStride) `(!HasShellDep stride) : Prop :=
   lex_ord_shell_dep (p n : N) (l : p < n) :
   fst (Spr1 (shell_dep p)) < fst (Spr1 (shell_dep n)) \/
+  fst (Spr1 (shell_dep p)) = fst (Spr1 (shell_dep n)) /\
   snd (Spr1 (shell_dep p)) < snd (Spr1 (shell_dep n)).
 
 Global Instance is_lex_ord_shell `(IsLexEnumShell) :
-  IsLexOrdShell shell unshell.
+  IsLexOrdShell shell.
 Proof.
   intros p n l.
-  assert (x : exists q : N, n = p + succ q).
-  { exists (n - p - 1). lia. }
-  destruct x as [q e].
-  subst n.
   generalize dependent p.
-  induction q as [| r li] using peano_ind; intros p l.
-  - clear l.
-    replace (p + succ 0) with (succ p) by lia.
-    pose proof (lex_enum_shell p) as e.
-    destruct (shell p) as [p0 p1], (shell (succ p)) as [q0 q1].
-    unfold fst, snd in *.
-    lia.
-  - destruct (eqb_spec p (p + succ r)) as [e | f].
-    + lia.
-    + assert (l' : p < p + succ r) by lia. clear l f.
-      apply li in l'. rename l' into l.
-      destruct l as [l0 | l1].
-      * left.
-        pose proof (lex_enum_shell (p + succ r)) as e.
-        replace (succ (p + succ r)) with (p + succ (succ r)) in * by lia.
-        repeat match goal with
-        | x : context [@shell (@shell ?f)] |- _ =>
-          change (@shell (@shell f)) with (@shell f) in x
-        end.
-        destruct (shell p) as [p0 p1],
-        (shell (p + succ r)) as [q0 q1],
-        (shell (p + succ (succ r))) as [r0 r1].
+  induction n as [| q x] using peano_ind; intros p l.
+  - lia.
+  - destruct (eqb_spec p q) as [e | f].
+    + subst p.
+      clear l x.
+      pose proof lex_enum_succ_shell q as e.
+      destruct (shell q) as [a b], (shell (succ q)) as [a' b'].
+      unfold fst, snd in *.
+      destruct e as [e | e]; injection e; clear e; intros e0 e1.
+      * subst a' b'.
+        lia.
+      * subst a' b'.
+        lia.
+    + assert (l' : p < q) by lia.
+      specialize (x p l').
+      clear l f l'.
+      pose proof lex_enum_succ_shell q as e.
+      destruct (shell q) as [a b], (shell (succ q)) as [a' b'].
+      destruct e as [e | e]; injection e; clear e; intros e0 e1.
+      * subst a' b'.
+        destruct (shell p) as [a'' b''].
         unfold fst, snd in *.
         lia.
-      * right.
-        pose proof (lex_enum_shell (p + succ r)) as e.
-        replace (succ (p + succ r)) with (p + succ (succ r)) in * by lia.
-        repeat match goal with
-        | x : context [@shell (@shell ?f)] |- _ =>
-          change (@shell (@shell f)) with (@shell f) in x
-        end.
-        destruct (shell p) as [p0 p1],
-        (shell (p + succ r)) as [q0 q1],
-        (shell (p + succ (succ r))) as [r0 r1].
+      * subst a' b'.
+        destruct (shell p) as [a'' b''].
         unfold fst, snd in *.
-        destruct e as [[e0 e1] | [e0 e1]].
-        -- lia.
-        -- subst. Abort.
+        lia. Qed.
 
 Global Instance is_lex_ord_shell_dep `(IsLexEnumShellDep) :
-  IsLexOrdShellDep stride shell_dep unshell_dep.
+  IsLexOrdShellDep stride shell_dep.
 Proof.
-  intros p n l. Abort.
+  intros p n l.
+  generalize dependent p.
+  induction n as [| q x] using peano_ind; intros p l.
+  - lia.
+  - destruct (eqb_spec p q) as [e | f].
+    + subst p.
+      clear l x.
+      pose proof lex_enum_succ_shell_dep q as e.
+      destruct (shell_dep q) as [[a b] l],
+      (shell_dep (succ q)) as [[a' b'] l'].
+      unfold fst, snd, Spr1 in *.
+      destruct e as [e | e]; injection e; clear e; intros e0 e1.
+      * subst a' b'.
+        lia.
+      * subst a' b'.
+        lia.
+    + assert (l' : p < q) by lia.
+      specialize (x p l').
+      clear l f l'.
+      pose proof lex_enum_succ_shell_dep q as e.
+      destruct (shell_dep q) as [[a b] l],
+      (shell_dep (succ q)) as [[a' b'] l'].
+      destruct e as [e | e]; injection e; clear e; intros e0 e1.
+      * subst a' b'.
+        destruct (shell_dep p) as [[a'' b''] l''].
+        unfold fst, snd, Spr1 in *.
+        lia.
+      * subst a' b'.
+        destruct (shell_dep p) as [[a'' b''] l''].
+        unfold fst, snd, Spr1 in *.
+        lia. Qed.
 
 (** The taco placement function has the same basic properties
     as the shell placement function,
@@ -389,7 +404,7 @@ Class IsRetrTacoDep `(HasStride)
 Class IsPlacement `(HasPlacement) : Prop := {
   shell_unshell_is_sect_shell :> IsSectShell shell unshell;
   (* shell_unshell_is_retr_shell :> IsRetrShell shell unshell; *)
-  shell_unshell_is_lex_enum_shell :> IsLexEnumShell shell unshell;
+  shell_unshell_is_lex_enum_shell :> IsLexEnumShell shell;
   taco_untaco_is_sect_taco :> IsSectTaco taco untaco;
   (* taco_untaco_is_retr_taco :> IsRetrTaco taco untaco; *)
 }.
@@ -400,7 +415,7 @@ Class IsPlacementDep `(HasPlacementDep) : Prop := {
   stride_shell_dep_unshell_dep_is_retr_shell_dep :>
     IsRetrShellDep stride shell_dep unshell_dep;
   stride_shell_dep_unshell_dep_is_lex_enum_shell_dep :>
-    IsLexEnumShellDep stride shell_dep unshell_dep;
+    IsLexEnumShellDep stride shell_dep;
   stride_taco_dep_untaco_dep_is_sect_taco_dep :>
     IsSectTacoDep stride taco_dep untaco_dep;
   stride_taco_dep_untaco_dep_is_retr_taco_dep :>
@@ -515,12 +530,10 @@ Proof.
   unfold Spr1.
   unfold PairingFunction.unshell_dep, unshell_dep, unshell. Abort.
 
-Local Instance is_lex_enum_shell : IsLexEnumShell shell unshell.
-Proof.
-  intros n. Abort.
+Local Instance is_lex_enum_shell : IsLexEnumShell shell.
+Proof. Abort.
 
-Local Instance is_lex_enum_shell_dep :
-  IsLexEnumShellDep stride shell_dep unshell_dep.
+Local Instance is_lex_enum_shell_dep : IsLexEnumShellDep stride shell_dep.
 Proof. Abort.
 
 End Context.
@@ -595,11 +608,10 @@ Proof. Abort.
 Local Instance is_retr_shell_dep : IsRetrShellDep stride shell_dep unshell_dep.
 Proof. Abort.
 
-Local Instance is_lex_enum_shell : IsLexEnumShell shell unshell.
+Local Instance is_lex_enum_shell : IsLexEnumShell shell.
 Proof. Abort.
 
-Local Instance is_lex_enum_shell_dep :
-  IsLexEnumShellDep stride shell_dep unshell_dep.
+Local Instance is_lex_enum_shell_dep : IsLexEnumShellDep stride shell_dep.
 Proof. Abort.
 
 End Context.
@@ -919,16 +931,28 @@ Proof.
   lia. Qed.
 
 Local Instance is_lex_enum_shell_dep :
-  IsLexEnumShellDep stride shell_dep unshell_dep.
+  IsLexEnumShellDep stride shell_dep.
 Proof.
-  intros n.
-  unfold shell_dep, has_shell_dep, shell_dep_def.
-  unfold Spr1.
-  unfold shell, has_shell, shell_def.
-  do 2 rewrite untri_rem_tri_untri.
-  unfold fst, snd.
-  destruct (eqb_spec (tri (untri (succ n))) (succ n)) as [e | f].
-  Admitted.
+  split.
+  - reflexivity.
+  - intros n.
+    unfold shell_dep, has_shell_dep, shell_dep_def.
+    unfold Spr1.
+    unfold shell, has_shell, shell_def.
+    do 2 rewrite untri_rem_tri_untri.
+    destruct (eqb_spec (tri (untri (succ n))) (succ n)) as [e | f].
+    + rewrite e. rewrite sub_diag.
+      right. f_equal.
+      admit.
+    + left.
+      f_equal.
+      * admit.
+      * do 2 rewrite <- add_1_l.
+        pose proof tri_untri n as l.
+        rewrite add_sub_assoc by lia.
+        f_equal.
+        admit.
+    Admitted.
 
 Global Instance is_placement_dep : IsPlacementDep placement_dep.
 Proof. esplit; typeclasses eauto. Qed.
