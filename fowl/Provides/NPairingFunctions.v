@@ -21,11 +21,20 @@ Module PairingFunction.
 
 Class HasStride : Type := stride (a : N) : positive.
 
+(** If we do not mark operational classes transparent,
+    instance resolution will fail to unify
+    [@HasShellDep (@stride (@stride H))] with [@HasShellDep (@stride H)]
+    among other ones. *)
+
+Typeclasses Transparent HasStride.
+
 Class IsStride `(HasStride) : Prop := {}.
 
 (** We call the first indexes of shells bases. *)
 
 Class HasBase : Type := base (a : N) : N.
+
+Typeclasses Transparent HasBase.
 
 (** Bases should be strictly increasing,
     because shells are supposed to be nonempty. *)
@@ -84,26 +93,26 @@ Local Instance has_base : HasBase := base_fix.
 
 Local Instance is_mono_base : IsMonoBase base.
 Proof.
-  intros a a' l.
+  intros a b l.
   unfold base, has_base.
-  generalize dependent a.
-  induction a' as [| p' li] using peano_ind; intros a l.
+  generalize dependent a. induction b as [| c li] using peano_ind; intros a l.
   - lia.
   - rewrite <- succ_pos_spec.
-    simp base_fix.
-    cbv zeta.
+    simp base_fix. cbv zeta.
     rewrite succ_pos_spec. rewrite pred_succ.
-    destruct (eqb_spec a p') as [e | f].
-    + subst a. lia.
-    + assert (l' : a < p') by lia. clear l f.
-      apply li in l'. clear li.
+    destruct (eqb_spec a c) as [e | f].
+    + subst c.
+      clear l li.
+      lia.
+    + assert (lf : a < c) by lia.
+      clear l f.
+      apply li in lf.
+      clear li.
       lia. Qed.
 
 Local Instance is_fixed_base : IsFixedBase base.
 Proof.
-  hnf.
-  unfold base, has_base.
-  simp base_fix.
+  hnf. unfold base, has_base. simp base_fix.
   reflexivity. Qed.
 
 Local Instance is_base : IsBase base.
@@ -116,20 +125,12 @@ Proof.
   intros a.
   unfold base, has_base.
   destruct a as [| n].
-  - rewrite add_0_r.
-    simp base_fix.
-    cbv zeta.
-    unfold pred. unfold Pos.pred_N.
-    simp base_fix.
+  - unfold succ. simp base_fix. cbv zeta. unfold pred.
+    unfold Pos.pred_N. simp base_fix.
     reflexivity.
-  - unfold succ.
-    simp base_fix.
-    cbv zeta.
-    unfold pred.
+  - unfold succ. simp base_fix. cbv zeta. unfold pred.
     rewrite Pos.pred_N_succ.
-    simp base_fix.
-    cbv zeta.
-    unfold pred.
+    simp base_fix. cbv zeta. unfold pred.
     reflexivity. Qed.
 
 Local Instance is_partition : IsPartition partition.
@@ -174,8 +175,7 @@ Import ssreflect.
 
 Lemma eq_stride_def' (a : N) : stride_def' a = stride_def a.
 Proof.
-  simp stride_def' stride_def.
-  cbv zeta.
+  simp stride_def' stride_def. cbv zeta.
   set (n := base (succ a) - base a).
   generalize (eq_refl n).
   case : {2 4 5} n.
@@ -198,9 +198,7 @@ Local Instance has_partition : HasPartition stride base := tt.
 Local Instance is_partial_sum : IsPartialSum partition.
 Proof.
   intros a.
-  unfold stride, has_stride.
-  simp stride_def.
-  cbv zeta.
+  unfold stride, has_stride. simp stride_def. cbv zeta.
   destruct (base (succ a) - base a) as [| n] eqn : e.
   + pose proof mono_base a (succ a) as l. lia.
   + lia. Qed.
@@ -270,9 +268,10 @@ Class IsSectShellDep `(HasStride)
   Ssig_uncurry (prod_uncurry_dep unshell_dep) (shell_dep n) = n.
 
 (** The shell placement function is not a retraction
-    of the function that undoes it unless it is made surjective.
+    of the function that undoes it,
+    unless we restrict the codomain to make it so.
     The unrestricted version is only presented for the sake of completeness,
-    as it would be suspect to be able to inhabit it. *)
+    as it would be suspect to inhabit it. *)
 
 Class IsRetrShell `(HasShell) `(HasUnshell) : Prop :=
   retr_shell (a b : N) : shell (unshell a b) = (a, b).
@@ -287,20 +286,20 @@ Class IsRetrShellDep `(HasStride)
 Class IsLexEnumShell `(HasShell) : Prop := {
   lex_enum_zero_shell : shell 0 = (0, 0);
   lex_enum_succ_shell (n : N) :
-  let (a, b) := shell n in
-  shell (succ n) = (a, succ b) \/ shell (succ n) = (succ a, 0);
+    let (a, b) := shell n in
+    shell (succ n) = (a, succ b) \/ shell (succ n) = (succ a, 0);
 }.
 
 Class IsLexEnumShellDep `(HasStride) `(!HasShellDep stride) : Prop := {
   lex_enum_zero_shell_dep : Spr1 (shell_dep 0) = (0, 0);
   lex_enum_succ_shell_dep (n : N) :
-  let (a, b) := Spr1 (shell_dep n) in
-  Spr1 (shell_dep (succ n)) = (a, succ b) \/
-  Spr1 (shell_dep (succ n)) = (succ a, 0);
+    let (a, b) := Spr1 (shell_dep n) in
+    Spr1 (shell_dep (succ n)) = (a, succ b) \/
+    Spr1 (shell_dep (succ n)) = (succ a, 0);
 }.
 
-(** Lexicographic enumerations are
-    particular kinds of lexicographic orderings. *)
+(** Lexicographic enumerations are particular kinds
+    of lexicographic orderings. *)
 
 Class IsLexOrdShell `(HasShell) : Prop :=
   lex_ord_shell (p n : N) (l : p < n) :
@@ -313,8 +312,11 @@ Class IsLexOrdShellDep `(HasStride) `(!HasShellDep stride) : Prop :=
   fst (Spr1 (shell_dep p)) = fst (Spr1 (shell_dep n)) /\
   snd (Spr1 (shell_dep p)) < snd (Spr1 (shell_dep n)).
 
-Global Instance is_lex_ord_shell `(IsLexEnumShell) :
-  IsLexOrdShell shell.
+(** The sketch of this proof was contributed by David Holland.
+    While the proof is not complicated,
+    it is still surprisingly easy to get lost in it. *)
+
+Global Instance is_lex_ord_shell `(IsLexEnumShell) : IsLexOrdShell shell.
 Proof.
   intros p n l.
   generalize dependent p.
@@ -383,7 +385,7 @@ Proof.
 
 (** The taco placement function has the same basic properties
     as the shell placement function,
-    except for the emergence of a lexicographic enumeration. *)
+    with the exception that it does not produce a lexicographic enumeration. *)
 
 Class IsSectTaco `(HasTaco) `(HasUntaco) : Prop :=
   sect_taco (x y : N) : prod_uncurry untaco (taco x y) = (x, y).
@@ -410,17 +412,94 @@ Class IsPlacement `(HasPlacement) : Prop := {
 }.
 
 Class IsPlacementDep `(HasPlacementDep) : Prop := {
-  stride_shell_dep_unshell_dep_is_sect_shell_dep :>
+  shell_dep_unshell_dep_is_sect_shell_dep :>
     IsSectShellDep stride shell_dep unshell_dep;
-  stride_shell_dep_unshell_dep_is_retr_shell_dep :>
+  shell_dep_unshell_dep_is_retr_shell_dep :>
     IsRetrShellDep stride shell_dep unshell_dep;
-  stride_shell_dep_unshell_dep_is_lex_enum_shell_dep :>
+  shell_dep_unshell_dep_is_lex_enum_shell_dep :>
     IsLexEnumShellDep stride shell_dep;
-  stride_taco_dep_untaco_dep_is_sect_taco_dep :>
+  taco_dep_untaco_dep_is_sect_taco_dep :>
     IsSectTacoDep stride taco_dep untaco_dep;
-  stride_taco_dep_untaco_dep_is_retr_taco_dep :>
+  taco_dep_untaco_dep_is_retr_taco_dep :>
     IsRetrTacoDep stride taco_dep untaco_dep;
 }.
+
+(** Some of the restricted versions can be derived
+    from the unrestricted ones and vice versa. *)
+
+Module DepViaNondep.
+
+Section Context.
+
+Local Instance has_shell `(HasStride) `(!HasShellDep stride) : HasShell :=
+  fun n : N => Spr1 (shell_dep n).
+
+Local Instance has_unshell_dep `(HasStride) `(HasUnshell) :
+  HasUnshellDep stride :=
+  fun (a b : N) (l : Squash (b < Npos (stride a))) => unshell a b.
+
+Local Instance has_taco `(HasStride) `(!HasTacoDep stride) : HasTaco :=
+  fun x y : N => Spr1 (taco_dep x y).
+
+Local Instance has_untaco_dep `(HasStride) `(HasUntaco) :
+  HasUntacoDep stride :=
+  fun (a b : N) (l : Squash (b < Npos (stride a))) => untaco a b.
+
+Local Instance has_placement `(HasStride)
+  `(!HasShellDep stride) `(HasUnshell) `(!HasTacoDep stride) `(HasUntaco) :
+  HasPlacement shell unshell taco untaco := tt.
+
+Local Instance has_placement_dep `(HasStride)
+  `(!HasShellDep stride) `(HasUnshell) `(!HasTacoDep stride) `(HasUntaco) :
+  HasPlacementDep stride shell_dep unshell_dep taco_dep untaco_dep := tt.
+
+Local Instance is_sect_shell `(HasStride) `(!HasShellDep stride) `(HasUnshell)
+  `(!IsSectShellDep stride shell_dep unshell_dep) : IsSectShell shell unshell.
+Proof. exact sect_shell_dep. Qed.
+
+Local Instance is_sect_taco `(HasStride) `(!HasTacoDep stride) `(HasUntaco)
+  `(!IsSectTacoDep stride taco_dep untaco_dep) : IsSectTaco taco untaco.
+Proof. exact sect_taco_dep. Qed.
+
+Local Instance is_sect_shell_dep `(HasStride)
+  `(!HasShellDep stride) `(HasUnshell)
+  `(!IsSectShell shell unshell) : IsSectShellDep stride shell_dep unshell_dep.
+Proof. exact sect_shell. Qed.
+
+Local Instance is_retr_shell_dep `(HasStride)
+  `(!HasShellDep stride) `(HasUnshell)
+  `(!IsRetrShell shell unshell) : IsRetrShellDep stride shell_dep unshell_dep.
+Proof.
+  intros a b l.
+  pose proof retr_shell a b as e.
+  unfold shell, has_shell in e.
+  unfold unshell_dep, has_unshell_dep.
+  apply Spr1_inj.
+  unfold Spr1.
+  apply e. Qed.
+
+Local Instance is_sect_taco_dep `(HasStride)
+  `(!HasTacoDep stride) `(HasUntaco)
+  `(!IsSectTaco taco untaco) : IsSectTacoDep stride taco_dep untaco_dep.
+Proof. exact sect_taco. Qed.
+
+Local Instance is_retr_taco_dep `(HasStride)
+  `(!HasTacoDep stride) `(HasUntaco)
+  `(!IsRetrTaco taco untaco) : IsRetrTacoDep stride taco_dep untaco_dep.
+Proof.
+  intros a b l.
+  pose proof retr_taco a b as e.
+  unfold prod_uncurry in e.
+  unfold taco, has_taco in e.
+  unfold prod_uncurry.
+  unfold untaco_dep, has_untaco_dep.
+  apply Spr1_inj.
+  unfold Spr1.
+  apply e. Qed.
+
+End Context.
+
+End DepViaNondep.
 
 (** Shells can be derived from strides or bases, but tacos cannot.
     Once again, tacos prove to be the ultimate form of food,
@@ -617,67 +696,6 @@ Proof. Abort.
 End Context.
 
 End ShellFromBase.
-
-(** Some restricted versions can be derived
-    from unrestricted ones and vice versa. *)
-
-Module DepAndNondep.
-
-Section Context.
-
-Local Instance has_shell `(HasShellDep) : HasShell :=
-  fun n : N => Spr1 (shell_dep n).
-
-Local Instance has_unshell_dep `(HasStride) `(HasUnshell) :
-  HasUnshellDep stride :=
-  fun (a b : N) (l : Squash (b < Npos (stride a))) => unshell a b.
-
-Local Instance has_taco `(HasTacoDep) : HasTaco :=
-  fun x y : N => Spr1 (taco_dep x y).
-
-Local Instance has_untaco_dep `(HasStride) `(HasUntaco) :
-  HasUntacoDep stride :=
-  fun (a b : N) (l : Squash (b < Npos (stride a))) => untaco a b.
-
-Local Instance has_placement `(HasStride)
-  `(!HasShellDep stride) `(HasUnshell) `(!HasTacoDep stride) `(HasUntaco) :
-  HasPlacement shell unshell taco untaco := tt.
-
-Fail Local Instance has_placement_dep `(HasStride)
-  `(!HasShellDep stride) `(HasUnshell) `(!HasTacoDep stride) `(HasUntaco) :
-  HasPlacementDep stride shell_dep unshell_dep taco_dep untaco_dep := tt.
-
-Local Instance has_placement_dep `(HasStride)
-  `(!HasShellDep stride) `(HasUnshell) `(!HasTacoDep stride) `(HasUntaco) :
-  HasPlacementDep stride
-  shell_dep (@unshell_dep stride (@has_unshell_dep stride unshell))
-  taco_dep (@untaco_dep stride (@has_untaco_dep stride untaco)) := tt.
-
-(*
-Local Instance is_sect_shell_dep : IsSectShellDep stride shell_dep unshell_dep.
-Proof.
-  intros n.
-  pose proof sect_shell n as e.
-  unfold prod_uncurry in e.
-  unfold Ssig_uncurry, prod_uncurry_dep.
-  unfold unshell_dep, has_unshell_dep. Abort.
-
-Local Instance is_retr_shell_dep : IsRetrShellDep stride shell_dep unshell_dep.
-Proof. Abort.
-
-Local Instance is_sect_taco_dep : IsSectTacoDep stride taco_dep untaco_dep.
-Proof. Abort.
-
-Local Instance is_retr_taco_dep : IsRetrTacoDep stride taco_dep untaco_dep.
-Proof. Abort.
-
-Local Instance is_placement_dep : IsPlacementDep placement_dep.
-Proof. Abort.
-*)
-
-End Context.
-
-End DepAndNondep.
 
 Class HasPair : Type := pair (n : N) : N * N.
 
