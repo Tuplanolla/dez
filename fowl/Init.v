@@ -15,11 +15,6 @@ Global Set Warnings "-notation-overridden".
 
 Global Set Warnings "-unsupported-attributes".
 
-(** We do not care about elegant automatically generated names.
-    In fact, we would prefer to have them look as inelegant as possible. *)
-
-Global Set Fast Name Printing.
-
 (** We turn on automatically inferred implicit arguments and
     make them maximally inserted and conservatively detected,
     since most type classes follow the same design pattern. *)

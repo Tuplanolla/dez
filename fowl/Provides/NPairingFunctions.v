@@ -594,19 +594,35 @@ Local Instance is_sect_shell : IsSectShell shell unshell.
 Proof.
   intros n.
   unfold prod_uncurry.
-  unfold PairingFunction.shell, shell, has_shell,
-  PairingFunction.unshell, unshell, has_unshell, unshell_def.
+  unfold unshell, has_unshell, unshell_def.
+  unfold shell, has_shell, shell_dep, has_shell_dep, shell_dep_def.
+  unfold Spr1.
   induction n as [| p e] using peano_ind.
   - reflexivity.
-  - Abort.
+  - simp shell_fix in *. unfold shell_fix_unfold_clause_1 in *.
+    rewrite add_0_r in *.
+    destruct (sumbool_of_bool (succ p <? pos (stride 0))) as [l | l].
+    + unfold fst, snd.
+      rewrite fixed_base.
+      lia.
+    + destruct (sumbool_of_bool (p <? pos (stride 0))) as [l' | l'].
+      * clear e.
+        apply ltb_ge in l.
+        apply ltb_lt in l'.
+        simp shell_fix.
+        admit.
+      *
+        apply ltb_ge in l.
+        apply ltb_ge in l'. Admitted.
 
 Local Instance is_retr_shell_dep : IsRetrShellDep stride shell_dep unshell_dep.
 Proof.
   intros a b l.
-  unfold PairingFunction.shell_dep, shell_dep, shell.
+  unfold unshell_dep, has_unshell_dep.
+  unfold unshell, has_unshell, unshell_def.
+  unfold shell_dep, has_shell_dep, shell_dep_def.
   apply Spr1_inj.
-  unfold Spr1.
-  unfold PairingFunction.unshell_dep, unshell_dep, unshell. Abort.
+  unfold Spr1. Admitted.
 
 Local Instance is_lex_enum_shell : IsLexEnumShell shell.
 Proof. Abort.
@@ -788,6 +804,12 @@ Global Instance has_partition : HasPartition stride base := tt.
 
 Global Instance is_mono_base : IsMonoBase base.
 Proof. intros a b l. apply tri_lt_mono. auto. Qed.
+
+Global Instance is_fixed_base : IsFixedBase base.
+Proof. reflexivity. Qed.
+
+Global Instance is_base : IsBase base.
+Proof. esplit; typeclasses eauto. Qed.
 
 Global Instance is_partial_sum : IsPartialSum partition.
 Proof.
