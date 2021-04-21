@@ -87,7 +87,7 @@ Equations base_fix (a : N) : N by wf (to_nat a) :=
   base_fix (Npos n) :=
     let p := pred (Npos n) in
     Npos (stride p) + base_fix p.
-Next Obligation. intros n f p. lia. Qed.
+Next Obligation. intros n _ p. lia. Qed.
 
 Local Instance has_base : HasBase := base_fix.
 
@@ -425,50 +425,79 @@ Class IsPlacementDep `(HasPlacementDep) : Prop := {
 }.
 
 (** Some of the restricted versions can be derived
-    from the unrestricted ones and vice versa. *)
+    from the unrestricted ones and vice versa.
+    There is a minimal basis of definitions
+    that cover every version without incurring an overhead. *)
 
-Module DepViaNondep.
+Class HasPlacementBasis `(HasStride)
+  `(!HasShellDep stride) `(HasUnshell)
+  `(!HasTacoDep stride) `(HasUntaco) : Type :=
+  placement_basis : unit.
 
 Section Context.
 
-Local Instance has_shell `(HasStride) `(!HasShellDep stride) : HasShell :=
-  fun n : N => Spr1 (shell_dep n).
+Context `(HasPlacementBasis).
 
-Local Instance has_unshell_dep `(HasStride) `(HasUnshell) :
-  HasUnshellDep stride :=
+Global Instance has_shell : HasShell := fun n : N => Spr1 (shell_dep n).
+
+Global Instance has_unshell_dep : HasUnshellDep stride :=
   fun (a b : N) (l : Squash (b < Npos (stride a))) => unshell a b.
 
-Local Instance has_taco `(HasStride) `(!HasTacoDep stride) : HasTaco :=
-  fun x y : N => Spr1 (taco_dep x y).
+Global Instance has_taco : HasTaco := fun x y : N => Spr1 (taco_dep x y).
 
-Local Instance has_untaco_dep `(HasStride) `(HasUntaco) :
-  HasUntacoDep stride :=
+Global Instance has_untaco_dep : HasUntacoDep stride :=
   fun (a b : N) (l : Squash (b < Npos (stride a))) => untaco a b.
 
-Local Instance has_placement `(HasStride)
-  `(!HasShellDep stride) `(HasUnshell) `(!HasTacoDep stride) `(HasUntaco) :
-  HasPlacement shell unshell taco untaco := tt.
+Global Instance has_placement : HasPlacement shell unshell taco untaco := tt.
 
-Local Instance has_placement_dep `(HasStride)
-  `(!HasShellDep stride) `(HasUnshell) `(!HasTacoDep stride) `(HasUntaco) :
+Global Instance has_placement_dep :
   HasPlacementDep stride shell_dep unshell_dep taco_dep untaco_dep := tt.
 
-Local Instance is_sect_shell `(HasStride) `(!HasShellDep stride) `(HasUnshell)
-  `(!IsSectShellDep stride shell_dep unshell_dep) : IsSectShell shell unshell.
+End Context.
+
+(** The restricted and unrestricted
+    section and enumeration properties are equally strong,
+    while the retraction properties are not. *)
+
+Module NondepFromDep.
+
+Section Context.
+
+Context `(HasPlacementBasis).
+
+Local Instance is_sect_shell `(!IsSectShellDep stride shell_dep unshell_dep) :
+  IsSectShell shell unshell.
 Proof. exact sect_shell_dep. Qed.
 
-Local Instance is_sect_taco `(HasStride) `(!HasTacoDep stride) `(HasUntaco)
-  `(!IsSectTacoDep stride taco_dep untaco_dep) : IsSectTaco taco untaco.
+Local Instance is_sect_taco `(!IsSectTacoDep stride taco_dep untaco_dep) :
+  IsSectTaco taco untaco.
 Proof. exact sect_taco_dep. Qed.
 
-Local Instance is_sect_shell_dep `(HasStride)
-  `(!HasShellDep stride) `(HasUnshell)
-  `(!IsSectShell shell unshell) : IsSectShellDep stride shell_dep unshell_dep.
+Local Instance is_lex_enum_shell `(!IsLexEnumShellDep stride shell_dep) :
+  IsLexEnumShell shell.
+Proof.
+  esplit.
+  - exact lex_enum_zero_shell_dep.
+  - exact lex_enum_succ_shell_dep. Qed.
+
+End Context.
+
+End NondepFromDep.
+
+Module DepFromNondep.
+
+Section Context.
+
+Context `(HasPlacementBasis).
+
+Local Instance is_sect_shell_dep `(!IsSectShell shell unshell) :
+  IsSectShellDep stride shell_dep unshell_dep.
 Proof. exact sect_shell. Qed.
 
-Local Instance is_retr_shell_dep `(HasStride)
-  `(!HasShellDep stride) `(HasUnshell)
-  `(!IsRetrShell shell unshell) : IsRetrShellDep stride shell_dep unshell_dep.
+(** Note that this instance is just the principle of explosion in disguise. *)
+
+Local Instance is_retr_shell_dep `(!IsRetrShell shell unshell) :
+  IsRetrShellDep stride shell_dep unshell_dep.
 Proof.
   intros a b l.
   pose proof retr_shell a b as e.
@@ -478,14 +507,12 @@ Proof.
   unfold Spr1.
   apply e. Qed.
 
-Local Instance is_sect_taco_dep `(HasStride)
-  `(!HasTacoDep stride) `(HasUntaco)
-  `(!IsSectTaco taco untaco) : IsSectTacoDep stride taco_dep untaco_dep.
+Local Instance is_sect_taco_dep `(!IsSectTaco taco untaco) :
+  IsSectTacoDep stride taco_dep untaco_dep.
 Proof. exact sect_taco. Qed.
 
-Local Instance is_retr_taco_dep `(HasStride)
-  `(!HasTacoDep stride) `(HasUntaco)
-  `(!IsRetrTaco taco untaco) : IsRetrTacoDep stride taco_dep untaco_dep.
+Local Instance is_retr_taco_dep `(!IsRetrTaco taco untaco) :
+  IsRetrTacoDep stride taco_dep untaco_dep.
 Proof.
   intros a b l.
   pose proof retr_taco a b as e.
@@ -497,9 +524,16 @@ Proof.
   unfold Spr1.
   apply e. Qed.
 
+Local Instance is_lex_enum_shell_dep `(!IsLexEnumShell shell) :
+  IsLexEnumShellDep stride shell_dep.
+Proof.
+  esplit.
+  - exact lex_enum_zero_shell.
+  - exact lex_enum_succ_shell. Qed.
+
 End Context.
 
-End DepViaNondep.
+End DepFromNondep.
 
 (** Shells can be derived from strides or bases, but tacos cannot.
     Once again, tacos prove to be the ultimate form of food,
@@ -527,22 +561,16 @@ Equations shell_fix (a b : N) : N * N by wf (to_nat b) :=
     | right _ => shell_fix (1 + a) (b - Npos (stride a))
   }.
 Next Obligation.
-  intros a b l f.
+  intros a b l _.
   apply ltb_ge in l.
   lia. Qed.
 
-Equations shell_def (n : N) : N * N :=
-  shell_def n := shell_fix 0 n.
-
-Local Instance has_shell : HasShell := shell_def.
-
 Equations shell_dep_def (n : N) :
   {x : N * N $ Squash (snd x < Npos (stride (fst x)))} :=
-  shell_dep_def n := Sexists _ (shell n) _.
+  shell_dep_def n := Sexists _ (shell_fix 0 n) _.
 Next Obligation.
   intros n.
   apply squash.
-  unfold shell, has_shell, shell_def.
   apply shell_fix_elim.
   - clear n.
     intros a b l _.
@@ -560,46 +588,17 @@ Equations unshell_def (a b : N) : N :=
 
 Local Instance has_unshell : HasUnshell := unshell_def.
 
-Equations unshell_dep_def (a b : N) (l : Squash (b < Npos (stride a))) : N :=
-  unshell_dep_def a b l := unshell a b.
-
-Local Instance has_unshell_dep : HasUnshellDep stride := unshell_dep_def.
+(** TODO Write these proofs. *)
 
 Local Instance is_sect_shell : IsSectShell shell unshell.
 Proof.
   intros n.
   unfold prod_uncurry.
-  unfold PairingFunction.shell, shell, has_shell, shell_def,
+  unfold PairingFunction.shell, shell, has_shell,
   PairingFunction.unshell, unshell, has_unshell, unshell_def.
   induction n as [| p e] using peano_ind.
   - reflexivity.
-  - rewrite shell_fix_equation_1 in *.
-    destruct (sumbool_of_bool (p <? Npos (stride 0))),
-    (sumbool_of_bool (succ p <? Npos (stride 0)));
-    unfold shell_fix_unfold_clause_1 in *.
-    + unfold base, has_base.
-      simp base_fix.
-      rewrite add_0_r.
-      reflexivity.
-    + rewrite add_0_r.
-      apply ltb_lt in e0.
-      apply ltb_ge in e1.
-      admit.
-    + rewrite add_0_r.
-      apply ltb_ge in e0.
-      apply ltb_lt in e1.
-      lia.
-    + rewrite add_0_r in *.
-      apply ltb_ge in e0.
-      apply ltb_ge in e1. Abort.
-
-Local Instance is_sect_shell_dep : IsSectShellDep stride shell_dep unshell_dep.
-Proof.
-  intros n.
-  unfold Ssig_uncurry, prod_uncurry_dep.
-  unfold PairingFunction.shell_dep, shell_dep, shell,
-  PairingFunction.unshell_dep, unshell_dep, unshell.
-  unfold Spr1. Abort.
+  - Abort.
 
 Local Instance is_retr_shell_dep : IsRetrShellDep stride shell_dep unshell_dep.
 Proof.
@@ -610,9 +609,6 @@ Proof.
   unfold PairingFunction.unshell_dep, unshell_dep, unshell. Abort.
 
 Local Instance is_lex_enum_shell : IsLexEnumShell shell.
-Proof. Abort.
-
-Local Instance is_lex_enum_shell_dep : IsLexEnumShellDep stride shell_dep.
 Proof. Abort.
 
 End Context.
@@ -644,18 +640,13 @@ Next Obligation.
   pose proof mono_base a (succ a) as l'.
   lia. Qed.
 
-Equations shell_def (n : N) : N * N :=
-  shell_def n := shell_fix 0 n.
-
-Local Instance has_shell : HasShell := shell_def.
-
 Equations shell_dep_def (n : N) :
   {x : N * N $ Squash (snd x < Npos (stride (fst x)))} :=
-  shell_dep_def n := Sexists _ (shell n) _.
+  shell_dep_def n := Sexists _ (shell_fix 0 n) _.
 Next Obligation.
   intros n.
   apply squash.
-  unfold shell, has_shell, shell_def.
+  unfold shell, has_shell.
   apply shell_fix_elim.
   - intros a b l _.
     pose proof mono_base a (succ a) as la.
@@ -673,24 +664,13 @@ Equations unshell_def (a b : N) : N :=
 
 Local Instance has_unshell : HasUnshell := unshell_def.
 
-Equations unshell_dep_def (a b : N) (l : Squash (b < Npos (stride a))) : N :=
-  unshell_dep_def a b l := unshell a b.
-
-Local Instance has_unshell_dep : HasUnshellDep stride := unshell_dep_def.
-
 Local Instance is_sect_shell : IsSectShell shell unshell.
-Proof. Abort.
-
-Local Instance is_sect_shell_dep : IsSectShellDep stride shell_dep unshell_dep.
 Proof. Abort.
 
 Local Instance is_retr_shell_dep : IsRetrShellDep stride shell_dep unshell_dep.
 Proof. Abort.
 
 Local Instance is_lex_enum_shell : IsLexEnumShell shell.
-Proof. Abort.
-
-Local Instance is_lex_enum_shell_dep : IsLexEnumShellDep stride shell_dep.
 Proof. Abort.
 
 End Context.
@@ -721,20 +701,16 @@ Section Context.
 
 Context `(IsPlacementDep).
 
-Fail Equations pair_def (n : N) : N * N :=
-  pair_def n := prod_uncurry untaco (shell n).
-
 Equations pair_def (n : N) : N * N :=
   pair_def n := Ssig_uncurry (prod_uncurry_dep untaco_dep) (shell_dep n).
 
-Fail Equations unpair_def (x y : N) : N :=
-  unpair_def x y := prod_uncurry unshell (taco x y).
+Local Instance has_pair : HasPair := pair_def.
 
 Equations unpair_def (x y : N) : N :=
   unpair_def x y := Ssig_uncurry (prod_uncurry_dep unshell_dep) (taco_dep x y).
 
-Local Instance has_pair : HasPair := pair_def.
 Local Instance has_unpair : HasUnpair := unpair_def.
+
 Local Instance has_pairing : HasPairing pair unpair := tt.
 
 Local Instance is_sect_pair : IsSectPair pairing.
@@ -989,12 +965,10 @@ Local Existing Instance is_sect_pair.
 Local Existing Instance is_retr_pair.
 Local Existing Instance is_pairing.
 
-(** TODO Why does type class resolution fail here? *)
-
 Global Instance is_sect_pair : IsSectPair pairing.
-Proof. apply is_pairing; typeclasses eauto. Qed.
+Proof. typeclasses eauto. Qed.
 Global Instance is_retr_pair : IsRetrPair pairing.
-Proof. apply is_pairing; typeclasses eauto. Qed.
+Proof. typeclasses eauto. Qed.
 Global Instance is_pairing : IsPairing pairing.
 Proof. esplit; typeclasses eauto. Qed.
 

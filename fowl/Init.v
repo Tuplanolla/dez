@@ -269,6 +269,14 @@ Definition Ssig_uncurry_dep
   (x : {a : A $ P a}) : Q (Spr1 x) (Spr2 x) :=
   f (Spr1 x) (Spr2 x).
 
+Definition conj_curry (A B C : Prop)
+  (f : A /\ B -> C) (a : A) (b : B) : C :=
+  f (conj a b).
+
+Definition conj_uncurry (A B C : Prop)
+  (f : A -> B -> C) (x : A /\ B) : C :=
+  f (proj1 x) (proj2 x).
+
 (** Composition, constancy, flipping and application
     are totally fine in the standard library.
     We just augment them with dependent versions. *)
@@ -366,6 +374,8 @@ Arguments Ssig_curry {_ _ _} _ _ _ /.
 Arguments Ssig_uncurry {_ _ _} _ !_.
 Arguments Ssig_curry_dep {_ _ _} _ _ _ /.
 Arguments Ssig_uncurry_dep {_ _ _} _ !_.
+Arguments conj_curry {_ _ _} _ _ _ /.
+Arguments conj_uncurry {_ _ _} _ !_.
 Arguments compose_dep {_ _ _} _ _ _ /.
 Arguments const_dep {_ _} _ _ /.
 Arguments flip_dep {_ _ _} _ _ _ /.
