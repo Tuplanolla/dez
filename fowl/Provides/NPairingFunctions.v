@@ -1,5 +1,5 @@
 From Coq Require
-  ssreflect.
+  ssr.ssreflect.
 From Coq Require Import
   Lia Lists.List NArith.NArith Bool.Sumbool.
 From Maniunfold.Has Require Export
@@ -152,12 +152,11 @@ Context `(IsBase).
 (** Calculate the difference up from the given shell. *)
 
 Equations stride_def (a : N) : positive :=
-  stride_def a :=
-    let n := base (succ a) - base a in
-    match n with
-    | N0 => xH
+  stride_def a with base (succ a) - base a := {
+    | N0 => _;
     | Npos p => p
-    end.
+  }.
+Next Obligation. intros a. apply xH. Qed.
 
 (** We could also write the definition without the absurd case,
     but its equations would become unnecessarily complicated. *)
@@ -178,10 +177,11 @@ Import ssreflect.
 
 Lemma eq_stride_def' (a : N) : stride_def' a = stride_def a.
 Proof.
-  simp stride_def' stride_def. cbv zeta.
+  simp stride_def' stride_def.
+  unfold stride_def'_clause_1, stride_def_clause_1.
   set (n := base (succ a) - base a).
   generalize (eq_refl n).
-  case : {2 4 5} n.
+  case : {2 3 7} n.
   - intros e.
     subst n.
     pose proof mono_base a (succ a) as l.
@@ -201,7 +201,7 @@ Local Instance has_partition : HasPartition stride base := tt.
 Local Instance is_partial_sum : IsPartialSum partition.
 Proof.
   intros a.
-  unfold stride, has_stride. simp stride_def. cbv zeta.
+  unfold stride, has_stride. simp stride_def. unfold stride_def_clause_1.
   destruct (base (succ a) - base a) as [| n] eqn : e.
   + pose proof mono_base a (succ a) as l. lia.
   + lia. Qed.
