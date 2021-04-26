@@ -15,8 +15,6 @@ Local Open Scope N_scope.
 (** We define pairing functions by partitioning natural numbers
     into an infinite sequence of finite subintervals, which we call shells. *)
 
-Module PairingFunction.
-
 (** We call the sizes of shells strides. *)
 
 Class HasStride : Type := stride (a : N) : positive.
@@ -89,9 +87,9 @@ Equations base_fix (a : N) : N by wf (to_nat a) :=
     Npos (stride p) + base_fix p.
 Next Obligation. intros n _ p. lia. Qed.
 
-Local Instance has_base : HasBase := base_fix.
+#[local] Instance has_base : HasBase := base_fix.
 
-Local Instance is_mono_base : IsMonoBase base.
+#[local] Instance is_mono_base : IsMonoBase base.
 Proof.
   intros a b l.
   unfold base, has_base.
@@ -110,17 +108,17 @@ Proof.
       clear li.
       lia. Qed.
 
-Local Instance is_fixed_base : IsFixedBase base.
+#[local] Instance is_fixed_base : IsFixedBase base.
 Proof.
   hnf. unfold base, has_base. simp base_fix.
   reflexivity. Qed.
 
-Local Instance is_base : IsBase base.
+#[local] Instance is_base : IsBase base.
 Proof. esplit; typeclasses eauto. Qed.
 
-Local Instance has_partition : HasPartition stride base := tt.
+#[local] Instance has_partition : HasPartition stride base := tt.
 
-Local Instance is_partial_sum : IsPartialSum partition.
+#[local] Instance is_partial_sum : IsPartialSum partition.
 Proof.
   intros a.
   unfold base, has_base.
@@ -133,7 +131,7 @@ Proof.
     simp base_fix. cbv zeta. unfold pred.
     reflexivity. Qed.
 
-Local Instance is_partition : IsPartition partition.
+#[local] Instance is_partition : IsPartition partition.
 Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
@@ -191,14 +189,14 @@ Proof.
 
 End Context.
 
-Local Instance has_stride : HasStride := stride_def.
+#[local] Instance has_stride : HasStride := stride_def.
 
-Local Instance is_stride : IsStride stride.
+#[local] Instance is_stride : IsStride stride.
 Proof. Qed.
 
-Local Instance has_partition : HasPartition stride base := tt.
+#[local] Instance has_partition : HasPartition stride base := tt.
 
-Local Instance is_partial_sum : IsPartialSum partition.
+#[local] Instance is_partial_sum : IsPartialSum partition.
 Proof.
   intros a.
   unfold stride, has_stride. simp stride_def. unfold stride_def_clause_1.
@@ -206,7 +204,7 @@ Proof.
   + pose proof mono_base a (succ a) as l. lia.
   + lia. Qed.
 
-Local Instance is_partition : IsPartition partition.
+#[local] Instance is_partition : IsPartition partition.
 Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
@@ -322,7 +320,7 @@ Class IsLexOrdShellDep `(HasStride) `(!HasShellDep stride) : Prop :=
     While the proof is not complicated,
     it is still surprisingly easy to get lost in it. *)
 
-Global Instance is_lex_ord_shell `(IsLexEnumShell) : IsLexOrdShell shell.
+#[global] Instance is_lex_ord_shell `(IsLexEnumShell) : IsLexOrdShell shell.
 Proof.
   intros p n l.
   generalize dependent p.
@@ -354,7 +352,7 @@ Proof.
         unfold fst, snd in *.
         lia. Qed.
 
-Global Instance is_lex_ord_shell_dep `(IsLexEnumShellDep) :
+#[global] Instance is_lex_ord_shell_dep `(IsLexEnumShellDep) :
   IsLexOrdShellDep stride shell_dep.
 Proof.
   intros p n l.
@@ -444,19 +442,19 @@ Section Context.
 
 Context `(HasPlacementBasis).
 
-Global Instance has_shell : HasShell := fun n : N => Spr1 (shell_dep n).
+#[global] Instance has_shell : HasShell := fun n : N => Spr1 (shell_dep n).
 
-Global Instance has_unshell_dep : HasUnshellDep stride :=
+#[global] Instance has_unshell_dep : HasUnshellDep stride :=
   fun (a b : N) (l : Squash (b < Npos (stride a))) => unshell a b.
 
-Global Instance has_taco : HasTaco := fun x y : N => Spr1 (taco_dep x y).
+#[global] Instance has_taco : HasTaco := fun x y : N => Spr1 (taco_dep x y).
 
-Global Instance has_untaco_dep : HasUntacoDep stride :=
+#[global] Instance has_untaco_dep : HasUntacoDep stride :=
   fun (a b : N) (l : Squash (b < Npos (stride a))) => untaco a b.
 
-Global Instance has_placement : HasPlacement shell unshell taco untaco := tt.
+#[global] Instance has_placement : HasPlacement shell unshell taco untaco := tt.
 
-Global Instance has_placement_dep :
+#[global] Instance has_placement_dep :
   HasPlacementDep stride shell_dep unshell_dep taco_dep untaco_dep := tt.
 
 End Context.
@@ -471,15 +469,15 @@ Section Context.
 
 Context `(HasPlacementBasis).
 
-Local Instance is_sect_shell `(!IsSectShellDep stride shell_dep unshell_dep) :
+#[local] Instance is_sect_shell `(!IsSectShellDep stride shell_dep unshell_dep) :
   IsSectShell shell unshell.
 Proof. exact sect_shell_dep. Qed.
 
-Local Instance is_sect_taco `(!IsSectTacoDep stride taco_dep untaco_dep) :
+#[local] Instance is_sect_taco `(!IsSectTacoDep stride taco_dep untaco_dep) :
   IsSectTaco taco untaco.
 Proof. exact sect_taco_dep. Qed.
 
-Local Instance is_lex_enum_shell `(!IsLexEnumShellDep stride shell_dep) :
+#[local] Instance is_lex_enum_shell `(!IsLexEnumShellDep stride shell_dep) :
   IsLexEnumShell shell.
 Proof.
   esplit.
@@ -499,13 +497,13 @@ Section Context.
 
 Context `(HasPlacementBasis).
 
-Local Instance is_sect_shell_dep `(!IsSectShell shell unshell) :
+#[local] Instance is_sect_shell_dep `(!IsSectShell shell unshell) :
   IsSectShellDep stride shell_dep unshell_dep.
 Proof. exact sect_shell. Qed.
 
 (** Note that this instance is just the principle of explosion in disguise. *)
 
-Local Instance is_retr_shell_dep `(!IsRetrShell shell unshell) :
+#[local] Instance is_retr_shell_dep `(!IsRetrShell shell unshell) :
   IsRetrShellDep stride shell_dep unshell_dep.
 Proof.
   intros a b l.
@@ -516,11 +514,11 @@ Proof.
   unfold Spr1.
   apply e. Qed.
 
-Local Instance is_sect_taco_dep `(!IsSectTaco taco untaco) :
+#[local] Instance is_sect_taco_dep `(!IsSectTaco taco untaco) :
   IsSectTacoDep stride taco_dep untaco_dep.
 Proof. exact sect_taco. Qed.
 
-Local Instance is_retr_taco_dep `(!IsRetrTaco taco untaco) :
+#[local] Instance is_retr_taco_dep `(!IsRetrTaco taco untaco) :
   IsRetrTacoDep stride taco_dep untaco_dep.
 Proof.
   intros a b l.
@@ -533,7 +531,7 @@ Proof.
   unfold Spr1.
   apply e. Qed.
 
-Local Instance is_lex_enum_shell_dep `(!IsLexEnumShell shell) :
+#[local] Instance is_lex_enum_shell_dep `(!IsLexEnumShell shell) :
   IsLexEnumShellDep stride shell_dep.
 Proof.
   esplit.
@@ -586,16 +584,45 @@ Next Obligation.
     intros a b _ l _.
     auto. Qed.
 
-Local Instance has_shell_dep : HasShellDep stride := shell_dep_def.
+#[local] Instance has_shell_dep : HasShellDep stride := shell_dep_def.
 
 Equations unshell_def (a b : N) : N :=
   unshell_def a b := b + base a.
 
-Local Instance has_unshell : HasUnshell := unshell_def.
+#[local] Instance has_unshell : HasUnshell := unshell_def.
 
 (** TODO Write these proofs. *)
 
-Local Instance is_sect_shell : IsSectShell shell unshell.
+Lemma shell_fix_0_r (a : N) : shell_fix a 0 = (a, 0).
+Proof. reflexivity. Qed.
+
+Lemma shell_fix_0_l (a b : N) : shell_fix 0 (b + base a) = shell_fix a b.
+Proof.
+  generalize dependent b.
+  induction a as [| n e] using peano_ind; intros b.
+  simp shell_fix. unfold shell_fix_unfold_clause_1.
+  rewrite fixed_base. repeat rewrite add_0_r. reflexivity.
+  specialize (e (b + Npos (stride n))).
+  simp shell_fix in *. unfold shell_fix_unfold_clause_1 in *.
+  repeat rewrite add_0_r in *.
+  rewrite <- add_assoc in e. rewrite <- partial_sum in e.
+  destruct (sumbool_of_bool (b + pos (stride n) <? pos (stride n))).
+  apply ltb_lt in e0. lia.
+  apply ltb_ge in e0. clear e0.
+  destruct (sumbool_of_bool (b + base (succ n) <? pos (stride 0))).
+  rewrite e. rewrite shell_fix_equation_1 at 1. unfold shell_fix_unfold_clause_1.
+  rewrite add_1_l. rewrite <- add_sub_assoc by lia. rewrite sub_diag. rewrite add_0_r.
+  reflexivity.
+  apply ltb_ge in e0. rewrite e.
+  destruct (sumbool_of_bool (b <? pos (stride (succ n)))).
+  simp shell_fix. unfold shell_fix_unfold_clause_1.
+  rewrite add_1_l. rewrite <- add_sub_assoc by lia. rewrite sub_diag. rewrite add_0_r.
+  rewrite e1. unfold sumbool_of_bool. reflexivity.
+  rewrite <- add_sub_assoc by lia. rewrite sub_diag. rewrite add_0_r.
+  rewrite shell_fix_equation_1 at 1. unfold shell_fix_unfold_clause_1.
+  rewrite add_1_l. rewrite e1. unfold sumbool_of_bool. reflexivity. Qed.
+
+#[local] Instance is_sect_shell : IsSectShell shell unshell.
 Proof.
   intros n.
   unfold prod_uncurry.
@@ -606,46 +633,66 @@ Proof.
   - reflexivity.
   - simp shell_fix in *. unfold shell_fix_unfold_clause_1 in *.
     rewrite add_0_r in *.
-    destruct (sumbool_of_bool (succ p <? Npos (stride 0))) as [l | l].
-    + unfold fst, snd.
-      rewrite fixed_base.
+    destruct (sumbool_of_bool (p <? pos (stride 0))) as [l | l],
+    (sumbool_of_bool (succ p <? Npos (stride 0))) as [l' | l'].
+    + apply ltb_lt in l. apply ltb_lt in l'.
+      unfold fst, snd in *.
+      rewrite fixed_base in *.
       lia.
-    + destruct (sumbool_of_bool (p <? Npos (stride 0))) as [l' | l'].
-      * clear e.
-        apply ltb_ge in l.
-        apply ltb_lt in l'.
-        assert (e : succ p = Npos (stride 0)) by lia.
-        clear l' l.
-        rewrite e.
-        clear e.
-        rewrite sub_diag.
-        reflexivity.
-      * apply ltb_ge in l.
-        apply ltb_ge in l'.
-        clear l.
-        simp shell_fix in *. unfold shell_fix_unfold_clause_1 in *.
-        destruct (sumbool_of_bool (succ p - Npos (stride 0) <? Npos (stride 1))) as [l | l].
-        -- unfold fst, snd.
-          rewrite one_succ.
-          rewrite partial_sum.
-          rewrite fixed_base.
-          lia.
-        -- destruct (sumbool_of_bool (p - Npos (stride 0) <? Npos (stride 1))) as [l'' | l''].
-      ** clear e.
-        apply ltb_ge in l.
-        apply ltb_lt in l''.
-        assert (e : succ p = Npos (stride 0) + Npos (stride 1)) by lia.
-        clear l' l l''.
-        rewrite e.
-        clear e. Restart.
+    + apply ltb_lt in l. apply ltb_ge in l'.
+      unfold fst, snd in e. clear e.
+      assert (e : succ p = Npos (stride 0)) by lia.
+      rewrite e. rewrite sub_diag.
+      rewrite <- shell_fix_0_l.
+      rewrite add_0_l.
+      simp shell_fix. unfold shell_fix_unfold_clause_1.
+      rewrite one_succ.
+      rewrite partial_sum.
+      rewrite fixed_base. rewrite add_0_r.
+      destruct (sumbool_of_bool (pos (stride 0) <? pos (stride 0))).
+      apply ltb_lt in e0. lia.
+      rewrite sub_diag. unfold succ. rewrite add_0_r.
+      rewrite shell_fix_0_r. reflexivity.
+    + apply ltb_ge in l. apply ltb_lt in l'.
+      unfold fst, snd in *.
+      rewrite fixed_base in *.
+      lia.
+    + apply ltb_ge in l. apply ltb_ge in l'.
+      (* rewrite <- shell_fix_0_l in e.
+      rewrite one_succ in e. rewrite partial_sum in e.
+      rewrite fixed_base in e. rewrite add_0_r in e.
+      replace (p - pos (stride 0) + pos (stride 0)) with p in e by lia. *)
+      rewrite <- shell_fix_0_l.
+      simp shell_fix. unfold shell_fix_unfold_clause_1.
+      rewrite one_succ.
+      rewrite partial_sum. rewrite fixed_base. rewrite add_0_r.
+      replace (succ p - pos (stride 0) + pos (stride 0)) with (succ p) by lia.
+      apply ltb_ge in l'. rewrite l'.
+      unfold sumbool_of_bool. rewrite add_0_r. rewrite <- one_succ. Restart.
   intros n.
   unfold prod_uncurry.
   unfold unshell, has_unshell, unshell_def.
   unfold shell, has_shell, shell_dep, has_shell_dep, shell_dep_def.
   unfold Spr1.
-  remember 0 as a eqn : ea. Admitted.
+  induction n as [| p e] using peano_ind.
+  - reflexivity.
+  - simp shell_fix. unfold shell_fix_unfold_clause_1.
+    rewrite add_0_r.
+    destruct (sumbool_of_bool (succ p <? Npos (stride 0))) as [l | l].
+    + apply ltb_lt in l.
+      unfold fst, snd.
+      rewrite fixed_base.
+      lia.
+    + apply ltb_ge in l.
+      rewrite <- shell_fix_0_l.
+      simp shell_fix. unfold shell_fix_unfold_clause_1.
+      rewrite one_succ.
+      rewrite partial_sum.
+      rewrite fixed_base. rewrite add_0_r.
+      rewrite sub_add by lia.
+      apply ltb_ge in l. Admitted.
 
-Local Instance is_retr_shell_dep : IsRetrShellDep stride shell_dep unshell_dep.
+#[local] Instance is_retr_shell_dep : IsRetrShellDep stride shell_dep unshell_dep.
 Proof.
   intros a b l.
   unfold unshell_dep, has_unshell_dep.
@@ -654,7 +701,7 @@ Proof.
   apply Spr1_inj.
   unfold Spr1. Admitted.
 
-Local Instance is_lex_enum_shell : IsLexEnumShell shell.
+#[local] Instance is_lex_enum_shell : IsLexEnumShell shell.
 Proof. Admitted.
 
 End Context.
@@ -700,14 +747,14 @@ Next Obligation.
   - intros a b _ l _.
     auto. Qed.
 
-Local Instance has_shell_dep : HasShellDep stride := shell_dep_def.
+#[local] Instance has_shell_dep : HasShellDep stride := shell_dep_def.
 
 Equations unshell_def (a b : N) : N :=
   unshell_def a b := b + base a.
 
-Local Instance has_unshell : HasUnshell := unshell_def.
+#[local] Instance has_unshell : HasUnshell := unshell_def.
 
-Local Instance is_sect_shell : IsSectShell shell unshell.
+#[local] Instance is_sect_shell : IsSectShell shell unshell.
 Proof.
   intros n.
   unfold prod_uncurry.
@@ -715,31 +762,27 @@ Proof.
   unfold shell, has_shell, shell_dep, has_shell_dep, shell_dep_def.
   unfold Spr1.
   induction n as [| p e] using peano_ind.
-  - simp shell_fix.
-    unfold shell_fix_unfold_clause_1.
-    assert (l : 0 < base (succ 0)).
-    { pose proof mono_base 0 (succ 0).
-      lia. }
+  - simp shell_fix. unfold shell_fix_unfold_clause_1.
+    rewrite partial_sum. rewrite fixed_base. rewrite add_0_r.
+    assert (l : 0 < Npos (stride 0)) by lia.
     apply ltb_lt in l.
     rewrite l.
     unfold sumbool_of_bool. unfold fst, snd.
     rewrite fixed_base.
-    lia.
+    reflexivity.
   - simp shell_fix in *. unfold shell_fix_unfold_clause_1 in *.
-    destruct (ltb_spec p (base (succ 0))) as [l | l].
-    + unfold sumbool_of_bool in e.
-      unfold fst, snd in e.
+    destruct (eqb_spec (succ p) (base (succ 0))) as [e' | f'].
+    + rewrite e'.
       clear e.
-      destruct (eqb_spec (succ p) (base (succ 0))) as [e | f].
-      * assert (l' : base (succ 0) <= succ p) by lia.
-        apply ltb_ge in l'.
-        rewrite l'.
-        unfold sumbool_of_bool. Admitted.
+      assert (l : base (succ 0) <= base (succ 0)) by lia.
+      apply ltb_ge in l.
+      rewrite l.
+      unfold sumbool_of_bool. admit. Admitted.
 
-Local Instance is_retr_shell_dep : IsRetrShellDep stride shell_dep unshell_dep.
+#[local] Instance is_retr_shell_dep : IsRetrShellDep stride shell_dep unshell_dep.
 Proof. Admitted.
 
-Local Instance is_lex_enum_shell : IsLexEnumShell shell.
+#[local] Instance is_lex_enum_shell : IsLexEnumShell shell.
 Proof. Admitted.
 
 End Context.
@@ -781,16 +824,16 @@ Context `(IsPlacementDep).
 Equations pair_def (n : N) : N * N :=
   pair_def n := Ssig_uncurry (prod_uncurry_dep untaco_dep) (shell_dep n).
 
-Local Instance has_pair : HasPair := pair_def.
+#[local] Instance has_pair : HasPair := pair_def.
 
 Equations unpair_def (x y : N) : N :=
   unpair_def x y := Ssig_uncurry (prod_uncurry_dep unshell_dep) (taco_dep x y).
 
-Local Instance has_unpair : HasUnpair := unpair_def.
+#[local] Instance has_unpair : HasUnpair := unpair_def.
 
-Local Instance has_pairing : HasPairing pair unpair := tt.
+#[local] Instance has_pairing : HasPairing pair unpair := tt.
 
-Local Instance is_sect_pair : IsSectPair pairing.
+#[local] Instance is_sect_pair : IsSectPair pairing.
 Proof.
   intros n.
   unfold pair, has_pair, unpair, has_unpair.
@@ -815,7 +858,7 @@ Proof.
   rewrite eab in loop_s.
   simp Ssig_uncurry in loop_s. Qed.
 
-Local Instance is_retr_pair : IsRetrPair pairing.
+#[local] Instance is_retr_pair : IsRetrPair pairing.
 Proof.
   intros x y.
   unfold pair, has_pair, unpair, has_unpair.
@@ -838,7 +881,7 @@ Proof.
   rewrite eab' in loop_t.
   simp Ssig_uncurry in loop_t. Qed.
 
-Local Instance is_pairing : IsPairing pairing.
+#[local] Instance is_pairing : IsPairing pairing.
 Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
@@ -848,8 +891,6 @@ End Context.
 
 End PairingFromPlacement.
 
-End PairingFunction.
-
 (** We start by defining the Cantor pairing function.
     We instantiate more classes than is absolutely necessary,
     because it yields better performance and
@@ -857,30 +898,28 @@ End PairingFunction.
 
 Module Cantor.
 
-Import PairingFunction.
-
 Equations stride_def (a : N) : positive :=
   stride_def a := succ_pos a.
 
-Local Instance has_stride : HasStride := stride_def.
+#[local] Instance has_stride : HasStride := stride_def.
 
 Equations base_def (a : N) : N :=
   base_def a := tri a.
 
-Local Instance has_base : HasBase := base_def.
+#[local] Instance has_base : HasBase := base_def.
 
-Local Instance has_partition : HasPartition stride base := tt.
+#[local] Instance has_partition : HasPartition stride base := tt.
 
-Local Instance is_mono_base : IsMonoBase base.
+#[local] Instance is_mono_base : IsMonoBase base.
 Proof. intros a b l. apply tri_lt_mono. auto. Qed.
 
-Local Instance is_fixed_base : IsFixedBase base.
+#[local] Instance is_fixed_base : IsFixedBase base.
 Proof. reflexivity. Qed.
 
-Local Instance is_base : IsBase base.
+#[local] Instance is_base : IsBase base.
 Proof. esplit; typeclasses eauto. Qed.
 
-Local Instance is_partial_sum : IsPartialSum partition.
+#[local] Instance is_partial_sum : IsPartialSum partition.
 Proof.
   intros a.
   unfold stride, has_stride, stride_def, base, has_base, base_def.
@@ -891,7 +930,7 @@ Proof.
 Equations shell_def (n : N) : N * N :=
   shell_def n := untri_rem n.
 
-Local Instance has_shell : HasShell := shell_def.
+#[local] Instance has_shell : HasShell := shell_def.
 
 Equations shell_dep_def (n : N) :
   {x : N * N $ Squash (snd x < Npos (stride (fst x)))} :=
@@ -907,19 +946,19 @@ Next Obligation.
   pose proof tri_untri_untri_rem n as l.
   lia. Qed.
 
-Local Instance has_shell_dep : HasShellDep stride := shell_dep_def.
+#[local] Instance has_shell_dep : HasShellDep stride := shell_dep_def.
 
 Equations unshell_def (a b : N) : N :=
   unshell_def a b := b + tri a.
 
-Local Instance has_unshell : HasUnshell := unshell_def.
+#[local] Instance has_unshell : HasUnshell := unshell_def.
 
 Equations unshell_dep_def (a b : N) (l : Squash (b < Npos (stride a))) : N :=
   unshell_dep_def a b l := unshell a b.
 
-Local Instance has_unshell_dep : HasUnshellDep stride := unshell_dep_def.
+#[local] Instance has_unshell_dep : HasUnshellDep stride := unshell_dep_def.
 
-Local Instance is_sect_shell_dep :
+#[local] Instance is_sect_shell_dep :
   IsSectShellDep stride shell_dep unshell_dep.
 Proof.
   intros n.
@@ -934,7 +973,7 @@ Proof.
   pose proof tri_untri n as l.
   lia. Qed.
 
-Local Instance is_retr_shell_dep :
+#[local] Instance is_retr_shell_dep :
   IsRetrShellDep stride shell_dep unshell_dep.
 Proof.
   intros a b l.
@@ -956,7 +995,7 @@ Proof.
 Equations taco_def (x y : N) : N * N :=
   taco_def x y := (y + x, y).
 
-Local Instance has_taco : HasTaco := taco_def.
+#[local] Instance has_taco : HasTaco := taco_def.
 
 Equations taco_dep_def (x y : N) :
   {x : N * N $ Squash (snd x < Npos (stride (fst x)))} :=
@@ -970,22 +1009,22 @@ Next Obligation.
   simp fst snd.
   lia. Qed.
 
-Local Instance has_taco_dep : HasTacoDep stride := taco_dep_def.
+#[local] Instance has_taco_dep : HasTacoDep stride := taco_dep_def.
 
 Equations untaco_def (a b : N) : N * N :=
   untaco_def a b := (a - b, b).
 
-Local Instance has_untaco : HasUntaco := untaco_def.
+#[local] Instance has_untaco : HasUntaco := untaco_def.
 
 Equations untaco_dep_def (a b : N) (l : Squash (b < Npos (stride a))) : N * N :=
   untaco_dep_def a b l := untaco a b.
 
-Local Instance has_untaco_dep : HasUntacoDep stride := untaco_dep_def.
+#[local] Instance has_untaco_dep : HasUntacoDep stride := untaco_dep_def.
 
-Local Instance has_placement_dep :
+#[local] Instance has_placement_dep :
   HasPlacementDep stride shell_dep unshell_dep taco_dep untaco_dep := tt.
 
-Local Instance is_sect_taco_dep : IsSectTacoDep stride taco_dep untaco_dep.
+#[local] Instance is_sect_taco_dep : IsSectTacoDep stride taco_dep untaco_dep.
 Proof.
   intros x y.
   cbv [Ssig_uncurry Spr1 Spr2].
@@ -998,7 +1037,7 @@ Proof.
   f_equal.
   lia. Qed.
 
-Local Instance is_retr_taco_dep : IsRetrTacoDep stride taco_dep untaco_dep.
+#[local] Instance is_retr_taco_dep : IsRetrTacoDep stride taco_dep untaco_dep.
 Proof.
   intros a b l.
   cbv [prod_uncurry].
@@ -1015,7 +1054,7 @@ Proof.
   rewrite succ_pos_spec in l.
   lia. Qed.
 
-Local Instance is_lex_enum_shell_dep :
+#[local] Instance is_lex_enum_shell_dep :
   IsLexEnumShellDep stride shell_dep.
 Proof.
   split.
@@ -1039,20 +1078,20 @@ Proof.
         admit.
     Admitted.
 
-Local Instance is_placement_dep : IsPlacementDep placement_dep.
+#[local] Instance is_placement_dep : IsPlacementDep placement_dep.
 Proof. esplit; typeclasses eauto. Qed.
 
 Import PairingFromPlacement.
 
-Local Instance has_pair : HasPair := pair.
-Local Instance has_unpair : HasUnpair := unpair.
-Local Instance has_pairing : HasPairing pair unpair := tt.
+#[local] Instance has_pair : HasPair := pair.
+#[local] Instance has_unpair : HasUnpair := unpair.
+#[local] Instance has_pairing : HasPairing pair unpair := tt.
 
-Local Instance is_sect_pair : IsSectPair pairing.
+#[local] Instance is_sect_pair : IsSectPair pairing.
 Proof. typeclasses eauto. Qed.
-Local Instance is_retr_pair : IsRetrPair pairing.
+#[local] Instance is_retr_pair : IsRetrPair pairing.
 Proof. typeclasses eauto. Qed.
-Local Instance is_pairing : IsPairing pairing.
+#[local] Instance is_pairing : IsPairing pairing.
 Proof. esplit; typeclasses eauto. Qed.
 
 #[export] Hint Resolve has_pair has_unpair has_pairing
@@ -1060,10 +1099,9 @@ Proof. esplit; typeclasses eauto. Qed.
 
 End Cantor.
 
-Module PF := PairingFunction.
 Import Cantor.
-Compute map PF.pair (seq 0 64).
-Compute map (prod_uncurry PF.unpair o PF.pair) (seq 0 64).
+Compute map pair (seq 0 64).
+Compute map (prod_uncurry unpair o pair) (seq 0 64).
 
 (** TODO The rest of this module is in serious disrepair. *)
 
