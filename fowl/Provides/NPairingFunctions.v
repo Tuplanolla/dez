@@ -10,7 +10,7 @@ From Maniunfold.Provides Require Export
 
 Import ListNotations N.
 
-Local Open Scope N_scope.
+#[local] Open Scope N_scope.
 
 (** We define pairing functions by partitioning natural numbers
     into an infinite sequence of finite subintervals, which we call shells. *)
@@ -622,6 +622,35 @@ Proof.
   rewrite shell_fix_equation_1 at 1. unfold shell_fix_unfold_clause_1.
   rewrite add_1_l. rewrite e1. unfold sumbool_of_bool. reflexivity. Qed.
 
+Lemma shell_fix_0_l' (a b : N) (l : base a <= b) :
+  shell_fix 0 b = shell_fix a (b - base a).
+Proof. Admitted.
+
+Lemma shell_fix_0_di (n : N) :
+  succ (snd (shell_fix 0 n)) < Npos (stride (fst (shell_fix 0 n))) /\
+  shell_fix 0 (succ n) = prod_rmap succ (shell_fix 0 n) \/
+  succ (snd (shell_fix 0 n)) = Npos (stride (fst (shell_fix 0 n))) /\
+  shell_fix 0 (succ n) = prod_bimap succ (const 0) (shell_fix 0 n).
+Proof.
+  destruct (ltb_spec (succ (snd (shell_fix 0 n))) (Npos (stride (fst (shell_fix 0 n))))) as [l | l].
+  - left. split; auto. destruct (shell_fix 0 n) as [a b] eqn : e.
+    unfold prod_rmap. unfold fst, snd in *.
+    simp shell_fix in *. unfold shell_fix_unfold_clause_1 in *.
+    destruct (sumbool_of_bool (succ n <? pos (stride 0))).
+    apply ltb_lt in e0. apply lt_succ_l in e0. apply ltb_lt in e0.
+    rewrite e0 in e. unfold sumbool_of_bool in e. inversion e as [[ea eb]]. subst a b. reflexivity.
+    apply ltb_ge in e0. apply le_succ_r in e0. destruct e0 as [e0 | e0].
+    2:{ rewrite e0 in e.
+      pose proof lt_succ_diag_r n as d. apply ltb_lt in d. rewrite d in e.
+      unfold sumbool_of_bool in e. inversion e as [[ea eb]]. subst a b.
+      rewrite <- e0. rewrite sub_diag. rewrite shell_fix_0_r. lia. }
+    apply ltb_ge in e0. rewrite e0 in e. unfold sumbool_of_bool in e.
+    rewrite add_0_r in *.
+  Admitted.
+
+(* let (a, b) := shell_fix (succ p) (n - pos (stride p)) in
+ shell_fix (succ p) (succ n - pos (stride p)) = (a, succ b) *)
+
 #[local] Instance is_sect_shell : IsSectShell shell unshell.
 Proof.
   intros n.
@@ -629,68 +658,21 @@ Proof.
   unfold unshell, has_unshell, unshell_def.
   unfold shell, has_shell, shell_dep, has_shell_dep, shell_dep_def.
   unfold Spr1.
-  induction n as [| p e] using peano_ind.
+  induction n as [| p ep] using peano_ind.
   - reflexivity.
-  - simp shell_fix in *. unfold shell_fix_unfold_clause_1 in *.
-    rewrite add_0_r in *.
-    destruct (sumbool_of_bool (p <? pos (stride 0))) as [l | l],
-    (sumbool_of_bool (succ p <? Npos (stride 0))) as [l' | l'].
-    + apply ltb_lt in l. apply ltb_lt in l'.
+  - pose proof shell_fix_0_di p as x.
+    destruct x as [[l e] | [e' e]].
+    + destruct (shell_fix 0 p) as [a b] eqn : eab.
+      unfold prod_rmap in e.
+      rewrite e.
       unfold fst, snd in *.
-      rewrite fixed_base in *.
       lia.
-    + apply ltb_lt in l. apply ltb_ge in l'.
-      unfold fst, snd in e. clear e.
-      assert (e : succ p = Npos (stride 0)) by lia.
-      rewrite e. rewrite sub_diag.
-      rewrite <- shell_fix_0_l.
-      rewrite add_0_l.
-      simp shell_fix. unfold shell_fix_unfold_clause_1.
-      rewrite one_succ.
-      rewrite partial_sum.
-      rewrite fixed_base. rewrite add_0_r.
-      destruct (sumbool_of_bool (pos (stride 0) <? pos (stride 0))).
-      apply ltb_lt in e0. lia.
-      rewrite sub_diag. unfold succ. rewrite add_0_r.
-      rewrite shell_fix_0_r. reflexivity.
-    + apply ltb_ge in l. apply ltb_lt in l'.
+    + destruct (shell_fix 0 p) as [a b] eqn : eab.
+      unfold prod_bimap in e. unfold const in e.
+      rewrite e.
       unfold fst, snd in *.
-      rewrite fixed_base in *.
-      lia.
-    + apply ltb_ge in l. apply ltb_ge in l'.
-      (* rewrite <- shell_fix_0_l in e.
-      rewrite one_succ in e. rewrite partial_sum in e.
-      rewrite fixed_base in e. rewrite add_0_r in e.
-      replace (p - pos (stride 0) + pos (stride 0)) with p in e by lia. *)
-      rewrite <- shell_fix_0_l.
-      simp shell_fix. unfold shell_fix_unfold_clause_1.
-      rewrite one_succ.
-      rewrite partial_sum. rewrite fixed_base. rewrite add_0_r.
-      replace (succ p - pos (stride 0) + pos (stride 0)) with (succ p) by lia.
-      apply ltb_ge in l'. rewrite l'.
-      unfold sumbool_of_bool. rewrite add_0_r. rewrite <- one_succ. Restart.
-  intros n.
-  unfold prod_uncurry.
-  unfold unshell, has_unshell, unshell_def.
-  unfold shell, has_shell, shell_dep, has_shell_dep, shell_dep_def.
-  unfold Spr1.
-  induction n as [| p e] using peano_ind.
-  - reflexivity.
-  - simp shell_fix. unfold shell_fix_unfold_clause_1.
-    rewrite add_0_r.
-    destruct (sumbool_of_bool (succ p <? Npos (stride 0))) as [l | l].
-    + apply ltb_lt in l.
-      unfold fst, snd.
-      rewrite fixed_base.
-      lia.
-    + apply ltb_ge in l.
-      rewrite <- shell_fix_0_l.
-      simp shell_fix. unfold shell_fix_unfold_clause_1.
-      rewrite one_succ.
-      rewrite partial_sum.
-      rewrite fixed_base. rewrite add_0_r.
-      rewrite sub_add by lia.
-      apply ltb_ge in l. Admitted.
+      rewrite add_0_l. rewrite partial_sum.
+      lia. Qed.
 
 #[local] Instance is_retr_shell_dep : IsRetrShellDep stride shell_dep unshell_dep.
 Proof.
@@ -926,6 +908,19 @@ Proof.
   rewrite <- add_1_l.
   rewrite tri_succ. rewrite succ_pos_spec.
   lia. Qed.
+
+(*
+Scheme Equality for prod.
+Import ShellFromStride.
+Compute map (fun bx => map (b2n o fun b =>
+  implb (succ (snd (shell_fix 0 b)) <? Npos (stride (fst (shell_fix 0 b))))
+  (prod_beq eqb eqb (shell_fix 0 (succ b)) (prod_rmap succ (shell_fix 0 b)))
+  ) (seq 0 24)) (seq 0 16).
+Compute map (fun bx => map (b2n o fun b =>
+  implb (succ (snd (shell_fix 0 b)) =? Npos (stride (fst (shell_fix 0 b))))
+  (prod_beq eqb eqb (shell_fix 0 (succ b)) (prod_bimap succ (const 0) (shell_fix 0 b)))
+  ) (seq 0 24)) (seq 0 16).
+*)
 
 Equations shell_def (n : N) : N * N :=
   shell_def n := untri_rem n.

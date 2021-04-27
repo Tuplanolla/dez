@@ -1,6 +1,20 @@
 From Maniunfold Require Export
   Init.
 
+Scheme Equality for prod.
+
+Definition prod_fold_left (A B : Type)
+  (f : A -> B -> A) (x : B * B) (a : A) : A :=
+  match x with
+  | (b0, b1) => f (f a b0) b1
+  end.
+
+Definition prod_fold_right (A B : Type)
+  (f : B -> A -> A) (a : A) (x : B * B) : A :=
+  match x with
+  | (b0, b1) => f b0 (f b1 a)
+  end.
+
 Definition prod_bimap (A B C D : Type)
   (f : A -> C) (g : B -> D) (x : A * B) : C * D :=
   match x with
