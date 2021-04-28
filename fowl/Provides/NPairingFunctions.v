@@ -38,7 +38,7 @@ Typeclasses Transparent HasBase.
     because shells are supposed to be nonempty. *)
 
 Class IsMonoBase `(HasBase) : Prop :=
-  mono_base (a b : N) (l : a < b) : base a < base b.
+  mono_base (x y : N) (l : x < y) : base x < base y.
 
 (** Bases should have a fixed point at zero,
     because shells are supposed to be a covering. *)
@@ -220,18 +220,26 @@ End StrideFromBase.
 
 Class HasShell : Type := shell (n : N) : N * N.
 
+Typeclasses Transparent HasShell.
+
 (** The placement function is injective, but not surjective,
     unless we restrict the codomain to make it so. *)
 
 Class HasShellDep `(HasStride) : Type :=
   shell_dep (n : N) : {x : N * N $ Squash (snd x < Npos (stride (fst x)))}.
 
+Typeclasses Transparent HasShellDep.
+
 (** The placement can be undone. *)
 
 Class HasUnshell : Type := unshell (a b : N) : N.
 
+Typeclasses Transparent HasUnshell.
+
 Class HasUnshellDep `(HasStride) : Type :=
   unshell_dep (a b : N) (l : Squash (b < Npos (stride a))) : N.
+
+Typeclasses Transparent HasUnshellDep.
 
 (** We place each pair of natural numbers on a shell as well.
     Since the placement of pairs is intrinsically different
@@ -241,13 +249,21 @@ Class HasUnshellDep `(HasStride) : Type :=
 
 Class HasTaco : Type := taco (x y : N) : N * N.
 
+Typeclasses Transparent HasTaco.
+
 Class HasTacoDep `(HasStride) : Type :=
   taco_dep (x y : N) : {x : N * N $ Squash (snd x < Npos (stride (fst x)))}.
 
+Typeclasses Transparent HasTacoDep.
+
 Class HasUntaco : Type := untaco (a b : N) : N * N.
+
+Typeclasses Transparent HasUntaco.
 
 Class HasUntacoDep `(HasStride) : Type :=
   untaco_dep (a b : N) (l : Squash (b < Npos (stride a))) : N * N.
+
+Typeclasses Transparent HasUntacoDep.
 
 (** Shells and tacos are both ways to place things. *)
 
@@ -813,7 +829,11 @@ End ShellFromBase.
 
 Class HasPair : Type := pair (n : N) : N * N.
 
+Typeclasses Transparent HasPair.
+
 Class HasUnpair : Type := unpair (x y : N) : N.
+
+Typeclasses Transparent HasUnpair.
 
 Class HasPairing `(HasPair) `(HasUnpair) : Type := pairing : unit.
 
