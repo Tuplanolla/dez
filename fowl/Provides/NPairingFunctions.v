@@ -10,6 +10,8 @@ From Maniunfold.Provides Require Export
 
 Import ListNotations N.
 
+#[global] Instance lt_well_founded : WellFounded lt := lt_wf_0.
+
 #[local] Open Scope N_scope.
 
 (** We define pairing functions by partitioning natural numbers
@@ -80,7 +82,7 @@ Context `(IsStride).
 
 (** Calculate the partial sum up to the given shell. *)
 
-Equations base_fix (a : N) : N by wf (to_nat a) :=
+Equations base_fix (a : N) : N by wf a lt :=
   base_fix N0 := 0;
   base_fix (Npos n) :=
     let p := pred (Npos n) in
@@ -574,7 +576,7 @@ Context `(IsStride).
 
 Import BaseFromStride.
 
-Equations shell_fix (a b : N) : N * N by wf (to_nat b) :=
+Equations shell_fix (a b : N) : N * N by wf b lt :=
   shell_fix a b with sumbool_of_bool (b <? Npos (stride a)) => {
     | left _ => (a, b);
     | right _ => shell_fix (succ a) (b - Npos (stride a))
@@ -681,8 +683,26 @@ Equations unshell_def (a b : N) : N :=
 
 #[local] Instance has_unshell : HasUnshell := unshell_def.
 
+Lemma lt_wf_ind (n : N) (P : N -> Prop)
+  (g : forall (j : N) (x : forall (i : N) (l : i < j), P i), P j) : P n.
+Proof. Admitted.
+
 #[local] Instance is_sect_shell : IsSectShell shell unshell.
 Proof.
+  intros n.
+  unfold prod_uncurry.
+  unfold unshell, has_unshell, unshell_def.
+  unfold shell, has_shell, shell_dep, has_shell_dep, shell_dep_def.
+  unfold Spr1.
+  (* Search N "induction". *)
+  apply (lt_wf_ind n).
+  intros p g.
+  simp shell_fix in *. autounfold with shell_fix in *.
+  destruct (ltb_spec n (Npos (stride 0))) as [l | l].
+  - unfold sumbool_of_bool in *. unfold fst, snd in *.
+    rewrite fixed_base in *. rewrite add_0_r in *. apply g. admit.
+  - unfold sumbool_of_bool in *. apply g. admit.
+  Restart.
   intros n.
   unfold prod_uncurry.
   unfold unshell, has_unshell, unshell_def.
@@ -716,7 +736,7 @@ Proof.
   unfold shell, has_shell, shell_dep, has_shell_dep, shell_dep_def.
   unfold Spr1.
   induction n as [| p ep] using peano_ind.
-  - reflexivity. Admitted.
+  - Admitted.
 
 #[local] Instance is_retr_shell_dep : IsRetrShellDep stride shell_dep unshell_dep.
 Proof.
@@ -747,7 +767,7 @@ Context `(IsBase).
 
 Import StrideFromBase.
 
-Equations shell_fix (a b : N) : N * N by wf (to_nat (b - base a)) :=
+Equations shell_fix (a b : N) : N * N by wf (b - base a) lt :=
   shell_fix a b with sumbool_of_bool (b <? base (succ a)) => {
     | left _ => (a, b - base a);
     | right _ => shell_fix (succ a) b
