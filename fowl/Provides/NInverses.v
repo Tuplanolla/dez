@@ -5,11 +5,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.Provides Require Export
   NTheorems OptionTheorems PositiveTheorems ProductTheorems.
 
-Ltac flatten_this op :=
-  repeat match goal with
-  | x : context [op (op ?f)] |- _ => change (op (op f)) with (op f) in x
-  | |- context [op (op ?f)] => change (op (op f)) with (op f)
-  end.
+(** TODO This may be built into [setoid_rewrite]. *)
 
 Ltac flatten :=
   repeat match goal with
@@ -44,9 +40,6 @@ Class IsMonoMiff `(HasMiff) : Prop :=
 Class IsInjMiff `(HasMiff) : Prop :=
   inj_miff (x y : A) (e : miff x = miff y) : x = y.
 
-Fail Fail Class IsSurjMiff `(HasMiff) : Prop :=
-  surj_miff (b : B) : exists a : A, b = miff a.
-
 Class IsFixedMiff `(HasMiff) : Prop :=
   fixed_miff : miff 0 = 0.
 
@@ -63,9 +56,9 @@ Proof.
     flatten. forget. lia. Qed.
 
 Class IsMiff `(HasMiff) : Prop := {
-  base_is_mono_miff :> IsMonoMiff miff;
-  base_is_inj_miff :> IsInjMiff miff;
-  base_is_fixed_miff :> IsFixedMiff miff;
+  miff_is_mono_miff :> IsMonoMiff miff;
+  miff_is_inj_miff :> IsInjMiff miff;
+  miff_is_fixed_miff :> IsFixedMiff miff;
 }.
 
 (** We investigate three ways to pseudoinvert miffs. *)
@@ -83,12 +76,16 @@ Typeclasses Transparent HasUnmiffError.
 
 (** Partially, the pseudoinverse behaves like an inverse. *)
 
+(** The following statements are equivalent,
+    although we favor the first one,
+    because it does not mention [option_map] or [option_bind]. *)
+
 Class IsPartSectMiffError `(HasUnmiffError) : Prop :=
   part_sect_miff_error (a : A) : unmiff_error (miff a) = Some a.
 
-(** The following statements are equivalent,
-    although we favor the first one,
-    because it does not mention [option_map]. *)
+Class IsPartSectMiffError' `(HasUnmiffError) : Prop :=
+  part_sect_miff_error' (x : option A) :
+  option_bind unmiff_error (option_map miff x) = x.
 
 Class IsPartRetrMiffError `(HasUnmiffError) : Prop :=
   part_retr_miff_error (a : A) (b : B)
@@ -127,6 +124,35 @@ Class IsWeakUnmiffError `(HasUnmiffError) : Prop := {
 
 End Context.
 
+Module PartSect'FromPartSect.
+
+#[local] Instance is_part_sect_miff_error' `(IsPartSectMiffError) :
+  IsPartSectMiffError' unmiff_error.
+Proof.
+  intros [a |].
+  - unfold option_bind, option_map.
+    apply part_sect_miff_error.
+  - unfold option_bind, option_map.
+    reflexivity. Qed.
+
+#[export] Hint Resolve is_part_sect_miff_error' : typeclass_instances.
+
+End PartSect'FromPartSect.
+
+Module PartSectFromPartSect'.
+
+#[local] Instance is_part_sect_miff_error `(IsPartSectMiffError') :
+  IsPartSectMiffError unmiff_error.
+Proof.
+  intros a.
+  pose proof part_sect_miff_error' (Some a) as e.
+  unfold option_bind, option_map in e.
+  apply e. Qed.
+
+#[export] Hint Resolve is_part_sect_miff_error : typeclass_instances.
+
+End PartSectFromPartSect'.
+
 Module PartRetr'FromPartRetr.
 
 #[local] Instance is_part_retr_miff_error' `(IsPartRetrMiffError) :
@@ -136,7 +162,7 @@ Proof.
   destruct (unmiff_error x) as [a |] eqn : e.
   - unfold option_map in e'.
     apply part_retr_miff_error in e.
-    flatten. rewrite <- e in e'.
+    setoid_rewrite <- e in e'.
     injection e'. clear e'. intros e'. apply e'.
   - unfold option_map in e'.
     inversion e'. Qed.
@@ -153,7 +179,7 @@ Proof.
   intros a b e.
   destruct (unmiff_error b) as [x |] eqn : e'.
   - apply part_retr_miff_error'.
-    flatten. rewrite e'. rewrite e.
+    setoid_rewrite e'. rewrite e.
     unfold option_map.
     reflexivity.
   - inversion e. Qed.
@@ -177,36 +203,49 @@ Class HasUnmiffRoundUp : Type := unmiff_round_up (b : B) : A.
 
 Typeclasses Transparent HasUnmiffRoundDown HasUnmiffRoundUp.
 
+Class IsMonoUnmiffRoundDown `(HasUnmiffRoundDown) : Prop :=
+  mono_unmiff_round_down (x y : B) (l : x <= y) :
+  unmiff_round_down x <= unmiff_round_down y.
+
+Class IsSurjUnmiffRoundDown `(HasUnmiffRoundDown) : Prop :=
+  surj_unmiff_round_down (a : A) : exists b : B, a = unmiff_round_down b.
+
 Class IsSectMiffRoundDown `(HasUnmiffRoundDown) : Prop :=
-  sect_miff_down (a : A) : unmiff_round_down (miff a) = a.
+  sect_miff_round_down (a : A) : unmiff_round_down (miff a) = a.
 
 Class IsSectMiffRoundUp `(HasUnmiffRoundUp) : Prop :=
-  sect_miff_up (a : A) : unmiff_round_up (miff a) = a.
+  sect_miff_round_up (a : A) : unmiff_round_up (miff a) = a.
 
 (** The following statements are a bit awkward,
     because the predecessor function can be saturative. *)
 
 Class IsBoundRetrMiffRoundDown `(HasUnmiffRoundDown) : Prop :=
-  bound_retr_miff_down (b : B) :
+  bound_retr_miff_round_down (b : B) :
   miff (unmiff_round_down b) <= b < miff (succ (unmiff_round_down b)).
 
 Class IsBoundRetrMiffRoundUp `(HasUnmiffRoundUp) : Prop :=
-  bound_retr_miff_up (b : B) (l : pred b < b) :
+  bound_retr_miff_round_up (b : B) (l : pred b < b) :
   miff (pred (unmiff_round_up b)) < b <= miff (unmiff_round_up b).
 
+(** TODO Check which classes need [IsMiff] and name them properly. *)
+
 Class IsUnmiffRoundDown `(HasUnmiffRoundDown) : Prop := {
-  unmiff_round_down_is_sect_miff_down :> IsSectMiffRoundDown unmiff_round_down;
-  unmiff_round_down_is_bound_retr_miff_down :>
+  miff_is_miff_round_down :> IsMiff miff;
+  unmiff_round_down_is_sect_miff_round_down :>
+    IsSectMiffRoundDown unmiff_round_down;
+  unmiff_round_down_is_bound_retr_miff_round_down :>
     IsBoundRetrMiffRoundDown unmiff_round_down;
 }.
 
 Class IsUnmiffRoundUp `(HasUnmiffRoundUp) : Prop := {
-  unmiff_round_up_is_sect_miff_up :> IsSectMiffRoundUp unmiff_round_up;
-  unmiff_round_up_is_bound_retr_miff_up :>
+  miff_is_miff_round_up :> IsMiff miff;
+  unmiff_round_up_is_sect_miff_round_up :>
+    IsSectMiffRoundUp unmiff_round_up;
+  unmiff_round_up_is_bound_retr_miff_round_up :>
     IsBoundRetrMiffRoundUp unmiff_round_up;
 }.
 
-(** We could probably use this coherence condition
+(** TODO We could probably use this coherence condition
     to derive the rounding modes from each other. *)
 
 Class IsHomUnmiffRound `(HasUnmiffRoundDown) `(HasUnmiffRoundUp) : Prop :=
@@ -214,11 +253,40 @@ Class IsHomUnmiffRound `(HasUnmiffRoundDown) `(HasUnmiffRoundUp) : Prop :=
   unmiff_round_up (succ b) = succ (unmiff_round_down b).
 
 Class IsUnmiffRound `(HasUnmiffRoundDown) `(HasUnmiffRoundUp) : Prop := {
-  unmiff_round_down_is_unmiff_down :> IsUnmiffRoundDown unmiff_round_down;
-  unmiff_round_up_is_unmiff_up :> IsUnmiffRoundUp unmiff_round_up;
+  unmiff_round_down_is_unmiff_round_down :>
+    IsUnmiffRoundDown unmiff_round_down;
+  unmiff_round_up_is_unmiff_round_up :>
+    IsUnmiffRoundUp unmiff_round_up;
   unmiff_round_down_unmiff_round_up_is_hom_unmiff_round :>
     IsHomUnmiffRound unmiff_round_down unmiff_round_up;
 }.
+
+End Context.
+
+Section Context.
+
+Context `(IsUnmiffRoundDown).
+
+(** TODO These follow. *)
+
+#[global] Instance is_mono_unmiff_round_down :
+  IsMonoUnmiffRoundDown unmiff_round_down.
+Proof.
+  intros x y l.
+  destruct (ltb_spec x y) as [l' | l'].
+  - clear l.
+    admit.
+  - assert (e : x = y) by lia.
+    subst y.
+    reflexivity. Admitted.
+
+#[global] Instance is_surj_unmiff_round_down :
+  IsSurjUnmiffRoundDown unmiff_round_down.
+Proof.
+  intros a.
+  exists (miff a).
+  rewrite sect_miff_round_down.
+  reflexivity. Qed.
 
 End Context.
 
@@ -232,20 +300,33 @@ Section Context.
 
 Context `(IsUnmiffRoundDown).
 
-Definition B_quot : Type := {b : B $ Squash (miff (unmiff_round_down b) = b)}.
+Definition R (x y : B) : Prop :=
+  exists a : A, miff a <= x < miff (succ a) /\ miff a <= y < miff (succ a).
 
-Equations B_pr (b : B) : B_quot :=
-  B_pr b := Sexists _ (miff (unmiff_round_down b)) _.
+Definition B_R : Type := {b : B $ Squash (miff (unmiff_round_down b) = b)}.
+
+Equations pr (b : B) : B_R :=
+  pr b := Sexists _ (miff (unmiff_round_down b)) _.
 Next Obligation.
   intros b.
   apply squash.
-  rewrite (sect_miff_down (unmiff_round_down b)).
+  rewrite (sect_miff_round_down (unmiff_round_down b)).
   reflexivity. Qed.
 
-Equations miff_round_dep (a : A) : B_quot :=
-  miff_round_dep a := B_pr (miff a).
+(** TODO You should be able to write this. *)
 
-Class HasUnmiffRoundDep : Type := unmiff_round_dep (x : B_quot) : A.
+Lemma quotient (x y : B) (r : R x y) : pr x = pr y.
+Proof.
+  unfold pr.
+  apply Spr1_inj.
+  unfold Spr1.
+  f_equal.
+  destruct r as [a [lx ly]]. Admitted.
+
+Equations miff_round_dep (a : A) : B_R :=
+  miff_round_dep a := pr (miff a).
+
+Class HasUnmiffRoundDep : Type := unmiff_round_dep (x : B_R) : A.
 
 Typeclasses Transparent HasUnmiffRoundDep.
 
@@ -253,9 +334,10 @@ Class IsSectMiffRoundDep `(HasUnmiffRoundDep) : Prop :=
   sect_miff_round_dep (a : A) : unmiff_round_dep (miff_round_dep a) = a.
 
 Class IsRetrMiffRoundDep `(HasUnmiffRoundDep) : Prop :=
-  retr_miff_round_dep (x : B_quot) : miff_round_dep (unmiff_round_dep x) = x.
+  retr_miff_round_dep (x : B_R) : miff_round_dep (unmiff_round_dep x) = x.
 
 Class IsUnmiffRoundDep `(HasUnmiffRoundDep) : Prop := {
+  miff_is_miff_round_dep :> IsMiff miff;
   unmiff_round_dep_is_sect_miff_round_dep :>
     IsSectMiffRoundDep unmiff_round_dep;
   unmiff_round_dep_is_retr_miff_round_dep :>
@@ -287,24 +369,6 @@ Class HasUnmiffRemUp : Type := unmiff_rem_up (b : B) : A + A * B.
 
 Typeclasses Transparent HasUnmiffRemDown HasUnmiffRemUp.
 
-(** TODO No refinements, Fox only, Final Destination. *)
-
-Class IsRefineMiffRemDown `(HasUnmiffRemDown) : Prop :=
-  refine_miff_down (x : B) :
-  match unmiff_rem_down x with
-  | inl a => True
-  | inr (a, b) => miff a < b + miff a < miff (succ a)
-  (* 0 < b /\ b + miff a < miff (succ a) *)
-  end.
-
-Class IsRefineMiffRemUp `(HasUnmiffRemUp) : Prop :=
-  refine_miff_up (x : B) :
-  match unmiff_rem_up x with
-  | inl a => True
-  | inr (a, b) => pred a < a -> miff (pred a) < b + miff (pred a) < miff a
-  (* 0 < b /\ miff (pred a) < miff a - b *)
-  end.
-
 Class IsPartSectMiffRemDown `(HasUnmiffRemDown) : Prop :=
   part_sect_miff_rem_down (a : A) : unmiff_rem_down (miff a) = inl a.
 
@@ -318,12 +382,14 @@ Class IsRetrMiffRemUp `(HasUnmiffRemUp) : Prop :=
   retr_miff_rem_up (b : B) : miff_rem_up (unmiff_rem_up b) = b.
 
 Class IsUnmiffRemDown `(HasUnmiffRemDown) : Prop := {
+  miff_is_miff_rem_down :> IsMiff miff;
   unmiff_rem_down_is_part_sect_miff_rem_down :>
     IsPartSectMiffRemDown unmiff_rem_down;
   unmiff_rem_down_is_retr_miff_rem_down :> IsRetrMiffRemDown unmiff_rem_down;
 }.
 
 Class IsUnmiffRemUp `(HasUnmiffRemUp) : Prop := {
+  miff_is_miff_rem_up :> IsMiff miff;
   unmiff_rem_up_is_part_sect_miff_rem_up :>
     IsPartSectMiffRemUp unmiff_rem_up;
   unmiff_rem_up_is_retr_miff_rem_up :> IsRetrMiffRemUp unmiff_rem_up;
@@ -344,6 +410,8 @@ Section Context.
 Context `(IsMiff).
 
 Definition P (a : A) (b : B) : Prop := miff a < b + miff a < miff (succ a).
+
+(** TODO This might be different for [miff_rem_up_dep]. *)
 
 Definition S : Type := A + {x : A * B $ Squash (prod_uncurry P x)}.
 
@@ -377,6 +445,7 @@ Class IsRetrMiffRemUpDep `(HasUnmiffRemUpDep) : Prop :=
   miff_rem_up_dep (unmiff_rem_up_dep b) = b.
 
 Class IsUnmiffRemDownDep `(HasUnmiffRemDownDep) : Prop := {
+  miff_is_miff_rem_down_dep :> IsMiff miff;
   unmiff_rem_down_dep_is_sect_miff_rem_down_dep :>
     IsSectMiffRemDownDep unmiff_rem_down_dep;
   unmiff_rem_down_dep_is_retr_miff_rem_down_dep :>
@@ -384,6 +453,7 @@ Class IsUnmiffRemDownDep `(HasUnmiffRemDownDep) : Prop := {
 }.
 
 Class IsUnmiffRemUpDep `(HasUnmiffRemUpDep) : Prop := {
+  miff_is_miff_rem_up_dep :> IsMiff miff;
   unmiff_rem_up_dep_is_sect_miff_rem_up_dep :>
     IsSectMiffRemUpDep unmiff_rem_up_dep;
   unmiff_rem_up_dep_is_retr_miff_rem_up_dep :>
