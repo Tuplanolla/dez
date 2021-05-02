@@ -586,7 +586,30 @@ Next Obligation.
   apply ltb_ge in l.
   lia. Qed.
 
-Hint Unfold shell_fix_unfold_clause_1 : shell_fix.
+Lemma shell_fix_invariant (a b a' b' : N) (e : shell_fix a b = (a', b')) :
+  b' + base a' = b + base a.
+Proof.
+  simp shell_fix in e.
+  destruct (sumbool_of_bool (b <? pos (stride a))) as [l | l].
+  - simp shell_fix in e.
+    apply ltb_lt in l.
+    injection e. clear e. intros ea' eb'. subst a' b'.
+    reflexivity.
+  - simp shell_fix in e.
+    apply ltb_ge in l.
+    destruct (sumbool_of_bool (b - pos (stride a) <? pos (stride (succ a)))) as [l' | l'].
+    + simp shell_fix in e.
+      apply ltb_lt in l'.
+      injection e. clear e. intros ea' eb'. subst a' b'.
+      rewrite partial_sum.
+      lia.
+    + simp shell_fix in e.
+      apply ltb_ge in l'. Restart.
+  assert (eps : forall a : N, Npos (stride a) = base (succ a) - base a).
+  { intros ?. rewrite partial_sum. lia. }
+  simp shell_fix in e.
+  unfold shell_fix_unfold_clause_1 in e. rewrite eps in e.
+  induction a using peano_ind. admit. Abort.
 
 Lemma shell_fix_fst (a b : N) : a <= fst (shell_fix a b).
 Proof.
@@ -609,7 +632,7 @@ Proof.
 Lemma shell_fix_case_1 (a b : N) (l : b < Npos (stride a)) :
   shell_fix a b = (a, b).
 Proof.
-  simp shell_fix. autounfold with shell_fix.
+  simp shell_fix. unfold shell_fix_unfold_clause_1.
   apply ltb_lt in l. rewrite l.
   unfold sumbool_of_bool.
   reflexivity. Qed.
@@ -617,7 +640,7 @@ Proof.
 Lemma shell_fix_case_2 (a b : N) (l : Npos (stride a) <= b) :
   shell_fix a b = shell_fix (succ a) (b - Npos (stride a)).
 Proof.
-  rewrite shell_fix_equation_1. autounfold with shell_fix.
+  rewrite shell_fix_equation_1. unfold shell_fix_unfold_clause_1.
   apply ltb_ge in l. rewrite l.
   unfold sumbool_of_bool.
   reflexivity. Qed.
@@ -638,7 +661,7 @@ Proof.
   - rewrite partial_sum. rewrite add_assoc.
     specialize (e (b + Npos (stride a))).
     rewrite e. clear e.
-    rewrite (shell_fix_equation_1 a). autounfold with shell_fix.
+    rewrite (shell_fix_equation_1 a). unfold shell_fix_unfold_clause_1.
     assert (l : Npos (stride a) <= b + Npos (stride a)) by lia.
     apply ltb_ge in l. rewrite l.
     unfold sumbool_of_bool.
@@ -654,7 +677,7 @@ Proof.
 
 Lemma shell_fix_0_r (a : N) : shell_fix a 0 = (a, 0).
 Proof.
-  simp shell_fix. autounfold with shell_fix.
+  simp shell_fix. unfold shell_fix_unfold_clause_1.
   assert (l : 0 < Npos (stride a)) by lia.
   apply ltb_lt in l. rewrite l.
   unfold sumbool_of_bool.
@@ -697,7 +720,7 @@ Proof.
   (* Search N "induction". *)
   apply (lt_wf_ind n).
   intros p g.
-  simp shell_fix in *. autounfold with shell_fix in *.
+  simp shell_fix in *. unfold shell_fix_unfold_clause_1 in *.
   destruct (ltb_spec n (Npos (stride 0))) as [l | l].
   - unfold sumbool_of_bool in *. unfold fst, snd in *.
     rewrite fixed_base in *. rewrite add_0_r in *. apply g. admit.
@@ -714,14 +737,14 @@ Proof.
   revert a ea.
   induction n as [| p ep] using peano_ind; intros a ea.
   - subst a.
-    simp shell_fix. autounfold with shell_fix.
+    simp shell_fix. unfold shell_fix_unfold_clause_1.
     assert (l : 0 < Npos (stride 0)) by lia.
     apply ltb_lt in l. rewrite l.
     unfold sumbool_of_bool. unfold fst, snd.
     rewrite fixed_base. rewrite add_0_r.
     reflexivity.
   - subst a.
-    simp shell_fix. autounfold with shell_fix.
+    simp shell_fix. unfold shell_fix_unfold_clause_1.
     destruct (ltb_spec (succ p) (Npos (stride 0))) as [l' | l'].
     + unfold sumbool_of_bool. unfold fst, snd.
       rewrite fixed_base. rewrite add_0_r.
@@ -751,8 +774,6 @@ Proof.
 Proof. Admitted.
 
 End Context.
-
-#[export] Hint Unfold shell_fix_unfold_clause_1 : shell_fix.
 
 #[export] Hint Resolve has_shell_dep has_unshell
   is_sect_shell is_retr_shell_dep is_lex_enum_shell : typeclass_instances.
@@ -812,7 +833,7 @@ Proof.
   unfold shell, has_shell, shell_dep, has_shell_dep, shell_dep_def.
   unfold Spr1.
   induction n as [| p e] using peano_ind.
-  - simp shell_fix. autounfold with shell_fix.
+  - simp shell_fix. unfold shell_fix_unfold_clause_1.
     rewrite partial_sum. rewrite fixed_base. rewrite add_0_r.
     assert (l : 0 < Npos (stride 0)) by lia.
     apply ltb_lt in l.
