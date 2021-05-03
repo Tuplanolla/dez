@@ -25,8 +25,10 @@ Definition B : Type := N.
 
 Ltac forget := unfold A, B in *.
 
+Ltac lia := flatten; forget; Lia.lia.
+
 (** We are interested in monotonic injective functions
-    with a fixed point at zero, who we shall considered miffing. *)
+    with a fixed point at zero, which we shall consider miffing. *)
 
 Class HasMiff : Type := miff (a : A) : B.
 
@@ -35,7 +37,7 @@ Typeclasses Transparent HasMiff.
 (** Miffs are true to their name. *)
 
 Class IsMonoMiff `(HasMiff) : Prop :=
-  mono_miff (x y : A) (l : x < y) : miff x < miff y.
+  mono_miff (x y : A) (l : x <= y) : miff x <= miff y.
 
 Class IsInjMiff `(HasMiff) : Prop :=
   inj_miff (x y : A) (e : miff x = miff y) : x = y.
@@ -43,17 +45,44 @@ Class IsInjMiff `(HasMiff) : Prop :=
 Class IsFixedMiff `(HasMiff) : Prop :=
   fixed_miff : miff 0 = 0.
 
-(** Monotonicity implies injectivity, but not vice versa. *)
+(** TODO Generalize like this. *)
 
-#[global] Instance is_inj_miff `(IsMonoMiff) : IsInjMiff miff.
+Fail Fail Class IsStrictMonoMiff `(HasMiff) : Prop :=
+  strict_mono_miff : Morphisms.respectful lt lt miff miff.
+
+Class IsStrictMonoMiff `(HasMiff) : Prop :=
+  strict_mono_miff (x y : A) (l : x < y) : miff x < miff y.
+
+(** Monotonicity and injectivity together imply strict monotonicity. *)
+
+#[global] Instance is_strict_mono_miff `(HasMiff)
+  `(!IsMonoMiff miff) `(!IsInjMiff miff) : IsStrictMonoMiff miff.
 Proof.
-  intros x y e.
+  intros x y la.
+  pose proof mono_miff x y ltac:(lia) as lb.
+  destruct (eqb_spec (miff x) (miff y)) as [eb | fb].
+  - pose proof inj_miff x y ltac:(lia) as ea. lia.
+  - lia. Qed.
+
+(** Strict monotonicity implies monotonicity. *)
+
+#[global] Instance is_mono_miff `(IsStrictMonoMiff) : IsMonoMiff miff.
+Proof.
+  intros x y la.
+  pose proof strict_mono_miff x y as lb.
+  destruct (eqb_spec x y) as [ea | fa].
+  - pose proof f_equal miff ea as eb. lia.
+  - lia. Qed.
+
+(** Strict monotonicity implies injectivity. *)
+
+#[global] Instance is_inj_miff `(IsStrictMonoMiff) : IsInjMiff miff.
+Proof.
+  intros x y eb.
   destruct (lt_trichotomy x y) as [la | [ea | la]].
-  - apply mono_miff in la.
-    flatten. forget. lia.
-  - flatten. forget. lia.
-  - apply mono_miff in la.
-    flatten. forget. lia. Qed.
+  - pose proof strict_mono_miff x y ltac:(lia) as lb. lia.
+  - lia.
+  - pose proof strict_mono_miff y x ltac:(lia) as lb. lia. Qed.
 
 Class IsMiff `(HasMiff) : Prop := {
   miff_is_mono_miff :> IsMonoMiff miff;
@@ -199,6 +228,7 @@ Section Context.
 Context `(IsMiff).
 
 Class HasUnmiffRoundDown : Type := unmiff_round_down (b : B) : A.
+
 Class HasUnmiffRoundUp : Type := unmiff_round_up (b : B) : A.
 
 Typeclasses Transparent HasUnmiffRoundDown HasUnmiffRoundUp.
@@ -273,12 +303,36 @@ Context `(IsUnmiffRoundDown).
   IsMonoUnmiffRoundDown unmiff_round_down.
 Proof.
   intros x y l.
-  destruct (ltb_spec x y) as [l' | l'].
-  - clear l.
-    admit.
-  - assert (e : x = y) by lia.
-    subst y.
-    reflexivity. Admitted.
+  assert (ae : exists (a : A) (b : B), y = b + miff a).
+  { exists (unmiff_round_down y), (y - miff (unmiff_round_down y)).
+    pose proof bound_retr_miff_round_down y as ll.
+    lia. }
+  destruct ae as [a [b e]]. subst y.
+  induction b as [| b' e] using peano_ind.
+    + rewrite add_0_l in *.
+      rewrite sect_miff_round_down.
+      revert x l.
+      induction a as [| a' e] using peano_ind; intros x l.
+      rewrite fixed_miff in l.
+      assert (e : x = 0) by lia. subst x. clear l.
+      enough (unmiff_round_down 0 = 0) by (flatten; lia).
+      apply inj_miff.
+      pose proof bound_retr_miff_round_down 0.
+      setoid_rewrite fixed_miff. lia.
+      specialize (e (miff (pred (unmiff_round_down x)))).
+      setoid_rewrite sect_miff_round_down in e.
+      enough (pred (unmiff_round_down x) <= a') by (flatten; lia).
+      apply e.
+      pose proof bound_retr_miff_round_down x.
+      pose proof inj_miff.
+      pose proof strict_mono_miff. Restart.
+  intros x y l.
+  remember (x - miff (unmiff_round_down x)) as b eqn : e.
+  fold B in b.
+  induction b as [| b eb] using peano_ind.
+  pose proof bound_retr_miff_round_down x as llx.
+  assert (ex : x = miff (unmiff_round_down x)) by lia.
+  rewrite ex. Admitted.
 
 #[global] Instance is_surj_unmiff_round_down :
   IsSurjUnmiffRoundDown unmiff_round_down.
@@ -315,13 +369,34 @@ Next Obligation.
 
 (** TODO You should be able to write this. *)
 
+Lemma wtf (a : A) (b : B) (ll : miff a <= b < miff (succ a)) :
+  unmiff_round_down b = a.
+Proof.
+  revert b ll.
+  induction a using peano_ind; intros b ll.
+  - induction b using peano_ind.
+    + pose proof proj1 (bound_retr_miff_round_down 0) as ll0.
+      assert (eh : miff (unmiff_round_down 0) = 0) by lia.
+      rewrite <- fixed_miff in eh at 2.
+      apply inj_miff in eh. auto.
+    + setoid_rewrite fixed_miff in ll.
+      setoid_rewrite fixed_miff in IHb.
+      specialize (IHb ltac:(lia)).
+      pose proof bound_retr_miff_round_down b as ll0. Admitted.
+
 Lemma quotient (x y : B) (r : R x y) : pr x = pr y.
 Proof.
   unfold pr.
   apply Spr1_inj.
   unfold Spr1.
   f_equal.
-  destruct r as [a [lx ly]]. Admitted.
+  destruct r as [a [lx ly]].
+  destruct (lt_trichotomy x y) as [la | [ea | la]].
+  - rewrite (wtf a x) by assumption. rewrite (wtf a y) by assumption.
+    reflexivity.
+  - subst y. reflexivity.
+  - rewrite (wtf a x) by assumption. rewrite (wtf a y) by assumption.
+    reflexivity. Qed.
 
 Equations miff_round_dep (a : A) : B_R :=
   miff_round_dep a := pr (miff a).
@@ -365,6 +440,7 @@ Equations miff_rem_up (x : A + A * B) : B :=
   miff_rem_up (inr (a, b)) := miff a - b.
 
 Class HasUnmiffRemDown : Type := unmiff_rem_down (b : B) : A + A * B.
+
 Class HasUnmiffRemUp : Type := unmiff_rem_up (b : B) : A + A * B.
 
 Typeclasses Transparent HasUnmiffRemDown HasUnmiffRemUp.
@@ -409,31 +485,36 @@ Section Context.
 
 Context `(IsMiff).
 
-Definition P (a : A) (b : B) : Prop := miff a < b + miff a < miff (succ a).
+Definition P_down (a : A) (b : B) : Prop :=
+  miff a < b + miff a < miff (succ a).
 
-(** TODO This might be different for [miff_rem_up_dep]. *)
+Definition P_up (a : A) (b : B) : Prop :=
+  miff (pred a) < miff a - b < miff a.
 
-Definition S : Type := A + {x : A * B $ Squash (prod_uncurry P x)}.
+Definition S_down : Type := A + {x : A * B $ Squash (prod_uncurry P_down x)}.
 
-Equations miff_rem_down_dep (x : S) : B :=
+Definition S_up : Type := A + {x : A * B $ Squash (prod_uncurry P_up x)}.
+
+Equations miff_rem_down_dep (x : S_down) : B :=
   miff_rem_down_dep (inl a) := miff a;
   miff_rem_down_dep (inr (Sexists _ (a, b) _)) := b + miff a.
 
-Equations miff_rem_up_dep (x : S) : B :=
+Equations miff_rem_up_dep (x : S_up) : B :=
   miff_rem_up_dep (inl a) := miff a;
   miff_rem_up_dep (inr (Sexists _ (a, b) _)) := miff a - b.
 
-Class HasUnmiffRemDownDep : Type := unmiff_rem_down_dep (b : B) : S.
-Class HasUnmiffRemUpDep : Type := unmiff_rem_up_dep (b : B) : S.
+Class HasUnmiffRemDownDep : Type := unmiff_rem_down_dep (b : B) : S_down.
+
+Class HasUnmiffRemUpDep : Type := unmiff_rem_up_dep (b : B) : S_up.
 
 Typeclasses Transparent HasUnmiffRemDownDep HasUnmiffRemUpDep.
 
 Class IsSectMiffRemDownDep `(HasUnmiffRemDownDep) : Prop :=
-  sect_miff_rem_down_dep (x : S) :
+  sect_miff_rem_down_dep (x : S_down) :
   unmiff_rem_down_dep (miff_rem_down_dep x) = x.
 
 Class IsSectMiffRemUpDep `(HasUnmiffRemUpDep) : Prop :=
-  sect_miff_rem_up_dep (x : S) :
+  sect_miff_rem_up_dep (x : S_up) :
   unmiff_rem_up_dep (miff_rem_up_dep x) = x.
 
 Class IsRetrMiffRemDownDep `(HasUnmiffRemDownDep) : Prop :=
