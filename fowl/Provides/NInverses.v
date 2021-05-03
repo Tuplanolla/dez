@@ -53,6 +53,9 @@ Fail Fail Class IsStrictMonoMiff `(HasMiff) : Prop :=
 Class IsStrictMonoMiff `(HasMiff) : Prop :=
   strict_mono_miff (x y : A) (l : x < y) : miff x < miff y.
 
+Class IsExpandMiff `(HasMiff) : Prop :=
+  expand_miff (a : A) : a <= miff a.
+
 (** Monotonicity and injectivity together imply strict monotonicity. *)
 
 #[global] Instance is_strict_mono_miff `(HasMiff)
@@ -83,6 +86,18 @@ Proof.
   - pose proof strict_mono_miff x y ltac:(lia) as lb. lia.
   - lia.
   - pose proof strict_mono_miff y x ltac:(lia) as lb. lia. Qed.
+
+(** Strict monotonicity and fixed point at zero together
+    imply that the function is expansive. *)
+
+#[global] Instance is_expand_miff `(HasMiff)
+  `(!IsStrictMonoMiff miff) `(!IsFixedMiff miff) : IsExpandMiff miff.
+Proof.
+  intros a.
+  induction a as [| p lp] using peano_ind.
+  - rewrite fixed_miff.
+    reflexivity.
+  - pose proof strict_mono_miff p (succ p) ltac:(lia) as lb. lia. Qed.
 
 Class IsMiff `(HasMiff) : Prop := {
   miff_is_mono_miff :> IsMonoMiff miff;
@@ -240,6 +255,9 @@ Class IsMonoUnmiffRoundDown `(HasUnmiffRoundDown) : Prop :=
 Class IsSurjUnmiffRoundDown `(HasUnmiffRoundDown) : Prop :=
   surj_unmiff_round_down (a : A) : exists b : B, a = unmiff_round_down b.
 
+Class IsContractUnmiffRoundDown `(HasUnmiffRoundDown) : Prop :=
+  contract_unmiff_round_down (x : A) : unmiff_round_down x <= x.
+
 Class IsSectMiffRoundDown `(HasUnmiffRoundDown) : Prop :=
   sect_miff_round_down (a : A) : unmiff_round_down (miff a) = a.
 
@@ -327,12 +345,16 @@ Proof.
       pose proof inj_miff.
       pose proof strict_mono_miff. Restart.
   intros x y l.
-  remember (x - miff (unmiff_round_down x)) as b eqn : e.
-  fold B in b.
-  induction b as [| b eb] using peano_ind.
-  pose proof bound_retr_miff_round_down x as llx.
-  assert (ex : x = miff (unmiff_round_down x)) by lia.
-  rewrite ex. Admitted.
+  destruct (lt_trichotomy (unmiff_round_down x) (unmiff_round_down y))
+  as [la | [ea | la]].
+  - apply le_neq. apply la.
+  - setoid_rewrite ea. reflexivity.
+  - exfalso.
+    apply strict_mono_miff in la.
+    pose proof bound_retr_miff_round_down x as lx.
+    pose proof lt_le_trans _ _ _ la (proj1 lx) as lyx.
+    pose proof lt_le_trans _ _ _ lyx l as lyw.
+    apply mono_miff in l. Admitted.
 
 #[global] Instance is_surj_unmiff_round_down :
   IsSurjUnmiffRoundDown unmiff_round_down.
@@ -341,6 +363,15 @@ Proof.
   exists (miff a).
   rewrite sect_miff_round_down.
   reflexivity. Qed.
+
+#[global] Instance is_contract_unmiff_round_down :
+  IsContractUnmiffRoundDown unmiff_round_down.
+Proof.
+  intros a.
+  pose proof expand_miff a as l.
+  apply mono_unmiff_round_down in l.
+  rewrite sect_miff_round_down in l.
+  apply l. Qed.
 
 End Context.
 
@@ -369,9 +400,21 @@ Next Obligation.
 
 (** TODO You should be able to write this. *)
 
+Lemma lt_wf_ind (n : N) (P : N -> Prop)
+  (g : forall (j : N) (x : forall (i : N) (l : i < j), P i), P j) : P n.
+Proof. Admitted.
+
 Lemma wtf (a : A) (b : B) (ll : miff a <= b < miff (succ a)) :
   unmiff_round_down b = a.
 Proof.
+  revert a ll.
+  pattern b.
+  apply (lt_wf_ind b). intros.
+  specialize (x (unmiff_round_down j)).
+  epose proof x ltac:(admit) a.
+  pose proof bound_retr_miff_round_down b as llb.
+  pose proof bound_retr_miff_round_down (miff a) as lla.
+  pose proof sect_miff_round_down a as llx.
   revert b ll.
   induction a using peano_ind; intros b ll.
   - induction b using peano_ind.
