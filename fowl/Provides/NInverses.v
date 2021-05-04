@@ -13,6 +13,16 @@ Ltac flatten :=
   | |- context [?f (?f ?x)] => change (f (f x)) with (f x)
   end.
 
+Ltac flatten' :=
+  repeat match goal with
+  | h : context [?g (?f ?x)] |- _ =>
+    unify f g;
+    change (g (f x)) with (f x) in h
+  | |- context [?g (?f ?x)] =>
+    unify f g;
+    change (g (f x)) with (f x)
+  end.
+
 Import ListNotations N.
 
 #[local] Open Scope N_scope.
@@ -25,7 +35,7 @@ Definition B : Type := N.
 
 Ltac forget := unfold A, B in *.
 
-Ltac lia := flatten; forget; Lia.lia.
+Ltac lia := flatten'; forget; Lia.lia.
 
 (** We are interested in monotonic injective functions
     with a fixed point at zero, which we shall consider miffing. *)
@@ -48,24 +58,33 @@ Class IsFixedMiff `(HasMiff) : Prop :=
 (** TODO Generalize like this. *)
 
 Fail Fail Class IsStrictMonoMiff `(HasMiff) : Prop :=
-  strict_mono_miff : Morphisms.respectful lt lt miff miff.
+  strict_mono_miff : Morphisms.respectful lt lt id miff.
 
 Class IsStrictMonoMiff `(HasMiff) : Prop :=
   strict_mono_miff (x y : A) (l : x < y) : miff x < miff y.
 
+Fail Fail Class IsStrictComonoMiff `(HasMiff) : Prop :=
+  strict_comono_miff : Morphisms.respectful lt lt miff id.
+
+Class IsStrictComonoMiff `(HasMiff) : Prop :=
+  strict_comono_miff (x y : A) (l : miff x < miff y) : x < y.
+
 Class IsExpandMiff `(HasMiff) : Prop :=
   expand_miff (a : A) : a <= miff a.
 
-(** Monotonicity and injectivity together imply strict monotonicity. *)
+Fail Fail Class IsMetricExpandMiff `(HasMiff) : Prop :=
+  metric_expand_miff (x y : A) : dist x y <= dist (miff x) (miff y).
 
-#[global] Instance is_strict_mono_miff `(HasMiff)
-  `(!IsMonoMiff miff) `(!IsInjMiff miff) : IsStrictMonoMiff miff.
+(** Strict monotonicity implies strict comonotonicity. *)
+
+#[global] Instance is_strict_comono_miff `(IsStrictMonoMiff) :
+  IsStrictComonoMiff miff.
 Proof.
-  intros x y la.
-  pose proof mono_miff x y ltac:(lia) as lb.
-  destruct (eqb_spec (miff x) (miff y)) as [eb | fb].
-  - pose proof inj_miff x y ltac:(lia) as ea. lia.
-  - lia. Qed.
+  intros x y lb.
+  destruct (lt_trichotomy x y) as [la | [ea | la']].
+  - lia.
+  - subst y. lia.
+  - pose proof strict_mono_miff y x ltac:(lia) as lb'. lia. Qed.
 
 (** Strict monotonicity implies monotonicity. *)
 
@@ -82,21 +101,30 @@ Proof.
 #[global] Instance is_inj_miff `(IsStrictMonoMiff) : IsInjMiff miff.
 Proof.
   intros x y eb.
-  destruct (lt_trichotomy x y) as [la | [ea | la]].
+  destruct (lt_trichotomy x y) as [la | [ea | la']].
   - pose proof strict_mono_miff x y ltac:(lia) as lb. lia.
   - lia.
-  - pose proof strict_mono_miff y x ltac:(lia) as lb. lia. Qed.
+  - pose proof strict_mono_miff y x ltac:(lia) as lb'. lia. Qed.
+
+(** Monotonicity and injectivity together imply strict monotonicity. *)
+
+#[global] Instance is_strict_mono_miff `(HasMiff)
+  `(!IsMonoMiff miff) `(!IsInjMiff miff) : IsStrictMonoMiff miff.
+Proof.
+  intros x y la.
+  destruct (eqb_spec (miff x) (miff y)) as [ea | fa].
+  - pose proof inj_miff x y ltac:(lia) as eb. lia.
+  - pose proof mono_miff x y ltac:(lia) as lb. lia. Qed.
 
 (** Strict monotonicity and fixed point at zero together
     imply that the function is expansive. *)
 
-#[global] Instance is_expand_miff `(HasMiff)
+#[global] Instance is_expand_fixed_miff `(HasMiff)
   `(!IsStrictMonoMiff miff) `(!IsFixedMiff miff) : IsExpandMiff miff.
 Proof.
   intros a.
   induction a as [| p lp] using peano_ind.
-  - rewrite fixed_miff.
-    reflexivity.
+  - rewrite fixed_miff. reflexivity.
   - pose proof strict_mono_miff p (succ p) ltac:(lia) as lb. lia. Qed.
 
 Class IsMiff `(HasMiff) : Prop := {
@@ -253,7 +281,7 @@ Class IsMonoUnmiffRoundDown `(HasUnmiffRoundDown) : Prop :=
   unmiff_round_down x <= unmiff_round_down y.
 
 Class IsSurjUnmiffRoundDown `(HasUnmiffRoundDown) : Prop :=
-  surj_unmiff_round_down (a : A) : exists b : B, a = unmiff_round_down b.
+  surj_unmiff_round_down (a : A) : exists b : B, unmiff_round_down b = a.
 
 Class IsContractUnmiffRoundDown `(HasUnmiffRoundDown) : Prop :=
   contract_unmiff_round_down (x : A) : unmiff_round_down x <= x.
@@ -315,46 +343,23 @@ Section Context.
 
 Context `(IsUnmiffRoundDown).
 
-(** TODO These follow. *)
+(** The sketch of this proof was contributed by Paolo Giarrusso. *)
 
 #[global] Instance is_mono_unmiff_round_down :
   IsMonoUnmiffRoundDown unmiff_round_down.
 Proof.
-  intros x y l.
-  assert (ae : exists (a : A) (b : B), y = b + miff a).
-  { exists (unmiff_round_down y), (y - miff (unmiff_round_down y)).
-    pose proof bound_retr_miff_round_down y as ll.
-    lia. }
-  destruct ae as [a [b e]]. subst y.
-  induction b as [| b' e] using peano_ind.
-    + rewrite add_0_l in *.
-      rewrite sect_miff_round_down.
-      revert x l.
-      induction a as [| a' e] using peano_ind; intros x l.
-      rewrite fixed_miff in l.
-      assert (e : x = 0) by lia. subst x. clear l.
-      enough (unmiff_round_down 0 = 0) by (flatten; lia).
-      apply inj_miff.
-      pose proof bound_retr_miff_round_down 0.
-      setoid_rewrite fixed_miff. lia.
-      specialize (e (miff (pred (unmiff_round_down x)))).
-      setoid_rewrite sect_miff_round_down in e.
-      enough (pred (unmiff_round_down x) <= a') by (flatten; lia).
-      apply e.
-      pose proof bound_retr_miff_round_down x.
-      pose proof inj_miff.
-      pose proof strict_mono_miff. Restart.
-  intros x y l.
+  intros x y lb.
   destruct (lt_trichotomy (unmiff_round_down x) (unmiff_round_down y))
-  as [la | [ea | la]].
-  - apply le_neq. apply la.
-  - setoid_rewrite ea. reflexivity.
+  as [la | [ea | la']].
+  - apply le_neq. lia.
+  - lia.
   - exfalso.
-    apply strict_mono_miff in la.
     pose proof bound_retr_miff_round_down x as lx.
-    pose proof lt_le_trans _ _ _ la (proj1 lx) as lyx.
-    pose proof lt_le_trans _ _ _ lyx l as lyw.
-    apply mono_miff in l. Admitted.
+    pose proof bound_retr_miff_round_down y as ly.
+    assert (l : miff (unmiff_round_down x) < miff (succ (unmiff_round_down y)))
+    by lia.
+    apply strict_comono_miff in l.
+    lia. Qed.
 
 #[global] Instance is_surj_unmiff_round_down :
   IsSurjUnmiffRoundDown unmiff_round_down.
@@ -398,34 +403,22 @@ Next Obligation.
   rewrite (sect_miff_round_down (unmiff_round_down b)).
   reflexivity. Qed.
 
-(** TODO You should be able to write this. *)
-
-Lemma lt_wf_ind (n : N) (P : N -> Prop)
-  (g : forall (j : N) (x : forall (i : N) (l : i < j), P i), P j) : P n.
-Proof. Admitted.
-
-Lemma wtf (a : A) (b : B) (ll : miff a <= b < miff (succ a)) :
-  unmiff_round_down b = a.
+Lemma unmiff_round_down_elim (a : A) (b : B)
+  (ll : miff a <= b < miff (succ a)) : unmiff_round_down b = a.
 Proof.
-  revert a ll.
-  pattern b.
-  apply (lt_wf_ind b). intros.
-  specialize (x (unmiff_round_down j)).
-  epose proof x ltac:(admit) a.
-  pose proof bound_retr_miff_round_down b as llb.
-  pose proof bound_retr_miff_round_down (miff a) as lla.
-  pose proof sect_miff_round_down a as llx.
-  revert b ll.
-  induction a using peano_ind; intros b ll.
-  - induction b using peano_ind.
-    + pose proof proj1 (bound_retr_miff_round_down 0) as ll0.
-      assert (eh : miff (unmiff_round_down 0) = 0) by lia.
-      rewrite <- fixed_miff in eh at 2.
-      apply inj_miff in eh. auto.
-    + setoid_rewrite fixed_miff in ll.
-      setoid_rewrite fixed_miff in IHb.
-      specialize (IHb ltac:(lia)).
-      pose proof bound_retr_miff_round_down b as ll0. Admitted.
+  destruct (eqb_spec (unmiff_round_down b) (succ a)) as [eb | fb].
+  - exfalso.
+    apply (f_equal miff) in eb.
+    pose proof bound_retr_miff_round_down b as lb.
+    lia.
+  - assert (lb : b <= miff (succ a)) by lia.
+    apply mono_unmiff_round_down in lb.
+    rewrite sect_miff_round_down in lb.
+    assert (lb1 : unmiff_round_down b <= a) by lia.
+    clear fb lb.
+    pose proof mono_unmiff_round_down (miff a) b ltac:(lia) as lb0.
+    rewrite sect_miff_round_down in lb0.
+    lia. Qed.
 
 Lemma quotient (x y : B) (r : R x y) : pr x = pr y.
 Proof.
@@ -434,12 +427,9 @@ Proof.
   unfold Spr1.
   f_equal.
   destruct r as [a [lx ly]].
-  destruct (lt_trichotomy x y) as [la | [ea | la]].
-  - rewrite (wtf a x) by assumption. rewrite (wtf a y) by assumption.
-    reflexivity.
-  - subst y. reflexivity.
-  - rewrite (wtf a x) by assumption. rewrite (wtf a y) by assumption.
-    reflexivity. Qed.
+  rewrite (unmiff_round_down_elim a x),
+  (unmiff_round_down_elim a y) by assumption.
+  reflexivity. Qed.
 
 Equations miff_round_dep (a : A) : B_R :=
   miff_round_dep a := pr (miff a).
