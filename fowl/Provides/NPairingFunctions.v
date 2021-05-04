@@ -10,8 +10,6 @@ From Maniunfold.Provides Require Export
 
 Import ListNotations N.
 
-#[global] Instance lt_well_founded : WellFounded lt := lt_wf_0.
-
 #[local] Open Scope N_scope.
 
 (** We define pairing functions by partitioning natural numbers
@@ -39,8 +37,8 @@ Typeclasses Transparent HasBase.
 (** Bases should be strictly increasing,
     because shells are supposed to be nonempty. *)
 
-Class IsMonoBase `(HasBase) : Prop :=
-  mono_base (x y : N) (l : x < y) : base x < base y.
+Class IsStrictMonoBase `(HasBase) : Prop :=
+  strict_mono_base (x y : N) (l : x < y) : base x < base y.
 
 (** Bases should have a fixed point at zero,
     because shells are supposed to be a covering. *)
@@ -49,7 +47,7 @@ Class IsFixedBase `(HasBase) : Prop :=
   fixed_base : base 0 = 0.
 
 Class IsBase `(HasBase) : Prop := {
-  base_is_mono_base :> IsMonoBase base;
+  base_is_strict_mono_base :> IsStrictMonoBase base;
   base_is_fixed_base :> IsFixedBase base;
 }.
 
@@ -91,7 +89,7 @@ Next Obligation. intros n _ p. lia. Qed.
 
 #[local] Instance has_base : HasBase := base_fix.
 
-#[local] Instance is_mono_base : IsMonoBase base.
+#[local] Instance is_strict_mono_base : IsStrictMonoBase base.
 Proof.
   intros a b l.
   unfold base, has_base.
@@ -138,7 +136,7 @@ Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
 
-#[export] Hint Resolve has_base is_mono_base is_fixed_base is_base
+#[export] Hint Resolve has_base is_strict_mono_base is_fixed_base is_base
   has_partition is_partial_sum is_partition : typeclass_instances.
 
 End BaseFromStride.
@@ -170,7 +168,7 @@ Equations stride_def' (a : N) : positive :=
   }.
 Next Obligation.
   intros a e.
-  pose proof mono_base a (succ a) as l.
+  pose proof strict_mono_base a (succ a) as l.
   lia. Qed.
 
 Import ssreflect.
@@ -184,7 +182,7 @@ Proof.
   case : {2 3 7} n.
   - intros e.
     subst n.
-    pose proof mono_base a (succ a) as l.
+    pose proof strict_mono_base a (succ a) as l.
     lia.
   - intros p e.
     reflexivity. Qed.
@@ -203,7 +201,7 @@ Proof.
   intros a.
   unfold stride, has_stride. simp stride_def. unfold stride_def_clause_1.
   destruct (base (succ a) - base a) as [| n] eqn : e.
-  + pose proof mono_base a (succ a) as l. lia.
+  + pose proof strict_mono_base a (succ a) as l. lia.
   + lia. Qed.
 
 #[local] Instance is_partition : IsPartition partition.
@@ -796,7 +794,7 @@ Equations shell_fix (a b : N) : N * N by wf (b - base a) lt :=
 Next Obligation.
   intros a b l _.
   apply ltb_ge in l.
-  pose proof mono_base a (succ a) as l'.
+  pose proof strict_mono_base a (succ a) as l'.
   lia. Qed.
 
 Hint Unfold shell_fix_unfold_clause_1 : shell_fix.
@@ -810,7 +808,7 @@ Next Obligation.
   unfold shell, has_shell.
   apply shell_fix_elim.
   - intros a b l _.
-    pose proof mono_base a (succ a) as la.
+    pose proof strict_mono_base a (succ a) as la.
     pose proof partial_sum a as ea.
     unfold fst, snd.
     apply ltb_lt in l.
@@ -987,7 +985,7 @@ Equations base_def (a : N) : N :=
 
 #[local] Instance has_partition : HasPartition stride base := tt.
 
-#[local] Instance is_mono_base : IsMonoBase base.
+#[local] Instance is_strict_mono_base : IsStrictMonoBase base.
 Proof. intros a b l. apply tri_lt_mono. auto. Qed.
 
 #[local] Instance is_fixed_base : IsFixedBase base.

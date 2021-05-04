@@ -108,6 +108,8 @@ Proof.
 
 (** Monotonicity and injectivity together imply strict monotonicity. *)
 
+(** TODO This might cause a cycle. *)
+
 #[global] Instance is_strict_mono_miff `(HasMiff)
   `(!IsMonoMiff miff) `(!IsInjMiff miff) : IsStrictMonoMiff miff.
 Proof.
@@ -261,7 +263,7 @@ Proof.
 End PartRetrFromPartRetr'.
 
 (** The second way to form the pseudoinverse is
-    to restrict the codomain by rounding. *)
+    to restrict the codomain by introducing rounding. *)
 
 (** In the whole codomain of the miff,
     the pseudoinverse behaves like a bound. *)
@@ -338,6 +340,44 @@ Class IsUnmiffRound `(HasUnmiffRoundDown) `(HasUnmiffRoundUp) : Prop := {
 }.
 
 End Context.
+
+Module RoundUpFromRoundDown.
+
+Section Context.
+
+Context `(IsUnmiffRoundDown).
+
+Equations unmiff_round_up_def (b : B) : A :=
+  unmiff_round_up_def N0 := 0;
+  unmiff_round_up_def (Npos p) := succ (unmiff_round_down (Pos.pred_N p)).
+
+Instance has_unmiff_round_up : HasUnmiffRoundUp := unmiff_round_up_def.
+
+Instance is_sect_miff_round_up : IsSectMiffRoundUp unmiff_round_up.
+Proof.
+  intros a.
+  unfold unmiff_round_up, has_unmiff_round_up.
+  destruct (miff a) as [| p] eqn : ea.
+  - simp unmiff_round_up_def.
+    apply inj_miff.
+    rewrite fixed_miff.
+    lia.
+  - simp unmiff_round_up_def. Admitted.
+
+Instance is_bound_retr_miff_round_up : IsBoundRetrMiffRoundUp unmiff_round_up.
+Proof.
+  intros b l.
+  pose proof bound_retr_miff_round_down b. Admitted.
+
+Instance is_unmiff_round_up : IsUnmiffRoundUp unmiff_round_up.
+Proof. esplit; typeclasses eauto. Qed.
+
+End Context.
+
+#[export] Hint Resolve has_unmiff_round_up is_sect_miff_round_up
+  is_bound_retr_miff_round_up is_unmiff_round_up : typeclass_instances.
+
+End RoundUpFromRoundDown.
 
 Section Context.
 
