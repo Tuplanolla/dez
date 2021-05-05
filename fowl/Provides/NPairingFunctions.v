@@ -82,10 +82,10 @@ Context `(IsStride).
 
 Equations base_fix (a : N) : N by wf a lt :=
   base_fix N0 := 0;
-  base_fix (Npos n) :=
-    let p := pred (Npos n) in
-    Npos (stride p) + base_fix p.
-Next Obligation. intros n _ p. lia. Qed.
+  base_fix (Npos p) :=
+    let n := pred (Npos p) in
+    Npos (stride n) + base_fix n.
+Next Obligation. intros p _ n. lia. Qed.
 
 #[local] Instance has_base : HasBase := base_fix.
 
@@ -122,7 +122,7 @@ Proof. esplit; typeclasses eauto. Qed.
 Proof.
   intros a.
   unfold base, has_base.
-  destruct a as [| n].
+  destruct a as [| p].
   - unfold succ. simp base_fix. cbv zeta. unfold pred.
     unfold Pos.pred_N. simp base_fix.
     reflexivity.
@@ -1326,7 +1326,7 @@ Proof.
 
 End Szudzik.
 
-#[ugly]
+(*
 Module Hausdorff.
 
 Lemma pos_binfactor_even (n : positive) :
@@ -1651,3 +1651,4 @@ Proof.
     rewrite div_Even. reflexivity. Qed.
 
 End Hausdorff.
+*)

@@ -38,7 +38,9 @@ Ltac forget := unfold A, B in *.
 Ltac lia := flatten'; forget; Lia.lia.
 
 (** We are interested in monotonic injective functions
-    with a fixed point at zero, which we shall consider miffing. *)
+    with a fixed point at zero, which we shall consider miffing.
+    In order theory, these are called order embeddings
+    with a fixed point at the bottom. *)
 
 Class HasMiff : Type := miff (a : A) : B.
 
@@ -57,14 +59,42 @@ Class IsFixedMiff `(HasMiff) : Prop :=
 
 (** TODO Generalize like this. *)
 
+Import Classes.Morphisms Relations.Relations.
+
+Fail Fail Definition respectful (A B : Type)
+  (R : relation A) (S : relation B) : relation (A -> B) :=
+  fun f g : A -> B =>
+  forall x y : A, R x y -> S (f x) (g y).
+
+Definition corespectful (A B : Type)
+  (R : relation B) (S : relation A) : relation (A -> B) :=
+  fun f g : A -> B =>
+  forall x y : A, R (f x) (g y) -> S x y.
+
+Reserved Notation "R '<==' S" (right associativity, at level 55).
+
+Notation "R '<==' S" := (corespectful R S) : signature_scope.
+
+Definition birespectful (A B C : Type)
+  (R : relation B) (S : relation C) : relation ((A -> B) * (A -> C)) :=
+  fun fh gk : (A -> B) * (A -> C) =>
+  forall x y : A, R (fst fh x) (fst gk y) -> S (snd fh x) (snd gk y).
+
+Reserved Notation "R '<==>' S" (right associativity, at level 55).
+
+Notation "R '<==>' S" := (birespectful R S) : signature_scope.
+
+(* Eval unfold birespectful, Proper, fst, snd in
+  Proper (lt <==> lt) (miff, id). *)
+
 Fail Fail Class IsStrictMonoMiff `(HasMiff) : Prop :=
-  strict_mono_miff : Morphisms.respectful lt lt id miff.
+  strict_mono_miff : Proper (lt ==> lt) miff.
 
 Class IsStrictMonoMiff `(HasMiff) : Prop :=
   strict_mono_miff (x y : A) (l : x < y) : miff x < miff y.
 
 Fail Fail Class IsStrictComonoMiff `(HasMiff) : Prop :=
-  strict_comono_miff : Morphisms.respectful lt lt miff id.
+  strict_comono_miff : Proper (lt <== lt) miff.
 
 Class IsStrictComonoMiff `(HasMiff) : Prop :=
   strict_comono_miff (x y : A) (l : miff x < miff y) : x < y.
@@ -341,44 +371,6 @@ Class IsUnmiffRound `(HasUnmiffRoundDown) `(HasUnmiffRoundUp) : Prop := {
 
 End Context.
 
-Module RoundUpFromRoundDown.
-
-Section Context.
-
-Context `(IsUnmiffRoundDown).
-
-Equations unmiff_round_up_def (b : B) : A :=
-  unmiff_round_up_def N0 := 0;
-  unmiff_round_up_def (Npos p) := succ (unmiff_round_down (Pos.pred_N p)).
-
-Instance has_unmiff_round_up : HasUnmiffRoundUp := unmiff_round_up_def.
-
-Instance is_sect_miff_round_up : IsSectMiffRoundUp unmiff_round_up.
-Proof.
-  intros a.
-  unfold unmiff_round_up, has_unmiff_round_up.
-  destruct (miff a) as [| p] eqn : ea.
-  - simp unmiff_round_up_def.
-    apply inj_miff.
-    rewrite fixed_miff.
-    lia.
-  - simp unmiff_round_up_def. Admitted.
-
-Instance is_bound_retr_miff_round_up : IsBoundRetrMiffRoundUp unmiff_round_up.
-Proof.
-  intros b l.
-  pose proof bound_retr_miff_round_down b. Admitted.
-
-Instance is_unmiff_round_up : IsUnmiffRoundUp unmiff_round_up.
-Proof. esplit; typeclasses eauto. Qed.
-
-End Context.
-
-#[export] Hint Resolve has_unmiff_round_up is_sect_miff_round_up
-  is_bound_retr_miff_round_up is_unmiff_round_up : typeclass_instances.
-
-End RoundUpFromRoundDown.
-
 Section Context.
 
 Context `(IsUnmiffRoundDown).
@@ -418,7 +410,132 @@ Proof.
   rewrite sect_miff_round_down in l.
   apply l. Qed.
 
+Lemma unmiff_round_down_elim (a : A) (b : B)
+  (ll : miff a <= b < miff (succ a)) : unmiff_round_down b = a.
+Proof.
+  destruct (eqb_spec (unmiff_round_down b) (succ a)) as [eb | fb].
+  - exfalso.
+    apply (f_equal miff) in eb.
+    pose proof bound_retr_miff_round_down b as lb.
+    lia.
+  - assert (lb : b <= miff (succ a)) by lia.
+    apply mono_unmiff_round_down in lb.
+    rewrite sect_miff_round_down in lb.
+    assert (lb1 : unmiff_round_down b <= a) by lia.
+    clear fb lb.
+    pose proof mono_unmiff_round_down (miff a) b ltac:(lia) as lb0.
+    rewrite sect_miff_round_down in lb0.
+    lia. Qed.
+
 End Context.
+
+Section Context.
+
+Context `(IsUnmiffRoundUp).
+
+(** TODO Use generalizations here. *)
+
+#[global] Instance is_mono_unmiff_round_up :
+  IsMonoUnmiffRoundDown unmiff_round_up.
+Proof.
+  intros x y lb.
+  unfold unmiff_round_down.
+  destruct (lt_trichotomy (unmiff_round_up x) (unmiff_round_up y))
+  as [la | [ea | la']].
+  - apply le_neq. lia.
+  - lia.
+  - exfalso.
+    destruct (eqb_spec x 0) as [ex | fx].
+    subst x.
+    rewrite <- fixed_miff in la'.
+    rewrite sect_miff_round_up in la'.
+    lia.
+    destruct (eqb_spec y 0) as [ey | fy].
+    subst y.
+    lia.
+    pose proof bound_retr_miff_round_up x ltac:(lia) as lx.
+    pose proof bound_retr_miff_round_up y ltac:(lia) as ly.
+    assert (l : miff (pred (unmiff_round_up x)) < miff (unmiff_round_up y))
+    by lia.
+    apply strict_comono_miff in l.
+    lia. Qed.
+
+#[global] Instance is_surj_unmiff_round_up :
+  IsSurjUnmiffRoundDown unmiff_round_up.
+Proof.
+  intros a.
+  unfold unmiff_round_down.
+  exists (miff a).
+  rewrite sect_miff_round_up.
+  reflexivity. Qed.
+
+#[global] Instance is_contract_unmiff_round_up :
+  IsContractUnmiffRoundDown unmiff_round_up.
+Proof.
+  intros a.
+  unfold unmiff_round_down.
+  pose proof expand_miff a as l.
+  apply (@mono_unmiff_round_down unmiff_round_up _) in l.
+  rewrite sect_miff_round_up in l.
+  apply l. Qed.
+
+Lemma unmiff_round_up_elim (a : A) (b : B)
+  (ll : miff (pred a) < b <= miff a) : unmiff_round_up b = a.
+Proof.
+  destruct (eqb_spec (unmiff_round_up b) (pred a)) as [eb | fb].
+  - exfalso.
+    apply (f_equal miff) in eb.
+    pose proof bound_retr_miff_round_up b as lb.
+    lia.
+  - assert (lb : miff (pred a) <= b) by lia.
+    apply (@mono_unmiff_round_down unmiff_round_up _) in lb.
+    unfold unmiff_round_down in lb.
+    rewrite sect_miff_round_up in lb.
+    assert (lb1 : a <= unmiff_round_up b) by lia.
+    clear fb lb.
+    pose proof (@mono_unmiff_round_down unmiff_round_up _) b (miff a) ltac:(lia) as lb0.
+    rewrite sect_miff_round_up in lb0.
+    lia. Qed.
+
+End Context.
+
+Module RoundUpFromRoundDown.
+
+Section Context.
+
+Context `(IsUnmiffRoundDown).
+
+Equations unmiff_round_up_def (b : B) : A :=
+  unmiff_round_up_def N0 := 0;
+  unmiff_round_up_def (Npos p) := succ (unmiff_round_down (Pos.pred_N p)).
+
+Instance has_unmiff_round_up : HasUnmiffRoundUp := unmiff_round_up_def.
+
+Instance is_sect_miff_round_up : IsSectMiffRoundUp unmiff_round_up.
+Proof.
+  intros a.
+  unfold unmiff_round_up, has_unmiff_round_up.
+  induction a as [| p e] using peano_ind.
+  - rewrite fixed_miff.
+    simp unmiff_round_up_def.
+    reflexivity.
+  - simp unmiff_round_up_def. Admitted.
+
+Instance is_bound_retr_miff_round_up : IsBoundRetrMiffRoundUp unmiff_round_up.
+Proof.
+  intros b l.
+  unfold unmiff_round_up, has_unmiff_round_up.
+  pose proof bound_retr_miff_round_down b as ll. Admitted.
+
+Instance is_unmiff_round_up : IsUnmiffRoundUp unmiff_round_up.
+Proof. esplit; typeclasses eauto. Qed.
+
+End Context.
+
+#[export] Hint Resolve has_unmiff_round_up is_sect_miff_round_up
+  is_bound_retr_miff_round_up is_unmiff_round_up : typeclass_instances.
+
+End RoundUpFromRoundDown.
 
 (** In the image of the miff,
     the pseudoinverse behaves like an inverse. *)
@@ -443,23 +560,6 @@ Next Obligation.
   rewrite (sect_miff_round_down (unmiff_round_down b)).
   reflexivity. Qed.
 
-Lemma unmiff_round_down_elim (a : A) (b : B)
-  (ll : miff a <= b < miff (succ a)) : unmiff_round_down b = a.
-Proof.
-  destruct (eqb_spec (unmiff_round_down b) (succ a)) as [eb | fb].
-  - exfalso.
-    apply (f_equal miff) in eb.
-    pose proof bound_retr_miff_round_down b as lb.
-    lia.
-  - assert (lb : b <= miff (succ a)) by lia.
-    apply mono_unmiff_round_down in lb.
-    rewrite sect_miff_round_down in lb.
-    assert (lb1 : unmiff_round_down b <= a) by lia.
-    clear fb lb.
-    pose proof mono_unmiff_round_down (miff a) b ltac:(lia) as lb0.
-    rewrite sect_miff_round_down in lb0.
-    lia. Qed.
-
 Lemma quotient (x y : B) (r : R x y) : pr x = pr y.
 Proof.
   unfold pr.
@@ -467,8 +567,8 @@ Proof.
   unfold Spr1.
   f_equal.
   destruct r as [a [lx ly]].
-  rewrite (unmiff_round_down_elim a x),
-  (unmiff_round_down_elim a y) by assumption.
+  rewrite (unmiff_round_down_elim _ a x),
+  (unmiff_round_down_elim _ a y) by assumption.
   reflexivity. Qed.
 
 Equations miff_round_dep (a : A) : B_R :=
@@ -622,3 +722,5 @@ Class IsUnmiffRemDep `(HasUnmiffRemDownDep) `(HasUnmiffRemUpDep) : Prop := {
 }.
 
 End Context.
+
+(** TODO Now show the relative strength lattice. *)
