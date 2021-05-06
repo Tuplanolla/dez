@@ -231,6 +231,47 @@ has the follwing classes we want to be compatible with.
 * `SetoidTactics`
     * `DefaultRelation`
 
+Another review of Coq 8.13.0 and Equations 1.2.4.
+
+* `Classes.DecidableClass` `Decidable`
+* `Classes.SetoidClass` `Setoid`
+* `Classes.SetoidClass` `PartialSetoid`
+* `Classes.EquivDec` `DecidableEquivalence`
+* `Classes.EquivDec` `EqDec`
+* `Classes.Init` `Unconvertible`
+* `Classes.Morphisms` `Proper`
+* `Classes.Morphisms` `ProperProxy`
+* `Classes.Morphisms` `PartialApplication`
+* `Classes.Morphisms` `Params`
+* `Classes.Morphisms` `Normalizes`
+* `Classes.RelationClasses` `Reflexive`
+* `Classes.RelationClasses` `Irreflexive`
+* `Classes.RelationClasses` `Symmetric`
+* `Classes.RelationClasses` `Asymmetric`
+* `Classes.RelationClasses` `Transitive`
+* `Classes.RelationClasses` `PreOrder`
+* `Classes.RelationClasses` `StrictOrder`
+* `Classes.RelationClasses` `PER`
+* `Classes.RelationClasses` `Equivalence`
+* `Classes.RelationClasses` `Antisymmetric`
+* `Classes.RelationClasses` `subrelation`
+* `Classes.RelationClasses` `RewriteRelation`
+* `Classes.RelationClasses` `PartialOrder`
+* `Classes.RelationPairs` `Measure`
+* `Classes.SetoidDec` `DecidableSetoid`
+* `Classes.SetoidDec` `EqDec`
+* `Classes.SetoidTactics` `DefaultRelation`
+
+* `Prop.Classes` `WellFounded`
+* `Prop.Classes` `NoCyclePackage`
+* `Prop.Classes` `NoConfusionPackage`
+* `Prop.Classes` `UIP`
+* `Prop.Classes` `EqDec`
+* `Prop.Classes` `EqDecPoint`
+* `Prop.Classes` `ImpossibleCall`
+* `Prop.Classes` `FunctionalInduction`
+* `Prop.Classes` `FunctionalElimination`
+
 ### Subclass Specialization
 
 With the `coq-ltac-iter` plugin, we could do the following,

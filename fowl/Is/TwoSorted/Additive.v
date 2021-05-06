@@ -1,6 +1,6 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  OneSorted.Addition TwoSorted.Function.
+  OneSorted.Addition Function.
 From Maniunfold.ShouldHave Require Import
   OneSorted.ArithmeticNotations.
 

@@ -1,7 +1,5 @@
 From Coq Require Import
   Lia Lists.List NArith.NArith Bool.Sumbool.
-From Maniunfold.Has Require Export
-  OneSorted.Decision.
 From Maniunfold.Provides Require Export
   NTheorems OptionTheorems PositiveTheorems ProductTheorems.
 

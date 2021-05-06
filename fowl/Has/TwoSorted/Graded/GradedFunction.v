@@ -4,7 +4,7 @@ From Maniunfold.ShouldHave Require Import
   OneSorted.AdditiveNotations.
 
 (** Graded function.
-    See [Has.TwoSorted.Function]. *)
+    See [Has.Function]. *)
 
 Class HasGrdFn (A : Type) (P Q : A -> Type) `(HasUnOp A) : Type :=
   grd_fn : forall i : A, P i -> Q (- i).

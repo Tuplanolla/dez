@@ -1,6 +1,6 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  TwoSorted.RightAction TwoSorted.Function.
+  TwoSorted.RightAction Function.
 From Maniunfold.ShouldHave Require Import
   TwoSorted.MultiplicativeNotations.
 

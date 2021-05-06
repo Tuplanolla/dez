@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  OneSorted.OrderRelation.
+  OrderRelation.
 
 Declare Scope rel_scope.
 

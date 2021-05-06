@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  TwoSorted.Function.
+  Function.
 
 (** Unary operation, endofunction.
     Commonly found in groups. *)

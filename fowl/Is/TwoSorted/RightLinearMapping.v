@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   OneSorted.Addition OneSorted.Zero OneSorted.Negation
   OneSorted.Multiplication OneSorted.One
-  TwoSorted.RightAction TwoSorted.Function.
+  TwoSorted.RightAction Function.
 From Maniunfold.Is Require Export
   TwoSorted.RightModule TwoSorted.Additive ThreeSorted.RightHomogeneous.
 

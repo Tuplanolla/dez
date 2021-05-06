@@ -1,16 +1,12 @@
+(** * Operational class for order relations. *)
+
 From Maniunfold.Has Require Export
   OneSorted.BinaryRelation.
 
-(** Order relation, less than or equality, precedence. *)
-
 Class HasOrdRel (A : Type) : Type := ord_rel : A -> A -> Prop.
 
-Typeclasses Transparent HasOrdRel.
+#[export] Hint Transparent HasOrdRel : typeclass_instances.
 
-Section Context.
+Instance has_bin_rel (A : Type) `(HasOrdRel A) : HasBinRel A := ord_rel.
 
-Context (A : Type) `(HasOrdRel A).
-
-Global Instance A_has_bin_rel : HasBinRel A := ord_rel.
-
-End Context.
+#[export] Hint Resolve has_bin_rel : typeclass_instances.
