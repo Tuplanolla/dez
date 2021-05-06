@@ -7,7 +7,7 @@
 From Coq Require Import
   Classes.DecidableClass PArith.PArith Program.Wf.
 From Maniunfold.Has Require Export
-  OneSorted.EqualityDecision Unsquashing.
+  Unsquashing.
 From Maniunfold.Provides Require Import
   LogicalTheorems OptionTheorems PositiveTheorems PositivePairingFunctions.
 
@@ -18,9 +18,8 @@ Import ListNotations Pos.
 
 Unset Universe Polymorphism.
 
-Global Instance option_has_eq_dec (A : Type) `(HasEqDec A) :
-  HasEqDec (option A).
-Proof. cbv [HasEqDec] in *. decide equality. Defined.
+Global Instance option_has_eq_dec (A : Type) `(EqDec A) : EqDec (option A).
+Proof. cbv [EqDec] in *. decide equality. Defined.
 
 Fixpoint list_omap (A B : Type) (f : A -> option B)
   (l : list A) {struct l} : list B :=
@@ -45,9 +44,8 @@ Inductive pos_tree (A : Type) : Type :=
 
 Arguments pos_leaf {_}.
 
-Global Instance pos_tree_has_eq_dec (A : Type) `(HasEqDec A) :
-  HasEqDec (pos_tree A).
-Proof. cbv [HasEqDec]. decide equality. apply EqualityDecision.eq_dec. Defined.
+Global Instance pos_tree_has_eq_dec (A : Type) `(EqDec A) : EqDec (pos_tree A).
+Proof. cbv [EqDec]. decide equality. decide equality. Defined.
 
 Fixpoint pos_tree_wf' (A : Type) (t : pos_tree A) {struct t} : bool :=
   match t with
@@ -419,14 +417,13 @@ Polymorphic Hint Resolve squash : core.
 Definition pos_map (A : Type) : Type :=
   {t : pos_tree A $ Squash (pos_tree_wf t)}.
 
-Global Instance Ssig_has_eq_dec (A : Type) (P : A -> SProp) `(HasEqDec A) :
-  HasEqDec (Ssig P).
-Proof. cbv [HasEqDec] in *. intros [] []. pose proof H Spr1 Spr0. destruct H0.
+Global Instance Ssig_has_eq_dec (A : Type) (P : A -> SProp) `(EqDec A) :
+  EqDec (Ssig P).
+Proof. cbv [EqDec] in *. intros [] []. pose proof H Spr1 Spr0. destruct H0.
   left. apply Spr1_inj. auto.
   right. intros ?. inversion H0. contradiction. Defined.
 
-Global Instance pos_map_has_eq_dec (A : Type) `(HasEqDec A) :
-  HasEqDec (pos_map A).
+Global Instance pos_map_has_eq_dec (A : Type) `(EqDec A) : EqDec (pos_map A).
 Proof. typeclasses eauto. Defined.
 
 Program Definition pos_map_empty (A : Type) : pos_map A :=
