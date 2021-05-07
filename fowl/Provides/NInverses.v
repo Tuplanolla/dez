@@ -1,5 +1,7 @@
 From Coq Require Import
   Lia Lists.List NArith.NArith Bool.Sumbool.
+From Maniunfold.Is Require Export
+  Monotonic StrictlyMonotonic.
 From Maniunfold.Provides Require Export
   NTheorems OptionTheorems PositiveTheorems ProductTheorems.
 
@@ -46,8 +48,13 @@ Typeclasses Transparent HasMiff.
 
 (** Miffs are true to their name. *)
 
-Class IsMonoMiff `(HasMiff) : Prop :=
+(** TODO Does this work for real? *)
+
+Fail Fail Class IsMonoMiff `(HasMiff) : Prop :=
   mono_miff (x y : A) (l : x <= y) : miff x <= miff y.
+
+Notation IsMonoMiff miff := (Proper (le ==> le) miff).
+Notation mono_miff := (_ : IsMonoMiff miff).
 
 Class IsInjMiff `(HasMiff) : Prop :=
   inj_miff (x y : A) (e : miff x = miff y) : x = y.
