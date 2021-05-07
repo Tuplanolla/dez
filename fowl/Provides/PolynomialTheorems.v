@@ -117,7 +117,7 @@ Definition map_free_lan {K L A MK ML : Type}
   (p : K -> L) (m : MK) : ML :=
   map_fold (fun (i : K) (x : A) (n : ML) =>
     partial_alter (fun a : option (gmultiset A) =>
-      Some (union (singleton x) (default empty a))) (p i) n) empty m.
+      Some (base.union (singleton x) (default empty a))) (p i) n) empty m.
 
 Definition map_free_lan' {K L A MK ML : Type}
   `{FinMapToList K A MK} `{Empty ML} `{PartialAlter L (list A) ML}

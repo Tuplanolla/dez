@@ -1,6 +1,6 @@
 (* bad *)
 From Coq Require Import
-  Setoid Morphisms.
+  Setoid Morphisms RelationClasses.
 From Maniunfold.Has Require Export
   OneSorted.EquivalenceRelation.
 From Maniunfold.Is Require Export

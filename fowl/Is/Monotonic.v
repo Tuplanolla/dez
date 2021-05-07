@@ -7,5 +7,9 @@ Class IsMono (A B : Type)
   `(!HasOrdRel A) `(!HasOrdRel B) `(!HasFn A B) : Prop :=
   mono (x y : A) (l : x <= y) : fn x <= fn y.
 
-Instance proper `(IsMono) : Proper (_<=_ ==> _<=_) fn.
-Proof. exact mono. Qed.
+#[local] Instance is_mono (A B : Type)
+  `(HasOrdRel A) `(HasOrdRel B) `(HasFn A B)
+  `(!Proper (_<=_ ==> _<=_) fn) : IsMono _<=_ _<=_ fn.
+Proof. eassumption. Qed.
+
+#[export] Hint Resolve is_mono : typeclass_instances.

@@ -3,7 +3,7 @@
 (** We export [StrictProp] to be able to
     use strict propositions without ceremony,
     export [Basics] to make their utility functions available everywhere,
-    export [Morphisms] to build a symbiotic relationship
+    export [Morphisms] and [RelationClasses] to build a symbiotic relationship
     with the standard library,
     import [Setoid] to generalize the [rewrite] tactic,
     import [PArith], [NArith] and [ZArith] to
@@ -17,9 +17,9 @@
 From Coq Require Export
   Logic.StrictProp.
 From Coq Require Export
-  Program.Basics.
+  Program.Basics Relations.Relations.
 From Coq Require Export
-  Classes.Morphisms.
+  Classes.Morphisms Classes.RelationClasses.
 From Coq Require Import
   PArith.PArith NArith.NArith ZArith.ZArith.
 From Coq Require Import
@@ -98,6 +98,8 @@ Reserved Notation "'id'" (at level 0, no associativity).
 Reserved Notation "f '^-1'" (at level 25, left associativity).
 Reserved Notation "'{' x '$' B '}'" (at level 0, x at level 99).
 Reserved Notation "'{' x ':' A '$' B '}'" (at level 0, x at level 99).
+Reserved Notation "R '<==' S" (right associativity, at level 55).
+Reserved Notation "R '<==>' S" (right associativity, at level 55).
 Reserved Notation "x '\/' y" (at level 85, right associativity).
 Reserved Notation "'_|_'" (at level 0, no associativity).
 Reserved Notation "x '/\' y" (at level 80, right associativity).
@@ -120,6 +122,7 @@ Reserved Notation "x '==' y" (at level 70, no associativity).
 Reserved Notation "x '-->' y" (at level 55, right associativity).
 Reserved Notation "'0'" (at level 0, no associativity).
 Reserved Notation "'1'" (at level 0, no associativity).
+Reserved Notation "R '==>' S" (right associativity, at level 55).
 
 (** These partial applications (operator sections)
     can be generated automatically from the preceding notations. *)
@@ -128,6 +131,8 @@ Reserved Notation "'_o_'" (at level 0, no associativity).
 Reserved Notation "'_o'_'" (at level 0, no associativity).
 Reserved Notation "'_^-1'" (at level 0, no associativity).
 Reserved Notation "'{_$_}'" (at level 0, no associativity).
+Reserved Notation "'_<==_'" (at level 0, no associativity).
+Reserved Notation "'_<==>_'" (at level 0, no associativity).
 Reserved Notation "'_\/_'" (at level 0, no associativity).
 Reserved Notation "'_/\_'" (at level 0, no associativity).
 Reserved Notation "'_~~_'" (at level 0, no associativity).
@@ -143,6 +148,7 @@ Reserved Notation "'_/_'" (at level 0, no associativity).
 Reserved Notation "'_^_'" (at level 0, no associativity).
 Reserved Notation "'_==_'" (at level 0, no associativity).
 Reserved Notation "'_-->_'" (at level 0, no associativity).
+Reserved Notation "'_==>_'" (at level 0, no associativity).
 
 (** The implicit arguments of [Ssig], [sig] and [sigT] should be the same. *)
 
@@ -180,6 +186,29 @@ Notation "'1'" := (Npos xH) : N_scope.
 
 Notation "'0'" := Z0 : Z_scope.
 Notation "'1'" := (Zpos xH) : Z_scope.
+
+(** Respectful morphisms also have dual properties. *)
+
+Fail Fail Definition respectful (A B : Type)
+  (R : relation A) (S : relation B) : relation (A -> B) :=
+  fun f g : A -> B =>
+  forall x y : A, R x y -> S (f x) (g y).
+
+Fail Fail Notation "R '==>' S" := (respectful R S) : signature_scope.
+
+Definition corespectful (A B : Type)
+  (R : relation B) (S : relation A) : relation (A -> B) :=
+  fun f g : A -> B =>
+  forall x y : A, R (f x) (g y) -> S x y.
+
+Notation "R '<==' S" := (corespectful R S) : signature_scope.
+
+Definition birespectful (A B C : Type)
+  (R : relation B) (S : relation C) : relation ((A -> B) * (A -> C)) :=
+  fun fh gk : (A -> B) * (A -> C) =>
+  forall x y : A, R (fst fh x) (fst gk y) -> S (snd fh x) (snd gk y).
+
+Notation "R '<==>' S" := (birespectful R S) : signature_scope.
 
 (** We might as well allow treating booleans as reflections of propositions. *)
 

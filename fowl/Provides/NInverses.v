@@ -57,34 +57,6 @@ Class IsFixedMiff `(HasMiff) : Prop :=
 
 (** TODO Generalize like this. *)
 
-Import Classes.Morphisms Relations.Relations.
-
-Fail Fail Definition respectful (A B : Type)
-  (R : relation A) (S : relation B) : relation (A -> B) :=
-  fun f g : A -> B =>
-  forall x y : A, R x y -> S (f x) (g y).
-
-Definition corespectful (A B : Type)
-  (R : relation B) (S : relation A) : relation (A -> B) :=
-  fun f g : A -> B =>
-  forall x y : A, R (f x) (g y) -> S x y.
-
-Reserved Notation "R '<==' S" (right associativity, at level 55).
-
-Notation "R '<==' S" := (corespectful R S) : signature_scope.
-
-Definition birespectful (A B C : Type)
-  (R : relation B) (S : relation C) : relation ((A -> B) * (A -> C)) :=
-  fun fh gk : (A -> B) * (A -> C) =>
-  forall x y : A, R (fst fh x) (fst gk y) -> S (snd fh x) (snd gk y).
-
-Reserved Notation "R '<==>' S" (right associativity, at level 55).
-
-Notation "R '<==>' S" := (birespectful R S) : signature_scope.
-
-(* Eval unfold birespectful, Proper, fst, snd in
-  Proper (lt <==> lt) (miff, id). *)
-
 Fail Fail Class IsStrictMonoMiff `(HasMiff) : Prop :=
   strict_mono_miff : Proper (lt ==> lt) miff.
 
