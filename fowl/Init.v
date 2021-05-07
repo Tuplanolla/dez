@@ -210,6 +210,8 @@ Definition birespectful (A B C : Type)
 
 Notation "R '<==>' S" := (birespectful R S) : signature_scope.
 
+Typeclasses Opaque corespectful birespectful.
+
 (** We might as well allow treating booleans as reflections of propositions. *)
 
 Coercion is_true : bool >-> Sortclass.

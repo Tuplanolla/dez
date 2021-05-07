@@ -9,6 +9,8 @@ Class IsStrictMono (A B : Type)
   `(HasStrictOrdRel A) `(HasStrictOrdRel B) `(HasFn A B) : Prop :=
   strict_mono (x y : A) (l : x < y) : fn x < fn y.
 
+(** Strict monotonicity is a special case of respectfulness. *)
+
 #[local] Instance is_strict_mono (A B : Type)
   `(HasStrictOrdRel A) `(HasStrictOrdRel B) `(HasFn A B)
   `(!Proper (_<_ ==> _<_) fn) : IsStrictMono _<_ _<_ fn.
