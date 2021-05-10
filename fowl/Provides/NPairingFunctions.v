@@ -91,7 +91,7 @@ Next Obligation. intros p _ n. lia. Qed.
 Proof.
   intros a b l.
   unfold base, has_base.
-  generalize dependent a. induction b as [| c li] using peano_ind; intros a l.
+  revert a l; induction b as [| c li] using peano_ind; intros a l.
   - lia.
   - rewrite <- succ_pos_spec.
     simp base_fix. cbv zeta.

@@ -54,7 +54,7 @@ Fail Fail Class IsMonoMiff `(HasMiff) : Prop :=
   mono_miff (x y : A) (l : x <= y) : miff x <= miff y.
 
 Notation IsMonoMiff miff := (Proper (le ==> le) miff).
-Notation mono_miff := (_ : IsMonoMiff miff).
+Notation mono_miff := (proper_prf : IsMonoMiff miff).
 
 Class IsInjMiff `(HasMiff) : Prop :=
   inj_miff (x y : A) (e : miff x = miff y) : x = y.
