@@ -1,7 +1,7 @@
 (** * Operational class for strict order relations. *)
 
 From Maniunfold.Has Require Export
-  OneSorted.BinaryRelation.
+  OneSortedBinaryRelation.
 
 Class HasStrictOrdRel (A : Type) : Type := strict_ord_rel : A -> A -> Prop.
 

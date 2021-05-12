@@ -2,11 +2,11 @@
 From Coq Require Import
   Classes.RelationClasses.
 From Maniunfold.Has Require Export
-  OneSorted.EquivalenceRelation OneSorted.BinaryRelation.
+  OneSortedEquivalenceRelation OneSortedBinaryRelation.
 From Maniunfold.Is Require Export
-  OneSorted.Equivalence.
+  OneSortedEquivalence.
 From Maniunfold.ShouldHave Require Import
-  BinaryRelationNotations EquivalenceRelationNotations.
+  OneSortedBinaryRelationNotations OneSortedEquivalenceRelationNotations.
 
 Class IsAntisym (A : Type) `(HasBinRel A) : Prop :=
   antisym : forall x y : A, x ~~ y -> y ~~ x -> x = y.

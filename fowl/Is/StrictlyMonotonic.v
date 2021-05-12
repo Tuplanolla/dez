@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   Function.
 From Maniunfold.ShouldHave Require Import
-  OrderRelationNotations StrictOrderRelationNotations.
+  OneSortedOrderRelationNotations OneSortedStrictOrderRelationNotations.
 From Maniunfold.Is Require Export
   Monotonic CoherentOrderRelations.
 

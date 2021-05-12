@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
-  Function OrderRelation.
+  Function OneSortedOrderRelation.
 From Maniunfold.ShouldHave Require Import
-  OrderRelationNotations.
+  OneSortedOrderRelationNotations.
 
 Fail Fail Class IsMono (A B : Type)
   `(!HasOrdRel A) `(!HasOrdRel B) `(!HasFn A B) : Prop :=

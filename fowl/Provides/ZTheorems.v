@@ -1,10 +1,10 @@
 From Coq Require Import
   ZArith.ZArith.
 From Maniunfold.Is Require Export
-  OneSorted.AbelianGroup OneSorted.CommutativeSemigroup
-  OneSorted.CommutativeMonoid OneSorted.CommutativeSemiring
-  OneSorted.CommutativeRing
-  OneSorted.Equivalence TwoSorted.Isomorphism.
+  OneSortedAbelianGroup OneSortedCommutativeSemigroup
+  OneSortedCommutativeMonoid OneSortedCommutativeSemiring
+  OneSortedCommutativeRing
+  OneSortedEquivalence TwoSortedIsomorphism.
 
 Module Additive.
 

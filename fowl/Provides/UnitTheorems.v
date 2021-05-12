@@ -1,7 +1,7 @@
 From Maniunfold.Is Require Export
-  OneSorted.AbelianGroup OneSorted.CommutativeSemigroup
-  OneSorted.CommutativeMonoid OneSorted.CommutativeSemiring
-  OneSorted.CommutativeRing.
+  OneSortedAbelianGroup OneSortedCommutativeSemigroup
+  OneSortedCommutativeMonoid OneSortedCommutativeSemiring
+  OneSortedCommutativeRing.
 
 Ltac eautodestruct :=
   repeat match goal with

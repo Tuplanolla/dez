@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
-  OrderRelation StrictOrderRelation.
+  OneSortedOrderRelation StrictOrderRelation.
 From Maniunfold.ShouldHave Require Import
-  OrderRelationNotations StrictOrderRelationNotations.
+  OneSortedOrderRelationNotations OneSortedStrictOrderRelationNotations.
 
 Class IsCohOrdRels (A : Type) `(HasOrdRel A) `(HasStrictOrdRel A) : Prop :=
   coh_ord_rels (x y : A) : x < y <-> x <= y /\ x <> y.

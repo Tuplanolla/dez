@@ -5,26 +5,26 @@ From stdpp Require Import
   option finite fin_maps gmap gmultiset pmap.
 From Maniunfold.Has Require Export
   Unsquashing
-  OneSorted.Enumeration OneSorted.Cardinality TwoSorted.Isomorphism.
+  OneSortedEnumeration OneSortedCardinality TwoSortedIsomorphism.
 From Maniunfold.Is Require Export
-  OneSorted.Finite TwoSorted.Isomorphism
-  OneSorted.Ring TwoSorted.UnitalAssociativeAlgebra TwoSorted.Graded.Algebra.
+  OneSortedFinite TwoSortedIsomorphism
+  OneSortedRing TwoSortedUnitalAssociativeAlgebra TwoSortedGradedAlgebra.
 From Maniunfold.Is Require Export
-  OneSorted.AbelianGroup OneSorted.CommutativeSemigroup
-  OneSorted.CommutativeMonoid OneSorted.CommutativeSemiring
-  OneSorted.CommutativeRing.
+  OneSortedAbelianGroup OneSortedCommutativeSemigroup
+  OneSortedCommutativeMonoid OneSortedCommutativeSemiring
+  OneSortedCommutativeRing.
 From Maniunfold.Offers Require Export
-  TwoSorted.IsomorphismMappings
-  OneSorted.PositiveOperations OneSorted.NaturalOperations
-  OneSorted.IntegerOperations.
+  TwoSortedIsomorphismMappings
+  OneSortedPositiveOperations OneSortedNaturalOperations
+  OneSortedIntegerOperations.
 From Maniunfold.Provides Require Export
   NTheorems ZTheorems.
 From Maniunfold.ShouldHave Require
-  OneSorted.AdditiveNotations OneSorted.MultiplicativeNotations.
+  OneSortedAdditiveNotations OneSortedMultiplicativeNotations.
 From Maniunfold.ShouldHave Require
-  OneSorted.ArithmeticNotations.
+  OneSortedArithmeticNotations.
 From Maniunfold.ShouldOffer Require
-  OneSorted.ArithmeticOperationNotations.
+  OneSortedArithmeticOperationNotations.
 
 Set Warnings "-ambiguous-paths".
 
@@ -204,7 +204,7 @@ End Context.
 
 Section Context.
 
-Import OneSorted.ArithmeticNotations.
+Import OneSortedArithmeticNotations.
 
 Definition map_sum {K A M : Type}
   `{FinMapToList K A M} `{HasAdd A} `{HasZero A}
@@ -238,8 +238,8 @@ Notation "'`' x" := (Spr1 x).
 
 Section Context.
 
-Import OneSorted.ArithmeticNotations.
-Import OneSorted.ArithmeticOperationNotations.
+Import OneSortedArithmeticNotations.
+Import OneSortedArithmeticOperationNotations.
 
 Context (A : Type) `{IsRing A} `{EqDecision A} `{Countable A}.
 
@@ -457,8 +457,8 @@ End Tests. *)
 
 Module Additive.
 
-Import OneSorted.AdditiveNotations.
-Import OneSorted.ArithmeticNotations.
+Import OneSortedAdditiveNotations.
+Import OneSortedArithmeticNotations.
 
 Section Context.
 
@@ -624,8 +624,8 @@ End Additive.
 
 Module Multiplicative.
 
-Import OneSorted.MultiplicativeNotations.
-Import OneSorted.ArithmeticNotations.
+Import OneSortedMultiplicativeNotations.
+Import OneSortedArithmeticNotations.
 
 Section Context.
 
@@ -704,8 +704,8 @@ End Context.
 
 End Multiplicative.
 
-Import OneSorted.ArithmeticNotations.
-Import OneSorted.ArithmeticOperationNotations.
+Import OneSortedArithmeticNotations.
+Import OneSortedArithmeticOperationNotations.
 
 Section Context.
 
@@ -808,7 +808,7 @@ Proof with conversions.
   - apply dec_stable in F10. rewrite F10.
     rewrite map_imap_empty. reflexivity. Defined.
 
-Import OneSorted.Graded.ArithmeticNotations.
+Import OneSortedGradedArithmeticNotations.
 
 Definition poly_grd (i : N) : Type := A.
 

@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  OneSorted.BinaryRelation.
+  OneSortedBinaryRelation.
 
 Fail Class IsRefl (A : Type) `(HasBinRel A) : Prop :=
   refl (x : A) : x ~~ x.

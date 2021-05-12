@@ -2,11 +2,11 @@
 From Coq Require Import
   Lists.List Logic.ProofIrrelevance NArith.NArith ZArith.ZArith.
 From Maniunfold.Has Require Export
-  OneSorted.Enumeration OneSorted.Cardinality TwoSorted.Isomorphism.
+  OneSortedEnumeration OneSortedCardinality TwoSortedIsomorphism.
 From Maniunfold.Is Require Export
-  OneSorted.Finite TwoSorted.Isomorphism TwoSorted.Graded.Algebra.
+  OneSortedFinite TwoSortedIsomorphism TwoSortedGradedAlgebra.
 From Maniunfold.Offers Require Export
-  TwoSorted.IsomorphismMappings.
+  TwoSortedIsomorphismMappings.
 
 Definition is_left (A B : Prop) (s : sumbool A B) : bool :=
   if s then true else false.

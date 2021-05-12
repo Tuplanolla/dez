@@ -2,9 +2,9 @@
 From Coq Require Import
   Classes.RelationClasses.
 From Maniunfold.Has Require Export
-  OneSorted.BinaryRelation.
+  OneSortedBinaryRelation.
 From Maniunfold.ShouldHave Require Import
-  BinaryRelationNotations.
+  OneSortedBinaryRelationNotations.
 
 Class IsAsym (A : Type) `(HasBinRel A) : Prop :=
   asym : forall x y : A, x ~~ y -> ~ (y ~~ x).

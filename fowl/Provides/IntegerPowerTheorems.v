@@ -2,14 +2,15 @@
 From Coq Require Import
   ZArith.ZArith.
 From Maniunfold.Is Require Export
-  Magma Semigroup Monoid Group TwoSorted.LeftBinaryCommutative.
+  OneSortedMagma OneSortedSemigroup OneSortedMonoid OneSortedGroup
+  TwoSortedLeftBinaryCommutative.
 From Maniunfold.Offers Require Export
-  OneSorted.PositiveOperations OneSorted.NaturalOperations
-  OneSorted.IntegerOperations.
+  OneSortedPositiveOperations OneSortedNaturalOperations
+  OneSortedIntegerOperations.
 From Maniunfold.ShouldHave Require Import
-  OneSorted.AdditiveNotations.
+  OneSortedAdditiveNotations.
 From Maniunfold.ShouldOffer Require Import
-  OneSorted.AdditiveOperationNotations.
+  OneSortedAdditiveOperationNotations.
 
 Fact succ_xI (n : positive) :
   Pos.succ (xI n) = xO (Pos.succ n).

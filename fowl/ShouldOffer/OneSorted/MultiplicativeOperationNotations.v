@@ -1,4 +1,0 @@
-From Maniunfold.ShouldOffer Require Export
-  OneSorted.MultiplicativePositiveOperationNotations
-  OneSorted.MultiplicativeNaturalOperationNotations
-  OneSorted.MultiplicativeIntegerOperationNotations.

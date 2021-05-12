@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  OneSorted.BinaryRelation.
+  OneSortedBinaryRelation.
 
 Fail Class IsSym (A : Type) `(HasBinRel A) : Prop :=
   sym (x y : A) (a : x ~~ y) : y ~~ x.

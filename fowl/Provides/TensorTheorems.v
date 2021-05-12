@@ -2,20 +2,20 @@
 From Coq Require Import
   Lists.List Logic.ProofIrrelevance ZArith.ZArith.
 From Maniunfold.Has Require Export
-  OneSorted.Enumeration OneSorted.Cardinality TwoSorted.Isomorphism.
+  OneSortedEnumeration OneSortedCardinality TwoSortedIsomorphism.
 From Maniunfold.Is Require Export
-  OneSorted.Finite TwoSorted.Isomorphism TwoSorted.Bimodule
-  OneSorted.Ring TwoSorted.UnitalAssociativeAlgebra TwoSorted.Graded.Algebra.
+  OneSortedFinite TwoSortedIsomorphism TwoSortedBimodule
+  OneSortedRing TwoSortedUnitalAssociativeAlgebra TwoSortedGradedAlgebra.
 From Maniunfold.Offers Require Export
-  TwoSorted.IsomorphismMappings
-  OneSorted.PositiveOperations OneSorted.NaturalOperations
-  OneSorted.IntegerOperations.
+  TwoSortedIsomorphismMappings
+  OneSortedPositiveOperations OneSortedNaturalOperations
+  OneSortedIntegerOperations.
 From Maniunfold.Provides Require Export
   ZTheorems.
 From Maniunfold.ShouldHave Require Import
-  OneSorted.ArithmeticNotations.
+  OneSortedArithmeticNotations.
 From Maniunfold.ShouldOffer Require Import
-  OneSorted.MultiplicativeOperationNotations.
+  OneSortedMultiplicativeOperationNotations.
 
 Import ListNotations.
 
@@ -60,9 +60,9 @@ Definition proper (p : tensor) : Prop :=
   MapsTo k x (tt p) -> length x = Pos.to_nat k.
 
 Definition Add (p q : tensor) : tensor := {|
-  ht := Addition.add (ht p) (ht q);
+  ht := OneSortedAddition.add (ht p) (ht q);
   tt := Map.map2 (fun (as' bs : option (list B)) => match as', bs with
-    | Some a, Some b => Some (List.map (prod_uncurry Addition.add) (combine a b))
+    | Some a, Some b => Some (List.map (prod_uncurry OneSortedAddition.add) (combine a b))
     | Some a, None => Some a
     | None, Some b => Some b
     | None, None => None
@@ -88,7 +88,7 @@ Definition GrdMul (ps qs : tensor) : tensor :=
       fold_right (fun (l : nat) (s : t (list B)) => match Map.find (Pos.of_nat k) s with
         | Some u => Map.add (Pos.of_nat k) (app u
           match Map.find (Pos.of_nat l) p, Map.find (Pos.of_nat (Nat.sub k l)) q with
-          | Some a, Some b => app a b (* List.map (prod_curry Addition.add) (combine a b) *)
+          | Some a, Some b => app a b (* List.map (prod_curry OneSortedAddition.add) (combine a b) *)
           | _, _ => nil
           end) s
         | None => Map.add (Pos.of_nat k)
@@ -120,7 +120,7 @@ Global Instance N_has_null_op : HasNullOp N := N.zero.
 Global Instance lensor_is_grd_alg :
   IsGrdAlg (A := N) (P := fun n : N => A) (Q := fun n : N => tensor)
   (N_has_bin_op) (N_has_null_op)
-  (fun n : N => Addition.add) (fun n : N => zero) (fun n : N => neg)
+  (fun n : N => OneSortedAddition.add) (fun n : N => zero) (fun n : N => neg)
   (fun n p : N => mul) one
   (fun n : N => Add) (fun n : N => Zero) (fun n : N => Neg)
   (fun n p : N => GrdMul)

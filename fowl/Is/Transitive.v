@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  OneSorted.BinaryRelation.
+  OneSortedBinaryRelation.
 
 Fail Class IsTrans (A : Type) `(HasBinRel A) : Prop :=
   trans (x y z : A) (a : x ~~ y) (b : y ~~ z) : x ~~ z.

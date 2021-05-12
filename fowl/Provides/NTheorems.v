@@ -5,8 +5,8 @@ From Coq Require Import
 From Maniunfold Require Import
   DatatypeTactics RewritingTactics.
 From Maniunfold.Is Require Export
-  OneSorted.AbelianGroup OneSorted.CommutativeSemigroup
-  OneSorted.CommutativeMonoid OneSorted.CommutativeSemiring.
+  OneSortedAbelianGroup OneSortedCommutativeSemigroup
+  OneSortedCommutativeMonoid OneSortedCommutativeSemiring.
 From Maniunfold.Provides Require Import
   PositiveTheorems.
 
