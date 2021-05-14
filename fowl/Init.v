@@ -30,36 +30,36 @@ From Equations Require Export
 (** We disable warnings about overriding notations,
     because the plan is to replace many basic notations like [<=] and [+]. *)
 
-Global Set Warnings "-notation-overridden".
+#[global] Set Warnings "-notation-overridden".
 
 (** We disable warnings about unsupported attributes,
     because we use some custom attributes as hints. *)
 
-Global Set Warnings "-unsupported-attributes".
+#[global] Set Warnings "-unsupported-attributes".
 
 (** We turn on automatically inferred implicit arguments and
     make them maximally inserted and conservatively detected,
     since most type classes follow the same design pattern. *)
 
-Global Set Implicit Arguments.
-Global Set Maximal Implicit Insertion.
-Global Set Strict Implicit.
-Global Set Strongly Strict Implicit.
-Global Unset Contextual Implicit.
-Global Set Reversible Pattern Implicit.
+#[global] Set Implicit Arguments.
+#[global] Set Maximal Implicit Insertion.
+#[global] Set Strict Implicit.
+#[global] Set Strongly Strict Implicit.
+#[global] Unset Contextual Implicit.
+#[global] Set Reversible Pattern Implicit.
 
 (** We need to enable universe polymorphism
     for unification of strict propositions,
     even though the feature is experimental and
     incurs a considerable performance penalty on type checking. *)
 
-Global Set Universe Polymorphism.
+#[global] Set Universe Polymorphism.
 
 (** We mark equations transparent,
     because it is sometimes necessary to [unfold] them,
     particularly when [simp] would either fail to progress or diverge. *)
 
-Global Set Equations Transparent.
+#[global] Set Equations Transparent.
 
 (** We do not allow automatic solution of obligations,
     because we do not want the addition or removal of hints
@@ -76,7 +76,7 @@ Obligation Tactic := idtac.
     because the consequences of accidental misuse
     are worse than the convenience it permits. *)
 
-Global Generalizable No Variables.
+#[global] Generalizable No Variables.
 
 (** We use anonymous goals and obligations to define local lemmas,
     which is why we do not want to see them in search results. *)
@@ -175,6 +175,9 @@ Notation "'{_$_}'" := Ssig (only parsing) : type_scope.
 
 (** Numeral keywords are not a subset of numeral notations,
     which is why we must repeat them here. *)
+
+Notation "'0'" := False : type_scope.
+Notation "'1'" := True : type_scope.
 
 Notation "'1'" := xH : positive_scope.
 
