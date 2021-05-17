@@ -48,13 +48,12 @@ Typeclasses Transparent HasMiff.
 
 (** Miffs are true to their name. *)
 
-(** TODO Does this work for real? *)
+Notation IsMonoMiff := (Proper (le ==> le)).
+Notation mono_miff := (proper_prf (R := le ==> le) (m := miff)).
 
-Fail Fail Class IsMonoMiff `(HasMiff) : Prop :=
-  mono_miff (x y : A) (l : x <= y) : miff x <= miff y.
-
-Notation IsMonoMiff miff := (Proper (le ==> le) miff).
-Notation mono_miff := (proper_prf (R := (le ==> le)%signature) (m := miff)).
+Instance has_ord_rel : HasOrdRel N := le.
+Instance has_strict_ord_rel : HasStrictOrdRel N := lt.
+Instance has_fn `(HasMiff) : HasFn N N := miff.
 
 Class IsInjMiff `(HasMiff) : Prop :=
   inj_miff (x y : A) (e : miff x = miff y) : x = y.
@@ -62,16 +61,8 @@ Class IsInjMiff `(HasMiff) : Prop :=
 Class IsFixedMiff `(HasMiff) : Prop :=
   fixed_miff : miff 0 = 0.
 
-(** TODO Generalize like this. *)
-
-Fail Fail Class IsStrictMonoMiff `(HasMiff) : Prop :=
-  strict_mono_miff : Proper (lt ==> lt) miff.
-
-Class IsStrictMonoMiff `(HasMiff) : Prop :=
-  strict_mono_miff (x y : A) (l : x < y) : miff x < miff y.
-
-Fail Fail Class IsStrictComonoMiff `(HasMiff) : Prop :=
-  strict_comono_miff : Proper (lt <== lt) miff.
+Notation IsStrictMonoMiff := (Proper (lt ==> lt)).
+Notation strict_mono_miff := (proper_prf (R := lt ==> lt) (m := miff)).
 
 Class IsStrictComonoMiff `(HasMiff) : Prop :=
   strict_comono_miff (x y : A) (l : miff x < miff y) : x < y.
@@ -84,7 +75,7 @@ Fail Fail Class IsMetricExpandMiff `(HasMiff) : Prop :=
 
 (** Strict monotonicity implies strict comonotonicity. *)
 
-#[global] Instance is_strict_comono_miff `(IsStrictMonoMiff) :
+#[global] Instance is_strict_comono_miff `(HasMiff) `(!IsStrictMonoMiff miff) :
   IsStrictComonoMiff miff.
 Proof.
   intros x y lb.
@@ -95,7 +86,8 @@ Proof.
 
 (** Strict monotonicity implies monotonicity. *)
 
-#[global] Instance is_mono_miff `(IsStrictMonoMiff) : IsMonoMiff miff.
+#[global] Instance is_mono_miff `(HasMiff) `(!IsStrictMonoMiff miff) :
+  IsMonoMiff miff.
 Proof.
   intros x y la.
   pose proof strict_mono_miff x y as lb.
@@ -105,7 +97,8 @@ Proof.
 
 (** Strict monotonicity implies injectivity. *)
 
-#[global] Instance is_inj_miff `(IsStrictMonoMiff) : IsInjMiff miff.
+#[global] Instance is_inj_miff `(HasMiff) `(!IsStrictMonoMiff miff) :
+  IsInjMiff miff.
 Proof.
   intros x y eb.
   destruct (lt_trichotomy x y) as [la | [ea | la']].

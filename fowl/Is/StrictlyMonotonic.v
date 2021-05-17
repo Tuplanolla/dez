@@ -5,16 +5,14 @@ From Maniunfold.ShouldHave Require Import
 From Maniunfold.Is Require Export
   Monotonic CoherentOrderRelations.
 
-Class IsStrictMono (A B : Type)
+Fail Fail Class IsStrictMono (A B : Type)
   `(HasStrictOrdRel A) `(HasStrictOrdRel B) `(HasFn A B) : Prop :=
   strict_mono (x y : A) (l : x < y) : fn x < fn y.
 
-(** Strict monotonicity is a special case of respectfulness. *)
-
-#[local] Instance is_strict_mono (A B : Type)
-  `(HasStrictOrdRel A) `(HasStrictOrdRel B) `(HasFn A B)
-  `(!Proper (_<_ ==> _<_) fn) : IsStrictMono _<_ _<_ fn.
-Proof. eassumption. Qed.
+Notation IsStrictMono strict_ord_rel strict_ord_rel' :=
+  (Proper (strict_ord_rel ==> strict_ord_rel')).
+Notation strict_mono :=
+  (proper_prf (R := strict_ord_rel ==> strict_ord_rel) (m := fn)).
 
 (** Strict monotonicity implies monotonicity. *)
 
@@ -37,4 +35,4 @@ Proof.
 
 End Context.
 
-#[export] Hint Resolve is_strict_mono is_mono : typeclass_instances.
+#[export] Hint Resolve is_mono : typeclass_instances.

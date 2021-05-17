@@ -192,6 +192,8 @@ Notation "'1'" := (Zpos xH) : Z_scope.
 
 (** Respectful morphisms also have dual properties. *)
 
+Open Scope signature_scope.
+
 Fail Fail Definition respectful (A B : Type)
   (R : relation A) (S : relation B) : relation (A -> B) :=
   fun f g : A -> B =>
