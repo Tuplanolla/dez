@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
   OneSortedUnaryOperation.
 From Maniunfold.Is Require Export
   OneSortedMonoid OneSortedInvertible
-  OneSortedCancellative OneSortedUnaryAntidistributive OneSortedInjective
+  OneSortedCancellative OneSortedUnaryAntidistributive Injective
   OneSortedInvolutive OneSortedUnaryAbsorbing.
 From Maniunfold.ShouldHave Require Import
   OneSortedAdditiveNotations.

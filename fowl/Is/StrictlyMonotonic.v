@@ -9,8 +9,8 @@ Fail Fail Class IsStrictMono (A B : Type)
   `(HasStrictOrdRel A) `(HasStrictOrdRel B) `(HasFn A B) : Prop :=
   strict_mono (x y : A) (l : x < y) : fn x < fn y.
 
-Notation IsStrictMono strict_ord_rel strict_ord_rel' :=
-  (Proper (strict_ord_rel ==> strict_ord_rel')).
+Notation IsStrictMono strict_ord_rel strict_ord_rel' fn :=
+  (Proper (strict_ord_rel ==> strict_ord_rel') fn).
 Notation strict_mono :=
   (proper_prf (R := strict_ord_rel ==> strict_ord_rel) (m := fn)).
 

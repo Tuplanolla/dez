@@ -1,7 +1,7 @@
 From Coq Require Import
   Lia Lists.List NArith.NArith Bool.Sumbool.
 From Maniunfold.Is Require Export
-  Monotonic StrictlyMonotonic.
+  Fixed Monotonic StrictlyMonotonic Comonotonic StrictlyComonotonic.
 From Maniunfold.Provides Require Export
   NTheorems OptionTheorems PositiveTheorems ProductTheorems.
 
@@ -48,30 +48,33 @@ Typeclasses Transparent HasMiff.
 
 (** Miffs are true to their name. *)
 
-Notation IsMonoMiff := (Proper (le ==> le)).
+Notation IsMonoMiff miff := (Proper (le ==> le) miff).
 Notation mono_miff := (proper_prf (R := le ==> le) (m := miff)).
 
 Instance has_ord_rel : HasOrdRel N := le.
 Instance has_strict_ord_rel : HasStrictOrdRel N := lt.
 Instance has_fn `(HasMiff) : HasFn N N := miff.
 
-Class IsInjMiff `(HasMiff) : Prop :=
-  inj_miff (x y : A) (e : miff x = miff y) : x = y.
+Notation IsInjMiff := (Proper (Logic.eq <== Logic.eq)).
+Notation inj_miff := (proper_prf (R := Logic.eq <== Logic.eq) (m := miff)).
 
-Class IsFixedMiff `(HasMiff) : Prop :=
-  fixed_miff : miff 0 = 0.
+Notation IsFixedMiff := (IsFixed 0).
+Notation fixed_miff := (@fixed _ 0 _ _ : _ 0 = 0).
 
-Notation IsStrictMonoMiff := (Proper (lt ==> lt)).
+Notation IsStrictMonoMiff miff := (Proper (lt ==> lt) miff).
 Notation strict_mono_miff := (proper_prf (R := lt ==> lt) (m := miff)).
 
-Class IsStrictComonoMiff `(HasMiff) : Prop :=
-  strict_comono_miff (x y : A) (l : miff x < miff y) : x < y.
+Notation IsStrictComonoMiff miff := (Proper (lt <== lt) miff).
+Notation strict_comono_miff := (proper_prf (R := lt <== lt) (m := miff)).
 
-Class IsExpandMiff `(HasMiff) : Prop :=
-  expand_miff (a : A) : a <= miff a.
+(** Such a function is said to be inflationary or progressive. *)
 
-Fail Fail Class IsMetricExpandMiff `(HasMiff) : Prop :=
-  metric_expand_miff (x y : A) : dist x y <= dist (miff x) (miff y).
+Class IsInflateMiff `(HasMiff) : Prop :=
+  inflate_miff (a : A) : a <= miff a.
+
+Fail Class IsExpand (A B : Type)
+  `(HasDist A) `(HasDist B) `(HasFn A B) : Prop :=
+  expand (x y : A) : dist x y <= dist (fn x) (fn y).
 
 (** Strict monotonicity implies strict comonotonicity. *)
 
@@ -121,8 +124,8 @@ Proof.
 (** Strict monotonicity and fixed point at zero together
     imply that the function is expansive. *)
 
-#[global] Instance is_expand_fixed_miff `(HasMiff)
-  `(!IsStrictMonoMiff miff) `(!IsFixedMiff miff) : IsExpandMiff miff.
+#[global] Instance is_inflate_fixed_miff `(HasMiff)
+  `(!IsStrictMonoMiff miff) `(!IsFixedMiff miff) : IsInflateMiff miff.
 Proof.
   intros a.
   induction a as [| p lp] using peano_ind.
@@ -375,7 +378,7 @@ Proof.
   IsContractUnmiffRoundDown unmiff_round_down.
 Proof.
   intros a.
-  pose proof expand_miff a as l.
+  pose proof inflate_miff a as l.
   apply mono_unmiff_round_down in l.
   rewrite sect_miff_round_down in l.
   apply l. Qed.
@@ -444,7 +447,7 @@ Proof.
 Proof.
   intros a.
   unfold unmiff_round_down.
-  pose proof expand_miff a as l.
+  pose proof inflate_miff a as l.
   apply (@mono_unmiff_round_down unmiff_round_up _) in l.
   rewrite sect_miff_round_up in l.
   apply l. Qed.
