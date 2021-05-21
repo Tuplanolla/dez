@@ -1,5 +1,5 @@
-From Maniunfold.Has Require Export
-  Endofunction Point.
+From Maniunfold Require Export
+  Init.
 
-Class IsFixed (A : Type) `(HasPt A) `(HasEndo A) : Prop :=
-  fixed : fn pt = pt.
+Class IsFixed (A : Type) (x : A) (f : A -> A) : Prop :=
+  fixed : f x = x.

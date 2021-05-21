@@ -4,8 +4,8 @@ From Maniunfold.ShouldHave Require Import
   OneSortedOrderRelationNotations.
 
 Fail Fail Class IsMono (A B : Type)
-  `(HasOrdRel A) `(HasOrdRel B) `(HasFn A B) : Prop :=
-  mono (x y : A) (l : x <= y) : fn x <= fn y.
+  (R : HasOrdRel A) (S : HasOrdRel B) (f : A -> B) : Prop :=
+  mono (x y : A) (l : x <= y) : f x <= f y.
 
-Notation IsMono ord_rel ord_rel' fn := (Proper (ord_rel ==> ord_rel') fn).
-Notation mono := (proper_prf (R := ord_rel ==> ord_rel) (m := fn)).
+Notation IsMono R S f := (Proper (R ==> S) f).
+Notation mono := (proper_prf : IsMono _ _ _).

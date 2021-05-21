@@ -54,8 +54,6 @@ Notation mono_miff := (proper_prf (R := le ==> le) (m := miff)).
 Instance has_ord_rel : HasOrdRel N := le.
 Instance has_strict_ord_rel : HasStrictOrdRel N := lt.
 Instance has_fn `(HasMiff) : HasFn N N := miff.
-Instance has_endo `(HasMiff) : HasEndo N := miff.
-Instance has_pt : HasPt N := 0.
 
 Notation IsInjMiff := (Proper (Logic.eq <== Logic.eq)).
 Notation inj_miff := (proper_prf (R := Logic.eq <== Logic.eq) (m := miff)).

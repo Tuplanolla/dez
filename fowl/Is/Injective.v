@@ -1,8 +1,8 @@
-From Maniunfold.Has Require Export
-  Function.
+From Maniunfold Require Export
+  Init.
 
-Fail Fail Class IsInj (A B : Type) `(HasFn A B) : Prop :=
-  inj (x y : A) (e : fn x = fn y) : x = y.
+Fail Fail Class IsInj (A B : Type) (f : A -> B) : Prop :=
+  inj (x y : A) (e : f x = f y) : x = y.
 
-Notation IsInj := (Proper (eq <== eq)).
-Notation inj := (proper_prf (R := eq <== eq) (m := fn)).
+Notation IsInj f := (Proper (eq <== eq) f).
+Notation inj := (proper_prf : IsInj _).
