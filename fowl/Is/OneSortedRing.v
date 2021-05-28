@@ -1,6 +1,8 @@
 (* bad *)
 From Coq Require Import
   Logic.Eqdep_dec.
+From Maniunfold Require Export
+  TypeclassTactics.
 From Maniunfold.Has Require Export
   OneSortedAddition OneSortedZero OneSortedNegation OneSortedMultiplication
   OneSortedOne.

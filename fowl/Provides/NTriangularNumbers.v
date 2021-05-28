@@ -102,7 +102,6 @@ Next Obligation.
   destruct n as [| p].
   - subst x. inversion e.
   - lia. Qed.
-Next Obligation. Tactics.program_solve_wf. Defined.
 
 Program Fixpoint untri_down' (n : N) {measure (to_nat n)} : N :=
   match untri_error n with
@@ -114,7 +113,6 @@ Next Obligation.
   destruct n as [| p].
   - subst x. inversion e.
   - lia. Qed.
-Next Obligation. Tactics.program_solve_wf. Defined.
 
 (** This is obvious. *)
 
@@ -337,10 +335,10 @@ Proof.
   clear eqr eq. f_equal.
   destruct (Even_mul_consecutive q) as [u eu].
   rewrite eu. rewrite div_Even.
-  assert (or : r = 0 \/ r = 1) by lia. clear l1qr.
+  assert (or' : r = 0 \/ r = 1) by lia. clear l1qr.
   (** This case analysis is technically unnecessary,
       but speeds up [nia] considerably. *)
-  destruct or as [er | er]; subst r; arithmetize.
+  destruct or' as [er | er]; subst r; arithmetize.
   - change 8 with (2 * (2 * 2)). repeat rewrite <- (div_div _ 2) by lia.
     rename t into t0.
     destruct (Even_or_Odd t0) as [[t1 et1] | [t1 et1]]; arithmetize.
@@ -437,7 +435,7 @@ Proof.
   clear eqr eq.
   destruct (Even_mul_consecutive q) as [u eu].
   rewrite eu. rewrite div_Even. intros l.
-  assert (or : r = 0 \/ r = 1) by lia. clear l1qr.
+  assert (or' : r = 0 \/ r = 1) by lia. clear l1qr.
   destruct (eqb_spec t 0) as [e0 | f0],
   (eqb_spec (n - u) 0) as [e1 | f1]; arithmetize.
   + auto.

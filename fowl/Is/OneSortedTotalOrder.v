@@ -1,4 +1,6 @@
 (* bad *)
+From Maniunfold Require Export
+  TypeclassTactics.
 From Maniunfold.Has Require Export
   OneSortedEquivalenceRelation OneSortedOrderRelation.
 From Maniunfold.Is Require Export

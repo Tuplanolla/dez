@@ -228,7 +228,6 @@ Program Fixpoint merge' (l0 l1 : list positive)
 Next Obligation. intros. subst. cbn in *. lia. Qed.
 Next Obligation. intros. subst. cbn in *. lia. Qed.
 Next Obligation. Tactics.program_simplify. Qed.
-Next Obligation. Tactics.program_solve_wf. Defined.
 
 Arguments merge' _ / : simpl nomatch.
 
@@ -248,7 +247,6 @@ Program Fixpoint merge_by' (A : Type) (f : A -> positive) (l0 l1 : list A)
 Next Obligation. intros. subst. cbn in *. lia. Qed.
 Next Obligation. intros. subst. cbn in *. lia. Qed.
 Next Obligation. Tactics.program_simplify. Qed.
-Next Obligation. Tactics.program_solve_wf. Defined.
 
 Arguments merge_by' _ _ _ / : simpl nomatch.
 
@@ -346,7 +344,6 @@ Next Obligation.
   apply Lt.lt_n_S. apply Plus.plus_lt_compat_l.
   apply Pos2Nat.inj_lt.
   lia. Qed.
-Next Obligation. Tactics.program_solve_wf. Defined.
 
 (** If this function is given a list that is not sorted,
     its behavior will not be undefined!

@@ -1,3 +1,5 @@
+From Maniunfold Require Export
+  TypeclassTactics.
 From Maniunfold.Has Require Export
   OneSortedAddition OneSortedZero OneSortedMultiplication OneSortedOne.
 From Maniunfold.Is Require Export
