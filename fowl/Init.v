@@ -191,6 +191,15 @@ Notation "'{' x ':' A '$' B '}'" := (@Ssig A (fun x : _ => B)) : type_scope.
 Notation "'{_$_}'" := Ssig (only parsing) : type_scope.
 Notation "'{_:_$_}'" := @Ssig (only parsing) : type_scope.
 
+(** Using [o] as a variable name should be prohibited by law,
+    which is why we turn it into a notation instead.
+    We also turn [id] into a notation to keep it reusable. *)
+
+Notation "g 'o' f" := (compose g f) : core_scope.
+Notation "'id'" := Datatypes.id : core_scope.
+
+Notation "'_o_'" := compose (only parsing) : core_scope.
+
 (** We export the [rew] notations from [Init.Logic]
     to use them like transport in homotopy type theory. *)
 
@@ -295,118 +304,163 @@ Notation "'1'" := R1 : R_scope.
 (** Currying and uncurrying are swapped around in the standard library,
     which is why we redefine them here. *)
 
-Definition prod_curry (A B C : Type)
+Equations prod_curry (A B C : Type)
   (f : A * B -> C) (a : A) (b : B) : C :=
-  f (a, b).
+  prod_curry f a b := f (a, b).
 
-Definition prod_uncurry (A B C : Type)
+Equations prod_uncurry (A B C : Type)
   (f : A -> B -> C) (x : A * B) : C :=
-  f (fst x) (snd x).
+  prod_uncurry f x := f (fst x) (snd x).
 
-Definition prod_curry_dep (A B : Type) (P : A -> B -> Type)
+Equations prod_curry_dep (A B : Type) (P : A -> B -> Type)
   (f : forall x : A * B, P (fst x) (snd x)) (a : A) (b : B) : P a b :=
-  f (a, b).
+  prod_curry_dep _ f a b := f (a, b).
 
-Definition prod_uncurry_dep (A B : Type) (P : A -> B -> Type)
+Equations prod_uncurry_dep (A B : Type) (P : A -> B -> Type)
   (f : forall (a : A) (b : B), P a b) (x : A * B) : P (fst x) (snd x) :=
-  f (fst x) (snd x).
+  prod_uncurry_dep f x := f (fst x) (snd x).
 
-Definition sig_curry (A : Type) (P : A -> Prop) (B : Type)
+Equations sig_curry (A : Type) (P : A -> Prop) (B : Type)
   (f : {a : A | P a} -> B) (a : A) (b : P a) : B :=
-  f (exist P a b).
+  sig_curry f a b := f (exist P a b).
 
-Definition sig_uncurry (A : Type) (P : A -> Prop) (B : Type)
+Equations sig_uncurry (A : Type) (P : A -> Prop) (B : Type)
   (f : forall a : A, P a -> B) (x : {a : A | P a}) : B :=
-  f (proj1_sig x) (proj2_sig x).
+  sig_uncurry f x := f (proj1_sig x) (proj2_sig x).
 
-Definition sig_curry_dep
+Equations sig_curry_dep
   (A : Type) (P : A -> Prop) (Q : forall a : A, P a -> Type)
   (f : forall x : {a : A | P a}, Q (proj1_sig x) (proj2_sig x))
   (a : A) (b : P a) : Q a b :=
-  f (exist P a b).
+  sig_curry_dep _ f a b := f (exist P a b).
 
-Definition sig_uncurry_dep
+Equations sig_uncurry_dep
   (A : Type) (P : A -> Prop) (Q : forall a : A, P a -> Type)
   (f : forall (a : A) (b : P a), Q a b)
   (x : {a : A | P a}) : Q (proj1_sig x) (proj2_sig x) :=
-  f (proj1_sig x) (proj2_sig x).
+  sig_uncurry_dep f x := f (proj1_sig x) (proj2_sig x).
 
-Definition sigT_curry (A : Type) (P : A -> Type) (B : Type)
+Equations sigT_curry (A : Type) (P : A -> Type) (B : Type)
   (f : {a : A & P a} -> B) (a : A) (b : P a) : B :=
-  f (existT P a b).
+  sigT_curry f a b := f (existT P a b).
 
-Definition sigT_uncurry (A : Type) (P : A -> Type) (B : Type)
+Equations sigT_uncurry (A : Type) (P : A -> Type) (B : Type)
   (f : forall a : A, P a -> B) (x : {a : A & P a}) : B :=
-  f (projT1 x) (projT2 x).
+  sigT_uncurry f x := f (projT1 x) (projT2 x).
 
-Definition sigT_curry_dep
+Equations sigT_curry_dep
   (A : Type) (P : A -> Type) (Q : forall a : A, P a -> Type)
   (f : forall x : {a : A & P a}, Q (projT1 x) (projT2 x))
   (a : A) (b : P a) : Q a b :=
-  f (existT P a b).
+  sigT_curry_dep _ f a b := f (existT P a b).
 
-Definition sigT_uncurry_dep
+Equations sigT_uncurry_dep
   (A : Type) (P : A -> Type) (Q : forall a : A, P a -> Type)
   (f : forall (a : A) (b : P a), Q a b)
   (x : {a : A & P a}) : Q (projT1 x) (projT2 x) :=
-  f (projT1 x) (projT2 x).
+  sigT_uncurry_dep f x := f (projT1 x) (projT2 x).
 
-Definition Ssig_curry (A : Type) (P : A -> SProp) (B : Type)
+Equations Ssig_curry (A : Type) (P : A -> SProp) (B : Type)
   (f : {a : A $ P a} -> B) (a : A) (b : P a) : B :=
-  f (Sexists P a b).
+  Ssig_curry f a b := f (Sexists P a b).
 
-Definition Ssig_uncurry (A : Type) (P : A -> SProp) (B : Type)
+Equations Ssig_uncurry (A : Type) (P : A -> SProp) (B : Type)
   (f : forall a : A, P a -> B) (x : {a : A $ P a}) : B :=
-  f (Spr1 x) (Spr2 x).
+  Ssig_uncurry f x := f (Spr1 x) (Spr2 x).
 
-Definition Ssig_curry_dep
+Equations Ssig_curry_dep
   (A : Type) (P : A -> SProp) (Q : forall a : A, P a -> Type)
   (f : forall x : {a : A $ P a}, Q (Spr1 x) (Spr2 x))
   (a : A) (b : P a) : Q a b :=
-  f (Sexists P a b).
+  Ssig_curry_dep _ f a b := f (Sexists P a b).
 
-Definition Ssig_uncurry_dep
+Equations Ssig_uncurry_dep
   (A : Type) (P : A -> SProp) (Q : forall a : A, P a -> Type)
   (f : forall (a : A) (b : P a), Q a b)
   (x : {a : A $ P a}) : Q (Spr1 x) (Spr2 x) :=
-  f (Spr1 x) (Spr2 x).
+  Ssig_uncurry_dep f x := f (Spr1 x) (Spr2 x).
 
-Definition conj_curry (A B C : Prop)
+Equations conj_curry (A B C : Prop)
   (f : A /\ B -> C) (a : A) (b : B) : C :=
-  f (conj a b).
+  conj_curry f a b := f (conj a b).
 
-Definition conj_uncurry (A B C : Prop)
+Equations conj_uncurry (A B C : Prop)
   (f : A -> B -> C) (x : A /\ B) : C :=
-  f (proj1 x) (proj2 x).
+  conj_uncurry f x := f (proj1 x) (proj2 x).
 
 (** Composition, constancy, flipping and application
     are totally fine in the standard library.
-    We just augment them with dependent versions. *)
+    We just accompany them with dependent versions. *)
 
-Fail Fail Definition compose (A B C : Type)
+Fail Fail Equations compose (A B C : Type)
   (g : B -> C) (f : A -> B) (a : A) : C :=
-  g (f a).
+  compose g f a := g (f a).
 
-Definition compose_dep
+Corollary compose_equation_1 (A B C : Type)
+  (g : B -> C) (f : A -> B) (x : A) : (g o f) x = g (f x).
+Proof. reflexivity. Qed.
+
+Hint Rewrite @compose_equation_1 : compose.
+
+Equations compose_dep
   (A : Type) (P : A -> Type) (Q : forall a : A, P a -> Type)
   (g : forall (a : A) (b : P a), Q a b) (f : forall a : A, P a)
   (a : A) : Q a (f a) :=
-  g a (f a).
+  compose_dep g f a := g a (f a).
 
-Fail Fail Definition const (A B : Type) (a : A) (b : B) : A := a.
+Fail Fail Equations arrow (A B : Type) : Type :=
+  arrow A B := A -> B.
 
-Definition const_dep (A : Type) (P : A -> Type) (a : A) (b : P a) : A := a.
+Corollary arrow_equation_1 (A B : Type) : arrow A B = (A -> B).
+Proof. reflexivity. Qed.
 
-Fail Fail Definition flip (A B C : Type)
-  (f : A -> B -> C) (b : B) (a : A) : C := f a b.
+Hint Rewrite @arrow_equation_1 : arrow.
 
-Definition flip_dep (A B : Type) (P : A -> B -> Type)
-  (f : forall (a : A) (b : B), P a b) (b : B) (a : A) : P a b := f a b.
+Fail Fail Equations impl (A B : Prop) : Prop :=
+  impl A B := A -> B.
 
-Fail Fail Definition apply (A B : Type) (f : A -> B) (a : A) : B := f a.
+Corollary impl_equation_1 (A B : Prop) : impl A B = (A -> B).
+Proof. reflexivity. Qed.
 
-Definition apply_dep (A : Type) (P : A -> Type)
-  (f : forall a : A, P a) (a : A) : P a := f a.
+Hint Rewrite @impl_equation_1 : impl.
+
+Fail Fail Equations const (A B : Type) (a : A) (b : B) : A :=
+  const a b := a.
+
+Corollary const_equation_1 (A B : Type) (a : A) (b : B) : const a b = a.
+Proof. reflexivity. Qed.
+
+Hint Rewrite @const_equation_1 : const.
+
+Equations const_dep (A : Type) (P : A -> Type) (a : A) (b : P a) : A :=
+  const_dep _ a b := a.
+
+Fail Fail Equations flip (A B C : Type)
+  (f : A -> B -> C) (b : B) (a : A) : C :=
+  flip f b a := f a b.
+
+Corollary flip_equation_1 (A B C : Type) (f : A -> B -> C) (x : B) (y : A) :
+  flip f x y = f y x.
+Proof. reflexivity. Qed.
+
+Hint Rewrite @flip_equation_1 : flip.
+
+Equations flip_dep (A B : Type) (P : A -> B -> Type)
+  (f : forall (a : A) (b : B), P a b) (b : B) (a : A) : P a b :=
+  flip_dep f b a := f a b.
+
+Fail Fail Equations apply (A B : Type) (f : A -> B) (a : A) : B :=
+  apply f a := f a.
+
+Corollary apply_equation_1 (A B : Type) (f : A -> B) (x : A) :
+  apply f x = f x.
+Proof. reflexivity. Qed.
+
+Hint Rewrite @apply_equation_1 : apply.
+
+Equations apply_dep (A : Type) (P : A -> Type)
+  (f : forall a : A, P a) (a : A) : P a :=
+  apply_dep f a := f a.
 
 (** We mark the utility functions transparent for unification and
     provide some hints for simplifying them.
@@ -482,15 +536,6 @@ Arguments compose_dep {_ _ _} _ _ _ /.
 Arguments const_dep {_ _} _ _ /.
 Arguments flip_dep {_ _ _} _ _ _ /.
 Arguments apply_dep {_ _} _ _ /.
-
-(** Using [o] as a variable name should be prohibited by law,
-    which is why we turn it into a notation instead.
-    We also turn [id] into a notation to keep it reusable. *)
-
-Notation "g 'o' f" := (compose g f) : core_scope.
-Notation "'id'" := Datatypes.id : core_scope.
-
-Notation "'_o_'" := compose (only parsing) : core_scope.
 
 (** This is another way to state [Spr1_inj]
     without breaking unification when universe polymorphism is turned off. *)
@@ -744,20 +789,6 @@ Proof. reflexivity. Qed.
 
 Hint Rewrite @snd_equation_1 : snd.
 
-Corollary prod_curry_equation_1 (A B C : Type)
-  (f : A * B -> C) (a : A) (b : B) :
-  prod_curry f a b = f (a, b).
-Proof. reflexivity. Qed.
-
-Hint Rewrite @prod_curry_equation_1 : prod_curry.
-
-Corollary prod_uncurry_equation_1 (A B C : Type)
-  (f : A -> B -> C) (a : A) (b : B) :
-  prod_uncurry f (a, b) = f a b.
-Proof. reflexivity. Qed.
-
-Hint Rewrite @prod_uncurry_equation_1 : prod_uncurry.
-
 Corollary length_equation_1 (A : Type) :
   length (A := A) [] = O.
 Proof. reflexivity. Qed.
@@ -837,168 +868,3 @@ Corollary sigT_of_sig_equation_1 (A : Type) (P : A -> Prop) (a : A) (b : P a) :
 Proof. reflexivity. Qed.
 
 Hint Rewrite @sigT_of_sig_equation_1 : sig_of_sig.
-
-Corollary compose_equation_1 (A B C : Type)
-  (g : B -> C) (f : A -> B) (x : A) : (g o f) x = g (f x).
-Proof. reflexivity. Qed.
-
-Hint Rewrite @compose_equation_1 : compose.
-
-Corollary arrow_equation_1 (A B : Type) : arrow A B = (A -> B).
-Proof. reflexivity. Qed.
-
-Hint Rewrite @arrow_equation_1 : arrow.
-
-Corollary impl_equation_1 (A B : Prop) : impl A B = (A -> B).
-Proof. reflexivity. Qed.
-
-Hint Rewrite @impl_equation_1 : impl.
-
-Corollary const_equation_1 (A B : Type) (a : A) (b : B) : const a b = a.
-Proof. reflexivity. Qed.
-
-Hint Rewrite @const_equation_1 : const.
-
-Corollary flip_equation_1 (A B C : Type) (f : A -> B -> C) (x : B) (y : A) :
-  flip f x y = f y x.
-Proof. reflexivity. Qed.
-
-Hint Rewrite @flip_equation_1 : flip.
-
-Corollary apply_equation_1 (A B : Type) (f : A -> B) (x : A) :
-  apply f x = f x.
-Proof. reflexivity. Qed.
-
-Hint Rewrite @apply_equation_1 : apply.
-
-Corollary prod_curry_dep_equation_1 (A B : Type) (P : A -> B -> Type)
-  (f : forall x : A * B, P (fst x) (snd x)) (a : A) (b : B) :
-  prod_curry_dep f a b = f (a, b).
-Proof. reflexivity. Qed.
-
-Hint Rewrite @prod_curry_dep_equation_1 : prod_curry_dep.
-
-Corollary prod_uncurry_dep_equation_1 (A B : Type) (P : A -> B -> Type)
-  (f : forall (a : A) (b : B), P a b) (a : A) (b : B) :
-  prod_uncurry_dep f (a, b) = f a b.
-Proof. reflexivity. Qed.
-
-Hint Rewrite @prod_uncurry_dep_equation_1 : prod_uncurry_dep.
-
-Corollary sig_curry_equation_1 (A : Type) (P : A -> Prop) (B : Type)
-  (f : {a : A | P a} -> B) (a : A) (b : P a) :
-  sig_curry f a b = f (exist P a b).
-Proof. reflexivity. Qed.
-
-Hint Rewrite @sig_curry_equation_1 : sig_curry.
-
-Corollary sig_uncurry_equation_1 (A : Type) (P : A -> Prop) (B : Type)
-  (f : forall a : A, P a -> B) (a : A) (b : P a) :
-  sig_uncurry f (exist P a b) = f a b.
-Proof. reflexivity. Qed.
-
-Hint Rewrite @sig_uncurry_equation_1 : sig_uncurry.
-
-Corollary sig_curry_dep_equation_1
-  (A : Type) (P : A -> Prop) (Q : forall a : A, P a -> Type)
-  (f : forall x : {a : A | P a}, Q (proj1_sig x) (proj2_sig x))
-  (a : A) (b : P a) : sig_curry_dep f a b = f (exist P a b).
-Proof. reflexivity. Qed.
-
-Hint Rewrite @sig_curry_dep_equation_1 : sig_curry_dep.
-
-Corollary sig_uncurry_dep_equation_1
-  (A : Type) (P : A -> Prop) (Q : forall a : A, P a -> Type)
-  (f : forall (a : A) (b : P a), Q a b) (a : A) (b : P a) :
-  sig_uncurry_dep f (exist P a b) = f a b.
-Proof. reflexivity. Qed.
-
-Hint Rewrite @sig_uncurry_dep_equation_1 : sig_uncurry_dep.
-
-Corollary sigT_curry_equation_1 (A : Type) (P : A -> Type) (B : Type)
-  (f : {a : A & P a} -> B) (a : A) (b : P a) :
-  sigT_curry f a b = f (existT P a b).
-Proof. reflexivity. Qed.
-
-Hint Rewrite @sigT_curry_equation_1 : sigT_curry.
-
-Corollary sigT_uncurry_equation_1 (A : Type) (P : A -> Type) (B : Type)
-  (f : forall a : A, P a -> B) (a : A) (b : P a) :
-  sigT_uncurry f (existT P a b) = f a b.
-Proof. reflexivity. Qed.
-
-Hint Rewrite @sigT_uncurry_equation_1 : sigT_uncurry.
-
-Corollary sigT_curry_dep_equation_1
-  (A : Type) (P : A -> Type) (Q : forall a : A, P a -> Type)
-  (f : forall x : {a : A & P a}, Q (projT1 x) (projT2 x))
-  (a : A) (b : P a) : sigT_curry_dep f a b = f (existT P a b).
-Proof. reflexivity. Qed.
-
-Hint Rewrite @sigT_curry_dep_equation_1 : sigT_curry_dep.
-
-Corollary sigT_uncurry_dep_equation_1
-  (A : Type) (P : A -> Type) (Q : forall a : A, P a -> Type)
-  (f : forall (a : A) (b : P a), Q a b) (a : A) (b : P a) :
-  sigT_uncurry_dep f (existT P a b) = f a b.
-Proof. reflexivity. Qed.
-
-Hint Rewrite @sigT_uncurry_dep_equation_1 : sigT_uncurry_dep.
-
-Corollary Ssig_curry_equation_1 (A : Type) (P : A -> SProp) (B : Type)
-  (f : {a : A $ P a} -> B) (a : A) (b : P a) :
-  Ssig_curry f a b = f (Sexists P a b).
-Proof. reflexivity. Qed.
-
-Hint Rewrite @Ssig_curry_equation_1 : Ssig_curry.
-
-Corollary Ssig_uncurry_equation_1 (A : Type) (P : A -> SProp) (B : Type)
-  (f : forall a : A, P a -> B) (a : A) (b : P a) :
-  Ssig_uncurry f (Sexists P a b) = f a b.
-Proof. reflexivity. Qed.
-
-Hint Rewrite @Ssig_uncurry_equation_1 : Ssig_uncurry.
-
-Corollary Ssig_curry_dep_equation_1
-  (A : Type) (P : A -> SProp) (Q : forall a : A, P a -> Type)
-  (f : forall x : {a : A $ P a}, Q (Spr1 x) (Spr2 x))
-  (a : A) (b : P a) : Ssig_curry_dep f a b = f (Sexists P a b).
-Proof. reflexivity. Qed.
-
-Hint Rewrite @Ssig_curry_dep_equation_1 : Ssig_curry_dep.
-
-Corollary Ssig_uncurry_dep_equation_1
-  (A : Type) (P : A -> SProp) (Q : forall a : A, P a -> Type)
-  (f : forall (a : A) (b : P a), Q a b) (a : A) (b : P a) :
-  Ssig_uncurry_dep f (Sexists P a b) = f a b.
-Proof. reflexivity. Qed.
-
-Hint Rewrite @Ssig_uncurry_dep_equation_1 : Ssig_uncurry_dep.
-
-Corollary compose_dep_equation_1
-  (A : Type) (P : A -> Type) (Q : forall a : A, P a -> Type)
-  (g : forall (a : A) (b : P a), Q a b) (f : forall a : A, P a)
-  (a : A) : compose_dep g f a = g a (f a).
-Proof. reflexivity. Qed.
-
-Hint Rewrite @compose_dep_equation_1 : compose_dep.
-
-Corollary const_dep_equation_1 (A : Type) (P : A -> Type) (a : A) (b : P a) :
-  const_dep a b = a.
-Proof. reflexivity. Qed.
-
-Hint Rewrite @const_dep_equation_1 : const_dep.
-
-Corollary flip_dep_equation_1 (A B : Type) (P : A -> B -> Type)
-  (f : forall (a : A) (b : B), P a b) (b : B) (a : A) :
-  flip_dep f b a = f a b.
-Proof. reflexivity. Qed.
-
-Hint Rewrite @flip_dep_equation_1 : flip_dep.
-
-Corollary apply_dep_equation_1 (A : Type) (P : A -> Type)
-  (f : forall a : A, P a) (a : A) :
-  apply_dep f a = f a.
-Proof. reflexivity. Qed.
-
-Hint Rewrite @apply_dep_equation_1 : apply_dep.
