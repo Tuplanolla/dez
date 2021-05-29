@@ -310,7 +310,7 @@ Equations prod_curry (A B C : Type)
 
 Equations prod_uncurry (A B C : Type)
   (f : A -> B -> C) (x : A * B) : C :=
-  prod_uncurry f x := f (fst x) (snd x).
+  prod_uncurry f (a, b) := f a b.
 
 Equations prod_curry_dep (A B : Type) (P : A -> B -> Type)
   (f : forall x : A * B, P (fst x) (snd x)) (a : A) (b : B) : P a b :=
@@ -318,7 +318,7 @@ Equations prod_curry_dep (A B : Type) (P : A -> B -> Type)
 
 Equations prod_uncurry_dep (A B : Type) (P : A -> B -> Type)
   (f : forall (a : A) (b : B), P a b) (x : A * B) : P (fst x) (snd x) :=
-  prod_uncurry_dep f x := f (fst x) (snd x).
+  prod_uncurry_dep f (a, b) := f a b.
 
 Equations sig_curry (A : Type) (P : A -> Prop) (B : Type)
   (f : {a : A | P a} -> B) (a : A) (b : P a) : B :=
@@ -326,7 +326,7 @@ Equations sig_curry (A : Type) (P : A -> Prop) (B : Type)
 
 Equations sig_uncurry (A : Type) (P : A -> Prop) (B : Type)
   (f : forall a : A, P a -> B) (x : {a : A | P a}) : B :=
-  sig_uncurry f x := f (proj1_sig x) (proj2_sig x).
+  sig_uncurry f (exist _ a b) := f a b.
 
 Equations sig_curry_dep
   (A : Type) (P : A -> Prop) (Q : forall a : A, P a -> Type)
@@ -338,7 +338,7 @@ Equations sig_uncurry_dep
   (A : Type) (P : A -> Prop) (Q : forall a : A, P a -> Type)
   (f : forall (a : A) (b : P a), Q a b)
   (x : {a : A | P a}) : Q (proj1_sig x) (proj2_sig x) :=
-  sig_uncurry_dep f x := f (proj1_sig x) (proj2_sig x).
+  sig_uncurry_dep f (exist _ a b) := f a b.
 
 Equations sigT_curry (A : Type) (P : A -> Type) (B : Type)
   (f : {a : A & P a} -> B) (a : A) (b : P a) : B :=
@@ -346,7 +346,7 @@ Equations sigT_curry (A : Type) (P : A -> Type) (B : Type)
 
 Equations sigT_uncurry (A : Type) (P : A -> Type) (B : Type)
   (f : forall a : A, P a -> B) (x : {a : A & P a}) : B :=
-  sigT_uncurry f x := f (projT1 x) (projT2 x).
+  sigT_uncurry f (existT _ a b) := f a b.
 
 Equations sigT_curry_dep
   (A : Type) (P : A -> Type) (Q : forall a : A, P a -> Type)
@@ -358,7 +358,7 @@ Equations sigT_uncurry_dep
   (A : Type) (P : A -> Type) (Q : forall a : A, P a -> Type)
   (f : forall (a : A) (b : P a), Q a b)
   (x : {a : A & P a}) : Q (projT1 x) (projT2 x) :=
-  sigT_uncurry_dep f x := f (projT1 x) (projT2 x).
+  sigT_uncurry_dep f (existT _ a b) := f a b.
 
 Equations Ssig_curry (A : Type) (P : A -> SProp) (B : Type)
   (f : {a : A $ P a} -> B) (a : A) (b : P a) : B :=
@@ -366,7 +366,7 @@ Equations Ssig_curry (A : Type) (P : A -> SProp) (B : Type)
 
 Equations Ssig_uncurry (A : Type) (P : A -> SProp) (B : Type)
   (f : forall a : A, P a -> B) (x : {a : A $ P a}) : B :=
-  Ssig_uncurry f x := f (Spr1 x) (Spr2 x).
+  Ssig_uncurry f (Sexists _ a b) := f a b.
 
 Equations Ssig_curry_dep
   (A : Type) (P : A -> SProp) (Q : forall a : A, P a -> Type)
@@ -378,7 +378,7 @@ Equations Ssig_uncurry_dep
   (A : Type) (P : A -> SProp) (Q : forall a : A, P a -> Type)
   (f : forall (a : A) (b : P a), Q a b)
   (x : {a : A $ P a}) : Q (Spr1 x) (Spr2 x) :=
-  Ssig_uncurry_dep f x := f (Spr1 x) (Spr2 x).
+  Ssig_uncurry_dep f (Sexists _ a b) := f a b.
 
 Equations conj_curry (A B C : Prop)
   (f : A /\ B -> C) (a : A) (b : B) : C :=
@@ -386,7 +386,7 @@ Equations conj_curry (A B C : Prop)
 
 Equations conj_uncurry (A B C : Prop)
   (f : A -> B -> C) (x : A /\ B) : C :=
-  conj_uncurry f x := f (proj1 x) (proj2 x).
+  conj_uncurry f (conj a b) := f a b.
 
 (** Composition, constancy, flipping and application
     are totally fine in the standard library.
