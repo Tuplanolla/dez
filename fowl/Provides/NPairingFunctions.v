@@ -485,11 +485,23 @@ Context `(HasPlacementBasis).
 
 #[local] Instance is_sect_shell `(!IsSectShellDep stride shell_dep unshell_dep) :
   IsSectShell shell unshell.
-Proof. exact sect_shell_dep. Qed.
+Proof.
+  intros n.
+  pose proof sect_shell_dep n as e.
+  rewrite Ssig_uncurry_proj in e.
+  rewrite prod_uncurry_dep_proj in e.
+  rewrite prod_uncurry_proj.
+  auto. Qed.
 
 #[local] Instance is_sect_taco `(!IsSectTacoDep stride taco_dep untaco_dep) :
   IsSectTaco taco untaco.
-Proof. exact sect_taco_dep. Qed.
+Proof.
+  intros x y.
+  pose proof sect_taco_dep x y as e.
+  rewrite Ssig_uncurry_proj in e.
+  rewrite prod_uncurry_dep_proj in e.
+  rewrite prod_uncurry_proj.
+  auto. Qed.
 
 #[local] Instance is_lex_enum_shell `(!IsLexEnumShellDep stride shell_dep) :
   IsLexEnumShell shell.
@@ -513,7 +525,13 @@ Context `(HasPlacementBasis).
 
 #[local] Instance is_sect_shell_dep `(!IsSectShell shell unshell) :
   IsSectShellDep stride shell_dep unshell_dep.
-Proof. exact sect_shell. Qed.
+Proof.
+  intros n.
+  pose proof sect_shell n as e.
+  rewrite prod_uncurry_proj in e.
+  rewrite Ssig_uncurry_proj.
+  rewrite prod_uncurry_dep_proj.
+  auto. Qed.
 
 (** Note that this instance is just the principle of explosion in disguise. *)
 
@@ -530,16 +548,22 @@ Proof.
 
 #[local] Instance is_sect_taco_dep `(!IsSectTaco taco untaco) :
   IsSectTacoDep stride taco_dep untaco_dep.
-Proof. exact sect_taco. Qed.
+Proof.
+  intros x y.
+  pose proof sect_taco x y as e.
+  rewrite prod_uncurry_proj in e.
+  rewrite Ssig_uncurry_proj.
+  rewrite prod_uncurry_dep_proj.
+  auto. Qed.
 
 #[local] Instance is_retr_taco_dep `(!IsRetrTaco taco untaco) :
   IsRetrTacoDep stride taco_dep untaco_dep.
 Proof.
   intros a b l.
   pose proof retr_taco a b as e.
-  unfold prod_uncurry in e.
+  rewrite prod_uncurry_proj in e.
   unfold taco, has_taco in e.
-  unfold prod_uncurry.
+  rewrite prod_uncurry_proj.
   unfold untaco_dep, has_untaco_dep.
   apply Spr1_inj.
   unfold Spr1.
@@ -1050,7 +1074,7 @@ Proof.
   intros n.
   cbv [Ssig_uncurry Spr1 Spr2].
   unfold shell_dep, has_shell_dep, shell_dep_def.
-  cbv [prod_uncurry_dep].
+  rewrite prod_uncurry_dep_proj.
   unfold unshell_dep, has_unshell_dep, unshell_dep_def.
   unfold unshell, has_unshell, unshell_def.
   unfold shell, has_shell, shell_def.

@@ -195,8 +195,9 @@ Lemma pos_binoddprod_dep_pos_binoddfactor_dep (n : positive) :
   (pos_binoddfactor_dep n) = n.
 Proof.
   pose proof pos_binoddprod_pos_binoddfactor n as e.
-  unfold prod_uncurry in e.
-  unfold Ssig_uncurry. unfold prod_uncurry_dep. simp pos_binoddprod_dep. Qed.
+  rewrite prod_uncurry_proj in e.
+  unfold Ssig_uncurry.
+  rewrite prod_uncurry_dep_proj. simp pos_binoddprod_dep. Qed.
 
 (** The function [pos_binoddfactor_dep] is an inverse
     of [pos_binoddprod_dep]. *)
