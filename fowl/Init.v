@@ -116,6 +116,10 @@ Reserved Notation "f '^-1'" (left associativity, at level 25).
 (** We can only assert the following notations,
     because they are fixed by the standard library. *)
 
+Reserved Notation "A '->' B" (right associativity, at level 99,
+  B at level 200).
+Reserved Notation "A '<->' B" (no associativity, at level 95).
+
 Reserved Notation "R '==>' S" (right associativity, at level 55).
 Reserved Notation "R '-->' S" (right associativity, at level 55).
 
@@ -124,6 +128,7 @@ Reserved Notation "x '==' y" (no associativity, at level 70).
 Reserved Notation "x '===' y" (no associativity, at level 70).
 
 Reserved Notation "x '\/' y" (right associativity, at level 85).
+Reserved Notation "'~' x" (right associativity, at level 75).
 Reserved Notation "x '/\' y" (right associativity, at level 80).
 Reserved Notation "y '<=' x" (no associativity, at level 70).
 Reserved Notation "x '+' y" (left associativity, at level 50).
@@ -140,6 +145,9 @@ Reserved Notation "y '^' x" (right associativity, at level 30).
 Reserved Notation "'{_$_}'" (no associativity, at level 0).
 Reserved Notation "'{_:_$_}'" (no associativity, at level 0).
 
+Reserved Notation "'_->_'" (no associativity, at level 0).
+Reserved Notation "'_<->_'" (no associativity, at level 0).
+
 Reserved Notation "'_<==_'" (no associativity, at level 0).
 Reserved Notation "'_<--_'" (no associativity, at level 0).
 Reserved Notation "'_<==>_'" (no associativity, at level 0).
@@ -148,14 +156,12 @@ Reserved Notation "'_<-->_'" (no associativity, at level 0).
 Reserved Notation "'_==>_'" (no associativity, at level 0).
 Reserved Notation "'_-->_'" (no associativity, at level 0).
 
-Reserved Notation "'_o_'" (no associativity, at level 0).
-Reserved Notation "'_^-1'" (no associativity, at level 0).
-
 Reserved Notation "'_=_'" (no associativity, at level 0).
 Reserved Notation "'_==_'" (no associativity, at level 0).
 Reserved Notation "'_===_'" (no associativity, at level 0).
 
 Reserved Notation "'_\/_'" (no associativity, at level 0).
+Reserved Notation "'~_'" (no associativity, at level 0).
 Reserved Notation "'_/\_'" (no associativity, at level 0).
 Reserved Notation "'_<=_'" (no associativity, at level 0).
 Reserved Notation "'_+_'" (no associativity, at level 0).
@@ -165,6 +171,9 @@ Reserved Notation "'_*_'" (no associativity, at level 0).
 Reserved Notation "'/_'" (no associativity, at level 0).
 Reserved Notation "'_/_'" (no associativity, at level 0).
 Reserved Notation "'_^_'" (no associativity, at level 0).
+
+Reserved Notation "'_o_'" (no associativity, at level 0).
+Reserved Notation "'_^-1'" (no associativity, at level 0).
 
 (** We might as well treat booleans as reflections of propositions. *)
 
@@ -188,6 +197,9 @@ Notation "'{' x ':' A '$' B '}'" := (@Ssig A (fun x : _ => B)) : type_scope.
 Notation "'{_$_}'" := Ssig (only parsing) : type_scope.
 Notation "'{_:_$_}'" := @Ssig (only parsing) : type_scope.
 
+Notation "'_->_'" := arrow (only parsing) : type_scope.
+Notation "'_<->_'" := iff (only parsing) : type_scope.
+
 (** Respectful morphisms have an obvious dual
     that is missing from the standard library. *)
 
@@ -208,6 +220,8 @@ Proof. reflexivity. Qed.
 
 Fail Fail Notation "R '==>' S" := (respectful R S) : signature_scope.
 
+Notation "'_==>_'" := respectful (only parsing) : signature_scope.
+
 Equations corespectful (A B : Type)
   (R : relation B) (R' : relation A) : relation (A -> B) :=
   corespectful R R' := fun f g : A -> B =>
@@ -215,12 +229,16 @@ Equations corespectful (A B : Type)
 
 Notation "R '<==' S" := (corespectful R S) : signature_scope.
 
+Notation "'_<==_'" := corespectful (only parsing) : signature_scope.
+
 Equations birespectful (A B C : Type)
   (R : relation B) (R' : relation C) : relation ((A -> B) * (A -> C)) :=
   birespectful R R' := fun fh gk : (A -> B) * (A -> C) =>
   forall x y : A, R (fst fh x) (fst gk y) -> R' (snd fh x) (snd gk y).
 
 Notation "R '<==>' S" := (birespectful R S) : signature_scope.
+
+Notation "'_<==>_'" := birespectful (only parsing) : signature_scope.
 
 (** Numeral keywords are not a subset of numeral notations,
     which is why we must repeat them here. *)
@@ -257,11 +275,11 @@ Module Hexadecimal.
 
 Export Coq.Init.Hexadecimal.
 
-Notation "'0'" := (D0 Nil) : dec_uint_scope.
-Notation "'1'" := (D1 Nil) : dec_uint_scope.
+Notation "'0'" := (D0 Nil) : hex_uint_scope.
+Notation "'1'" := (D1 Nil) : hex_uint_scope.
 
-Notation "'0'" := (Pos (D0 Nil)) : dec_int_scope.
-Notation "'1'" := (Pos (D1 Nil)) : dec_int_scope.
+Notation "'0'" := (Pos (D0 Nil)) : hex_int_scope.
+Notation "'1'" := (Pos (D1 Nil)) : hex_int_scope.
 
 End Hexadecimal.
 
@@ -283,6 +301,17 @@ Notation "'0'" := R0 : hex_R_scope.
 Notation "'0'" := R0 : R_scope.
 Notation "'1'" := R1 : hex_R_scope.
 Notation "'1'" := R1 : R_scope.
+
+Notation "'_=_'" := eq (only parsing) : type_scope.
+
+Notation "'-' A" := (notT A) : type_scope.
+
+Notation "'_\/_'" := or (only parsing) : type_scope.
+Notation "'~_'" := not (only parsing) : type_scope.
+Notation "'_/\_'" := and (only parsing) : type_scope.
+Notation "'_+_'" := sum (only parsing) : type_scope.
+Notation "'-_'" := notT (only parsing) : type_scope.
+Notation "'_*_'" := prod (only parsing) : type_scope.
 
 (** We define some additional utility functions.
     While some standard library definitions need to be overridden
@@ -973,11 +1002,13 @@ Lemma compose_dep_assoc
   (h : forall (a : A) (b : P a) (c : Q a b), R a b c)
   (g : forall (a : A) (b : P a), Q a b) (f : forall a : A, P a) (a : A) :
   ((fun x : A => h x (f x)) o (g o f)) a = ((fun x : A => h x o g x) o f) a.
+  (* (apA h f o (g o f)) a = (liftA2 _o_ h g o f) a *)
 Proof. reflexivity. Qed.
 
 Lemma compose_dep_id_l (A : Type) (P : A -> Type)
   (f : forall a : A, P a) (a : A) :
   ((fun x : A => const id x) o f) a = f a.
+  (* (const id o f) a = f a *)
 Proof. reflexivity. Qed.
 
 Lemma compose_dep_id_r (A : Type) (P : A -> Type)

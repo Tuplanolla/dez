@@ -1,19 +1,12 @@
-(* bad *)
-From Coq Require Import
-  Classes.RelationClasses.
+(** * Asymmetry of a Binary Relation *)
+
 From Maniunfold.Has Require Export
   OneSortedBinaryRelation.
 From Maniunfold.ShouldHave Require Import
   OneSortedBinaryRelationNotations.
 
-Class IsAsym (A : Type) `(HasBinRel A) : Prop :=
-  asym : forall x y : A, x ~~ y -> ~ (y ~~ x).
+Fail Fail Class IsAsym (A : Type) (R : HasBinRel A) : Prop :=
+  asym (x y : A) (a : x ~~ y) (b : y ~~ x) : False.
 
-Section Context.
-
-Context (A : Type) `{IsAsym A}.
-
-Global Instance bin_rel_asymmetric : Asymmetric bin_rel | 0.
-Proof. intros x y. apply asym. Defined.
-
-End Context.
+Notation IsAsym := Asymmetric.
+Notation asym := (asymmetry : IsAsym _).

@@ -1,3 +1,5 @@
+(** * Monotonicity of a Function *)
+
 From Maniunfold.Has Require Export
   Function OneSortedOrderRelation.
 From Maniunfold.ShouldHave Require Import

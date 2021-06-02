@@ -153,6 +153,23 @@ Proof. exact @one_zero_degen. Qed.
 
 (** TODO Clean up. *)
 
+Theorem mul_l_cancel (a : forall x y : A, x * y = 0 -> x = 0 \/ y = 0)
+  (x y z : A) (e : z * x = z * y) (f : z <> 0) : x = y.
+Proof with conversions.
+  assert (e' : z * x + - (z * y) = 0).
+  { rewrite e.
+    rewrite (r_inv (z * y))...
+    reflexivity. }
+  rewrite l_bin_comm in e'.
+  rewrite <- l_distr in e'.
+  apply a in e'.
+  destruct e' as [e' | e'].
+  - congruence.
+  - apply (r_cancel x y (- y))...
+    rewrite e'.
+    rewrite (r_inv y)...
+    reflexivity. Qed.
+
 Import OneSortedGradedArithmeticNotations.
 Import OneSortedGradedAdditiveNotations.
 

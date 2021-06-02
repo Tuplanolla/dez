@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold.Has Require Export
   OneSortedOrderRelation StrictOrderRelation.
 From Maniunfold.ShouldHave Require Import

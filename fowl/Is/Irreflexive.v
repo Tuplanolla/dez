@@ -1,19 +1,12 @@
-(* bad *)
-From Coq Require Import
-  Classes.RelationClasses.
+(** * Irreflexivity of a Binary Relation *)
+
 From Maniunfold.Has Require Export
   OneSortedBinaryRelation.
 From Maniunfold.ShouldHave Require Import
   OneSortedBinaryRelationNotations.
 
-Class IsIrrefl (A : Type) `(HasBinRel A) : Prop :=
-  irrefl : forall x : A, ~ (x ~~ x).
+Fail Fail Class IsIrrefl (A : Type) (R : HasBinRel A) : Prop :=
+  irrefl (x : A) : ~ (x ~~ x).
 
-Section Context.
-
-Context (A : Type) `{IsIrrefl A}.
-
-Global Instance bin_rel_reflexive : Irreflexive bin_rel | 0.
-Proof. intros x. apply irrefl. Defined.
-
-End Context.
+Notation IsIrrefl := Irreflexive.
+Notation irrefl := (irreflexivity : IsIrrefl _).

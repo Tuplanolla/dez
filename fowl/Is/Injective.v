@@ -1,3 +1,5 @@
+(** * Injectivity of a Function *)
+
 From Maniunfold Require Export
   Init.
 

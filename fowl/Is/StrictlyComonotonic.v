@@ -1,3 +1,4 @@
+(* bad *)
 From Maniunfold.Has Require Export
   Function.
 From Maniunfold.ShouldHave Require Import
