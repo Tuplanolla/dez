@@ -1,33 +1,32 @@
-(* bad *)
+(** * Strict Monotonicity of a Function *)
+
 From Maniunfold.Has Require Export
-  Function.
+  OneSortedOrderRelation.
 From Maniunfold.ShouldHave Require Import
   OneSortedOrderRelationNotations OneSortedStrictOrderRelationNotations.
 From Maniunfold.Is Require Export
   Monotonic CoherentOrderRelations.
 
 Fail Fail Class IsStrictMono (A B : Type)
-  `(HasStrictOrdRel A) `(HasStrictOrdRel B) `(HasFn A B) : Prop :=
-  strict_mono (x y : A) (l : x < y) : fn x < fn y.
+  (R : HasStrictOrdRel A) (S : HasStrictOrdRel B) (f : A -> B) : Prop :=
+  strict_mono (x y : A) (l : x < y) : f x < f y.
 
-Notation IsStrictMono strict_ord_rel strict_ord_rel' fn :=
-  (Proper (strict_ord_rel ==> strict_ord_rel') fn).
-Notation strict_mono :=
-  (proper_prf (R := strict_ord_rel ==> strict_ord_rel) (m := fn)).
-
-(** Strict monotonicity implies monotonicity. *)
+Notation IsStrictMono R S f := (Proper (R ==> S) f).
+Notation strict_mono := (proper_prf : IsStrictMono _ _ _).
 
 Section Context.
 
-Context (A B : Type)
+Context (A B : Type) (f : A -> B)
   `(EqDec A) `(IsCohOrdRels A) `(!@PreOrder A _<=_)
   `(IsCohOrdRels B) `(!@PreOrder B _<=_)
   `(HasFn A B).
 
-#[local] Instance is_mono `(!IsStrictMono _<_ _<_ fn) : IsMono _<=_ _<=_ fn.
+(** Strict monotonicity implies monotonicity. *)
+
+#[local] Instance is_mono `(!IsStrictMono _<_ _<_ f) : IsMono _<=_ _<=_ f.
 Proof.
   intros x y l.
-  destruct (eq_dec x y) as [e | f].
+  destruct (eq_dec x y) as [e | f'].
   - subst y. reflexivity.
   - pose proof proj2 (coh_ord_rels x y) ltac:(eauto) as l'.
     pose proof strict_mono x y ltac:(eauto) as lf'.

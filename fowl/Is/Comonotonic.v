@@ -1,7 +1,7 @@
 (** * Comonotonicity of a Function *)
 
 From Maniunfold.Has Require Export
-  Function OneSortedOrderRelation.
+  OneSortedOrderRelation.
 From Maniunfold.ShouldHave Require Import
   OneSortedOrderRelationNotations.
 

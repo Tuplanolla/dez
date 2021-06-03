@@ -37,13 +37,13 @@ From Equations.Prop Require Export
 
 (** We disable warnings about overriding notations,
     because we overload many standard library notations
-    with operational type classes. *)
+    with operational typeclasses. *)
 
 #[global] Set Warnings "-notation-overridden".
 
 (** We turn on automatically inferred implicit arguments and
     make them maximally inserted and conservatively detected,
-    since most type classes follow the same design pattern. *)
+    since most typeclasses follow the same design pattern. *)
 
 #[global] Set Implicit Arguments.
 #[global] Set Maximal Implicit Insertion.
@@ -96,88 +96,75 @@ Add Search Blacklist "FunctionalInduction_".
 
 (** We reserve the following notations.
     While doing so is not strictly necessary,
-    this list also serves as a quick reference. *)
+    this list also serves as a quick reference.
+    Partially applied notations (operator sections)
+    can be generated from the fully applied versions,
+    although they have to be declared first,
+    so that they are not used for printing
+    when more arguments are available. *)
 
-Reserved Notation "'{' x '$' B '}'" (at level 0, x at level 99).
-Reserved Notation "'{' x ':' A '$' B '}'" (at level 0, x at level 99).
+Reserved Notation "'{_$_}'" (no associativity, at level 0).
+Reserved Notation "'{' a '$' B '}'" (at level 0, a at level 99).
+Reserved Notation "'{_:_$_}'" (no associativity, at level 0).
+Reserved Notation "'{' a ':' A '$' B '}'" (at level 0, a at level 99).
 
+Reserved Notation "'_->_'" (no associativity, at level 0).
+Reserved Notation "A '->' B"
+  (right associativity, at level 99, B at level 200).
+Reserved Notation "'_<->_'" (no associativity, at level 0).
+Reserved Notation "A '<->' B" (no associativity, at level 95).
+
+Reserved Notation "'_==>_'" (no associativity, at level 0).
+Reserved Notation "R '==>' S" (right associativity, at level 55).
+Reserved Notation "'_-->_'" (no associativity, at level 0).
+Reserved Notation "R '-->' S" (right associativity, at level 55).
+Reserved Notation "'_<==_'" (no associativity, at level 0).
 Reserved Notation "R '<==' S" (right associativity, at level 55).
+Reserved Notation "'_<--_'" (no associativity, at level 0).
 Reserved Notation "R '<--' S" (right associativity, at level 55).
+Reserved Notation "'_<==>_'" (no associativity, at level 0).
 Reserved Notation "R '<==>' S" (right associativity, at level 55).
+Reserved Notation "'_<-->_'" (no associativity, at level 0).
 Reserved Notation "R '<-->' S" (right associativity, at level 55).
 
 Reserved Notation "'0'" (no associativity, at level 0).
 Reserved Notation "'1'" (no associativity, at level 0).
 
-Reserved Notation "g 'o' f" (left associativity, at level 40).
-Reserved Notation "'id'" (no associativity, at level 0).
-Reserved Notation "f '^-1'" (left associativity, at level 25).
-
-(** We can only assert the following notations,
-    because they are fixed by the standard library. *)
-
-Reserved Notation "A '->' B" (right associativity, at level 99,
-  B at level 200).
-Reserved Notation "A '<->' B" (no associativity, at level 95).
-
-Reserved Notation "R '==>' S" (right associativity, at level 55).
-Reserved Notation "R '-->' S" (right associativity, at level 55).
-
+Reserved Notation "'_=_'" (no associativity, at level 0).
 Reserved Notation "x '=' y" (no associativity, at level 70).
+Reserved Notation "'_==_'" (no associativity, at level 0).
 Reserved Notation "x '==' y" (no associativity, at level 70).
+Reserved Notation "'_===_'" (no associativity, at level 0).
 Reserved Notation "x '===' y" (no associativity, at level 70).
 
+Reserved Notation "'_\/_'" (no associativity, at level 0).
 Reserved Notation "x '\/' y" (right associativity, at level 85).
+Reserved Notation "'~_'" (no associativity, at level 0).
 Reserved Notation "'~' x" (right associativity, at level 75).
+Reserved Notation "'_/\_'" (no associativity, at level 0).
 Reserved Notation "x '/\' y" (right associativity, at level 80).
+Reserved Notation "'_<=_'" (no associativity, at level 0).
 Reserved Notation "y '<=' x" (no associativity, at level 70).
+Reserved Notation "'_+_'" (no associativity, at level 0).
 Reserved Notation "x '+' y" (left associativity, at level 50).
+Reserved Notation "'-_'" (no associativity, at level 0).
 Reserved Notation "'-' x" (right associativity, at level 35).
+Reserved Notation "'_-_'" (no associativity, at level 0).
 Reserved Notation "y '-' x" (left associativity, at level 50).
+Reserved Notation "'_*_'" (no associativity, at level 0).
 Reserved Notation "x '*' y" (left associativity, at level 40).
+Reserved Notation "'/_'" (no associativity, at level 0).
 Reserved Notation "'/' x" (right associativity, at level 35).
+Reserved Notation "'_/_'" (no associativity, at level 0).
 Reserved Notation "y '/' x" (left associativity, at level 40).
+Reserved Notation "'_^_'" (no associativity, at level 0).
 Reserved Notation "y '^' x" (right associativity, at level 30).
 
-(** These partial applications (operator sections)
-    could be generated automatically from the preceding notations. *)
-
-Reserved Notation "'{_$_}'" (no associativity, at level 0).
-Reserved Notation "'{_:_$_}'" (no associativity, at level 0).
-
-Reserved Notation "'_->_'" (no associativity, at level 0).
-Reserved Notation "'_<->_'" (no associativity, at level 0).
-
-Reserved Notation "'_<==_'" (no associativity, at level 0).
-Reserved Notation "'_<--_'" (no associativity, at level 0).
-Reserved Notation "'_<==>_'" (no associativity, at level 0).
-Reserved Notation "'_<-->_'" (no associativity, at level 0).
-
-Reserved Notation "'_==>_'" (no associativity, at level 0).
-Reserved Notation "'_-->_'" (no associativity, at level 0).
-
-Reserved Notation "'_=_'" (no associativity, at level 0).
-Reserved Notation "'_==_'" (no associativity, at level 0).
-Reserved Notation "'_===_'" (no associativity, at level 0).
-
-Reserved Notation "'_\/_'" (no associativity, at level 0).
-Reserved Notation "'~_'" (no associativity, at level 0).
-Reserved Notation "'_/\_'" (no associativity, at level 0).
-Reserved Notation "'_<=_'" (no associativity, at level 0).
-Reserved Notation "'_+_'" (no associativity, at level 0).
-Reserved Notation "'-_'" (no associativity, at level 0).
-Reserved Notation "'_-_'" (no associativity, at level 0).
-Reserved Notation "'_*_'" (no associativity, at level 0).
-Reserved Notation "'/_'" (no associativity, at level 0).
-Reserved Notation "'_/_'" (no associativity, at level 0).
-Reserved Notation "'_^_'" (no associativity, at level 0).
-
 Reserved Notation "'_o_'" (no associativity, at level 0).
+Reserved Notation "g 'o' f" (left associativity, at level 40).
+Reserved Notation "'id'" (no associativity, at level 0).
 Reserved Notation "'_^-1'" (no associativity, at level 0).
-
-(** We might as well treat booleans as reflections of propositions. *)
-
-Coercion is_true : bool >-> Sortclass.
+Reserved Notation "f '^-1'" (left associativity, at level 25).
 
 (** We export the [rew] notations from [Init.Logic]
     to use them like transport in homotopy type theory. *)
@@ -191,14 +178,15 @@ Import ListNotations.
     Besides, using [!] would conflict with
     the lonely notations of the equations plugin. *)
 
-Notation "'{' x '$' B '}'" := (Ssig (fun x : _ => B)) : type_scope.
-Notation "'{' x ':' A '$' B '}'" := (@Ssig A (fun x : _ => B)) : type_scope.
+Notation "'{_$_}'" := Ssig : type_scope.
+Notation "'{' a '$' B '}'" := (Ssig (fun a : _ => B)) : type_scope.
+Notation "'{_:_$_}'" := @Ssig : type_scope.
+Notation "'{' a ':' A '$' B '}'" := (@Ssig A (fun a : _ => B)) : type_scope.
 
-Notation "'{_$_}'" := Ssig (only parsing) : type_scope.
-Notation "'{_:_$_}'" := @Ssig (only parsing) : type_scope.
-
-Notation "'_->_'" := arrow (only parsing) : type_scope.
-Notation "'_<->_'" := iff (only parsing) : type_scope.
+Notation "'_->_'" := (fun A B : _ => forall _ : A, B) : type_scope.
+Notation "A '->' B" := (forall _ : A, B) : type_scope.
+Notation "'_<->_'" := iff : type_scope.
+Notation "A '<->' B" := (iff A B) : type_scope.
 
 (** Respectful morphisms have an obvious dual
     that is missing from the standard library. *)
@@ -216,29 +204,26 @@ Corollary respectful_equation_1
   forall x y : A, R x y -> R' (f x) (g y).
 Proof. reflexivity. Qed.
 
-#[global] Hint Rewrite @respectful_equation_1 : respectful.
+#[export] Hint Rewrite @respectful_equation_1 : respectful.
 
-Fail Fail Notation "R '==>' S" := (respectful R S) : signature_scope.
-
-Notation "'_==>_'" := respectful (only parsing) : signature_scope.
+Notation "'_==>_'" := respectful : signature_scope.
+Notation "R '==>' S" := (respectful R S) : signature_scope.
 
 Equations corespectful (A B : Type)
   (R : relation B) (R' : relation A) : relation (A -> B) :=
   corespectful R R' := fun f g : A -> B =>
   forall x y : A, R (f x) (g y) -> R' x y.
 
+Notation "'_<==_'" := corespectful : signature_scope.
 Notation "R '<==' S" := (corespectful R S) : signature_scope.
-
-Notation "'_<==_'" := corespectful (only parsing) : signature_scope.
 
 Equations birespectful (A B C : Type)
   (R : relation B) (R' : relation C) : relation ((A -> B) * (A -> C)) :=
   birespectful R R' := fun fh gk : (A -> B) * (A -> C) =>
   forall x y : A, R (fst fh x) (fst gk y) -> R' (snd fh x) (snd gk y).
 
+Notation "'_<==>_'" := birespectful : signature_scope.
 Notation "R '<==>' S" := (birespectful R S) : signature_scope.
-
-Notation "'_<==>_'" := birespectful (only parsing) : signature_scope.
 
 (** Numeral keywords are not a subset of numeral notations,
     which is why we must repeat them here. *)
@@ -302,16 +287,21 @@ Notation "'0'" := R0 : R_scope.
 Notation "'1'" := R1 : hex_R_scope.
 Notation "'1'" := R1 : R_scope.
 
-Notation "'_=_'" := eq (only parsing) : type_scope.
+Notation "'_=_'" := eq : type_scope.
+Notation "x '=' y" := (eq x y) : type_scope.
 
+Notation "'-_'" := notT : type_scope.
 Notation "'-' A" := (notT A) : type_scope.
-
-Notation "'_\/_'" := or (only parsing) : type_scope.
-Notation "'~_'" := not (only parsing) : type_scope.
-Notation "'_/\_'" := and (only parsing) : type_scope.
-Notation "'_+_'" := sum (only parsing) : type_scope.
-Notation "'-_'" := notT (only parsing) : type_scope.
-Notation "'_*_'" := prod (only parsing) : type_scope.
+Notation "'_\/_'" := or : type_scope.
+Notation "A '\/' B" := (or A B) : type_scope.
+Notation "'~_'" := not : type_scope.
+Notation "'~' A" := (not A) : type_scope.
+Notation "'_/\_'" := and : type_scope.
+Notation "A '/\' B" := (and A B) : type_scope.
+Notation "'_+_'" := sum : type_scope.
+Notation "A '+' B" := (sum A B) : type_scope.
+Notation "'_*_'" := prod : type_scope.
+Notation "A '*' B" := (prod A B) : type_scope.
 
 (** We define some additional utility functions.
     While some standard library definitions need to be overridden
@@ -336,8 +326,8 @@ Proof. reflexivity. Qed.
 
 End Context.
 
-#[global] Hint Rewrite @Spr1_equation_1 : Spr1.
-#[global] Hint Rewrite @Spr2_equation_1 : Spr2.
+#[export] Hint Rewrite @Spr1_equation_1 : Spr1.
+#[export] Hint Rewrite @Spr2_equation_1 : Spr2.
 
 Section Context.
 
@@ -397,13 +387,17 @@ Proof. reflexivity. Qed.
 
 End Context.
 
-#[global] Hint Rewrite @andb_equation_1 @andb_equation_2 : andb.
-#[global] Hint Rewrite @orb_equation_1 @orb_equation_2 : orb.
-#[global] Hint Rewrite @implb_equation_1 @implb_equation_2 : implb.
-#[global] Hint Rewrite @xorb_equation_1 @xorb_equation_2
+#[export] Hint Rewrite @andb_equation_1 @andb_equation_2 : andb.
+#[export] Hint Rewrite @orb_equation_1 @orb_equation_2 : orb.
+#[export] Hint Rewrite @implb_equation_1 @implb_equation_2 : implb.
+#[export] Hint Rewrite @xorb_equation_1 @xorb_equation_2
   @xorb_equation_3 @xorb_equation_4 : xorb.
-#[global] Hint Rewrite @negb_equation_1 @negb_equation_2 : negb.
-#[global] Hint Rewrite @is_true_equation_1 : is_true.
+#[export] Hint Rewrite @negb_equation_1 @negb_equation_2 : negb.
+#[export] Hint Rewrite @is_true_equation_1 : is_true.
+
+(** We might as well treat booleans as reflections of propositions. *)
+
+Coercion is_true : bool >-> Sortclass.
 
 Corollary option_map_equation_1 (A B : Type) (f : A -> B) (a : A) :
   option_map f (Some a) = Some (f a).
@@ -413,7 +407,7 @@ Corollary option_map_equation_2 (A B : Type) (f : A -> B) :
   option_map f None = None.
 Proof. reflexivity. Qed.
 
-#[global] Hint Rewrite @option_map_equation_1
+#[export] Hint Rewrite @option_map_equation_1
   @option_map_equation_2 : option_map.
 
 Corollary fst_equation_1 (A B : Type) (x : A) (y : B) : fst (x, y) = x.
@@ -422,8 +416,8 @@ Proof. reflexivity. Qed.
 Corollary snd_equation_1 (A B : Type) (x : A) (y : B) : snd (x, y) = y.
 Proof. reflexivity. Qed.
 
-#[global] Hint Rewrite @fst_equation_1 : fst.
-#[global] Hint Rewrite @snd_equation_1 : snd.
+#[export] Hint Rewrite @fst_equation_1 : fst.
+#[export] Hint Rewrite @snd_equation_1 : snd.
 
 (** Currying and uncurrying are swapped around
     in some versions of the standard library,
@@ -443,7 +437,7 @@ Equations prod_uncurry (A B C : Type)
 Lemma prod_uncurry_proj (A B C : Type)
   (f : A -> B -> C) (x : A * B) :
   prod_uncurry f x = f (fst x) (snd x).
-Proof. destruct x as [a b]. simp prod_uncurry. reflexivity. Qed.
+Proof. destruct x as [a b]. reflexivity. Qed.
 
 Equations prod_curry_dep (A B : Type) (P : A -> B -> Type)
   (f : forall x : A * B, P (fst x) (snd x)) (a : A) (b : B) : P a b :=
@@ -456,7 +450,7 @@ Equations prod_uncurry_dep (A B : Type) (P : A -> B -> Type)
 Lemma prod_uncurry_dep_proj (A B : Type) (P : A -> B -> Type)
   (f : forall (a : A) (b : B), P a b) (x : A * B) :
   prod_uncurry_dep f x = f (fst x) (snd x).
-Proof. destruct x as [a b]. simp prod_uncurry_dep. reflexivity. Qed.
+Proof. destruct x as [a b]. reflexivity. Qed.
 
 Equations sig_curry (A : Type) (P : A -> Prop) (B : Type)
   (f : {a : A | P a} -> B) (a : A) (b : P a) : B :=
@@ -469,7 +463,7 @@ Equations sig_uncurry (A : Type) (P : A -> Prop) (B : Type)
 Lemma sig_uncurry_proj (A : Type) (P : A -> Prop) (B : Type)
   (f : forall a : A, P a -> B) (x : {a : A | P a}) :
   sig_uncurry f x = f (proj1_sig x) (proj2_sig x).
-Proof. destruct x as [a b]. simp sig_uncurry. reflexivity. Qed.
+Proof. destruct x as [a b]. reflexivity. Qed.
 
 Equations sig_curry_dep
   (A : Type) (P : A -> Prop) (Q : forall a : A, P a -> Type)
@@ -488,7 +482,7 @@ Lemma sig_uncurry_dep_proj
   (f : forall (a : A) (b : P a), Q a b)
   (x : {a : A | P a}) :
   sig_uncurry_dep f x = f (proj1_sig x) (proj2_sig x).
-Proof. destruct x as [a b]. simp sig_uncurry. reflexivity. Qed.
+Proof. destruct x as [a b]. reflexivity. Qed.
 
 Equations sigT_curry (A : Type) (P : A -> Type) (B : Type)
   (f : {a : A & P a} -> B) (a : A) (b : P a) : B :=
@@ -501,7 +495,7 @@ Equations sigT_uncurry (A : Type) (P : A -> Type) (B : Type)
 Lemma sigT_uncurry_proj (A : Type) (P : A -> Type) (B : Type)
   (f : forall a : A, P a -> B) (x : {a : A & P a}) :
   sigT_uncurry f x = f (projT1 x) (projT2 x).
-Proof. destruct x as [a b]. simp sigT_uncurry. reflexivity. Qed.
+Proof. destruct x as [a b]. reflexivity. Qed.
 
 Equations sigT_curry_dep
   (A : Type) (P : A -> Type) (Q : forall a : A, P a -> Type)
@@ -520,7 +514,7 @@ Lemma sigT_uncurry_dep_proj
   (f : forall (a : A) (b : P a), Q a b)
   (x : {a : A & P a}) :
   sigT_uncurry_dep f x = f (projT1 x) (projT2 x).
-Proof. destruct x as [a b]. simp sigT_uncurry. reflexivity. Qed.
+Proof. destruct x as [a b]. reflexivity. Qed.
 
 Equations Ssig_curry (A : Type) (P : A -> SProp) (B : Type)
   (f : {a : A $ P a} -> B) (a : A) (b : P a) : B :=
@@ -533,7 +527,7 @@ Equations Ssig_uncurry (A : Type) (P : A -> SProp) (B : Type)
 Lemma Ssig_uncurry_proj (A : Type) (P : A -> SProp) (B : Type)
   (f : forall a : A, P a -> B) (x : {a : A $ P a}) :
   Ssig_uncurry f x = f (Spr1 x) (Spr2 x).
-Proof. destruct x as [a b]. simp Ssig_uncurry. reflexivity. Qed.
+Proof. destruct x as [a b]. reflexivity. Qed.
 
 Equations Ssig_curry_dep
   (A : Type) (P : A -> SProp) (Q : forall a : A, P a -> Type)
@@ -552,7 +546,7 @@ Lemma Ssig_uncurry_dep_proj
   (f : forall (a : A) (b : P a), Q a b)
   (x : {a : A $ P a}) :
   Ssig_uncurry_dep f x = f (Spr1 x) (Spr2 x).
-Proof. destruct x as [a b]. simp Ssig_uncurry. reflexivity. Qed.
+Proof. destruct x as [a b]. reflexivity. Qed.
 
 Equations conj_curry (A B C : Prop)
   (f : A /\ B -> C) (a : A) (b : B) : C :=
@@ -570,7 +564,7 @@ Corollary length_equation_2 (A : Type) (a : A) (l' : list A) :
   length (a :: l') = S (length l').
 Proof. reflexivity. Qed.
 
-#[global] Hint Rewrite @length_equation_1 @length_equation_2 : length.
+#[export] Hint Rewrite @length_equation_1 @length_equation_2 : length.
 
 Corollary app_equation_1 (A : Type) (m : list A) :
   [] ++ m = m.
@@ -580,38 +574,33 @@ Corollary app_equation_2 (A : Type) (a : A) (l1 m : list A) :
   (a :: l1) ++ m = a :: (l1 ++ m).
 Proof. reflexivity. Qed.
 
-#[global] Hint Rewrite @app_equation_1 @app_equation_2 : app.
+#[export] Hint Rewrite @app_equation_1 @app_equation_2 : app.
 
 Corollary ID_equation_1 : ID = forall A : Type, A -> A.
 Proof. reflexivity. Qed.
 
-#[global] Hint Rewrite @ID_equation_1 : ID.
+#[export] Hint Rewrite @ID_equation_1 : ID.
 
-(** We turn [id] into a keyword
-    to keep it reusable for things like categories. *)
-
-Notation "'id'" := Init.Datatypes.id : core_scope.
-
-Corollary id_equation_1 (A : Type) (x : A) : id x = x.
-Proof. reflexivity. Qed.
-
-(** If we created a hint database called [id],
+(** We define a new identity function and
+    turn [id] into a keyword to reuse it with concepts like categories.
+    If we created a hint database called [id],
     we could never refer to it again,
-    because [id] is a keyword and
-    hint databases cannot have qualified names.
-    Therefore, we put the hint into [ID]. *)
+    because hint databases cannot handle qualified names. *)
 
-#[global] Hint Rewrite @id_equation_1 : ID.
+Equations idfun (A : Type) (x : A) : A :=
+  idfun x := x.
+
+Notation "'id'" := idfun : core_scope.
 
 Corollary IDProp_equation_1 : IDProp = forall A : Prop, A -> A.
 Proof. reflexivity. Qed.
 
-#[global] Hint Rewrite @IDProp_equation_1 : IDProp.
+#[export] Hint Rewrite @IDProp_equation_1 : IDProp.
 
 Corollary idProp_equation_1 (A : Prop) (x : A) : idProp x = x.
 Proof. reflexivity. Qed.
 
-#[global] Hint Rewrite @idProp_equation_1 : idProp.
+#[export] Hint Rewrite @idProp_equation_1 : idProp.
 
 Corollary proj1_sig_equation_1 (A : Type) (P : A -> Prop) (a : A) (b : P a) :
   proj1_sig (exist P a b) = a.
@@ -621,8 +610,8 @@ Corollary proj2_sig_equation_1 (A : Type) (P : A -> Prop) (a : A) (b : P a) :
   proj2_sig (exist P a b) = b.
 Proof. reflexivity. Qed.
 
-#[global] Hint Rewrite @proj1_sig_equation_1 : proj1_sig.
-#[global] Hint Rewrite @proj2_sig_equation_1 : proj2_sig.
+#[export] Hint Rewrite @proj1_sig_equation_1 : proj1_sig.
+#[export] Hint Rewrite @proj2_sig_equation_1 : proj2_sig.
 
 Corollary projT1_equation_1 (A : Type) (P : A -> Type) (a : A) (b : P a) :
   projT1 (existT P a b) = a.
@@ -632,8 +621,8 @@ Corollary projT2_equation_1 (A : Type) (P : A -> Type) (a : A) (b : P a) :
   projT2 (existT P a b) = b.
 Proof. reflexivity. Qed.
 
-#[global] Hint Rewrite @projT1_equation_1 : projT1.
-#[global] Hint Rewrite @projT2_equation_1 : projT2.
+#[export] Hint Rewrite @projT1_equation_1 : projT1.
+#[export] Hint Rewrite @projT2_equation_1 : projT2.
 
 Corollary sig_of_sigT_equation_1 (A : Type) (P : A -> Prop) (a : A) (b : P a) :
   sig_of_sigT (existT P a b) = exist P a b.
@@ -643,8 +632,8 @@ Corollary sigT_of_sig_equation_1 (A : Type) (P : A -> Prop) (a : A) (b : P a) :
   sigT_of_sig (exist P a b) = existT P a b.
 Proof. reflexivity. Qed.
 
-#[global] Hint Rewrite @sig_of_sigT_equation_1 : sig_of_sigT.
-#[global] Hint Rewrite @sigT_of_sig_equation_1 : sig_of_sig.
+#[export] Hint Rewrite @sig_of_sigT_equation_1 : sig_of_sigT.
+#[export] Hint Rewrite @sigT_of_sig_equation_1 : sig_of_sig.
 
 Fail Fail Equations compose (A B C : Type)
   (g : B -> C) (f : A -> B) (a : A) : C :=
@@ -653,16 +642,15 @@ Fail Fail Equations compose (A B C : Type)
 (** Using [o] as a variable name should be prohibited by law,
     which is why we turn it into a notation instead. *)
 
+Notation "'_o_'" := compose : core_scope.
 Notation "g 'o' f" := (compose g f) : core_scope.
-
-Notation "'_o_'" := compose (only parsing) : core_scope.
 
 Corollary compose_equation_1 (A B C : Type)
   (g : B -> C) (f : A -> B) (x : A) :
   (g o f) x = g (f x).
 Proof. reflexivity. Qed.
 
-#[global] Hint Rewrite @compose_equation_1 : compose.
+#[export] Hint Rewrite @compose_equation_1 : compose.
 
 Equations compose_dep
   (A : Type) (P : A -> Type) (Q : forall a : A, P a -> Type)
@@ -676,7 +664,7 @@ Fail Fail Equations arrow (A B : Type) : Type :=
 Corollary arrow_equation_1 (A B : Type) : arrow A B = (A -> B).
 Proof. reflexivity. Qed.
 
-#[global] Hint Rewrite @arrow_equation_1 : arrow.
+#[export] Hint Rewrite @arrow_equation_1 : arrow.
 
 Fail Fail Equations impl (A B : Prop) : Prop :=
   impl A B := A -> B.
@@ -684,7 +672,7 @@ Fail Fail Equations impl (A B : Prop) : Prop :=
 Corollary impl_equation_1 (A B : Prop) : impl A B = (A -> B).
 Proof. reflexivity. Qed.
 
-#[global] Hint Rewrite @impl_equation_1 : impl.
+#[export] Hint Rewrite @impl_equation_1 : impl.
 
 Fail Fail Equations const (A B : Type) (a : A) (b : B) : A :=
   const a b := a.
@@ -692,7 +680,7 @@ Fail Fail Equations const (A B : Type) (a : A) (b : B) : A :=
 Corollary const_equation_1 (A B : Type) (a : A) (b : B) : const a b = a.
 Proof. reflexivity. Qed.
 
-#[global] Hint Rewrite @const_equation_1 : const.
+#[export] Hint Rewrite @const_equation_1 : const.
 
 Equations const_dep (A : Type) (P : A -> Type) (a : A) (b : P a) : A :=
   const_dep _ a b := a.
@@ -705,7 +693,7 @@ Corollary flip_equation_1 (A B C : Type) (f : A -> B -> C) (x : B) (y : A) :
   flip f x y = f y x.
 Proof. reflexivity. Qed.
 
-#[global] Hint Rewrite @flip_equation_1 : flip.
+#[export] Hint Rewrite @flip_equation_1 : flip.
 
 Equations flip_dep (A B : Type) (P : A -> B -> Type)
   (f : forall (a : A) (b : B), P a b) (b : B) (a : A) : P a b :=
@@ -718,7 +706,7 @@ Corollary apply_equation_1 (A B : Type) (f : A -> B) (x : A) :
   apply f x = f x.
 Proof. reflexivity. Qed.
 
-#[global] Hint Rewrite @apply_equation_1 : apply.
+#[export] Hint Rewrite @apply_equation_1 : apply.
 
 Equations apply_dep (A : Type) (P : A -> Type)
   (f : forall a : A, P a) (a : A) : P a :=
@@ -755,7 +743,7 @@ Arguments prod_uncurry {_ _ _} _ !_.
 Arguments length {_} !_.
 Arguments app {_} !_ _.
 Arguments ID /.
-Arguments Init.Datatypes.id {_} _ /.
+Arguments idfun {_} _ /.
 Arguments IDProp /.
 Arguments idProp {_} _ /.
 
@@ -799,7 +787,7 @@ Typeclasses Transparent Spr1 Spr2.
 Typeclasses Opaque respectful corespectful birespectful.
 
 Typeclasses Transparent andb orb implb xorb negb is_true option_map fst snd
-  prod_curry prod_uncurry length app ID Init.Datatypes.id IDProp idProp.
+  prod_curry prod_uncurry length app ID idfun IDProp idProp.
 
 Typeclasses Transparent proj1_sig proj2_sig projT1 projT2
   sig_of_sigT sigT_of_sig.
@@ -990,11 +978,13 @@ Lemma compose_id_r (A B : Type) (f : A -> B) (a : A) :
   (f o id) a = f a.
 Proof. reflexivity. Qed.
 
+(** Dependent composition is more complicated and
+    somehow needs to involve the S and K combinators. *)
+
 Section Context.
 
+#[local] Notation "'_o_'" := compose_dep : core_scope.
 #[local] Notation "g 'o' f" := (compose_dep g f) : core_scope.
-
-#[local] Notation "'_o_'" := compose_dep (only parsing) : core_scope.
 
 Lemma compose_dep_assoc
   (A : Type) (P : A -> Type) (Q : forall a : A, P a -> Type)
@@ -1002,18 +992,19 @@ Lemma compose_dep_assoc
   (h : forall (a : A) (b : P a) (c : Q a b), R a b c)
   (g : forall (a : A) (b : P a), Q a b) (f : forall a : A, P a) (a : A) :
   ((fun x : A => h x (f x)) o (g o f)) a = ((fun x : A => h x o g x) o f) a.
-  (* (apA h f o (g o f)) a = (liftA2 _o_ h g o f) a *)
+  (* (h o (g o f)) a = ((h o g) o f) a *)
 Proof. reflexivity. Qed.
 
 Lemma compose_dep_id_l (A : Type) (P : A -> Type)
   (f : forall a : A, P a) (a : A) :
-  ((fun x : A => const id x) o f) a = f a.
+  ((fun x : A => id) o f) a = f a.
   (* (const id o f) a = f a *)
 Proof. reflexivity. Qed.
 
 Lemma compose_dep_id_r (A : Type) (P : A -> Type)
   (f : forall a : A, P a) (a : A) :
-  (const f o id) a = f a.
+  ((fun x : A => f) o id) a = f a.
+  (* (const f o id) a = f a *)
 Proof. reflexivity. Qed.
 
 End Context.
