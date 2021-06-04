@@ -1,9 +1,9 @@
 (** * Monotonicity of a Function *)
 
 From Maniunfold.Has Require Export
-  Function OneSortedOrderRelation.
+  Function OrderRelation.
 From Maniunfold.ShouldHave Require Import
-  OneSortedOrderRelationNotations.
+  OrderRelationNotations.
 
 Fail Fail Class IsMono (A B : Type)
   (R : HasOrdRel A) (S : HasOrdRel B) (f : A -> B) : Prop :=

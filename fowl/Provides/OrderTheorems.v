@@ -1,9 +1,9 @@
 (** * Order theory. *)
 
 From Maniunfold.Has Require Export
-  OneSortedOrderRelation StrictOrderRelation.
+  OrderRelation StrictOrderRelation.
 From Maniunfold.ShouldHave Require Import
-  OneSortedOrderRelationNotations OneSortedStrictOrderRelationNotations.
+  OrderRelationNotations StrictOrderRelationNotations.
 
 (** Orders and strict orders can be defined in terms of each other. *)
 

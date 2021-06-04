@@ -1,9 +1,9 @@
 (** * Strict Monotonicity of a Function *)
 
 From Maniunfold.Has Require Export
-  StrictOrderRelation OneSortedOrderRelation.
+  StrictOrderRelation OrderRelation.
 From Maniunfold.ShouldHave Require Import
-  OneSortedStrictOrderRelationNotations OneSortedOrderRelationNotations.
+  StrictOrderRelationNotations OrderRelationNotations.
 From Maniunfold.Is Require Export
   Preorder CoherentOrderRelations Monotonic.
 
