@@ -1,37 +1,38 @@
 (** * Strict Monotonicity of a Function *)
 
 From Maniunfold.Has Require Export
-  OneSortedOrderRelation.
+  StrictOrderRelation OneSortedOrderRelation.
 From Maniunfold.ShouldHave Require Import
-  OneSortedOrderRelationNotations OneSortedStrictOrderRelationNotations.
+  OneSortedStrictOrderRelationNotations OneSortedOrderRelationNotations.
 From Maniunfold.Is Require Export
-  Monotonic CoherentOrderRelations.
+  Preorder CoherentOrderRelations Monotonic.
 
-Fail Fail Class IsStrictMono (A B : Type)
+Fail Fail Class IsStrMono (A B : Type)
   (R : HasStrictOrdRel A) (S : HasStrictOrdRel B) (f : A -> B) : Prop :=
-  strict_mono (x y : A) (l : x < y) : f x < f y.
+  str_mono (x y : A) (l : x < y) : f x < f y.
 
-Notation IsStrictMono R S f := (Proper (R ==> S) f).
-Notation strict_mono := (proper_prf : IsStrictMono _ _ _).
+Notation IsStrMono R S f := (Proper (R ==> S) f).
+Notation str_mono := (proper_prf : IsStrMono _ _ _).
 
 Section Context.
 
-Context (A B : Type) (f : A -> B)
-  `(EqDec A) `(IsCohOrdRels A) `(!@PreOrder A _<=_)
-  `(IsCohOrdRels B) `(!@PreOrder B _<=_)
-  `(HasFn A B).
+Context (A B : Type)
+  `(RA : HasOrdRel A) `(!IsPreord RA)
+  `(SA : HasStrictOrdRel A) `(!IsCohOrdRels RA SA) `(EqDec A)
+  `(RB : HasOrdRel B) `(!IsPreord RB)
+  `(SB : HasStrictOrdRel B) `(!IsCohOrdRels RB SB) (f : A -> B).
 
 (** Strict monotonicity implies monotonicity. *)
 
-#[local] Instance is_mono `(!IsStrictMono _<_ _<_ f) : IsMono _<=_ _<=_ f.
+#[local] Instance is_mono `(!IsStrMono _<_ _<_ f) : IsMono _<=_ _<=_ f.
 Proof.
-  intros x y l.
-  destruct (eq_dec x y) as [e | f'].
-  - subst y. reflexivity.
-  - pose proof proj2 (coh_ord_rels x y) ltac:(eauto) as l'.
-    pose proof strict_mono x y ltac:(eauto) as lf'.
-    destruct (proj1 (coh_ord_rels (fn x) (fn y)) ltac:(eauto)) as [lf ff].
-    eauto. Qed.
+  intros x y lxy.
+  destruct (eq_dec x y) as [exy | fxy].
+  - rewrite exy. reflexivity.
+  - pose proof proj2 (coh_ord_rels x y) (conj lxy fxy) as lxy'.
+    pose proof str_mono x y ltac:(eauto) as lfxy'.
+    destruct (proj1 (coh_ord_rels (f x) (f y)) lfxy') as [lfxy ffxy].
+    apply lfxy. Qed.
 
 End Context.
 

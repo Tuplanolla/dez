@@ -6,11 +6,11 @@ From Maniunfold.ShouldHave Require Import
 From Maniunfold.Is Require Export
   Monotonic CoherentOrderRelations.
 
-Fail Fail Class IsStrictComono (A B : Type)
+Fail Fail Class IsStrComono (A B : Type)
   `(HasStrictOrdRel A) `(HasStrictOrdRel B) `(HasFn A B) : Prop :=
-  strict_comono (x y : A) (l : fn x < fn y) : x < y.
+  str_comono (x y : A) (l : fn x < fn y) : x < y.
 
-Notation IsStrictComono strict_ord_rel strict_ord_rel' fn :=
+Notation IsStrComono strict_ord_rel strict_ord_rel' fn :=
   (Proper (strict_ord_rel <== strict_ord_rel') fn).
-Notation strict_comono :=
+Notation str_comono :=
   (proper_prf (R := strict_ord_rel <== strict_ord_rel) (m := fn)).

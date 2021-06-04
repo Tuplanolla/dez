@@ -1,6 +1,6 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  OneSortedEquivalenceRelation OneSortedJoin OneSortedMeet.
+  EquivalenceRelation OneSortedJoin OneSortedMeet.
 From Maniunfold.ShouldHave Require Import
   OneSortedLatticeNotations.
 

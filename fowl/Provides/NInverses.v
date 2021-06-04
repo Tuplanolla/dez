@@ -61,11 +61,11 @@ Notation inj_miff := (proper_prf (R := Logic.eq <== Logic.eq) (m := miff)).
 Notation IsFixedMiff := (IsFixed 0).
 Notation fixed_miff := (@fixed _ 0 _ _ : _ 0 = 0).
 
-Notation IsStrictMonoMiff miff := (Proper (lt ==> lt) miff).
-Notation strict_mono_miff := (proper_prf (R := lt ==> lt) (m := miff)).
+Notation IsStrMonoMiff miff := (Proper (lt ==> lt) miff).
+Notation str_mono_miff := (proper_prf (R := lt ==> lt) (m := miff)).
 
-Notation IsStrictComonoMiff miff := (Proper (lt <== lt) miff).
-Notation strict_comono_miff := (proper_prf (R := lt <== lt) (m := miff)).
+Notation IsStrComonoMiff miff := (Proper (lt <== lt) miff).
+Notation str_comono_miff := (proper_prf (R := lt <== lt) (m := miff)).
 
 (** Such a function is said to be inflationary or progressive. *)
 
@@ -78,43 +78,43 @@ Fail Class IsExpand (A B : Type)
 
 (** Strict monotonicity implies strict comonotonicity. *)
 
-#[global] Instance is_strict_comono_miff `(HasMiff) `(!IsStrictMonoMiff miff) :
-  IsStrictComonoMiff miff.
+#[global] Instance is_str_comono_miff `(HasMiff) `(!IsStrMonoMiff miff) :
+  IsStrComonoMiff miff.
 Proof.
   intros x y lb.
   destruct (lt_trichotomy x y) as [la | [ea | la']].
   - lia.
   - subst y. lia.
-  - pose proof strict_mono_miff y x ltac:(lia) as lb'. lia. Qed.
+  - pose proof str_mono_miff y x ltac:(lia) as lb'. lia. Qed.
 
 (** Strict monotonicity implies monotonicity. *)
 
-#[global] Instance is_mono_miff `(HasMiff) `(!IsStrictMonoMiff miff) :
+#[global] Instance is_mono_miff `(HasMiff) `(!IsStrMonoMiff miff) :
   IsMonoMiff miff.
 Proof.
   intros x y la.
-  pose proof strict_mono_miff x y as lb.
+  pose proof str_mono_miff x y as lb.
   destruct (eqb_spec x y) as [ea | fa].
   - pose proof f_equal miff ea as eb. lia.
   - lia. Qed.
 
 (** Strict monotonicity implies injectivity. *)
 
-#[global] Instance is_inj_miff `(HasMiff) `(!IsStrictMonoMiff miff) :
+#[global] Instance is_inj_miff `(HasMiff) `(!IsStrMonoMiff miff) :
   IsInjMiff miff.
 Proof.
   intros x y eb.
   destruct (lt_trichotomy x y) as [la | [ea | la']].
-  - pose proof strict_mono_miff x y ltac:(lia) as lb. lia.
+  - pose proof str_mono_miff x y ltac:(lia) as lb. lia.
   - lia.
-  - pose proof strict_mono_miff y x ltac:(lia) as lb'. lia. Qed.
+  - pose proof str_mono_miff y x ltac:(lia) as lb'. lia. Qed.
 
 (** Monotonicity and injectivity together imply strict monotonicity. *)
 
 (** TODO This might cause a cycle. *)
 
-#[global] Instance is_strict_mono_miff `(HasMiff)
-  `(!IsMonoMiff miff) `(!IsInjMiff miff) : IsStrictMonoMiff miff.
+#[global] Instance is_str_mono_miff `(HasMiff)
+  `(!IsMonoMiff miff) `(!IsInjMiff miff) : IsStrMonoMiff miff.
 Proof.
   intros x y la.
   destruct (eqb_spec (miff x) (miff y)) as [ea | fa].
@@ -125,12 +125,12 @@ Proof.
     imply that the function is expansive. *)
 
 #[global] Instance is_inflate_fixed_miff `(HasMiff)
-  `(!IsStrictMonoMiff miff) `(!IsFixedMiff miff) : IsInflateMiff miff.
+  `(!IsStrMonoMiff miff) `(!IsFixedMiff miff) : IsInflateMiff miff.
 Proof.
   intros a.
   induction a as [| p lp] using peano_ind.
   - rewrite fixed_miff. reflexivity.
-  - pose proof strict_mono_miff p (succ p) ltac:(lia) as lb. lia. Qed.
+  - pose proof str_mono_miff p (succ p) ltac:(lia) as lb. lia. Qed.
 
 Class IsMiff `(HasMiff) : Prop := {
   miff_is_mono_miff :> IsMonoMiff miff;
@@ -363,7 +363,7 @@ Proof.
     pose proof bound_retr_miff_round_down y as ly.
     assert (l : miff (unmiff_round_down x) < miff (succ (unmiff_round_down y)))
     by lia.
-    apply strict_comono_miff in l.
+    apply str_comono_miff in l.
     lia. Qed.
 
 #[global] Instance is_surj_unmiff_round_down :
@@ -430,7 +430,7 @@ Proof.
     pose proof bound_retr_miff_round_up y ltac:(lia) as ly.
     assert (l : miff (pred (unmiff_round_up x)) < miff (unmiff_round_up y))
     by lia.
-    apply strict_comono_miff in l.
+    apply str_comono_miff in l.
     lia. Qed.
 
 #[global] Instance is_surj_unmiff_round_up :
