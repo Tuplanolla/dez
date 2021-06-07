@@ -1,9 +1,9 @@
 (** * Connexity of a Binary Relation *)
 
 From Maniunfold.Has Require Export
-  OneSortedBinaryRelation.
+  BinaryRelation.
 From Maniunfold.ShouldHave Require Import
-  OneSortedBinaryRelationNotations.
+  BinaryRelationNotations.
 
 Class IsConnex (A : Type) (R : HasBinRel A) : Prop :=
   connex (x y : A) : x ~~ y \/ y ~~ x.

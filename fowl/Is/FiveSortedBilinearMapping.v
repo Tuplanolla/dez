@@ -42,7 +42,7 @@ Class IsBilinMap (A B C D E : Type)
 From Coq Require Import
   Logic.ProofIrrelevance.
 From Maniunfold.Is Require Export
-  TwoSortedUnital TwoSortedIsomorphism
+  TwoSortedUnital Isomorphism
   TwoSortedLeftDistributive ThreeSortedBicompatible
   OneSortedCommutativeRing.
 From Maniunfold.ShouldHave Require Import

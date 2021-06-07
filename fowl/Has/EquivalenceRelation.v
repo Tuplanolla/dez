@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  OneSortedBinaryRelation.
+  BinaryRelation.
 
 (** Equivalence relation, equality, similarity. *)
 

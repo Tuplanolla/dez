@@ -4,7 +4,7 @@ From Maniunfold.Is Require Export
   OneSortedAbelianGroup OneSortedCommutativeSemigroup
   OneSortedCommutativeMonoid OneSortedCommutativeSemiring
   OneSortedCommutativeRing
-  Equivalence PartialEquivalence TwoSortedIsomorphism.
+  Equivalence PartialEquivalence Isomorphism.
 
 Module Additive.
 

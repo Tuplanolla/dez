@@ -2,11 +2,11 @@
 From Coq Require Import
   NArith.NArith Lists.List.
 From Maniunfold.Has Require Export
-  OneSortedCardinality TwoSortedIsomorphism.
+  OneSortedCardinality Isomorphism.
 From Maniunfold.Is Require Export
-  OneSortedFinite TwoSortedIsomorphism.
+  OneSortedFinite Isomorphism.
 From Maniunfold.Offers Require Export
-  TwoSortedIsomorphismMappings.
+  IsomorphismMappings.
 
 Local Open Scope N_scope.
 

@@ -1,9 +1,9 @@
 (** * Reflexivity of a Binary Relation *)
 
 From Maniunfold.Has Require Export
-  OneSortedBinaryRelation.
+  BinaryRelation.
 From Maniunfold.ShouldHave Require Import
-  OneSortedBinaryRelationNotations.
+  BinaryRelationNotations.
 
 Fail Fail Class IsRefl (A : Type) (R : HasBinRel A) : Prop :=
   refl (x : A) : x ~~ x.

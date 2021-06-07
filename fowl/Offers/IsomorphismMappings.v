@@ -1,5 +1,7 @@
 From Maniunfold.Has Require Export
-  TwoSortedIsomorphism.
+  Isomorphism.
+From Maniunfold.ShouldOffer Require Import
+  IsomorphismNotations.
 
 Section Context.
 

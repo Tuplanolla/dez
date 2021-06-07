@@ -1,9 +1,9 @@
 (** * Antisymmetry of a Binary Relation *)
 
 From Maniunfold.Has Require Export
-  OneSortedBinaryRelation.
+  BinaryRelation.
 From Maniunfold.ShouldHave Require Import
-  OneSortedBinaryRelationNotations.
+  BinaryRelationNotations.
 
 Fail Fail Class IsAntisym (A : Type) (R : HasBinRel A) : Prop :=
   antisym (x y : A) (a : x ~~ y) (b : y ~~ x) : x = y.

@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  OneSortedBinaryRelation.
+  BinaryRelation.
 
 (** Morphism, arrow.
     Commonly found in categories. *)

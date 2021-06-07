@@ -4,11 +4,11 @@ From Coq Require Import
 From Coq Require Import
   Lists.List Logic.FinFun.
 From Maniunfold.Has Require Export
-  OneSortedEnumeration OneSortedCardinality TwoSortedIsomorphism.
+  OneSortedEnumeration OneSortedCardinality Isomorphism.
 From Maniunfold.Is Require Export
-  TwoSortedIsomorphism.
+  Isomorphism.
 From Maniunfold.Offers Require Export
-  TwoSortedIsomorphismMappings.
+  IsomorphismMappings.
 
 Local Open Scope N_scope.
 

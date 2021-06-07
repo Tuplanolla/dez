@@ -10,7 +10,7 @@ From Maniunfold.Is Require Export
   TwoSortedGradedLeftModule TwoSortedGradedRightModule
   ThreeSortedGradedBimodule
   TwoSortedGradedBimodule
-  TwoSortedUnital TwoSortedIsomorphism
+  TwoSortedUnital Isomorphism
   ThreeSortedGradedLeftBiadditive ThreeSortedGradedRightBiadditive.
 From Maniunfold.ShouldHave Require Import
   OneSortedArithmeticNotations TwoSortedMultiplicativeNotations

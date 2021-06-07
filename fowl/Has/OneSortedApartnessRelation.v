@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  OneSortedBinaryRelation.
+  BinaryRelation.
 
 (** Apartness relation, constructive inequality. *)
 

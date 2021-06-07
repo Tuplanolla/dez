@@ -1,7 +1,7 @@
 (** * Monotonicity of a Function *)
 
 From Maniunfold.Has Require Export
-  Function OrderRelation.
+  OrderRelation.
 From Maniunfold.ShouldHave Require Import
   OrderRelationNotations.
 

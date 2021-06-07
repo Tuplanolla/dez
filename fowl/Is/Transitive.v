@@ -1,9 +1,9 @@
 (** * Transitivity of a Binary Relation *)
 
 From Maniunfold.Has Require Export
-  OneSortedBinaryRelation.
+  BinaryRelation.
 From Maniunfold.ShouldHave Require Import
-  OneSortedBinaryRelationNotations.
+  BinaryRelationNotations.
 
 Fail Fail Class IsTrans (A : Type) (R : HasBinRel A) : Prop :=
   trans (x y z : A) (a : x ~~ y) (b : y ~~ z) : x ~~ z.

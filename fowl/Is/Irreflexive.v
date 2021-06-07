@@ -1,9 +1,9 @@
 (** * Irreflexivity of a Binary Relation *)
 
 From Maniunfold.Has Require Export
-  OneSortedBinaryRelation.
+  BinaryRelation.
 From Maniunfold.ShouldHave Require Import
-  OneSortedBinaryRelationNotations.
+  BinaryRelationNotations.
 
 Fail Fail Class IsIrrefl (A : Type) (R : HasBinRel A) : Prop :=
   irrefl (x : A) : ~ (x ~~ x).
