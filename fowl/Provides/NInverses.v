@@ -1,7 +1,7 @@
 From Coq Require Import
   Lia Lists.List NArith.NArith Bool.Sumbool.
 From Maniunfold.Is Require Export
-  Fixed Monotonic StrictlyMonotonic Comonotonic StrictlyComonotonic.
+  Fixed Monotonic StrictlyMonotonic Comonotonic StrictlyComonotonic Inverse.
 From Maniunfold.Provides Require Export
   NTheorems OptionTheorems PositiveTheorems ProductTheorems.
 
@@ -271,6 +271,9 @@ End PartRetrFromPartRetr'.
 (** In the whole codomain of the miff,
     the pseudoinverse behaves like a bound. *)
 
+Notation IsSectMiffRoundDown g := (IsInvL miff g).
+Notation sect_miff_round_down := (inv_l : IsSectMiffRoundDown _).
+
 Section Context.
 
 Context `(IsMiff).
@@ -291,7 +294,7 @@ Class IsSurjUnmiffRoundDown `(HasUnmiffRoundDown) : Prop :=
 Class IsContractUnmiffRoundDown `(HasUnmiffRoundDown) : Prop :=
   contract_unmiff_round_down (x : A) : unmiff_round_down x <= x.
 
-Class IsSectMiffRoundDown `(HasUnmiffRoundDown) : Prop :=
+Fail Fail Class IsSectMiffRoundDown `(HasUnmiffRoundDown) : Prop :=
   sect_miff_round_down (a : A) : unmiff_round_down (miff a) = a.
 
 Class IsSectMiffRoundUp `(HasUnmiffRoundUp) : Prop :=
@@ -371,7 +374,8 @@ Proof.
 Proof.
   intros a.
   exists (miff a).
-  rewrite sect_miff_round_down.
+  pose proof sect_miff_round_down as e.
+  rewrite e.
   reflexivity. Qed.
 
 #[global] Instance is_contract_unmiff_round_down :

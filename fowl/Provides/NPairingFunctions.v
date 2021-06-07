@@ -337,8 +337,7 @@ Class IsLexOrdShellDep `(HasStride) `(!HasShellDep stride) : Prop :=
 #[global] Instance is_lex_ord_shell `(IsLexEnumShell) : IsLexOrdShell shell.
 Proof.
   intros p n l.
-  generalize dependent p.
-  induction n as [| q x] using peano_ind; intros p l.
+  revert p l; induction n as [| q x] using peano_ind; intros p l.
   - lia.
   - destruct (eqb_spec p q) as [e | f].
     + subst p.
@@ -370,8 +369,7 @@ Proof.
   IsLexOrdShellDep stride shell_dep.
 Proof.
   intros p n l.
-  generalize dependent p.
-  induction n as [| q x] using peano_ind; intros p l.
+  revert p l; induction n as [| q x] using peano_ind; intros p l.
   - lia.
   - destruct (eqb_spec p q) as [e | f].
     + subst p.
@@ -674,8 +672,7 @@ Proof.
 
 Lemma shell_fix_0_l' (a b : N) : shell_fix 0 (b + base a) = shell_fix a b.
 Proof.
-  generalize dependent b.
-  induction a as [| a e] using peano_ind; intros b.
+  revert b; induction a as [| a e] using peano_ind; intros b.
   - rewrite fixed_base. rewrite add_0_r.
     reflexivity.
   - rewrite partial_sum. rewrite add_assoc.
@@ -1427,7 +1424,7 @@ Lemma binfactor_pow_2 (n p : N) (f : p <> 0) :
 Proof.
   destruct n as [| q].
   - arithmetize. reflexivity.
-  - generalize dependent p. induction q as [r ei | r ei |]; intros p f.
+  - revert p f; induction q as [r ei | r ei |]; intros p f.
     + replace (pos r~1) with (succ (2 * pos r)) by lia.
       rewrite pow_succ_r'.
       rewrite <- mul_assoc.
@@ -1462,7 +1459,7 @@ Lemma binfactor_trivial (p q : N) :
 Proof.
   destruct p as [| r].
   - arithmetize. apply binfactor_odd.
-  - generalize dependent q. induction r as [s ei | s ei |]; intros q.
+  - revert q; induction r as [s ei | s ei |]; intros q.
     + replace (pos s~1) with (succ (2 * pos s)) by lia.
       rewrite pow_succ_r'.
       replace (2 * pos s) with (pos s + pos s) by lia.
@@ -1523,7 +1520,7 @@ Lemma oddfactor_pow_2 (n p : N) (f : p <> 0) :
 Proof.
   destruct n as [| q].
   - arithmetize. cbn. lia.
-  - generalize dependent p. induction q as [s ei | s ei |]; intros p f.
+  - revert p f; induction q as [s ei | s ei |]; intros p f.
     + replace (pos s~1) with (succ (2 * pos s)) by lia.
       rewrite pow_succ_r'.
       replace (2 * pos s) with (pos s + pos s) by lia.
@@ -1556,7 +1553,7 @@ Lemma oddfactor_trivial (p q : N) :
 Proof.
   destruct p as [| r].
   - arithmetize. apply oddfactor_odd.
-  - generalize dependent q. induction r as [s ei | s ei |]; intros q.
+  - revert q; induction r as [s ei | s ei |]; intros q.
     + replace (pos s~1) with (succ (2 * pos s)) by lia.
       rewrite pow_succ_r'.
       replace (2 * pos s) with (pos s + pos s) by lia.

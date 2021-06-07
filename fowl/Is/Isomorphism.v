@@ -1,11 +1,13 @@
-(** Isomorphism, Equivalence, Bijection *)
+(** * Isomorphism,
+    Equivalence,
+    Bijection *)
 
-From Maniunfold Require Export
-  Init.
+From Maniunfold.Is Require Export
+  Inverse.
 
 Class IsIso (A B : Type) (f : A -> B) (g : B -> A) : Prop := {
-  sect (a : A) : g (f a) = a;
-  retr (b : B) : f (g b) = b;
+  is_inv_l :> IsInvL f g;
+  is_inv_r :> IsInvR f g;
 }.
 
 Section Context.
@@ -15,7 +17,7 @@ Context (A B : Type) (f : A -> B) (g : B -> A) `(!IsIso f g).
 #[local] Instance is_iso : IsIso g f.
 Proof.
   split.
-  - intros b. apply retr.
-  - intros a. apply sect. Qed.
+  - intros b. apply inv_r.
+  - intros a. apply inv_l. Qed.
 
 End Context.

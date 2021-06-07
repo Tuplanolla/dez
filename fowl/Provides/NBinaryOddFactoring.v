@@ -1,3 +1,5 @@
+(** * Factoring of Binary Natural Numbers into Binary and Odd Factors *)
+
 From Coq Require Import
   NArith.NArith.
 From Maniunfold.Has Require Import
@@ -5,9 +7,11 @@ From Maniunfold.Has Require Import
 From Maniunfold.Provides Require Export
   LogicalTheorems NTheorems PositiveTheorems.
 
+(** TODO We should turn these lemmas into typeclass instances. *)
+
 Import N.
 
-Local Open Scope N_scope.
+#[local] Open Scope N_scope.
 
 (** Split the given positive number into a binary factor and an odd factor.
 
@@ -138,7 +142,7 @@ Lemma pos_binoddprod_pos_binoddfactor (n : positive) :
 Proof.
   destruct (pos_binoddfactor n) as [b c] eqn : e.
   simp prod_uncurry. simp pos_binoddprod.
-  generalize dependent b. induction n as [p ep | p ep |]; intros b e.
+  revert b e; induction n as [p ep | p ep |]; intros b e.
   - simp pos_binoddfactor in e.
     injection e. clear e. intros ec eb. subst b c.
     rewrite Pos.shiftl_0_r. rewrite Pos.mul_1_r.
@@ -157,7 +161,7 @@ Proof.
 
 Lemma not_pos_binoddfactor_pos_binoddprod : ~ forall (b : N) (c : positive),
   pos_binoddfactor (pos_binoddprod b c) = (b, c).
-Proof. intros e. specialize (e 2%N 2%positive). cbv in e. inversion e. Qed.
+Proof. intros e. specialize (e 2%N 2%positive). inversion e. Qed.
 
 (** The function [pos_binoddfactor] is an inverse of [pos_binoddprod],
     when the second factor is odd. *)
@@ -181,8 +185,7 @@ Proof.
       rewrite odd_pos_oddfactor by assumption.
       reflexivity.
     + simp shiftl. simp shiftl in eq.
-      rewrite Pos.iter_succ.
-      rewrite Pos.mul_xO_r.
+      rewrite Pos.iter_succ. rewrite Pos.mul_xO_r.
       simp pos_binoddfactor.
       rewrite eq by assumption.
       reflexivity. Qed.
@@ -195,8 +198,7 @@ Lemma pos_binoddprod_dep_pos_binoddfactor_dep (n : positive) :
   (pos_binoddfactor_dep n) = n.
 Proof.
   pose proof pos_binoddprod_pos_binoddfactor n as e.
-  rewrite prod_uncurry_proj in e.
-  unfold Ssig_uncurry.
+  rewrite prod_uncurry_proj in e. rewrite Ssig_uncurry_proj.
   rewrite prod_uncurry_dep_proj. simp pos_binoddprod_dep. Qed.
 
 (** The function [pos_binoddfactor_dep] is an inverse
@@ -208,9 +210,8 @@ Lemma pos_binoddfactor_dep_pos_binoddprod_dep
 Proof.
   pose proof pos_binoddfactor_pos_binoddprod b c as f.
   simp pos_binoddprod_dep. simp pos_binoddfactor_dep.
-  apply Spr1_inj. unfold Spr1.
-  apply unsquash in e.
-  auto. Qed.
+  apply Spr1_inj. simp Spr1.
+  apply unsquash in e. apply f. apply e. Qed.
 
 (** Split the given natural number into a binary factor and an odd factor,
     except for the degenerate case at zero.
@@ -236,8 +237,7 @@ Lemma binoddprod_eqn (b c : N) : binoddprod b c = c * 2 ^ b.
 Proof.
   destruct c as [| p].
   - reflexivity.
-  - simp binoddprod.
-    simp pos_binoddprod.
+  - simp binoddprod. simp pos_binoddprod.
     rewrite <- shiftl_1_l.
     reflexivity. Qed.
 
@@ -267,8 +267,8 @@ Proof.
   - pose proof pos_binoddprod_pos_binoddfactor p as e.
     simp binoddfactor.
     destruct (pos_binoddfactor p) as [b c].
-    unfold prod_uncurry, fst, snd. simp binoddprod.
-    unfold prod_uncurry, fst, snd in e.
+    rewrite prod_uncurry_proj. simp fst snd. simp binoddprod.
+    rewrite prod_uncurry_proj in e. simp fst snd in e.
     rewrite e.
     reflexivity. Qed.
 
