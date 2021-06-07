@@ -58,7 +58,7 @@ Class IsBBihomogen (A B C D E : Type)
   b_bihomogen : forall (a : A) (x : C) (y : D) (b : B),
     bin_fn (a * x)%l_mod (y * b)%r_mod = ((a * bin_fn x y)%l_mod * b)%r_mod.
 
-Local Instance bihomogen_has_iso {A B C D E : Type}
+Definition bihomogen_has_iso {A B C D E : Type}
   `{HasLAct A C} `{HasRAct B D}
   `{HasLAct A E} `{HasRAct B E}
   `{HasBinFn C D E}
@@ -69,8 +69,10 @@ Local Instance bihomogen_has_iso {A B C D E : Type}
   `{!@IsTwoLUnl A E l_act null_op}
   `{!@IsTwoRUnl B D r_act null_op}
   `{!@IsTwoRUnl B E r_act null_op} :
-  HasIso (@IsBihomogen A B C D E l_act r_act l_act r_act bin_fn)
-  (@IsBBihomogen A B C D E l_act r_act l_act r_act bin_fn).
+  (@IsBihomogen A B C D E l_act r_act l_act r_act bin_fn ->
+  @IsBBihomogen A B C D E l_act r_act l_act r_act bin_fn) *
+  (@IsBBihomogen A B C D E l_act r_act l_act r_act bin_fn ->
+  @IsBihomogen A B C D E l_act r_act l_act r_act bin_fn).
 Proof.
   split.
   - intros ? a b x y.
@@ -101,7 +103,7 @@ Local Instance bihomogen_is_iso {A B C D E : Type}
   `{!@IsTwoLUnl A E l_act null_op}
   `{!@IsTwoRUnl B D r_act null_op}
   `{!@IsTwoRUnl B E r_act null_op} :
-  IsIso bihomogen_has_iso.
+  IsIso (fst bihomogen_has_iso) (snd bihomogen_has_iso).
 Proof.
   split.
   - intros x. apply proof_irrelevance.

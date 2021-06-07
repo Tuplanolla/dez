@@ -1,24 +1,21 @@
-(* bad *)
-From Maniunfold.Has Require Export
-  Isomorphism.
-From Maniunfold.Offers Require Export
-  IsomorphismMappings.
+(** Isomorphism, Equivalence, Bijection *)
 
-Class IsIso (A B : Type) `(HasIso A B) : Prop := {
-  retr_sect (x : A) : retr (sect x) = x;
-  sect_retr (x : B) : sect (retr x) = x;
+From Maniunfold Require Export
+  Init.
+
+Class IsIso (A B : Type) (f : A -> B) (g : B -> A) : Prop := {
+  sect (a : A) : g (f a) = a;
+  retr (b : B) : f (g b) = b;
 }.
 
 Section Context.
 
-Context (A B : Type) `(IsIso A B).
+Context (A B : Type) (f : A -> B) (g : B -> A) `(!IsIso f g).
 
-Local Instance has_iso : HasIso B A := (retr, sect).
-
-Local Instance iso_is_iso : IsIso iso.
+#[local] Instance is_iso : IsIso g f.
 Proof.
   split.
-  - intros x. apply sect_retr.
-  - intros x. apply retr_sect. Defined.
+  - intros b. apply retr.
+  - intros a. apply sect. Qed.
 
 End Context.

@@ -2,11 +2,9 @@
 From Coq Require Import
   Lists.List Logic.ProofIrrelevance NArith.NArith ZArith.ZArith.
 From Maniunfold.Has Require Export
-  OneSortedEnumeration OneSortedCardinality Isomorphism.
+  OneSortedEnumeration OneSortedCardinality.
 From Maniunfold.Is Require Export
   OneSortedFinite Isomorphism TwoSortedGradedAlgebra.
-From Maniunfold.Offers Require Export
-  IsomorphismMappings.
 
 Definition is_left (A B : Prop) (s : sumbool A B) : bool :=
   if s then true else false.
@@ -35,7 +33,8 @@ Proof.
 
 Global Instance bool_has_card : HasCard bool := 2.
 
-Global Instance bool_has_iso : HasIso bool {n : N | n < card bool}.
+Definition bool_has_iso :
+  (bool -> {n : N | n < card bool}) * ({n : N | n < card bool} -> bool).
 Proof.
   split.
   - intros [].
@@ -47,7 +46,8 @@ Proof.
     + apply false.
     + apply true. Defined.
 
-Global Instance bool_is_fin : IsFin (card bool) iso.
+Global Instance bool_is_fin :
+  IsFin (card bool) (fst bool_has_iso) (snd bool_has_iso).
 Proof.
   split.
   - intros [].

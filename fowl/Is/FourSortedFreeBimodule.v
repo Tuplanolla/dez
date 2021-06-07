@@ -2,15 +2,12 @@
 From Coq Require Import
   Lists.List Logic.ProofIrrelevance NArith.NArith.
 From Maniunfold.Has Require Export
-  OneSortedEnumeration OneSortedCardinality Isomorphism
+  OneSortedEnumeration OneSortedCardinality
   OneSortedAddition OneSortedZero OneSortedNegation
   OneSortedMultiplication OneSortedOne
   TwoSortedLeftAction TwoSortedRightAction.
 From Maniunfold.Is Require Export
-  OneSortedFinite Isomorphism
-  ThreeSortedBimodule.
-From Maniunfold.Offers Require Export
-  IsomorphismMappings.
+  Isomorphism OneSortedFinite ThreeSortedBimodule.
 
 Local Open Scope N_scope.
 

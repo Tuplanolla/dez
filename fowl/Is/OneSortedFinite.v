@@ -4,18 +4,18 @@ From Coq Require Import
 From Coq Require Import
   Lists.List Logic.FinFun.
 From Maniunfold.Has Require Export
-  OneSortedEnumeration OneSortedCardinality Isomorphism.
+  OneSortedEnumeration OneSortedCardinality.
 From Maniunfold.Is Require Export
   Isomorphism.
-From Maniunfold.Offers Require Export
-  IsomorphismMappings.
 
 Local Open Scope N_scope.
 
 (** TODO Perhaps define another notation for [HasIso A {n : N | ...}]. *)
 
-Class IsFin (A : Type) `(HasCard A) `(HasIso A {n : N | n < card A}) : Prop :=
-  A_iso_is_iso :> @IsIso A {n : N | n < card A} iso.
+Class IsFin (A : Type) `(HasCard A)
+  (f : A -> {n : N | n < card A})
+  (g : {n : N | n < card A} -> A) : Prop :=
+  A_iso_is_iso :> IsIso f g.
 
 Module Export Bishop.
 

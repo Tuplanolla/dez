@@ -5,7 +5,7 @@ From stdpp Require Import
   option finite fin_maps gmap gmultiset pmap.
 From Maniunfold.Has Require Export
   Unsquashing
-  OneSortedEnumeration OneSortedCardinality Isomorphism.
+  OneSortedEnumeration OneSortedCardinality.
 From Maniunfold.Is Require Export
   OneSortedFinite Isomorphism
   OneSortedRing TwoSortedUnitalAssociativeAlgebra TwoSortedGradedAlgebra.
@@ -14,7 +14,6 @@ From Maniunfold.Is Require Export
   OneSortedCommutativeMonoid OneSortedCommutativeSemiring
   OneSortedCommutativeRing.
 From Maniunfold.Offers Require Export
-  IsomorphismMappings
   OneSortedPositiveOperations OneSortedNaturalOperations
   OneSortedIntegerOperations.
 From Maniunfold.Provides Require Export

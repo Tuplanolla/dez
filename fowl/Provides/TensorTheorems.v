@@ -2,12 +2,11 @@
 From Coq Require Import
   Lists.List Logic.ProofIrrelevance ZArith.ZArith.
 From Maniunfold.Has Require Export
-  OneSortedEnumeration OneSortedCardinality Isomorphism.
+  OneSortedEnumeration OneSortedCardinality.
 From Maniunfold.Is Require Export
   OneSortedFinite Isomorphism TwoSortedBimodule
   OneSortedRing TwoSortedUnitalAssociativeAlgebra TwoSortedGradedAlgebra.
 From Maniunfold.Offers Require Export
-  IsomorphismMappings
   OneSortedPositiveOperations OneSortedNaturalOperations
   OneSortedIntegerOperations.
 From Maniunfold.Provides Require Export
