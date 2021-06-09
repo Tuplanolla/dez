@@ -1,6 +1,4 @@
-(** * Isomorphism,
-    Equivalence,
-    Bijection *)
+(** * Isomorphism, Equivalence, Bijection *)
 
 From Maniunfold.Is Require Export
   Inverse.

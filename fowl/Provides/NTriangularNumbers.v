@@ -1,4 +1,4 @@
-(** * Triangular numbers and their properties over [N]. *)
+(** * Triangular Numbers over Binary Natural Numbers *)
 
 From Coq Require Import
   Classes.Morphisms Lia Lists.List NArith.NArith Setoids.Setoid.

@@ -1,4 +1,4 @@
-(** Binary Relation *)
+(** * Binary Relation *)
 
 From Maniunfold.Has Require Export
   TwoSortedBinaryRelation.

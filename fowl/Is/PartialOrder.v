@@ -1,4 +1,4 @@
-(** * Partial Order *)
+(** * Partial Order, Poset *)
 
 From Maniunfold.Has Require Export
   OrderRelation.

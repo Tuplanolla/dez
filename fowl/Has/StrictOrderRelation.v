@@ -1,13 +1,13 @@
-(** * Operational class for strict order relations. *)
+(** * Strict Order Relations *)
 
 From Maniunfold.Has Require Export
   BinaryRelation.
 
-Class HasStrictOrdRel (A : Type) : Type := strict_ord_rel : A -> A -> Prop.
+Class HasStrOrdRel (A : Type) : Type := str_ord_rel : A -> A -> Prop.
 
-#[export] Hint Transparent HasStrictOrdRel : typeclass_instances.
+Typeclasses Transparent HasStrOrdRel.
 
-Instance has_bin_rel (A : Type) `(HasStrictOrdRel A) : HasBinRel A :=
-  strict_ord_rel.
+Instance has_bin_rel (A : Type) `(HasStrOrdRel A) : HasBinRel A :=
+  str_ord_rel.
 
 #[export] Hint Resolve has_bin_rel : typeclass_instances.

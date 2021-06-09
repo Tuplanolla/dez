@@ -1,4 +1,4 @@
-(** * Lemmas and instances for [N]. *)
+(** * Properties of Binary Natural Numbers *)
 
 From Coq Require Import
   Classes.DecidableClass Classes.Morphisms Lia NArith.NArith Setoids.Setoid.

@@ -8,7 +8,7 @@ From Maniunfold.Is Require Export
   Preorder CoherentOrderRelations Monotonic.
 
 Fail Fail Class IsStrMono (A B : Type)
-  (R : HasStrictOrdRel A) (S : HasStrictOrdRel B) (f : A -> B) : Prop :=
+  (R : HasStrOrdRel A) (S : HasStrOrdRel B) (f : A -> B) : Prop :=
   str_mono (x y : A) (l : x < y) : f x < f y.
 
 Notation IsStrMono R S f := (Proper (R ==> S) f).
@@ -18,9 +18,9 @@ Section Context.
 
 Context (A B : Type)
   `(RA : HasOrdRel A) `(!IsPreord RA)
-  `(SA : HasStrictOrdRel A) `(!IsCohOrdRels RA SA) `(EqDec A)
+  `(SA : HasStrOrdRel A) `(!IsCohOrdRels RA SA) `(EqDec A)
   `(RB : HasOrdRel B) `(!IsPreord RB)
-  `(SB : HasStrictOrdRel B) `(!IsCohOrdRels RB SB) (f : A -> B).
+  `(SB : HasStrOrdRel B) `(!IsCohOrdRels RB SB) (f : A -> B).
 
 (** Strict monotonicity implies monotonicity. *)
 

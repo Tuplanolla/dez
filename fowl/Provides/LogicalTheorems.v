@@ -1,4 +1,4 @@
-(** * Basic logic. *)
+(** * Basic Logic *)
 
 From Coq Require Import
   Classes.DecidableClass.

@@ -1,4 +1,4 @@
-(** Unsquashing, Large Elimination for Strict Propositions. *)
+(** * Unsquashing, Large Elimination for Strict Propositions *)
 
 From Maniunfold Require Export
   Init.

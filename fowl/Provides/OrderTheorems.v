@@ -1,4 +1,4 @@
-(** * Order theory. *)
+(** * Properties of Orders *)
 
 From Maniunfold.Has Require Export
   OrderRelation StrictOrderRelation.
@@ -15,14 +15,14 @@ Context (A : Type) `(HasOrdRel A).
 
 (** We use the same argument order to [/\] as [le_neq]. *)
 
-Equations strict_ord_rel_def (x y : A) : Prop :=
-  strict_ord_rel_def x y := x <= y /\ x <> y.
+Equations str_ord_rel_def (x y : A) : Prop :=
+  str_ord_rel_def x y := x <= y /\ x <> y.
 
-Instance has_strict_ord_rel : HasStrictOrdRel A := strict_ord_rel_def.
+Instance has_str_ord_rel : HasStrOrdRel A := str_ord_rel_def.
 
 End Context.
 
-#[export] Hint Resolve has_strict_ord_rel : typeclass_instances.
+#[export] Hint Resolve has_str_ord_rel : typeclass_instances.
 
 End StrictFromLax.
 
@@ -30,7 +30,7 @@ Module LaxFromStrict.
 
 Section Context.
 
-Context (A : Type) `(HasStrictOrdRel A).
+Context (A : Type) `(HasStrOrdRel A).
 
 (** We use the same argument order to [\/] as [le_lteq]. *)
 
