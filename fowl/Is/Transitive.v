@@ -8,5 +8,5 @@ From Maniunfold.ShouldHave Require Import
 Fail Fail Class IsTrans (A : Type) (R : HasBinRel A) : Prop :=
   trans (x y z : A) (a : x ~~ y) (b : y ~~ z) : x ~~ z.
 
-Notation IsTrans := Transitive.
+Notation IsTrans R := (Transitive R).
 Notation trans := (transitivity : IsTrans _).

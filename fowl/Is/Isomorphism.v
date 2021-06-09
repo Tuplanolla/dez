@@ -8,6 +8,8 @@ Class IsIso (A B : Type) (f : A -> B) (g : B -> A) : Prop := {
   is_inv_r :> IsInvR f g;
 }.
 
+Module Flipped.
+
 Section Context.
 
 Context (A B : Type) (f : A -> B) (g : B -> A) `(!IsIso f g).
@@ -19,3 +21,7 @@ Proof.
   - intros a. apply inv_l. Qed.
 
 End Context.
+
+#[export] Hint Resolve is_iso : typeclass_instances.
+
+End Flipped.

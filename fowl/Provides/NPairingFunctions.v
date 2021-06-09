@@ -1,3 +1,5 @@
+(** * Pairing Functions over Binary Natural Numbers *)
+
 From Coq Require
   ssr.ssreflect.
 From Coq Require Import

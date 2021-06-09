@@ -5,7 +5,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   OrderRelationNotations.
 From Maniunfold.Is Require Export
-  Irreflexive Transitive Asymmetric.
+  Irreflexive Transitive.
 
 Fail Fail Class IsStrPartOrd (A : Type) (R : HasOrdRel A) : Prop := {
   is_irrefl :> IsIrrefl _<=_;

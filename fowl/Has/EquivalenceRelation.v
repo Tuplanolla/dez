@@ -3,7 +3,7 @@
 From Maniunfold.Has Require Export
   BinaryRelation.
 
-Class HasEqRel (A : Type) : Type := eq_rel : A -> A -> Prop.
+Class HasEqRel (A : Type) : Type := eq_rel (x y : A) : Prop.
 
 Typeclasses Transparent HasEqRel.
 

@@ -3,11 +3,14 @@
 From Maniunfold.Has Require Export
   BinaryRelation.
 
-Class HasStrOrdRel (A : Type) : Type := str_ord_rel : A -> A -> Prop.
+Class HasStrOrdRel (A : Type) : Type := str_ord_rel (x y : A) : Prop.
 
-Typeclasses Transparent HasStrOrdRel.
+Section Context.
 
-Instance has_bin_rel (A : Type) `(HasStrOrdRel A) : HasBinRel A :=
-  str_ord_rel.
+Context (A : Type) `(HasStrOrdRel A).
+
+#[local] Instance has_bin_rel : HasBinRel A := str_ord_rel.
+
+End Context.
 
 #[export] Hint Resolve has_bin_rel : typeclass_instances.

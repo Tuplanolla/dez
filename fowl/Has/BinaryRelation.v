@@ -1,8 +1,8 @@
 (** * Binary Relation *)
 
-From Maniunfold.Has Require Export
-  TwoSortedBinaryRelation.
+From Maniunfold Require Export
+  Init.
 
-Class HasBinRel (A : Type) : Type := bin_rel : A -> A -> Prop.
+Class HasBinRel (A : Type) : Type := bin_rel (x y : A) : Prop.
 
 Typeclasses Transparent HasBinRel.

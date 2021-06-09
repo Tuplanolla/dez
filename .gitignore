@@ -19,4 +19,5 @@ _Coq*
 __pycache__
 _build
 gen-*
+html
 main

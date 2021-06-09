@@ -8,5 +8,5 @@ From Maniunfold.ShouldHave Require Import
 Fail Fail Class IsIrrefl (A : Type) (R : HasBinRel A) : Prop :=
   irrefl (x : A) : ~ (x ~~ x).
 
-Notation IsIrrefl := Irreflexive.
+Notation IsIrrefl R := (Irreflexive R).
 Notation irrefl := (irreflexivity : IsIrrefl _).

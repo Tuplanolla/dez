@@ -8,5 +8,5 @@ From Maniunfold.ShouldHave Require Import
 Fail Fail Class IsAntisym (A : Type) (R : HasBinRel A) : Prop :=
   antisym (x y : A) (a : x ~~ y) (b : y ~~ x) : x = y.
 
-Notation IsAntisym := (Antisymmetric _ _=_).
+Notation IsAntisym R := (Antisymmetric _ _=_ R).
 Notation antisym := (@antisymmetry _ _ _ _ _ : IsAntisym _).

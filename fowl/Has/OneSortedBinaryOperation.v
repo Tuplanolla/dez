@@ -39,7 +39,8 @@ A_B_has_l_act : HasLAct A B
 A_B_has_r_act : HasRAct A B
 
 ?HasLAct : "HasLAct A A"
->> *)
+>>
+*)
 
 Section Context.
 

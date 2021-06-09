@@ -20,7 +20,7 @@ Class IsTotOrd (A : Type) (R : HasOrdRel A) : Prop := {
 
 Section Context.
 
-Context (A : Type) `(HasOrdRel A) `(!IsTotOrd _<=_).
+Context (A : Type) (R : HasOrdRel A) `(!IsTotOrd _<=_).
 
 Ltac conversions := typeclasses
   convert bin_rel into ord_rel.

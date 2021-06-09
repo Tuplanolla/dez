@@ -8,5 +8,5 @@ From Maniunfold.ShouldHave Require Import
 Fail Fail Class IsRefl (A : Type) (R : HasBinRel A) : Prop :=
   refl (x : A) : x ~~ x.
 
-Notation IsRefl := Reflexive.
+Notation IsRefl R := (Reflexive R).
 Notation refl := (reflexivity : IsRefl _).
