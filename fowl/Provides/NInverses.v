@@ -53,7 +53,6 @@ Notation mono_miff := (proper_prf (R := le ==> le) (m := miff)).
 
 Instance has_ord_rel : HasOrdRel N := le.
 Instance has_str_ord_rel : HasStrOrdRel N := lt.
-Instance has_fn `(HasMiff) : HasFn N N := miff.
 
 Notation IsInjMiff := (Proper (Logic.eq <== Logic.eq)).
 Notation inj_miff := (proper_prf (R := Logic.eq <== Logic.eq) (m := miff)).
@@ -73,7 +72,7 @@ Class IsInflateMiff `(HasMiff) : Prop :=
   inflate_miff (a : A) : a <= miff a.
 
 Fail Class IsExpand (A B : Type)
-  `(HasDist A) `(HasDist B) `(HasFn A B) : Prop :=
+  `(HasDist A) `(HasDist B) (f : A -> B) : Prop :=
   expand (x y : A) : dist x y <= dist (fn x) (fn y).
 
 (** Strict monotonicity implies strict comonotonicity. *)

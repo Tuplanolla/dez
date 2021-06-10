@@ -7,7 +7,7 @@ Class HasStrOrdRel (A : Type) : Type := str_ord_rel (x y : A) : Prop.
 
 Section Context.
 
-Context (A : Type) `(HasStrOrdRel A).
+Context (A : Type) (R : HasStrOrdRel A).
 
 #[local] Instance has_bin_rel : HasBinRel A := str_ord_rel.
 

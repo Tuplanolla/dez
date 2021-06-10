@@ -9,7 +9,7 @@ Typeclasses Transparent HasOrdRel.
 
 Section Context.
 
-Context (A : Type) `(HasOrdRel A).
+Context (A : Type) (R : HasOrdRel A).
 
 #[local] Instance has_bin_rel : HasBinRel A := ord_rel.
 
