@@ -9,7 +9,7 @@ Typeclasses Transparent HasEqRel.
 
 Section Context.
 
-Context (A : Type) `(HasEqRel A).
+Context (A : Type) (R : HasEqRel A).
 
 #[local] Instance has_bin_rel : HasBinRel A := eq_rel.
 

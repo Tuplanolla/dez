@@ -4,6 +4,8 @@ From Coq Require
   ssr.ssreflect.
 From Coq Require Import
   Lia Lists.List NArith.NArith Bool.Sumbool.
+From Maniunfold.Has Require Export
+  Unsquashing.
 From Maniunfold.Provides Require Export
   OptionTheorems PositiveTheorems ProductTheorems
   NBinaryOddFactoring NTriangularNumbers.

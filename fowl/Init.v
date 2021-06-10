@@ -4,14 +4,14 @@
     to use strict propositions without ceremony,
     export [Basics] and [Relations]
     to make their utility functions available everywhere,
-    export [Morphisms] and [RelationClasses]
+    export [Morphisms], [DecidableClass] and [RelationClasses]
     to build a symbiotic relationship with the standard library,
     import [PArith], [NArith], [ZArith], [QArith],
     [Reals], [Int31] and [Int63] in order
     to redefine some of the basic numeral notations,
     import [List] to manually define some corollaries
-    that would otherwise be automatically generated and
-    export [Equations] as we make heavy use of the equations plugin.
+    that would otherwise be automatically generated,
+    export [Equations] to load the equations plugin.
     All of the imports and exports are carried out before setting options,
     because we want to ensure that the options we set are not overridden
     by other libraries. *)
@@ -21,7 +21,7 @@ From Coq Require Export
 From Coq Require Export
   Program.Basics Program.Tactics Relations.Relations.
 From Coq Require Export
-  Classes.Morphisms Classes.RelationClasses.
+  Classes.Morphisms Classes.DecidableClass Classes.RelationClasses.
 From Coq Require Import
   PArith.PArith NArith.NArith ZArith.ZArith QArith.QArith Reals.Reals
   Numbers.Cyclic.Int31.Int31 Numbers.Cyclic.Int63.Int63.

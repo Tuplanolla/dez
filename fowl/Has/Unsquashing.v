@@ -1,7 +1,7 @@
 (** * Unsquashing, Large Elimination for Strict Propositions *)
 
-From Maniunfold Require Export
-  Init.
+From Maniunfold.Has Require Export
+  Decidability.
 
 Class HasUnsquash (A : Type) : Type := unsquash (x : Squash A) : A.
 
@@ -24,7 +24,7 @@ Proof.
   contradiction. Qed.
 
 #[local] Instance arrow_has_unsquash (A B : Type)
-  `(HasUnsquash B) : HasUnsquash (A -> B).
+  (u : HasUnsquash B) : HasUnsquash (A -> B).
 Proof.
   intros x a.
   apply unsquash.
@@ -33,7 +33,7 @@ Proof.
   auto. Qed.
 
 #[local] Instance pi_has_unsquash (A : Type) (P : A -> Type)
-  `(forall a : A, HasUnsquash (P a)) : HasUnsquash (forall a : A, P a).
+  (u : forall a : A, HasUnsquash (P a)) : HasUnsquash (forall a : A, P a).
 Proof.
   intros x a.
   apply unsquash.
@@ -41,7 +41,17 @@ Proof.
   apply squash.
   auto. Qed.
 
+#[local] Instance dec_has_unsquash (A : Prop)
+  (d : HasDec A) : HasUnsquash A.
+Proof.
+  intros x.
+  decide A as [a | f].
+  - auto.
+  - enough sEmpty by contradiction.
+    inversion x as [a].
+    contradiction. Qed.
+
 End Context.
 
 #[export] Hint Resolve not_has_unsquash notT_has_unsquash
-  arrow_has_unsquash pi_has_unsquash : typeclass_instances.
+  arrow_has_unsquash pi_has_unsquash dec_has_unsquash : typeclass_instances.

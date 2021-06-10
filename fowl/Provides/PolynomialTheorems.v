@@ -1,4 +1,7 @@
 (* bad *)
+
+Set Warnings "-ambiguous-paths".
+
 From Coq Require Import
   ZArith.ZArith.
 From stdpp Require Import
@@ -25,9 +28,16 @@ From Maniunfold.ShouldHave Require
 From Maniunfold.ShouldOffer Require
   OneSortedArithmeticOperationNotations.
 
-Set Warnings "-ambiguous-paths".
-
 Generalizable All Variables.
+
+Global Instance this_thing `(HasEqDec A) : EqDecision A.
+Proof.
+  intros x y.
+  decide (x = y) as [e | f].
+  - left. apply e.
+  - right. apply f. Qed.
+
+#[local] Arguments decide : simpl never.
 
 Section more_merge.
 
@@ -240,7 +250,7 @@ Section Context.
 Import OneSortedArithmeticNotations.
 Import OneSortedArithmeticOperationNotations.
 
-Context (A : Type) `{IsRing A} `{EqDecision A} `{Countable A}.
+Context (A : Type) `{IsRing A} `{HasEqDec A} `{Countable A}.
 
 (** We cannot keep zero values in the map,
     because they would break definitional equality and
@@ -299,7 +309,7 @@ Next Obligation.
   destruct Hyp as [[Hx Hy] | [[Hx Hy] | [a [b [Hx [Hy Hxy]]]]]].
   - apply (poly_lookup_wf x i Hx).
   - apply (poly_lookup_wf y i Hy).
-  - cbv zeta in Hxy. destruct (decide (a + b <> 0)) as [Fab | Fab]; stabilize.
+  - decide (a + b <> 0) as [Fab | Fab]; stabilize.
     + inversion Hxy as [Hab]. apply Fab. apply Hab.
     + inversion Hxy. Defined.
 
@@ -368,7 +378,7 @@ Program Definition poly_one : poly :=
 Next Obligation.
   apply squash.
   intros i a Hyp. intros Ha. subst a.
-  destruct (decide (1 <> 0)) as [F10 | F10]; stabilize.
+  decide (1 <> 0) as [F10 | F10]; stabilize.
   - rewrite lookup_singleton_ne in Hyp.
     + inversion Hyp.
     + intros Hi. subst i.
@@ -461,7 +471,7 @@ Import OneSortedArithmeticNotations.
 
 Section Context.
 
-Context (A : Type) `{IsRing A} `{EqDecision A}.
+Context (A : Type) `{IsRing A} `{HasEqDec A}.
 
 (** Performing this specialization by hand aids type inference. *)
 
@@ -509,21 +519,21 @@ Proof with conversions.
     reflexivity).
   cbv [f].
   cbv [union_with option_union_with].
-  destruct (decide (a + b <> 0)) as [Fab | Fab],
-  (decide (b + c <> 0)) as [Fbc | Fbc]; stabilize; cbn.
-  - destruct (decide (a + (b + c) <> 0)) as [Fa_bc | Fa_bc],
-    (decide ((a + b) + c <> 0)) as [Fab_c | Fab_c]; stabilize; cbn.
+  decide (a + b <> 0) as [Fab | Fab];
+  decide (b + c <> 0) as [Fbc | Fbc]; stabilize; cbn.
+  - decide (a + (b + c) <> 0) as [Fa_bc | Fa_bc];
+    decide ((a + b) + c <> 0) as [Fab_c | Fab_c]; stabilize; cbn.
     + f_equal. rewrite assoc... reflexivity.
     + exfalso. apply Fa_bc. rewrite assoc... apply Fab_c.
     + exfalso. apply Fab_c. rewrite <- assoc... apply Fa_bc.
     + reflexivity.
-  - destruct (decide ((a + b) + c <> 0)) as [Fab_c | Fab_c];
+  - decide ((a + b) + c <> 0) as [Fab_c | Fab_c];
     stabilize; cbn.
     + f_equal. rewrite <- assoc... rewrite Fbc. rewrite r_unl. reflexivity.
     + exfalso. rewrite <- assoc in Fab_c...
       rewrite Fbc in Fab_c. rewrite r_unl in Fab_c.
       subst a. apply (poly_lookup_wf x i). apply Dx.
-  - destruct (decide (a + (b + c) <> 0)) as [Fa_bc | Fa_bc];
+  - decide (a + (b + c) <> 0) as [Fa_bc | Fa_bc];
     stabilize; cbn.
     + f_equal. rewrite assoc... rewrite Fab. rewrite l_unl. reflexivity.
     + exfalso. rewrite assoc in Fa_bc...
@@ -555,8 +565,8 @@ Proof with conversions.
   (`y !! i) as [b |] eqn : Dy; try reflexivity.
   cbv [f].
   cbv [union_with option_union_with].
-  destruct (decide (a + b <> 0)) as [Fab | Fab],
-  (decide (b + a <> 0)) as [Fba | Fba]; stabilize; cbn.
+  decide (a + b <> 0) as [Fab | Fab];
+  decide (b + a <> 0) as [Fba | Fba]; stabilize; cbn.
   - f_equal. rewrite comm... reflexivity.
   - exfalso. apply Fab. rewrite comm... apply Fba.
   - exfalso. apply Fba. rewrite comm... apply Fab.
@@ -628,7 +638,7 @@ Import OneSortedArithmeticNotations.
 
 Section Context.
 
-Context (A : Type) `{IsRing A} `{EqDecision A} `{Countable A}.
+Context (A : Type) `{IsRing A} `{HasEqDec A} `{Countable A}.
 
 Let poly := poly (A := A).
 
@@ -708,7 +718,7 @@ Import OneSortedArithmeticOperationNotations.
 
 Section Context.
 
-Context (A : Type) `{IsRing A} `{EqDecision A} `{Countable A}.
+Context (A : Type) `{IsRing A} `{HasEqDec A} `{Countable A}.
 
 Let poly := poly (A := A).
 
@@ -796,7 +806,7 @@ Lemma poly_eval_one : forall x : A,
 Proof with conversions.
   intros x. etransitivity. cbv [one]. reflexivity.
   cbv [poly_has_one poly_one poly_eval]. cbn.
-  destruct (decide (1 <> 0)) as [F10 | F10].
+  decide (1 <> (0 : A)) as [F10 | F10].
   - rewrite map_imap_singleton.
     cbv [map_sum]. rewrite <- insert_empty. rewrite map_fold_insert_L.
     + cbn. rewrite map_fold_empty. rewrite r_unl. cbv [poly_value_eval].

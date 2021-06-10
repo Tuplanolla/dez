@@ -3,7 +3,7 @@
 From Maniunfold.Has Require Export
   Function.
 
-Fail Fail #[deprecated (since="8.13")]
+Fail Fail #[deprecated (since="now")]
 Class HasEndo (A : Type) : Type := endo : A -> A.
 
 Notation HasEndo A := (HasFn A A).
