@@ -1,4 +1,4 @@
-(** * Unsquashing, Large Elimination for Strict Propositions *)
+(** * Unsquashing or Large Elimination for Strict Propositions *)
 
 From Maniunfold.Has Require Export
   Decidability.

@@ -13,4 +13,4 @@ Fail Fail Class IsEq (A : Type) (R : HasEqRel A) : Prop := {
   is_trans :> IsTrans _==_;
 }.
 
-Notation IsEq R := (Equivalence R).
+Notation IsEq := Equivalence.

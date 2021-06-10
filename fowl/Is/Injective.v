@@ -6,5 +6,5 @@ From Maniunfold Require Export
 Fail Fail Class IsInj (A B : Type) (f : A -> B) : Prop :=
   inj (x y : A) (e : f x = f y) : x = y.
 
-Notation IsInj f := (Proper (_=_ <== _=_) f).
+Notation IsInj := (Proper (_=_ <== _=_)).
 Notation inj := (proper_prf : IsInj _).

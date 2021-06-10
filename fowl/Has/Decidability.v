@@ -8,7 +8,7 @@ Fail Fail Class HasDec (A : Prop) : Type := {
   Decidable_spec : decide = true <-> A;
 }.
 
-Notation HasDec A := (Decidable A).
+Notation HasDec := Decidable.
 
 Arguments decide _ {_}.
 
@@ -21,7 +21,7 @@ Tactic Notation "decide" constr(A) "as" "[" ident(a) "|" ident(f) "]" :=
   let x := fresh in
   _decide_ A x; [rename x into a | rename x into f].
 
-Notation HasEqDec A := (EqDec A).
+Notation HasEqDec := EqDec.
 
 Arguments eq_dec {_ _} _ _.
 
@@ -29,7 +29,7 @@ Typeclasses Transparent EqDec.
 
 (** We need this instance to bridge the gap
     between the standard library and the equations plugin.
-    Without it, we could not [decide (tt = tt)]. *)
+    Without it, we could not [decide (tt = tt)], for example. *)
 
 Section Context.
 

@@ -78,6 +78,12 @@ Otherwise, changes in implicit argument inference will break them.
 ### Notations
 
 Always provide full sections, in Agda style.
+They have to come before fully applied versions,
+so that full applications are preferred for printing.
+
+Eta reduce nonkeyword notations as much as possible,
+because it is annoying to have to fully apply them for type checking.
+Also, no notation chains please.
 
 ### Imports and Exports
 

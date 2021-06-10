@@ -12,4 +12,4 @@ Fail Fail Class IsStrPartOrd (A : Type) (R : HasOrdRel A) : Prop := {
   is_trans :> IsTrans _<=_;
 }.
 
-Notation IsStrPartOrd R := (StrictOrder R).
+Notation IsStrPartOrd := StrictOrder.

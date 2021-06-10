@@ -1,4 +1,4 @@
-(** * Partial Order, Poset *)
+(** * Partial Order or Poset *)
 
 From Maniunfold.Has Require Export
   OrderRelation.
@@ -12,4 +12,4 @@ Fail Fail Class IsPartOrd (A : Type) (R : HasOrdRel A) : Prop := {
   is_antisym :> IsAntisym _<=_;
 }.
 
-Notation IsPartOrd R := (PartialOrder _=_ R).
+Notation IsPartOrd := (PartialOrder _=_).

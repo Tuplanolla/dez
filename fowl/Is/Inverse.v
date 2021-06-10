@@ -1,4 +1,4 @@
-(** * Left and Right Inverse of a Function, Section and Retraction of a Function *)
+(** * Left and Right Inverse or Section and Retraction of a Function *)
 
 From Maniunfold Require Export
   Init.

@@ -1,4 +1,4 @@
-(** * Connexity of a Binary Relation *)
+(** * Connexity or Connectedness or Totality of a Binary Relation *)
 
 From Maniunfold.Has Require Export
   BinaryRelation.

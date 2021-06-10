@@ -1,4 +1,4 @@
-(** * Strict Order Relations *)
+(** * Strict Order Relation *)
 
 From Maniunfold.Has Require Export
   BinaryRelation.

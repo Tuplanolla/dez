@@ -12,4 +12,4 @@ Fail Fail Class IsPartEq (A : Type) (R : HasEqRel A) : Prop := {
   is_trans :> IsTrans _==_;
 }.
 
-Notation IsPartEq R := (PER R).
+Notation IsPartEq := PER.

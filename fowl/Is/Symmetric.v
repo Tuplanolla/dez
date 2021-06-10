@@ -8,5 +8,5 @@ From Maniunfold.ShouldHave Require Import
 Fail Fail Class IsSym (A : Type) (R : HasBinRel A) : Prop :=
   sym (x y : A) (a : x ~~ y) : y ~~ x.
 
-Notation IsSym R := (Symmetric R).
+Notation IsSym := Symmetric.
 Notation sym := (symmetry : IsSym _).

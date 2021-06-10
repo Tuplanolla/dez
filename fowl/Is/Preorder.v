@@ -12,4 +12,4 @@ Fail Fail Class IsPreord (A : Type) (R : HasOrdRel A) : Prop := {
   is_trans :> IsTrans _<=_;
 }.
 
-Notation IsPreord R := (PreOrder R).
+Notation IsPreord := PreOrder.
