@@ -1,4 +1,4 @@
-(** * Apartness Relation, Constructive Inequality *)
+(** * Apartness Relation or Constructive Inequality *)
 
 From Maniunfold.Has Require Export
   BinaryRelation.
@@ -9,7 +9,7 @@ Typeclasses Transparent HasApartRel.
 
 Section Context.
 
-Context (A : Type) `(HasApartRel A).
+Context (A : Type) (R : HasApartRel A).
 
 #[local] Instance has_bin_rel : HasBinRel A := apart_rel.
 

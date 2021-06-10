@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  OneSortedApartnessRelation.
+  ApartnessRelation.
 From Maniunfold.Is Require Export
   Cotransitive Irreflexive Symmetric.
 

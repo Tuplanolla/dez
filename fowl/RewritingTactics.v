@@ -1,4 +1,4 @@
-(** * Higher-order tactics for rewriting. *)
+(** * Higher-Order Tactics for Rewriting *)
 
 From Maniunfold Require Export
   Init.

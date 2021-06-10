@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  OneSortedApartnessRelation.
+  ApartnessRelation.
 
 Declare Scope rel_scope.
 

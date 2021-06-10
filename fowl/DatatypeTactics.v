@@ -1,4 +1,4 @@
-(** * Tactical predicates for basic data types. *)
+(** * Predicate Tactics for Data Types *)
 
 From Coq Require Import
   PArith.PArith NArith.NArith ZArith.ZArith.
