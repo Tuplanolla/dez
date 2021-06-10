@@ -12,6 +12,7 @@ From Maniunfold.ShouldHave Require Import
 
 (** TODO Check ungraded argument order to be consistent. *)
 
+Local Open Scope grp_scope.
 Local Open Scope grd_r_mod_scope.
 
 Class IsTwoGrdRLDistr (A : Type) (P Q : A -> Type)

@@ -3,6 +3,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   OneSortedAdditiveNotations TwoSortedMultiplicativeNotations.
 
+Local Open Scope grp_scope.
 Local Open Scope r_mod_scope.
 
 Class IsTwoRBinComm (A B : Type)

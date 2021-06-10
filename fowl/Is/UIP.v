@@ -14,6 +14,8 @@ Context (A : Type) (e : HasIrrel A).
 
 (** TODO This is stupid. *)
 
+#[local] Open Scope type_scope.
+
 #[local] Instance is_uip : IsUIP A.
 Proof.
   intros x y a b.

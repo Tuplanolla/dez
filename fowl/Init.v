@@ -160,11 +160,11 @@ Reserved Notation "y '/' x" (left associativity, at level 40).
 Reserved Notation "'_^_'" (no associativity, at level 0).
 Reserved Notation "y '^' x" (right associativity, at level 30).
 
-Reserved Notation "'_o_'" (no associativity, at level 0).
-Reserved Notation "g 'o' f" (left associativity, at level 40).
 Reserved Notation "'id'" (no associativity, at level 0).
 Reserved Notation "'_^-1'" (no associativity, at level 0).
 Reserved Notation "f '^-1'" (left associativity, at level 25).
+Reserved Notation "'_o_'" (no associativity, at level 0).
+Reserved Notation "g 'o' f" (left associativity, at level 40).
 
 (** We export the [rew] notations from [Init.Logic]
     to use them like transport in homotopy type theory. *)
@@ -192,6 +192,8 @@ Notation "A '<->' B" := (iff A B) : type_scope.
     that is missing from the standard library. *)
 
 #[global] Open Scope signature_scope.
+#[global] Open Scope type_scope.
+#[global] Open Scope core_scope.
 
 Fail Fail Equations respectful (A B : Type)
   (R : relation A) (R' : relation B) : relation (A -> B) :=
@@ -302,6 +304,12 @@ Notation "'_+_'" := sum : type_scope.
 Notation "A '+' B" := (sum A B) : type_scope.
 Notation "'_*_'" := prod : type_scope.
 Notation "A '*' B" := (prod A B) : type_scope.
+
+Notation "'id'" := eq_refl : type_scope.
+Notation "'_^-1'" := eq_sym : type_scope.
+Notation "f '^-1'" := (eq_sym f) : type_scope.
+Notation "'_o_'" := eq_trans : type_scope.
+Notation "g 'o' f" := (eq_trans g f) : type_scope.
 
 (** We define some additional utility functions.
     While some standard library definitions need to be overridden
@@ -722,11 +730,16 @@ Arguments existT {_} _ _ _.
 Arguments Ssig {_} _.
 Arguments Sexists {_} _ _ _.
 
+Arguments eq_refl {_ _}.
+Arguments eq_sym {_ _ _} _.
+Arguments eq_trans {_ _ _ _} _ _.
+
 Arguments Spr1 {_ _} !_.
 Arguments Spr2 {_ _} !_.
 
 Arguments respectful {_ _} !_.
-Arguments Spr2 {_ _} !_.
+Arguments corespectful {_ _} !_.
+Arguments birespectful {_ _} !_.
 
 Arguments andb !_ _.
 Arguments orb !_ _.

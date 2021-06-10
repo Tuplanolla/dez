@@ -3,6 +3,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   OneSortedAdditiveNotations TwoSortedAdditiveNotations.
 
+Local Open Scope grp_scope.
 Local Open Scope l_mod_scope.
 
 (** Unital; left chirality.

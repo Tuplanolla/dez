@@ -10,6 +10,7 @@ From Maniunfold.ShouldHave Require Import
   OneSortedGradedMultiplicativeNotations
   TwoSortedGradedMultiplicativeNotations.
 
+Local Close Scope type_scope.
 Local Open Scope grd_l_mod_scope.
 
 Class IsTwoGrdLUnl (A : Type) (P Q : A -> Type)
