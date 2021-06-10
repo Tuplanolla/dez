@@ -298,6 +298,12 @@ but solving some of them would get rid of a lot of pointless busywork.
 
 ### Tidying
 
+Find duplicate module names.
+
+```
+$ for x in $(for x in $(find . -name '*.v') ; do basename -- "$x" ; done | sort | uniq -d) ; do find . -name "$x" ; done
+```
+
 Find long lines.
 
 ```

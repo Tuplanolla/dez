@@ -13,7 +13,7 @@ Section Context.
 
 Context (A : Type) (R : HasOrdRel A).
 
-(** We use the same argument order with [/\] as [le_neq]. *)
+(** This has the same shape as [le_neq]. *)
 
 Equations str_ord_rel_def (x y : A) : Prop :=
   str_ord_rel_def x y := x <= y /\ x <> y.
@@ -32,7 +32,7 @@ Section Context.
 
 Context (A : Type) (R : HasStrOrdRel A).
 
-(** We use the same argument order with [\/] as [le_lteq]. *)
+(** This has the same shape as [le_lteq]. *)
 
 Equations ord_rel_def (x y : A) : Prop :=
   ord_rel_def x y := x < y \/ x = y.

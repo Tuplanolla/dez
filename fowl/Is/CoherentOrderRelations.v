@@ -5,7 +5,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   OrderRelationNotations StrictOrderRelationNotations.
 
-(** This is analogous in structure to [le_neq]. *)
+(** This has the same shape as [le_neq]. *)
 
 Class IsCohOrdRels (A : Type)
   (R : HasOrdRel A) (S : HasStrOrdRel A) : Prop :=
