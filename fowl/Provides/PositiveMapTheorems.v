@@ -87,7 +87,7 @@ Proof.
   cbv [pos_tree_wf pos_tree_wf'] in w; apply andb_prop in w; destruct w;
   tauto. Qed.
 
-Local Hint Resolve pos_tree_wf_l pos_tree_wf_r : core.
+#[local] Hint Resolve pos_tree_wf_l pos_tree_wf_r : core.
 
 Lemma pos_tree_wf_leaf (A : Type) : pos_tree_wf (@pos_leaf A).
 Proof. cbn; auto. Qed.
@@ -101,7 +101,7 @@ Lemma pos_tree_wf_branch' (A : Type) (x : option A) (l r : pos_tree A)
   (wl : pos_tree_wf l) (wr : pos_tree_wf r) : pos_tree_wf (pos_branch' x l r).
 Proof. destruct x, l, r; cbn; auto with bool. Qed.
 
-Local Hint Resolve pos_tree_wf_leaf
+#[local] Hint Resolve pos_tree_wf_leaf
   pos_tree_wf_branch pos_tree_wf_branch' : core.
 
 Definition pos_tree_empty (A : Type) : pos_tree A := pos_leaf.
@@ -409,7 +409,7 @@ Fixpoint pos_tree_merge (A B C : Type) (f : option A -> option B -> option C)
     (pos_tree_merge f r0 r1)
   end.
 
-Polymorphic Hint Resolve squash : core.
+#[local, polymorphic] Hint Resolve squash : core.
 
 Definition pos_map (A : Type) : Type :=
   {t : pos_tree A $ Squash (pos_tree_wf t)}.
@@ -525,7 +525,7 @@ Class HasCode (A B : Type) : Type := code : (A -> option B) * (B -> A).
 
 Typeclasses Transparent HasCode.
 
-Hint Mode HasCode - - : typeclass_instances.
+#[local] Hint Mode HasCode - - : typeclass_instances.
 
 (* Offers.TwoSorted.CodeMappings *)
 
