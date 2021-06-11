@@ -1,7 +1,7 @@
 (** * Triangular Numbers over Binary Natural Numbers *)
 
 From Coq Require Import
-  Classes.Morphisms Lia Lists.List NArith.NArith Setoids.Setoid.
+  Lia Lists.List NArith.NArith.
 From Maniunfold Require Import
   DatatypeTactics RewritingTactics.
 From Maniunfold.Provides Require Export
@@ -9,35 +9,31 @@ From Maniunfold.Provides Require Export
 
 Import ListNotations N.
 
-Local Open Scope N_scope.
+#[local] Open Scope N_scope.
 
 (** A generating function.
     Sequence A000217. *)
 
-Definition tri (n : N) : N :=
-  shiftr (n * succ n) 1.
-
-Arguments tri _ : assert.
+Equations tri (n : N) : N :=
+  tri n := shiftr (n * succ n) 1.
 
 Lemma tri_eqn (n : N) : tri n =
   n * (1 + n) / 2.
-Proof. cbv [tri]. arithmetize. auto. Qed.
+Proof. simp tri. arithmetize. auto. Qed.
 
 (** An inverse of the generating function, with a remainder. *)
 
-Definition untri_rem (n : N) : N * N :=
-  let (s, t) := sqrtrem (succ (shiftl n 3)) in
-  let (q, r) := div_eucl (pred s) 2 in
-  (q, shiftr (t + r * pred (shiftl s 1)) 3).
-
-Arguments untri_rem _ : assert.
+Equations untri_rem (n : N) : N * N :=
+  untri_rem n := let (s, t) := sqrtrem (succ (shiftl n 3)) in
+    let (q, r) := div_eucl (pred s) 2 in
+    (q, shiftr (t + r * pred (shiftl s 1)) 3).
 
 Lemma untri_rem_eqn (n : N) : untri_rem n =
   let (s, t) := sqrtrem (1 + 8 * n) in
   let (q, r) := div_eucl (s - 1) 2 in
   (q, (t + r * (2 * s - 1)) / 8).
 Proof.
-  cbv [untri_rem].
+  simp untri_rem.
   arithmetize. destruct_sqrtrem s t est es e0st l1st.
   arithmetize. destruct_div_eucl q r eqr eq e0qr l1qr.
   arithmetize. auto. Qed.
@@ -45,50 +41,44 @@ Proof.
 (** A weak inverse of the generating function, rounding down.
     Sequence A003056. *)
 
-Definition untri (n : N) : N :=
-  shiftr (pred (sqrt (succ (shiftl n 3)))) 1.
-
-Arguments untri _ : assert.
+Equations untri (n : N) : N :=
+  untri n := shiftr (pred (sqrt (succ (shiftl n 3)))) 1.
 
 Lemma untri_eqn (n : N) : untri n =
   (sqrt (1 + 8 * n) - 1) / 2.
-Proof. cbv [untri]. arithmetize. auto. Qed.
+Proof. simp untri. arithmetize. auto. Qed.
 
 (** A weak inverse of the generating function, rounding up. *)
 
-Definition untri_up (n : N) : N :=
-  match n with
-  | N0 => 0
-  | Npos p => succ (untri (Pos.pred_N p))
-  end.
-
-Arguments untri_up !_.
+Equations untri_up (n : N) : N :=
+  untri_up n := match n with
+    | N0 => 0
+    | Npos p => succ (untri (Pos.pred_N p))
+    end.
 
 Lemma untri_up_eqn (n : N) : untri_up n =
   if n =? 0 then 0 else 1 + (sqrt (1 + 8 * (n - 1)) - 1) / 2.
 Proof.
   destruct n as [| p].
   - auto.
-  - cbv [untri_up]. rewrite pos_pred_spec.
+  - simp untri_up. rewrite pos_pred_spec.
     arithmetize. rewrite untri_eqn. auto. Qed.
 
 (** A partial inverse of the generating function. *)
 
-Definition untri_error (n : N) : option N :=
-  let (s, t) := sqrtrem (succ (shiftl n 3)) in
-  if t =? 0 then Some (shiftr (pred s) 1) else None.
-
-Arguments untri_error _ : assert.
+Equations untri_error (n : N) : option N :=
+  untri_error n := let (s, t) := sqrtrem (succ (shiftl n 3)) in
+    if t =? 0 then Some (shiftr (pred s) 1) else None.
 
 Lemma untri_error_eqn (n : N) : untri_error n =
   let (s, t) := sqrtrem (1 + 8 * n) in
   if t =? 0 then Some ((s - 1) / 2) else None.
 Proof.
-  cbv [untri_error].
+  simp untri_error.
   arithmetize. destruct_sqrtrem s t est es e0st l1st.
   arithmetize. auto. Qed.
 
-(** Just to see if it can be done. *)
+(** TODO These should emerge from the more general inversion stuff. *)
 
 From Coq Require Import Program.Wf.
 
@@ -474,8 +464,6 @@ Next Obligation.
   rewrite tri_succ.
   pose proof tri_untri_untri_rem n as e.
   lia. Qed.
-
-Arguments untri_quotrem _ : assert.
 
 Global Instance tri_wd : Proper (Logic.eq ==> Logic.eq) tri.
 Proof. intros n p e. auto using f_equal. Qed.
