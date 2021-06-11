@@ -1,7 +1,7 @@
 From Coq Require Import
   Lia Lists.List NArith.NArith Bool.Sumbool.
 From Maniunfold.Is Require Export
-  Fixed Monotonic StrictlyMonotonic Comonotonic StrictlyComonotonic Inverse.
+  Fixed Monotonic Comonotonic Inverse.
 From Maniunfold.Provides Require Export
   NTheorems OptionTheorems PositiveTheorems ProductTheorems.
 

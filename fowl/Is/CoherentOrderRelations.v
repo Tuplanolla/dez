@@ -1,4 +1,4 @@
-(** * Coherence of a Lax and a Strict Order Relation *)
+(** * Coherence of an Order Relation and a Strict Order Relation *)
 
 From Maniunfold.Has Require Export
   OrderRelation StrictOrderRelation.
