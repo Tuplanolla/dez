@@ -1,7 +1,7 @@
 (** * Uniqueness of Identity Proofs *)
 
 From Maniunfold.Is Require Export
-  ProofIrrelevance.
+  ProofIrrelevant.
 
 Fail Fail Class IsUIP (A : Type) : Prop :=
   uip (x y : A) (a b : x = y) : a = b.
