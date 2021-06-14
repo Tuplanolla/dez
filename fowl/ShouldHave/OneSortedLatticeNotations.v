@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  OneSortedJoin OneSortedBottom OneSortedMeet OneSortedTop.
+  OneSortedAddition OneSortedZero OneSortedMultiplication OneSortedOne.
 
 Declare Scope lat_scope.
 
@@ -7,10 +7,9 @@ Delimit Scope lat_scope with lat.
 
 Open Scope lat_scope.
 
-Notation "x '\/' y" := (join x y) : lat_scope.
-Notation "'_|_'" := bot : lat_scope.
-Notation "x '/\' y" := (meet x y) : lat_scope.
-Notation "'-|-'" := top : lat_scope.
-
-Notation "'_\/_'" := join (only parsing) : lat_scope.
-Notation "'_/\_'" := meet (only parsing) : lat_scope.
+Notation "'_\/_'" := add : lat_scope.
+Notation "x '\/' y" := (add x y) : lat_scope.
+Notation "'_|_'" := zero : lat_scope.
+Notation "'_/\_'" := mul : lat_scope.
+Notation "x '/\' y" := (mul x y) : lat_scope.
+Notation "'-|-'" := one : lat_scope.

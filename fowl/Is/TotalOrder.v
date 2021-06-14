@@ -25,6 +25,8 @@ Context (A : Type) (R : HasOrdRel A) `(!IsTotOrd _<=_).
 Ltac conversions := typeclasses
   convert bin_rel into ord_rel.
 
+(** Total orders are reflexive. *)
+
 #[local] Instance is_refl : IsRefl _<=_.
 Proof with conversions.
   intros x.

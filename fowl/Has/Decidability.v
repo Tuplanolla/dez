@@ -27,13 +27,13 @@ Arguments eq_dec {_ _} _ _.
 
 Typeclasses Transparent EqDec.
 
-(** We need this instance to bridge the gap
-    between the standard library and the equations plugin.
-    Without it, we could not [decide (tt = tt)], for example. *)
-
 Section Context.
 
 Context (A : Type) (d : HasEqDec A) (x y : A).
+
+(** We need this instance to bridge the gap
+    between the standard library and the equations plugin.
+    Without it, we could not [decide (tt = tt)], for example. *)
 
 #[local] Instance has_dec : HasDec (x = y).
 Proof.

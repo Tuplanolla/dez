@@ -20,11 +20,9 @@ Context (A : Type) `(IsIrrel A).
 
 #[local] Instance is_uip : IsUIP A.
 Proof.
-  intros x y a b.
-  set (ex := irrel x).
-  assert (ee : forall (w z : A) (e : w = z), e = ex w ^-1 o ex z).
-  { intros w z e. rewrite e. rewrite eq_trans_sym_inv_l. reflexivity. }
-  rewrite (ee _ _ a), (ee _ _ b). reflexivity. Qed.
+  assert (e : forall (x y z : A) (e : x = z), e = irrel y x ^-1 o irrel y z).
+  { intros x y z e. rewrite e. rewrite eq_trans_sym_inv_l. reflexivity. }
+  intros x y a b. rewrite (e x x y a), (e x x y b). reflexivity. Qed.
 
 End Context.
 

@@ -20,8 +20,6 @@ Notation mono := (proper_prf : IsMono _ _ _).
 Notation IsStrMono RA RB := (Proper (RA ==> RB)) (only parsing).
 Notation str_mono := (proper_prf : IsMono _ _ _) (only parsing).
 
-(** Decidable strict monotonicity implies monotonicity. *)
-
 Section Context.
 
 Context (A B : Type) (d : HasEqDec A)
@@ -30,6 +28,8 @@ Context (A B : Type) (d : HasEqDec A)
   (RB : HasOrdRel B) `(!IsPreord RB)
   (SB : HasStrOrdRel B) `(!IsCohOrdRels RB SB)
   (f : A -> B) `(!IsMono _<_ _<_ f).
+
+(** Decidable strict monotonicity implies monotonicity. *)
 
 #[local] Instance is_mono : IsMono _<=_ _<=_ f.
 Proof.
