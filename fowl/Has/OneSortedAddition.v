@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  OneSortedBinaryOperation.
+  BinaryOperation.
 
 (** Addition, summation, plus.
     Commonly found in semirings. *)

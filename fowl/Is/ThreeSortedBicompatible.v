@@ -1,9 +1,9 @@
 From Maniunfold.Has Require Export
-  TwoSortedLeftAction TwoSortedRightAction.
+  Action Action.
 From Maniunfold.ShouldHave Require Import
   TwoSortedMultiplicativeNotations.
 
 Class IsBicompat (A B C : Type)
-  `(HasLAct A C) `(HasRAct B C) : Prop :=
+  `(HasActL A C) `(HasActR B C) : Prop :=
   bicompat : forall (a : A) (x : C) (b : B),
     (a * (x * b)%r_mod)%l_mod = ((a * x)%l_mod * b)%r_mod.

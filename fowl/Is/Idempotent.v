@@ -1,7 +1,7 @@
 (** * Idempotency of an Element and a Binary Operation and a Function *)
 
 From Maniunfold.Has Require Export
-  OneSortedBinaryOperation.
+  BinaryOperation.
 From Maniunfold.Is Require Export
   FunctionExtensionality.
 From Maniunfold.ShouldHave Require Import

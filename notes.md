@@ -35,6 +35,8 @@ they must be marked transparent,
 for classes with `Typeclasses Transparent` or, for instances, with `Defined`.
 When defining instances of predicative classes,
 they must be marked opaque, usually with `Qed`.
+Replacing operational notations requires `setoid_rewrite` instead of `rewrite`
+to enable unification that goes deeper.
 
 When defining predicative classes,
 all the operational classes must be constraints,

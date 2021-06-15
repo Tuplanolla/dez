@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  OneSortedBinaryOperation OneSortedNullaryOperation
+  BinaryOperation OneSortedNullaryOperation
   OneSortedUnaryOperation.
 
 Declare Scope grp_scope.

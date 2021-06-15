@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   OneSortedAddition OneSortedZero OneSortedNegation
   OneSortedMultiplication OneSortedOne
-  TwoSortedLeftAction TwoSortedRightAction ThreeSortedBinaryFunction.
+  Action Action ThreeSortedBinaryFunction.
 From Maniunfold.Is Require Export
   TwoSortedLeftModule TwoSortedRightModule
   ThreeSortedBimodule ThreeSortedBiadditive FiveSortedBihomogeneous.
@@ -19,20 +19,20 @@ Class IsBilinMap (A B C D E : Type)
   `(HasAdd C) `(HasZero C) `(HasNeg C)
   `(HasAdd D) `(HasZero D) `(HasNeg D)
   `(HasAdd E) `(HasZero E) `(HasNeg E)
-  `(HasLAct A C) `(HasRAct B D)
-  `(HasLAct A E) `(HasRAct B E)
+  `(HasActL A C) `(HasActR B D)
+  `(HasActL A E) `(HasActR B E)
   `(HasBinFn C D E) : Prop := {
-  A_C_add_zero_neg_mul_one_add_zero_neg_l_act_is_l_mod :>
-    IsLMod add zero neg mul one add zero neg (l_act (A := A) (B := C));
-  B_D_add_zero_neg_mul_one_add_zero_neg_r_act_is_r_mod :>
-    IsRMod add zero neg mul one add zero neg (r_act (A := B) (B := D));
-  A_B_E_add_zero_neg_mul_one_add_zero_neg_mul_one_add_zero_neg_l_act_r_act_is_three_bimod
+  A_C_add_zero_neg_mul_one_add_zero_neg_act_l_is_l_mod :>
+    IsLMod add zero neg mul one add zero neg (act_l (A := A) (B := C));
+  B_D_add_zero_neg_mul_one_add_zero_neg_act_r_is_r_mod :>
+    IsRMod add zero neg mul one add zero neg (act_r (A := B) (B := D));
+  A_B_E_add_zero_neg_mul_one_add_zero_neg_mul_one_add_zero_neg_act_l_act_r_is_three_bimod
     :> IsThreeBimod
-    add zero neg mul one add zero neg mul one add zero neg l_act r_act;
+    add zero neg mul one add zero neg mul one add zero neg act_l act_r;
   C_D_E_add_add_add_bin_fn_is_biaddve :>
     IsBiaddve (add (A := C)) (add (A := D)) (add (A := E)) bin_fn;
-  A_B_C_D_E_l_act_r_act_l_act_r_act_bin_fn_is_bihomogen :>
-    IsBihomogen l_act r_act l_act r_act bin_fn;
+  A_B_C_D_E_act_l_act_r_act_l_act_r_bin_fn_is_bihomogen :>
+    IsBihomogen act_l act_r act_l act_r bin_fn;
 }.
 
 (** TODO Get rid of this once it has been addressed. *)
@@ -52,27 +52,27 @@ Section Context.
 
 (* BothBihomogeneous *)
 Class IsBBihomogen (A B C D E : Type)
-  `(HasLAct A C) `(HasRAct B D)
-  `(HasLAct A E) `(HasRAct B E)
+  `(HasActL A C) `(HasActR B D)
+  `(HasActL A E) `(HasActR B E)
   `(HasBinFn C D E) : Prop :=
   b_bihomogen : forall (a : A) (x : C) (y : D) (b : B),
     bin_fn (a * x)%l_mod (y * b)%r_mod = ((a * bin_fn x y)%l_mod * b)%r_mod.
 
 Definition bihomogen_has_iso {A B C D E : Type}
-  `{HasLAct A C} `{HasRAct B D}
-  `{HasLAct A E} `{HasRAct B E}
+  `{HasActL A C} `{HasActR B D}
+  `{HasActL A E} `{HasActR B E}
   `{HasBinFn C D E}
   (** These classes are not equivalent unless the actions are unital.
       Otherwise [IsBBihomogen] is weaker than [IsBihomogen]. *)
   `{HasNullOp A} `{HasNullOp B}
-  `{!@IsTwoLUnl A C l_act null_op}
-  `{!@IsTwoLUnl A E l_act null_op}
-  `{!@IsTwoRUnl B D r_act null_op}
-  `{!@IsTwoRUnl B E r_act null_op} :
-  (@IsBihomogen A B C D E l_act r_act l_act r_act bin_fn ->
-  @IsBBihomogen A B C D E l_act r_act l_act r_act bin_fn) *
-  (@IsBBihomogen A B C D E l_act r_act l_act r_act bin_fn ->
-  @IsBihomogen A B C D E l_act r_act l_act r_act bin_fn).
+  `{!@IsTwoLUnl A C act_l null_op}
+  `{!@IsTwoLUnl A E act_l null_op}
+  `{!@IsTwoRUnl B D act_r null_op}
+  `{!@IsTwoRUnl B E act_r null_op} :
+  (@IsBihomogen A B C D E act_l act_r act_l act_r bin_fn ->
+  @IsBBihomogen A B C D E act_l act_r act_l act_r bin_fn) *
+  (@IsBBihomogen A B C D E act_l act_r act_l act_r bin_fn ->
+  @IsBihomogen A B C D E act_l act_r act_l act_r bin_fn).
 Proof.
   split.
   - intros ? a b x y.
@@ -95,14 +95,14 @@ Proof.
 (** Life with proof irrelevance is dull. *)
 
 Local Instance bihomogen_is_iso {A B C D E : Type}
-  `{HasLAct A C} `{HasRAct B D}
-  `{HasLAct A E} `{HasRAct B E}
+  `{HasActL A C} `{HasActR B D}
+  `{HasActL A E} `{HasActR B E}
   `{HasBinFn C D E}
   `{HasNullOp A} `{HasNullOp B}
-  `{!@IsTwoLUnl A C l_act null_op}
-  `{!@IsTwoLUnl A E l_act null_op}
-  `{!@IsTwoRUnl B D r_act null_op}
-  `{!@IsTwoRUnl B E r_act null_op} :
+  `{!@IsTwoLUnl A C act_l null_op}
+  `{!@IsTwoLUnl A E act_l null_op}
+  `{!@IsTwoRUnl B D act_r null_op}
+  `{!@IsTwoRUnl B E act_r null_op} :
   IsIso (fst bihomogen_has_iso) (snd bihomogen_has_iso).
 Proof.
   split.

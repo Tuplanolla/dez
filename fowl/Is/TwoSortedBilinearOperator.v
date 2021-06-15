@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   OneSortedAddition OneSortedZero OneSortedNegation
   OneSortedMultiplication OneSortedOne
-  TwoSortedLeftAction TwoSortedRightAction.
+  Action Action.
 From Maniunfold.Is Require Export
   FiveSortedBilinearMapping.
 
@@ -15,8 +15,8 @@ Class IsBilinOp (A B : Type)
   `(HasAdd A) `(HasZero A) `(HasNeg A)
   `(HasMul A) `(HasOne A)
   `(HasAdd B) `(HasZero B) `(HasNeg B)
-  `(HasLAct A B) `(HasRAct A B)
+  `(HasActL A B) `(HasActR A B)
   `(HasMul B) : Prop :=
-  A_A_B_B_B_add_zero_neg_mul_one_add_zero_neg_mul_one_add_zero_neg_add_zero_neg_add_zero_neg_l_act_r_act_l_act_r_act_mul_is_bilin_map
+  A_A_B_B_B_add_zero_neg_mul_one_add_zero_neg_mul_one_add_zero_neg_add_zero_neg_add_zero_neg_act_l_act_r_act_l_act_r_mul_is_bilin_map
     :> IsBilinMap add zero neg mul one add zero neg mul one
-    add zero neg add zero neg add zero neg l_act r_act l_act r_act mul.
+    add zero neg add zero neg add zero neg act_l act_r act_l act_r mul.

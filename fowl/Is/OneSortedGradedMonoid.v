@@ -1,6 +1,6 @@
 From Maniunfold.Has Require Export
-  OneSortedBinaryOperation OneSortedNullaryOperation
-  OneSortedGradedBinaryOperation OneSortedGradedNullaryOperation.
+  BinaryOperation OneSortedNullaryOperation
+  GradedBinaryOperation OneSortedGradedNullaryOperation.
 From Maniunfold.Is Require Export
   OneSortedMonoid OneSortedGradedSemigroup OneSortedGradedUnital.
 

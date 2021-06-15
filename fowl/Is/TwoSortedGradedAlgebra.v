@@ -1,8 +1,8 @@
 From Maniunfold.Has Require Export
-  OneSortedBinaryOperation OneSortedNullaryOperation
+  BinaryOperation OneSortedNullaryOperation
   OneSortedAddition OneSortedZero OneSortedNegation
   OneSortedGradedMultiplication OneSortedGradedOne
-  TwoSortedGradedLeftAction TwoSortedGradedRightAction.
+  GradedAction GradedAction.
 From Maniunfold.Is Require Export
   OneSortedGradedRing
   TwoSortedGradedBimodule TwoSortedGradedBilinearOperator.
@@ -22,14 +22,14 @@ Class IsGrdAlg (A : Type) (P Q : A -> Type)
   `(Q_has_zero : forall i : A, HasZero (Q i))
   `(Q_has_neg : forall i : A, HasNeg (Q i))
   `(!HasGrdMul Q bin_op)
-  `(!HasGrdLAct P Q bin_op)
-  `(!HasGrdRAct P Q bin_op) : Prop := {
+  `(!HasGrdActL P Q bin_op)
+  `(!HasGrdActR P Q bin_op) : Prop := {
   P_add_zero_neg_grd_mul_grd_one_is_grd_ring :>
     @IsGrdRing A P bin_op null_op P_has_add P_has_zero P_has_neg grd_mul grd_one;
-  P_Q_add_zero_neg_grd_mul_grd_one_add_zero_neg_grd_l_act_grd_r_act_is_two_grd_bimod
+  P_Q_add_zero_neg_grd_mul_grd_one_add_zero_neg_grd_act_l_grd_act_r_is_two_grd_bimod
     :> @IsTwoGrdBimod A P Q bin_op null_op P_has_add P_has_zero P_has_neg grd_mul grd_one
-    Q_has_add Q_has_zero Q_has_neg grd_l_act grd_r_act;
-  P_Q_add_zero_neg_grd_mul_grd_one_add_zero_neg_grd_l_act_grd_r_act_grd_mul_is_grd_bilin_op
+    Q_has_add Q_has_zero Q_has_neg grd_act_l grd_act_r;
+  P_Q_add_zero_neg_grd_mul_grd_one_add_zero_neg_grd_act_l_grd_act_r_grd_mul_is_grd_bilin_op
     :> @IsGrdBilinOp A P Q bin_op null_op P_has_add P_has_zero P_has_neg grd_mul grd_one
-    Q_has_add Q_has_zero Q_has_neg grd_l_act grd_r_act grd_mul;
+    Q_has_add Q_has_zero Q_has_neg grd_act_l grd_act_r grd_mul;
 }.

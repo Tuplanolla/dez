@@ -5,7 +5,7 @@ From Maniunfold.Has Require Export
   OneSortedEnumeration OneSortedCardinality
   OneSortedAddition OneSortedZero OneSortedNegation
   OneSortedMultiplication OneSortedOne
-  TwoSortedLeftAction TwoSortedRightAction.
+  Action Action.
 From Maniunfold.Is Require Export
   Isomorphism OneSortedFinite ThreeSortedBimodule.
 
@@ -38,21 +38,21 @@ Class IsFourFreeBimod (X A B C : Type)
   `(HasAdd B) `(HasZero B) `(HasNeg B)
   `(HasMul B) `(HasOne B)
   `(HasAdd C) `(HasZero C) `(HasNeg C)
-  `(HasLAct A C) `(HasRAct B C) : Prop := {
+  `(HasActL A C) `(HasActR B C) : Prop := {
   X_is_b_fin :> IsBFin enum;
-  A_B_C_add_zero_neg_mul_one_add_zero_neg_mul_one_add_zero_neg_l_act_r_act_is_three_bimod
+  A_B_C_add_zero_neg_mul_one_add_zero_neg_mul_one_add_zero_neg_act_l_act_r_is_three_bimod
     :> IsThreeBimod
-    add zero neg mul one add zero neg mul one add zero neg l_act r_act;
+    add zero neg mul one add zero neg mul one add zero neg act_l act_r;
   (** The folded summation must be associative and commutative
       in order to keep the basis independent of the enumeration.
       Luckily, in this case, it already is. *)
   (* x = a0 L* e0 + a1 L* e1 + ... + an L* en *)
   l_gen_set : forall x : C, exists f : X -> A,
-    x = sum (map (prod_uncurry l_act) (combine (map f enum) (map basis enum)));
+    x = sum (map (prod_uncurry act_l) (combine (map f enum) (map basis enum)));
   (* 0 = a0 L* e0 + a1 L* e1 + ... + an L* en ->
      0 = a0 /\ 0 = a1 /\ ... /\ 0 = an *)
   l_lin_indep : forall f : X -> A,
-    zero = sum (map (prod_uncurry l_act) (combine (map f enum) (map basis enum))) ->
+    zero = sum (map (prod_uncurry act_l) (combine (map f enum) (map basis enum))) ->
     Forall (eq zero) (map f enum);
   (** TODO Repeat for the other chirality. *)
 }.

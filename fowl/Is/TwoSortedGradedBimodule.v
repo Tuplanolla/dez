@@ -2,7 +2,7 @@
 From Maniunfold.Has Require Export
   OneSortedAddition OneSortedZero OneSortedNegation
   OneSortedMultiplication OneSortedOne
-  TwoSortedGradedLeftAction TwoSortedGradedRightAction.
+  GradedAction GradedAction.
 From Maniunfold.Is Require Export
   ThreeSortedGradedBimodule.
 
@@ -15,9 +15,9 @@ Class IsTwoGrdBimod (A : Type) (P Q : A -> Type)
   `(Q_has_add : forall i : A, HasAdd (Q i))
   `(Q_has_zero : forall i : A, HasZero (Q i))
   `(Q_has_neg : forall i : A, HasNeg (Q i))
-  `(!HasGrdLAct P Q bin_op) `(!HasGrdRAct P Q bin_op) : Prop :=
-  add_zero_neg_grd_mul_grd_one_add_zero_neg_grd_mul_grd_one_add_zero_neg_grd_l_act_grd_r_act_is_three_grd_bimod
+  `(!HasGrdActL P Q bin_op) `(!HasGrdActR P Q bin_op) : Prop :=
+  add_zero_neg_grd_mul_grd_one_add_zero_neg_grd_mul_grd_one_add_zero_neg_grd_act_l_grd_act_r_is_three_grd_bimod
     :> @IsThreeGrdBimod A P P Q bin_op null_op
     P_has_add P_has_zero P_has_neg grd_mul grd_one
     P_has_add P_has_zero P_has_neg grd_mul grd_one
-    Q_has_add Q_has_zero Q_has_neg grd_l_act grd_r_act.
+    Q_has_add Q_has_zero Q_has_neg grd_act_l grd_act_r.

@@ -1,6 +1,6 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  OneSortedBinaryOperation OneSortedGradedBinaryOperation.
+  BinaryOperation GradedBinaryOperation.
 From Maniunfold.Is Require Export
   OneSortedSemigroup OneSortedGradedAssociative OneSortedGradedMagma.
 

@@ -1,6 +1,6 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  OneSortedBinaryOperation OneSortedNullaryOperation
+  BinaryOperation OneSortedNullaryOperation
   OneSortedUnaryOperation.
 From Maniunfold.ShouldHave Require Import
   OneSortedAdditiveNotations.

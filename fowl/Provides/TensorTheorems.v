@@ -104,11 +104,11 @@ Definition GrdMul (ps qs : tensor) : tensor :=
 Definition GrdOne : tensor :=
   {| ht := one; tt := Map.empty (list B) |}.
 
-Definition LAct (a : A) (p : tensor) : tensor :=
-  {| ht := ht p; tt := Map.map (List.map (l_act a)) (tt p) |}.
+Definition ActL (a : A) (p : tensor) : tensor :=
+  {| ht := ht p; tt := Map.map (List.map (act_l a)) (tt p) |}.
 
-Definition RAct (p : tensor) (a : A) : tensor :=
-  {| ht := ht p; tt := Map.map (List.map (flip r_act a)) (tt p) |}.
+Definition ActR (p : tensor) (a : A) : tensor :=
+  {| ht := ht p; tt := Map.map (List.map (flip act_r a)) (tt p) |}.
 
 Global Instance N_has_bin_op : HasBinOp N := N.add.
 
@@ -123,7 +123,7 @@ Global Instance lensor_is_grd_alg :
   (fun n p : N => mul) one
   (fun n : N => Add) (fun n : N => Zero) (fun n : N => Neg)
   (fun n p : N => GrdMul)
-  (fun n p : N => LAct) (fun n p : N => RAct).
+  (fun n p : N => ActL) (fun n p : N => ActR).
 Proof. repeat split. Abort.
 
 End Context.
@@ -146,13 +146,13 @@ Instance Z3_has_neg : HasNeg (Z * Z * Z) :=
   | (x0, x1, x2) => (- x0, - x1, - x2)
   end.
 
-Instance Z3_has_l_act : HasLAct Z (Z * Z * Z) :=
+Instance Z3_has_act_l : HasActL Z (Z * Z * Z) :=
   fun (a : Z) (x : Z * Z * Z) =>
   match x with
   | (x0, x1, x2) => (a * x0, a * x1, a * x2)
   end.
 
-Instance Z3_has_r_act : HasRAct Z (Z * Z * Z) :=
+Instance Z3_has_act_r : HasActR Z (Z * Z * Z) :=
   fun (x : Z * Z * Z) (a : Z) =>
   match x with
   | (x0, x1, x2) => (x0 * a, x1 * a, x2 * a)

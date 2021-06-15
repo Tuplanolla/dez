@@ -1,6 +1,6 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  OneSortedBinaryOperation OneSortedAddition OneSortedGradedMultiplication.
+  BinaryOperation OneSortedAddition OneSortedGradedMultiplication.
 From Maniunfold.Is Require Export
   OneSortedGradedLeftDistributive OneSortedGradedRightDistributive.
 

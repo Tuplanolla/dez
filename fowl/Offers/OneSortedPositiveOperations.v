@@ -1,7 +1,7 @@
 From Coq Require Import
   PArith.PArith.
 From Maniunfold.Has Require Export
-  TwoSortedLeftAction.
+  Action.
 From Maniunfold.Is Require Export
   OneSortedSemigroup.
 From Maniunfold.ShouldHave Require Import
@@ -16,7 +16,7 @@ Import Pos.
 Definition positive_op (n : positive) (x : A) : A :=
   iter_op _+_ n x.
 
-Global Instance positive_A_has_l_act : HasLAct positive A := positive_op.
+Global Instance positive_A_has_act_l : HasActL positive A := positive_op.
 
 End Context.
 

@@ -1,7 +1,7 @@
 From Coq Require Import
   NArith.NArith.
 From Maniunfold.Has Require Export
-  TwoSortedLeftAction.
+  Action.
 From Maniunfold.Is Require Export
   OneSortedMonoid.
 From Maniunfold.Offers Require Export
@@ -19,7 +19,7 @@ Fixpoint nat_op (n : nat) (x : A) : A :=
   | S p => x + @nat_op p x
   end.
 
-Global Instance nat_A_has_l_act : HasLAct nat A := nat_op.
+Global Instance nat_A_has_act_l : HasActL nat A := nat_op.
 
 Definition n_op (n : N) (x : A) : A :=
   match n with
@@ -27,7 +27,7 @@ Definition n_op (n : N) (x : A) : A :=
   | Npos p => (p * x)%positive
   end.
 
-Global Instance N_A_has_l_act : HasLAct N A := n_op.
+Global Instance N_A_has_act_l : HasActL N A := n_op.
 
 End Context.
 

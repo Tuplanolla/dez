@@ -1,7 +1,7 @@
 From Coq Require Import
   ZArith.ZArith.
 From Maniunfold.Has Require Export
-  TwoSortedLeftAction.
+  Action.
 From Maniunfold.Is Require Export
   OneSortedGroup.
 From Maniunfold.Offers Require Export
@@ -20,7 +20,7 @@ Definition z_op (n : Z) (x : A) : A :=
   | Zneg p => - (p * x)%positive
   end.
 
-Global Instance Z_A_has_l_act : HasLAct Z A := z_op.
+Global Instance Z_A_has_act_l : HasActL Z A := z_op.
 
 End Context.
 

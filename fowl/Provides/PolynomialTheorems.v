@@ -396,7 +396,7 @@ Next Obligation.
     are related by the pointwise multiplication
     $x_n = a \times x_n$ for all $n$. *)
 
-Program Definition poly_l_act (a : A) (x : poly) : poly :=
+Program Definition poly_act_l (a : A) (x : poly) : poly :=
   Sexists (Squash o poly_wf)
   (filter (prod_uncurry poly_value_wf) (mul a <$> `x)) _.
 Next Obligation with conversions.
@@ -413,7 +413,7 @@ Next Obligation with conversions.
     are related by the pointwise multiplication
     $x_n = x_n \times a$ for all $n$. *)
 
-Program Definition poly_r_act (x : poly) (a : A) : poly :=
+Program Definition poly_act_r (x : poly) (a : A) : poly :=
   Sexists (Squash o poly_wf)
   (filter (prod_uncurry poly_value_wf) (flip mul a <$> `x)) _.
 Next Obligation with conversions.
@@ -727,8 +727,8 @@ Global Instance poly_has_zero : HasZero poly := poly_zero.
 Global Instance poly_has_neg : HasNeg poly := poly_neg.
 Global Instance poly_has_mul : HasMul poly := poly_mul.
 Global Instance poly_has_one : HasOne poly := poly_one.
-Global Instance poly_has_l_act : HasLAct A poly := poly_l_act.
-Global Instance poly_has_r_act : HasRAct A poly := poly_r_act.
+Global Instance poly_has_act_l : HasActL A poly := poly_act_l.
+Global Instance poly_has_act_r : HasActR A poly := poly_act_r.
 
 Ltac conversions := typeclasses
   convert bin_op into (add (A := poly)) and
@@ -872,17 +872,17 @@ Proof. split; try typeclasses eauto. Admitted.
 
 Global Instance add_zero_neg_mul_one_is_alg :
   IsAlg (A := A) (B := poly)
-  add zero neg mul one add zero neg mul l_act r_act.
+  add zero neg mul one add zero neg mul act_l act_r.
 Proof. split; try typeclasses eauto. Admitted.
 
 Global Instance add_zero_neg_mul_one_is_assoc_alg :
   IsAssocAlg (A := A) (B := poly)
-  add zero neg mul one add zero neg mul l_act r_act.
+  add zero neg mul one add zero neg mul act_l act_r.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance add_zero_neg_mul_one_is_unl_assoc_alg :
   IsUnlAssocAlg (A := A) (B := poly)
-  add zero neg mul one add zero neg mul one l_act r_act.
+  add zero neg mul one add zero neg mul one act_l act_r.
 Proof. split; typeclasses eauto. Defined.
 
 End Context.

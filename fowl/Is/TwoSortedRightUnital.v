@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  TwoSortedRightAction OneSortedNullaryOperation.
+  Action OneSortedNullaryOperation.
 From Maniunfold.ShouldHave Require Import
   OneSortedAdditiveNotations TwoSortedAdditiveNotations.
 
@@ -10,5 +10,5 @@ Local Open Scope r_mod_scope.
     See [Is.OneSortedLeftUnital]. *)
 
 Class IsTwoRUnl (A B : Type)
-  `(HasRAct A B) `(HasNullOp A) : Prop :=
+  `(HasActR A B) `(HasNullOp A) : Prop :=
   two_r_unl : forall x : B, x + 0 = x.
