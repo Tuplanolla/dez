@@ -1,10 +1,10 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  OneSortedAddition Action.
+  Addition Action.
 From Maniunfold.ShouldHave Require Import
-  OneSortedAdditiveNotations TwoSortedMultiplicativeNotations.
+  OneSortedArithmeticNotations TwoSortedMultiplicativeNotations.
 
-Local Open Scope grp_scope.
+Local Open Scope ring_scope.
 Local Open Scope r_mod_scope.
 
 Class IsTwoRRDistr (A B : Type)

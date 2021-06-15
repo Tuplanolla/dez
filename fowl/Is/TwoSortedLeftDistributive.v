@@ -1,6 +1,6 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  OneSortedAddition Action.
+  Addition Action.
 From Maniunfold.Is Require Export
   TwoSortedLeftLeftDistributive TwoSortedLeftRightDistributive.
 

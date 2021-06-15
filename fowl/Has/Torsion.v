@@ -1,4 +1,4 @@
-(** Torsion or Action over a Principal Homogeneous Space *)
+(** * Torsion or Action over a Principal Homogeneous Space *)
 
 From Maniunfold Require Export
   Init.

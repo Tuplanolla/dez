@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  OneSortedAddition OneSortedZero OneSortedNegation
+  Addition Zero Negation
   OneSortedGradedMultiplication OneSortedGradedOne
   GradedAction GradedAction.
 From Maniunfold.Is Require Export

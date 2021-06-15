@@ -1,10 +1,10 @@
 From Maniunfold.Has Require Export
-  CategoricalMorphism CategoricalComposition CategoricalIdentity.
+  Morphism ComposedMorphism IdentityMorphism.
 From Maniunfold.Is Require Export
   CategoricalLeftUnital CategoricalRightUnital.
 
 Class IsCatUnl (A : Type)
-  `(HasHom A) `(!HasComp hom) `(!HasIdt hom) : Prop := {
-  comp_idn_is_cat_l_unl :> IsCatLUnl comp idn;
-  comp_idn_is_cat_r_unl :> IsCatRUnl comp idn;
+  `(HasHom A) `(!HasCompHom hom) `(!HasIdHom hom) : Prop := {
+  comp_hom_id_hom_is_cat_l_unl :> IsCatLUnl comp_hom id_hom;
+  comp_hom_id_hom_is_cat_r_unl :> IsCatRUnl comp_hom id_hom;
 }.

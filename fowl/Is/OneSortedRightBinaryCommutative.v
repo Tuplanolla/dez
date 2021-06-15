@@ -1,6 +1,6 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  OneSortedNegation OneSortedMultiplication.
+  Negation Multiplication.
 From Maniunfold.Is Require Export
   TwoSortedLeftBinaryCommutative.
 From Maniunfold.ShouldHave Require Import

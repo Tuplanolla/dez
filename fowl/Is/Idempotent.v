@@ -7,19 +7,19 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   OneSortedAdditiveNotations.
 
-Class IsIdemElem (A : Type) (f : HasBinOp A) (x : A) : Prop :=
+Class IsIdemElem (A : Type) (k : HasBinOp A) (x : A) : Prop :=
   idem_elem : x + x = x.
 
-Class IsIdemBinOp (A : Type) (f : HasBinOp A) : Prop :=
+Class IsIdemBinOp (A : Type) (k : HasBinOp A) : Prop :=
   idem_bin_op (x : A) : x + x = x.
 
 Section Context.
 
-Context (A : Type) (f : HasBinOp A) `(!IsIdemBinOp f).
+Context (A : Type) (k : HasBinOp A) `(!IsIdemBinOp k).
 
 (** For an idempotent binary operation, every element is idempotent. *)
 
-#[local] Instance is_idem_elem (x : A) : IsIdemElem f x.
+#[local] Instance is_idem_elem (x : A) : IsIdemElem k x.
 Proof. apply idem_bin_op. Qed.
 
 End Context.

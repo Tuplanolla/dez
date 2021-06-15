@@ -4,7 +4,7 @@ From Maniunfold.ShouldHave Require Import
   OneSortedAdditiveNotations.
 
 (** Graded addition.
-    See [Has.OneSortedAddition]. *)
+    See [Has.Addition]. *)
 
 Class HasGrdAdd (A : Type) (P : A -> Type) `(HasBinOp A) : Type :=
   grd_add : forall i j : A, P i -> P j -> P (i + j).

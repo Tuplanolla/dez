@@ -3,8 +3,8 @@ From Coq Require Import
   Lists.List Logic.ProofIrrelevance NArith.NArith.
 From Maniunfold.Has Require Export
   OneSortedEnumeration OneSortedCardinality
-  OneSortedAddition OneSortedZero OneSortedNegation
-  OneSortedMultiplication OneSortedOne
+  Addition Zero Negation
+  Multiplication One
   Action.
 From Maniunfold.Is Require Export
   Isomorphism OneSortedFinite ThreeSortedBimodule.

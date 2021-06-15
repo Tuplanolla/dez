@@ -1,6 +1,6 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  OneSortedAddition ThreeSortedBinaryFunction.
+  Addition ThreeSortedBinaryFunction.
 From Maniunfold.Is Require Export
   ThreeSortedLeftBiadditive ThreeSortedRightBiadditive.
 

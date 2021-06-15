@@ -11,6 +11,8 @@ Section Context.
 
 Context (A : Type) (R : HasApartRel A).
 
+(** Apartness relation is a binary relation. *)
+
 #[local] Instance has_bin_rel : HasBinRel A := apart_rel.
 
 End Context.

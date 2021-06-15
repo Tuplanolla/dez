@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Import
-  OneSortedReciprocation.
+  Reciprocation.
 From Maniunfold.Is Require Import
   OneSortedRing.
 From Maniunfold.ShouldHave Require Import

@@ -11,6 +11,8 @@ Section Context.
 
 Context (A : Type) (R : HasOrdRel A).
 
+(** Order relation is a binary relation. *)
+
 #[local] Instance has_bin_rel : HasBinRel A := ord_rel.
 
 End Context.

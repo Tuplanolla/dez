@@ -1,6 +1,6 @@
 From Maniunfold.Has Require Export
-  OneSortedAddition OneSortedZero OneSortedNegation
-  OneSortedMultiplication OneSortedOne
+  Addition Zero Negation
+  Multiplication One
   Action ThreeSortedBinaryFunction.
 From Maniunfold.Is Require Export
   FiveSortedBilinearMapping.

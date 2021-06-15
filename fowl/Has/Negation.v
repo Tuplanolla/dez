@@ -1,0 +1,20 @@
+(** * Negation or Additive Inverse *)
+
+From Maniunfold.Has Require Export
+  UnaryOperation.
+
+Class HasNeg (A : Type) : Type := neg (x : A) : A.
+
+Typeclasses Transparent HasNeg.
+
+Section Context.
+
+Context (A : Type) (f : HasNeg A).
+
+(** Negation is a unary operation. *)
+
+#[local] Instance has_un_op : HasUnOp A := neg.
+
+End Context.
+
+#[export] Hint Resolve has_un_op : typeclass_instances.

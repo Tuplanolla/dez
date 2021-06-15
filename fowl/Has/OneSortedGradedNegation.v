@@ -4,7 +4,7 @@ From Maniunfold.ShouldHave Require Import
   OneSortedAdditiveNotations.
 
 (** Graded negation.
-    See [Has.OneSortedNegation]. *)
+    See [Has.Negation]. *)
 
 Class HasGrdNeg (A : Type) (P : A -> Type) `(HasUnOp A) : Type :=
   grd_neg : forall i : A, P i -> P (- i).

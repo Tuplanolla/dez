@@ -42,15 +42,15 @@ Proof. split; typeclasses eauto. Defined.
 Global Instance Z_bin_op_null_op_is_comm_mon : IsCommMon (bin_op (A := Z)) null_op.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_bin_op_null_op_un_op_is_l_inv :
+Global Instance Z_bin_op_null_op_un_op_is_l_inv_hom :
   IsLInv (bin_op (A := Z)) null_op un_op.
 Proof. intros x. apply Z.add_opp_diag_l. Defined.
 
-Global Instance Z_bin_op_null_op_un_op_is_r_inv :
+Global Instance Z_bin_op_null_op_un_op_is_r_inv_hom :
   IsRInv (bin_op (A := Z)) null_op un_op.
 Proof. intros x. apply Z.add_opp_diag_r. Defined.
 
-Global Instance Z_bin_op_null_op_un_op_is_inv : IsInv (bin_op (A := Z)) null_op un_op.
+Global Instance Z_bin_op_null_op_un_op_is_inv_hom : IsInv (bin_op (A := Z)) null_op un_op.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_bin_op_null_op_un_op_is_grp : IsGrp (bin_op (A := Z)) null_op un_op.
@@ -126,11 +126,11 @@ Proof. intros x. apply Z.mul_0_r. Defined.
 Global Instance Z_zero_mul_is_absorb : IsAbsorb zero mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_add_zero_mul_one_is_sring : IsSring add zero mul one.
+Global Instance Z_add_zero_mul_one_is_sring : IsSemiring add zero mul one.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_add_zero_mul_one_is_comm_sring :
-  IsCommSring add zero mul one.
+  IsCommSemiring add zero mul one.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_add_zero_neg_mul_one_is_ring : IsRing add zero neg mul one.

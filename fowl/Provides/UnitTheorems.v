@@ -45,15 +45,15 @@ Global Instance unit_bin_op_null_op_is_comm_mon :
   IsCommMon (bin_op (A := unit)) null_op.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance unit_bin_op_null_op_un_op_is_l_inv :
+Global Instance unit_bin_op_null_op_un_op_is_l_inv_hom :
   IsLInv (bin_op (A := unit)) null_op un_op.
 Proof. intros x. eautodestruct. Defined.
 
-Global Instance unit_bin_op_null_op_un_op_is_r_inv :
+Global Instance unit_bin_op_null_op_un_op_is_r_inv_hom :
   IsRInv (bin_op (A := unit)) null_op un_op.
 Proof. intros x. eautodestruct. Defined.
 
-Global Instance unit_bin_op_null_op_un_op_is_inv :
+Global Instance unit_bin_op_null_op_un_op_is_inv_hom :
   IsInv (bin_op (A := unit)) null_op un_op.
 Proof. split; typeclasses eauto. Defined.
 
@@ -132,11 +132,11 @@ Proof. intros x. eautodestruct. Defined.
 Global Instance unit_zero_mul_is_absorb : IsAbsorb zero mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance unit_add_zero_mul_one_is_sring : IsSring add zero mul one.
+Global Instance unit_add_zero_mul_one_is_sring : IsSemiring add zero mul one.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance unit_add_zero_mul_one_is_comm_sring :
-  IsCommSring add zero mul one.
+  IsCommSemiring add zero mul one.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance unit_add_zero_neg_mul_one_is_ring :

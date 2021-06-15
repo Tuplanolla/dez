@@ -599,7 +599,7 @@ Global Instance poly_bin_op_null_op_is_comm_mon :
   IsCommMon poly_add null_op.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_bin_op_null_op_un_op_is_l_inv :
+Global Instance poly_bin_op_null_op_un_op_is_l_inv_hom :
   IsLInv poly_add null_op un_op.
 Proof.
   intros x. cbv [bin_op poly_has_bin_op poly_add
@@ -607,7 +607,7 @@ Proof.
   un_op poly_has_un_op poly_neg].
   cbv [union_with map_union_with]. Admitted.
 
-Global Instance poly_bin_op_null_op_un_op_is_r_inv :
+Global Instance poly_bin_op_null_op_un_op_is_r_inv_hom :
   IsRInv poly_add null_op un_op.
 Proof.
   intros x. cbv [bin_op poly_has_bin_op poly_add
@@ -615,7 +615,7 @@ Proof.
   un_op poly_has_un_op poly_neg].
   cbv [union_with map_union_with]. Admitted.
 
-Global Instance poly_bin_op_null_op_un_op_is_inv :
+Global Instance poly_bin_op_null_op_un_op_is_inv_hom :
   IsInv poly_add null_op un_op.
 Proof. split; typeclasses eauto. Defined.
 
@@ -760,11 +760,11 @@ Proof. intros x. Admitted.
 Global Instance poly_zero_mul_is_absorb : IsAbsorb zero mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_add_zero_mul_one_is_sring : IsSring add zero mul one.
+Global Instance poly_add_zero_mul_one_is_sring : IsSemiring add zero mul one.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_add_zero_mul_one_is_comm_sring :
-  IsCommSring add zero mul one.
+  IsCommSemiring add zero mul one.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_add_zero_neg_mul_one_is_ring :

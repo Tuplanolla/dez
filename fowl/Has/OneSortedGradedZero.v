@@ -4,7 +4,7 @@ From Maniunfold.ShouldHave Require Import
   OneSortedAdditiveNotations.
 
 (** Graded zero.
-    See [Has.OneSortedZero]. *)
+    See [Has.Zero]. *)
 
 Class HasGrdZero (A : Type) (P : A -> Type) `(HasNullOp A) : Type :=
   grd_zero : P 0.

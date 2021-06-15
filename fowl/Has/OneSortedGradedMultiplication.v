@@ -4,7 +4,7 @@ From Maniunfold.ShouldHave Require Import
   OneSortedAdditiveNotations.
 
 (** Graded multiplication.
-    See [Has.OneSortedMultiplication]. *)
+    See [Has.Multiplication]. *)
 
 Class HasGrdMul (A : Type) (P : A -> Type) `(HasBinOp A) : Type :=
   grd_mul : forall i j : A, P i -> P j -> P (i + j).

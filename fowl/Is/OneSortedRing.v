@@ -4,14 +4,15 @@ From Coq Require Import
 From Maniunfold Require Export
   TypeclassTactics.
 From Maniunfold.Has Require Export
-  OneSortedAddition OneSortedZero OneSortedNegation OneSortedMultiplication
-  OneSortedOne.
+  Addition Zero Negation Multiplication
+  One.
 From Maniunfold.Is Require Export
   OneSortedAbelianGroup OneSortedDistributive OneSortedMonoid
   OneSortedAbsorbing OneSortedSignedAbsorbing OneSortedBinaryCommutative
   OneSortedBinaryCrossing OneSortedBinarySplitCancellative
   OneSortedDegenerate OneSortedSemiring OneSortedGradedRing.
 From Maniunfold.ShouldHave Require Import
+  OneSortedAdditiveNotations
   OneSortedArithmeticNotations.
 From Maniunfold.ShouldHave Require
   OneSortedGradedAdditiveNotations OneSortedGradedArithmeticNotations.
@@ -19,7 +20,8 @@ From Maniunfold.ShouldHave Require
 (** Ring, abelian group distributing over a monoid. *)
 
 Class IsRing (A : Type)
-  `(HasAdd A) `(HasZero A) `(HasNeg A) `(HasMul A) `(HasOne A) : Prop := {
+  (k : HasAdd A) (x' : HasZero A) (f' : HasNeg A)
+  (m : HasMul A) (y' : HasOne A) : Prop := {
   add_zero_neg_is_ab_grp :> IsAbGrp add zero neg;
   add_mul_is_distr :> IsDistr add mul;
   mul_one_is_mon :> IsMon mul one;
@@ -27,15 +29,26 @@ Class IsRing (A : Type)
 
 Section Context.
 
-Context (A : Type) `{IsRing A}.
+Context (A : Type) `(IsRing A).
 
 Ltac conversions := typeclasses
   convert bin_op into add and null_op into zero and un_op into neg or
   convert bin_op into mul and null_op into one.
 
+(** TODO Decide whether this is a good or a bad feature
+    of operational subclasses (hypothesis: bad). *)
+
 Theorem zero_mul_l_absorb (x : A) : 0 * x = 0.
 Proof with conversions.
   apply (l_cancel (0 * x) 0 (1 * x))...
+  pose proof r_unl (H := add) as ea'...
+  pose proof r_unl (H := mul) as em'...
+  pose proof r_unl (H := add) as ea.
+  pose proof r_unl (H := mul) as em.
+  pose proof r_unl as ex.
+  specialize (ex : forall x : A, x * 1 = x).
+  specialize (ex : forall x : A, x + 0 = x).
+  Fail rewrite (ex (1 * x)).
   rewrite (r_unl (1 * x)).
   rewrite <- (r_distr 1 0 x).
   rewrite (r_unl 1).
@@ -58,15 +71,13 @@ Proof. exact @zero_mul_r_absorb. Qed.
 Global Instance zero_mul_is_absorb : IsAbsorb zero mul.
 Proof. split; typeclasses eauto. Qed.
 
-Theorem zero_neg_un_absorb : - 0 = 0.
+Global Instance zero_neg_is_un_absorb : IsUnAbsorb zero neg.
 Proof with conversions.
+  hnf...
   apply (l_cancel (- 0) 0 0)...
   rewrite (r_inv 0)...
   rewrite (r_unl 0).
   reflexivity. Qed.
-
-Global Instance zero_neg_is_un_absorb : IsUnAbsorb zero neg.
-Proof. exact @zero_neg_un_absorb. Qed.
 
 Theorem neg_mul_one_l_sgn_absorb (x : A) : (- 1) * x = - x.
 Proof with conversions.

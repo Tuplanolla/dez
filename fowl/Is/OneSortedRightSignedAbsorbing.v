@@ -1,6 +1,6 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  OneSortedNegation OneSortedMultiplication OneSortedOne.
+  Negation Multiplication One.
 From Maniunfold.ShouldHave Require Import
   OneSortedArithmeticNotations.
 

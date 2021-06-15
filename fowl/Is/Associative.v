@@ -5,15 +5,15 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   OneSortedAdditiveNotations.
 
-Class IsAssoc (A : Type) (f : HasBinOp A) : Prop :=
+Class IsAssoc (A : Type) (k : HasBinOp A) : Prop :=
   assoc (x y z : A) : x + (y + z) = (x + y) + z.
 
-Class IsCompatL (A B : Type) (f : HasBinOp A) (l : HasActL A B) : Prop :=
-  compat_l (a b : A) (x : B) : l a (l b x) = l (f a b) x.
+Class IsCompatL (A B : Type) (k : HasBinOp A) (l : HasActL A B) : Prop :=
+  compat_l (a b : A) (x : B) : l a (l b x) = l (k a b) x.
   (* compat_l (a b : A) (x : B) : a * (b * x) = (a * b) * x. *)
 
-Class IsCompatR (A B : Type) (f : HasBinOp A) (r : HasActR A B) : Prop :=
-  compat_r (x : B) (a b : A) : r x (f a b) = r (r x a) b.
+Class IsCompatR (A B : Type) (k : HasBinOp A) (r : HasActR A B) : Prop :=
+  compat_r (x : B) (a b : A) : r x (k a b) = r (r x a) b.
   (* compat_r (x : B) (a b : A) : x * (a * b) = (x * a) * b. *)
 
 Class IsBicompat (A B C : Type) (l : HasActL A C) (r : HasActR B C) : Prop :=
@@ -22,9 +22,9 @@ Class IsBicompat (A B C : Type) (l : HasActL A C) (r : HasActR B C) : Prop :=
 
 Section Context.
 
-Context (A : Type) (f : HasBinOp A) `(!IsAssoc f).
+Context (A : Type) (k : HasBinOp A) `(!IsAssoc k).
 
-#[local] Instance is_bicompat : IsBicompat f f.
+#[local] Instance is_bicompat : IsBicompat k k.
 Proof. intros x y z. apply assoc. Qed.
 
 End Context.

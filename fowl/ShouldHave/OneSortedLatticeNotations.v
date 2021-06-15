@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  OneSortedAddition OneSortedZero OneSortedMultiplication OneSortedOne.
+  Addition Zero Multiplication One.
 
 Declare Scope lat_scope.
 

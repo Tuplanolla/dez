@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  OneSortedNegation OneSortedMultiplication OneSortedOne.
+  Negation Multiplication One.
 From Maniunfold.Is Require Export
   OneSortedLeftSignedAbsorbing OneSortedRightSignedAbsorbing.
 

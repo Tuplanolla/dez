@@ -1,17 +1,15 @@
 From Maniunfold.Has Require Export
-  CategoricalComposition CategoricalIdentity CategoricalInverse.
+  ComposedMorphism IdentityMorphism InverseMorphism.
 From Maniunfold.ShouldHave Require Export
-  CategoricalTypeNotations.
+  MorphismNotations.
 
-Declare Scope cat_scope.
+Declare Scope category_scope.
+Delimit Scope category_scope with cat.
 
-Delimit Scope cat_scope with cat.
+Notation "'_o_'" := (comp_hom _ _ _) : cat.
+Notation "g 'o' f" := (comp_hom _ _ _ g f) : cat.
+Notation "'id'" := (id_hom _) : cat.
+Notation "'_^-1'" := (inv_hom _ _) : cat.
+Notation "f '^-1'" := (inv_hom _ _ f) : cat.
 
-Open Scope cat_scope.
-
-Notation "g 'o' f" := (comp _ _ _ f g) : cat_scope.
-Notation "'id'" := (idn _) : cat_scope.
-Notation "f '^-1'" := (inv _ _ f) : cat_scope.
-
-Notation "'_o_'" := (comp _ _ _) (only parsing) : cat_scope.
-Notation "'_^-1'" := (inv _ _) (only parsing) : cat_scope.
+#[global] Open Scope cat.

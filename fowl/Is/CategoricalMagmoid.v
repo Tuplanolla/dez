@@ -1,4 +1,4 @@
 From Maniunfold.Has Require Export
-  CategoricalMorphism CategoricalComposition.
+  Morphism ComposedMorphism.
 
-Class IsMagd (A : Type) `(HasHom A) `(!HasComp hom) : Prop := {}.
+Class IsMagd (A : Type) `(HasHom A) `(!HasCompHom hom) : Prop := {}.

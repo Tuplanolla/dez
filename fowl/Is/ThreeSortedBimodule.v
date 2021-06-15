@@ -1,7 +1,7 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  OneSortedAddition OneSortedZero OneSortedNegation OneSortedMultiplication
-  OneSortedOne Action.
+  Addition Zero Negation Multiplication
+  One Action.
 From Maniunfold.Is Require Export
   TwoSortedLeftModule TwoSortedRightModule ThreeSortedBicompatible.
 

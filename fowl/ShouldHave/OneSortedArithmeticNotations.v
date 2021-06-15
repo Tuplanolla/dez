@@ -1,6 +1,6 @@
 From Maniunfold.Has Require Export
-  OneSortedAddition OneSortedZero OneSortedNegation
-  OneSortedMultiplication OneSortedOne OneSortedReciprocation.
+  Addition Zero Negation
+  Multiplication One Reciprocation.
 
 Declare Scope ring_scope.
 

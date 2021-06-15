@@ -1,28 +1,27 @@
+(** * Semiring (bad) *)
+
 From Maniunfold Require Export
   TypeclassTactics.
 From Maniunfold.Has Require Export
-  OneSortedAddition OneSortedZero OneSortedMultiplication OneSortedOne.
+  Addition Zero Multiplication One.
 From Maniunfold.Is Require Export
   OneSortedCommutative OneSortedMonoid OneSortedDistributive
   OneSortedAbsorbing.
 From Maniunfold.ShouldHave Require Import
   OneSortedArithmeticNotations.
 
-(** Noncommutative semiring. *)
-
-Class IsSring (A : Type)
-  `(HasAdd A) `(HasZero A)
-  `(HasMul A) `(HasOne A) : Prop := {
-  A_add_is_comm :> IsComm add;
-  A_add_zero_is_mon :> IsMon add zero;
-  A_add_mul_is_distr :> IsDistr add mul;
-  A_zero_mul_is_absorb :> IsAbsorb zero mul;
-  A_mul_one_is_mon :> IsMon mul one;
+Class IsSemiring (A : Type)
+  (k : HasAdd A) (x : HasZero A) (m : HasMul A) (y : HasOne A) : Prop := {
+  add_is_comm :> IsComm add;
+  add_zero_is_mon :> IsMon add zero;
+  add_mul_is_distr :> IsDistr add mul;
+  zero_mul_is_absorb :> IsAbsorb zero mul;
+  mul_one_is_mon :> IsMon mul one;
 }.
 
 Section Context.
 
-Context (A : Type) `{IsSring A}.
+Context (A : Type) `(IsSemiring A).
 
 Ltac conversions := typeclasses
   convert bin_op into add and null_op into zero or
@@ -30,12 +29,13 @@ Ltac conversions := typeclasses
 
 Goal 0 = 1 -> forall x y : A, x = y.
 Proof with conversions.
-  intros Hyp x y.
-  rewrite <- (l_unl (H0 := 1) x)...
-  rewrite <- (l_unl (H0 := 1) y)...
-  rewrite <- Hyp.
+  intros e x y.
+  pose proof @l_unl _ mul one _ as l...
+  rewrite <- (l x).
+  rewrite <- (l y).
+  rewrite <- e.
   rewrite (l_absorb x).
   rewrite (l_absorb y).
-  reflexivity. Defined.
+  reflexivity. Qed.
 
 End Context.

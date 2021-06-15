@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  OneSortedZero OneSortedMultiplication.
+  Zero Multiplication.
 From Maniunfold.Is Require Export
   OneSortedLeftAbsorbing OneSortedRightAbsorbing.
 

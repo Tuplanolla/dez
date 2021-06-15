@@ -4,8 +4,8 @@ From Maniunfold.Is Require Export
   Inverse.
 
 Class IsIso (A B : Type) (f : A -> B) (g : B -> A) : Prop := {
-  is_inv_l :> IsInvL f g;
-  is_inv_r :> IsInvR f g;
+  is_inv_hom_l :> IsInvL f g;
+  is_inv_hom_r :> IsInvR f g;
 }.
 
 Module Flipped.

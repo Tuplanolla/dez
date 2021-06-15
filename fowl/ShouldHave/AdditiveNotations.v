@@ -15,16 +15,12 @@ Delimit Scope left_action_scope with act_l.
 
 Notation "'_+_'" := act_l : act_l.
 Notation "a '+' x" := (act_l a x) : act_l.
-Notation "'_-_'" := (fun (a : _) (x : _) => act_l a (un_op x)) : act_l.
-Notation "a '-' x" := (act_l a (un_op x)) : act_l.
 
 Declare Scope right_action_scope.
 Delimit Scope right_action_scope with act_r.
 
 Notation "'_+_'" := act_r : act_r.
 Notation "x '+' a" := (act_r x a) : act_r.
-Notation "'_-_'" := (fun (x : _) (a : _) => act_r x (un_op a)) : act_r.
-Notation "x '-' a" := (act_r x (un_op a)) : act_r.
 
 Declare Scope left_torsion_scope.
 Delimit Scope left_torsion_scope with tor_l.

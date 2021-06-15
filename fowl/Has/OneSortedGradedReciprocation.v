@@ -4,7 +4,7 @@ From Maniunfold.ShouldHave Require Import
   OneSortedAdditiveNotations.
 
 (** Graded reciprocation.
-    See [Has.OneSortedReciprocation]. *)
+    See [Has.Reciprocation]. *)
 
 Class HasGrdRecip (A : Type) (P : A -> Type) `(HasUnOp A) : Type :=
   grd_recip : forall i : A, P i -> P (- i).

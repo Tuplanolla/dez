@@ -12,7 +12,7 @@ From Maniunfold.ShouldHave Require Import
 
 Class IsGrp (A : Type) `(HasBinOp A) `(HasNullOp A) `(HasUnOp A) : Prop := {
   bin_op_null_op_is_mon :> IsMon bin_op null_op;
-  bin_op_null_op_un_op_is_inv :> IsInv bin_op null_op un_op;
+  bin_op_null_op_un_op_is_inv_hom :> IsInv bin_op null_op un_op;
 }.
 
 Section Context.

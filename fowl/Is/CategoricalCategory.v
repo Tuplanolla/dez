@@ -1,9 +1,9 @@
 From Maniunfold.Has Require Export
-  CategoricalMorphism CategoricalComposition CategoricalIdentity.
+  Morphism ComposedMorphism IdentityMorphism.
 From Maniunfold.Is Require Export
   CategoricalSemicategory CategoricalUnital.
 
-Class IsCat (A : Type) `(HasHom A) `(!HasComp hom) `(!HasIdt hom) : Prop := {
-  comp_is_scat :> IsScat comp;
-  comp_idn_is_cat_unl :> IsCatUnl comp idn;
+Class IsCat (A : Type) `(HasHom A) `(!HasCompHom hom) `(!HasIdHom hom) : Prop := {
+  comp_hom_is_scat :> IsSemicat comp_hom;
+  comp_hom_id_hom_is_cat_unl :> IsCatUnl comp_hom id_hom;
 }.

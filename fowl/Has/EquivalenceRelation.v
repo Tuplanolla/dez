@@ -11,6 +11,8 @@ Section Context.
 
 Context (A : Type) (R : HasEqRel A).
 
+(** Equivalence relation is a binary relation. *)
+
 #[local] Instance has_bin_rel : HasBinRel A := eq_rel.
 
 End Context.
