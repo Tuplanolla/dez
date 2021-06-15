@@ -132,10 +132,10 @@ Proof. intros x. eautodestruct. Defined.
 Global Instance unit_zero_mul_is_absorb : IsAbsorb zero mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance unit_add_zero_mul_one_is_sring : IsSemiring add zero mul one.
+Global Instance unit_add_zero_mul_one_is_semiring : IsSemiring add zero mul one.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance unit_add_zero_mul_one_is_comm_sring :
+Global Instance unit_add_zero_mul_one_is_comm_semiring :
   IsCommSemiring add zero mul one.
 Proof. split; typeclasses eauto. Defined.
 

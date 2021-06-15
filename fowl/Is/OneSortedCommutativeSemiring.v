@@ -8,6 +8,6 @@ From Maniunfold.Is Require Export
 Class IsCommSemiring (A : Type)
   `(HasAdd A) `(HasZero A)
   `(HasMul A) `(HasOne A) : Prop := {
-  A_add_zero_mul_one_is_sring :> IsSemiring add zero mul one;
+  A_add_zero_mul_one_is_semiring :> IsSemiring add zero mul one;
   A_mul_is_comm :> IsComm mul;
 }.

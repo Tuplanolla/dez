@@ -20,8 +20,8 @@ From Maniunfold.ShouldHave Require
 (** Ring, abelian group distributing over a monoid. *)
 
 Class IsRing (A : Type)
-  (k : HasAdd A) (x' : HasZero A) (f' : HasNeg A)
-  (m : HasMul A) (y' : HasOne A) : Prop := {
+  (k' : HasAdd A) (x' : HasZero A) (f' : HasNeg A)
+  (m' : HasMul A) (y' : HasOne A) : Prop := {
   add_zero_neg_is_ab_grp :> IsAbGrp add zero neg;
   add_mul_is_distr :> IsDistr add mul;
   mul_one_is_mon :> IsMon mul one;
@@ -150,7 +150,7 @@ Proof with conversions.
 Global Instance neg_mul_is_bin_spt_cancel : IsBinSptCancel neg mul.
 Proof. exact @neg_mul_bin_spt_cancel. Qed.
 
-Global Instance add_zero_mul_one_is_sring : IsSring add zero mul one.
+Global Instance add_zero_mul_one_is_semiring : IsSemiring add zero mul one.
 Proof. split; typeclasses eauto. Qed.
 
 Theorem one_zero_degen (x : A) (e : 1 = 0) : x = 0.
