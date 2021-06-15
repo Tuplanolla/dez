@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
   BinaryOperation
   GradedAction ThreeSortedGradedBinaryFunction.
 From Maniunfold.Is Require Export
-  OneSortedAssociative.
+  Associative.
 From Maniunfold.ShouldHave Require Import
   TwoSortedGradedMultiplicativeNotations.
 

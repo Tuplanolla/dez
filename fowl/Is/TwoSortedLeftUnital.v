@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  Action OneSortedNullaryOperation.
+  Action NullaryOperation.
 From Maniunfold.ShouldHave Require Import
   OneSortedAdditiveNotations TwoSortedAdditiveNotations.
 

@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  OneSortedUnaryOperation.
+  UnaryOperation.
 
 (** Reciprocal, multiplicative inverse.
     Commonly found in fields. *)

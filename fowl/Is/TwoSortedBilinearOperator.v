@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   OneSortedAddition OneSortedZero OneSortedNegation
   OneSortedMultiplication OneSortedOne
-  Action Action.
+  Action.
 From Maniunfold.Is Require Export
   FiveSortedBilinearMapping.
 

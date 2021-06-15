@@ -2,10 +2,10 @@
 
 From Maniunfold.Has Require Export
   Decidability StrictOrderRelation OrderRelation.
-From Maniunfold.ShouldHave Require Import
-  StrictOrderRelationNotations OrderRelationNotations.
 From Maniunfold.Is Require Export
   Preorder CoherentOrderRelations.
+From Maniunfold.ShouldHave Require Import
+  StrictOrderRelationNotations OrderRelationNotations.
 
 Fail Fail Class IsMono (A B : Type)
   (RA : HasOrdRel A) (RB : HasOrdRel B) (f : A -> B) : Prop :=

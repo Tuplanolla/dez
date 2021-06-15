@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  OneSortedGradedUnaryOperation
+  GradedUnaryOperation
   GradedAction GradedAction.
 
 (** We do not open [grd_l_mod_scope] or [grd_r_mod_scope],

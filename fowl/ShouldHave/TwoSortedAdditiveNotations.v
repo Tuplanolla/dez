@@ -1,7 +1,6 @@
 From Maniunfold.Has Require Export
-  OneSortedUnaryOperation
-  Action Action
-  TwoSortedLeftTorsion TwoSortedRightTorsion.
+  UnaryOperation
+  Action Torsion.
 
 (** We do not open [l_mod_scope] or [r_mod_scope],
     because we do not want to favor one over the other.
@@ -33,14 +32,14 @@ Declare Scope l_subgrp_scope.
 
 Delimit Scope l_subgrp_scope with l_subgrp.
 
-Notation "x '-' y" := (l_tor x y) : l_subgrp_scope.
+Notation "x '-' y" := (tor_l x y) : l_subgrp_scope.
 
-Notation "'_-_'" := l_tor (only parsing) : l_subgrp_scope.
+Notation "'_-_'" := tor_l (only parsing) : l_subgrp_scope.
 
 Declare Scope r_subgrp_scope.
 
 Delimit Scope r_subgrp_scope with r_subgrp.
 
-Notation "x '-' y" := (r_tor x y) : r_subgrp_scope.
+Notation "x '-' y" := (tor_r x y) : r_subgrp_scope.
 
-Notation "'_-_'" := r_tor (only parsing) : r_subgrp_scope.
+Notation "'_-_'" := tor_r (only parsing) : r_subgrp_scope.

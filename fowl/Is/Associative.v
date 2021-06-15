@@ -1,7 +1,7 @@
 (** * Associativity and Compatibility of a Binary Operation *)
 
 From Maniunfold.Has Require Export
-  BinaryOperation.
+  BinaryOperation Action.
 From Maniunfold.ShouldHave Require Import
   OneSortedAdditiveNotations.
 

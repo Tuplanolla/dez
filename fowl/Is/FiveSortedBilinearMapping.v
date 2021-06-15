@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   OneSortedAddition OneSortedZero OneSortedNegation
   OneSortedMultiplication OneSortedOne
-  Action Action ThreeSortedBinaryFunction.
+  Action ThreeSortedBinaryFunction.
 From Maniunfold.Is Require Export
   TwoSortedLeftModule TwoSortedRightModule
   ThreeSortedBimodule ThreeSortedBiadditive FiveSortedBihomogeneous.

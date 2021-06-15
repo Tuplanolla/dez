@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  OneSortedNullaryOperation.
+  NullaryOperation.
 
 (** Zero, nil, additive identity.
     Commonly found in semirings. *)

@@ -1,6 +1,6 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  OneSortedUnaryOperation OneSortedAddition Action
+  UnaryOperation OneSortedAddition Action
   OneSortedAddition OneSortedZero OneSortedNegation
   OneSortedGradedMultiplication OneSortedGradedOne
   ThreeSortedGradedBinaryFunction.

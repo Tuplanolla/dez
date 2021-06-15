@@ -1,4 +1,4 @@
-(** Action or Act *)
+(** * Action or Act *)
 
 From Maniunfold Require Export
   Init.

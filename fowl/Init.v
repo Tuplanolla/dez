@@ -82,6 +82,29 @@ From Equations.Prop Require Export
 
 #[global] Generalizable No Variables.
 
+(** We reset the interpretation scope stack,
+    because it is very sensitive to changes.
+    The initial scope stack can be inspected
+    with `Print Scopes` and `Print Visibility`. *)
+
+#[global] Close Scope equations_scope.
+#[global] Close Scope list_scope.
+#[global] Close Scope Q_scope.
+#[global] Close Scope bool_scope.
+#[global] Close Scope nat_scope.
+#[global] Close Scope type_scope.
+#[global] Close Scope function_scope.
+#[global] Close Scope core_scope.
+
+#[global] Open Scope equations_scope.
+#[global] Open Scope signature_scope.
+#[global] Open Scope list_scope.
+#[global] Open Scope bool_scope.
+#[global] Open Scope nat_scope.
+#[global] Open Scope type_scope.
+#[global] Open Scope function_scope.
+#[global] Open Scope core_scope.
+
 (** We use anonymous goals and obligations to define local lemmas,
     which is why we do not want to see them in search results. *)
 
@@ -190,10 +213,6 @@ Notation "A '<->' B" := (iff A B) : type_scope.
 
 (** Respectful morphisms have an obvious dual
     that is missing from the standard library. *)
-
-#[global] Open Scope signature_scope.
-#[global] Open Scope type_scope.
-#[global] Open Scope core_scope.
 
 Fail Fail Equations respectful (A B : Type)
   (R : relation A) (R' : relation B) : relation (A -> B) :=

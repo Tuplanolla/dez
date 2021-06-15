@@ -2,7 +2,7 @@
 From Maniunfold.Has Require Export
   BinaryOperation GradedBinaryOperation.
 From Maniunfold.Is Require Export
-  OneSortedAssociative.
+  Associative.
 From Maniunfold.ShouldHave Require Import
   OneSortedGradedAdditiveNotations.
 

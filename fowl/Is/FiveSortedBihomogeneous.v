@@ -1,6 +1,6 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  Action Action ThreeSortedBinaryFunction.
+  Action ThreeSortedBinaryFunction.
 From Maniunfold.Is Require Export
   FourSortedLeftBihomogeneous FourSortedRightBihomogeneous.
 

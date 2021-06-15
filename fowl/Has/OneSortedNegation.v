@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  OneSortedUnaryOperation.
+  UnaryOperation.
 
 (** Negation, opposite, additive inverse.
     Commonly found in rings. *)

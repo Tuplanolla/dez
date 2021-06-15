@@ -1,6 +1,6 @@
 From Maniunfold.Has Require Export
-  BinaryOperation OneSortedNullaryOperation
-  OneSortedUnaryOperation.
+  BinaryOperation NullaryOperation
+  UnaryOperation.
 From Maniunfold.Is Require Export
   OneSortedCommutative OneSortedGroup OneSortedUnaryDistributive.
 From Maniunfold.ShouldHave Require Import

@@ -8,4 +8,4 @@ Local Open Scope r_mod_scope.
 
 Class IsRCompat (A B : Type)
   `(HasBinOp A) `(HasActR A B) : Prop :=
-  r_compat : forall (x : B) (a b : A), x * (a * b) = (x * a) * b.
+  r_compat : forall (x : B) (a b : A), x * (bin_op a b) = (x * a) * b.

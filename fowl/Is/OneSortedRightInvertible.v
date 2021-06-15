@@ -1,7 +1,7 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  BinaryOperation OneSortedNullaryOperation
-  OneSortedUnaryOperation.
+  BinaryOperation NullaryOperation
+  UnaryOperation.
 From Maniunfold.ShouldHave Require Import
   OneSortedAdditiveNotations.
 

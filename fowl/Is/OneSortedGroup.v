@@ -1,6 +1,6 @@
 From Maniunfold.Has Require Export
-  BinaryOperation OneSortedNullaryOperation
-  OneSortedUnaryOperation.
+  BinaryOperation NullaryOperation
+  UnaryOperation.
 From Maniunfold.Is Require Export
   OneSortedMonoid OneSortedInvertible
   OneSortedCancellative OneSortedUnaryAntidistributive Injective

@@ -1,7 +1,7 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  BinaryOperation OneSortedNullaryOperation
-  GradedBinaryOperation OneSortedGradedNullaryOperation.
+  BinaryOperation NullaryOperation
+  GradedBinaryOperation GradedNullaryOperation.
 From Maniunfold.Is Require Export
   OneSortedLeftUnital.
 From Maniunfold.ShouldHave Require Import

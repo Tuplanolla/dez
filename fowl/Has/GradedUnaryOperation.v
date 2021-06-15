@@ -1,10 +1,10 @@
 From Maniunfold.Has Require Export
-  OneSortedUnaryOperation TwoSortedGradedGradedFunction.
+  UnaryOperation TwoSortedGradedGradedFunction.
 From Maniunfold.ShouldHave Require Import
   OneSortedAdditiveNotations.
 
 (** Graded unary operation.
-    See [Has.OneSortedUnaryOperation]. *)
+    See [Has.UnaryOperation]. *)
 
 Class HasGrdUnOp (A : Type) (P : A -> Type) `(HasUnOp A) : Type :=
   grd_un_op : forall i : A, P i -> P (- i).

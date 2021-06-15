@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   BinaryOperation.
 From Maniunfold.Is Require Export
-  OneSortedAssociative OneSortedMagma.
+  Associative OneSortedMagma.
 
 (** Semigroup, associative magma. *)
 

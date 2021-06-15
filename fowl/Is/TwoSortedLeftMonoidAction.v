@@ -1,6 +1,6 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  BinaryOperation OneSortedNullaryOperation Action.
+  BinaryOperation NullaryOperation Action.
 From Maniunfold.Is Require Export
   OneSortedMonoid TwoSortedLeftSemigroupAction TwoSortedLeftUnital.
 

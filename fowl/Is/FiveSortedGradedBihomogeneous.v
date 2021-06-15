@@ -1,6 +1,6 @@
 (* bad *)
 From Maniunfold.Has Require Export
-  BinaryOperation OneSortedNullaryOperation
+  BinaryOperation NullaryOperation
   GradedAction GradedAction
   ThreeSortedGradedBinaryFunction.
 From Maniunfold.Is Require Export

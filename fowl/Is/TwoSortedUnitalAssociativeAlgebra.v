@@ -1,9 +1,9 @@
 From Maniunfold.Has Require Export
   OneSortedAddition OneSortedZero OneSortedNegation
   OneSortedMultiplication OneSortedOne
-  Action Action.
+  Action.
 From Maniunfold.Is Require Export
-  OneSortedUnital TwoSortedAssociativeAlgebra.
+  OneSortedUnital AssociativeAlgebra.
 
 (** Noncommutative algebra over a noncommutative ring.
     The ring is carried by [A] and the algebra by [B].

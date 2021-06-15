@@ -2,7 +2,7 @@
 From Maniunfold.Has Require Export
   BinaryOperation GradedBinaryOperation.
 From Maniunfold.Is Require Export
-  OneSortedSemigroup OneSortedGradedAssociative OneSortedGradedMagma.
+  OneSortedSemigroup GradedAssociative OneSortedGradedMagma.
 
 Class IsGrdSgrp (A : Type) (P : A -> Type)
   `(HasBinOp A) `(HasGrdBinOp A P) : Prop := {

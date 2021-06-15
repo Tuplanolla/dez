@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  BinaryOperation OneSortedNullaryOperation.
+  BinaryOperation NullaryOperation.
 From Maniunfold.Is Require Export
   OneSortedLeftUnital OneSortedRightUnital TwoSortedUnital.
 

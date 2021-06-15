@@ -5,7 +5,7 @@ From Maniunfold.Has Require Export
   OneSortedEnumeration OneSortedCardinality
   OneSortedAddition OneSortedZero OneSortedNegation
   OneSortedMultiplication OneSortedOne
-  Action Action.
+  Action.
 From Maniunfold.Is Require Export
   Isomorphism OneSortedFinite ThreeSortedBimodule.
 

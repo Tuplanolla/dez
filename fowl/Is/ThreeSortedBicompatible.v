@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  Action Action.
+  Action.
 From Maniunfold.ShouldHave Require Import
   TwoSortedMultiplicativeNotations.
 

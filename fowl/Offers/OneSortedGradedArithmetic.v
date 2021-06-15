@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  BinaryOperation OneSortedUnaryOperation
+  BinaryOperation UnaryOperation
   OneSortedGradedAddition OneSortedGradedNegation
   OneSortedGradedMultiplication OneSortedGradedReciprocation.
 From Maniunfold.ShouldHave Require Import

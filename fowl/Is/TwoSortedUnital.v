@@ -1,5 +1,5 @@
 From Maniunfold.Has Require Export
-  Action Action OneSortedNullaryOperation.
+  Action NullaryOperation.
 From Maniunfold.Is Require Export
   TwoSortedLeftUnital TwoSortedRightUnital.
 
