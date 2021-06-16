@@ -3,13 +3,8 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Export
   MorphismNotations.
 
-Declare Scope category_scope.
-Delimit Scope category_scope with cat.
-
-Notation "'_o_'" := (comp_hom _ _ _) : cat.
-Notation "g 'o' f" := (comp_hom _ _ _ g f) : cat.
-Notation "'id'" := (id_hom _) : cat.
-Notation "'_^-1'" := (inv_hom _ _) : cat.
-Notation "f '^-1'" := (inv_hom _ _ f) : cat.
-
-#[global] Open Scope cat.
+Notation "'_o_'" := (comp_hom _ _ _) : category_scope.
+Notation "g 'o' f" := (comp_hom _ _ _ g f) : category_scope.
+Notation "'id'" := (id_hom _) : category_scope.
+Notation "'_^-1'" := (inv_hom _ _) : category_scope.
+Notation "f '^-1'" := (inv_hom _ _ f) : category_scope.

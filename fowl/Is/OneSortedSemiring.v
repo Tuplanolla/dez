@@ -11,12 +11,13 @@ From Maniunfold.ShouldHave Require Import
   OneSortedArithmeticNotations.
 
 Class IsSemiring (A : Type)
-  (k' : HasAdd A) (x' : HasZero A) (m' : HasMul A) (y' : HasOne A) : Prop := {
-  add_is_comm :> IsComm add;
+  (Hk : HasAdd A) (Hx : HasZero A)
+  (Hm : HasMul A) (Hy : HasOne A) : Prop := {
   add_zero_is_mon :> IsMon add zero;
+  mul_one_is_mon :> IsMon mul one;
+  add_is_comm :> IsComm add;
   add_mul_is_distr :> IsDistr add mul;
   zero_mul_is_absorb :> IsAbsorb zero mul;
-  mul_one_is_mon :> IsMon mul one;
 }.
 
 Section Context.

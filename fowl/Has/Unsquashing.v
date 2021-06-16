@@ -43,7 +43,7 @@ Proof.
     This is a special case of [pi_has_unsquash]. *)
 
 #[local] Instance arrow_has_unsquash (A B : Type)
-  (u : HasUnsquash B) : HasUnsquash (A -> B).
+  (Hu : HasUnsquash B) : HasUnsquash (A -> B).
 Proof.
   intros x a.
   apply unsquash.
@@ -72,7 +72,8 @@ Proof.
 
 (** Decidable propositions can be unsquashed. *)
 
-#[local] Instance dec_has_unsquash (A : Prop) (d : HasDec A) : HasUnsquash A.
+#[local] Instance dec_has_unsquash (A : Prop)
+  (Hd : HasDec A) : HasUnsquash A.
 Proof.
   intros x.
   decide A as [a | f].

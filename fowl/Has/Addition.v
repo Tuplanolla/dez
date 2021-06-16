@@ -11,7 +11,7 @@ Module Subclass.
 
 Section Context.
 
-Context (A : Type) (k : HasAdd A).
+Context (A : Type) (Hk : HasAdd A).
 
 (** Addition is a binary operation. *)
 

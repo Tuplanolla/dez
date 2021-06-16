@@ -11,7 +11,7 @@ Module Subclass.
 
 Section Context.
 
-Context (A : Type) (x : HasZero A).
+Context (A : Type) (Hx : HasZero A).
 
 (** Zero is a nullary operation. *)
 

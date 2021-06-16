@@ -309,12 +309,12 @@ Next Obligation.
   intros x y. apply squash.
   intros i a Hyp. intros Ha. subst a.
   apply lookup_union_with_Some in Hyp. cbn in Hyp.
-  destruct Hyp as [[Hx Hy] | [[Hx Hy] | [a [b [Hx [Hy Hxy]]]]]].
-  - apply (poly_lookup_wf x i Hx).
-  - apply (poly_lookup_wf y i Hy).
-  - decide (a + b <> 0) as [Fab | Fab]; stabilize.
-    + inversion Hxy as [Hab]. apply Fab. apply Hab.
-    + inversion Hxy. Defined.
+  destruct Hyp as [[hx hy] | [[hx hy] | [a [b [hx [hy hxy]]]]]].
+  - apply (poly_lookup_wf x i hx).
+  - apply (poly_lookup_wf y i hy).
+  - decide (a + b <> 0) as [fab | fab]; stabilize.
+    + inversion hxy as [hab]. apply fab. apply hab.
+    + inversion hxy. Defined.
 
 (** Zero polynomial.
 
@@ -340,9 +340,9 @@ Next Obligation with conversions.
   intros i a Hyp. intros Ha. subst a.
   rewrite lookup_fmap in Hyp.
   pose proof fmap_Some_1 _ _ _ Hyp as Hyp'.
-  destruct Hyp' as [a [Hx Hy]].
-  rewrite <- un_absorb in Hy... apply inj in Hy. subst a.
-  apply (poly_lookup_wf x i Hx). Defined.
+  destruct Hyp' as [a [hx hy]].
+  rewrite <- un_absorb in hy... apply inj in hy. subst a.
+  apply (poly_lookup_wf x i hx). Defined.
 
 (** Multiplication of polynomials.
 

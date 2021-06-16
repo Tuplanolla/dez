@@ -1,10 +1,7 @@
 From Maniunfold.Has Require Export
   EquivalenceRelation.
+From Maniunfold.ShouldHave Require Export
+  BinaryRelationNotations.
 
-Declare Scope relation_scope.
-Delimit Scope relation_scope with rel.
-
-Notation "'_==_'" := eq_rel : rel.
-Notation "x '==' y" := (eq_rel x y) : rel.
-
-#[global] Open Scope rel.
+Notation "'_==_'" := eq_rel : relation_scope.
+Notation "x '==' y" := (eq_rel x y) : relation_scope.

@@ -11,7 +11,7 @@ Module Subclass.
 
 Section Context.
 
-Context (A : Type) (R : HasApartRel A).
+Context (A : Type) (HR : HasApartRel A).
 
 (** Apartness relation is a binary relation. *)
 

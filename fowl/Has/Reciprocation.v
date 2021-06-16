@@ -11,7 +11,7 @@ Module Subclass.
 
 Section Context.
 
-Context (A : Type) (f : HasRecip A).
+Context (A : Type) (Hf : HasRecip A).
 
 (** Reciprocal is a unary operation. *)
 

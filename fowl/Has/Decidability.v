@@ -29,7 +29,7 @@ Typeclasses Transparent EqDec.
 
 Section Context.
 
-Context (A : Type) (d : HasEqDec A) (x y : A).
+Context (A : Type) (Hd : HasEqDec A) (x y : A).
 
 (** We need this instance to bridge the gap
     between the standard library and the equations plugin.

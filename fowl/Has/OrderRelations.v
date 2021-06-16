@@ -17,10 +17,10 @@ Context (A : Type).
 (** Order relations are binary relations. *)
 
 #[local] Instance has_bin_rel
-  (R : HasOrdRel A) : HasBinRel A := ord_rel.
+  (HR : HasOrdRel A) : HasBinRel A := ord_rel.
 
 #[local] Instance str_has_bin_rel
-  (R : HasStrOrdRel A) : HasBinRel A := str_ord_rel.
+  (HR : HasStrOrdRel A) : HasBinRel A := str_ord_rel.
 
 End Context.
 

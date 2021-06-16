@@ -11,7 +11,7 @@ Module Subclass.
 
 Section Context.
 
-Context (A : Type) (k : HasMul A).
+Context (A : Type) (Hk : HasMul A).
 
 (** Multiplication is a binary operation. *)
 

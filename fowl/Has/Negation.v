@@ -11,7 +11,7 @@ Module Subclass.
 
 Section Context.
 
-Context (A : Type) (f : HasNeg A).
+Context (A : Type) (Hf : HasNeg A).
 
 (** Negation is a unary operation. *)
 

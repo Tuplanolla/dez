@@ -1,182 +1,55 @@
 digraph Has {
-  label = "Operational Class Hierarchy without Internal Homs"
+  label = "Operational Class Hierarchy"
 
   node [fontname = monospace]
 
-  subgraph Three {
-    label = "ThreeSorted"
+  HasActL [label = "\N\nact_l (a : A) (x : B) : B"]
+  HasActR [label = "\N\nact_r (x : B) (a : A) : B"]
+  HasAdd [label = "\N\nadd (x y : A) : A"]
+  HasApartRel [label = "\N\napart_rel (x y : A) : Prop"]
+  HasBinOp [label = "\N\nbin_op (x y : A) : A"]
+  HasBinRel [label = "\N\nbin_rel (x y : A) : Prop"]
+  HasCompHom [label = "\N\ncomp_hom (x y z : A) (a : y --> z) (b : x --> y) : x --> z"]
+  HasDec [label = "\N\ndecide : bool"]
+  HasDist [label = "\N\ndist (x y : A) : B"]
+  HasEqRel [label = "\N\neq_rel (x y : A) : Prop"]
+  HasIdHom [label = "\N\nid_hom (x : A) : x --> x"]
+  HasInvHom [label = "\N\ninv_hom (x y : A) (a : x --> y) : y --> x"]
+  HasHom [label = "\N\nhom (x y : A) : Prop"]
+  HasMul [label = "\N\nmul (x y : A) : A"]
+  HasNeg [label = "\N\nneg (x : A) : A"]
+  HasNullOp [label = "\N\nnull_op : A"]
+  HasOne [label = "\N\none : A"]
+  HasOrdRel [label = "\N\nord_rel (x y : A) : Prop"]
+  HasStrOrdRel [label = "\N\nstr_ord_rel (x y : A) : Prop"]
+  HasRecip [label = "\N\nrecip (x : A) : A"]
+  HasSMulL [label = "\N\ns_mul_l (a : A) (x : B) : B"]
+  HasSMulR [label = "\N\ns_mul_r (x : B) (a : A) : B"]
+  HasTor [label = "\N\ntor (x y : B) : A"]
+  HasTorL [label = "\N\ntor_l (x y : B) : A"]
+  HasTorR [label = "\N\ntor_r (x y : B) : A"]
+  HasUnOp [label = "\N\nun_op : A -> A"]
+  HasUnsquash [label = "\N\nunsquash (x : Squash A) : A"]
+  HasZero [label = "\N\nzero : A"]
 
-    node [peripheries = 3]
+  edge [style = solid]
 
-    subgraph TwoGrd {
-      label = "Graded"
-
-      node [style = dashed]
-
-      GrdBinFn [label = "BinaryFunction\nP i -> Q j -> R (i + j)"]
-    }
-
-    BinFn [label = "BinaryFunction\nA -> B -> C"]
-  }
-
-  subgraph Two {
-    label = "TwoSorted"
-
-    node [peripheries = 2]
-
-    subgraph TwoGrd {
-      label = "Graded"
-
-      node [style = dashed]
-
-      GrdFn [label = "Function\nP i -> Q (- i)"]
-
-      GrdLAct [label = "LeftAction\nP i -> Q j -> Q (i + j)"]
-      GrdRAct [label = "RightAction\nQ i -> P j -> Q (i + j)"]
-    }
-
-    Fn [label = "Function\nA -> B"]
-
-    LAct [label = "LeftAction\nA -> B -> B"]
-    RAct [label = "RightAction\nB -> A -> B"]
-    LTor [label = "LeftTorsion\nA -> A -> B"]
-    RTor [label = "RightTorsion\nA -> A -> B"]
-    Tor [label = "Torsion\nA -> A -> B"]
-
-    TwoBinRel [label = "BinaryRelation\nA -> B -> Prop"]
-
-    BinForm [label = "BinaryForm\nB -> B -> A"]
-  }
-
-  subgraph One {
-    label = "OneSorted"
-
-    subgraph OneGrd {
-      label = "Graded"
-
-      node [style = dashed]
-
-      GrdBinOp [label = "BinaryOperation\nP i -> P j -> P (i + j)"]
-      GrdNullOp [label = "NullaryOperation\nP 0"]
-      GrdUnOp [label = "UnaryOperation\nP i -> P (- i)"]
-
-      GrdAdd [label = "Addition\nP i -> P j -> P (i + j)"]
-      GrdZero [label = "Zero\nP 0"]
-      GrdNeg [label = "Negation\nP i -> P (- i)"]
-      GrdMul [label = "Multiplication\nP i -> P j -> P (i + j)"]
-      GrdOne [label = "One\nP 0"]
-      GrdRecip [label = "Reciprocation\nP i -> P (- i)"]
-    }
-
-    BinOp [label = "BinaryOperation\nA -> A -> A"]
-    NullOp [label = "NullaryOperation\nA"]
-    UnOp [label = "UnaryOperation\nA -> A"]
-
-    Add [label = "Addition\nA -> A -> A"]
-    Zero [label = "Zero\nA"]
-    Neg [label = "Negation\nA -> A"]
-    Mul [label = "Multiplication\nA -> A -> A"]
-    One [label = "One\nA"]
-    Recip [label = "Reciprocation\nA -> A"]
-
-    Join [label = "Join\nA -> A -> A"]
-    Bot [label = "Bottom\nA"]
-    Meet [label = "Meet\nA -> A -> A"]
-    Top [label = "Top\nA"]
-
-    Enum [label = "Enumeration\nlist A"]
-
-    BinRel [label = "BinaryRelation\nA -> A -> Prop"]
-
-    EqRel [label = "EquivalenceRelation\nA -> A -> Prop"]
-    OrdRel [label = "OrderRelation\nA -> A -> Prop"]
-
-    Pred [label = "Predicate\nA -> Prop"]
-
-    Iso [label = "Isomorphism\n(A -> B) * (B -> A)"]
-
-    Card [label = "Cardinality\nN"]
-  }
-
-  subgraph Cat {
-    label = "Categorical"
-
-    Hom [label = "Morphism\nA -> A -> Prop"]
-    Comp [label = "Composition\n(x --> y) -> (y --> z) -> (x --> z)"]
-    Idt [label = "Identity\nx --> x"]
-    Inv [label = "Inverse\n(x --> y) -> (y --> x)"]
-  }
-
-  node [fillcolor = violet, style = filled]
-
-  GrdBinOp -> BinOp
-  GrdNullOp -> NullOp
-  GrdUnOp -> UnOp
-
-  GrdAdd -> BinOp
-  GrdZero -> NullOp
-  GrdNeg -> UnOp
-  GrdMul -> BinOp
-  GrdOne -> NullOp
-  GrdRecip -> UnOp
-
-  GrdLAct -> BinOp
-  GrdRAct -> BinOp
-
-  GrdBinFn -> BinOp
-  GrdFn -> UnOp
-
-  Hom -> Comp
-  Hom -> Idt
-  Hom -> Inv
+  HasCompHom -> HasHom
+  HasIdHom -> HasHom
+  HasInvHom -> HasHom
 
   edge [style = dashed]
 
-  BinOp -> Add
-  NullOp -> Zero
-  UnOp -> Neg
-  BinOp -> Mul
-  NullOp -> One
-  UnOp -> Recip
-
-  GrdBinOp -> GrdAdd
-  GrdNullOp -> GrdZero
-  GrdUnOp -> GrdNeg
-  GrdBinOp -> GrdMul
-  GrdNullOp -> GrdOne
-  GrdUnOp -> GrdRecip
-
-  BinOp -> Join
-  NullOp -> Bot
-  BinOp -> Meet
-  NullOp -> Top
-
-  BinOp -> LAct
-  BinOp -> RAct
-  BinOp -> LTor
-  BinOp -> RTor
-
-  BinRel -> TwoBinRel
-
-  EqRel -> BinRel
-  OrdRel -> BinRel
-
-  GrdBinOp -> GrdLAct
-  GrdBinOp -> GrdRAct
-
-  GrdLAct -> GrdBinFn
-  GrdRAct -> GrdBinFn
-
-  LAct -> BinFn
-  RAct -> BinFn
-  LTor -> Tor
-  RTor -> Tor
-
-  UnOp -> Fn
-
-  GrdUnOp -> GrdFn
-
-  BinForm -> BinFn
-
-  Hom -> BinRel
+  HasAdd -> HasBinOp
+  HasApartRel -> HasBinRel
+  HasEqRel -> HasBinRel
+  HasMul -> HasBinOp
+  HasNeg -> HasUnOp
+  HasOne -> HasNullOp
+  HasOrdRel -> HasBinRel
+  HasStrOrdRel -> HasBinRel
+  HasRecip -> HasUnOp
+  HasSMulL -> HasActL
+  HasSMulR -> HasActR
+  HasZero -> HasNullOp
 }

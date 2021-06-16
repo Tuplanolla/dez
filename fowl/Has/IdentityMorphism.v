@@ -5,7 +5,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   MorphismNotations.
 
-Class HasIdHom (A : Type) (C : HasHom A) : Type :=
+Class HasIdHom (A : Type) (HC : HasHom A) : Type :=
   id_hom (x : A) : x --> x.
 
 Typeclasses Transparent HasIdHom.

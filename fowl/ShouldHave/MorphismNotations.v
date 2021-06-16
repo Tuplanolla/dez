@@ -4,7 +4,7 @@ From Maniunfold.Has Require Export
 Declare Scope category_scope.
 Delimit Scope category_scope with cat.
 
-Notation "'_-->_'" := hom : cat.
-Notation "x '-->' y" := (hom x y) : cat.
+#[global] Open Scope category_scope.
 
-#[global] Open Scope cat.
+Notation "'_-->_'" := hom : category_scope.
+Notation "x '-->' y" := (hom x y) : category_scope.

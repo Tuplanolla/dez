@@ -11,7 +11,7 @@ Module Subclass.
 
 Section Context.
 
-Context (A : Type) (R : HasEqRel A).
+Context (A : Type) (HR : HasEqRel A).
 
 (** Equivalence relation is a binary relation. *)
 

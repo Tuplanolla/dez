@@ -20,11 +20,11 @@ From Maniunfold.ShouldHave Require
 (** Ring, abelian group distributing over a monoid. *)
 
 Class IsRing (A : Type)
-  (k' : HasAdd A) (x' : HasZero A) (f' : HasNeg A)
-  (m' : HasMul A) (y' : HasOne A) : Prop := {
+  (Hk : HasAdd A) (Hx : HasZero A) (Hf : HasNeg A)
+  (Hm : HasMul A) (Hy : HasOne A) : Prop := {
   add_zero_neg_is_ab_grp :> IsAbGrp add zero neg;
-  add_mul_is_distr :> IsDistr add mul;
   mul_one_is_mon :> IsMon mul one;
+  add_mul_is_distr :> IsDistr add mul;
 }.
 
 Section Context.
