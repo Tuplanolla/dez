@@ -7,6 +7,8 @@ Class HasApartRel (A : Type) : Type := apart_rel (x y : A) : Prop.
 
 Typeclasses Transparent HasApartRel.
 
+Module Subclass.
+
 Section Context.
 
 Context (A : Type) (R : HasApartRel A).
@@ -18,3 +20,5 @@ Context (A : Type) (R : HasApartRel A).
 End Context.
 
 #[export] Hint Resolve has_bin_rel : typeclass_instances.
+
+End Subclass.

@@ -1,7 +1,7 @@
 (** * Preorder *)
 
 From Maniunfold.Has Require Export
-  OrderRelation.
+  OrderRelations.
 From Maniunfold.ShouldHave Require Import
   OrderRelationNotations.
 From Maniunfold.Is Require Export

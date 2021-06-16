@@ -1,7 +1,7 @@
 (** * Expansivity or Longness of a Function *)
 
 From Maniunfold.Has Require Export
-  Distance OrderRelation.
+  Distance OrderRelations.
 From Maniunfold.ShouldHave Require Import
   OrderRelationNotations.
 

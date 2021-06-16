@@ -1,7 +1,7 @@
 (** * Inflationarity or Progressivity of a Function *)
 
 From Maniunfold.Has Require Export
-  OrderRelation.
+  OrderRelations.
 From Maniunfold.ShouldHave Require Import
   OrderRelationNotations.
 

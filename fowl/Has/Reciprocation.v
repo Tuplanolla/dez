@@ -7,6 +7,8 @@ Class HasRecip (A : Type) : Type := recip (x : A) : A.
 
 Typeclasses Transparent HasRecip.
 
+Module Subclass.
+
 Section Context.
 
 Context (A : Type) (f : HasRecip A).
@@ -18,3 +20,5 @@ Context (A : Type) (f : HasRecip A).
 End Context.
 
 #[export] Hint Resolve has_un_op : typeclass_instances.
+
+End Subclass.

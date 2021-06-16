@@ -1,11 +1,11 @@
 (** * Monotonicity and Strict Monotonicity of a Function *)
 
 From Maniunfold.Has Require Export
-  Decidability StrictOrderRelation OrderRelation.
+  Decidability OrderRelations.
 From Maniunfold.Is Require Export
   Preorder CoherentOrderRelations.
 From Maniunfold.ShouldHave Require Import
-  StrictOrderRelationNotations OrderRelationNotations.
+  OrderRelationNotations.
 
 Fail Fail Class IsMono (A B : Type)
   (RA : HasOrdRel A) (RB : HasOrdRel B) (f : A -> B) : Prop :=

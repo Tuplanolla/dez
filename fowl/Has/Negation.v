@@ -7,6 +7,8 @@ Class HasNeg (A : Type) : Type := neg (x : A) : A.
 
 Typeclasses Transparent HasNeg.
 
+Module Subclass.
+
 Section Context.
 
 Context (A : Type) (f : HasNeg A).
@@ -18,3 +20,5 @@ Context (A : Type) (f : HasNeg A).
 End Context.
 
 #[export] Hint Resolve has_un_op : typeclass_instances.
+
+End Subclass.

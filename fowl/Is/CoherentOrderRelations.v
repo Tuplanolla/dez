@@ -1,9 +1,9 @@
 (** * Coherence of an Order Relation and a Strict Order Relation *)
 
 From Maniunfold.Has Require Export
-  OrderRelation StrictOrderRelation.
+  OrderRelations.
 From Maniunfold.ShouldHave Require Import
-  OrderRelationNotations StrictOrderRelationNotations.
+  OrderRelationNotations.
 
 (** This has the same shape as [le_neq]. *)
 

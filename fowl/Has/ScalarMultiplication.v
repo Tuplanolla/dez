@@ -8,6 +8,8 @@ Class HasSMulR (A B : Type) : Type := s_mul_r : B -> A -> B.
 
 Typeclasses Transparent HasSMulL HasSMulR.
 
+Module Subclass.
+
 Section Context.
 
 Context (A B : Type).
@@ -20,3 +22,5 @@ Context (A B : Type).
 End Context.
 
 #[export] Hint Resolve has_act_l has_act_r : typeclass_instances.
+
+End Subclass.

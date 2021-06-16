@@ -31,6 +31,9 @@ Section Context.
 
 Context (A : Type) `(IsRing A).
 
+Import Addition.Subclass Zero.Subclass Negation.Subclass
+  Multiplication.Subclass One.Subclass.
+
 Ltac conversions := typeclasses
   convert bin_op into add and null_op into zero and un_op into neg or
   convert bin_op into mul and null_op into one.

@@ -1,9 +1,9 @@
 (** * Comonotonicity and Strict Comonotonicity of a Function *)
 
 From Maniunfold.Has Require Export
-  StrictOrderRelation OrderRelation.
+  OrderRelations.
 From Maniunfold.ShouldHave Require Import
-  StrictOrderRelationNotations OrderRelationNotations.
+  OrderRelationNotations.
 
 Fail Fail Class IsComono (A B : Type)
   (RA : HasOrdRel A) (RB : HasOrdRel B) (f : A -> B) : Prop :=

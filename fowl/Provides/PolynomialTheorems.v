@@ -273,6 +273,9 @@ Ltac stabilize :=
   | H : ~ ?a <> ?b |- _ => apply dec_stable in H
   end.
 
+Import Addition.Subclass Zero.Subclass Negation.Subclass
+  Multiplication.Subclass One.Subclass.
+
 Ltac conversions := typeclasses
   convert bin_op into (add (A := poly)) and
   null_op into (zero (A := poly)) and
@@ -477,6 +480,9 @@ Context (A : Type) `{IsRing A} `{HasEqDec A}.
 
 Let poly := poly (A := A).
 
+Import Addition.Subclass Zero.Subclass Negation.Subclass
+  Multiplication.Subclass One.Subclass.
+
 Ltac conversions := typeclasses
   convert bin_op into (add (A := poly)) and
   null_op into (zero (A := poly)) and
@@ -642,6 +648,9 @@ Context (A : Type) `{IsRing A} `{HasEqDec A} `{Countable A}.
 
 Let poly := poly (A := A).
 
+Import Addition.Subclass Zero.Subclass Negation.Subclass
+  Multiplication.Subclass One.Subclass.
+
 Ltac conversions := typeclasses
   convert bin_op into (add (A := poly)) and
   null_op into (zero (A := poly)) and
@@ -729,6 +738,9 @@ Global Instance poly_has_mul : HasMul poly := poly_mul.
 Global Instance poly_has_one : HasOne poly := poly_one.
 Global Instance poly_has_act_l : HasActL A poly := poly_act_l.
 Global Instance poly_has_act_r : HasActR A poly := poly_act_r.
+
+Import Addition.Subclass Zero.Subclass Negation.Subclass
+  Multiplication.Subclass One.Subclass.
 
 Ltac conversions := typeclasses
   convert bin_op into (add (A := poly)) and

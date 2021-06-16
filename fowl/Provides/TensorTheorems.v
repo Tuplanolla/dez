@@ -18,6 +18,9 @@ From Maniunfold.ShouldOffer Require Import
 
 Import ListNotations.
 
+Import Addition.Subclass Zero.Subclass Negation.Subclass
+  Multiplication.Subclass One.Subclass.
+
 Definition Nseq (start len : N) : list N :=
   map N.of_nat (seq (N.to_nat start) (N.to_nat len)).
 

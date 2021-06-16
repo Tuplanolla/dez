@@ -7,6 +7,8 @@ Class HasMul (A : Type) : Type := mul (x y : A) : A.
 
 Typeclasses Transparent HasMul.
 
+Module Subclass.
+
 Section Context.
 
 Context (A : Type) (k : HasMul A).
@@ -18,3 +20,5 @@ Context (A : Type) (k : HasMul A).
 End Context.
 
 #[export] Hint Resolve has_bin_op : typeclass_instances.
+
+End Subclass.

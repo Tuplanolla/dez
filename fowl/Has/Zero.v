@@ -7,6 +7,8 @@ Class HasZero (A : Type) : Type := zero : A.
 
 Typeclasses Transparent HasZero.
 
+Module Subclass.
+
 Section Context.
 
 Context (A : Type) (x : HasZero A).
@@ -18,3 +20,5 @@ Context (A : Type) (x : HasZero A).
 End Context.
 
 #[export] Hint Resolve has_null_op : typeclass_instances.
+
+End Subclass.

@@ -7,6 +7,8 @@ Class HasEqRel (A : Type) : Type := eq_rel (x y : A) : Prop.
 
 Typeclasses Transparent HasEqRel.
 
+Module Subclass.
+
 Section Context.
 
 Context (A : Type) (R : HasEqRel A).
@@ -18,3 +20,5 @@ Context (A : Type) (R : HasEqRel A).
 End Context.
 
 #[export] Hint Resolve has_bin_rel : typeclass_instances.
+
+End Subclass.

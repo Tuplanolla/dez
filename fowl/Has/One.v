@@ -7,6 +7,8 @@ Class HasOne (A : Type) : Type := one : A.
 
 Typeclasses Transparent HasOne.
 
+Module Subclass.
+
 Section Context.
 
 Context (A : Type) (x : HasOne A).
@@ -18,3 +20,5 @@ Context (A : Type) (x : HasOne A).
 End Context.
 
 #[export] Hint Resolve has_null_op : typeclass_instances.
+
+End Subclass.

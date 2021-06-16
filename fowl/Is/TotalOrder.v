@@ -3,7 +3,7 @@
 From Maniunfold Require Export
   TypeclassTactics.
 From Maniunfold.Has Require Export
-  OrderRelation.
+  OrderRelations.
 From Maniunfold.Is Require Export
   Preorder PartialOrder Connex Reflexive.
 From Maniunfold.ShouldHave Require Import
@@ -21,6 +21,8 @@ Class IsTotOrd (A : Type) (R : HasOrdRel A) : Prop := {
 Section Context.
 
 Context (A : Type) (R : HasOrdRel A) `(!IsTotOrd _<=_).
+
+Import OrderRelations.Subclass.
 
 Ltac conversions := typeclasses
   convert bin_rel into ord_rel.
