@@ -5,5 +5,5 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   OrderRelationNotations.
 
-Class IsInflate (A : Type) (R : HasOrdRel A) (f : A -> A) : Prop :=
+Class IsInflate (A : Type) (HR : HasOrdRel A) (f : A -> A) : Prop :=
   inflate (a : A) : a <= f a.

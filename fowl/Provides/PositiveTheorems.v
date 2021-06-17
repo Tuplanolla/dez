@@ -126,13 +126,13 @@ Proof. Defined.
 Global Instance positive_bin_op_is_assoc : IsAssoc (bin_op (A := positive)).
 Proof. intros x y z. apply Pos.add_assoc. Defined.
 
-Global Instance positive_bin_op_is_sgrp : IsSgrp (bin_op (A := positive)).
+Global Instance positive_bin_op_is_semigrp : IsSemigrp (bin_op (A := positive)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance positive_bin_op_is_comm : IsComm (bin_op (A := positive)).
 Proof. intros x y. apply Pos.add_comm. Defined.
 
-Global Instance positive_bin_op_is_comm_sgrp : IsCommSgrp (bin_op (A := positive)).
+Global Instance positive_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := positive)).
 Proof. split; typeclasses eauto. Defined.
 
 End Additive.
@@ -148,13 +148,13 @@ Proof. Defined.
 Global Instance positive_bin_op_is_assoc : IsAssoc (bin_op (A := positive)).
 Proof. intros x y z. apply Pos.mul_assoc. Defined.
 
-Global Instance positive_bin_op_is_sgrp : IsSgrp (bin_op (A := positive)).
+Global Instance positive_bin_op_is_semigrp : IsSemigrp (bin_op (A := positive)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance positive_bin_op_is_comm : IsComm (bin_op (A := positive)).
 Proof. intros x y. apply Pos.mul_comm. Defined.
 
-Global Instance positive_bin_op_is_comm_sgrp : IsCommSgrp (bin_op (A := positive)).
+Global Instance positive_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := positive)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance positive_bin_op_null_op_is_l_unl : IsLUnl (bin_op (A := positive)) null_op.

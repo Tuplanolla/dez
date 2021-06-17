@@ -1,11 +1,11 @@
+(** * Semigroup or Associative Magma *)
+
 From Maniunfold.Has Require Export
   BinaryOperation.
 From Maniunfold.Is Require Export
-  Associative OneSortedMagma.
+  OneSortedMagma Associative.
 
-(** Semigroup, associative magma. *)
-
-Class IsSgrp (A : Type) `(HasBinOp A) : Prop := {
-  bin_op_is_assoc :> IsAssoc (bin_op (A := A));
-  bin_op_is_mag :> IsMag (bin_op (A := A));
+Class IsSemigrp (A : Type) (Hk : HasBinOp A) : Prop := {
+  is_mag :> IsMag bin_op;
+  is_assoc :> IsAssoc bin_op;
 }.

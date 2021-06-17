@@ -1,12 +1,11 @@
+(** * Monoid *)
+
 From Maniunfold.Has Require Export
   BinaryOperation NullaryOperation.
 From Maniunfold.Is Require Export
   OneSortedSemigroup OneSortedUnital.
 
-(** Monoid, unital semigroup. *)
-
-Class IsMon (A : Type)
-  `(HasBinOp A) `(HasNullOp A) : Prop := {
-  A_bin_op_is_sgrp :> IsSgrp (bin_op (A := A));
-  A_bin_op_null_op_is_unl :> IsUnl bin_op null_op;
+Class IsMon (A : Type) (Hk : HasBinOp A) (Hx : HasNullOp A) : Prop := {
+  is_semigrp :> IsSemigrp bin_op;
+  is_unl :> IsUnl bin_op null_op;
 }.

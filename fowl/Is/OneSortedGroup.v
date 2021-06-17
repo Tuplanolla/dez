@@ -8,11 +8,12 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   OneSortedAdditiveNotations.
 
-(** Group, monoid with inverses. *)
+(** * Group *)
 
-Class IsGrp (A : Type) `(HasBinOp A) `(HasNullOp A) `(HasUnOp A) : Prop := {
-  bin_op_null_op_is_mon :> IsMon bin_op null_op;
-  bin_op_null_op_un_op_is_inv_hom :> IsInv bin_op null_op un_op;
+Class IsGrp (A : Type)
+  (Hk : HasBinOp A) (Hx : HasNullOp A) (Hf : HasUnOp A) : Prop := {
+  is_mon :> IsMon bin_op null_op;
+  is_inv :> IsInv bin_op null_op un_op;
 }.
 
 Section Context.

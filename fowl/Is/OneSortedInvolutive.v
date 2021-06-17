@@ -1,8 +1,7 @@
-(* bad *)
-From Maniunfold.Has Require Export
-  UnaryOperation.
-From Maniunfold.ShouldHave Require Import
-  OneSortedAdditiveNotations.
+(** * Involutivity of a Function *)
 
-Class IsInvol (A : Type) `(HasUnOp A) : Prop :=
-  invol : forall x : A, - (- x) = x.
+From Maniunfold Require Export
+  Init.
+
+Class IsInvol (A : Type) (f : A -> A) : Prop :=
+  invol (x : A) : f (f x) = x.

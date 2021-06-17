@@ -8,25 +8,25 @@ From Maniunfold.ShouldHave Require Import
   OrderRelationNotations.
 
 Fail Fail Class IsMono (A B : Type)
-  (RA : HasOrdRel A) (RB : HasOrdRel B) (f : A -> B) : Prop :=
+  (HRA : HasOrdRel A) (HRB : HasOrdRel B) (f : A -> B) : Prop :=
   mono (x y : A) (l : x <= y) : f x <= f y.
 
-Notation IsMono RA RB := (Proper (RA ==> RB)).
+Notation IsMono HRA HRB := (Proper (HRA ==> HRB)).
 Notation mono := (proper_prf : IsMono _ _ _).
 
 (** Strict monotonicity of an order relation is just
     monotonicity of a strict order relation. *)
 
-Notation IsStrMono RA RB := (Proper (RA ==> RB)) (only parsing).
+Notation IsStrMono HRA HRB := (Proper (HRA ==> HRB)) (only parsing).
 Notation str_mono := (proper_prf : IsMono _ _ _) (only parsing).
 
 Section Context.
 
 Context (A B : Type) (d : HasEqDec A)
-  (RA : HasOrdRel A) `(!IsPreord RA)
-  (SA : HasStrOrdRel A) `(!IsCohOrdRels RA SA)
-  (RB : HasOrdRel B) `(!IsPreord RB)
-  (SB : HasStrOrdRel B) `(!IsCohOrdRels RB SB)
+  (HRA : HasOrdRel A) `(!IsPreord HRA)
+  (HSA : HasStrOrdRel A) `(!IsCohOrdRels HRA HSA)
+  (HRB : HasOrdRel B) `(!IsPreord HRB)
+  (HSB : HasStrOrdRel B) `(!IsCohOrdRels HRB HSB)
   (f : A -> B) `(!IsMono _<_ _<_ f).
 
 (** Decidable strict monotonicity implies monotonicity. *)

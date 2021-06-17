@@ -20,13 +20,13 @@ Proof. Defined.
 Global Instance unit_bin_op_is_assoc : IsAssoc (bin_op (A := unit)).
 Proof. intros x y z. eautodestruct. Defined.
 
-Global Instance unit_bin_op_is_sgrp : IsSgrp (bin_op (A := unit)).
+Global Instance unit_bin_op_is_semigrp : IsSemigrp (bin_op (A := unit)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance unit_bin_op_is_comm : IsComm (bin_op (A := unit)).
 Proof. intros x y. eautodestruct. Defined.
 
-Global Instance unit_bin_op_is_comm_sgrp : IsCommSgrp (bin_op (A := unit)).
+Global Instance unit_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := unit)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance unit_bin_op_null_op_is_l_unl : IsLUnl (bin_op (A := unit)) null_op.
@@ -78,13 +78,13 @@ Proof. Defined.
 Global Instance unit_bin_op_is_assoc : IsAssoc (bin_op (A := unit)).
 Proof. intros x y z. eautodestruct. Defined.
 
-Global Instance unit_bin_op_is_sgrp : IsSgrp (bin_op (A := unit)).
+Global Instance unit_bin_op_is_semigrp : IsSemigrp (bin_op (A := unit)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance unit_bin_op_is_comm : IsComm (bin_op (A := unit)).
 Proof. intros x y. eautodestruct. Defined.
 
-Global Instance unit_bin_op_is_comm_sgrp : IsCommSgrp (bin_op (A := unit)).
+Global Instance unit_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := unit)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance unit_bin_op_null_op_is_l_unl : IsLUnl (bin_op (A := unit)) null_op.

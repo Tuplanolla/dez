@@ -5,7 +5,7 @@ From Maniunfold.Is Require Export
 
 (** Commutative semigroup, abelian semigroup. *)
 
-Class IsCommSgrp (A : Type) `(HasBinOp A) : Prop := {
+Class IsCommSemigrp (A : Type) `(HasBinOp A) : Prop := {
   A_bin_op_is_comm :> IsComm (bin_op (A := A));
-  A_bin_op_is_sgrp :> IsSgrp (bin_op (A := A));
+  A_bin_op_is_semigrp :> IsSemigrp (bin_op (A := A));
 }.

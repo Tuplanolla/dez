@@ -9,7 +9,7 @@ From Maniunfold.ShouldHave Require Import
 
 Section Context.
 
-Context (A : Type) `{IsSgrp A}.
+Context (A : Type) `{IsSemigrp A}.
 
 Import Pos.
 

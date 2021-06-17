@@ -5,7 +5,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   BinaryRelationNotations.
 
-Fail Fail Class IsAntisym (A : Type) (R : HasBinRel A) : Prop :=
+Fail Fail Class IsAntisym (A : Type) (HR : HasBinRel A) : Prop :=
   antisym (x y : A) (a : x ~~ y) (b : y ~~ x) : x = y.
 
 Notation IsAntisym := (Antisymmetric _ _=_).

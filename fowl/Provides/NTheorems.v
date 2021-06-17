@@ -650,13 +650,13 @@ Proof. Defined.
 Global Instance N_bin_op_is_assoc : IsAssoc (bin_op (A := N)).
 Proof. intros x y z. apply N.add_assoc. Defined.
 
-Global Instance N_bin_op_is_sgrp : IsSgrp (bin_op (A := N)).
+Global Instance N_bin_op_is_semigrp : IsSemigrp (bin_op (A := N)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance N_bin_op_is_comm : IsComm (bin_op (A := N)).
 Proof. intros x y. apply N.add_comm. Defined.
 
-Global Instance N_bin_op_is_comm_sgrp : IsCommSgrp (bin_op (A := N)).
+Global Instance N_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := N)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance N_bin_op_null_op_is_l_unl : IsLUnl (bin_op (A := N)) null_op.
@@ -689,13 +689,13 @@ Proof. Defined.
 Global Instance N_bin_op_is_assoc : IsAssoc (bin_op (A := N)).
 Proof. intros x y z. apply N.mul_assoc. Defined.
 
-Global Instance N_bin_op_is_sgrp : IsSgrp (bin_op (A := N)).
+Global Instance N_bin_op_is_semigrp : IsSemigrp (bin_op (A := N)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance N_bin_op_is_comm : IsComm (bin_op (A := N)).
 Proof. intros x y. apply N.mul_comm. Defined.
 
-Global Instance N_bin_op_is_comm_sgrp : IsCommSgrp (bin_op (A := N)).
+Global Instance N_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := N)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance N_bin_op_null_op_is_l_unl : IsLUnl (bin_op (A := N)) null_op.

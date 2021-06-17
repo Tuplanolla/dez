@@ -554,7 +554,7 @@ Proof with conversions.
     rewrite Hc. rewrite <- assoc...
     rewrite Fbc. rewrite r_unl. reflexivity. Defined.
 
-Global Instance poly_bin_op_is_sgrp : IsSgrp poly_add.
+Global Instance poly_bin_op_is_semigrp : IsSemigrp poly_add.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_is_comm : IsComm poly_add.
@@ -578,7 +578,7 @@ Proof with conversions.
   - exfalso. apply Fba. rewrite comm... apply Fab.
   - reflexivity. Defined.
 
-Global Instance poly_bin_op_is_comm_sgrp : IsCommSgrp poly_add.
+Global Instance poly_bin_op_is_comm_semigrp : IsCommSemigrp poly_add.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_is_l_unl : IsLUnl poly_add null_op.
@@ -687,7 +687,7 @@ Proof with conversions.
   destruct x as [m Wm]. cbn.
   generalize dependent m. Admitted.
 
-Global Instance poly_bin_op_is_sgrp : IsSgrp poly_mul.
+Global Instance poly_bin_op_is_semigrp : IsSemigrp poly_mul.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_is_comm : IsComm poly_mul.
@@ -697,7 +697,7 @@ Proof.
   apply Spr1_inj. cbn.
   generalize dependent x. Admitted.
 
-Global Instance poly_bin_op_is_comm_sgrp : IsCommSgrp poly_mul.
+Global Instance poly_bin_op_is_comm_semigrp : IsCommSemigrp poly_mul.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_is_l_unl : IsLUnl poly_mul null_op.

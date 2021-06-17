@@ -18,13 +18,13 @@ Proof. Defined.
 Global Instance Z_bin_op_is_assoc : IsAssoc (bin_op (A := Z)).
 Proof. intros x y z. apply Z.add_assoc. Defined.
 
-Global Instance Z_bin_op_is_sgrp : IsSgrp (bin_op (A := Z)).
+Global Instance Z_bin_op_is_semigrp : IsSemigrp (bin_op (A := Z)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_bin_op_is_comm : IsComm (bin_op (A := Z)).
 Proof. intros x y. apply Z.add_comm. Defined.
 
-Global Instance Z_bin_op_is_comm_sgrp : IsCommSgrp (bin_op (A := Z)).
+Global Instance Z_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := Z)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_bin_op_null_op_is_l_unl : IsLUnl (bin_op (A := Z)) null_op.
@@ -73,13 +73,13 @@ Proof. Defined.
 Global Instance Z_bin_op_is_assoc : IsAssoc (bin_op (A := Z)).
 Proof. intros x y z. apply Z.mul_assoc. Defined.
 
-Global Instance Z_bin_op_is_sgrp : IsSgrp (bin_op (A := Z)).
+Global Instance Z_bin_op_is_semigrp : IsSemigrp (bin_op (A := Z)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_bin_op_is_comm : IsComm (bin_op (A := Z)).
 Proof. intros x y. apply Z.mul_comm. Defined.
 
-Global Instance Z_bin_op_is_comm_sgrp : IsCommSgrp (bin_op (A := Z)).
+Global Instance Z_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := Z)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_bin_op_null_op_is_l_unl : IsLUnl (bin_op (A := Z)) null_op.

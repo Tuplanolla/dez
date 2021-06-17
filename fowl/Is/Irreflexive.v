@@ -5,7 +5,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   BinaryRelationNotations.
 
-Fail Fail Class IsIrrefl (A : Type) (R : HasBinRel A) : Prop :=
+Fail Fail Class IsIrrefl (A : Type) (HR : HasBinRel A) : Prop :=
   irrefl (x : A) : ~ (x ~~ x).
 
 Notation IsIrrefl := Irreflexive.

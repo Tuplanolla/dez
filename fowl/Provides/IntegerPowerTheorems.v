@@ -43,7 +43,7 @@ End Context.
 
 Section Context.
 
-Context (A : Type) `{IsSgrp A}.
+Context (A : Type) `{IsSemigrp A}.
 
 Lemma iter_op_succ (n : positive) (x : A) :
   Pos.iter_op _+_ (Pos.succ n) x = x + Pos.iter_op _+_ n x.

@@ -1,6 +1,8 @@
+(** * Magma or Groupoid *)
+
 From Maniunfold.Has Require Export
   BinaryOperation.
 
-(** Magma, groupoid, binary operation. *)
+(** This class would have some fields in the setoid model. *)
 
-Class IsMag (A : Type) `(HasBinOp A) : Prop := {}.
+Class IsMag (A : Type) (Hk : HasBinOp A) : Prop := {}.

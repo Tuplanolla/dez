@@ -5,5 +5,5 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   BinaryRelationNotations.
 
-Class IsCotrans (A : Type) (R : HasBinRel A) : Prop :=
+Class IsCotrans (A : Type) (HR : HasBinRel A) : Prop :=
   cotrans (x y z : A) (a : x ~~ z) : x ~~ y \/ y ~~ z.

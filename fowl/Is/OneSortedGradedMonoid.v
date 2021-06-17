@@ -9,7 +9,7 @@ Class IsGrdMon (A : Type) (P : A -> Type)
   `(HasGrdBinOp A P)
   `(HasGrdNullOp A P) : Prop := {
   bin_op_null_op_is_mon :> IsMon bin_op null_op;
-  grd_bin_op_is_grd_sgrp :> IsGrdSgrp bin_op grd_bin_op;
+  grd_bin_op_is_grd_semigrp :> IsGrdSemigrp bin_op grd_bin_op;
   grd_bin_op_grd_null_op_is_grd_unl :>
     IsGrdUnl bin_op null_op grd_bin_op grd_null_op;
 }.
