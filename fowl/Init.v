@@ -326,15 +326,26 @@ Notation "A '*' B" := (prod A B) : type_scope.
 
 Notation "'id'" := eq_refl : type_scope.
 Notation "'_^-1'" := eq_sym : type_scope.
-Notation "f '^-1'" := (eq_sym f) : type_scope.
+Notation "a '^-1'" := (eq_sym a) : type_scope.
 Notation "'_o_'" := eq_trans : type_scope.
-Notation "g 'o' f" := (eq_trans g f) : type_scope.
+Notation "b 'o' a" := (eq_trans a b) : type_scope.
 
 (** We define some additional utility functions.
     While some standard library definitions need to be overridden
     with more sensible versions,
     most of them are totally fine,
     in which case we just accompany them with dependent versions. *)
+
+Corollary ex_proj1_equation_1 (A : Prop) (P : A -> Prop) (a : A) (b : P a) :
+  ex_proj1 (ex_intro P a b) = a.
+Proof. reflexivity. Qed.
+
+Corollary ex_proj2_equation_1 (A : Prop) (P : A -> Prop) (a : A) (b : P a) :
+  ex_proj2 (ex_intro P a b) = b.
+Proof. reflexivity. Qed.
+
+#[export] Hint Rewrite @ex_proj1_equation_1 : ex_proj1.
+#[export] Hint Rewrite @ex_proj2_equation_1 : ex_proj2.
 
 Section Context.
 
@@ -445,6 +456,46 @@ Proof. reflexivity. Qed.
 
 #[export] Hint Rewrite @fst_equation_1 : fst.
 #[export] Hint Rewrite @snd_equation_1 : snd.
+
+Equations conj_curry (A B C : Prop)
+  (f : A /\ B -> C) (a : A) (b : B) : C :=
+  conj_curry f a b := f (conj a b).
+
+Equations conj_uncurry (A B C : Prop)
+  (f : A -> B -> C) (x : A /\ B) : C :=
+  conj_uncurry f (conj a b) := f a b.
+
+Equations ex_curry (A : Prop) (P : A -> Prop) (B : Prop)
+  (f : (exists a : A, P a) -> B) (a : A) (b : P a) : B :=
+  ex_curry f a b := f (ex_intro P a b).
+
+Equations ex_uncurry (A : Prop) (P : A -> Prop) (B : Prop)
+  (f : forall a : A, P a -> B) (x : exists a : A, P a) : B :=
+  ex_uncurry f (ex_intro _ a b) := f a b.
+
+Lemma ex_uncurry_proj (A : Prop) (P : A -> Prop) (B : Prop)
+  (f : forall a : A, P a -> B) (x : exists a : A, P a) :
+  ex_uncurry f x = f (ex_proj1 x) (ex_proj2 x).
+Proof. destruct x as [a b]. reflexivity. Qed.
+
+Equations ex_curry_dep
+  (A : Prop) (P : A -> Prop) (Q : forall a : A, P a -> Prop)
+  (f : forall x : exists a : A, P a, Q (ex_proj1 x) (ex_proj2 x))
+  (a : A) (b : P a) : Q a b :=
+  ex_curry_dep _ f a b := f (ex_intro P a b).
+
+Equations ex_uncurry_dep
+  (A : Prop) (P : A -> Prop) (Q : forall a : A, P a -> Prop)
+  (f : forall (a : A) (b : P a), Q a b)
+  (x : exists a : A, P a) : Q (ex_proj1 x) (ex_proj2 x) :=
+  ex_uncurry_dep f (ex_intro _ a b) := f a b.
+
+Lemma ex_uncurry_dep_proj
+  (A : Prop) (P : A -> Prop) (Q : forall a : A, P a -> Prop)
+  (f : forall (a : A) (b : P a), Q a b)
+  (x : exists a : A, P a) :
+  ex_uncurry_dep f x = f (ex_proj1 x) (ex_proj2 x).
+Proof. destruct x as [a b]. reflexivity. Qed.
 
 (** Currying and uncurrying are swapped around
     in some versions of the standard library,
@@ -574,14 +625,6 @@ Lemma Ssig_uncurry_dep_proj
   (x : {a : A $ P a}) :
   Ssig_uncurry_dep f x = f (Spr1 x) (Spr2 x).
 Proof. destruct x as [a b]. reflexivity. Qed.
-
-Equations conj_curry (A B C : Prop)
-  (f : A /\ B -> C) (a : A) (b : B) : C :=
-  conj_curry f a b := f (conj a b).
-
-Equations conj_uncurry (A B C : Prop)
-  (f : A -> B -> C) (x : A /\ B) : C :=
-  conj_uncurry f (conj a b) := f a b.
 
 Corollary length_equation_1 (A : Type) :
   length (A := A) [] = O.
@@ -739,9 +782,11 @@ Equations apply_dep (A : Type) (P : A -> Type)
   (f : forall a : A, P a) (a : A) : P a :=
   apply_dep f a := f a.
 
-(** We adjust the implicit arguments of [Ssig], [sig], [sigT] and
+(** We adjust the implicit arguments of [ex], [sig], [sigT], [Ssig] and
     several other standard library functions to behave the same way. *)
 
+Arguments ex {_} _.
+Arguments ex_intro {_} _ _ _.
 Arguments sig {_} _.
 Arguments exist {_} _ _ _.
 Arguments sigT {_} _.
@@ -753,12 +798,12 @@ Arguments eq_refl {_ _}.
 Arguments eq_sym {_ _ _} _.
 Arguments eq_trans {_ _ _ _} _ _.
 
-Arguments Spr1 {_ _} !_.
-Arguments Spr2 {_ _} !_.
-
 Arguments respectful {_ _} !_.
 Arguments corespectful {_ _} !_.
 Arguments birespectful {_ _} !_.
+
+Arguments Spr1 {_ _} !_.
+Arguments Spr2 {_ _} !_.
 
 Arguments andb !_ _.
 Arguments orb !_ _.
@@ -778,6 +823,9 @@ Arguments idfun {_} _ /.
 Arguments IDProp /.
 Arguments idProp {_} _ /.
 
+Arguments ex_proj1 {_ _} !_.
+Arguments ex_proj2 {_ _} !_.
+
 Arguments proj1_sig {_ _} !_.
 Arguments proj2_sig {_ _} !_.
 Arguments projT1 {_ _} !_.
@@ -792,6 +840,8 @@ Arguments const {_ _} _ _ /.
 Arguments flip {_ _ _} _ _ _ /.
 Arguments apply {_ _} _ _ /.
 
+Arguments ex_curry_dep {_ _ _} _ _ _ /.
+Arguments ex_uncurry_dep {_ _ _} _ !_.
 Arguments prod_curry_dep {_ _ _} _ _ _ /.
 Arguments prod_uncurry_dep {_ _ _} _ !_.
 Arguments sig_curry {_ _ _} _ _ _ /.
