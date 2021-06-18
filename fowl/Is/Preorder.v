@@ -7,7 +7,7 @@ From Maniunfold.ShouldHave Require Import
 From Maniunfold.Is Require Export
   Reflexive Transitive.
 
-Fail Fail Class IsPreord (A : Type) (R : HasOrdRel A) : Prop := {
+Fail Fail Class IsPreord (A : Type) (HR : HasOrdRel A) : Prop := {
   is_refl :> IsRefl _<=_;
   is_trans :> IsTrans _<=_;
 }.

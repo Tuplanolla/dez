@@ -5,7 +5,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   BinaryRelationNotations.
 
-Fail Fail Class IsSym (A : Type) (R : HasBinRel A) : Prop :=
+Fail Fail Class IsSym (A : Type) (HR : HasBinRel A) : Prop :=
   sym (x y : A) (a : x ~~ y) : y ~~ x.
 
 Notation IsSym := Symmetric.

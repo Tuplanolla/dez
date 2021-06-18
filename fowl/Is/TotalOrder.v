@@ -10,9 +10,9 @@ From Maniunfold.ShouldHave Require Import
   OrderRelationNotations.
 
 (** We need to include [IsPreord] in [IsTotOrd],
-    because the definition under [IsPartOrd] is a bit wonky. *)
+    because the definition beneath [IsPartOrd] is a bit wonky. *)
 
-Class IsTotOrd (A : Type) (R : HasOrdRel A) : Prop := {
+Class IsTotOrd (A : Type) (HR : HasOrdRel A) : Prop := {
   is_preord :> IsPreord _<=_;
   is_part_ord :> IsPartOrd _<=_;
   is_connex :> IsConnex _<=_;
@@ -20,7 +20,7 @@ Class IsTotOrd (A : Type) (R : HasOrdRel A) : Prop := {
 
 Section Context.
 
-Context (A : Type) (R : HasOrdRel A) `(!IsTotOrd _<=_).
+Context (A : Type) (HR : HasOrdRel A) `(!IsTotOrd _<=_).
 
 Import OrderRelations.Subclass.
 

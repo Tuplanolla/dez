@@ -7,7 +7,7 @@ From Maniunfold.ShouldHave Require Import
 From Maniunfold.Is Require Export
   Symmetric Transitive.
 
-Fail Fail Class IsPartEq (A : Type) (R : HasEqRel A) : Prop := {
+Fail Fail Class IsPartEq (A : Type) (HR : HasEqRel A) : Prop := {
   is_sym :> IsSym _==_;
   is_trans :> IsTrans _==_;
 }.

@@ -22,7 +22,7 @@ Notation str_mono := (proper_prf : IsMono _ _ _) (only parsing).
 
 Section Context.
 
-Context (A B : Type) (d : HasEqDec A)
+Context (A B : Type) (Hd : HasEqDec A)
   (HRA : HasOrdRel A) `(!IsPreord HRA)
   (HSA : HasStrOrdRel A) `(!IsCohOrdRels HRA HSA)
   (HRB : HasOrdRel B) `(!IsPreord HRB)

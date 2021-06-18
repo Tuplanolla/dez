@@ -15,11 +15,11 @@ Class IsIdemBinOp (A : Type) (Hk : HasBinOp A) : Prop :=
 
 Section Context.
 
-Context (A : Type) (Hk : HasBinOp A) `(!IsIdemBinOp bin_op).
+Context (A : Type) (Hk : HasBinOp A) `(!IsIdemBinOp _+_).
 
 (** For an idempotent binary operation, every element is idempotent. *)
 
-#[local] Instance is_idem_elem (x : A) : IsIdemElem bin_op x.
+#[local] Instance is_idem_elem (x : A) : IsIdemElem _+_ x.
 Proof. apply idem_bin_op. Qed.
 
 End Context.

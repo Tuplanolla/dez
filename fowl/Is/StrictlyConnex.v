@@ -7,5 +7,5 @@ From Maniunfold.ShouldHave Require Import
 
 (** This has the same shape as [lt_trichotomy]. *)
 
-Class IsStrConnex (A : Type) (R : HasBinRel A) : Prop :=
+Class IsStrConnex (A : Type) (HR : HasBinRel A) : Prop :=
   str_connex (x y : A) : x ~~ y \/ x = y \/ y ~~ x.

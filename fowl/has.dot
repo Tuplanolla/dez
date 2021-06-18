@@ -32,13 +32,21 @@ digraph Has {
   HasUnsquash [label = "\N\nunsquash (x : Squash A) : A"]
   HasZero [label = "\N\nzero : A"]
 
+  // Superclasses and Substructures
+
   edge [style = solid]
+
+  // This Library
 
   HasCompHom -> HasHom
   HasIdHom -> HasHom
   HasInvHom -> HasHom
 
+  // Subclasses and Instances
+
   edge [style = dashed]
+
+  // This Library
 
   HasAdd -> HasBinOp
   HasApartRel -> HasBinRel

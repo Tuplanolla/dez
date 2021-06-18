@@ -7,7 +7,7 @@ From Maniunfold.ShouldHave Require Import
 From Maniunfold.Is Require Export
   Preorder Antisymmetric.
 
-Fail Fail Class IsPartOrd (A : Type) (R : HasOrdRel A) : Prop := {
+Fail Fail Class IsPartOrd (A : Type) (HR : HasOrdRel A) : Prop := {
   is_preord :> IsPreord _<=_;
   is_antisym :> IsAntisym _<=_;
 }.

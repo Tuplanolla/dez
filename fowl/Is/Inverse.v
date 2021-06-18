@@ -15,12 +15,12 @@ Section Context.
 
 Context (A B : Type) (f : A -> B) (g : B -> A) `(!IsInvL f g).
 
-#[local] Instance is_inv_hom_r : IsInvR g f.
+#[local] Instance is_inv_r : IsInvR g f.
 Proof. auto. Qed.
 
 End Context.
 
-#[export] Hint Resolve is_inv_hom_r : typeclass_instances.
+#[export] Hint Resolve is_inv_r : typeclass_instances.
 
 End RFromL.
 
@@ -30,11 +30,11 @@ Section Context.
 
 Context (A B : Type) (f : A -> B) (g : B -> A) `(!IsInvR f g).
 
-#[local] Instance is_inv_hom_l : IsInvL g f.
+#[local] Instance is_inv_l : IsInvL g f.
 Proof. auto. Qed.
 
 End Context.
 
-#[export] Hint Resolve is_inv_hom_l : typeclass_instances.
+#[export] Hint Resolve is_inv_l : typeclass_instances.
 
 End LFromR.
