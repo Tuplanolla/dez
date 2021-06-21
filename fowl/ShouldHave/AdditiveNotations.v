@@ -1,5 +1,7 @@
+(** * Additive Notations for Algebraic Operations *)
+
 From Maniunfold.Has Require Export
-  BinaryOperation NullaryOperation UnaryOperation Action Torsion.
+  BinaryOperation UnaryOperation NullaryOperation Action Torsion.
 
 (** Some programming languages like Octave
     use [.+] and [.*] for scalar operations,
@@ -16,16 +18,13 @@ Reserved Notation "x '-,' y" (right associativity, at level 35).
 Declare Scope operation_scope.
 Delimit Scope operation_scope with op.
 
-(** We do not open chiral scopes,
-    because we do not want to favor one over the other. *)
-
 #[global] Open Scope operation_scope.
 
 Notation "'_+_'" := bin_op : operation_scope.
 Notation "x '+' y" := (bin_op x y) : operation_scope.
-Notation "'0'" := null_op : operation_scope.
 Notation "'-_'" := un_op : operation_scope.
 Notation "'-' x" := (un_op x) : operation_scope.
+Notation "'0'" := null_op : operation_scope.
 
 Declare Scope action_scope.
 Delimit Scope action_scope with act.
@@ -39,6 +38,9 @@ Notation "x '+,' a" := (act_r x a) : action_scope.
 
 Declare Scope left_action_scope.
 Delimit Scope left_action_scope with act_l.
+
+(** We do not open chiral scopes,
+    because we do not want to favor one over the other. *)
 
 Notation "'_+_'" := act_l : left_action_scope.
 Notation "a '+' x" := (act_l a x) : left_action_scope.

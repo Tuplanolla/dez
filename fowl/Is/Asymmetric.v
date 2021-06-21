@@ -6,7 +6,7 @@ From Maniunfold.ShouldHave Require Import
   BinaryRelationNotations.
 
 Fail Fail Class IsAsym (A : Type) (HR : HasBinRel A) : Prop :=
-  asym (x y : A) (a : x ~~ y) (b : y ~~ x) : 0.
+  asym (x y : A) (a : x ~ y) (b : y ~ x) : 0.
 
 Notation IsAsym := Asymmetric.
 Notation asym := (asymmetry : IsAsym _).

@@ -6,7 +6,7 @@ From Maniunfold.ShouldHave Require Import
   BinaryRelationNotations.
 
 Fail Fail Class IsTrans (A : Type) (HR : HasBinRel A) : Prop :=
-  trans (x y z : A) (a : x ~~ y) (b : y ~~ z) : x ~~ z.
+  trans (x y z : A) (a : x ~ y) (b : y ~ z) : x ~ z.
 
 Notation IsTrans := Transitive.
 Notation trans := (transitivity : IsTrans _).

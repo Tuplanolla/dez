@@ -1,3 +1,5 @@
+(** * Notations for Order Relations *)
+
 From Maniunfold.Has Require Export
   OrderRelations.
 From Maniunfold.ShouldHave Require Export
