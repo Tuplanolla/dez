@@ -1,3 +1,5 @@
+(** * Notations for Categories *)
+
 From Maniunfold.Has Require Export
   Morphism.
 

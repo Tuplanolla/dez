@@ -1,3 +1,5 @@
+(** * Notations for Equivalence Relations *)
+
 From Maniunfold.Has Require Export
   EquivalenceRelation.
 From Maniunfold.ShouldHave Require Export
