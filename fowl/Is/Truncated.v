@@ -16,6 +16,8 @@ Notation IsSet := UIP.
 
 Arguments uip {_ _ _ _} _.
 
+(** TODO Wild, but mostly useless type tricks. *)
+
 Inductive IsTrunc : nat -> Type -> Prop :=
   | trunc_zero (A : Type) (x : IsContr A) : IsTrunc O A
   | trunc_trunc (n : nat) (A : Type)
@@ -32,6 +34,14 @@ Section Context.
 Context (A : Type).
 
 #[local] Open Scope type_scope.
+
+(** Contractibility is equivalent to truncation at level [-2]. *)
+
+Lemma contr_eq_trunc : IsContr A <-> IsTrunc 0 A.
+Proof.
+  split.
+  - intros ?. apply trunc_zero. auto.
+  - intros t. inversion t. auto. Qed.
 
 (** Proof irrelevance is equivalent
     to contractibility of identity proofs. *)
@@ -55,6 +65,16 @@ Context (A : Type).
 
 #[local] Open Scope type_scope.
 
+(** Proof irrelevance is equivalent to truncation at level [-1]. *)
+
+Lemma prop_eq_trunc : IsProp A <-> IsTrunc 1 A.
+Proof.
+  split.
+  - intros ?. apply trunc_trunc.
+    intros x y. apply trunc_zero. apply prop_eq_contr. auto.
+  - intros t. inversion t. apply prop_eq_contr.
+    intros x y. apply contr_eq_trunc. auto. Qed.
+
 (** Uniqueness of identity proofs is equivalent
     to proof irrelevance of identity proofs. *)
 
@@ -63,6 +83,36 @@ Proof.
   split.
   - intros ? x y a b. apply uip.
   - intros ? x y a b. apply irrel. Qed.
+
+End Context.
+
+Section Context.
+
+Context (A : Type).
+
+#[local] Open Scope type_scope.
+
+(** Uniqueness of identity proofs is equivalent to truncation at level [0]. *)
+
+Lemma set_eq_trunc : IsSet A <-> IsTrunc 2 A.
+Proof.
+  split.
+  - intros ?. apply trunc_trunc.
+    intros x y. apply trunc_trunc.
+    intros a b. apply trunc_zero. apply prop_eq_contr. apply set_eq_prop. auto.
+  - intros t. inversion t. apply set_eq_prop.
+    intros x y. assert (u : IsTrunc 1 (x = y)) by auto.
+    inversion u. apply prop_eq_contr.
+    intros a b. apply contr_eq_trunc. auto. Qed.
+
+(** There is this thing. *)
+
+Lemma trunc_eq_trunc (n : nat) :
+  IsTrunc (S n) A <-> forall x y : A, IsTrunc n (x = y).
+Proof.
+  split.
+  - intros t x y. inversion t. auto.
+  - intros ?. apply trunc_trunc. auto. Qed.
 
 End Context.
 
@@ -106,8 +156,6 @@ Proof.
 End Context.
 
 #[export] Hint Resolve is_set : typeclass_instances.
-
-(** TODO Wild, but mostly useless type tricks. *)
 
 #[local] Open Scope type_scope.
 
