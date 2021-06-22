@@ -1,7 +1,9 @@
-(** * Contractibility and Proof Irrelevance and Uniqueness of Identity Proofs *)
+(** * Contractibility and Proof Irrelevance and Uniqueness of Identity Proofs and Truncation *)
 
 From Maniunfold Require Export
   Init.
+
+#[local] Open Scope type_scope.
 
 Class IsContr (A : Type) : Prop :=
   contr : exists x : A, forall y : A, x = y.
@@ -16,181 +18,130 @@ Notation IsSet := UIP.
 
 Arguments uip {_ _ _ _} _.
 
-(** TODO Wild, but mostly useless type tricks. *)
+(** While this type is indexed over [nat], which starts from [0],
+    the truncation levels actually start from [-2]. *)
 
-Inductive IsTrunc : nat -> Type -> Prop :=
-  | trunc_zero (A : Type) (x : IsContr A) : IsTrunc O A
-  | trunc_trunc (n : nat) (A : Type)
-    (t : forall x y : A, IsTrunc n (x = y)) : IsTrunc (S n) A.
+Inductive Trunc : nat -> Type -> Prop :=
+  | trunc_zero (A : Type) `(IsContr A) : Trunc O A
+  | trunc_succ (n : nat) (A : Type)
+    (t : forall x y : A, Trunc n (x = y)) : Trunc (S n) A.
 
-#[local] Open Scope type_scope.
+Lemma zero_trunc (A : Type) (t : Trunc O A) : IsContr A.
+Proof. inversion_clear t. auto. Qed.
 
-Lemma cone (A : Type) `(IsProp A) (x y z : A) (a : y = z) :
-  a = irrel x z o irrel x y ^-1.
-Proof. rewrite a. rewrite eq_trans_sym_inv_l. reflexivity. Qed.
+(** Truncation at the first level is equivalent to contractibility. *)
 
-Section Context.
+Lemma trunc_zero' (A : Type) : Trunc O A <-> IsContr A.
+Proof. split; [apply zero_trunc | apply trunc_zero]. Qed.
 
-Context (A : Type).
+Lemma succ_trunc (A : Type) (n : nat)
+  (t : Trunc (S n) A) (x y : A) : Trunc n (x = y).
+Proof. inversion_clear t. auto. Qed.
 
-#[local] Open Scope type_scope.
+(** Truncation at the next level is equivalent to truncation of identities. *)
+
+Lemma trunc_succ' (A : Type) (n : nat) :
+  Trunc (S n) A <-> forall x y : A, Trunc n (x = y).
+Proof. split; [apply succ_trunc | apply trunc_succ]. Qed.
+
+(** Truncation is cumulative. *)
+
+Lemma trunc_cum (A : Type) (n : nat) (t : Trunc n A) : Trunc (S n) A.
+Proof.
+  induction t as [A [x a] | n A t t'].
+  - apply trunc_succ'.
+    intros y z. apply trunc_zero'. exists (a z o a y ^-1).
+    intros c. rewrite c. rewrite eq_trans_sym_inv_l. reflexivity.
+  - apply trunc_succ'. auto. Qed.
+
+Lemma contr_trunc (A : Type) `(IsContr A) : Trunc 0 A.
+Proof. apply trunc_zero'. auto. Qed.
+
+Lemma trunc_contr (A : Type) (t : Trunc 0 A) : IsContr A.
+Proof. inversion_clear t. auto. Qed.
 
 (** Contractibility is equivalent to truncation at level [-2]. *)
 
-Lemma contr_eq_trunc : IsContr A <-> IsTrunc 0 A.
+Lemma trunc_contr' (A : Type) : IsContr A <-> Trunc 0 A.
+Proof. split; [apply contr_trunc | apply trunc_contr]. Qed.
+
+Lemma prop_trunc (A : Type) `(IsProp A) : Trunc 1 A.
 Proof.
-  split.
-  - intros ?. apply trunc_zero. auto.
-  - intros t. inversion t. auto. Qed.
+  apply trunc_succ'.
+  intros x y. apply trunc_contr'.
+  exists (irrel x y o irrel x x ^-1). intros a.
+  rewrite a. rewrite eq_trans_sym_inv_l. reflexivity. Qed.
+
+Lemma trunc_prop (A : Type) (t : Trunc 1 A) : IsProp A.
+Proof.
+  inversion_clear t.
+  intros x y. assert (a : IsContr (x = y)).
+  { apply trunc_contr'. auto. }
+  apply a. Qed.
+
+(** Proof irrelevance is equivalent to truncation at level [-1]. *)
+
+Lemma trunc_prop' (A : Type) : IsProp A <-> Trunc 1 A.
+Proof. split; [apply prop_trunc | apply trunc_prop]. Qed.
+
+Lemma set_trunc (A : Type) `(IsSet A) : Trunc 2 A.
+Proof.
+  apply trunc_succ'.
+  intros x y. apply trunc_prop'.
+  intros a b. apply uip. Qed.
+
+Lemma trunc_set (A : Type) (t : Trunc 2 A) : IsSet A.
+Proof.
+  inversion_clear t.
+  intros x y. assert (a : IsProp (x = y)).
+  { apply trunc_prop'. auto. }
+  apply a. Qed.
+
+(** Uniqueness of identity proofs is equivalent to truncation at level [0]. *)
+
+Lemma trunc_set' (A : Type) : IsSet A <-> Trunc 2 A.
+Proof. split; [apply set_trunc | apply trunc_set]. Qed.
+
+(** Hints that construct truncations. *)
+
+Create HintDb trunc.
+
+#[export] Hint Resolve trunc_zero trunc_succ succ_trunc trunc_cum
+  contr_trunc prop_trunc set_trunc : trunc.
+
+(** Hints that eliminate truncations. *)
+
+Create HintDb untrunc.
+
+#[export] Hint Resolve zero_trunc trunc_succ succ_trunc trunc_cum
+  trunc_contr trunc_prop trunc_set : untrunc.
 
 (** Proof irrelevance is equivalent
     to contractibility of identity proofs. *)
 
-Lemma prop_eq_contr : IsProp A <-> forall x y : A, IsContr (x = y).
-Proof.
-  split.
-  - intros ? x y.
-    assert (a := irrel x y).
-    exists a. intros b.
-    assert (z := x).
-    rewrite (cone _ z a). rewrite (cone _ z b).
-    reflexivity.
-  - intros ? x y. apply (ex_proj1 contr). Qed.
-
-End Context.
-
-Section Context.
-
-Context (A : Type).
-
-#[local] Open Scope type_scope.
-
-(** Proof irrelevance is equivalent to truncation at level [-1]. *)
-
-Lemma prop_eq_trunc : IsProp A <-> IsTrunc 1 A.
-Proof.
-  split.
-  - intros ?. apply trunc_trunc.
-    intros x y. apply trunc_zero. apply prop_eq_contr. auto.
-  - intros t. inversion t. apply prop_eq_contr.
-    intros x y. apply contr_eq_trunc. auto. Qed.
+Lemma prop_contr (A : Type) : IsProp A <-> forall x y : A, IsContr (x = y).
+Proof. split; auto with trunc untrunc. Qed.
 
 (** Uniqueness of identity proofs is equivalent
     to proof irrelevance of identity proofs. *)
 
-Lemma set_eq_prop : IsSet A <-> forall x y : A, IsProp (x = y).
-Proof.
-  split.
-  - intros ? x y a b. apply uip.
-  - intros ? x y a b. apply irrel. Qed.
+Lemma set_prop (A : Type) : IsSet A <-> forall x y : A, IsProp (x = y).
+Proof. split; auto with trunc untrunc. Qed.
 
-End Context.
+(** Contractibility implies proof irrelevance. *)
 
-Section Context.
+Lemma contr_prop (A : Type) `(IsContr A) : IsProp A.
+Proof. auto with trunc untrunc. Qed.
 
-Context (A : Type).
+(** Proof irrelevance implies uniqueness of identity proofs. *)
 
-#[local] Open Scope type_scope.
-
-(** Uniqueness of identity proofs is equivalent to truncation at level [0]. *)
-
-Lemma set_eq_trunc : IsSet A <-> IsTrunc 2 A.
-Proof.
-  split.
-  - intros ?. apply trunc_trunc.
-    intros x y. apply trunc_trunc.
-    intros a b. apply trunc_zero. apply prop_eq_contr. apply set_eq_prop. auto.
-  - intros t. inversion t. apply set_eq_prop.
-    intros x y. assert (u : IsTrunc 1 (x = y)) by auto.
-    inversion u. apply prop_eq_contr.
-    intros a b. apply contr_eq_trunc. auto. Qed.
-
-(** There is this thing. *)
-
-Lemma trunc_eq_trunc (n : nat) :
-  IsTrunc (S n) A <-> forall x y : A, IsTrunc n (x = y).
-Proof.
-  split.
-  - intros t x y. inversion t. auto.
-  - intros ?. apply trunc_trunc. auto. Qed.
-
-End Context.
-
-Section Context.
-
-Context (A : Type) `(IsContr A).
-
-#[local] Open Scope type_scope.
-
-(** Proof irrelevance is a special case of contractibility.
-    In homotopy type theory parlance,
-    contractible types are mere propositions. *)
-
-#[local] Instance is_prop : IsProp A.
-Proof.
-  intros x y.
-  destruct contr as [z e].
-  rewrite <- (e x), <- (e y).
-  reflexivity. Qed.
-
-End Context.
-
-#[export] Hint Resolve is_prop : typeclass_instances.
-
-Section Context.
-
-Context (A : Type) `(IsProp A).
-
-#[local] Open Scope type_scope.
-
-(** Uniqueness of identity proofs is a special case of proof irrelevance.
-    In homotopy type theory parlance,
-    mere propositions are sets. *)
-
-#[local] Instance is_set : IsSet A.
-Proof.
-  assert (e : forall (x y z : A) (e : x = z), e = irrel y z o irrel y x ^-1).
-  { intros x y z e. rewrite e. rewrite eq_trans_sym_inv_l. reflexivity. }
-  intros x y a b. rewrite (e x x y a), (e x x y b). reflexivity. Qed.
-
-End Context.
-
-#[export] Hint Resolve is_set : typeclass_instances.
-
-#[local] Open Scope type_scope.
-
-Lemma trunc_succ (A : Type) (n : nat) (t : IsTrunc n A) : IsTrunc (S n) A.
-Proof.
-  induction t as [A x | n A t t'].
-  - pose proof x as x_. destruct x as [x' f].
-    apply trunc_trunc. intros x y. apply trunc_zero.
-    assert (e := f y o f x ^-1).
-    hnf. exists e. intros e'.
-    enough (IsSet A) by auto. typeclasses eauto.
-  - apply trunc_trunc. apply t'. Qed.
-
-Lemma trunc_prop (A : Type) `(IsProp A) : IsTrunc 1 A.
-Proof.
-  apply trunc_trunc. intros x y. apply trunc_zero.
-  enough (IsSet A) by (exists (irrel x y); auto).
-  typeclasses eauto. Qed.
-
-Lemma trunc_set (A : Type) `(IsSet A) : IsTrunc 2 A.
-Proof.
-  apply trunc_trunc. intros x y.
-  apply trunc_trunc.
-  intros a b. apply trunc_zero.
-  assert (IsProp (x = y)). intros e f. eapply uip.
-  pose proof uip a b as e.
-  exists e.
-  intros f. eapply uip. Qed.
-
-#[export] Hint Resolve trunc_zero trunc_prop trunc_set trunc_trunc trunc_succ : typeclass_instances.
+Lemma prop_set (A : Type) `(IsProp A) : IsSet A.
+Proof. auto with trunc untrunc. Qed.
 
 #[local] Instance nat_is_set : IsSet nat.
 Proof. apply EqDec.eqdec_uip. hnf. apply nat_eqdec. Qed.
 
 (** Natural numbers are obviously a homotopy-5-type. *)
 
-Goal IsTrunc 5 nat.
-Proof. typeclasses eauto. Qed.
+Goal Trunc 5 nat.
+Proof. Abort.
