@@ -14,6 +14,8 @@ Section Context.
 
 Context (A B : Type) (f : A -> B) (g : B -> A) `(!IsIso f g).
 
+(** A flipped isomorphism is an isomorphism. *)
+
 #[local] Instance is_iso : IsIso g f.
 Proof.
   split.

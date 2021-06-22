@@ -15,6 +15,8 @@ Section Context.
 
 Context (A B : Type) (f : A -> B) (g : B -> A) `(!IsInvL f g).
 
+(** A flipped left inverse is a right inverse. *)
+
 #[local] Instance is_inv_r : IsInvR g f.
 Proof. auto. Qed.
 
@@ -29,6 +31,8 @@ Module LFromR.
 Section Context.
 
 Context (A B : Type) (f : A -> B) (g : B -> A) `(!IsInvR f g).
+
+(** A flipped right inverse is a left inverse. *)
 
 #[local] Instance is_inv_l : IsInvL g f.
 Proof. auto. Qed.
