@@ -165,7 +165,7 @@ Proof. eauto with trunc untrunc. Qed.
 Lemma prop_set_cum (A : Type) `(IsProp A) : IsSet A.
 Proof. eauto with trunc untrunc. Qed.
 
-#[export] Hint Resolve contr_prop prop_set
+#[export] Hint Resolve prop_contr set_prop
   contr_prop_cum prop_set_cum : typeclass_instances.
 
 #[local] Instance nat_is_set : IsSet nat.
@@ -174,4 +174,4 @@ Proof. typeclasses eauto. Qed.
 (** Natural numbers are obviously a homotopy-5-type. *)
 
 Goal IsTrunc 5 nat.
-Proof. auto with trunc untrunc typeclass_instances. Qed.
+Proof. eauto with trunc untrunc typeclass_instances. Qed.
