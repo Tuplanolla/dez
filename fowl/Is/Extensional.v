@@ -15,6 +15,17 @@ Class IsFunExtDep : Prop :=
   fun_ext_dep (A : Type) (P : A -> Type)
   (f g : forall a : A, P a) (a : forall x : A, f x = g x) : f = g.
 
+Section Context.
+
+Context `(IsFunExtDep).
+
+#[local] Instance is_fun_ext : IsFunExt.
+Proof. intros A P f g a. apply fun_ext_dep. apply a. Qed.
+
+End Context.
+
+#[export] Hint Resolve is_fun_ext : typeclass_instances.
+
 Module FromAxioms.
 
 #[local] Instance is_fun_ext : IsFunExt.

@@ -52,6 +52,8 @@ digraph Is {
 
   // This Library
 
+  IsInv -> IsInvL
+  IsInv -> IsInvR
   IsIso -> IsInvL
   IsIso -> IsInvR
   IsTotOrd -> IsConnex
@@ -83,6 +85,7 @@ digraph Is {
   IsAssoc -> IsCompatR
   IsContr -> IsProp
   IsContr -> IsTrunc
+  IsIdemBinOp -> IsIdemElem
   IsInvL -> IsInvR
   IsInvR -> IsInvL
   IsProp -> IsSet

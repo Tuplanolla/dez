@@ -3,7 +3,7 @@
 From Maniunfold.Has Require Export
   BinaryOperation.
 From Maniunfold.Is Require Export
-  FunctionExtensionality.
+  Extensional.
 From Maniunfold.ShouldHave Require Import
   AdditiveNotations.
 
