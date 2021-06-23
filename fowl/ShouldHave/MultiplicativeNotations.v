@@ -1,7 +1,7 @@
 (** * Multiplicative Notations for Algebraic Operations *)
 
-From Maniunfold.Has Require Export
-  BinaryOperation UnaryOperation NullaryOperation Action Torsion.
+From Maniunfold.Has Require Import
+  Torsion Action BinaryOperation UnaryOperation NullaryOperation.
 
 (** Some programming languages like Octave
     use [.+] and [.*] for scalar operations,
@@ -15,22 +15,33 @@ Reserved Notation "x '*,' y" (left associativity, at level 40).
 Reserved Notation "x ',/' y" (right associativity, at level 35).
 Reserved Notation "x '/,' y" (right associativity, at level 35).
 
-Declare Scope operation_scope.
-Delimit Scope operation_scope with op.
-
-#[global] Open Scope operation_scope.
-
-Notation "'_*_'" := bin_op : operation_scope.
-Notation "x '*' y" := (bin_op x y) : operation_scope.
-Notation "'/_'" := un_op : operation_scope.
-Notation "'/' x" := (un_op x) : operation_scope.
-Notation "'1'" := null_op : operation_scope.
-
-Declare Scope left_action_scope.
-Delimit Scope left_action_scope with act_l.
+Declare Scope left_torsion_scope.
+Delimit Scope left_torsion_scope with tor_l.
 
 (** We do not open chiral scopes,
     because we do not want to favor one over the other. *)
+
+Notation "'_/_'" := tor_l : left_torsion_scope.
+Notation "y '/' x" := (tor_l x y) : left_torsion_scope.
+
+Declare Scope right_torsion_scope.
+Delimit Scope right_torsion_scope with tor_r.
+
+Notation "'_/_'" := tor_r : right_torsion_scope.
+Notation "y '/' x" := (tor_r x y) : right_torsion_scope.
+
+Declare Scope torsion_scope.
+Delimit Scope torsion_scope with tor.
+
+#[global] Open Scope torsion_scope.
+
+Notation "'_,/_'" := tor_l : torsion_scope.
+Notation "a ',/' x" := (tor_l a x) : torsion_scope.
+Notation "'_/,_'" := tor_r : torsion_scope.
+Notation "x '/,' a" := (tor_r x a) : torsion_scope.
+
+Declare Scope left_action_scope.
+Delimit Scope left_action_scope with act_l.
 
 Notation "'_*_'" := act_l : left_action_scope.
 Notation "a '*' x" := (act_l a x) : left_action_scope.
@@ -51,24 +62,13 @@ Notation "a ',*' x" := (act_l a x) : action_scope.
 Notation "'_*,_'" := act_r : action_scope.
 Notation "x '*,' a" := (act_r x a) : action_scope.
 
-Declare Scope left_torsion_scope.
-Delimit Scope left_torsion_scope with tor_l.
+Declare Scope operation_scope.
+Delimit Scope operation_scope with op.
 
-Notation "'_/_'" := tor_l : left_torsion_scope.
-Notation "y '/' x" := (tor_l x y) : left_torsion_scope.
+#[global] Open Scope operation_scope.
 
-Declare Scope right_torsion_scope.
-Delimit Scope right_torsion_scope with tor_r.
-
-Notation "'_/_'" := tor_r : right_torsion_scope.
-Notation "y '/' x" := (tor_r x y) : right_torsion_scope.
-
-Declare Scope torsion_scope.
-Delimit Scope torsion_scope with tor.
-
-#[global] Open Scope torsion_scope.
-
-Notation "'_,/_'" := tor_l : torsion_scope.
-Notation "a ',/' x" := (tor_l a x) : torsion_scope.
-Notation "'_/,_'" := tor_r : torsion_scope.
-Notation "x '/,' a" := (tor_r x a) : torsion_scope.
+Notation "'_*_'" := bin_op : operation_scope.
+Notation "x '*' y" := (bin_op x y) : operation_scope.
+Notation "'/_'" := un_op : operation_scope.
+Notation "'/' x" := (un_op x) : operation_scope.
+Notation "'1'" := null_op : operation_scope.

@@ -1,7 +1,8 @@
 From Maniunfold.Is Require Export
-  OneSortedAbelianGroup OneSortedCommutativeSemigroup
-  OneSortedCommutativeMonoid OneSortedCommutativeSemiring
-  OneSortedCommutativeRing.
+  OneSortedAbelianGroup OneSortedSemigroup
+  OneSortedMonoid OneSortedSemiring
+  OneSortedRing OneSortedCommutativeSemigroup OneSortedCommutativeMonoid
+  OneSortedCommutativeSemiring OneSortedCommutativeRing.
 
 Ltac eautodestruct :=
   repeat match goal with
@@ -38,7 +39,7 @@ Proof. intros x. eautodestruct. Defined.
 Global Instance unit_bin_op_null_op_is_unl : IsUnl (bin_op (A := unit)) null_op.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance unit_bin_op_null_op_is_mon : IsMon (bin_op (A := unit)) null_op.
+Global Instance unit_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := unit)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance unit_bin_op_null_op_is_comm_mon :
@@ -96,7 +97,7 @@ Proof. intros x. eautodestruct. Defined.
 Global Instance unit_bin_op_null_op_is_unl : IsUnl (bin_op (A := unit)) null_op.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance unit_bin_op_null_op_is_mon : IsMon (bin_op (A := unit)) null_op.
+Global Instance unit_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := unit)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance unit_bin_op_null_op_is_comm_mon :

@@ -1,4 +1,4 @@
-From Maniunfold.Offers Require Export
+From Maniunfold.Offers Require Import
   OneSortedGradedArithmetic.
 From Maniunfold.ShouldHave Require Export
   OneSortedGradedArithmeticNotations.

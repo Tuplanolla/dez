@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   Addition Zero Multiplication One.
 From Maniunfold.Is Require Export
-  OneSortedCommutative OneSortedSemiring.
+  Commutative OneSortedSemiring.
 
 (** Commutative semiring. *)
 

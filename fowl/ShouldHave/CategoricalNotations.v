@@ -1,6 +1,6 @@
 (** * Indexed Notations for Categories *)
 
-From Maniunfold.Has Require Export
+From Maniunfold.Has Require Import
   ComposedMorphism IdentityMorphism InverseMorphism.
 From Maniunfold.ShouldHave Require Export
   MorphismNotations.

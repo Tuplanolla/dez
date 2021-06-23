@@ -23,7 +23,7 @@ Class IsRing (A : Type)
   (Hk : HasAdd A) (Hx : HasZero A) (Hf : HasNeg A)
   (Hm : HasMul A) (Hy : HasOne A) : Prop := {
   add_zero_neg_is_ab_grp :> IsAbGrp add zero neg;
-  mul_one_is_mon :> IsMon mul one;
+  mul_one_is_mon :> IsMon one mul;
   add_mul_is_distr :> IsDistr add mul;
 }.
 

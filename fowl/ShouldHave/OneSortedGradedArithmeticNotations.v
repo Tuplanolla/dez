@@ -1,4 +1,4 @@
-From Maniunfold.Has Require Export
+From Maniunfold.Has Require Import
   OneSortedGradedAddition OneSortedGradedZero OneSortedGradedNegation
   OneSortedGradedMultiplication OneSortedGradedOne
   OneSortedGradedReciprocation.

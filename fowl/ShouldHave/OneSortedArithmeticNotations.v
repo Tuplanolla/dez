@@ -1,4 +1,4 @@
-From Maniunfold.Has Require Export
+From Maniunfold.Has Require Import
   Addition Zero Negation
   Multiplication One Reciprocation.
 

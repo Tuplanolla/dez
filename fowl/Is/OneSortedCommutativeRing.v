@@ -2,7 +2,7 @@ From Maniunfold.Has Require Export
   Addition Zero Negation
   Multiplication One.
 From Maniunfold.Is Require Export
-  OneSortedRing OneSortedCommutative.
+  OneSortedRing Commutative.
 
 (** Commutative ring. *)
 

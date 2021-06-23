@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   BinaryOperation.
 From Maniunfold.Is Require Export
-  OneSortedCommutative OneSortedSemigroup.
+  Commutative OneSortedSemigroup.
 
 (** Commutative semigroup, abelian semigroup. *)
 

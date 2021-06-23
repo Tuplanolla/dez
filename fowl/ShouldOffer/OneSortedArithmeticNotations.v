@@ -1,10 +1,9 @@
-From Maniunfold.Offers Require Export
+From Maniunfold.Offers Require Import
   OneSortedArithmetic.
 From Maniunfold.ShouldHave Require Export
   OneSortedArithmeticNotations.
 
+Notation "'_-_'" := (sub _ _) : ring_scope.
 Notation "x '-' y" := (sub _ _ x y) : ring_scope.
+Notation "'_/_'" := (div _ _) : ring_scope.
 Notation "x '/' y" := (div _ _ x y) : ring_scope.
-
-Notation "'_-_'" := (sub _ _) (only parsing) : ring_scope.
-Notation "'_/_'" := (div _ _) (only parsing) : ring_scope.

@@ -2,7 +2,7 @@ From Maniunfold.Has Require Export
   BinaryOperation NullaryOperation
   UnaryOperation.
 From Maniunfold.Is Require Export
-  OneSortedCommutative OneSortedGroup OneSortedUnaryDistributive.
+  Commutative OneSortedGroup OneSortedUnaryDistributive.
 From Maniunfold.ShouldHave Require Import
   OneSortedAdditiveNotations.
 

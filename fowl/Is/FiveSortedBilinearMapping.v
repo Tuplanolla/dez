@@ -44,7 +44,7 @@ From Coq Require Import
 From Maniunfold.Is Require Export
   TwoSortedUnital Isomorphism
   TwoSortedLeftDistributive ThreeSortedBicompatible
-  OneSortedCommutativeRing.
+  OneSortedRing.
 From Maniunfold.ShouldHave Require Import
   OneSortedArithmeticNotations TwoSortedMultiplicativeNotations.
 

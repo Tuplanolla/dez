@@ -1,10 +1,9 @@
-From Maniunfold.Offers Require Export
+From Maniunfold.Offers Require Import
   OneSortedNaturalOperations.
 From Maniunfold.ShouldHave Require Export
   OneSortedMultiplicativeNotations.
 
-Notation "x '^' n" := (nat_op bin_op null_op n x) : nat_scope.
-Notation "x '^' n" := (n_op bin_op null_op n x) : N_scope.
-
-Notation "'_^_'" := (flip (nat_op bin_op null_op)) (only parsing) : nat_scope.
-Notation "'_^_'" := (flip (n_op bin_op null_op)) (only parsing) : N_scope.
+Notation "x '^' n" := (nat_op null_op bin_op n x) : nat_scope.
+Notation "'_^_'" := (nat_op null_op bin_op) : nat_scope.
+Notation "x '^' n" := (n_op null_op bin_op n x) : N_scope.
+Notation "'_^_'" := (n_op null_op bin_op) : N_scope.

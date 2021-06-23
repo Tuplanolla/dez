@@ -11,7 +11,7 @@ From Maniunfold.ShouldOffer Require Import
 
 Section Context.
 
-Context (A : Type) `{IsMon A}.
+Context (A : Type) (Hx : HasNullOp A) (Hk : HasBinOp A) `(IsMon A).
 
 Fixpoint nat_op (n : nat) (x : A) : A :=
   match n with

@@ -5,8 +5,10 @@ From Coq Require Import
 From Maniunfold Require Import
   DatatypeTactics RewritingTactics.
 From Maniunfold.Is Require Export
-  OneSortedAbelianGroup OneSortedCommutativeSemigroup
-  OneSortedCommutativeMonoid OneSortedCommutativeSemiring.
+  OneSortedAbelianGroup OneSortedSemigroup
+  OneSortedMonoid OneSortedSemiring
+  OneSortedCommutativeSemigroup OneSortedCommutativeMonoid
+  OneSortedCommutativeSemiring.
 From Maniunfold.Provides Require Import
   PositiveTheorems.
 
@@ -668,7 +670,7 @@ Proof. intros x. apply N.add_0_r. Defined.
 Global Instance N_bin_op_null_op_is_unl : IsUnl (bin_op (A := N)) null_op.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance N_bin_op_null_op_is_mon : IsMon (bin_op (A := N)) null_op.
+Global Instance N_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := N)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance N_bin_op_null_op_is_comm_mon : IsCommMon (bin_op (A := N)) null_op.
@@ -707,7 +709,7 @@ Proof. intros x. apply N.mul_1_r. Defined.
 Global Instance N_bin_op_null_op_is_unl : IsUnl (bin_op (A := N)) null_op.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance N_bin_op_null_op_is_mon : IsMon (bin_op (A := N)) null_op.
+Global Instance N_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := N)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance N_bin_op_null_op_is_comm_mon : IsCommMon (bin_op (A := N)) null_op.

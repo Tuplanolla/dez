@@ -106,6 +106,9 @@ Favor exporting in the form
 `From Maniunfold.Is Require Export OneSortedly.Magma OneSortedly.Unital`,
 where the placement in the main hierarchy is at the top.
 
+If you export non-notation modules from notation modules,
+the scope stack will be broken and life will be suffering.
+
 ### Naming Conventions
 
 Operative classes are prefixed with `Has` and predicative classes with `Is`.

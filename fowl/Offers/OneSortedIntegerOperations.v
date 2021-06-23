@@ -11,7 +11,10 @@ From Maniunfold.ShouldOffer Require Import
 
 Section Context.
 
-Context (A : Type) `{IsGrp A}.
+Context (A : Type) (Hk : HasBinOp A) (Hx : HasNullOp A) (Hf : HasUnOp A)
+  `(IsGrp A).
+(* Context (A : Type) (Hx : HasNullOp A) (Hf : HasUnOp A) (Hk : HasBinOp A)
+  `(IsGrp A). *)
 
 Definition z_op (n : Z) (x : A) : A :=
   match n with

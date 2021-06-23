@@ -2,10 +2,10 @@
 
 From Maniunfold.Has Require Export
   OrderRelations.
-From Maniunfold.ShouldHave Require Import
-  OrderRelationNotations.
 From Maniunfold.Is Require Export
   Reflexive Transitive.
+From Maniunfold.ShouldHave Require Import
+  OrderRelationNotations.
 
 Fail Fail Class IsPreord (A : Type) (HR : HasOrdRel A) : Prop := {
   is_refl :> IsRefl _<=_;

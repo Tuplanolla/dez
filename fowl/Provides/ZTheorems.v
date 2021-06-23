@@ -1,9 +1,10 @@
 From Coq Require Import
   ZArith.ZArith.
 From Maniunfold.Is Require Export
-  OneSortedAbelianGroup OneSortedCommutativeSemigroup
-  OneSortedCommutativeMonoid OneSortedCommutativeSemiring
-  OneSortedCommutativeRing
+  OneSortedAbelianGroup OneSortedSemigroup
+  OneSortedMonoid OneSortedSemiring
+  OneSortedRing OneSortedCommutativeSemigroup OneSortedCommutativeMonoid
+  OneSortedCommutativeSemiring OneSortedCommutativeRing
   Equivalence PartialEquivalence Isomorphism.
 
 Module Additive.
@@ -36,7 +37,7 @@ Proof. intros x. apply Z.add_0_r. Defined.
 Global Instance Z_bin_op_null_op_is_unl : IsUnl (bin_op (A := Z)) null_op.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_bin_op_null_op_is_mon : IsMon (bin_op (A := Z)) null_op.
+Global Instance Z_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := Z)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_bin_op_null_op_is_comm_mon : IsCommMon (bin_op (A := Z)) null_op.
@@ -91,7 +92,7 @@ Proof. intros x. apply Z.mul_1_r. Defined.
 Global Instance Z_bin_op_null_op_is_unl : IsUnl (bin_op (A := Z)) null_op.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_bin_op_null_op_is_mon : IsMon (bin_op (A := Z)) null_op.
+Global Instance Z_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := Z)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_bin_op_null_op_is_comm_mon : IsCommMon (bin_op (A := Z)) null_op.

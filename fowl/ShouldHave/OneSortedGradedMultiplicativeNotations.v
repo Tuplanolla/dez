@@ -1,4 +1,4 @@
-From Maniunfold.Has Require Export
+From Maniunfold.Has Require Import
   GradedBinaryOperation GradedNullaryOperation
   GradedUnaryOperation.
 

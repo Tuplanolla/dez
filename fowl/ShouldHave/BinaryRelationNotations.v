@@ -1,6 +1,6 @@
 (** * Notations for Binary Relations *)
 
-From Maniunfold.Has Require Export
+From Maniunfold.Has Require Import
   BinaryRelation.
 
 Reserved Notation "x '~' y" (no associativity, at level 70).

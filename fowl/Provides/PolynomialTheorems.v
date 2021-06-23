@@ -13,9 +13,9 @@ From Maniunfold.Is Require Export
   OneSortedFinite Isomorphism
   OneSortedRing TwoSortedUnitalAssociativeAlgebra TwoSortedGradedAlgebra.
 From Maniunfold.Is Require Export
-  OneSortedAbelianGroup OneSortedCommutativeSemigroup
-  OneSortedCommutativeMonoid OneSortedCommutativeSemiring
-  OneSortedCommutativeRing.
+  OneSortedAbelianGroup OneSortedSemigroup
+  OneSortedMonoid OneSortedSemiring
+  OneSortedRing.
 From Maniunfold.Offers Require Export
   OneSortedPositiveOperations OneSortedNaturalOperations
   OneSortedIntegerOperations.
@@ -598,7 +598,7 @@ Proof.
 Global Instance poly_bin_op_null_op_is_unl : IsUnl poly_add null_op.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_bin_op_null_op_is_mon : IsMon poly_add null_op.
+Global Instance poly_bin_op_null_op_is_mon : IsMon null_op poly_add.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_is_comm_mon :
@@ -711,7 +711,7 @@ Proof. intros x. Admitted.
 Global Instance poly_bin_op_null_op_is_unl : IsUnl poly_mul null_op.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_bin_op_null_op_is_mon : IsMon poly_mul null_op.
+Global Instance poly_bin_op_null_op_is_mon : IsMon null_op poly_mul.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_is_comm_mon :
