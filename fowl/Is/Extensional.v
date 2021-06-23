@@ -13,7 +13,7 @@ Class IsFunExt : Prop :=
 
 Class IsFunExtDep : Prop :=
   fun_ext_dep (A : Type) (P : A -> Type)
-  (f g : forall a : A, P a) (a : forall x : A, f x = g x) : f = g.
+  (f g : forall x : A, P x) (a : forall x : A, f x = g x) : f = g.
 
 Section Context.
 
@@ -28,13 +28,6 @@ End Context.
 
 Module FromAxioms.
 
-#[local] Instance is_fun_ext : IsFunExt.
-Proof.
-  intros A B f g a.
-  apply functional_extensionality.
-  intros x.
-  apply a. Qed.
-
 #[local] Instance is_fun_ext_dep : IsFunExtDep.
 Proof.
   intros A P f g a.
@@ -42,6 +35,6 @@ Proof.
   intros x.
   apply a. Qed.
 
-#[export] Hint Resolve is_fun_ext is_fun_ext_dep : typeclass_instances.
+#[export] Hint Resolve is_fun_ext_dep : typeclass_instances.
 
 End FromAxioms.

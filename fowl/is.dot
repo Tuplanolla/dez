@@ -19,8 +19,8 @@ digraph Is {
   IsExpand [label = "\N\ncontract (x y : A) : dist (f x) (f y) <= dist x y"]
   IsExpand [label = "\N\nexpand (x y : A) : dist x y <= dist (f x) (f y)"]
   IsFixed [label = "\N\nfixed : f x = x"]
-  IsFunExt [label = "\N\nfun_ext (A B : Type) (f g : A -> B) (e : forall a : A, f a = g a) : f = g"]
-  IsFunExtDep [label = "\N\nfun_ext_dep (A : Type) (P : A -> Type) (f g : forall a : A, P a) (e : forall a : A, f a = g a) : f = g"]
+  IsFunExt [label = "\N\nfun_ext (A B : Type) (f g : A -> B) (a : forall x : A, f x = g x) : f = g"]
+  IsFunExtDep [label = "\N\nfun_ext_dep (A : Type) (P : A -> Type) (f g : forall x : A, P x) (a : forall x : A, f x = g x) : f = g"]
   IsIdemBinOp [label = "\N\nidem_bin_op (x : A) : x + x = x"]
   IsIdemElem [label = "\N\nidem_elem : x + x = x"]
   IsIdemFn [label = "\N\nidem_fn (x : A) : f (f x) = f x"]
@@ -85,6 +85,7 @@ digraph Is {
   IsAssoc -> IsCompatR
   IsContr -> IsProp
   IsContr -> IsTrunc
+  IsFunExtDep -> IsFunExt
   IsIdemBinOp -> IsIdemElem
   IsInvL -> IsInvR
   IsInvR -> IsInvL
