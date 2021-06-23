@@ -5,7 +5,7 @@ From Maniunfold.Has Require Export
 From Maniunfold.Is Require Export
   FunctionExtensionality.
 From Maniunfold.ShouldHave Require Import
-  OneSortedAdditiveNotations.
+  AdditiveNotations.
 
 Class IsIdemElem (A : Type) (Hk : HasBinOp A) (x : A) : Prop :=
   idem_elem : x + x = x.
