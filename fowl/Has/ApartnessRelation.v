@@ -1,4 +1,4 @@
-(** * Apartness Relation or Constructive Inequality *)
+(** * Apartness Relation *)
 
 From Maniunfold.Has Require Export
   BinaryRelation.

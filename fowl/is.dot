@@ -4,6 +4,7 @@ digraph Is {
   node [fontname = monospace]
 
   IsAntisym [label = "\N\nantisym (x y : A) (a : x ~ y) (b : y ~ x) : x = y"]
+  IsApart [label = "\N"]
   IsAssoc [label = "\N\nassoc (x y z : A) : x + (y + z) = (x + y) + z"]
   IsAsym [label = "\N\nasym (x y : A) (a : x ~ y) (b : y ~ x) : 0"]
   IsCohOrdRels [label = "\N\ncoh_ord_rels (x y : A) : x < y <-> x <= y /\\ x <> y"]
@@ -25,7 +26,7 @@ digraph Is {
   IsIdemElem [label = "\N\nidem_elem : x + x = x"]
   IsIdemFn [label = "\N\nidem_fn (x : A) : f (f x) = f x"]
   IsInflate [label = "\N\ninflate (a : A) : a <= f a"]
-  IsInj [label = "\N\ninj (x y : A) (e : f x = f y) : x = y"]
+  IsInj [label = "\N\ninj (x y : A) (a : f x = f y) : x = y"]
   IsInv [label = "\N"]
   IsInvL [label = "\N\ninv_l (a : A) : g (f a) = a"]
   IsInvR [label = "\N\ninv_r (b : B) : f (g b) = b"]
@@ -52,6 +53,9 @@ digraph Is {
 
   // This Library
 
+  IsApart -> IsIrrefl
+  IsApart -> IsSym
+  IsApart -> IsCotrans
   IsInv -> IsInvL
   IsInv -> IsInvR
   IsIso -> IsInvL
