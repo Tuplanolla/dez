@@ -22,9 +22,10 @@ Arguments uip {_ _ _ _} _.
     the truncation levels actually start from [-2]. *)
 
 Inductive IsTrunc : nat -> Type -> Prop :=
-  | trunc_zero (A : Type) `(IsContr A) : IsTrunc O A
+  | trunc_zero (A : Type)
+    `(IsContr A) : IsTrunc O A
   | trunc_succ (n : nat) (A : Type)
-    (t : forall x y : A, IsTrunc n (x = y)) : IsTrunc (S n) A.
+    `(forall x y : A, IsTrunc n (x = y)) : IsTrunc (S n) A.
 
 Existing Class IsTrunc.
 

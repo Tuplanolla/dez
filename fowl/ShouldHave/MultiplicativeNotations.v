@@ -26,16 +26,6 @@ Notation "'/_'" := un_op : operation_scope.
 Notation "'/' x" := (un_op x) : operation_scope.
 Notation "'1'" := null_op : operation_scope.
 
-Declare Scope action_scope.
-Delimit Scope action_scope with act.
-
-#[global] Open Scope action_scope.
-
-Notation "'_,*_'" := act_l : action_scope.
-Notation "a ',*' x" := (act_l a x) : action_scope.
-Notation "'_*,_'" := act_r : action_scope.
-Notation "x '*,' a" := (act_r x a) : action_scope.
-
 Declare Scope left_action_scope.
 Delimit Scope left_action_scope with act_l.
 
@@ -51,15 +41,15 @@ Delimit Scope right_action_scope with act_r.
 Notation "'_*_'" := act_r : right_action_scope.
 Notation "x '*' a" := (act_r x a) : right_action_scope.
 
-Declare Scope torsion_scope.
-Delimit Scope torsion_scope with tor.
+Declare Scope action_scope.
+Delimit Scope action_scope with act.
 
-#[global] Open Scope torsion_scope.
+#[global] Open Scope action_scope.
 
-Notation "'_,/_'" := tor_l : torsion_scope.
-Notation "a ',/' x" := (tor_l a x) : torsion_scope.
-Notation "'_/,_'" := tor_r : torsion_scope.
-Notation "x '/,' a" := (tor_r x a) : torsion_scope.
+Notation "'_,*_'" := act_l : action_scope.
+Notation "a ',*' x" := (act_l a x) : action_scope.
+Notation "'_*,_'" := act_r : action_scope.
+Notation "x '*,' a" := (act_r x a) : action_scope.
 
 Declare Scope left_torsion_scope.
 Delimit Scope left_torsion_scope with tor_l.
@@ -72,3 +62,13 @@ Delimit Scope right_torsion_scope with tor_r.
 
 Notation "'_/_'" := tor_r : right_torsion_scope.
 Notation "y '/' x" := (tor_r x y) : right_torsion_scope.
+
+Declare Scope torsion_scope.
+Delimit Scope torsion_scope with tor.
+
+#[global] Open Scope torsion_scope.
+
+Notation "'_,/_'" := tor_l : torsion_scope.
+Notation "a ',/' x" := (tor_l a x) : torsion_scope.
+Notation "'_/,_'" := tor_r : torsion_scope.
+Notation "x '/,' a" := (tor_r x a) : torsion_scope.

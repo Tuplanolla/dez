@@ -11,7 +11,7 @@ digraph Has {
   HasBinRel [label = "\N\nbin_rel (x y : A) : Prop"]
   HasCompHom [label = "\N\ncomp_hom (x y z : A) (a : y --> z) (b : x --> y) : x --> z"]
   HasDec [label = "\N\ndecide : bool"]
-  HasDist [label = "\N\ndist (x y : A) : B"]
+  HasDist [label = "\N\ndist (x y : B) : A"]
   HasEqRel [label = "\N\neq_rel (x y : A) : Prop"]
   HasIdHom [label = "\N\nid_hom (x : A) : x --> x"]
   HasInvHom [label = "\N\ninv_hom (x y : A) (a : x --> y) : y --> x"]
@@ -28,7 +28,7 @@ digraph Has {
   HasTor [label = "\N\ntor (x y : B) : A"]
   HasTorL [label = "\N\ntor_l (x y : B) : A"]
   HasTorR [label = "\N\ntor_r (x y : B) : A"]
-  HasUnOp [label = "\N\nun_op : A -> A"]
+  HasUnOp [label = "\N\nun_op (x : A) : A"]
   HasUnsquash [label = "\N\nunsquash (x : Squash A) : A"]
   HasZero [label = "\N\nzero : A"]
 
@@ -42,22 +42,35 @@ digraph Has {
   HasIdHom -> HasHom
   HasInvHom -> HasHom
 
+  // Other Libraries
+
   // Subclasses and Instances
 
   edge [style = dashed]
 
   // This Library
 
+  HasActL -> HasBinOp
+  HasActR -> HasBinOp
   HasAdd -> HasBinOp
   HasApartRel -> HasBinRel
+  HasDist -> HasTor
+  HasDist -> HasTorL
+  HasDist -> HasTorR
   HasEqRel -> HasBinRel
+  HasHom -> HasBinRel
   HasMul -> HasBinOp
   HasNeg -> HasUnOp
   HasOne -> HasNullOp
   HasOrdRel -> HasBinRel
-  HasStrOrdRel -> HasBinRel
   HasRecip -> HasUnOp
   HasSMulL -> HasActL
   HasSMulR -> HasActR
+  HasStrOrdRel -> HasBinRel
+  HasTor -> HasBinOp
+  HasTorL -> HasBinOp
+  HasTorR -> HasBinOp
   HasZero -> HasNullOp
+
+  // Other Libraries
 }

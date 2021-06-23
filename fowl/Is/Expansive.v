@@ -6,6 +6,6 @@ From Maniunfold.ShouldHave Require Import
   OrderRelationNotations.
 
 Class IsExpand (A B C : Type)
-  (HR : HasOrdRel C) (HdA : HasDist A C) (HdB : HasDist B C)
+  (HR : HasOrdRel C) (HdA : HasDist C A) (HdB : HasDist C B)
   (f : A -> B) : Prop :=
   expand (x y : A) : dist x y <= dist (f x) (f y).
