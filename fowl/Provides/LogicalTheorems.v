@@ -3,7 +3,7 @@
 From Maniunfold Require Export
   Init.
 
-(** ** Equality *)
+(** ** Equalities *)
 
 (** This is a negative version of [f_equal]. *)
 
@@ -69,7 +69,7 @@ Proof. reflexivity. Qed.
 
 End Context.
 
-(** ** Functional Programming *)
+(** ** Passing Arguments *)
 
 (** Flipping is a section and a retraction of itself,
     making it an involution. *)
@@ -82,24 +82,6 @@ Proof. reflexivity. Qed.
 Lemma flip_dep_involutive (A B : Type) (P : A -> B -> Type)
   (f : forall (a : A) (b : B), P a b) (b : B) (a : A) :
   flip_dep (flip_dep f) a b = f a b.
-Proof. reflexivity. Qed.
-
-(** The dependent and nondependent versions are related as follows. *)
-
-Lemma eq_compose_nondep (A B C : Type) (g : B -> C) (f : A -> B) (a : A) :
-  compose_dep (const g) f a = compose g f a.
-Proof. reflexivity. Qed.
-
-Lemma eq_const_nondep (A B : Type) (a : A) (b : B) :
-  const_dep a b = const a b.
-Proof. reflexivity. Qed.
-
-Lemma eq_flip_nondep (A B C : Type) (f : A -> B -> C) (b : B) (a : A) :
-  flip_dep f b a = flip f b a.
-Proof. reflexivity. Qed.
-
-Lemma eq_apply_nondep (A B : Type) (f : A -> B) (a : A) :
-  apply_dep f a = apply f a.
 Proof. reflexivity. Qed.
 
 (** ** Currying and Uncurrying *)
@@ -231,53 +213,3 @@ Lemma eq_Ssig_curry_dep_uncurry_dep
   (a : A) (b : P a) :
   Ssig_curry_dep (Ssig_uncurry_dep f) a b = f a b.
 Proof. reflexivity. Qed.
-
-(** The dependent and nondependent versions are related as follows. *)
-
-Lemma eq_ex_curry_nondep (A : Prop) (P : A -> Prop) (B : Prop)
-  (f : (exists a : A, P a) -> B) (a : A) (b : P a) :
-  ex_curry_dep f a b = ex_curry f a b.
-Proof. reflexivity. Qed.
-
-Lemma eq_ex_uncurry_nondep (A : Prop) (P : A -> Prop) (B : Prop)
-  (f : forall a : A, P a -> B) (x : exists a : A, P a) :
-  ex_uncurry_dep f x = ex_uncurry f x.
-Proof. destruct x as [a b]. reflexivity. Qed.
-
-Lemma eq_prod_curry_nondep (A B C : Type) (f : A * B -> C) (a : A) (b : B) :
-  prod_curry_dep f a b = prod_curry f a b.
-Proof. reflexivity. Qed.
-
-Lemma eq_prod_uncurry_nondep (A B C : Type) (f : A -> B -> C) (x : A * B) :
-  prod_uncurry_dep f x = prod_uncurry f x.
-Proof. destruct x as [a b]. reflexivity. Qed.
-
-Lemma eq_sig_curry_nondep (A : Type) (P : A -> Prop) (B : Type)
-  (f : {a : A | P a} -> B) (a : A) (b : P a) :
-  sig_curry_dep f a b = sig_curry f a b.
-Proof. reflexivity. Qed.
-
-Lemma eq_sig_uncurry_nondep (A : Type) (P : A -> Prop) (B : Type)
-  (f : forall a : A, P a -> B) (x : {a : A | P a}) :
-  sig_uncurry_dep f x = sig_uncurry f x.
-Proof. destruct x as [a b]. reflexivity. Qed.
-
-Lemma eq_sigT_curry_nondep (A : Type) (P : A -> Type) (B : Type)
-  (f : {a : A & P a} -> B) (a : A) (b : P a) :
-  sigT_curry_dep f a b = sigT_curry f a b.
-Proof. reflexivity. Qed.
-
-Lemma eq_sigT_uncurry_nondep (A : Type) (P : A -> Type) (B : Type)
-  (f : forall a : A, P a -> B) (x : {a : A & P a}) :
-  sigT_uncurry_dep f x = sigT_uncurry f x.
-Proof. destruct x as [a b]. reflexivity. Qed.
-
-Lemma eq_Ssig_curry_nondep (A : Type) (P : A -> SProp) (B : Type)
-  (f : {a : A $ P a} -> B) (a : A) (b : P a) :
-  Ssig_curry_dep f a b = Ssig_curry f a b.
-Proof. reflexivity. Qed.
-
-Lemma eq_Ssig_uncurry_nondep (A : Type) (P : A -> SProp) (B : Type)
-  (f : forall a : A, P a -> B) (x : {a : A $ P a}) :
-  Ssig_uncurry_dep f x = Ssig_uncurry f x.
-Proof. destruct x as [a b]. reflexivity. Qed.
