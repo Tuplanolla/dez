@@ -5,33 +5,33 @@ From Maniunfold.Has Require Export
 From Maniunfold.Is Require Export
   Extensional.
 From Maniunfold.ShouldHave Require Import
-  AdditiveNotations.
+  MultiplicativeNotations.
 
 Class IsIdemElem (A : Type) (x : A) (Hk : HasBinOp A) : Prop :=
-  idem_elem : x + x = x.
+  idem_elem : x * x = x.
 
 Class IsIdemBinOp (A : Type) (Hk : HasBinOp A) : Prop :=
-  idem_bin_op (x : A) : x + x = x.
+  idem_bin_op (x : A) : x * x = x.
 
 Section Context.
 
-Context (A : Type) (Hk : HasBinOp A) `(!IsIdemBinOp _+_).
+Context (A : Type) (Hk : HasBinOp A) `(!IsIdemBinOp _*_).
 
 (** For an idempotent binary operation, every element is idempotent. *)
 
-#[local] Instance is_idem_elem (x : A) : IsIdemElem x _+_.
+#[local] Instance is_idem_elem (x : A) : IsIdemElem x _*_.
 Proof. apply idem_bin_op. Qed.
 
 End Context.
 
 #[export] Hint Resolve is_idem_elem : typeclass_instances.
 
-Class IsIdemFn (A : Type) (f : A -> A) : Prop :=
-  idem_fn (x : A) : f (f x) = f x.
+Class IsIdem (A : Type) (f : A -> A) : Prop :=
+  idem (x : A) : f (f x) = f x.
 
 Section Context.
 
-Context `(IsFunExt) (A : Type) (f : A -> A) `(!IsIdemFn f).
+Context `(IsFunExt) (A : Type) (f : A -> A) `(!IsIdem f).
 
 (** Idempotent functions are idempotent elements of the endofunction monoid. *)
 
@@ -40,7 +40,7 @@ Proof.
   apply fun_ext.
   intros x.
   unfold compose.
-  setoid_rewrite idem_fn.
+  setoid_rewrite idem.
   reflexivity. Qed.
 
 End Context.

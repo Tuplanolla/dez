@@ -13,10 +13,10 @@ From Maniunfold.ShouldHave Require Import
 Local Open Scope grd_grp_scope.
 Local Open Scope grd_l_mod_scope.
 
-Class IsTwoGrdLUnl (A : Type) (P Q : A -> Type)
+Class IsTwoGrdUnlL (A : Type) (P Q : A -> Type)
   `(HasBinOp A) `(HasNullOp A)
   `(!HasGrdActL P Q bin_op) `(!HasGrdOne P null_op) : Prop := {
-  bin_op_null_op_is_l_unl :> IsLUnl bin_op null_op;
-  grd_two_l_unl : forall (i : A) (x : Q i),
-    rew l_unl i in (1 * x) = x;
+  bin_op_null_op_is_unl_l :> IsUnlBinOpL null_op bin_op;
+  grd_two_unl_l : forall (i : A) (x : Q i),
+    rew unl_bin_op_l i in (1 * x) = x;
 }.

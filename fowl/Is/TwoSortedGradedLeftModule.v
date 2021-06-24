@@ -29,8 +29,8 @@ Class IsGrdLMod (A : Type) (P Q : A -> Type)
     @IsTwoGrdLDistrR A P Q bin_op null_op P_has_add Q_has_add grd_act_l;
   grd_mul_grd_act_l_is_grd_l_compat :>
     @IsGrdLCompat A P Q bin_op null_op grd_mul grd_act_l;
-  zero_grd_act_l_is_grd_two_l_unl :>
-    @IsTwoGrdLUnl A P Q bin_op null_op grd_act_l grd_one;
+  zero_grd_act_l_is_grd_two_unl_l :>
+    @IsTwoGrdUnlL A P Q bin_op null_op grd_act_l grd_one;
   add_grd_act_l_is_grd_two_distr_l :>
     @IsTwoGrdLDistrL A P Q bin_op null_op Q_has_add grd_act_l;
 }.

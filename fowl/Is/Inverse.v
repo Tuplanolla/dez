@@ -3,6 +3,9 @@
 From Maniunfold Require Export
   Init.
 
+(** TODO Rename into isomorphisms or sections or whatever and
+    dedicate this name to algebraic stuff (groups). *)
+
 Class IsInvL (A B : Type) (f : A -> B) (g : B -> A) : Prop :=
   inv_l (a : A) : g (f a) = a.
 

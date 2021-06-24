@@ -1,9 +1,15 @@
-(** * Deflationarity or Regressivity of a Function *)
+(** * Deflationarity or Regressivity of a Function and a Binary Operation *)
 
 From Maniunfold.Has Require Export
-  OrderRelations.
+  OrderRelations BinaryOperation.
 From Maniunfold.ShouldHave Require Import
-  OrderRelationNotations.
+  OrderRelationNotations AdditiveNotations.
 
-Class IsDeflate (A : Type) (HR : HasOrdRel A) (f : A -> A) : Prop :=
-  deflate (a : A) : f a <= a.
+Class IsDefl (A : Type) (HR : HasOrdRel A) (f : A -> A) : Prop :=
+  defl (x : A) : f x <= x.
+
+Class IsDeflBinOpL (A : Type) (HR : HasOrdRel A) (Hk : HasBinOp A) : Prop :=
+  defl_bin_op_l (x y : A) : x + y <= y.
+
+Class IsDeflBinOpR (A : Type) (HR : HasOrdRel A) (Hk : HasBinOp A) : Prop :=
+  defl_bin_op_r (x y : A) : x + y <= x.

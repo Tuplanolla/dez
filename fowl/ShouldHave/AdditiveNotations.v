@@ -10,10 +10,10 @@ From Maniunfold.Has Require Import
     use [<+] and [<*] for chiral operations,
     but we cannot do that due to [->] being the function arrow. *)
 
-Reserved Notation "x ',+' y" (left associativity, at level 50).
-Reserved Notation "x '+,' y" (left associativity, at level 50).
-Reserved Notation "x ',-' y" (right associativity, at level 35).
-Reserved Notation "x '-,' y" (right associativity, at level 35).
+Reserved Notation "x '+<' y" (left associativity, at level 50).
+Reserved Notation "x '>+' y" (left associativity, at level 50).
+Reserved Notation "x '-<' y" (right associativity, at level 35).
+Reserved Notation "x '>-' y" (right associativity, at level 35).
 
 Declare Scope left_torsion_scope.
 Delimit Scope left_torsion_scope with tor_l.
@@ -35,10 +35,10 @@ Delimit Scope torsion_scope with tor.
 
 #[global] Open Scope torsion_scope.
 
-Notation "'_,-_'" := tor_l : torsion_scope.
-Notation "a ',-' x" := (tor_l a x) : torsion_scope.
-Notation "'_-,_'" := tor_r : torsion_scope.
-Notation "x '-,' a" := (tor_r x a) : torsion_scope.
+Notation "'_-<_'" := tor_l : torsion_scope.
+Notation "a '-<' x" := (tor_l a x) : torsion_scope.
+Notation "'_>-_'" := tor_r : torsion_scope.
+Notation "x '>-' a" := (tor_r x a) : torsion_scope.
 
 Declare Scope left_action_scope.
 Delimit Scope left_action_scope with act_l.
@@ -57,10 +57,10 @@ Delimit Scope action_scope with act.
 
 #[global] Open Scope action_scope.
 
-Notation "'_,+_'" := act_l : action_scope.
-Notation "a ',+' x" := (act_l a x) : action_scope.
-Notation "'_+,_'" := act_r : action_scope.
-Notation "x '+,' a" := (act_r x a) : action_scope.
+Notation "'_+<_'" := act_l : action_scope.
+Notation "a '+<' x" := (act_l a x) : action_scope.
+Notation "'_>+_'" := act_r : action_scope.
+Notation "x '>+' a" := (act_r x a) : action_scope.
 
 Declare Scope operation_scope.
 Delimit Scope operation_scope with op.

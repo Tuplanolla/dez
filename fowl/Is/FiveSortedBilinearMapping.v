@@ -65,10 +65,10 @@ Definition bihomogen_has_iso {A B C D E : Type}
   (** These classes are not equivalent unless the actions are unital.
       Otherwise [IsBBihomogen] is weaker than [IsBihomogen]. *)
   `{HasNullOp A} `{HasNullOp B}
-  `{!@IsTwoLUnl A C act_l null_op}
-  `{!@IsTwoLUnl A E act_l null_op}
-  `{!@IsTwoRUnl B D act_r null_op}
-  `{!@IsTwoRUnl B E act_r null_op} :
+  `{!@IsTwoUnlL A C act_l null_op}
+  `{!@IsTwoUnlL A E act_l null_op}
+  `{!@IsTwoUnlR B D act_r null_op}
+  `{!@IsTwoUnlR B E act_r null_op} :
   (@IsBihomogen A B C D E act_l act_r act_l act_r bin_fn ->
   @IsBBihomogen A B C D E act_l act_r act_l act_r bin_fn) *
   (@IsBBihomogen A B C D E act_l act_r act_l act_r bin_fn ->
@@ -80,16 +80,16 @@ Proof.
     reflexivity.
   - intros ?. split.
     + intros a b x.
-      rewrite <- (two_r_unl x).
+      rewrite <- (two_unl_r x).
       rewrite b_bihomogen.
-      rewrite (two_r_unl x).
-      rewrite (two_r_unl (a * bin_fn b x)%l_mod).
+      rewrite (two_unl_r x).
+      rewrite (two_unl_r (a * bin_fn b x)%l_mod).
       reflexivity.
     + intros x y a.
-      rewrite <- (two_l_unl x).
+      rewrite <- (two_unl_l x).
       rewrite b_bihomogen.
-      rewrite (two_l_unl x).
-      rewrite (two_l_unl (bin_fn x y)).
+      rewrite (two_unl_l x).
+      rewrite (two_unl_l (bin_fn x y)).
       reflexivity. Defined.
 
 (** Life with proof irrelevance is dull. *)
@@ -99,10 +99,10 @@ Local Instance bihomogen_is_iso {A B C D E : Type}
   `{HasActL A E} `{HasActR B E}
   `{HasBinFn C D E}
   `{HasNullOp A} `{HasNullOp B}
-  `{!@IsTwoLUnl A C act_l null_op}
-  `{!@IsTwoLUnl A E act_l null_op}
-  `{!@IsTwoRUnl B D act_r null_op}
-  `{!@IsTwoRUnl B E act_r null_op} :
+  `{!@IsTwoUnlL A C act_l null_op}
+  `{!@IsTwoUnlL A E act_l null_op}
+  `{!@IsTwoUnlR B D act_r null_op}
+  `{!@IsTwoUnlR B E act_r null_op} :
   IsIso (fst bihomogen_has_iso) (snd bihomogen_has_iso).
 Proof.
   split.

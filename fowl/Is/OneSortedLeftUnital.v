@@ -7,15 +7,15 @@ From Maniunfold.ShouldHave Require Import
 
 (** Unital, having an identity element; left chirality. *)
 
-Class IsLUnl (A : Type)
+Class IsUnlBinOpL (A : Type)
   `(HasBinOp A) `(HasNullOp A) : Prop :=
-  l_unl : forall x : A, 0 + x = x.
+  unl_bin_op_l : forall x : A, 0 + x = x.
 
 Section Context.
 
-Context (A : Type) `{IsLUnl A}.
+Context (A : Type) `{IsUnlBinOpL A}.
 
-Global Instance A_A_bin_op_null_op_is_two_l_unl : IsTwoLUnl bin_op null_op.
-Proof. intros x. apply l_unl. Defined.
+Global Instance A_A_bin_op_null_op_is_two_unl_l : IsTwoUnlL bin_op null_op.
+Proof. intros x. apply unl_bin_op_l. Defined.
 
 End Context.

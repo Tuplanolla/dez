@@ -7,11 +7,13 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   MultiplicativeNotations.
 
+(** This has the same shape as [mul_assoc]. *)
+
 Class IsAssoc (A : Type) (Hk : HasBinOp A) : Prop :=
   assoc (x y z : A) : x * (y * z) = (x * y) * z.
 
 Class IsCompat (A B C : Type) (Hl : HasActL A C) (Hr : HasActR B C) : Prop :=
-  compat (a : A) (x : C) (b : B) : a ,* (x *, b) = (a ,* x) *, b.
+  compat (a : A) (x : C) (b : B) : a *< (x >* b) = (a *< x) >* b.
 
 Section Context.
 

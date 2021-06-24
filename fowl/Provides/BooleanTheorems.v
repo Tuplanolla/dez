@@ -122,14 +122,14 @@ Proof.
   | x : unit |- _ => destruct x
   end; try reflexivity. Defined.
 
-Local Instance bool_bin_op_is_l_unl : IsLUnl (bin_op (A := bool)) null_op.
+Local Instance bool_bin_op_is_unl_l : IsUnlBinOpL null_op (bin_op (A := bool)).
 Proof.
   intros x. all: cbn; repeat match goal with
   | x : bool |- _ => destruct x
   | x : unit |- _ => destruct x
   end; try reflexivity. Defined.
 
-Local Instance bool_bin_op_is_r_unl : IsRUnl (bin_op (A := bool)) null_op.
+Local Instance bool_bin_op_is_unl_r : IsUnlBinOpR null_op (bin_op (A := bool)).
 Proof.
   intros x. all: cbn; repeat match goal with
   | x : bool |- _ => destruct x

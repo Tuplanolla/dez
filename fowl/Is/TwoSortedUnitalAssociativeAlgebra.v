@@ -15,7 +15,7 @@ Class IsUnlAssocAlg (A B : Type)
   `(HasAdd B) `(HasZero B) `(HasNeg B)
   `(HasMul B) `(HasOne B)
   `(HasActL A B) `(HasActR A B) : Prop := {
-  B_mul_one_is_unl :> IsUnl one mul;
+  B_mul_one_is_unl :> IsUnlBinOpLR one mul;
   A_B_add_zero_neg_mul_one_add_zero_neg_mul_act_l_act_r_is_assoc_alg :>
     IsAssocAlg add zero neg mul one add zero neg mul
     (act_l (A := A) (B := B)) (act_r (A := A) (B := B));

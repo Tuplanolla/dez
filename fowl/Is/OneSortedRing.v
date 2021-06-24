@@ -10,7 +10,8 @@ From Maniunfold.Is Require Export
   OneSortedAbelianGroup Distributive Monoid
   OneSortedAbsorbing OneSortedSignedAbsorbing OneSortedBinaryCommutative
   OneSortedBinaryCrossing OneSortedBinarySplitCancellative
-  OneSortedDegenerate OneSortedSemiring OneSortedGradedRing.
+  OneSortedDegenerate OneSortedSemiring OneSortedGradedRing
+  Unital.
 From Maniunfold.ShouldHave Require Import
   OneSortedAdditiveNotations
   OneSortedArithmeticNotations.
@@ -24,7 +25,7 @@ Class IsRing (A : Type)
   (Hm : HasMul A) (Hy : HasOne A) : Prop := {
   add_zero_neg_is_ab_grp :> IsAbGrp add zero neg;
   mul_one_is_mon :> IsMon one mul;
-  mul_add_is_distr :> IsDistr mul add;
+  mul_add_is_distr :> IsDistrLR mul add;
 }.
 
 Section Context.
@@ -44,17 +45,17 @@ Ltac conversions := typeclasses
 Theorem zero_mul_l_absorb (x : A) : 0 * x = 0.
 Proof with conversions.
   apply (l_cancel (0 * x) 0 (1 * x))...
-  pose proof r_unl (H := add) as ea'...
-  pose proof r_unl (H := mul) as em'...
-  pose proof r_unl (H := add) as ea.
-  pose proof r_unl (H := mul) as em.
-  pose proof r_unl as ex.
+  pose proof unl_bin_op_r (Hk := add) as ea'...
+  pose proof unl_bin_op_r (Hk := mul) as em'...
+  pose proof unl_bin_op_r (Hk := add) as ea.
+  pose proof unl_bin_op_r (Hk := mul) as em.
+  pose proof unl_bin_op_r as ex.
   specialize (ex : forall x : A, x * 1 = x).
   specialize (ex : forall x : A, x + 0 = x).
   Fail rewrite (ex (1 * x)).
-  rewrite (r_unl (1 * x)).
+  rewrite (unl_bin_op_r (1 * x)).
   rewrite <- (distr_r 1 0 x).
-  rewrite (r_unl 1).
+  rewrite (unl_bin_op_r 1).
   reflexivity. Qed.
 
 Global Instance zero_mul_is_l_absorb : IsLAbsorb zero mul.
@@ -63,9 +64,9 @@ Proof. exact @zero_mul_l_absorb. Qed.
 Theorem zero_mul_r_absorb (x : A) : x * 0 = 0.
 Proof with conversions.
   apply (l_cancel (x * 0) 0 (x * 1))...
-  rewrite (r_unl (x * 1)).
+  rewrite (unl_bin_op_r (x * 1)).
   rewrite <- (distr_l x 1 0).
-  rewrite (r_unl 1).
+  rewrite (unl_bin_op_r 1).
   reflexivity. Qed.
 
 Global Instance zero_mul_is_r_absorb : IsRAbsorb zero mul.
@@ -79,7 +80,7 @@ Proof with conversions.
   hnf...
   apply (l_cancel (- 0) 0 0)...
   rewrite (r_inv 0)...
-  rewrite (r_unl 0).
+  rewrite (unl_bin_op_r 0).
   reflexivity. Qed.
 
 Theorem neg_mul_one_l_sgn_absorb (x : A) : (- 1) * x = - x.
@@ -88,7 +89,7 @@ Proof with conversions.
   rewrite <- (distr_r 1 (- 1) x).
   rewrite (r_inv 1)...
   rewrite (l_absorb x).
-  rewrite (l_unl x).
+  rewrite (unl_bin_op_l x).
   rewrite (r_inv x)...
   reflexivity. Qed.
 
@@ -101,7 +102,7 @@ Proof with conversions.
   rewrite <- (distr_l x 1 (- 1)).
   rewrite (r_inv 1)...
   rewrite (r_absorb x).
-  rewrite (r_unl x).
+  rewrite (unl_bin_op_r x).
   rewrite (r_inv x)...
   reflexivity. Qed.
 
@@ -159,8 +160,8 @@ Proof. split; typeclasses eauto. Qed.
 Theorem one_zero_degen (x : A) (e : 1 = 0) : x = 0.
 Proof with conversions.
   pose proof distr_l x 0 1 as e'.
-  rewrite l_unl in e'. rewrite r_unl in e' at 1. rewrite e in e'.
-  repeat rewrite r_absorb in e'. rewrite r_unl in e'. apply e'. Qed.
+  rewrite unl_bin_op_l in e'. rewrite unl_bin_op_r in e' at 1. rewrite e in e'.
+  repeat rewrite r_absorb in e'. rewrite unl_bin_op_r in e'. apply e'. Qed.
 
 Global Instance one_zero_is_degen : IsDegen zero one.
 Proof. exact @one_zero_degen. Qed.
@@ -195,11 +196,11 @@ Proof. intros x y z. repeat match goal with t : unit |- _ => destruct t end.
 
 Local Instance unit_has_null_op : HasNullOp unit := tt.
 
-Local Instance bin_op_null_op_is_l_unl : IsLUnl bin_op null_op.
+Local Instance bin_op_null_op_is_unl_l : IsUnlBinOpL null_op bin_op.
 Proof. intros x. repeat match goal with t : unit |- _ => destruct t end.
   reflexivity. Qed.
 
-Local Instance bin_op_null_op_is_r_unl : IsRUnl bin_op null_op.
+Local Instance bin_op_null_op_is_unl_r : IsUnlBinOpR null_op bin_op.
 Proof. intros x. repeat match goal with t : unit |- _ => destruct t end.
   reflexivity. Qed.
 
@@ -232,9 +233,9 @@ Proof. repeat split. all: try typeclasses eauto.
     apply assoc.
   - esplit. intros [] x.
     rewrite <- eq_rect_eq_dec; try decide equality.
-    apply l_unl.
+    apply unl_bin_op_l.
   - esplit. intros [] x.
     rewrite <- eq_rect_eq_dec; try decide equality.
-    apply r_unl. Qed.
+    apply unl_bin_op_r. Admitted.
 
 End Context.

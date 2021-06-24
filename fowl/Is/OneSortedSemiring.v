@@ -16,13 +16,16 @@ Class IsSemiring (A : Type)
   add_zero_is_mon :> IsMon zero add;
   mul_one_is_mon :> IsMon one mul;
   add_is_comm :> IsComm add;
-  add_mul_is_distr :> IsDistr mul add;
+  add_mul_is_distr :> IsDistrLR mul add;
   zero_mul_is_absorb :> IsAbsorb zero mul;
 }.
 
 Section Context.
 
 Context (A : Type) `(IsSemiring A).
+
+Import Addition.Subclass Zero.Subclass Negation.Subclass
+  Multiplication.Subclass One.Subclass.
 
 Ltac conversions := typeclasses
   convert bin_op into add and null_op into zero or
@@ -31,9 +34,8 @@ Ltac conversions := typeclasses
 Goal 0 = 1 -> forall x y : A, x = y.
 Proof with conversions.
   intros e x y.
-  pose proof @l_unl _ mul one _ as l...
-  rewrite <- (l x).
-  rewrite <- (l y).
+  rewrite <- (unl_bin_op_l x)...
+  rewrite <- (unl_bin_op_l y)...
   rewrite <- e.
   rewrite (l_absorb x).
   rewrite (l_absorb y).

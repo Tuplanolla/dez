@@ -157,13 +157,13 @@ Proof. intros x y. apply Pos.mul_comm. Defined.
 Global Instance positive_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := positive)).
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance positive_bin_op_null_op_is_l_unl : IsLUnl (bin_op (A := positive)) null_op.
+Global Instance positive_bin_op_null_op_is_unl_l : IsUnlBinOpL null_op (bin_op (A := positive)).
 Proof. intros x. apply Pos.mul_1_l. Defined.
 
-Global Instance positive_bin_op_null_op_is_r_unl : IsRUnl (bin_op (A := positive)) null_op.
+Global Instance positive_bin_op_null_op_is_unl_r : IsUnlBinOpR null_op (bin_op (A := positive)).
 Proof. intros x. apply Pos.mul_1_r. Defined.
 
-Global Instance positive_bin_op_null_op_is_unl : IsUnl null_op (bin_op (A := positive)).
+Global Instance positive_bin_op_null_op_is_unl : IsUnlBinOpLR null_op (bin_op (A := positive)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance positive_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := positive)).

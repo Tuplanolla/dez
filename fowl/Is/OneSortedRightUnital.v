@@ -8,15 +8,15 @@ From Maniunfold.ShouldHave Require Import
 (** Unital; right chirality.
     See [Is.OneSortedLeftUnital]. *)
 
-Class IsRUnl (A : Type)
+Class IsUnlBinOpR (A : Type)
   `(HasBinOp A) `(HasNullOp A) : Prop :=
-  r_unl : forall x : A, x + 0 = x.
+  unl_bin_op_r : forall x : A, x + 0 = x.
 
 Section Context.
 
-Context (A : Type) `{IsRUnl A}.
+Context (A : Type) `{IsUnlBinOpR A}.
 
-Global Instance A_A_bin_op_null_op_is_two_r_unl : IsTwoRUnl bin_op null_op.
-Proof. intros x. apply r_unl. Defined.
+Global Instance A_A_bin_op_null_op_is_two_unl_r : IsTwoUnlR bin_op null_op.
+Proof. intros x. apply unl_bin_op_r. Defined.
 
 End Context.

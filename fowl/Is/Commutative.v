@@ -3,7 +3,9 @@
 From Maniunfold.Has Require Export
   BinaryOperation.
 From Maniunfold.ShouldHave Require Import
-  AdditiveNotations.
+  MultiplicativeNotations.
+
+(** This has the same shape as [mul_comm]. *)
 
 Class IsComm (A : Type) (Hk : HasBinOp A) : Prop :=
-  comm (x y : A) : x + y = y + x.
+  comm (x y : A) : x * y = y * x.

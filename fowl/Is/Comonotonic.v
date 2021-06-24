@@ -7,7 +7,7 @@ From Maniunfold.ShouldHave Require Import
 
 Fail Fail Class IsComono (A B : Type)
   (HRA : HasOrdRel A) (HRB : HasOrdRel B) (f : A -> B) : Prop :=
-  comono (x y : A) (l : f x <= f y) : x <= y.
+  comono (x y : A) (a : f x <= f y) : x <= y.
 
 Notation IsComono HRA HRB := (Proper (HRA <== HRB)).
 Notation comono := (proper_prf : IsComono _ _ _).

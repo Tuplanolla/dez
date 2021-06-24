@@ -19,6 +19,6 @@ Class IsRMod (A B : Type)
   B_add_zero_neg_is_ab_grp :> IsAbGrp add zero neg;
   A_B_add_add_act_r_is_two_r_distr_l :> IsTwoRDistrL add add act_r;
   A_B_mul_act_r_is_r_compat :> IsRCompat mul act_r;
-  A_B_zero_act_r_is_two_r_unl :> IsTwoRUnl act_r zero;
+  A_B_zero_act_r_is_two_unl_r :> IsTwoUnlR act_r zero;
   A_B_add_act_r_is_two_r_distr_r :> IsTwoRDistrR add act_r;
 }.

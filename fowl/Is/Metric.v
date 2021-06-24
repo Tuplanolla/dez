@@ -3,7 +3,7 @@
 From Maniunfold.Has Require Export
   NullaryOperation BinaryOperation OrderRelations Distance.
 From Maniunfold.Is Require Export
-  TotalOrder Bounded Monoid Commutative.
+  TotalOrder Bounded Monoid Commutative Monotonic.
 From Maniunfold.ShouldHave Require Import
   OrderRelationNotations AdditiveNotations.
 
@@ -15,7 +15,7 @@ Class IsDistMon (A : Type)
   is_lower_bnd :> IsLowerBnd 0 _<=_;
   is_mon :> IsMon 0 _+_;
   is_comm :> IsComm _+_;
-  is_proper :> Proper (_<=_ ==> _<=_ ==> _<=_) _+_;
+  is_mono_bin_op :> IsMonoBinOp _<=_ _+_;
 }.
 
 Module Alternative.
@@ -30,7 +30,7 @@ Class IsPartOrdCommSemigrp (A : Type)
   (* some_property_r (x y : A) : y <= x + y; *)
   is_semigrp :> IsSemigrp _+_;
   is_comm :> IsComm _+_;
-  is_proper :> Proper (_<=_ ==> _<=_ ==> _<=_) _+_;
+  is_mono_bin_op :> IsMonoBinOp _<=_ _+_;
 }.
 
 End Alternative.

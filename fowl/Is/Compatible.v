@@ -5,8 +5,8 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   MultiplicativeNotations.
 
-Class IsCompatL (A B : Type) (Hl : HasActL A B) (Hk : HasBinOp A) : Prop :=
-  compat_l (a b : A) (x : B) : a ,* (b ,* x) = (a * b) ,* x.
+Class IsCompatL (A B : Type) (Hk : HasBinOp A) (Hl : HasActL A B) : Prop :=
+  compat_l (a b : A) (x : B) : a *< (b *< x) = (a * b) *< x.
 
 Class IsCompatR (A B : Type) (Hk : HasBinOp A) (Hr : HasActR A B) : Prop :=
-  compat_r (x : B) (a b : A) : x *, (a * b) = (x *, a) *, b.
+  compat_r (x : B) (a b : A) : x >* (a * b) = (x >* a) >* b.

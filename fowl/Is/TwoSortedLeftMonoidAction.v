@@ -9,5 +9,5 @@ Class IsLMonAct (A B : Type)
   `(HasActL A B) : Prop := {
   A_bin_op_null_op_is_mon :> IsMon null_op bin_op;
   A_B_bin_op_act_l_is_l_semigrp_act :> IsLSemigrpAct bin_op act_l;
-  A_B_null_op_act_l_is_two_l_unl :> IsTwoLUnl act_l null_op;
+  A_B_null_op_act_l_is_two_unl_l :> IsTwoUnlL act_l null_op;
 }.

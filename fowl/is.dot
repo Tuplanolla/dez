@@ -3,49 +3,72 @@ digraph Is {
 
   node [fontname = monospace]
 
+  // IsMetric [label = "\N"]
+  IsAntidistr [label = "\N\nantidistr (x y : A) : f (x + y) = f y + f x"]
   IsAntisym [label = "\N\nantisym (x y : A) (a : x ~ y) (b : y ~ x) : x = y"]
   IsApart [label = "\N"]
-  IsAssoc [label = "\N\nassoc (x y z : A) : x + (y + z) = (x + y) + z"]
+  IsAssoc [label = "\N\nassoc (x y z : A) : x * (y * z) = (x * y) * z"]
   IsAsym [label = "\N\nasym (x y : A) (a : x ~ y) (b : y ~ x) : 0"]
   IsCohOrdRels [label = "\N\ncoh_ord_rels (x y : A) : x < y <-> x <= y /\\ x <> y"]
-  IsComono [label = "\N\ncomono (x y : A) (l : f x <= f y) : x <= y"]
-  IsCompat [label = "\N\ncompat (a : A) (x : C) (b : B) : a ,+ (x +, b) = (a ,+ x) +, b"]
-  IsCompatL [label = "\N\ncompat_l (a b : A) (x : B) : a ,+ (b ,+ x) = (a + b) ,+ x"]
-  IsCompatR [label = "\N\ncompat_r (x : B) (a b : A) : x +, (a + b) = (x +, a) +, b"]
+  IsComm [label = "\N\ncomm (x y : A) : x * y = y * x"]
+  IsComono [label = "\N\ncomono (x y : A) (a : f x <= f y) : x <= y"]
+  IsCompat [label = "\N\ncompat (a : A) (x : C) (b : B) : a *< (x >* b) = (a *< x) >* b"]
+  IsCompatL [label = "\N\ncompat_l (a b : A) (x : B) : a *< (b *< x) = (a * b) *< x"]
+  IsCompatR [label = "\N\ncompat_r (x : B) (a b : A) : x >* (a * b) = (x >* a) >* b"]
   IsConnex [label = "\N\nconnex (x y : A) : x ~ y \\/ y ~ x"]
   IsContr [label = "\N\ncontr : exists x : A, forall y : A, x = y"]
   IsCotrans [label = "\N\ncotrans (x y z : A) (a : x ~ z) : x ~ y \\/ y ~ z"]
-  IsDeflate [label = "\N\ndeflate (a : A) : f a <= a"]
+  IsDefl [label = "\N\ndeflate (x : A) : f x <= x"]
+  IsDistr [label = "\N\ndistr (x y : A) : f (x + y) = f x + f y"]
+  IsDistrL [label = "\N\ndistr_l (x y z : A) : x * (y + z) = x * y + x * z"]
+  IsDistrLR [label = "\N"]
+  IsDistrR [label = "\N\ndistr_r (x y z : A) : (x + y) * z = x * z + y * z"]
   IsEq [label = "\N"]
   IsExpand [label = "\N\ncontract (x y : A) : dist (f x) (f y) <= dist x y"]
   IsExpand [label = "\N\nexpand (x y : A) : dist x y <= dist (f x) (f y)"]
   IsFixed [label = "\N\nfixed : f x = x"]
   IsFunExt [label = "\N\nfun_ext (A B : Type) (f g : A -> B) (a : forall x : A, f x = g x) : f = g"]
   IsFunExtDep [label = "\N\nfun_ext_dep (A : Type) (P : A -> Type) (f g : forall x : A, P x) (a : forall x : A, f x = g x) : f = g"]
-  IsIdemBinOp [label = "\N\nidem_bin_op (x : A) : x + x = x"]
-  IsIdemElem [label = "\N\nidem_elem : x + x = x"]
-  IsIdemFn [label = "\N\nidem_fn (x : A) : f (f x) = f x"]
-  IsInflate [label = "\N\ninflate (a : A) : a <= f a"]
+  IsIdemBinOp [label = "\N\nidem_bin_op (x : A) : x * x = x"]
+  IsIdemElem [label = "\N\nidem_elem : x * x = x"]
+  IsIdem [label = "\N\nidem (x : A) : f (f x) = f x"]
+  IsInfl [label = "\N\ninfl (x : A) : x <= f x"]
+  IsInflateBinOpL [label = "\N\ninflate_bin_op_l (x y : A) : y <= x + y"]
+  IsInflateBinOpR [label = "\N\ninflate_bin_op_r (x y : A) : x <= x + y"]
   IsInj [label = "\N\ninj (x y : A) (a : f x = f y) : x = y"]
-  IsInv [label = "\N"]
   IsInvL [label = "\N\ninv_l (a : A) : g (f a) = a"]
+  IsInvLR [label = "\N"]
   IsInvR [label = "\N\ninv_r (b : B) : f (g b) = b"]
   IsIrrefl [label = "\N\nirrefl (x : A) : ~ (x ~ x)"]
   IsIso [label = "\N"]
-  IsMono [label = "\N\nmono (x y : A) (l : x <= y) : f x <= f y"]
+  IsLowerBnd [label = "\N\nlower_bnd (y : A) : x <= y"]
+  IsMag [label = "\N"]
+  IsMon [label = "\N"]
+  IsMono [label = "\N\nmono (x y : A) (a : x <= y) : f x <= f y"]
+  IsMonoBinOp [label = "\N\nmono_bin_op (x0 y0 : A) (a0 : x0 <= y0) (x1 y1 : A) (a1 : x1 <= y1) : x0 + x1 <= y0 + y1"]
+  IsMonoBinOpL [label = "\N\nmono_bin_op_l (x y z : A) (a : x <= y) : z + x <= z + y"]
+  IsMonoBinOpR [label = "\N\nmono_bin_op_r (x y z : A) (a : x <= y) : x + z <= y + z"]
   IsPartEq [label = "\N"]
   IsPartOrd [label = "\N"]
   IsPreord [label = "\N"]
   IsProp [label = "\N\nirrel (x y : A) : x = y"]
   IsRefl [label = "\N\nrefl (x : A) : x ~ x"]
+  IsSemigrp [label = "\N"]
   IsSet [label = "\N\nuip (x y : A) (a b : x = y) : a = b"]
-  IsStrComono [label = "\N\nstr_comono (x y : A) (l : f x < f y) : x < y"]
+  IsStrComono [label = "\N\nstr_comono (x y : A) (a : f x < f y) : x < y"]
   IsStrConnex [label = "\N\nstr_connex (x y : A) : x ~ y \\/ x = y \\/ y ~ x"]
-  IsStrMono [label = "\N\nstr_mono (x y : A) (l : x < y) : f x < f y"]
+  IsStrMono [label = "\N\nstr_mono (x y : A) (a : x < y) : f x < f y"]
   IsSym [label = "\N\nsym (x y : A) (a : x ~ y) : y ~ x"]
   IsTotOrd [label = "\N"]
   IsTrans [label = "\N\ntrans (x y z : A) (a : x ~ y) (b : y ~ z) : x ~ z"]
   IsTrunc [label = "\N\ntrunc_zero (A : Type) : IsTrunc O A\ntrunc_succ (n : nat) (A : Type) : IsTrunc (S n) A"]
+  IsUnlActL [label = "\N\nunl_act_l (x : B) : 1 *< x = x"]
+  IsUnlActLR [label = "\N"]
+  IsUnlActR [label = "\N\nunl_act_r (x : B) : x >* 1 = x"]
+  IsUnlBinOpL [label = "\N\nunl_bin_op_l (x : A) : 1 * x = x"]
+  IsUnlBinOpLR [label = "\N"]
+  IsUnlBinOpR [label = "\N\nunl_bin_op_r (x : A) : x * 1 = x"]
+  IsUpperBnd [label = "\N\nupper_bnd (y : A) : y <= x"]
 
   // Superclasses and Substructures
 
@@ -53,16 +76,22 @@ digraph Is {
 
   // This Library
 
+  IsApart -> IsCotrans
   IsApart -> IsIrrefl
   IsApart -> IsSym
-  IsApart -> IsCotrans
-  IsInv -> IsInvL
-  IsInv -> IsInvR
+  IsDistrLR -> IsDistrL
+  IsDistrLR -> IsDistrR
+  IsInvLR -> IsInvL
+  IsInvLR -> IsInvR
   IsIso -> IsInvL
   IsIso -> IsInvR
   IsTotOrd -> IsConnex
   IsTotOrd -> IsPartOrd
   IsTotOrd -> IsPreord
+  IsUnlActLR -> IsUnlActL
+  IsUnlActLR -> IsUnlActR
+  IsUnlBinOpLR -> IsUnlBinOpL
+  IsUnlBinOpLR -> IsUnlBinOpR
 
   // Other Libraries
 
@@ -93,13 +122,24 @@ digraph Is {
   IsIdemBinOp -> IsIdemElem
   IsInvL -> IsInvR
   IsInvR -> IsInvL
+  IsMon -> IsSemigrp
+  IsMon -> IsUnlBinOpLR
+  IsMono -> IsStrMono
+  IsMonoBinOp -> IsMonoBinOpL
+  IsMonoBinOp -> IsMonoBinOpR
   IsProp -> IsSet
   IsProp -> IsTrunc
+  IsSemigrp -> IsAssoc
+  IsSemigrp -> IsMag
   IsSet -> IsTrunc
+  IsStrMono -> IsMono
   IsTotOrd -> IsRefl
   IsTrunc -> IsContr
   IsTrunc -> IsProp
   IsTrunc -> IsSet
+  IsUnlBinOpL -> IsUnlActL
+  IsUnlBinOpLR -> IsUnlActLR
+  IsUnlBinOpR -> IsUnlActR
 
   // Other Libraries
 
