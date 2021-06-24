@@ -7,7 +7,7 @@ From Maniunfold.Has Require Export
   Addition Zero Negation Multiplication
   One.
 From Maniunfold.Is Require Export
-  OneSortedAbelianGroup OneSortedDistributive OneSortedMonoid
+  OneSortedAbelianGroup Distributive Monoid
   OneSortedAbsorbing OneSortedSignedAbsorbing OneSortedBinaryCommutative
   OneSortedBinaryCrossing OneSortedBinarySplitCancellative
   OneSortedDegenerate OneSortedSemiring OneSortedGradedRing.
@@ -24,7 +24,7 @@ Class IsRing (A : Type)
   (Hm : HasMul A) (Hy : HasOne A) : Prop := {
   add_zero_neg_is_ab_grp :> IsAbGrp add zero neg;
   mul_one_is_mon :> IsMon one mul;
-  add_mul_is_distr :> IsDistr add mul;
+  mul_add_is_distr :> IsDistr mul add;
 }.
 
 Section Context.
@@ -53,7 +53,7 @@ Proof with conversions.
   specialize (ex : forall x : A, x + 0 = x).
   Fail rewrite (ex (1 * x)).
   rewrite (r_unl (1 * x)).
-  rewrite <- (r_distr 1 0 x).
+  rewrite <- (distr_r 1 0 x).
   rewrite (r_unl 1).
   reflexivity. Qed.
 
@@ -64,7 +64,7 @@ Theorem zero_mul_r_absorb (x : A) : x * 0 = 0.
 Proof with conversions.
   apply (l_cancel (x * 0) 0 (x * 1))...
   rewrite (r_unl (x * 1)).
-  rewrite <- (l_distr x 1 0).
+  rewrite <- (distr_l x 1 0).
   rewrite (r_unl 1).
   reflexivity. Qed.
 
@@ -85,7 +85,7 @@ Proof with conversions.
 Theorem neg_mul_one_l_sgn_absorb (x : A) : (- 1) * x = - x.
 Proof with conversions.
   apply (l_cancel ((- 1) * x) (- x) (1 * x))...
-  rewrite <- (r_distr 1 (- 1) x).
+  rewrite <- (distr_r 1 (- 1) x).
   rewrite (r_inv 1)...
   rewrite (l_absorb x).
   rewrite (l_unl x).
@@ -98,7 +98,7 @@ Proof. exact @neg_mul_one_l_sgn_absorb. Qed.
 Theorem neg_mul_one_r_sgn_absorb (x : A) : x * (- 1) = - x.
 Proof with conversions.
   apply (l_cancel (x * (- 1)) (- x) (x * 1))...
-  rewrite <- (l_distr x 1 (- 1)).
+  rewrite <- (distr_l x 1 (- 1)).
   rewrite (r_inv 1)...
   rewrite (r_absorb x).
   rewrite (r_unl x).
@@ -158,7 +158,7 @@ Proof. split; typeclasses eauto. Qed.
 
 Theorem one_zero_degen (x : A) (e : 1 = 0) : x = 0.
 Proof with conversions.
-  pose proof l_distr x 0 1 as e'.
+  pose proof distr_l x 0 1 as e'.
   rewrite l_unl in e'. rewrite r_unl in e' at 1. rewrite e in e'.
   repeat rewrite r_absorb in e'. rewrite r_unl in e'. apply e'. Qed.
 
@@ -175,7 +175,7 @@ Proof with conversions.
     rewrite (r_inv (z * y))...
     reflexivity. }
   rewrite l_bin_comm in e'.
-  rewrite <- l_distr in e'.
+  rewrite <- distr_l in e'.
   apply a in e'.
   destruct e' as [e' | e'].
   - congruence.
@@ -225,8 +225,8 @@ Proof. repeat split. all: try typeclasses eauto.
   all: hnf; intros.
   all: repeat match goal with t : unit |- _ => destruct t end.
   all: auto; try typeclasses eauto.
-  - apply l_distr.
-  - apply r_distr.
+  - apply distr_l.
+  - apply distr_r.
   - esplit. intros [] [] [] x y z.
     rewrite <- eq_rect_eq_dec; try decide equality.
     apply assoc.

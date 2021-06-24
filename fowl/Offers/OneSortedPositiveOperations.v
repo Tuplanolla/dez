@@ -3,7 +3,7 @@ From Coq Require Import
 From Maniunfold.Has Require Export
   Action.
 From Maniunfold.Is Require Export
-  OneSortedSemigroup.
+  Semigroup.
 From Maniunfold.ShouldHave Require Import
   OneSortedAdditiveNotations.
 

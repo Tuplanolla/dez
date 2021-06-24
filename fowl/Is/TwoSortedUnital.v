@@ -4,7 +4,7 @@ From Maniunfold.Is Require Export
   TwoSortedLeftUnital TwoSortedRightUnital.
 
 (** Unital.
-    See [Is.OneSortedUnital]. *)
+    See [Is.Unital]. *)
 
 Class IsTwoUnl (A B : Type)
   `(HasActL A B) `(HasActR A B)

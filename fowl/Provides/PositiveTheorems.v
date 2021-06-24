@@ -3,8 +3,8 @@ From Coq Require Import
 From Maniunfold.Has Require Export
   One.
 From Maniunfold.Is Require Export
-  OneSortedAbelianGroup OneSortedSemigroup
-  OneSortedMonoid OneSortedCommutativeSemigroup OneSortedCommutativeMonoid.
+  OneSortedAbelianGroup Semigroup
+  Monoid OneSortedCommutativeSemigroup OneSortedCommutativeMonoid.
 
 Module Pos.
 
@@ -163,7 +163,7 @@ Proof. intros x. apply Pos.mul_1_l. Defined.
 Global Instance positive_bin_op_null_op_is_r_unl : IsRUnl (bin_op (A := positive)) null_op.
 Proof. intros x. apply Pos.mul_1_r. Defined.
 
-Global Instance positive_bin_op_null_op_is_unl : IsUnl (bin_op (A := positive)) null_op.
+Global Instance positive_bin_op_null_op_is_unl : IsUnl null_op (bin_op (A := positive)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance positive_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := positive)).

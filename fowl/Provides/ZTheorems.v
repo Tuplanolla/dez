@@ -1,8 +1,8 @@
 From Coq Require Import
   ZArith.ZArith.
 From Maniunfold.Is Require Export
-  OneSortedAbelianGroup OneSortedSemigroup
-  OneSortedMonoid OneSortedSemiring
+  OneSortedAbelianGroup Semigroup
+  Monoid OneSortedSemiring
   OneSortedRing OneSortedCommutativeSemigroup OneSortedCommutativeMonoid
   OneSortedCommutativeSemiring OneSortedCommutativeRing
   Equivalence PartialEquivalence Isomorphism.
@@ -34,7 +34,7 @@ Proof. intros x. apply Z.add_0_l. Defined.
 Global Instance Z_bin_op_null_op_is_r_unl : IsRUnl (bin_op (A := Z)) null_op.
 Proof. intros x. apply Z.add_0_r. Defined.
 
-Global Instance Z_bin_op_null_op_is_unl : IsUnl (bin_op (A := Z)) null_op.
+Global Instance Z_bin_op_null_op_is_unl : IsUnl null_op (bin_op (A := Z)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := Z)).
@@ -89,7 +89,7 @@ Proof. intros x. apply Z.mul_1_l. Defined.
 Global Instance Z_bin_op_null_op_is_r_unl : IsRUnl (bin_op (A := Z)) null_op.
 Proof. intros x. apply Z.mul_1_r. Defined.
 
-Global Instance Z_bin_op_null_op_is_unl : IsUnl (bin_op (A := Z)) null_op.
+Global Instance Z_bin_op_null_op_is_unl : IsUnl null_op (bin_op (A := Z)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := Z)).
@@ -109,13 +109,13 @@ Global Instance Z_has_one : HasOne Z := Z.one.
 Global Instance Z_add_is_comm : IsComm add.
 Proof. intros x y. apply Z.add_comm. Defined.
 
-Global Instance Z_add_mul_is_l_distr : IsLDistr add mul.
+Global Instance Z_add_mul_is_distr_l : IsDistrL mul add.
 Proof. intros x y z. apply Z.mul_add_distr_l. Defined.
 
-Global Instance Z_add_mul_is_r_distr : IsRDistr add mul.
+Global Instance Z_add_mul_is_distr_r : IsDistrR mul add.
 Proof. intros x y z. apply Z.mul_add_distr_r. Defined.
 
-Global Instance Z_add_mul_is_distr : IsDistr add mul.
+Global Instance Z_add_mul_is_distr : IsDistr mul add.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_zero_mul_is_l_absorb : IsLAbsorb zero mul.

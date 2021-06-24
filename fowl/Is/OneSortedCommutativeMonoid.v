@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Export
   BinaryOperation NullaryOperation.
 From Maniunfold.Is Require Export
-  Commutative OneSortedMonoid.
+  Commutative Monoid.
 
 (** Commutative monoid, abelian monoid. *)
 

@@ -2,7 +2,7 @@
 From Maniunfold.Has Require Export
   BinaryOperation NullaryOperation Action.
 From Maniunfold.Is Require Export
-  OneSortedMonoid TwoSortedLeftSemigroupAction TwoSortedLeftUnital.
+  Monoid TwoSortedLeftSemigroupAction TwoSortedLeftUnital.
 
 Class IsLMonAct (A B : Type)
   `(HasBinOp A) `(HasNullOp A)

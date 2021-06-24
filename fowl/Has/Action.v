@@ -1,4 +1,4 @@
-(** * Left and Right Action or Act *)
+(** * Action or Act *)
 
 From Maniunfold.Has Require Export
   BinaryOperation.

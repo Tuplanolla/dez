@@ -4,6 +4,6 @@ From Maniunfold.Has Require Export
 From Maniunfold.ShouldHave Require Import
   OneSortedArithmeticNotations.
 
-Class IsLDistr (A : Type)
+Class IsDistrL (A : Type)
   `(HasAdd A) `(HasMul A) : Prop :=
-  l_distr : forall x y z : A, x * (y + z) = x * y + x * z.
+  distr_l : forall x y z : A, x * (y + z) = x * y + x * z.

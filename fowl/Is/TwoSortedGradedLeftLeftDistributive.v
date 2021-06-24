@@ -13,9 +13,9 @@ From Maniunfold.ShouldHave Require Import
 Local Open Scope ring_scope.
 Local Open Scope grd_l_mod_scope.
 
-Class IsTwoGrdLLDistr (A : Type) (P Q : A -> Type)
+Class IsTwoGrdLDistrL (A : Type) (P Q : A -> Type)
   `(HasBinOp A) `(HasNullOp A)
   `(forall i : A, HasAdd (Q i))
   `(!HasGrdActL P Q bin_op) : Prop :=
-  grd_two_l_l_distr : forall (i j : A) (a : P i) (x y : Q j),
+  grd_two_l_distr_l : forall (i j : A) (a : P i) (x y : Q j),
     a * (x + y) = a * x + a * y.

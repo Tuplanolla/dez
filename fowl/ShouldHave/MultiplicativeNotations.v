@@ -1,7 +1,7 @@
 (** * Multiplicative Notations for Algebraic Operations *)
 
 From Maniunfold.Has Require Import
-  Torsion Action BinaryOperation UnaryOperation NullaryOperation.
+  Torsion Action NullaryOperation UnaryOperation BinaryOperation.
 
 (** Some programming languages like Octave
     use [.+] and [.*] for scalar operations,
@@ -67,8 +67,8 @@ Delimit Scope operation_scope with op.
 
 #[global] Open Scope operation_scope.
 
-Notation "'_*_'" := bin_op : operation_scope.
-Notation "x '*' y" := (bin_op x y) : operation_scope.
+Notation "'1'" := null_op : operation_scope.
 Notation "'/_'" := un_op : operation_scope.
 Notation "'/' x" := (un_op x) : operation_scope.
-Notation "'1'" := null_op : operation_scope.
+Notation "'_*_'" := bin_op : operation_scope.
+Notation "x '*' y" := (bin_op x y) : operation_scope.

@@ -13,8 +13,8 @@ From Maniunfold.Is Require Export
   OneSortedFinite Isomorphism
   OneSortedRing TwoSortedUnitalAssociativeAlgebra TwoSortedGradedAlgebra.
 From Maniunfold.Is Require Export
-  OneSortedAbelianGroup OneSortedSemigroup
-  OneSortedMonoid OneSortedSemiring
+  OneSortedAbelianGroup Semigroup
+  Monoid OneSortedSemiring
   OneSortedRing.
 From Maniunfold.Offers Require Export
   OneSortedPositiveOperations OneSortedNaturalOperations
@@ -595,7 +595,7 @@ Proof.
   cbv [union_with map_union_with].
   Fail apply (right_id empty (merge (option_union_with _))). Admitted.
 
-Global Instance poly_bin_op_null_op_is_unl : IsUnl poly_add null_op.
+Global Instance poly_bin_op_null_op_is_unl : IsUnl null_op poly_add.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_is_mon : IsMon null_op poly_add.
@@ -708,7 +708,7 @@ Proof.
 Global Instance poly_bin_op_null_op_is_r_unl : IsRUnl poly_mul null_op.
 Proof. intros x. Admitted.
 
-Global Instance poly_bin_op_null_op_is_unl : IsUnl poly_mul null_op.
+Global Instance poly_bin_op_null_op_is_unl : IsUnl null_op poly_mul.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_is_mon : IsMon null_op poly_mul.
@@ -754,13 +754,13 @@ Ltac conversions := typeclasses
   convert bin_op into (mul (A := A)) and
   null_op into (one (A := A)).
 
-Global Instance poly_add_mul_is_l_distr : IsLDistr add mul.
+Global Instance poly_add_mul_is_distr_l : IsDistrL mul add.
 Proof. intros x y z. Admitted.
 
-Global Instance poly_add_mul_is_r_distr : IsRDistr add mul.
+Global Instance poly_add_mul_is_distr_r : IsDistrR mul add.
 Proof. intros x y z. Admitted.
 
-Global Instance poly_add_mul_is_distr : IsDistr add mul.
+Global Instance poly_add_mul_is_distr : IsDistr mul add.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_zero_mul_is_l_absorb : IsLAbsorb zero mul.
@@ -862,15 +862,15 @@ Proof.
   cbv [grd_bin_op grd_mul poly_has_grd_mul
     grd_null_op grd_one poly_has_grd_one]. apply r_unl. Defined.
 
-Global Instance poly_is_grd_l_distr :
-  IsGrdLDistr (P := poly_grd) bin_op (fun i : N => add) grd_mul.
+Global Instance poly_is_grd_distr_l :
+  IsGrdDistrL (P := poly_grd) bin_op (fun i : N => add) grd_mul.
 Proof.
-  intros i j x y z. cbv [grd_mul poly_has_grd_mul]. apply l_distr. Defined.
+  intros i j x y z. cbv [grd_mul poly_has_grd_mul]. apply distr_l. Defined.
 
-Global Instance poly_is_grd_r_distr :
-  IsGrdRDistr (P := poly_grd) bin_op (fun i : N => add) grd_mul.
+Global Instance poly_is_grd_distr_r :
+  IsGrdDistrR (P := poly_grd) bin_op (fun i : N => add) grd_mul.
 Proof.
-  intros i j x y z. cbv [grd_mul poly_has_grd_mul]. apply r_distr. Defined.
+  intros i j x y z. cbv [grd_mul poly_has_grd_mul]. apply distr_r. Defined.
 
 Global Instance poly_is_grd_distr :
   IsGrdDistr (P := poly_grd) bin_op (fun i : N => add) grd_mul.

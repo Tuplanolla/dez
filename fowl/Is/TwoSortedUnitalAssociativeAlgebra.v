@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
   Multiplication One
   Action.
 From Maniunfold.Is Require Export
-  OneSortedUnital AssociativeAlgebra.
+  Unital AssociativeAlgebra.
 
 (** Noncommutative algebra over a noncommutative ring.
     The ring is carried by [A] and the algebra by [B].
@@ -15,7 +15,7 @@ Class IsUnlAssocAlg (A B : Type)
   `(HasAdd B) `(HasZero B) `(HasNeg B)
   `(HasMul B) `(HasOne B)
   `(HasActL A B) `(HasActR A B) : Prop := {
-  B_mul_one_is_unl :> IsUnl mul one;
+  B_mul_one_is_unl :> IsUnl one mul;
   A_B_add_zero_neg_mul_one_add_zero_neg_mul_act_l_act_r_is_assoc_alg :>
     IsAssocAlg add zero neg mul one add zero neg mul
     (act_l (A := A) (B := B)) (act_r (A := A) (B := B));

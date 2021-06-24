@@ -25,12 +25,12 @@ Class IsGrdRMod (A : Type) (P Q : A -> Type)
     IsGrdRing bin_op null_op P_has_add P_has_zero P_has_neg grd_mul grd_one;
   add_zero_neg_is_ab_grp :> forall i : A,
     IsAbGrp (Q_has_add i) (Q_has_zero i) (Q_has_neg i);
-  add_add_grd_act_r_is_grd_two_r_distr :>
-    @IsTwoGrdRLDistr A P Q bin_op null_op P_has_add Q_has_add grd_act_r;
+  add_add_grd_act_r_is_grd_two_distr_r :>
+    @IsTwoGrdRDistrL A P Q bin_op null_op P_has_add Q_has_add grd_act_r;
   grd_mul_grd_act_r_is_grd_r_compat :>
     @IsGrdRCompat A P Q bin_op null_op grd_mul grd_act_r;
   zero_grd_act_r_is_grd_two_r_unl :>
     @IsTwoGrdRUnl A P Q bin_op null_op grd_act_r grd_one;
-  add_grd_act_r_is_grd_two_r_distr :>
-    @IsTwoGrdRRDistr A P Q bin_op null_op Q_has_add grd_act_r;
+  add_grd_act_r_is_grd_two_distr_r :>
+    @IsTwoGrdRDistrR A P Q bin_op null_op Q_has_add grd_act_r;
 }.

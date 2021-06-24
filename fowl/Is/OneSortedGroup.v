@@ -2,7 +2,7 @@ From Maniunfold.Has Require Export
   BinaryOperation NullaryOperation
   UnaryOperation.
 From Maniunfold.Is Require Export
-  OneSortedMonoid OneSortedInvertible
+  Monoid OneSortedInvertible
   OneSortedCancellative OneSortedUnaryAntidistributive Injective
   OneSortedInvolutive OneSortedUnaryAbsorbing.
 From Maniunfold.ShouldHave Require Import

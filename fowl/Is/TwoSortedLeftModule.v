@@ -17,8 +17,8 @@ Class IsLMod (A B : Type)
   `(HasActL A B) : Prop := {
   A_add_zero_neg_mul_one_is_ring :> IsRing add zero neg mul one;
   B_add_zero_neg_is_ab_grp :> IsAbGrp add zero neg;
-  A_B_add_add_act_l_is_two_l_r_distr :> IsTwoLRDistr add add act_l;
+  A_B_add_add_act_l_is_two_l_distr_r :> IsTwoLDistrR add add act_l;
   A_B_mul_act_l_is_l_compat :> IsLCompat mul act_l;
   A_B_zero_act_l_is_two_l_unl :> IsTwoLUnl act_l zero;
-  A_B_add_act_l_is_two_l_l_distr :> IsTwoLLDistr add act_l;
+  A_B_add_act_l_is_two_l_distr_l :> IsTwoLDistrL add act_l;
 }.

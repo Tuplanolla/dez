@@ -5,7 +5,7 @@ From Maniunfold Require Export
 From Maniunfold.Has Require Export
   Addition Zero Multiplication One.
 From Maniunfold.Is Require Export
-  Commutative OneSortedMonoid OneSortedDistributive
+  Commutative Monoid Distributive
   OneSortedAbsorbing.
 From Maniunfold.ShouldHave Require Import
   OneSortedArithmeticNotations.
@@ -16,7 +16,7 @@ Class IsSemiring (A : Type)
   add_zero_is_mon :> IsMon zero add;
   mul_one_is_mon :> IsMon one mul;
   add_is_comm :> IsComm add;
-  add_mul_is_distr :> IsDistr add mul;
+  add_mul_is_distr :> IsDistr mul add;
   zero_mul_is_absorb :> IsAbsorb zero mul;
 }.
 

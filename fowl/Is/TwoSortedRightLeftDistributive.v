@@ -7,7 +7,7 @@ From Maniunfold.ShouldHave Require Import
 Local Open Scope ring_scope.
 Local Open Scope r_mod_scope.
 
-Class IsTwoRLDistr (A B : Type)
+Class IsTwoRDistrL (A B : Type)
   `(HasAdd A) `(HasAdd B)
   `(HasActR A B) : Prop :=
-  two_r_l_distr : forall (a b : A) (x : B), x * (a + b) = x * a + x * b.
+  two_r_distr_l : forall (a b : A) (x : B), x * (a + b) = x * a + x * b.

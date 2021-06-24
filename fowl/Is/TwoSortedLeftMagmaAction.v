@@ -2,7 +2,7 @@
 From Maniunfold.Has Require Export
   BinaryOperation Action.
 From Maniunfold.Is Require Export
-  OneSortedMagma.
+  Magma.
 
 Class IsLMagAct (A B : Type)
   `(HasBinOp A) `(HasActL A B) : Prop := {

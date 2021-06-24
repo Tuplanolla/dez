@@ -7,7 +7,7 @@ From Maniunfold.Is Require Export
 From Maniunfold.ShouldHave Require Import
   AdditiveNotations.
 
-Class IsIdemElem (A : Type) (Hk : HasBinOp A) (x : A) : Prop :=
+Class IsIdemElem (A : Type) (x : A) (Hk : HasBinOp A) : Prop :=
   idem_elem : x + x = x.
 
 Class IsIdemBinOp (A : Type) (Hk : HasBinOp A) : Prop :=
@@ -19,7 +19,7 @@ Context (A : Type) (Hk : HasBinOp A) `(!IsIdemBinOp _+_).
 
 (** For an idempotent binary operation, every element is idempotent. *)
 
-#[local] Instance is_idem_elem (x : A) : IsIdemElem _+_ x.
+#[local] Instance is_idem_elem (x : A) : IsIdemElem x _+_.
 Proof. apply idem_bin_op. Qed.
 
 End Context.
@@ -35,7 +35,7 @@ Context `(IsFunExt) (A : Type) (f : A -> A) `(!IsIdemFn f).
 
 (** Idempotent functions are idempotent elements of the endofunction monoid. *)
 
-#[local] Instance compose_is_idem_elem : IsIdemElem _o_ f.
+#[local] Instance compose_is_idem_elem : IsIdemElem f _o_.
 Proof.
   apply fun_ext.
   intros x.

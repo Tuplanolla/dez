@@ -2,7 +2,7 @@
 From Maniunfold.Has Require Export
   BinaryOperation Action.
 From Maniunfold.Is Require Export
-  OneSortedSemigroup TwoSortedLeftMagmaAction TwoSortedLeftCompatible.
+  Semigroup TwoSortedLeftMagmaAction TwoSortedLeftCompatible.
 
 Class IsLSemigrpAct (A B : Type)
   `(HasBinOp A) `(HasActL A B) : Prop := {

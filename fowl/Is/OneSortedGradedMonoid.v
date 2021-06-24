@@ -2,7 +2,7 @@ From Maniunfold.Has Require Export
   BinaryOperation NullaryOperation
   GradedBinaryOperation GradedNullaryOperation.
 From Maniunfold.Is Require Export
-  OneSortedMonoid OneSortedGradedSemigroup OneSortedGradedUnital.
+  Monoid OneSortedGradedSemigroup OneSortedGradedUnital.
 
 Class IsGrdMon (A : Type) (P : A -> Type)
   `(HasBinOp A) `(HasNullOp A)

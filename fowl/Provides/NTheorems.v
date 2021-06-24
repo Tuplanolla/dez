@@ -5,8 +5,8 @@ From Coq Require Import
 From Maniunfold Require Import
   DatatypeTactics RewritingTactics.
 From Maniunfold.Is Require Export
-  OneSortedAbelianGroup OneSortedSemigroup
-  OneSortedMonoid OneSortedSemiring
+  OneSortedAbelianGroup Semigroup
+  Monoid OneSortedSemiring
   OneSortedCommutativeSemigroup OneSortedCommutativeMonoid
   OneSortedCommutativeSemiring.
 From Maniunfold.Provides Require Import
@@ -667,7 +667,7 @@ Proof. intros x. apply N.add_0_l. Defined.
 Global Instance N_bin_op_null_op_is_r_unl : IsRUnl (bin_op (A := N)) null_op.
 Proof. intros x. apply N.add_0_r. Defined.
 
-Global Instance N_bin_op_null_op_is_unl : IsUnl (bin_op (A := N)) null_op.
+Global Instance N_bin_op_null_op_is_unl : IsUnl null_op (bin_op (A := N)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance N_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := N)).
@@ -706,7 +706,7 @@ Proof. intros x. apply N.mul_1_l. Defined.
 Global Instance N_bin_op_null_op_is_r_unl : IsRUnl (bin_op (A := N)) null_op.
 Proof. intros x. apply N.mul_1_r. Defined.
 
-Global Instance N_bin_op_null_op_is_unl : IsUnl (bin_op (A := N)) null_op.
+Global Instance N_bin_op_null_op_is_unl : IsUnl null_op (bin_op (A := N)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance N_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := N)).
@@ -727,13 +727,13 @@ Global Instance N_has_one : HasOne N := N.one.
 Global Instance N_add_is_comm : IsComm add.
 Proof. intros x y. apply N.add_comm. Defined.
 
-Global Instance N_add_mul_is_l_distr : IsLDistr add mul.
+Global Instance N_add_mul_is_distr_l : IsDistrL mul add.
 Proof. intros x y z. apply N.mul_add_distr_l. Defined.
 
-Global Instance N_add_mul_is_r_distr : IsRDistr add mul.
+Global Instance N_add_mul_is_distr_r : IsDistrR mul add.
 Proof. intros x y z. apply N.mul_add_distr_r. Defined.
 
-Global Instance N_add_mul_is_distr : IsDistr add mul.
+Global Instance N_add_mul_is_distr : IsDistr mul add.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance N_zero_mul_is_l_absorb : IsLAbsorb zero mul.

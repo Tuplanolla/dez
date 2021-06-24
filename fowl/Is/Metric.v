@@ -3,7 +3,7 @@
 From Maniunfold.Has Require Export
   NullaryOperation BinaryOperation OrderRelations Distance.
 From Maniunfold.Is Require Export
-  TotalOrder Bounded OneSortedMonoid Commutative.
+  TotalOrder Bounded Monoid Commutative.
 From Maniunfold.ShouldHave Require Import
   OrderRelationNotations AdditiveNotations.
 
