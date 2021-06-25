@@ -1,7 +1,7 @@
 From Coq Require Import
   Lia Lists.List NArith.NArith Bool.Sumbool.
 From Maniunfold.Is Require Export
-  Fixed Monotonic Comonotonic Inverse.
+  Fixed Monotonic Comonotonic Isomorphism.
 From Maniunfold.Provides Require Export
   NTheorems OptionTheorems PositiveTheorems ProductTheorems.
 
@@ -270,8 +270,8 @@ End PartRetrFromPartRetr'.
 (** In the whole codomain of the miff,
     the pseudoinverse behaves like a bound. *)
 
-Notation IsSectMiffRoundDown g := (IsInvL miff g).
-Notation sect_miff_round_down := (inv_l : IsSectMiffRoundDown _).
+Notation IsSectMiffRoundDown g := (IsIsoL miff g).
+Notation sect_miff_round_down := (iso_l : IsSectMiffRoundDown _).
 
 Section Context.
 

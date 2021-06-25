@@ -36,9 +36,9 @@ digraph Is {
   IsInflateBinOpL [label = "\N\ninflate_bin_op_l (x y : A) : y <= x + y"]
   IsInflateBinOpR [label = "\N\ninflate_bin_op_r (x y : A) : x <= x + y"]
   IsInj [label = "\N\ninj (x y : A) (a : f x = f y) : x = y"]
-  IsInvL [label = "\N\ninv_l (a : A) : g (f a) = a"]
+  IsIsoL [label = "\N\ninv_l (a : A) : g (f a) = a"]
   IsInvLR [label = "\N"]
-  IsInvR [label = "\N\ninv_r (b : B) : f (g b) = b"]
+  IsIsoR [label = "\N\ninv_r (b : B) : f (g b) = b"]
   IsIrrefl [label = "\N\nirrefl (x : A) : ~ (x ~ x)"]
   IsIso [label = "\N"]
   IsLowerBnd [label = "\N\nlower_bnd (y : A) : x <= y"]
@@ -81,10 +81,8 @@ digraph Is {
   IsApart -> IsSym
   IsDistrLR -> IsDistrL
   IsDistrLR -> IsDistrR
-  IsInvLR -> IsInvL
-  IsInvLR -> IsInvR
-  IsIso -> IsInvL
-  IsIso -> IsInvR
+  IsIso -> IsIsoL
+  IsIso -> IsIsoR
   IsMon -> IsSemigrp
   IsMon -> IsUnlBinOpLR
   IsSemigrp -> IsAssoc
@@ -124,8 +122,8 @@ digraph Is {
   IsContr -> IsTrunc
   IsFunExtDep -> IsFunExt
   IsIdemBinOp -> IsIdemElem
-  IsInvL -> IsInvR
-  IsInvR -> IsInvL
+  IsIsoL -> IsIsoR
+  IsIsoR -> IsIsoL
   IsMono -> IsStrMono
   IsMonoBinOp -> IsMonoBinOpL
   IsMonoBinOp -> IsMonoBinOpR
