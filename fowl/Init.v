@@ -162,10 +162,10 @@ Reserved Notation "'{' a ':' A '$' B '}'" (at level 0, a at level 99).
 
 Reserved Notation "R '==>' S" (right associativity, at level 55).
 Reserved Notation "R '-->' S" (right associativity, at level 55).
-Reserved Notation "R '<==' S" (right associativity, at level 55).
-Reserved Notation "R '<--' S" (right associativity, at level 55).
-Reserved Notation "R '<==>' S" (right associativity, at level 55).
-Reserved Notation "R '<-->' S" (right associativity, at level 55).
+Reserved Notation "R '<==' S" (left associativity, at level 45).
+Reserved Notation "R '<--' S" (left associativity, at level 45).
+Reserved Notation "R '<==>' S" (no associativity, at level 50).
+Reserved Notation "R '<-->' S" (no associativity, at level 50).
 
 Reserved Notation "x '==' y" (no associativity, at level 70).
 Reserved Notation "x '===' y" (no associativity, at level 70).
@@ -822,6 +822,27 @@ Lemma birespectful_nondep (A B C : Type)
   birespectful_hetero (const (const R)) (const (const R')) f g =
   birespectful R R' f g.
 Proof. reflexivity. Qed.
+
+(** There is a problem with the dual here.
+
+<<
+Import Z. Open Scope Z_scope.
+
+Eval unfold Proper, "==>" in Proper (le ==> le) opp.
+Eval unfold Proper, "<==" in Proper (le <== le) opp.
+Eval unfold Proper, "==>" in Proper (le ==> le ==> le) add.
+Eval unfold Proper, "<==" in Proper (le <== le <== le) add.
+
+(** This is expected. *)
+Check forall x0 y0 x1 y1, x0 <= y0 /\ x1 <= y1 -> x0 + x1 <= y0 + y1.
+(** This is actual, but equivalent to expected. *)
+Check forall x0 y0, x0 <= y0 -> forall x1 y1, x1 <= y1 -> x0 + x1 <= y0 + y1.
+(** This is expected. *)
+Check forall x0 y0 x1 y1, x0 + x1 <= y0 + y1 -> x0 <= y0 \/ x1 <= y1.
+(** This is actual and not equivalent to expected. *)
+Check forall x0 y0, (forall x1 y1, x0 + x1 <= y0 + y1 -> x1 <= y1) -> x0 <= y0.
+>>
+*)
 
 (** ** Currying and Uncurrying *)
 
