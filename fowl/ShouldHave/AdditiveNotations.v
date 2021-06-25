@@ -36,9 +36,9 @@ Delimit Scope torsion_scope with tor.
 #[global] Open Scope torsion_scope.
 
 Notation "'_-<_'" := tor_l : torsion_scope.
-Notation "a '-<' x" := (tor_l a x) : torsion_scope.
+Notation "y '-<' x" := (tor_l x y) : torsion_scope.
 Notation "'_>-_'" := tor_r : torsion_scope.
-Notation "x '>-' a" := (tor_r x a) : torsion_scope.
+Notation "y '>-' x" := (tor_r x y) : torsion_scope.
 
 Declare Scope left_action_scope.
 Delimit Scope left_action_scope with act_l.

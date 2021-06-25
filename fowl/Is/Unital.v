@@ -10,16 +10,28 @@ From Maniunfold.ShouldHave Require Import
 Class IsUnlBinOpL (A : Type) (Hx : HasNullOp A) (Hk : HasBinOp A) : Prop :=
   unl_bin_op_l (x : A) : 1 * x = x.
 
+Section Context.
+
+#[local] Open Scope left_action_scope.
+
 Class IsUnlActL (A B : Type) (Hx : HasNullOp A) (Hl : HasActL A B) : Prop :=
-  unl_act_l (x : B) : 1 *< x = x.
+  unl_act_l (x : B) : 1 * x = x.
+
+End Context.
 
 (** This has the same shape as [add_0_r]. *)
 
 Class IsUnlBinOpR (A : Type) (Hx : HasNullOp A) (Hk : HasBinOp A) : Prop :=
   unl_bin_op_r (x : A) : x * 1 = x.
 
+Section Context.
+
+#[local] Open Scope right_action_scope.
+
 Class IsUnlActR (A B : Type) (Hx : HasNullOp A) (Hr : HasActR A B) : Prop :=
-  unl_act_r (x : B) : x >* 1 = x.
+  unl_act_r (x : B) : x * 1 = x.
+
+End Context.
 
 Class IsUnlBinOpLR (A : Type) (Hx : HasNullOp A) (Hk : HasBinOp A) : Prop := {
   is_unl_bin_op_l :> IsUnlBinOpL 1 _*_;

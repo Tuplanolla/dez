@@ -62,9 +62,9 @@ digraph Is {
   IsTotOrd [label = "\N"]
   IsTrans [label = "\N\ntrans (x y z : A) (a : x ~ y) (b : y ~ z) : x ~ z"]
   IsTrunc [label = "\N\ntrunc_zero (A : Type) : IsTrunc O A\ntrunc_succ (n : nat) (A : Type) : IsTrunc (S n) A"]
-  IsUnlActL [label = "\N\nunl_act_l (x : B) : 1 *< x = x"]
+  IsUnlActL [label = "\N\nunl_act_l (x : B) : 1 * x = x"]
   IsUnlActLR [label = "\N"]
-  IsUnlActR [label = "\N\nunl_act_r (x : B) : x >* 1 = x"]
+  IsUnlActR [label = "\N\nunl_act_r (x : B) : x * 1 = x"]
   IsUnlBinOpL [label = "\N\nunl_bin_op_l (x : A) : 1 * x = x"]
   IsUnlBinOpLR [label = "\N"]
   IsUnlBinOpR [label = "\N\nunl_bin_op_r (x : A) : x * 1 = x"]
@@ -85,6 +85,10 @@ digraph Is {
   IsInvLR -> IsInvR
   IsIso -> IsInvL
   IsIso -> IsInvR
+  IsMon -> IsSemigrp
+  IsMon -> IsUnlBinOpLR
+  IsSemigrp -> IsAssoc
+  IsSemigrp -> IsMag
   IsTotOrd -> IsConnex
   IsTotOrd -> IsPartOrd
   IsTotOrd -> IsPreord
@@ -122,15 +126,11 @@ digraph Is {
   IsIdemBinOp -> IsIdemElem
   IsInvL -> IsInvR
   IsInvR -> IsInvL
-  IsMon -> IsSemigrp
-  IsMon -> IsUnlBinOpLR
   IsMono -> IsStrMono
   IsMonoBinOp -> IsMonoBinOpL
   IsMonoBinOp -> IsMonoBinOpR
   IsProp -> IsSet
   IsProp -> IsTrunc
-  IsSemigrp -> IsAssoc
-  IsSemigrp -> IsMag
   IsSet -> IsTrunc
   IsStrMono -> IsMono
   IsTotOrd -> IsRefl

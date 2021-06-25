@@ -14,7 +14,7 @@ Section Context.
 
 Context (A : Type).
 
-(** Binary operation is a homogeneous action. *)
+(** Homogeneous action is a binary operation. *)
 
 #[local] Instance act_l_has_bin_op (Hl : HasActL A A) : HasBinOp A := act_l.
 #[local] Instance act_r_has_bin_op (Hr : HasActR A A) : HasBinOp A := act_r.
