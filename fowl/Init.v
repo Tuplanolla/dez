@@ -823,6 +823,66 @@ Lemma birespectful_nondep (A B C : Type)
   birespectful R R' f g.
 Proof. reflexivity. Qed.
 
+Import Z. Open Scope Z_scope.
+
+Eval unfold Proper, "==>" in Proper (le ==> le) opp.
+Eval unfold Proper, "<==" in Proper (le <== le) opp.
+Eval unfold Proper, "==>" in Proper (le ==> le ==> le) add.
+Eval unfold Proper, "<==" in Proper (le <== le <== le) add.
+
+Equations respectful_fix_subtype (A B : Type) (n : nat) : Type :=
+  respectful_fix_subtype A B O := A -> B;
+  respectful_fix_subtype A B (S p) := A -> respectful_fix_subtype A B p.
+
+Compute respectful_fix_subtype N Z 0.
+Compute respectful_fix_subtype N Z 1.
+Compute respectful_fix_subtype N Z 2.
+Compute respectful_fix_subtype N Z (S ?[n]).
+
+Equations respectful_fix_type (A B : Type) (n : nat) : Type :=
+  respectful_fix_type A B n := relation (respectful_fix_subtype A B n).
+
+Compute respectful_fix_type N Z 0.
+Compute respectful_fix_type N Z 1.
+Compute respectful_fix_type N Z 2.
+Compute respectful_fix_type N Z (S ?[n]).
+
+Check le ==> (le ==> le) = @respectful Z (Z -> Z) le (@respectful Z Z le le).
+
+Equations respectful_fix (A B : Type)
+  (n : nat) (c : Prop -> Prop) (c' : Prop -> Prop)
+  (R : relation A) (R' : relation B) : respectful_fix_type A B n by struct n :=
+  respectful_fix O c c' R R' :=
+    fun f g : A -> B =>
+    forall x y : A, c (R x y) -> c' (R' (f x) (g y));
+  respectful_fix (S p) c c' R R' :=
+    fun f g : respectful_fix_subtype A B (S p) =>
+    forall x y : A, respectful_fix p
+    (fun a : Prop => c (R x y /\ a))
+    (fun a : Prop => c' a)
+    R R' (f x) (g y).
+
+Eval cbv -[opp le] in respectful_fix 0 id id le le opp opp.
+Eval cbv -[add le] in respectful_fix 1 id id le le add add.
+Eval cbv -[const add le] in respectful_fix 2 id id le le (const add) (const add).
+
+Equations corespectful_fix (A B : Type)
+  (n : nat) (c : Prop -> Prop) (c' : Prop -> Prop)
+  (R : relation B) (R' : relation A) : respectful_fix_type A B n by struct n :=
+  corespectful_fix O c c' R R' :=
+    fun f g : A -> B =>
+    forall x y : A, c (R (f x) (g y)) -> c' (R' x y);
+  corespectful_fix (S p) c c' R R' :=
+    fun f g : respectful_fix_subtype A B (S p) =>
+    forall x y : A, corespectful_fix p
+    (fun a : Prop => c a)
+    (fun a : Prop => c' (R' x y \/ a))
+    R R' (f x) (g y).
+
+Eval cbv -[opp le] in corespectful_fix 0 id id le le opp opp.
+Eval cbv -[add le] in corespectful_fix 1 id id le le add add.
+Eval cbv -[const add le] in corespectful_fix 2 id id le le (const add) (const add).
+
 (** There is a problem with the dual here.
 
 <<
@@ -841,6 +901,21 @@ Check forall x0 y0, x0 <= y0 -> forall x1 y1, x1 <= y1 -> x0 + x1 <= y0 + y1.
 Check forall x0 y0 x1 y1, x0 + x1 <= y0 + y1 -> x0 <= y0 \/ x1 <= y1.
 (** This is actual and not equivalent to expected. *)
 Check forall x0 y0, (forall x1 y1, x0 + x1 <= y0 + y1 -> x1 <= y1) -> x0 <= y0.
+
+f <= f
+forall x0 y0, x0 <= y0 -> f x0 <= f y0
+forall x0 y0, x0 <= y0 -> forall x1 y1, x1 <= y1 -> f x0 x1 <= f y0 y1
+forall x0 y0, x0 <= y0 -> forall x1 y1, x1 <= y1 -> forall x2 y2, x2 <= y2 -> f x0 x1 x2 <= f y0 y1 y2
+
+f <= f
+forall x0 y0, x0 <= y0 -> f x0 <= f y0
+forall x0 y0 x1 y1, x0 <= y0 /\ x1 <= y1 -> f x0 x1 <= f y0 y1
+forall x0 y0 x1 y1 x2 y2, x0 <= y0 /\ x1 <= y1 /\ x2 <= y2 -> f x0 x1 x2 <= f y0 y1 y2
+
+f <= f
+forall x0 y0, f x0 <= f y0 -> x0 <= y0
+forall x0 y0 x1 y1, f x0 x1 <= f y0 y1 -> x0 <= y0 \/ x1 <= y1
+forall x0 y0 x1 y1 x2 y2, f x0 x1 x2 <= f y0 y1 y2 -> x0 <= y0 \/ x1 <= y1 \/ x2 <= y2
 >>
 *)
 
