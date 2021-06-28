@@ -830,8 +830,28 @@ Eval unfold Proper, "<==" in Proper (le <== le) opp.
 Eval unfold Proper, "==>" in Proper (le ==> le ==> le) add.
 Eval unfold Proper, "<==" in Proper (le <== le <== le) add.
 
+Check le ==> (le ==> le) = @respectful Z (Z -> Z) le (@respectful Z Z le le).
+
+Lemma and_True_l (A : Prop) : 1 /\ A <-> A.
+Proof. intuition. Qed.
+
+Lemma and_True_r (A : Prop) : A /\ 1 <-> A.
+Proof. intuition. Qed.
+
+Lemma or_True_l (A : Prop) : 0 \/ A <-> A.
+Proof. intuition. Qed.
+
+Lemma or_True_r (A : Prop) : A \/ 0 <-> A.
+Proof. intuition. Qed.
+
+Lemma and_or_distr_l (A B C : Prop) : A /\ (B \/ C) <-> A /\ B \/ A /\ C.
+Proof. intuition. Qed.
+
+Lemma and_or_distr_r (A B C : Prop) : (A \/ B) /\ C <-> A /\ C \/ B /\ C.
+Proof. intuition. Qed.
+
 Equations respectful_fix_subtype (A B : Type) (n : nat) : Type :=
-  respectful_fix_subtype A B O := A -> B;
+  respectful_fix_subtype A B O := B;
   respectful_fix_subtype A B (S p) := A -> respectful_fix_subtype A B p.
 
 Compute respectful_fix_subtype N Z 0.
@@ -839,49 +859,36 @@ Compute respectful_fix_subtype N Z 1.
 Compute respectful_fix_subtype N Z 2.
 Compute respectful_fix_subtype N Z (S ?[n]).
 
-Equations respectful_fix_type (A B : Type) (n : nat) : Type :=
-  respectful_fix_type A B n := relation (respectful_fix_subtype A B n).
-
-Compute respectful_fix_type N Z 0.
-Compute respectful_fix_type N Z 1.
-Compute respectful_fix_type N Z 2.
-Compute respectful_fix_type N Z (S ?[n]).
-
-Check le ==> (le ==> le) = @respectful Z (Z -> Z) le (@respectful Z Z le le).
-
-Equations respectful_fix (A B : Type)
-  (n : nat) (c : Prop -> Prop) (c' : Prop -> Prop)
-  (R : relation A) (R' : relation B) : respectful_fix_type A B n by struct n :=
-  respectful_fix O c c' R R' :=
-    fun f g : A -> B =>
-    forall x y : A, c (R x y) -> c' (R' (f x) (g y));
-  respectful_fix (S p) c c' R R' :=
+Equations respectful_fix (A B : Type) (c : Prop -> Prop)
+  (n : nat) (R : relation A) (R' : relation B) :
+  relation (respectful_fix_subtype A B n) by struct n :=
+  respectful_fix c O R R' :=
+    fun f g : respectful_fix_subtype A B O => c True -> R' f g;
+  respectful_fix c (S p) R R' :=
     fun f g : respectful_fix_subtype A B (S p) =>
-    forall x y : A, respectful_fix p
-    (fun a : Prop => c (R x y /\ a))
-    (fun a : Prop => c' a)
-    R R' (f x) (g y).
+    forall x y : A, respectful_fix (fun C : Prop => c (R x y /\ C))
+    p R R' (f x) (g y).
 
-Eval cbv -[opp le] in respectful_fix 0 id id le le opp opp.
-Eval cbv -[add le] in respectful_fix 1 id id le le add add.
-Eval cbv -[const add le] in respectful_fix 2 id id le le (const add) (const add).
+Eval cbv -[one le] in respectful_fix id 0 le le one one.
+Eval cbv -[opp le] in respectful_fix id 1 le le opp opp.
+Eval cbv -[add le] in respectful_fix id 2 le le add add.
+Eval cbv -[const add le] in respectful_fix id 3 le le (const add) (const add).
 
-Equations corespectful_fix (A B : Type)
-  (n : nat) (c : Prop -> Prop) (c' : Prop -> Prop)
-  (R : relation B) (R' : relation A) : respectful_fix_type A B n by struct n :=
-  corespectful_fix O c c' R R' :=
-    fun f g : A -> B =>
-    forall x y : A, c (R (f x) (g y)) -> c' (R' x y);
-  corespectful_fix (S p) c c' R R' :=
+Equations corespectful_fix (A B : Type) (c : Prop -> Prop)
+  (n : nat) (R : relation B) (R' : relation A) :
+  relation (respectful_fix_subtype A B n) by struct n :=
+  corespectful_fix c O R R' :=
+    fun f g : respectful_fix_subtype A B O => R f g -> c False;
+  corespectful_fix c (S p) R R' :=
     fun f g : respectful_fix_subtype A B (S p) =>
-    forall x y : A, corespectful_fix p
-    (fun a : Prop => c a)
-    (fun a : Prop => c' (R' x y \/ a))
-    R R' (f x) (g y).
+    forall x y : A, corespectful_fix
+    (fun C : Prop => c (R' x y \/ C))
+    p R R' (f x) (g y).
 
-Eval cbv -[opp le] in corespectful_fix 0 id id le le opp opp.
-Eval cbv -[add le] in corespectful_fix 1 id id le le add add.
-Eval cbv -[const add le] in corespectful_fix 2 id id le le (const add) (const add).
+Eval cbv -[one le] in corespectful_fix id 0 le le one one.
+Eval cbv -[opp le] in corespectful_fix id 1 le le opp opp.
+Eval cbv -[add le] in corespectful_fix id 2 le le add add.
+Eval cbv -[const add le] in corespectful_fix id 3 le le (const add) (const add).
 
 (** There is a problem with the dual here.
 
