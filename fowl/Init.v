@@ -421,11 +421,6 @@ Arguments option_map {_ _} _ !_.
 
 Notation "'_+_'" := sum : type_scope.
 Notation "A '+' B" := (sum A B) : type_scope.
-
-Equations out (A : Type) (x : A + A) : A :=
-  out (inl a) := a;
-  out (inr a) := a.
-
 Notation "'_*_'" := prod : type_scope.
 Notation "A '*' B" := (prod A B) : type_scope.
 
@@ -830,6 +825,14 @@ Proof. reflexivity. Qed.
 
 (** Indexed respectful setoid morphisms... *)
 
+Equations out (A : Type) (x : A + A) : A :=
+  out (inl a) := a;
+  out (inr a) := a.
+
+Equations default (A : Type) (a : A) (x : option A) : A :=
+  default a (Some b) := b;
+  default a None := a.
+
 Equations grespectful_type (A B : Type) (n : nat) : Type :=
   grespectful_type A B O := B;
   grespectful_type A B (S p) := A -> grespectful_type A B p.
@@ -852,6 +855,19 @@ Equations grespectful1 (A B : Type)
 
 (** Uncurried, more elaborate version that does not produce [_ /\ 1]. *)
 
+Fail Fail Equations grespectful_fix (A B : Type) (P : option Prop -> Prop)
+  (l : list (relation A)) (R : relation B) :
+  relation (grespectful_type A B (length l)) by struct l :=
+  grespectful_fix P [] R :=
+    fun f g : grespectful_type A B _ => P None -> R f g;
+  grespectful_fix P (R' :: l') R :=
+    fun f g : grespectful_type A B _ => forall x y : A,
+    grespectful_fix (fun X : option Prop =>
+    match X with
+    | Some C => P (Some (R' x y /\ C))
+    | None => P (Some (R' x y))
+    end) l' R (f x) (g y).
+
 Equations grespectful_fix (A B : Type) (P : Prop + Prop -> Prop)
   (l : list (relation A)) (R : relation B) :
   relation (grespectful_type A B (length l)) by struct l :=
@@ -869,6 +885,19 @@ Equations grespectful (A B : Type)
   (l : list (relation A)) (R : relation B) :
   relation (grespectful_type A B (length l)) :=
   grespectful l R := grespectful_fix out l R.
+
+Section Suffering.
+
+Import Z. Open Scope Z_scope.
+
+Eval cbv -[not le zero opp add const] in grespectful1 [] le one one.
+Eval cbv -[not le zero opp add const] in grespectful [] le one one.
+Eval cbv -[not le zero opp add const] in grespectful1 [le] le opp opp.
+Eval cbv -[not le zero opp add const] in grespectful [le] le opp opp.
+Eval cbv -[not le zero opp add const] in grespectful1 [le; le] le add add.
+Eval cbv -[not le zero opp add const] in grespectful [le; le] le add add.
+
+End Suffering.
 
 (** The elaboration changes nothing. *)
 
@@ -987,23 +1016,53 @@ Equations gdisrespectful1 (A B : Type)
 
 (** Uncurried, more elaborate version that does not produce [_ \/ 0]. *)
 
+Fail Fail Equations gdisrespectful_fix (A B : Type) (P : option Prop -> Prop)
+  (R : relation B) (l : list (relation A)) :
+  relation (grespectful_type A B (length l)) by struct l :=
+  gdisrespectful_fix P R [] :=
+    fun f g : grespectful_type A B _ => R f g -> P None;
+  gdisrespectful_fix P R (R' :: l') :=
+    fun f g : grespectful_type A B _ => forall x y : A,
+    gdisrespectful_fix (fun X : option Prop =>
+    match X with
+    | Some C => P (Some (R' x y \/ C))
+    | None => P (Some (R' x y))
+    end) R l' (f x) (g y).
+
 Equations gdisrespectful_fix (A B : Type) (P : Prop + Prop -> Prop)
   (R : relation B) (l : list (relation A)) :
   relation (grespectful_type A B (length l)) by struct l :=
   gdisrespectful_fix P R [] :=
-    fun f g : grespectful_type A B _ => P (inl (R f g));
+    fun f g : grespectful_type A B _ => P (inr (R f g));
   gdisrespectful_fix P R (R' :: l') :=
     fun f g : grespectful_type A B _ => forall x y : A,
     gdisrespectful_fix (fun X : Prop + Prop =>
     match X with
-    | inl C => C -> P (inr (R' x y))
-    | inr C => P (inr (R' x y \/ C))
+    | inl C => P (inl (R' x y \/ C))
+    | inr C => C -> P (inl (R' x y))
     end) R l' (f x) (g y).
 
 Equations gdisrespectful (A B : Type)
   (R : relation B) (l : list (relation A)) :
   relation (grespectful_type A B (length l)) :=
-  gdisrespectful R l := gdisrespectful_fix out R l.
+  gdisrespectful R l := gdisrespectful_fix (fun X : Prop + Prop =>
+    match X with
+    | inl C => C
+    | inr C => C -> 0
+    end) R l.
+
+Section Suffering.
+
+Import Z. Open Scope Z_scope.
+
+Eval cbv -[not le zero opp add const] in gdisrespectful1 le [] one one.
+Eval cbv -[not le zero opp add const] in gdisrespectful le [] one one.
+Eval cbv -[not le zero opp add const] in gdisrespectful1 le [le] opp opp.
+Eval cbv -[not le zero opp add const] in gdisrespectful le [le] opp opp.
+Eval cbv -[not le zero opp add const] in gdisrespectful1 le [le; le] add add.
+Eval cbv -[not le zero opp add const] in gdisrespectful le [le; le] add add.
+
+End Suffering.
 
 Lemma iff_gdisrespectful1_gdisrespectful (A B : Type)
   (R : relation B) (l : list (relation A))
@@ -1018,7 +1077,7 @@ Equations gdisrespectful_fix' (A B : Type) (P : Prop -> Prop)
   (R : relation B) (l : list (relation A)) :
   relation (grespectful_type A B (length l)) by struct l :=
   gdisrespectful_fix' P R [] :=
-    fun f g : grespectful_type A B _ => R f g -> P 0;
+    fun f g : grespectful_type A B _ => P (~ R f g);
   gdisrespectful_fix' P R (R' :: l') :=
     fun f g : grespectful_type A B _ => forall x y : A,
     gdisrespectful_fix' (fun C : Prop => P (~ R' x y -> C)) R l' (f x) (g y).
@@ -1077,20 +1136,37 @@ Proof.
   split; intros C.
   - revert R' R f g C. induction l as [| R'' l' Ci]; intros R' R f g C.
     + hnf. intros x y. hnf. unfold "id". specialize (C x y). intuition.
-    + (** This might go, although it may require decidability. *) Admitted.
+    (** This might go, although it may require decidability. *) Admitted.
 
 Section Suffering.
 
-Import Z.
+Import Z. Open Scope Z_scope.
+
+Eval cbv -[le zero opp add const] in grespectful1 [] le one one.
+Eval cbv -[le zero opp add const] in grespectful [] le one one.
+Eval cbv -[le zero opp add const] in grespectful' [] le one one.
+Eval cbv -[le zero opp add const] in le one one.
+Eval cbv -[le zero opp add const] in grespectful1 [le] le opp opp.
+Eval cbv -[le zero opp add const] in grespectful [le] le opp opp.
+Eval cbv -[le zero opp add const] in grespectful' [le] le opp opp.
+Eval cbv -[le zero opp add const] in (le ==> le) opp opp.
+Eval cbv -[le zero opp add const] in grespectful1 [le; le] le add add.
+Eval cbv -[le zero opp add const] in grespectful [le; le] le add add.
+Eval cbv -[le zero opp add const] in grespectful' [le; le] le add add.
+Eval cbv -[le zero opp add const] in (le ==> le ==> le) add add.
+
 Eval cbv -[le zero opp add const] in gdisrespectful1 le [] one one.
 Eval cbv -[le zero opp add const] in gdisrespectful le [] one one.
 Eval cbv -[le zero opp add const] in gdisrespectful' le [] one one.
+Eval cbv -[le zero opp add const] in complement le one one.
 Eval cbv -[le zero opp add const] in gdisrespectful1 le [le] opp opp.
 Eval cbv -[le zero opp add const] in gdisrespectful le [le] opp opp.
 Eval cbv -[le zero opp add const] in gdisrespectful' le [le] opp opp.
+Eval cbv -[le zero opp add const] in (complement le ==> complement le) opp opp.
 Eval cbv -[le zero opp add const] in gdisrespectful1 le [le; le] add add.
 Eval cbv -[le zero opp add const] in gdisrespectful le [le; le] add add.
 Eval cbv -[le zero opp add const] in gdisrespectful' le [le; le] add add.
+Eval cbv -[le zero opp add const] in (complement le ==> complement le ==> complement le) add add.
 
 End Suffering.
 
@@ -1098,22 +1174,7 @@ Equations disrespectful_ (A B : Type)
   (R : relation B) (R' : relation A) : relation (A -> B) :=
   disrespectful_ R R' := flip respectful (complement R) (complement R').
 
-(** Things work as follows.
-
-<<
-Import Z. Open Scope Z_scope.
-
-Eval cbv -[le zero opp add const] in Proper le zero.
-Eval cbv -[le zero opp add const] in Proper (complement le) zero.
-Eval cbv -[le zero opp add const] in Proper (le ==> le) opp.
-Eval cbv -[le zero opp add const] in Proper (complement le ==> complement le) opp.
-Eval cbv -[le zero opp add const] in Proper (le ==> le ==> le) add.
-Eval cbv -[le zero opp add const] in Proper (complement le ==> complement le ==> complement le) add.
->>
-
-    Duality and its relation to decidability and
-    univalence is still slightly mystifying.
-*)
+(** End of digression. *)
 
 Lemma and_True_l (A : Prop) : 1 /\ A <-> A.
 Proof. intuition. Qed.
