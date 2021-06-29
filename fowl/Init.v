@@ -226,8 +226,8 @@ End Hexadecimal.
 (** We would rather not touch primitive integers,
     because they are strange and fragile. *)
 
-Notation "'0'" := On : int31_scope.
-Notation "'1'" := In : int31_scope.
+Notation "'0'" := Int31.On : int31_scope.
+Notation "'1'" := Int31.In : int31_scope.
 
 (* Notation "'0'" := _ : int63_scope.
 Notation "'1'" := _ : int63_scope. *)
@@ -421,6 +421,11 @@ Arguments option_map {_ _} _ !_.
 
 Notation "'_+_'" := sum : type_scope.
 Notation "A '+' B" := (sum A B) : type_scope.
+
+Equations out (A : Type) (x : A + A) : A :=
+  out (inl a) := a;
+  out (inr a) := a.
+
 Notation "'_*_'" := prod : type_scope.
 Notation "A '*' B" := (prod A B) : type_scope.
 
@@ -770,27 +775,27 @@ Lemma respectful_nondep (A B : Type)
   respectful_hetero R (const (const R')) f g = respectful R R' f g.
 Proof. reflexivity. Qed.
 
-Equations corespectful (A B : Type)
+Equations disrespectful (A B : Type)
   (R : relation B) (R' : relation A) : relation (A -> B) :=
-  corespectful R R' := fun f g : A -> B =>
+  disrespectful R R' := fun f g : A -> B =>
   forall x y : A, R (f x) (g y) -> R' x y.
 
-Arguments corespectful {_ _} _ _ /.
+Arguments disrespectful {_ _} _ _ /.
 
-Notation "'_<==_'" := corespectful : signature_scope.
-Notation "R '<==' S" := (corespectful R S) : signature_scope.
+Notation "'_<==_'" := disrespectful : signature_scope.
+Notation "R '<==' S" := (disrespectful R S) : signature_scope.
 
-Equations corespectful_hetero
+Equations disrespectful_hetero
   (A B : Type) (C : A -> Type) (D : B -> Type)
   (R : forall (x : A) (y : B), C x -> D y -> Prop) (R' : A -> B -> Prop) :
   (forall x : A, C x) -> (forall x : B, D x) -> Prop :=
-  corespectful_hetero R R' :=
+  disrespectful_hetero R R' :=
   fun (f : forall x : A, C x) (g : forall x : B, D x) =>
   forall (x : A) (y : B), R x y (f x) (g y) -> R' x y.
 
-Lemma corespectful_nondep (A B : Type)
+Lemma disrespectful_nondep (A B : Type)
   (R : relation B) (R' : relation A) (f g : A -> B) :
-  corespectful_hetero (const (const R)) R' f g = corespectful R R' f g.
+  disrespectful_hetero (const (const R)) R' f g = disrespectful R R' f g.
 Proof. reflexivity. Qed.
 
 Equations birespectful (A B C : Type)
@@ -823,113 +828,218 @@ Lemma birespectful_nondep (A B C : Type)
   birespectful R R' f g.
 Proof. reflexivity. Qed.
 
-(** There is a problem with the dual here.
-    Observe.
+(** Indexed respectful setoid morphisms... *)
+
+Equations grespectful_type (A B : Type) (n : nat) : Type :=
+  grespectful_type A B O := B;
+  grespectful_type A B (S p) := A -> grespectful_type A B p.
+
+(** Uncurried. *)
+
+Equations grespectful1_fix (A B : Type) (P : Prop -> Prop)
+  (l : list (relation A)) (R : relation B) :
+  relation (grespectful_type A B (length l)) by struct l :=
+  grespectful1_fix P [] R :=
+    fun f g : grespectful_type A B _ => P 1 -> R f g;
+  grespectful1_fix P (R' :: l') R :=
+    fun f g : grespectful_type A B _ => forall x y : A,
+    grespectful1_fix (fun C : Prop => P (R' x y /\ C)) l' R (f x) (g y).
+
+Equations grespectful1 (A B : Type)
+  (l : list (relation A)) (R : relation B) :
+  relation (grespectful_type A B (length l)) :=
+  grespectful1 l R := grespectful1_fix id l R.
+
+(** Uncurried, more elaborate version that does not produce [_ /\ 1]. *)
+
+Equations grespectful_fix (A B : Type) (P : Prop + Prop -> Prop)
+  (l : list (relation A)) (R : relation B) :
+  relation (grespectful_type A B (length l)) by struct l :=
+  grespectful_fix P [] R :=
+    fun f g : grespectful_type A B _ => P (inl (R f g));
+  grespectful_fix P (R' :: l') R :=
+    fun f g : grespectful_type A B _ => forall x y : A,
+    grespectful_fix (fun X : Prop + Prop =>
+    match X with
+    | inl C => P (inr (R' x y)) -> C
+    | inr C => P (inr (R' x y /\ C))
+    end) l' R (f x) (g y).
+
+Equations grespectful (A B : Type)
+  (l : list (relation A)) (R : relation B) :
+  relation (grespectful_type A B (length l)) :=
+  grespectful l R := grespectful_fix out l R.
+
+Lemma grespectful1_grespectful' (A B : Type)
+  (l : list (relation A)) (R : relation B)
+  (f g : grespectful_type A B (length l))
+  (* `(forall R' : relation A, In R' l -> forall x y : A, Decidable (R' x y))
+  `(forall x y : B, Decidable (R x y)) *) :
+  grespectful1 l R f g <-> grespectful l R f g.
+Proof.
+  split.
+  - admit.
+  - simp grespectful grespectful1.
+    intros C.
+    induction l as [| R' l' Ci].
+    + simp grespectful_fix in C. simp grespectful1_fix. simp out in C.
+    + simp grespectful_fix in C. simp grespectful1_fix.
+      intros x y.
+      specialize (C x y).
+      specialize (Ci (f x) (g y)).
+      (** Need some lemma that generalizes the continuations here. *) Admitted.
+
+Lemma respectful_grespectful_nil' (A B : Type)
+  (R : relation B)
+  (f g : grespectful_type A B (length [])) :
+  R f g <-> grespectful [] R f g.
+Proof.
+  unfold "==>", grespectful. unfold grespectful_fix. unfold out.
+  split; intuition. Qed.
+
+(** These lemmas are enough to cover the standard library. *)
+
+#[useless]
+Lemma respectful_grespectful_1' (A B : Type)
+  (R0 : relation A) (R : relation B)
+  (f g : grespectful_type A B (length [R0])) :
+  (R0 ==> R) f g <-> grespectful [R0] R f g.
+Proof.
+  unfold "==>", grespectful. unfold grespectful_fix. unfold out.
+  split; intuition. Qed.
+
+#[useless]
+Lemma respectful_grespectful_2' (A B : Type)
+  (R0 R1 : relation A) (R : relation B)
+  (f g : grespectful_type A B (length [R0; R1])) :
+  (R0 ==> R1 ==> R) f g <-> grespectful [R0; R1] R f g.
+Proof.
+  unfold "==>", grespectful. unfold grespectful_fix. unfold out.
+  split; intuition. Qed.
+
+#[useless]
+Lemma respectful_grespectful_3' (A B : Type)
+  (R0 R1 R2 : relation A) (R : relation B)
+  (f g : grespectful_type A B (length [R0; R1; R2])) :
+  (R0 ==> R1 ==> R2 ==> R) f g <-> grespectful [R0; R1; R2] R f g.
+Proof.
+  unfold "==>", grespectful. unfold grespectful_fix. unfold out.
+  split; intuition. Qed.
+
+Lemma respectful_grespectful_cons' (A B : Type)
+  (R' : relation A) (l : list (relation A)) (R : relation B)
+  (f g : grespectful_type A B (length (R' :: l))) :
+  (R' ==> grespectful l R) f g <-> grespectful (R' :: l) R f g.
+Proof.
+  unfold "==>", grespectful.
+  split; intros C.
+  - revert R' R f g C. induction l as [| R'' l' Ci]; intros R' R f g C.
+    + auto.
+    + simp grespectful_fix in *.
+      intros x y. unfold out in *. simp grespectful_fix.
+      intros x' y'.
+      (* This is convincing enough. *) Admitted.
+
+(** Curried, does not require [grespectful1_fix']. *)
+
+Equations grespectful_fix' (A B : Type) (P : Prop -> Prop)
+  (l : list (relation A)) (R : relation B) :
+  relation (grespectful_type A B (length l)) by struct l :=
+  grespectful_fix' P [] R :=
+    fun f g : grespectful_type A B _ => P (R f g);
+  grespectful_fix' P (R' :: l') R :=
+    fun f g : grespectful_type A B _ => forall x y : A,
+    grespectful_fix' (fun C : Prop => P (R' x y -> C)) l' R (f x) (g y).
+
+Equations grespectful' (A B : Type)
+  (l : list (relation A)) (R : relation B) :
+  relation (grespectful_type A B (length l)) :=
+  grespectful' l R := grespectful_fix' id l R.
+
+(** TODO Apostrophes for [iff] relations is a stupid convention; change it. *)
+
+Lemma grespectful'_grespectful' (A B : Type)
+  (l : list (relation A)) (R : relation B)
+  (f g : grespectful_type A B (length l)) :
+  grespectful' l R f g <-> grespectful l R f g.
+Proof.
+  (** This should be easy. *) Admitted.
+
+(** And now the duals... *)
+
+(** Uncurried. *)
+
+Equations gdisrespectful1_fix (A B : Type) (P : Prop -> Prop)
+  (R : relation B) (l : list (relation A)) :
+  relation (grespectful_type A B (length l)) by struct l :=
+  gdisrespectful1_fix P R [] :=
+    fun f g : grespectful_type A B _ => R f g -> P 0;
+  gdisrespectful1_fix P R (R' :: l') :=
+    fun f g : grespectful_type A B _ => forall x y : A,
+    gdisrespectful1_fix (fun C : Prop => P (R' x y \/ C)) R l' (f x) (g y).
+
+Equations gdisrespectful1 (A B : Type)
+  (R : relation B) (l : list (relation A)) :
+  relation (grespectful_type A B (length l)) :=
+  gdisrespectful1 R l := gdisrespectful1_fix id R l.
+
+(** Uncurried, more elaborate version that does not produce [_ \/ 0]. *)
+
+Equations gdisrespectful_fix (A B : Type) (P : Prop + Prop -> Prop)
+  (R : relation B) (l : list (relation A)) :
+  relation (grespectful_type A B (length l)) by struct l :=
+  gdisrespectful_fix P R [] :=
+    fun f g : grespectful_type A B _ => P (inl (R f g));
+  gdisrespectful_fix P R (R' :: l') :=
+    fun f g : grespectful_type A B _ => forall x y : A,
+    gdisrespectful_fix (fun X : Prop + Prop =>
+    match X with
+    | inl C => C -> P (inr (R' x y))
+    | inr C => P (inr (R' x y \/ C))
+    end) R l' (f x) (g y).
+
+Equations gdisrespectful (A B : Type)
+  (R : relation B) (l : list (relation A)) :
+  relation (grespectful_type A B (length l)) :=
+  gdisrespectful R l := gdisrespectful_fix out R l.
+
+(** Curried, does not require [grespectful1_fix'], equivalent with dec. *)
+
+Equations gdisrespectful_fix' (A B : Type) (P : Prop -> Prop)
+  (R : relation B) (l : list (relation A)) :
+  relation (grespectful_type A B (length l)) by struct l :=
+  gdisrespectful_fix' P R [] :=
+    fun f g : grespectful_type A B _ => R f g -> P 0;
+  gdisrespectful_fix' P R (R' :: l') :=
+    fun f g : grespectful_type A B _ => forall x y : A,
+    gdisrespectful_fix' (fun C : Prop => P (~ R' x y -> C)) R l' (f x) (g y).
+
+Equations gdisrespectful' (A B : Type)
+  (R : relation B) (l : list (relation A)) :
+  relation (grespectful_type A B (length l)) :=
+  gdisrespectful' R l := gdisrespectful_fix' id R l.
+
+Equations disrespectful_ (A B : Type)
+  (R : relation B) (R' : relation A) : relation (A -> B) :=
+  disrespectful_ R R' := flip respectful (complement R) (complement R').
+
+(** Things work as follows.
 
 <<
 Import Z. Open Scope Z_scope.
 
-Eval unfold Proper, "==>" in Proper (le ==> le) opp.
-Eval unfold Proper, "<==" in Proper (le <== le) opp.
-Eval unfold Proper, "==>" in Proper (le ==> le ==> le) add.
-Eval unfold Proper, "<==" in Proper (le <== le <== le) add.
-
-(** This is expected. *)
-Check forall x0 y0 x1 y1, x0 <= y0 /\ x1 <= y1 -> x0 + x1 <= y0 + y1.
-(** This is actual, but equivalent to expected. *)
-Check forall x0 y0, x0 <= y0 -> forall x1 y1, x1 <= y1 -> x0 + x1 <= y0 + y1.
-(** This is expected. *)
-Check forall x0 y0 x1 y1, x0 + x1 <= y0 + y1 -> x0 <= y0 \/ x1 <= y1.
-(** This is actual and not equivalent to expected. *)
-Check forall x0 y0, (forall x1 y1, x0 + x1 <= y0 + y1 -> x1 <= y1) -> x0 <= y0.
+Eval cbv -[le zero opp add const] in Proper le zero.
+Eval cbv -[le zero opp add const] in Proper (complement le) zero.
+Eval cbv -[le zero opp add const] in Proper (le ==> le) opp.
+Eval cbv -[le zero opp add const] in Proper (complement le ==> complement le) opp.
+Eval cbv -[le zero opp add const] in Proper (le ==> le ==> le) add.
+Eval cbv -[le zero opp add const] in Proper (complement le ==> complement le ==> complement le) add.
 >>
 
-    We can generate the types and their duals as follows.
+    Duality and its relation to decidability and
+    univalence is still slightly mystifying.
+*)
 
-<<
-Equations respectful_fix_type (A B : Type) (n : nat) : Type :=
-  respectful_fix_type A B O := B;
-  respectful_fix_type A B (S p) := A -> respectful_fix_type A B p.
-
-Compute respectful_fix_type N Z 0.
-Compute respectful_fix_type N Z 1.
-Compute respectful_fix_type N Z 2.
-Compute respectful_fix_type N Z 3.
-
-Equations respectful_fix (A B : Type) (c : Prop -> Prop)
-  (n : nat) (R : relation A) (R' : relation B) :
-  relation (respectful_fix_type A B n) by struct n :=
-  respectful_fix c O R R' :=
-    fun f g : respectful_fix_type A B O =>
-    c True -> R' f g;
-  respectful_fix c (S p) R R' :=
-    fun f g : respectful_fix_type A B (S p) =>
-    forall x y : A,
-    respectful_fix (fun C : Prop => c (R x y /\ C)) p R R' (f x) (g y).
-
-Eval cbv -[le not one opp add const] in respectful_fix id 0 le le one one.
-Eval cbv -[le not one opp add const] in respectful_fix id 1 le le opp opp.
-Eval cbv -[le not one opp add const] in respectful_fix id 2 le le add add.
-Eval cbv -[le not one opp add const] in respectful_fix id 3 le le (const add) (const add).
-
-Equations corespectful_fix (A B : Type) (c : Prop -> Prop)
-  (n : nat) (R : relation B) (R' : relation A) :
-  relation (respectful_fix_type A B n) by struct n :=
-  corespectful_fix c O R R' :=
-    fun f g : respectful_fix_type A B O =>
-    R f g -> c False;
-  corespectful_fix c (S p) R R' :=
-    fun f g : respectful_fix_type A B (S p) =>
-    forall x y : A,
-    corespectful_fix (fun C : Prop => c (R' x y \/ C)) p R R' (f x) (g y).
-
-Eval cbv -[le not one opp add const] in corespectful_fix id 0 le le one one.
-Eval cbv -[le not one opp add const] in corespectful_fix id 1 le le opp opp.
-Eval cbv -[le not one opp add const] in corespectful_fix id 2 le le add add.
-Eval cbv -[le not one opp add const] in corespectful_fix id 3 le le (const add) (const add).
-
-(** And now, with curry. *)
-
-Equations respectful_fix' (A B : Type) (c : Prop -> Prop)
-  (n : nat) (R : relation A) (R' : relation B) :
-  relation (respectful_fix_type A B n) by struct n :=
-  respectful_fix' c O R R' :=
-    fun f g : respectful_fix_type A B O =>
-    c (R' f g);
-  respectful_fix' c (S p) R R' :=
-    fun f g : respectful_fix_type A B (S p) =>
-    forall x y : A,
-    respectful_fix' (fun C : Prop => c (R x y -> C)) p R R' (f x) (g y).
-
-Eval cbv -[le not one opp add const] in respectful_fix' id 0 le le one one.
-Eval cbv -[le not one opp add const] in respectful_fix' id 1 le le opp opp.
-Eval cbv -[le not one opp add const] in respectful_fix' id 2 le le add add.
-Eval cbv -[le not one opp add const] in respectful_fix' id 3 le le (const add) (const add).
-
-(** However, this one only works with decidable relations. *)
-
-Equations corespectful_fix' (A B : Type) (c : Prop -> Prop)
-  (n : nat) (R : relation B) (R' : relation A) :
-  relation (respectful_fix_type A B n) by struct n :=
-  corespectful_fix' c O R R' :=
-    fun f g : respectful_fix_type A B O =>
-    R f g -> c False;
-  corespectful_fix' c (S p) R R' :=
-    fun f g : respectful_fix_type A B (S p) =>
-    forall x y : A,
-    corespectful_fix' (fun C : Prop => c (~ R' x y -> C)) p R R' (f x) (g y).
-
-Eval cbv -[le not one opp add const] in corespectful_fix' id 0 le le one one.
-Eval cbv -[le not one opp add const] in corespectful_fix' id 1 le le opp opp.
-Eval cbv -[le not one opp add const] in corespectful_fix' id 2 le le add add.
-Eval cbv -[le not one opp add const] in corespectful_fix' id 3 le le (const add) (const add).
->>
-
-    We could also get rid of the neutral elements,
-    although that would require more cases or
-    [rew] over univalence with these lemmas.
-
-<<
 Lemma and_True_l (A : Prop) : 1 /\ A <-> A.
 Proof. intuition. Qed.
 
@@ -947,18 +1057,6 @@ Proof. intuition. Qed.
 
 Lemma and_or_distr_r (A B C : Prop) : (A \/ B) /\ C <-> A /\ C \/ B /\ C.
 Proof. intuition. Qed.
->>
-
-    It is also still a mystery
-    whether we can define the types from arrow chains,
-    as is done with [==>].
-
-<<
-Check le ==> (le ==> le) = @respectful Z (Z -> Z) le (@respectful Z Z le le).
->>
-
-    There may be a classical route via something like the cps transform.
-*)
 
 (** ** Currying and Uncurrying *)
 
@@ -1239,7 +1337,7 @@ Typeclasses Transparent ex_proj1 ex_proj2 proj1_sig proj2_sig
 Typeclasses Transparent compose compose_dep arrow impl
   const const_dep flip flip_dep apply apply_dep.
 
-Typeclasses Opaque respectful corespectful birespectful.
+Typeclasses Opaque respectful disrespectful birespectful.
 
 Typeclasses Transparent conj_curry conj_uncurry
   ex_curry ex_curry_dep ex_uncurry ex_uncurry_dep
