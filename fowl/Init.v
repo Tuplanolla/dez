@@ -870,11 +870,11 @@ Equations grespectful (A B : Type)
   relation (grespectful_type A B (length l)) :=
   grespectful l R := grespectful_fix out l R.
 
-Lemma grespectful1_grespectful' (A B : Type)
+(** The elaboration changes nothing. *)
+
+Lemma iff_grespectful1_grespectful (A B : Type)
   (l : list (relation A)) (R : relation B)
-  (f g : grespectful_type A B (length l))
-  (* `(forall R' : relation A, In R' l -> forall x y : A, Decidable (R' x y))
-  `(forall x y : B, Decidable (R x y)) *) :
+  (f g : grespectful_type A B (length l)) :
   grespectful1 l R f g <-> grespectful l R f g.
 Proof.
   split.
@@ -888,57 +888,6 @@ Proof.
       specialize (C x y).
       specialize (Ci (f x) (g y)).
       (** Need some lemma that generalizes the continuations here. *) Admitted.
-
-Lemma respectful_grespectful_nil' (A B : Type)
-  (R : relation B)
-  (f g : grespectful_type A B (length [])) :
-  R f g <-> grespectful [] R f g.
-Proof.
-  unfold "==>", grespectful. unfold grespectful_fix. unfold out.
-  split; intuition. Qed.
-
-(** These lemmas are enough to cover the standard library. *)
-
-#[useless]
-Lemma respectful_grespectful_1' (A B : Type)
-  (R0 : relation A) (R : relation B)
-  (f g : grespectful_type A B (length [R0])) :
-  (R0 ==> R) f g <-> grespectful [R0] R f g.
-Proof.
-  unfold "==>", grespectful. unfold grespectful_fix. unfold out.
-  split; intuition. Qed.
-
-#[useless]
-Lemma respectful_grespectful_2' (A B : Type)
-  (R0 R1 : relation A) (R : relation B)
-  (f g : grespectful_type A B (length [R0; R1])) :
-  (R0 ==> R1 ==> R) f g <-> grespectful [R0; R1] R f g.
-Proof.
-  unfold "==>", grespectful. unfold grespectful_fix. unfold out.
-  split; intuition. Qed.
-
-#[useless]
-Lemma respectful_grespectful_3' (A B : Type)
-  (R0 R1 R2 : relation A) (R : relation B)
-  (f g : grespectful_type A B (length [R0; R1; R2])) :
-  (R0 ==> R1 ==> R2 ==> R) f g <-> grespectful [R0; R1; R2] R f g.
-Proof.
-  unfold "==>", grespectful. unfold grespectful_fix. unfold out.
-  split; intuition. Qed.
-
-Lemma respectful_grespectful_cons' (A B : Type)
-  (R' : relation A) (l : list (relation A)) (R : relation B)
-  (f g : grespectful_type A B (length (R' :: l))) :
-  (R' ==> grespectful l R) f g <-> grespectful (R' :: l) R f g.
-Proof.
-  unfold "==>", grespectful.
-  split; intros C.
-  - revert R' R f g C. induction l as [| R'' l' Ci]; intros R' R f g C.
-    + auto.
-    + simp grespectful_fix in *.
-      intros x y. unfold out in *. simp grespectful_fix.
-      intros x' y'.
-      (* This is convincing enough. *) Admitted.
 
 (** Curried, does not require [grespectful1_fix']. *)
 
@@ -956,14 +905,67 @@ Equations grespectful' (A B : Type)
   relation (grespectful_type A B (length l)) :=
   grespectful' l R := grespectful_fix' id l R.
 
-(** TODO Apostrophes for [iff] relations is a stupid convention; change it. *)
+(** Currying changes nothing. *)
 
-Lemma grespectful'_grespectful' (A B : Type)
+Lemma iff_grespectful'_grespectful (A B : Type)
   (l : list (relation A)) (R : relation B)
   (f g : grespectful_type A B (length l)) :
   grespectful' l R f g <-> grespectful l R f g.
 Proof.
   (** This should be easy. *) Admitted.
+
+(** Now more. *)
+
+Lemma iff_respectful_grespectful'_nil (A B : Type)
+  (R : relation B)
+  (f g : grespectful_type A B (length [])) :
+  R f g <-> grespectful' [] R f g.
+Proof.
+  unfold "==>", grespectful'. unfold grespectful_fix'. unfold "id".
+  split; intuition. Qed.
+
+(** These lemmas are enough to cover the standard library. *)
+
+#[useless]
+Lemma iff_respectful_grespectful'_1 (A B : Type)
+  (R0 : relation A) (R : relation B)
+  (f g : grespectful_type A B (length [R0])) :
+  (R0 ==> R) f g <-> grespectful' [R0] R f g.
+Proof.
+  unfold "==>", grespectful'. unfold grespectful_fix'. unfold "id".
+  split; intuition. Qed.
+
+#[useless]
+Lemma iff_respectful_grespectful'_2 (A B : Type)
+  (R0 R1 : relation A) (R : relation B)
+  (f g : grespectful_type A B (length [R0; R1])) :
+  (R0 ==> R1 ==> R) f g <-> grespectful' [R0; R1] R f g.
+Proof.
+  unfold "==>", grespectful'. unfold grespectful_fix'. unfold "id".
+  split; intuition. Qed.
+
+#[useless]
+Lemma iff_respectful_grespectful'_3 (A B : Type)
+  (R0 R1 R2 : relation A) (R : relation B)
+  (f g : grespectful_type A B (length [R0; R1; R2])) :
+  (R0 ==> R1 ==> R2 ==> R) f g <-> grespectful' [R0; R1; R2] R f g.
+Proof.
+  unfold "==>", grespectful'. unfold grespectful_fix'. unfold "id".
+  split; intuition. Qed.
+
+Lemma iff_respectful_grespectful'_cons (A B : Type)
+  (R' : relation A) (l : list (relation A)) (R : relation B)
+  (f g : grespectful_type A B (length (R' :: l))) :
+  (R' ==> grespectful' l R) f g <-> grespectful' (R' :: l) R f g.
+Proof.
+  unfold "==>", grespectful'.
+  split; intros C.
+  - revert R' R f g C. induction l as [| R'' l' Ci]; intros R' R f g C.
+    + auto.
+    + simp grespectful_fix' in *.
+      intros x y. unfold "id" in *. simp grespectful_fix'.
+      intros x' y'.
+      (* This is convincing enough. *) Admitted.
 
 (** And now the duals... *)
 
@@ -1003,7 +1005,14 @@ Equations gdisrespectful (A B : Type)
   relation (grespectful_type A B (length l)) :=
   gdisrespectful R l := gdisrespectful_fix out R l.
 
-(** Curried, does not require [grespectful1_fix'], equivalent with dec. *)
+Lemma iff_gdisrespectful1_gdisrespectful (A B : Type)
+  (R : relation B) (l : list (relation A))
+  (f g : grespectful_type A B (length l)) :
+  gdisrespectful1 R l f g <-> gdisrespectful R l f g.
+Proof.
+  (** This is currently not true for the empty case. *) Admitted.
+
+(** Curried, does not require [grespectful1_fix']. *)
 
 Equations gdisrespectful_fix' (A B : Type) (P : Prop -> Prop)
   (R : relation B) (l : list (relation A)) :
@@ -1018,6 +1027,72 @@ Equations gdisrespectful' (A B : Type)
   (R : relation B) (l : list (relation A)) :
   relation (grespectful_type A B (length l)) :=
   gdisrespectful' R l := gdisrespectful_fix' id R l.
+
+(** Currying changes nothing, but requires decidability. *)
+
+Lemma iff_gdisrespectful'_gdisrespectful (A B : Type)
+  (R : relation B) (l : list (relation A))
+  (Hd' : forall R' : relation A, In R' l -> forall x y : A, Decidable (R' x y))
+  (Hd : forall x y : B, Decidable (R x y))
+  (f g : grespectful_type A B (length l)) :
+  gdisrespectful' R l f g <-> gdisrespectful R l f g.
+Proof.
+  rewrite <- iff_gdisrespectful1_gdisrespectful.
+  unfold gdisrespectful', gdisrespectful1. split.
+  - intros C. revert Hd' Hd. induction l as [| R' l' Ci]; intros Hd' Hd.
+    + auto.
+    + hnf. admit.
+    (** This should be doable. *) Admitted.
+
+Lemma iff_respectful_gdisrespectful'_nil (A B : Type)
+  (R : relation B)
+  (f g : grespectful_type A B (length [])) :
+  complement R f g <-> gdisrespectful' R [] f g.
+Proof.
+  unfold "==>", gdisrespectful'. unfold gdisrespectful_fix'. unfold "id".
+  split; intuition. Qed.
+
+#[useless]
+Lemma iff_respectful_gdisrespectful_1 (A B : Type)
+  (R : relation B) (R0 : relation A)
+  (** Do you need both? *)
+  (Hd : forall x y : B, Decidable (R x y))
+  (Hd0 : forall x y : A, Decidable (R0 x y))
+  (f g : grespectful_type A B (length [R0])) :
+  (complement R0 ==> complement R) f g <-> gdisrespectful R [R0] f g.
+Proof.
+  unfold complement, "==>", gdisrespectful.
+  unfold gdisrespectful_fix. unfold out.
+  split.
+  - intros F x y. specialize (F x y).
+    decide (R0 x y); intuition.
+  - intuition. Qed.
+
+Lemma iff_respectful_gdisrespectful'_cons (A B : Type)
+  (R' : relation A) (R : relation B) (l : list (relation A))
+  (f g : grespectful_type A B (length (R' :: l))) :
+  (complement R' ==> gdisrespectful' R l) f g <-> gdisrespectful' R (R' :: l) f g.
+Proof.
+  unfold "==>", gdisrespectful'.
+  split; intros C.
+  - revert R' R f g C. induction l as [| R'' l' Ci]; intros R' R f g C.
+    + hnf. intros x y. hnf. unfold "id". specialize (C x y). intuition.
+    + (** This might go, although it may require decidability. *) Admitted.
+
+Section Suffering.
+
+Import Z.
+Eval cbv -[le zero opp add const] in gdisrespectful1 le [] one one.
+Eval cbv -[le zero opp add const] in gdisrespectful le [] one one.
+Eval cbv -[le zero opp add const] in gdisrespectful' le [] one one.
+Eval cbv -[le zero opp add const] in gdisrespectful1 le [le] opp opp.
+Eval cbv -[le zero opp add const] in gdisrespectful le [le] opp opp.
+Eval cbv -[le zero opp add const] in gdisrespectful' le [le] opp opp.
+Eval cbv -[le zero opp add const] in gdisrespectful1 le [le; le] add add.
+Eval cbv -[le zero opp add const] in gdisrespectful le [le; le] add add.
+Eval cbv -[le zero opp add const] in gdisrespectful' le [le; le] add add.
+
+End Suffering.
 
 Equations disrespectful_ (A B : Type)
   (R : relation B) (R' : relation A) : relation (A -> B) :=

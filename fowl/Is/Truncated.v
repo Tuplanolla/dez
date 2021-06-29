@@ -38,7 +38,7 @@ Proof.
 
 (** Truncation at the next level is equivalent to truncation of identities. *)
 
-Lemma trunc_succ_trunc_eq' (A : Type) (n : nat) :
+Lemma iff_trunc_succ_trunc_eq (A : Type) (n : nat) :
   IsTrunc (S n) A <-> forall x y : A, IsTrunc n (x = y).
 Proof. split; [apply trunc_succ_trunc_eq | apply trunc_succ]. Qed.
 
@@ -49,7 +49,7 @@ Proof.
   match goal with
   | t : IsTrunc n A |- _ => induction t as [A [x a] | n A t t']
   end.
-  - apply trunc_succ_trunc_eq'.
+  - apply iff_trunc_succ_trunc_eq.
     intros y z. apply trunc_zero. exists (a z o a y ^-1).
     intros c. rewrite c. rewrite eq_trans_sym_inv_l. reflexivity.
   - apply trunc_succ. auto. Qed.
@@ -65,13 +65,13 @@ Proof.
 
 (** Contractibility is equivalent to truncation at level [-2]. *)
 
-Lemma contr_trunc' (A : Type) : IsContr A <-> IsTrunc 0 A.
+Lemma iff_contr_trunc (A : Type) : IsContr A <-> IsTrunc 0 A.
 Proof. split; [apply contr_trunc | apply trunc_contr]. Qed.
 
 Lemma prop_trunc (A : Type) `(IsProp A) : IsTrunc 1 A.
 Proof.
-  apply trunc_succ_trunc_eq'.
-  intros x y. apply contr_trunc'.
+  apply iff_trunc_succ_trunc_eq.
+  intros x y. apply iff_contr_trunc.
   exists (irrel x y o irrel x x ^-1). intros a.
   rewrite a. rewrite eq_trans_sym_inv_l. reflexivity. Qed.
 
@@ -81,18 +81,18 @@ Proof.
   | t : IsTrunc 1 A |- _ => inversion_clear t
   end.
   intros x y. assert (a : IsContr (x = y)).
-  { apply contr_trunc'. auto. }
+  { apply iff_contr_trunc. auto. }
   apply a. Qed.
 
 (** Proof irrelevance is equivalent to truncation at level [-1]. *)
 
-Lemma prop_trunc' (A : Type) : IsProp A <-> IsTrunc 1 A.
+Lemma iff_prop_trunc (A : Type) : IsProp A <-> IsTrunc 1 A.
 Proof. split; [apply prop_trunc | apply trunc_prop]. Qed.
 
 Lemma set_trunc (A : Type) `(IsSet A) : IsTrunc 2 A.
 Proof.
-  apply trunc_succ_trunc_eq'.
-  intros x y. apply prop_trunc'.
+  apply iff_trunc_succ_trunc_eq.
+  intros x y. apply iff_prop_trunc.
   intros a b. apply uip. Qed.
 
 Lemma trunc_set (A : Type) `(IsTrunc 2 A) : IsSet A.
@@ -101,12 +101,12 @@ Proof.
   | t : IsTrunc 2 A |- _ => inversion_clear t
   end.
   intros x y. assert (a : IsProp (x = y)).
-  { apply prop_trunc'. auto. }
+  { apply iff_prop_trunc. auto. }
   apply a. Qed.
 
 (** Uniqueness of identity proofs is equivalent to truncation at level [0]. *)
 
-Lemma set_trunc' (A : Type) : IsSet A <-> IsTrunc 2 A.
+Lemma iff_set_trunc (A : Type) : IsSet A <-> IsTrunc 2 A.
 Proof. split; [apply set_trunc | apply trunc_set]. Qed.
 
 (** Hints that construct truncations. *)
@@ -132,7 +132,7 @@ Proof. eauto 7 with trunc untrunc. Qed.
 (** Proof irrelevance is equivalent
     to contractibility of identity proofs. *)
 
-Lemma prop_contr_eq' (A : Type) : IsProp A <-> forall x y : A, IsContr (x = y).
+Lemma iff_prop_contr_eq (A : Type) : IsProp A <-> forall x y : A, IsContr (x = y).
 Proof.
   split; [apply prop_contr_eq | apply contr_eq_prop] ||
   split; eauto 7 with trunc untrunc. Qed.
@@ -147,7 +147,7 @@ Proof. eauto 7 with trunc untrunc. Qed.
 (** Uniqueness of identity proofs is equivalent
     to proof irrelevance of identity proofs. *)
 
-Lemma set_prop_eq' (A : Type) : IsSet A <-> forall x y : A, IsProp (x = y).
+Lemma iff_set_prop_eq (A : Type) : IsSet A <-> forall x y : A, IsProp (x = y).
 Proof.
   split; [apply set_prop_eq | apply prop_eq_set] ||
   split; eauto 7 with trunc untrunc. Qed.
