@@ -1,7 +1,7 @@
 From Coq Require Import
   Lia Lists.List NArith.NArith Bool.Sumbool.
 From Maniunfold.Is Require Export
-  Fixed Monotonic Comonotonic Isomorphism.
+  Fixed Injective Monotonic Comonotonic Isomorphism.
 From Maniunfold.Provides Require Export
   NTheorems OptionTheorems PositiveTheorems ProductTheorems.
 
@@ -35,7 +35,7 @@ Definition B : Type := N.
 
 Ltac forget := unfold A, B in *.
 
-Ltac lia := flatten'; forget; Lia.lia.
+Ltac lia := flatten'; forget; unfold ord_rel in *; Lia.lia.
 
 (** We are interested in monotonic injective functions
     with a fixed point at zero, which we shall consider miffing.
@@ -49,22 +49,22 @@ Typeclasses Transparent HasMiff.
 (** Miffs are true to their name. *)
 
 Notation IsMonoMiff miff := (Proper (le ==> le) miff).
-Notation mono_miff := (proper_prf (R := le ==> le) (m := miff)).
+Notation mono_miff := (proper_prf (R := le ==> le) (m := miff) : IsMonoMiff miff).
 
 Instance has_ord_rel : HasOrdRel N := le.
 Instance has_str_ord_rel : HasStrOrdRel N := lt.
 
-Notation IsInjMiff := (Proper (Logic.eq <== Logic.eq)).
-Notation inj_miff := (proper_prf (R := Logic.eq <== Logic.eq) (m := miff)).
+Notation IsInjMiff := IsInj.
+Notation inj_miff := (inj : IsInjMiff miff).
 
 Notation IsFixedMiff := (IsFixed 0).
 Notation fixed_miff := (@fixed _ 0 _ _ : _ 0 = 0).
 
 Notation IsStrMonoMiff miff := (Proper (lt ==> lt) miff).
-Notation str_mono_miff := (proper_prf (R := lt ==> lt) (m := miff)).
+Notation str_mono_miff := (proper_prf (R := lt ==> lt) (m := miff) : IsStrMonoMiff miff).
 
-Notation IsStrComonoMiff miff := (Proper (lt <== lt) miff).
-Notation str_comono_miff := (proper_prf (R := lt <== lt) (m := miff)).
+Notation IsStrComonoMiff := (IsStrComono lt lt).
+Notation str_comono_miff := (str_comono : IsStrComonoMiff miff).
 
 (** Such a function is said to be inflationary or progressive. *)
 

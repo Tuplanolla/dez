@@ -1456,8 +1456,6 @@ Typeclasses Transparent ex_proj1 ex_proj2 proj1_sig proj2_sig
 Typeclasses Transparent compose compose_dep arrow impl
   const const_dep flip flip_dep apply apply_dep.
 
-Typeclasses Opaque respectful disrespectful birespectful.
-
 Typeclasses Transparent conj_curry conj_uncurry
   ex_curry ex_curry_dep ex_uncurry ex_uncurry_dep
   prod_curry prod_curry_dep prod_uncurry prod_uncurry_dep
