@@ -162,10 +162,10 @@ Reserved Notation "'{' a ':' A '$' B '}'" (at level 0, a at level 99).
 
 Reserved Notation "R '==>' S" (right associativity, at level 55).
 Reserved Notation "R '-->' S" (right associativity, at level 55).
-Reserved Notation "R '<==' S" (left associativity, at level 45).
-Reserved Notation "R '<--' S" (left associativity, at level 45).
-Reserved Notation "R '<==>' S" (no associativity, at level 50).
-Reserved Notation "R '<-->' S" (no associativity, at level 50).
+Reserved Notation "R '<==' S" (left associativity, at level 54).
+Reserved Notation "R '<--' S" (left associativity, at level 54).
+Reserved Notation "R '<==>' S" (no associativity, at level 45).
+Reserved Notation "R '<-->' S" (no associativity, at level 45).
 
 Reserved Notation "x '==' y" (no associativity, at level 70).
 Reserved Notation "x '===' y" (no associativity, at level 70).
@@ -770,60 +770,25 @@ Lemma respectful_nondep (A B : Type)
   respectful_hetero R (const (const R')) f g = respectful R R' f g.
 Proof. reflexivity. Qed.
 
-Equations disrespectful (A B : Type)
-  (R : relation B) (R' : relation A) : relation (A -> B) :=
-  disrespectful R R' := fun f g : A -> B =>
-  forall x y : A, R (f x) (g y) -> R' x y.
-
-Arguments disrespectful {_ _} _ _ /.
-
-Notation "'_<==_'" := disrespectful : signature_scope.
-Notation "R '<==' S" := (disrespectful R S) : signature_scope.
-
-Equations disrespectful_hetero
-  (A B : Type) (C : A -> Type) (D : B -> Type)
-  (R : forall (x : A) (y : B), C x -> D y -> Prop) (R' : A -> B -> Prop) :
-  (forall x : A, C x) -> (forall x : B, D x) -> Prop :=
-  disrespectful_hetero R R' :=
-  fun (f : forall x : A, C x) (g : forall x : B, D x) =>
-  forall (x : A) (y : B), R x y (f x) (g y) -> R' x y.
-
-Lemma disrespectful_nondep (A B : Type)
-  (R : relation B) (R' : relation A) (f g : A -> B) :
-  disrespectful_hetero (const (const R)) R' f g = disrespectful R R' f g.
-Proof. reflexivity. Qed.
-
-Equations birespectful (A B C : Type)
-  (R : relation B) (R' : relation C) : relation ((A -> B) * (A -> C)) :=
-  birespectful R R' := fun fh gk : (A -> B) * (A -> C) =>
-  forall x y : A, R (fst fh x) (fst gk y) -> R' (snd fh x) (snd gk y).
-
-Arguments birespectful {_ _ _} _ _ /.
-
-Notation "'_<==>_'" := birespectful : signature_scope.
-Notation "R '<==>' S" := (birespectful R S) : signature_scope.
-
-Equations birespectful_hetero (A B : Type)
-  (C : A -> Type) (D : B -> Type) (E : A -> Type) (F : B -> Type)
-  (R : forall (x : A) (y : B), C x -> D y -> Prop)
-  (R' : forall (x : A) (y : B), E x -> F y -> Prop) :
-  (forall x : A, C x) * (forall x : A, E x) ->
-  (forall x : B, D x) * (forall x : B, F x) -> Prop :=
-  birespectful_hetero R R' :=
-  fun (fh : (forall x : A, C x) * (forall x : A, E x))
-  (gk : (forall x : B, D x) * (forall x : B, F x)) =>
-  forall (x : A) (y : B),
-  R x y (fst fh x) (fst gk y) -> R' x y (snd fh x) (snd gk y).
-
-Arguments respectful_hetero {_ _ _ _ _ _} _ _ /.
-
-Lemma birespectful_nondep (A B C : Type)
-  (R : relation B) (R' : relation C) (f g : (A -> B) * (A -> C)) :
-  birespectful_hetero (const (const R)) (const (const R')) f g =
-  birespectful R R' f g.
-Proof. reflexivity. Qed.
-
 (** Indexed respectful setoid morphisms... *)
+
+Lemma and_True_l (A : Prop) : 1 /\ A <-> A.
+Proof. intuition. Qed.
+
+Lemma and_True_r (A : Prop) : A /\ 1 <-> A.
+Proof. intuition. Qed.
+
+Lemma or_True_l (A : Prop) : 0 \/ A <-> A.
+Proof. intuition. Qed.
+
+Lemma or_True_r (A : Prop) : A \/ 0 <-> A.
+Proof. intuition. Qed.
+
+Lemma and_or_distr_l (A B C : Prop) : A /\ (B \/ C) <-> A /\ B \/ A /\ C.
+Proof. intuition. Qed.
+
+Lemma and_or_distr_r (A B C : Prop) : (A \/ B) /\ C <-> A /\ C \/ B /\ C.
+Proof. intuition. Qed.
 
 Equations out (A : Type) (x : A + A) : A :=
   out (inl a) := a;
@@ -855,19 +820,6 @@ Equations grespectful1 (A B : Type)
 
 (** Uncurried, more elaborate version that does not produce [_ /\ 1]. *)
 
-Fail Fail Equations grespectful_fix (A B : Type) (P : option Prop -> Prop)
-  (l : list (relation A)) (R : relation B) :
-  relation (grespectful_type A B (length l)) by struct l :=
-  grespectful_fix P [] R :=
-    fun f g : grespectful_type A B _ => P None -> R f g;
-  grespectful_fix P (R' :: l') R :=
-    fun f g : grespectful_type A B _ => forall x y : A,
-    grespectful_fix (fun X : option Prop =>
-    match X with
-    | Some C => P (Some (R' x y /\ C))
-    | None => P (Some (R' x y))
-    end) l' R (f x) (g y).
-
 Equations grespectful_fix (A B : Type) (P : Prop + Prop -> Prop)
   (l : list (relation A)) (R : relation B) :
   relation (grespectful_type A B (length l)) by struct l :=
@@ -884,39 +836,121 @@ Equations grespectful_fix (A B : Type) (P : Prop + Prop -> Prop)
 Equations grespectful (A B : Type)
   (l : list (relation A)) (R : relation B) :
   relation (grespectful_type A B (length l)) :=
-  grespectful l R := grespectful_fix out l R.
+  grespectful l R := grespectful_fix (fun X : Prop + Prop =>
+    match X with
+    | inl C => C
+    | inr C => C
+    end) l R.
 
 Section Suffering.
 
 Import Z. Open Scope Z_scope.
 
-Eval cbv -[not le zero opp add const] in grespectful1 [] le one one.
-Eval cbv -[not le zero opp add const] in grespectful [] le one one.
-Eval cbv -[not le zero opp add const] in grespectful1 [le] le opp opp.
-Eval cbv -[not le zero opp add const] in grespectful [le] le opp opp.
-Eval cbv -[not le zero opp add const] in grespectful1 [le; le] le add add.
-Eval cbv -[not le zero opp add const] in grespectful [le; le] le add add.
+Eval cbv -[le zero opp add const] in grespectful1_fix id [] le one one.
+Eval cbv -[le zero opp add const] in grespectful_fix (fun X : Prop + Prop =>
+    match X with
+    | inl C => 1 -> C
+    | inr C => C /\ 1
+    end) [] le one one.
+Eval cbv -[le zero opp add const] in grespectful1_fix id [le] le opp opp.
+Eval cbv -[le zero opp add const] in grespectful_fix (fun X : Prop + Prop =>
+    match X with
+    | inl C => 1 -> C
+    | inr C => C /\ 1
+    end) [le] le opp opp.
+Eval cbv -[le zero opp add const] in grespectful1_fix id [le; le] le add add.
+Eval cbv -[le zero opp add const] in grespectful_fix (fun X : Prop + Prop =>
+    match X with
+    | inl C => 1 -> C
+    | inr C => C /\ 1
+    end) [le; le] le add add.
 
 End Suffering.
 
 (** The elaboration changes nothing. *)
+
+Axiom univalence_axiom : forall A B : Prop, (A <-> B) -> A = B.
+#[deprecated(note="This axiom should only be used for drafting proofs.")]
+Notation univalence := univalence_axiom.
+
+Lemma iff_grespectful1_fix_grespectful_fix (A B : Type)
+  (P1 : Prop -> Prop) (P : Prop + Prop -> Prop)
+  (G : forall C : Prop, P (inl C) <-> (P1 1 -> C))
+  (G' : forall C D : Prop, (P (inr D) -> C) <-> (P1 D -> C))
+  (PP1 : Proper (_<->_ ==> _<->_) P1)
+  (PPr : Proper (_<->_ ==> _<->_) (P o inr))
+  (l : list (relation A)) (R : relation B)
+  (f g : grespectful_type A B (length l)) :
+  grespectful1_fix P1 l R f g <-> grespectful_fix P l R f g.
+Proof.
+  split.
+  - revert P1 P G G' PP1 PPr R f g; induction l as [| R' l' Fi]; intros P1 P G G' PP1 PPr R f g F.
+      (* P (inl (R f g)) <-> (P1 1 -> R f g) *)
+      (* (P (inr (R' f g)) -> C) <-> (P1 (R' f g /\ 1) -> C) *)
+    + simp grespectful1_fix in F. simp grespectful_fix. eapply G. apply F.
+    + simp grespectful1_fix in F. simp grespectful_fix.
+      intros x y. eapply Fi, F. intros C. cbn. split. intros D E. apply G' in D; auto.
+      rewrite ( (and_True_r _)) in E. apply E.
+      intros D E. apply G' in D; auto.
+      change (P (inr (R' x y /\ 1))) with ((P o inr) (R' x y /\ 1)).
+      rewrite ( (and_True_r _)). apply E.
+      intros C X. split.
+      intros D E. apply G' in D; auto.
+      intros D E. apply G' in D; auto.
+      intros D E. intros W. apply PP1. intuition.
+      intros D E. intros W. cbn -[iff].
+      change (P (inr (R' x y /\ D))) with ((P o inr) (R' x y /\ D)).
+      change (P (inr (R' x y /\ E))) with ((P o inr) (R' x y /\ E)).
+      apply PPr. intuition.
+  - revert P1 P G G' PP1 PPr R f g; induction l as [| R' l' Fi]; intros P1 P G G' PP1 PPr R f g F.
+    + simp grespectful_fix in F. simp grespectful1_fix. eapply G. apply F.
+    + simp grespectful_fix in F. simp grespectful1_fix.
+      intros x y. eapply Fi, F. intros C. cbn. split. intros D E. apply G' in D; auto.
+      rewrite ( (and_True_r _)) in E. apply E.
+      intros D E. apply G' in D; auto.
+      change (P (inr (R' x y /\ 1))) with ((P o inr) (R' x y /\ 1)).
+      rewrite ( (and_True_r _)). apply E.
+      intros C X. split.
+      intros D E. apply G' in D; auto.
+      intros D E. apply G' in D; auto.
+      intros D E. intros W. apply PP1. intuition.
+      intros D E. intros W. cbn -[iff].
+      change (P (inr (R' x y /\ D))) with ((P o inr) (R' x y /\ D)).
+      change (P (inr (R' x y /\ E))) with ((P o inr) (R' x y /\ E)).
+      apply PPr. intuition. Qed.
 
 Lemma iff_grespectful1_grespectful (A B : Type)
   (l : list (relation A)) (R : relation B)
   (f g : grespectful_type A B (length l)) :
   grespectful1 l R f g <-> grespectful l R f g.
 Proof.
-  split.
-  - admit.
-  - simp grespectful grespectful1.
-    intros C.
+  unfold grespectful1, grespectful, "id". split.
+  - intros a. shelve.
+  - intros C.
     induction l as [| R' l' Ci].
-    + simp grespectful_fix in C. simp grespectful1_fix. simp out in C.
+    + simp grespectful_fix in C. simp grespectful1_fix.
     + simp grespectful_fix in C. simp grespectful1_fix.
       intros x y.
       specialize (C x y).
       specialize (Ci (f x) (g y)).
-      (** Need some lemma that generalizes the continuations here. *) Admitted.
+      (* (fun C : Prop => R' x y /\ C) ~ (fun C : Prop => C) *)
+      (* (fun X : Prop + Prop =>
+          match X with
+          | inl C => R' x y -> C
+          | inr C => R' x y /\ C
+          end) ~ (fun X : Prop + Prop =>
+           match X with
+           | inl C => C
+           | inr C => C
+           end) *)
+      (** Need some lemma that generalizes the continuations here.
+          Let us go back and force one through. *) Restart.
+Proof.
+  unfold grespectful1, grespectful, "id".
+  apply iff_grespectful1_fix_grespectful_fix.
+    intuition. intuition.
+    intros D E. intros W. intuition.
+    intros D E. intros W. cbn -[iff]. intuition. Qed.
 
 (** Curried, does not require [grespectful1_fix']. *)
 
@@ -1016,30 +1050,17 @@ Equations gdisrespectful1 (A B : Type)
 
 (** Uncurried, more elaborate version that does not produce [_ \/ 0]. *)
 
-Fail Fail Equations gdisrespectful_fix (A B : Type) (P : option Prop -> Prop)
-  (R : relation B) (l : list (relation A)) :
-  relation (grespectful_type A B (length l)) by struct l :=
-  gdisrespectful_fix P R [] :=
-    fun f g : grespectful_type A B _ => R f g -> P None;
-  gdisrespectful_fix P R (R' :: l') :=
-    fun f g : grespectful_type A B _ => forall x y : A,
-    gdisrespectful_fix (fun X : option Prop =>
-    match X with
-    | Some C => P (Some (R' x y \/ C))
-    | None => P (Some (R' x y))
-    end) R l' (f x) (g y).
-
 Equations gdisrespectful_fix (A B : Type) (P : Prop + Prop -> Prop)
   (R : relation B) (l : list (relation A)) :
   relation (grespectful_type A B (length l)) by struct l :=
   gdisrespectful_fix P R [] :=
-    fun f g : grespectful_type A B _ => P (inr (R f g));
+    fun f g : grespectful_type A B _ => P (inl (R f g));
   gdisrespectful_fix P R (R' :: l') :=
     fun f g : grespectful_type A B _ => forall x y : A,
     gdisrespectful_fix (fun X : Prop + Prop =>
     match X with
-    | inl C => P (inl (R' x y \/ C))
-    | inr C => C -> P (inl (R' x y))
+    | inl C => C -> P (inr (R' x y))
+    | inr C => P (inr (R' x y \/ C))
     end) R l' (f x) (g y).
 
 Equations gdisrespectful (A B : Type)
@@ -1047,8 +1068,8 @@ Equations gdisrespectful (A B : Type)
   relation (grespectful_type A B (length l)) :=
   gdisrespectful R l := gdisrespectful_fix (fun X : Prop + Prop =>
     match X with
-    | inl C => C
-    | inr C => C -> 0
+    | inl C => C -> 0
+    | inr C => C
     end) R l.
 
 Section Suffering.
@@ -1175,24 +1196,6 @@ Equations disrespectful_ (A B : Type)
   disrespectful_ R R' := flip respectful (complement R) (complement R').
 
 (** End of digression. *)
-
-Lemma and_True_l (A : Prop) : 1 /\ A <-> A.
-Proof. intuition. Qed.
-
-Lemma and_True_r (A : Prop) : A /\ 1 <-> A.
-Proof. intuition. Qed.
-
-Lemma or_True_l (A : Prop) : 0 \/ A <-> A.
-Proof. intuition. Qed.
-
-Lemma or_True_r (A : Prop) : A \/ 0 <-> A.
-Proof. intuition. Qed.
-
-Lemma and_or_distr_l (A B C : Prop) : A /\ (B \/ C) <-> A /\ B \/ A /\ C.
-Proof. intuition. Qed.
-
-Lemma and_or_distr_r (A B C : Prop) : (A \/ B) /\ C <-> A /\ C \/ B /\ C.
-Proof. intuition. Qed.
 
 (** ** Currying and Uncurrying *)
 
