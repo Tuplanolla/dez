@@ -802,6 +802,15 @@ Proof. intuition. Qed.
 Lemma and_or_distr_r (A B C : Prop) : (A \/ B) /\ C <-> A /\ C \/ B /\ C.
 Proof. intuition. Qed.
 
+Lemma impl_and_l (A B C : Prop) : (A -> B /\ C) <-> (A -> B) /\ (A -> C).
+Proof. intuition. Qed.
+
+Lemma impl_and_r (A B C : Prop) : (A /\ B -> C) <-> (A -> B -> C).
+Proof. intuition. Qed.
+
+Lemma impl_or_r (A B C : Prop) : (A \/ B -> C) <-> (A -> C) /\ (B -> C).
+Proof. intuition. Qed.
+
 Equations out (A : Type) (x : A + A) : A :=
   out (inl a) := a;
   out (inr a) := a.
@@ -924,12 +933,59 @@ Equations grespectful' (A B : Type)
 
 (** Currying changes nothing. *)
 
-Lemma iff_grespectful'_grespectful (A B : Type)
+Lemma iff_grespectful_fix'_grespectful1_fix (A B : Type)
+  (P' : Prop -> Prop) (P1 : Prop -> Prop)
+  (IP' : Proper (_<->_ ==> _<->_) P')
+  (IP1 : Proper (_<->_ ==> _<->_) P1)
+  (e1 : forall C : Prop, P' C <-> (P1 1 -> C))
+  (e2 : forall C D : Prop, P' (C -> D) <-> (P1 C -> D))
   (l : list (relation A)) (R : relation B)
   (f g : grespectful_type A B (length l)) :
-  grespectful' l R f g <-> grespectful l R f g.
+  grespectful_fix' P' l R f g <-> grespectful1_fix P1 l R f g.
 Proof.
-  (** This should be easy. *) Admitted.
+  split.
+  - revert P' P1 IP' IP1 e1 e2 R f g;
+    induction l as [| R' l' ri];
+    intros P' P1 IP' IP1 e1 e2 R f g r.
+    + simp grespectful1_fix grespectful_fix' in *.
+      apply e1. apply r.
+    + simp grespectful1_fix grespectful_fix' in *.
+      intros x y. eapply ri, r.
+      * intros C D e. rewrite e. reflexivity.
+      * intros C D e. rewrite e. reflexivity.
+      * intros C. split.
+        -- intros p. rewrite and_True_r. apply e2. apply p.
+        -- intros p1. apply e2. rewrite and_True_r in p1. apply p1.
+      * intros C D. split.
+        -- intros p. rewrite <- impl_and_r in p. apply e2. apply p.
+        -- intros p1. apply e2 in p1. rewrite impl_and_r in p1. apply p1.
+  - revert P' P1 IP' IP1 e1 e2 R f g;
+    induction l as [| R' l' ri];
+    intros P' P1 IP' IP1 e1 e2 R f g r.
+    + simp grespectful1_fix grespectful_fix' in *.
+      apply e1. apply r.
+    + simp grespectful1_fix grespectful_fix' in *.
+      intros x y. eapply ri, r.
+      * intros C D e. rewrite e. reflexivity.
+      * intros C D e. rewrite e. reflexivity.
+      * intros C. split.
+        -- intros p. rewrite and_True_r. apply e2. apply p.
+        -- intros p1. apply e2. rewrite and_True_r in p1. apply p1.
+      * intros C D. split.
+        -- intros p. rewrite <- impl_and_r in p. apply e2. apply p.
+        -- intros p1. apply e2 in p1. rewrite impl_and_r in p1. apply p1. Qed.
+
+Lemma iff_grespectful'_grespectful1 (A B : Type)
+  (l : list (relation A)) (R : relation B)
+  (f g : grespectful_type A B (length l)) :
+  grespectful' l R f g <-> grespectful1 l R f g.
+Proof.
+  unfold grespectful', grespectful1.
+  apply iff_grespectful_fix'_grespectful1_fix.
+  - typeclasses eauto.
+  - typeclasses eauto.
+  - intros C. unfold "id". intuition.
+  - intros C. unfold "id". intuition. Qed.
 
 (** Now more. *)
 
@@ -939,7 +995,7 @@ Lemma iff_respectful_grespectful'_nil (A B : Type)
   R f g <-> grespectful' [] R f g.
 Proof.
   unfold "==>", grespectful'. unfold grespectful_fix'. unfold "id".
-  split; intuition. Qed.
+  intuition. Qed.
 
 (** These lemmas are enough to cover the standard library. *)
 
@@ -950,7 +1006,7 @@ Lemma iff_respectful_grespectful'_1 (A B : Type)
   (R0 ==> R) f g <-> grespectful' [R0] R f g.
 Proof.
   unfold "==>", grespectful'. unfold grespectful_fix'. unfold "id".
-  split; intuition. Qed.
+  intuition. Qed.
 
 #[useless]
 Lemma iff_respectful_grespectful'_2 (A B : Type)
@@ -959,7 +1015,7 @@ Lemma iff_respectful_grespectful'_2 (A B : Type)
   (R0 ==> R1 ==> R) f g <-> grespectful' [R0; R1] R f g.
 Proof.
   unfold "==>", grespectful'. unfold grespectful_fix'. unfold "id".
-  split; intuition. Qed.
+  intuition. Qed.
 
 #[useless]
 Lemma iff_respectful_grespectful'_3 (A B : Type)
@@ -968,7 +1024,7 @@ Lemma iff_respectful_grespectful'_3 (A B : Type)
   (R0 ==> R1 ==> R2 ==> R) f g <-> grespectful' [R0; R1; R2] R f g.
 Proof.
   unfold "==>", grespectful'. unfold grespectful_fix'. unfold "id".
-  split; intuition. Qed.
+  intuition. Qed.
 
 Lemma iff_respectful_grespectful'_cons (A B : Type)
   (R' : relation A) (l : list (relation A)) (R : relation B)
@@ -978,9 +1034,10 @@ Proof.
   unfold "==>", grespectful'.
   split; intros C.
   - revert R' R f g C. induction l as [| R'' l' Ci]; intros R' R f g C.
-    + auto.
-    + simp grespectful_fix' in *.
+    + subst; auto.
+    + subst. simp grespectful_fix' in *.
       intros x y. unfold "id" in *. simp grespectful_fix'.
+      cbn [grespectful_fix'] in Ci.
       intros x' y'.
       (* This is convincing enough. *) Admitted.
 
@@ -1094,19 +1151,107 @@ Equations gdisrespectful' (A B : Type)
 
 (** Currying changes nothing, but requires decidability. *)
 
-Lemma iff_gdisrespectful'_gdisrespectful (A B : Type)
+Lemma iff_gdisrespectful_fix'_gdisrespectful1_fix (A B : Type)
+  (P' : Prop -> Prop) (P1 : Prop -> Prop)
+  (IP' : Proper (_<->_ ==> _<->_) P')
+  (IP1 : Proper (_<->_ ==> _<->_) P1)
+  (e1 : forall C : Prop, P' (~ C) <-> (C -> P1 0))
+  (e2 : forall C D : Prop, Decidable D -> P' (~ D -> ~ C) <-> (C -> P1 D))
+  (l : list (relation A)) (R : relation B)
+  (Hd' : forall R' : relation A, In R' l -> forall x y : A, Decidable (R' x y))
+  (Hd1 : forall x y : B, Decidable (R x y))
+  (f g : grespectful_type A B (length l)) :
+  gdisrespectful_fix' P' R l f g <-> gdisrespectful1_fix P1 R l f g.
+Proof.
+  split.
+  - revert P' P1 IP' IP1 e1 e2 R Hd' Hd1 f g;
+    induction l as [| R' l' ri];
+    intros P' P1 IP' IP1 e1 e2 R Hd' Hd1 f g r.
+    + simp gdisrespectful1_fix gdisrespectful_fix' in *.
+      apply e1. apply r.
+    + simp gdisrespectful1_fix gdisrespectful_fix' in *.
+      intros x y. assert (Decidable (R' x y)).
+      { apply Hd'. left. reflexivity. }
+      eapply ri, r.
+      * intros C D e. rewrite e. reflexivity.
+      * intros C D e. rewrite e. reflexivity.
+      * intros C. split.
+        -- intros p. rewrite or_False_r. apply e2. typeclasses eauto. apply p.
+        -- intros p1. apply e2. typeclasses eauto. rewrite or_False_r in p1. apply p1.
+      * intros C D.
+          assert (eqr : ~ (R' x y \/ D) <-> ~ R' x y /\ ~ D) by intuition. split.
+        -- intros p. rewrite <- impl_and_r in p. apply e2.
+          decide (R' x y); decide D.
+          exists true. split; auto.
+          exists true. split; auto.
+          exists true. split; auto.
+          exists false. split.
+          intros ?; congruence.
+          intros [? | ?]; contradiction.
+          rewrite eqr. apply p.
+        -- intros p1. rewrite <- impl_and_r. rewrite <- eqr. apply e2.
+          decide (R' x y); decide D.
+          exists true. split; auto.
+          exists true. split; auto.
+          exists true. split; auto.
+          exists false. split.
+          intros ?; congruence.
+          intros [? | ?]; contradiction.
+          apply p1.
+      * intros R'' I x' y'. apply Hd'. right. auto.
+      * intros x' y'. auto.
+  - revert P' P1 IP' IP1 e1 e2 R Hd' Hd1 f g;
+    induction l as [| R' l' ri];
+    intros P' P1 IP' IP1 e1 e2 R Hd' Hd1 f g r.
+    + simp gdisrespectful1_fix gdisrespectful_fix' in *.
+      apply e1. apply r.
+    + simp gdisrespectful1_fix gdisrespectful_fix' in *.
+      intros x y. assert (Decidable (R' x y)).
+      { apply Hd'. left. reflexivity. }
+      eapply ri, r.
+      * intros C D e. rewrite e. reflexivity.
+      * intros C D e. rewrite e. reflexivity.
+      * intros C. split.
+        -- intros p. rewrite or_False_r. apply e2. typeclasses eauto. apply p.
+        -- intros p1. apply e2. typeclasses eauto. rewrite or_False_r in p1. apply p1.
+      * intros C D.
+          assert (eqr : ~ (R' x y \/ D) <-> ~ R' x y /\ ~ D) by intuition. split.
+        -- intros p. rewrite <- impl_and_r in p. apply e2.
+          decide (R' x y); decide D.
+          exists true. split; auto.
+          exists true. split; auto.
+          exists true. split; auto.
+          exists false. split.
+          intros ?; congruence.
+          intros [? | ?]; contradiction.
+          rewrite eqr. apply p.
+        -- intros p1. rewrite <- impl_and_r. rewrite <- eqr. apply e2.
+          decide (R' x y); decide D.
+          exists true. split; auto.
+          exists true. split; auto.
+          exists true. split; auto.
+          exists false. split.
+          intros ?; congruence.
+          intros [? | ?]; contradiction.
+          apply p1.
+      * intros R'' I x' y'. apply Hd'. right. auto.
+      * intros x' y'. auto. Qed.
+
+Lemma iff_gdisrespectful'_gdisrespectful1 (A B : Type)
   (R : relation B) (l : list (relation A))
   (Hd' : forall R' : relation A, In R' l -> forall x y : A, Decidable (R' x y))
   (Hd : forall x y : B, Decidable (R x y))
   (f g : grespectful_type A B (length l)) :
-  gdisrespectful' R l f g <-> gdisrespectful R l f g.
+  gdisrespectful' R l f g <-> gdisrespectful1 R l f g.
 Proof.
-  rewrite <- iff_gdisrespectful1_gdisrespectful.
-  unfold gdisrespectful', gdisrespectful1. split.
-  - intros C. revert Hd' Hd. induction l as [| R' l' Ci]; intros Hd' Hd.
-    + auto.
-    + hnf. admit.
-    (** This should be doable. *) Admitted.
+  unfold gdisrespectful1, gdisrespectful.
+  apply iff_gdisrespectful_fix'_gdisrespectful1_fix.
+  - typeclasses eauto.
+  - typeclasses eauto.
+  - intros C. unfold "id". intuition.
+  - intros C D ?. unfold "id". decide D; intuition.
+  - typeclasses eauto.
+  - typeclasses eauto. Qed.
 
 Lemma iff_respectful_gdisrespectful'_nil (A B : Type)
   (R : relation B)
@@ -1114,7 +1259,7 @@ Lemma iff_respectful_gdisrespectful'_nil (A B : Type)
   complement R f g <-> gdisrespectful' R [] f g.
 Proof.
   unfold "==>", gdisrespectful'. unfold gdisrespectful_fix'. unfold "id".
-  split; intuition. Qed.
+  intuition. Qed.
 
 #[useless]
 Lemma iff_respectful_gdisrespectful_1 (A B : Type)
