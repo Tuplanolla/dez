@@ -1,40 +1,13 @@
 From Coq Require Import
   Lists.List ZArith.ZArith.
-From Maniunfold Require Export
-  Init.
+From Maniunfold.Provides Require Export
+  LogicalTheorems.
 
 Import ListNotations.
 
 (** Indexed respectful setoid morphism digression... *)
 
 #[global] Instance id_Proper (A : Type) (R : relation A) : Proper (R ==> R) id.
-Proof. intuition. Qed.
-
-Lemma and_True_l (A : Prop) : 1 /\ A <-> A.
-Proof. intuition. Qed.
-
-Lemma and_True_r (A : Prop) : A /\ 1 <-> A.
-Proof. intuition. Qed.
-
-Lemma or_False_l (A : Prop) : 0 \/ A <-> A.
-Proof. intuition. Qed.
-
-Lemma or_False_r (A : Prop) : A \/ 0 <-> A.
-Proof. intuition. Qed.
-
-Lemma and_or_distr_l (A B C : Prop) : A /\ (B \/ C) <-> A /\ B \/ A /\ C.
-Proof. intuition. Qed.
-
-Lemma and_or_distr_r (A B C : Prop) : (A \/ B) /\ C <-> A /\ C \/ B /\ C.
-Proof. intuition. Qed.
-
-Lemma impl_and_l (A B C : Prop) : (A -> B /\ C) <-> (A -> B) /\ (A -> C).
-Proof. intuition. Qed.
-
-Lemma impl_and_r (A B C : Prop) : (A /\ B -> C) <-> (A -> B -> C).
-Proof. intuition. Qed.
-
-Lemma impl_or_r (A B C : Prop) : (A \/ B -> C) <-> (A -> C) /\ (B -> C).
 Proof. intuition. Qed.
 
 Equations out (A : Type) (x : A + A) : A :=

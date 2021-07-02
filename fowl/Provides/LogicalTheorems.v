@@ -2,6 +2,8 @@
 
 From Maniunfold Require Export
   Init.
+From Maniunfold.Is Require Export
+  Extensional OneSortedSemiring.
 
 (** ** Equalities *)
 
@@ -19,6 +21,53 @@ Lemma eq_Ssig (A : Type) (P : A -> SProp)
   (a0 : A) (b0 : P a0) (a1 : A) (b1 : P a1)
   (e : a0 = a1) : Sexists P a0 b0 = Sexists P a1 b1.
 Proof. auto using Spr1_inj. Qed.
+
+(** ** Semiring of Logical Equivalences *)
+
+Lemma and_True_l (A : Prop) : 1 /\ A <-> A.
+Proof. intuition. Qed.
+
+Lemma and_True_r (A : Prop) : A /\ 1 <-> A.
+Proof. intuition. Qed.
+
+Lemma or_False_l (A : Prop) : 0 \/ A <-> A.
+Proof. intuition. Qed.
+
+Lemma or_False_r (A : Prop) : A \/ 0 <-> A.
+Proof. intuition. Qed.
+
+Lemma and_or_distr_l (A B C : Prop) : A /\ (B \/ C) <-> A /\ B \/ A /\ C.
+Proof. intuition. Qed.
+
+Lemma and_or_distr_r (A B C : Prop) : (A \/ B) /\ C <-> A /\ C \/ B /\ C.
+Proof. intuition. Qed.
+
+Lemma impl_and_l (A B C : Prop) : (A -> B /\ C) <-> (A -> B) /\ (A -> C).
+Proof. intuition. Qed.
+
+Lemma impl_and_r (A B C : Prop) : (A /\ B -> C) <-> (A -> B -> C).
+Proof. intuition. Qed.
+
+Lemma impl_or_r (A B C : Prop) : (A \/ B -> C) <-> (A -> C) /\ (B -> C).
+Proof. intuition. Qed.
+
+Section Context.
+
+Context `(IsPropExt).
+
+#[local] Instance is_mon : IsMon 0 _\/_.
+Proof.
+  repeat split; hnf; unfold null_op, bin_op;
+  intros; apply prop_ext; intuition. Qed.
+
+(** TODO This could be nicer. *)
+
+#[local] Instance is_semiring : IsSemiring _\/_ 0 _/\_ 1.
+Proof.
+  repeat split; hnf; unfold zero, add, one, mul, null_op, bin_op;
+  intros; apply prop_ext; intuition. Qed.
+
+End Context.
 
 (** ** Category of Types *)
 

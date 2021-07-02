@@ -47,3 +47,8 @@ Proof.
 #[export] Hint Resolve is_fun_ext_dep is_prop_ext : typeclass_instances.
 
 End FromAxioms.
+
+(** Analogous in structure to [equal_f]. *)
+
+Lemma iff_f (A B : Prop) (a : A = B) : A <-> B.
+Proof. rewrite a. reflexivity. Qed.
