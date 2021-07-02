@@ -594,7 +594,7 @@ Corollary sigT_of_sig_equation_1 (A : Type) (P : A -> Prop) (a : A) (b : P a) :
 Proof. reflexivity. Qed.
 
 #[export] Hint Rewrite @sig_of_sigT_equation_1 : sig_of_sigT.
-#[export] Hint Rewrite @sigT_of_sig_equation_1 : sig_of_sig.
+#[export] Hint Rewrite @sigT_of_sig_equation_1 : sigT_of_sig.
 
 Arguments sig_of_sigT {_ _} !_.
 Arguments sigT_of_sig {_ _} !_.
