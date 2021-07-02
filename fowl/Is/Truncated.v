@@ -1,5 +1,7 @@
 (** * Contractibility and Proof Irrelevance and Uniqueness of Identity Proofs and Truncation *)
 
+From Coq Require Import
+  Logic.ProofIrrelevance.
 From Maniunfold.Has Require Export
   Decidability.
 
@@ -164,3 +166,14 @@ Proof. eauto 7 with trunc untrunc. Qed.
 
 #[export] Hint Resolve prop_contr_eq set_prop_eq
   contr_prop prop_set : typeclass_instances.
+
+Module FromAxioms.
+
+#[local] Instance is_prop (A : Prop) : IsProp A.
+Proof.
+  intros x y.
+  apply proof_irrelevance. Qed.
+
+#[export] Hint Resolve is_prop : typeclass_instances.
+
+End FromAxioms.
