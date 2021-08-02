@@ -1,11 +1,10 @@
 (** * Group *)
 
 From Maniunfold.Has Require Export
-  BinaryOperation NullaryOperation
-  UnaryOperation.
+  NullaryOperation UnaryOperation BinaryOperation.
 From Maniunfold.Is Require Export
-  Monoid Invertible
-  OneSortedCancellative OneSortedUnaryAntidistributive Injective
+  Monoid Invertible Injective
+  OneSortedCancellative OneSortedUnaryAntidistributive
   OneSortedInvolutive OneSortedUnaryAbsorbing.
 From Maniunfold.ShouldHave Require Import
   AdditiveNotations.
@@ -20,44 +19,36 @@ Section Context.
 
 Context (A : Type) `(IsGrp A).
 
-(** TODO If we use section notations here,
-    the following `Let` becomes useless. *)
-
-Let bin_op : HasBinOp A := bin_op.
-
-Theorem bin_op_l_cancel (x y z : A) (e : z + x = z + y) : x = y.
+#[local] Instance is_l_cancel : IsLCancel _+_.
 Proof.
+  intros x y z a.
   rewrite <- (unl_bin_op_l x).
   rewrite <- (inv_l z).
   rewrite <- (assoc (- z) z x).
-  rewrite e.
+  setoid_rewrite a.
   rewrite (assoc (- z) z y).
   rewrite (inv_l z).
   rewrite (unl_bin_op_l y).
   reflexivity. Qed.
 
-Global Instance bin_op_is_l_cancel : IsLCancel bin_op.
-Proof. exact @bin_op_l_cancel. Qed.
-
-Theorem bin_op_r_cancel (x y z : A) (e : x + z = y + z) : x = y.
+#[local] Instance is_r_cancel : IsRCancel _+_.
 Proof.
+  intros x y z a.
   rewrite <- (unl_bin_op_r x).
   rewrite <- (inv_r z).
   rewrite (assoc x z (- z)).
-  rewrite e.
+  setoid_rewrite a.
   rewrite <- (assoc y z (- z)).
   rewrite (inv_r z).
   rewrite (unl_bin_op_r y).
   reflexivity. Qed.
 
-Global Instance bin_op_is_r_cancel : IsRCancel bin_op.
-Proof. exact @bin_op_r_cancel. Qed.
-
-Global Instance bin_op_is_cancel : IsCancel bin_op.
+#[local] Instance is_cancel : IsCancel _+_.
 Proof. split; typeclasses eauto. Qed.
 
-Theorem bin_op_un_op_un_antidistr (x y : A) : - (x + y) = (- y) + (- x).
+#[local] Instance is_un_antidistr : IsUnAntidistr _+_ -_.
 Proof.
+  intros x y.
   apply (l_cancel (- (x + y)) ((- y) + (- x)) (x + y)).
   rewrite (inv_r (x + y)).
   rewrite (assoc (x + y) (- y) (- x)).
@@ -67,24 +58,20 @@ Proof.
   rewrite (inv_r x).
   reflexivity. Qed.
 
-Global Instance bin_op_un_op_is_un_antidistr : IsUnAntidistr bin_op un_op.
-Proof. exact @bin_op_un_op_un_antidistr. Qed.
-
-Theorem un_op_inj (x y : A) (e : - x = - y) : x = y.
+#[local] Instance is_inj : IsInj -_.
 Proof.
+  intros x y a.
   rewrite <- (unl_bin_op_l y).
   rewrite <- (inv_r x).
-  rewrite e.
+  setoid_rewrite a.
   rewrite <- (assoc x (- y) y).
   rewrite (inv_l y).
   rewrite (unl_bin_op_r x).
   reflexivity. Qed.
 
-Global Instance un_op_is_inj : IsInj un_op.
-Proof. exact @un_op_inj. Qed.
-
-Theorem un_op_invol (x : A) : - (- x) = x.
+#[local] Instance is_invol : IsInvol -_.
 Proof.
+  intros x.
   rewrite <- (unl_bin_op_r (- (- x))).
   rewrite <- (inv_l x).
   rewrite (assoc (- (- x)) (- x) x).
@@ -92,16 +79,14 @@ Proof.
   rewrite (unl_bin_op_l x).
   reflexivity. Qed.
 
-Global Instance un_op_is_invol : IsInvol un_op.
-Proof. exact @un_op_invol. Qed.
-
-Theorem null_op_un_op_un_absorb : - 0 = 0.
+#[local] Instance is_un_absorb : IsUnAbsorb 0 -_.
 Proof.
+  hnf.
   rewrite <- (unl_bin_op_r (- 0)).
   rewrite (inv_l 0).
   reflexivity. Qed.
 
-Global Instance null_op_un_op_is_un_absorb : IsUnAbsorb null_op un_op.
-Proof. exact @null_op_un_op_un_absorb. Qed.
-
 End Context.
+
+#[export] Hint Resolve is_l_cancel is_r_cancel is_cancel is_un_antidistr
+  is_inj is_invol is_un_absorb : typeclass_instances.

@@ -3,7 +3,7 @@ From Coq Require Import
 From Maniunfold.Has Require Export
   Action.
 From Maniunfold.Is Require Export
-  OneSortedGroup.
+  Group.
 From Maniunfold.Offers Require Export
   OneSortedPositiveOperations OneSortedNaturalOperations.
 From Maniunfold.ShouldOffer Require Import

@@ -29,6 +29,7 @@ digraph Is {
   IsFixed [label = "\N\nfixed : f x = x"]
   IsFunExt [label = "\N\nfun_ext (A B : Type) (f g : A -> B) (a : forall x : A, f x = g x) : f = g"]
   IsFunExtDep [label = "\N\nfun_ext_dep (A : Type) (P : A -> Type) (f g : forall x : A, P x) (a : forall x : A, f x = g x) : f = g"]
+  IsGrp [label = "\N"]
   IsIdem [label = "\N\nidem (x : A) : f (f x) = f x"]
   IsIdemBinOp [label = "\N\nidem_bin_op (x : A) : x * x = x"]
   IsIdemElem [label = "\N\nidem_elem : x * x = x"]
@@ -39,6 +40,7 @@ digraph Is {
   IsInvL [label = "\N\ninv_l (x : A) : (- x) + x = 0"]
   IsInvLR [label = "\N"]
   IsInvR [label = "\N\ninv_r (x : A) : x + (- x) = 0"]
+  IsInvol [label = "\N\ninvol (x : A) : f (f x) = x"]
   IsIrrefl [label = "\N\nirrefl (x : A) : ~ (x ~ x)"]
   IsIsoL [label = "\N\niso_l (a : A) : g (f a) = a"]
   IsIsoLR [label = "\N"]
@@ -83,6 +85,8 @@ digraph Is {
   IsApart -> IsSym
   IsDistrLR -> IsDistrL
   IsDistrLR -> IsDistrR
+  IsGrp -> IsInvLR
+  IsGrp -> IsMon
   IsInvLR -> IsInvL
   IsInvLR -> IsInvR
   IsIsoLR -> IsIsoL
@@ -142,6 +146,12 @@ digraph Is {
   IsUnlBinOpL -> IsUnlActL
   IsUnlBinOpLR -> IsUnlActLR
   IsUnlBinOpR -> IsUnlActR
+
+  // IsGrp -> IsCancel
+  // IsGrp -> IsUnAntidistr
+  IsGrp -> IsInj
+  IsGrp -> IsInvol
+  // IsGrp -> IsUnAbsorb
 
   // Other Libraries
 

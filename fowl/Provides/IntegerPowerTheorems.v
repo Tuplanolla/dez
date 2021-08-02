@@ -2,7 +2,7 @@
 From Coq Require Import
   ZArith.ZArith.
 From Maniunfold.Is Require Export
-  Magma Semigroup Monoid OneSortedGroup
+  Magma Semigroup Monoid Group
   TwoSortedLeftBinaryCommutative.
 From Maniunfold.Offers Require Export
   OneSortedPositiveOperations OneSortedNaturalOperations

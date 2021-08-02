@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
   BinaryOperation NullaryOperation UnaryOperation
   Action Torsion.
 From Maniunfold.Is Require Export
-  OneSortedGroup TwoSortedLeftGroupAction TwoSortedLeftUnique.
+  Group TwoSortedLeftGroupAction TwoSortedLeftUnique.
 
 Class IsLGrpTor (A B : Type)
   `(HasBinOp A) `(HasNullOp A)

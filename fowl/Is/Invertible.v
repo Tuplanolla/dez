@@ -3,7 +3,7 @@
 From Maniunfold.Has Require Export
   NullaryOperation UnaryOperation BinaryOperation.
 From Maniunfold.ShouldHave Require Import
-  OneSortedAdditiveNotations.
+  AdditiveNotations.
 
 Class IsInvL (A : Type)
   (Hx : HasNullOp A) (Hf : HasUnOp A) (Hk : HasBinOp A) : Prop :=

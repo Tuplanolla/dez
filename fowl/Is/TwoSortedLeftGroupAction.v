@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
   BinaryOperation NullaryOperation UnaryOperation
   Action.
 From Maniunfold.Is Require Export
-  OneSortedGroup TwoSortedLeftMonoidAction.
+  Group TwoSortedLeftMonoidAction.
 
 Class IsLGrpAct (A B : Type)
   `(HasBinOp A) `(HasNullOp A)
