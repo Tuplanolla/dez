@@ -4,7 +4,7 @@ From Maniunfold.Has Require Export
   NullaryOperation UnaryOperation BinaryOperation.
 From Maniunfold.Is Require Export
   Monoid Invertible Injective
-  OneSortedCancellative OneSortedUnaryAntidistributive
+  OneSortedUnaryAntidistributive
   OneSortedInvolutive OneSortedUnaryAbsorbing.
 From Maniunfold.ShouldHave Require Import
   AdditiveNotations.
@@ -19,19 +19,7 @@ Section Context.
 
 Context (A : Type) `(IsGrp A).
 
-#[local] Instance is_l_cancel : IsLCancel _+_.
-Proof.
-  intros x y z a.
-  rewrite <- (unl_bin_op_l x).
-  rewrite <- (inv_l z).
-  rewrite <- (assoc (- z) z x).
-  setoid_rewrite a.
-  rewrite (assoc (- z) z y).
-  rewrite (inv_l z).
-  rewrite (unl_bin_op_l y).
-  reflexivity. Qed.
-
-#[local] Instance is_r_cancel : IsRCancel _+_.
+#[local] Instance is_cancel_l : IsCancelL _+_.
 Proof.
   intros x y z a.
   rewrite <- (unl_bin_op_r x).
@@ -43,13 +31,25 @@ Proof.
   rewrite (unl_bin_op_r y).
   reflexivity. Qed.
 
-#[local] Instance is_cancel : IsCancel _+_.
+#[local] Instance is_cancel_r : IsCancelR _+_.
+Proof.
+  intros x y z a.
+  rewrite <- (unl_bin_op_l x).
+  rewrite <- (inv_l z).
+  rewrite <- (assoc (- z) z x).
+  setoid_rewrite a.
+  rewrite (assoc (- z) z y).
+  rewrite (inv_l z).
+  rewrite (unl_bin_op_l y).
+  reflexivity. Qed.
+
+#[local] Instance is_cancel_l_r : IsCancelLR _+_.
 Proof. split; typeclasses eauto. Qed.
 
 #[local] Instance is_un_antidistr : IsUnAntidistr _+_ -_.
 Proof.
   intros x y.
-  apply (l_cancel (- (x + y)) ((- y) + (- x)) (x + y)).
+  apply (cancel_r (- (x + y)) ((- y) + (- x)) (x + y)).
   rewrite (inv_r (x + y)).
   rewrite (assoc (x + y) (- y) (- x)).
   rewrite <- (assoc x y (- y)).
@@ -88,5 +88,5 @@ Proof.
 
 End Context.
 
-#[export] Hint Resolve is_l_cancel is_r_cancel is_cancel is_un_antidistr
+#[export] Hint Resolve is_cancel_l is_cancel_r is_cancel_l_r is_un_antidistr
   is_inj is_invol is_un_absorb : typeclass_instances.

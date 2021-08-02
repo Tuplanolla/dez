@@ -8,7 +8,7 @@ From Maniunfold.Has Require Export
   One.
 From Maniunfold.Is Require Export
   OneSortedAbelianGroup Distributive Monoid
-  OneSortedAbsorbing OneSortedSignedAbsorbing OneSortedBinaryCommutative
+  Absorbing OneSortedSignedAbsorbing OneSortedBinaryCommutative
   OneSortedBinaryCrossing OneSortedBinarySplitCancellative
   OneSortedDegenerate OneSortedSemiring OneSortedGradedRing
   Unital.
@@ -42,9 +42,9 @@ Ltac conversions := typeclasses
 (** TODO Decide whether this is a good or a bad feature
     of operational subclasses (hypothesis: bad). *)
 
-Theorem zero_mul_l_absorb (x : A) : 0 * x = 0.
+Theorem zero_mul_absorb_elem_l (x : A) : 0 * x = 0.
 Proof with conversions.
-  apply (l_cancel (0 * x) 0 (1 * x))...
+  apply (cancel_r (0 * x) 0 (1 * x))...
   pose proof unl_bin_op_r (Hk := add) as ea'...
   pose proof unl_bin_op_r (Hk := mul) as em'...
   pose proof unl_bin_op_r (Hk := add) as ea.
@@ -58,37 +58,37 @@ Proof with conversions.
   rewrite (unl_bin_op_r 1).
   reflexivity. Qed.
 
-Global Instance zero_mul_is_l_absorb : IsLAbsorb zero mul.
-Proof. exact @zero_mul_l_absorb. Qed.
+Global Instance zero_mul_is_absorb_elem_l : IsAbsorbElemL zero mul.
+Proof. exact @zero_mul_absorb_elem_l. Qed.
 
-Theorem zero_mul_r_absorb (x : A) : x * 0 = 0.
+Theorem zero_mul_absorb_elem_r (x : A) : x * 0 = 0.
 Proof with conversions.
-  apply (l_cancel (x * 0) 0 (x * 1))...
+  apply (cancel_r (x * 0) 0 (x * 1))...
   rewrite (unl_bin_op_r (x * 1)).
   rewrite <- (distr_l x 1 0).
   rewrite (unl_bin_op_r 1).
   reflexivity. Qed.
 
-Global Instance zero_mul_is_r_absorb : IsRAbsorb zero mul.
-Proof. exact @zero_mul_r_absorb. Qed.
+Global Instance zero_mul_is_absorb_elem_r : IsAbsorbElemR zero mul.
+Proof. exact @zero_mul_absorb_elem_r. Qed.
 
-Global Instance zero_mul_is_absorb : IsAbsorb zero mul.
+Global Instance zero_mul_is_absorb_elem_l_r : IsAbsorbElemLR zero mul.
 Proof. split; typeclasses eauto. Qed.
 
 Global Instance zero_neg_is_un_absorb : IsUnAbsorb zero neg.
 Proof with conversions.
   hnf...
-  apply (l_cancel (- 0) 0 0)...
+  apply (cancel_r (- 0) 0 0)...
   rewrite (inv_r 0)...
   rewrite (unl_bin_op_r 0).
   reflexivity. Qed.
 
 Theorem neg_mul_one_l_sgn_absorb (x : A) : (- 1) * x = - x.
 Proof with conversions.
-  apply (l_cancel ((- 1) * x) (- x) (1 * x))...
+  apply (cancel_r ((- 1) * x) (- x) (1 * x))...
   rewrite <- (distr_r 1 (- 1) x).
   rewrite (inv_r 1)...
-  rewrite (l_absorb x).
+  rewrite (absorb_elem_l x).
   rewrite (unl_bin_op_l x).
   rewrite (inv_r x)...
   reflexivity. Qed.
@@ -98,10 +98,10 @@ Proof. exact @neg_mul_one_l_sgn_absorb. Qed.
 
 Theorem neg_mul_one_r_sgn_absorb (x : A) : x * (- 1) = - x.
 Proof with conversions.
-  apply (l_cancel (x * (- 1)) (- x) (x * 1))...
+  apply (cancel_r (x * (- 1)) (- x) (x * 1))...
   rewrite <- (distr_l x 1 (- 1)).
   rewrite (inv_r 1)...
-  rewrite (r_absorb x).
+  rewrite (absorb_elem_r x).
   rewrite (unl_bin_op_r x).
   rewrite (inv_r x)...
   reflexivity. Qed.
@@ -161,14 +161,14 @@ Theorem one_zero_degen (x : A) (e : 1 = 0) : x = 0.
 Proof with conversions.
   pose proof distr_l x 0 1 as e'.
   rewrite unl_bin_op_l in e'. rewrite unl_bin_op_r in e' at 1. rewrite e in e'.
-  repeat rewrite r_absorb in e'. rewrite unl_bin_op_r in e'. apply e'. Qed.
+  repeat rewrite absorb_elem_r in e'. rewrite unl_bin_op_r in e'. apply e'. Qed.
 
 Global Instance one_zero_is_degen : IsDegen zero one.
 Proof. exact @one_zero_degen. Qed.
 
 (** TODO Clean up. *)
 
-Theorem mul_l_cancel (a : forall x y : A, x * y = 0 -> x = 0 \/ y = 0)
+Theorem mul_cancel_r (a : forall x y : A, x * y = 0 -> x = 0 \/ y = 0)
   (x y z : A) (e : z * x = z * y) (f : z <> 0) : x = y.
 Proof with conversions.
   assert (e' : z * x + - (z * y) = 0).
@@ -180,7 +180,7 @@ Proof with conversions.
   apply a in e'.
   destruct e' as [e' | e'].
   - congruence.
-  - apply (r_cancel x y (- y))...
+  - apply (cancel_l x y (- y))...
     rewrite e'.
     rewrite (inv_r y)...
     reflexivity. Qed.

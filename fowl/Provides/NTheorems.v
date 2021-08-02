@@ -736,13 +736,13 @@ Proof. intros x y z. apply N.mul_add_distr_r. Defined.
 Global Instance N_add_mul_is_distr : IsDistrLR mul add.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance N_zero_mul_is_l_absorb : IsLAbsorb zero mul.
+Global Instance N_zero_mul_is_absorb_elem_l : IsAbsorbElemL zero mul.
 Proof. intros x. apply N.mul_0_l. Defined.
 
-Global Instance N_zero_mul_is_r_absorb : IsRAbsorb zero mul.
+Global Instance N_zero_mul_is_absorb_elem_r : IsAbsorbElemR zero mul.
 Proof. intros x. apply N.mul_0_r. Defined.
 
-Global Instance N_zero_mul_is_absorb : IsAbsorb zero mul.
+Global Instance N_zero_mul_is_absorb_elem_l_r : IsAbsorbElemLR zero mul.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance N_add_zero_mul_one_is_semiring : IsSemiring add zero mul one.

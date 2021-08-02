@@ -763,13 +763,13 @@ Proof. intros x y z. Admitted.
 Global Instance poly_add_mul_is_distr : IsDistrLR mul add.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_zero_mul_is_l_absorb : IsLAbsorb zero mul.
+Global Instance poly_zero_mul_is_absorb_elem_l : IsAbsorbElemL zero mul.
 Proof. intros x. Admitted.
 
-Global Instance poly_zero_mul_is_r_absorb : IsRAbsorb zero mul.
+Global Instance poly_zero_mul_is_absorb_elem_r : IsAbsorbElemR zero mul.
 Proof. intros x. Admitted.
 
-Global Instance poly_zero_mul_is_absorb : IsAbsorb zero mul.
+Global Instance poly_zero_mul_is_absorb_elem_l_r : IsAbsorbElemLR zero mul.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_add_zero_mul_one_is_semiring : IsSemiring add zero mul one.

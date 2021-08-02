@@ -1,4 +1,4 @@
-(** * Invertibility of a Unary Operation with respect to a Binary Operation *)
+(** * Invertibility of a Unary Operation over a Binary Operation *)
 
 From Maniunfold.Has Require Export
   NullaryOperation UnaryOperation BinaryOperation.

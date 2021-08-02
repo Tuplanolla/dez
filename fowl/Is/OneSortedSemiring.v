@@ -6,7 +6,7 @@ From Maniunfold.Has Require Export
   Addition Zero Multiplication One.
 From Maniunfold.Is Require Export
   Commutative Monoid Distributive
-  OneSortedAbsorbing.
+  Absorbing.
 From Maniunfold.ShouldHave Require Import
   OneSortedArithmeticNotations.
 
@@ -17,7 +17,7 @@ Class IsSemiring (A : Type)
   mul_one_is_mon :> IsMon one mul;
   add_is_comm :> IsComm add;
   add_mul_is_distr :> IsDistrLR mul add;
-  zero_mul_is_absorb :> IsAbsorb zero mul;
+  zero_mul_is_absorb_elem_l_r :> IsAbsorbElemLR zero mul;
 }.
 
 Section Context.
@@ -37,8 +37,8 @@ Proof with conversions.
   rewrite <- (unl_bin_op_l x)...
   rewrite <- (unl_bin_op_l y)...
   rewrite <- e.
-  rewrite (l_absorb x).
-  rewrite (l_absorb y).
+  rewrite (absorb_elem_l x).
+  rewrite (absorb_elem_l y).
   reflexivity. Qed.
 
 End Context.

@@ -31,3 +31,7 @@ Proof. intros x a b. apply assoc. Qed.
 End Context.
 
 #[export] Hint Resolve is_compat is_compat_l is_compat_r : typeclass_instances.
+
+(** TODO Why is associativity and compatibility unified
+    just like injectivity and cancellativity,
+    but absorptivity and fixed points are not. *)

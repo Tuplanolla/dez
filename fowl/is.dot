@@ -9,6 +9,9 @@ digraph Is {
   IsApart [label = "\N"]
   IsAssoc [label = "\N\nassoc (x y z : A) : x * (y * z) = (x * y) * z"]
   IsAsym [label = "\N\nasym (x y : A) (a : x ~ y) (b : y ~ x) : 0"]
+  IsCancelL [label = "\N\ncancel_l (x y z : A) (a : x + z = y + z) : x = y"]
+  IsCancelLR [label = "\N"]
+  IsCancelR [label = "\N\ncancel_r (x y z : A) (a : z + x = z + y) : x = y"]
   IsCohOrdRels [label = "\N\ncoh_ord_rels (x y : A) : x < y <-> x <= y /\\ x <> y"]
   IsComm [label = "\N\ncomm (x y : A) : x * y = y * x"]
   IsComono [label = "\N\ncomono (x y : A) (a : f x <= f y) : x <= y"]
@@ -83,6 +86,8 @@ digraph Is {
   IsApart -> IsCotrans
   IsApart -> IsIrrefl
   IsApart -> IsSym
+  IsCancelLR -> IsCancelL
+  IsCancelLR -> IsCancelR
   IsDistrLR -> IsDistrL
   IsDistrLR -> IsDistrR
   IsGrp -> IsInvLR
@@ -147,7 +152,7 @@ digraph Is {
   IsUnlBinOpLR -> IsUnlActLR
   IsUnlBinOpR -> IsUnlActR
 
-  // IsGrp -> IsCancel
+  IsGrp -> IsCancelLR
   // IsGrp -> IsUnAntidistr
   IsGrp -> IsInj
   IsGrp -> IsInvol
