@@ -11,7 +11,7 @@ From Maniunfold.ShouldHave Require Import
 Class IsAbGrp (A : Type) `(HasBinOp A)
   `(HasNullOp A) `(HasUnOp A) : Prop := {
   A_bin_op_is_comm :> IsComm (bin_op (A := A));
-  A_bin_op_null_op_un_op_is_grp :> IsGrp bin_op null_op un_op;
+  A_bin_op_null_op_un_op_is_grp :> IsGrp null_op un_op bin_op;
 }.
 
 Section Context.

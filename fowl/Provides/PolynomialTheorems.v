@@ -546,9 +546,9 @@ Proof with conversions.
       rewrite Fab in Fa_bc. rewrite unl_bin_op_l in Fa_bc.
       subst c. apply (poly_lookup_wf z i). apply Dz.
   - f_equal. assert (Ha : a = a + (b + - b)).
-    { rewrite r_inv. rewrite unl_bin_op_r. reflexivity. }
+    { rewrite inv_r. rewrite unl_bin_op_r. reflexivity. }
     assert (Hc : c = (- b + b) + c).
-    { rewrite l_inv. rewrite unl_bin_op_l. reflexivity. }
+    { rewrite inv_l. rewrite unl_bin_op_l. reflexivity. }
     rewrite Ha. rewrite assoc...
     rewrite Fab. rewrite unl_bin_op_l.
     rewrite Hc. rewrite <- assoc...
@@ -605,16 +605,16 @@ Global Instance poly_bin_op_null_op_is_comm_mon :
   IsCommMon poly_add null_op.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_bin_op_null_op_un_op_is_l_inv_hom :
-  IsLInv poly_add null_op un_op.
+Global Instance poly_bin_op_null_op_un_op_is_inv_l_hom :
+  IsInvL null_op un_op poly_add.
 Proof.
   intros x. cbv [bin_op poly_has_bin_op poly_add
   null_op poly_has_null_op poly_zero
   un_op poly_has_un_op poly_neg].
   cbv [union_with map_union_with]. Admitted.
 
-Global Instance poly_bin_op_null_op_un_op_is_r_inv_hom :
-  IsRInv poly_add null_op un_op.
+Global Instance poly_bin_op_null_op_un_op_is_inv_r_hom :
+  IsInvR null_op un_op poly_add.
 Proof.
   intros x. cbv [bin_op poly_has_bin_op poly_add
   null_op poly_has_null_op poly_zero
@@ -622,11 +622,11 @@ Proof.
   cbv [union_with map_union_with]. Admitted.
 
 Global Instance poly_bin_op_null_op_un_op_is_inv_hom :
-  IsInvLR poly_add null_op un_op.
+  IsInvLR null_op un_op poly_add.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_un_op_is_grp :
-  IsGrp poly_add null_op un_op.
+  IsGrp null_op un_op poly_add.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_un_op_is_ab_grp :

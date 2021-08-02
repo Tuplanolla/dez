@@ -1,11 +1,21 @@
 From Maniunfold.Has Require Export
-  Morphism ComposedMorphism IdentityMorphism
-  InverseMorphism.
-From Maniunfold.Is Require Export
-  CategoricalLeftInvertible CategoricalRightInvertible.
+  Morphism IdentityMorphism InverseMorphism ComposedMorphism.
+From Maniunfold.ShouldHave Require Import
+  CategoricalNotations.
 
-Class IsCatInv (A : Type)
-  `(HasHom A) `(!HasCompHom hom) `(!HasIdHom hom) `(!HasInvHom hom) : Prop := {
-  comp_hom_id_hom_inv_hom_is_cat_l_inv_hom :> IsCatLInv comp_hom id_hom inv_hom;
-  comp_hom_id_hom_inv_hom_is_cat_r_inv_hom :> IsCatRInv comp_hom id_hom inv_hom;
+Class IsCatInvL (A : Type) (HC : HasHom A)
+  (Hx : HasIdHom _-->_) (Hf : HasInvHom _-->_)
+  (Hk : HasCompHom _-->_) : Prop :=
+  cat_inv_l (x y : A) (f : x --> y) : f o f ^-1 = id.
+
+Class IsCatInvR (A : Type) (HC : HasHom A)
+  (Hx : HasIdHom _-->_) (Hf : HasInvHom _-->_)
+  (Hk : HasCompHom _-->_) : Prop :=
+  cat_inv_r (x y : A) (f : x --> y) : f ^-1 o f = id.
+
+Class IsCatInvLR (A : Type) (HC : HasHom A)
+  (Hx : HasIdHom _-->_) (Hf : HasInvHom _-->_)
+  (Hk : HasCompHom _-->_) : Prop := {
+  is_cat_inv_l :> IsCatInvL Hx Hf Hk;
+  is_cat_inv_r :> IsCatInvR Hx Hf Hk;
 }.

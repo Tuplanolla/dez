@@ -29,18 +29,20 @@ digraph Is {
   IsFixed [label = "\N\nfixed : f x = x"]
   IsFunExt [label = "\N\nfun_ext (A B : Type) (f g : A -> B) (a : forall x : A, f x = g x) : f = g"]
   IsFunExtDep [label = "\N\nfun_ext_dep (A : Type) (P : A -> Type) (f g : forall x : A, P x) (a : forall x : A, f x = g x) : f = g"]
+  IsIdem [label = "\N\nidem (x : A) : f (f x) = f x"]
   IsIdemBinOp [label = "\N\nidem_bin_op (x : A) : x * x = x"]
   IsIdemElem [label = "\N\nidem_elem : x * x = x"]
-  IsIdem [label = "\N\nidem (x : A) : f (f x) = f x"]
   IsInfl [label = "\N\ninfl (x : A) : x <= f x"]
   IsInflateBinOpL [label = "\N\ninflate_bin_op_l (x y : A) : y <= x + y"]
   IsInflateBinOpR [label = "\N\ninflate_bin_op_r (x y : A) : x <= x + y"]
   IsInj [label = "\N\ninj (x y : A) (a : f x = f y) : x = y"]
-  IsIsoL [label = "\N\ninv_l (a : A) : g (f a) = a"]
+  IsInvL [label = "\N\ninv_l (x : A) : (- x) + x = 0"]
   IsInvLR [label = "\N"]
-  IsIsoR [label = "\N\ninv_r (b : B) : f (g b) = b"]
+  IsInvR [label = "\N\ninv_r (x : A) : x + (- x) = 0"]
   IsIrrefl [label = "\N\nirrefl (x : A) : ~ (x ~ x)"]
-  IsIso [label = "\N"]
+  IsIsoL [label = "\N\niso_l (a : A) : g (f a) = a"]
+  IsIsoLR [label = "\N"]
+  IsIsoR [label = "\N\niso_r (b : B) : f (g b) = b"]
   IsLowerBnd [label = "\N\nlower_bnd (y : A) : x <= y"]
   IsMag [label = "\N"]
   IsMon [label = "\N"]
@@ -81,8 +83,10 @@ digraph Is {
   IsApart -> IsSym
   IsDistrLR -> IsDistrL
   IsDistrLR -> IsDistrR
-  IsIso -> IsIsoL
-  IsIso -> IsIsoR
+  IsInvLR -> IsInvL
+  IsInvLR -> IsInvR
+  IsIsoLR -> IsIsoL
+  IsIsoLR -> IsIsoR
   IsMon -> IsSemigrp
   IsMon -> IsUnlBinOpLR
   IsSemigrp -> IsAssoc

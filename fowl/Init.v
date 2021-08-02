@@ -724,11 +724,6 @@ Proof. reflexivity. Qed.
 
 (** ** Respectful Relations and Morphisms *)
 
-Fail Fail Equations respectful (A B : Type)
-  (R : relation A) (R' : relation B) : relation (A -> B) :=
-  respectful R R' := fun f g : A -> B =>
-  forall x y : A, R x y -> R' (f x) (g y).
-
 Corollary respectful_equation_1
   (A B : Type) (R : relation A) (R' : relation B) :
   respectful R R' = fun f g : A -> B =>
@@ -741,14 +736,6 @@ Arguments respectful {_ _} _ _ /.
 
 Notation "'_==>_'" := respectful : signature_scope.
 Notation "R '==>' S" := (respectful R S) : signature_scope.
-
-Fail Fail Equations respectful_hetero
-  (A B : Type) (C : A -> Type) (D : B -> Type)
-  (R : A -> B -> Prop) (R' : forall (x : A) (y : B), C x -> D y -> Prop)
-  (f : forall x : A, C x) (g : forall x : B, D x) : Prop :=
-  respectful_hetero R R' :=
-  fun (f : forall x : A, C x) (g : forall x : B, D x) =>
-  forall (x : A) (y : B), R x y -> R' x y (f x) (g y).
 
 Corollary respectful_hetero_equation_1
   (A B : Type) (C : A -> Type) (D : B -> Type)

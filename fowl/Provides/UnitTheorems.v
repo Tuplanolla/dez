@@ -46,20 +46,20 @@ Global Instance unit_bin_op_null_op_is_comm_mon :
   IsCommMon (bin_op (A := unit)) null_op.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance unit_bin_op_null_op_un_op_is_l_inv_hom :
-  IsLInv (bin_op (A := unit)) null_op un_op.
+Global Instance unit_bin_op_null_op_un_op_is_inv_l_hom :
+  IsInvL null_op un_op (bin_op (A := unit)).
 Proof. intros x. eautodestruct. Defined.
 
-Global Instance unit_bin_op_null_op_un_op_is_r_inv_hom :
-  IsRInv (bin_op (A := unit)) null_op un_op.
+Global Instance unit_bin_op_null_op_un_op_is_inv_r_hom :
+  IsInvR null_op un_op (bin_op (A := unit)).
 Proof. intros x. eautodestruct. Defined.
 
 Global Instance unit_bin_op_null_op_un_op_is_inv_hom :
-  IsInvLR (bin_op (A := unit)) null_op un_op.
+  IsInvLR null_op un_op (bin_op (A := unit)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance unit_bin_op_null_op_un_op_is_grp :
-  IsGrp (bin_op (A := unit)) null_op un_op.
+  IsGrp null_op un_op (bin_op (A := unit)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance unit_bin_op_null_op_un_op_is_ab_grp :

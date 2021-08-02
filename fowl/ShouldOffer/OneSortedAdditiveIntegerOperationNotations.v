@@ -3,5 +3,5 @@ From Maniunfold.Offers Require Import
 From Maniunfold.ShouldHave Require Export
   OneSortedAdditiveNotations.
 
-Notation "'_*_'" := (z_op bin_op null_op un_op) : Z_scope.
-Notation "n '*' x" := (z_op bin_op null_op un_op n x) : Z_scope.
+Notation "'_*_'" := (z_op null_op un_op bin_op) : Z_scope.
+Notation "n '*' x" := (z_op null_op un_op bin_op n x) : Z_scope.
