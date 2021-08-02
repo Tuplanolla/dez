@@ -134,6 +134,11 @@ digraph Is {
   IsContr -> IsProp
   IsContr -> IsTrunc
   IsFunExtDep -> IsFunExt
+  IsGrp -> IsAntidistr
+  IsGrp -> IsCancelLR
+  IsGrp -> IsFixed
+  IsGrp -> IsInj
+  IsGrp -> IsInvol
   IsIdemBinOp -> IsIdemElem
   IsIsoL -> IsIsoR
   IsIsoR -> IsIsoL
@@ -151,12 +156,6 @@ digraph Is {
   IsUnlBinOpL -> IsUnlActL
   IsUnlBinOpLR -> IsUnlActLR
   IsUnlBinOpR -> IsUnlActR
-
-  IsGrp -> IsCancelLR
-  // IsGrp -> IsUnAntidistr
-  IsGrp -> IsInj
-  IsGrp -> IsInvol
-  // IsGrp -> IsUnAbsorb
 
   // Other Libraries
 

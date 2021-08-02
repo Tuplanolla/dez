@@ -7,7 +7,7 @@ From Maniunfold.Has Require Export
   Addition Zero Negation Multiplication
   One.
 From Maniunfold.Is Require Export
-  OneSortedAbelianGroup Distributive Monoid
+  OneSortedAbelianGroup Distributive Monoid Cancellative
   Absorbing OneSortedSignedAbsorbing OneSortedBinaryCommutative
   OneSortedBinaryCrossing OneSortedBinarySplitCancellative
   OneSortedDegenerate OneSortedSemiring OneSortedGradedRing
@@ -75,7 +75,7 @@ Proof. exact @zero_mul_absorb_elem_r. Qed.
 Global Instance zero_mul_is_absorb_elem_l_r : IsAbsorbElemLR zero mul.
 Proof. split; typeclasses eauto. Qed.
 
-Global Instance zero_neg_is_un_absorb : IsUnAbsorb zero neg.
+Global Instance zero_neg_is_fixed : IsFixed zero neg.
 Proof with conversions.
   hnf...
   apply (cancel_r (- 0) 0 0)...

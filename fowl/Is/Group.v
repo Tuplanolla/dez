@@ -3,9 +3,8 @@
 From Maniunfold.Has Require Export
   NullaryOperation UnaryOperation BinaryOperation.
 From Maniunfold.Is Require Export
-  Monoid Invertible Injective
-  OneSortedUnaryAntidistributive
-  OneSortedInvolutive OneSortedUnaryAbsorbing.
+  Monoid Invertible
+  Fixed Involutive Injective Cancellative Antidistributive.
 From Maniunfold.ShouldHave Require Import
   AdditiveNotations.
 
@@ -18,6 +17,34 @@ Class IsGrp (A : Type)
 Section Context.
 
 Context (A : Type) `(IsGrp A).
+
+#[local] Instance is_fixed : IsFixed 0 -_.
+Proof.
+  hnf.
+  rewrite <- (unl_bin_op_r (- 0)).
+  rewrite (inv_l 0).
+  reflexivity. Qed.
+
+#[local] Instance is_invol : IsInvol -_.
+Proof.
+  intros x.
+  rewrite <- (unl_bin_op_r (- (- x))).
+  rewrite <- (inv_l x).
+  rewrite (assoc (- (- x)) (- x) x).
+  rewrite (inv_l (- x)).
+  rewrite (unl_bin_op_l x).
+  reflexivity. Qed.
+
+#[local] Instance is_inj : IsInj -_.
+Proof.
+  intros x y a.
+  rewrite <- (unl_bin_op_l y).
+  rewrite <- (inv_r x).
+  setoid_rewrite a.
+  rewrite <- (assoc x (- y) y).
+  rewrite (inv_l y).
+  rewrite (unl_bin_op_r x).
+  reflexivity. Qed.
 
 #[local] Instance is_cancel_l : IsCancelL _+_.
 Proof.
@@ -46,7 +73,7 @@ Proof.
 #[local] Instance is_cancel_l_r : IsCancelLR _+_.
 Proof. split; typeclasses eauto. Qed.
 
-#[local] Instance is_un_antidistr : IsUnAntidistr _+_ -_.
+#[local] Instance is_antidistr : IsAntidistr -_ _+_ _+_.
 Proof.
   intros x y.
   apply (cancel_r (- (x + y)) ((- y) + (- x)) (x + y)).
@@ -58,35 +85,7 @@ Proof.
   rewrite (inv_r x).
   reflexivity. Qed.
 
-#[local] Instance is_inj : IsInj -_.
-Proof.
-  intros x y a.
-  rewrite <- (unl_bin_op_l y).
-  rewrite <- (inv_r x).
-  setoid_rewrite a.
-  rewrite <- (assoc x (- y) y).
-  rewrite (inv_l y).
-  rewrite (unl_bin_op_r x).
-  reflexivity. Qed.
-
-#[local] Instance is_invol : IsInvol -_.
-Proof.
-  intros x.
-  rewrite <- (unl_bin_op_r (- (- x))).
-  rewrite <- (inv_l x).
-  rewrite (assoc (- (- x)) (- x) x).
-  rewrite (inv_l (- x)).
-  rewrite (unl_bin_op_l x).
-  reflexivity. Qed.
-
-#[local] Instance is_un_absorb : IsUnAbsorb 0 -_.
-Proof.
-  hnf.
-  rewrite <- (unl_bin_op_r (- 0)).
-  rewrite (inv_l 0).
-  reflexivity. Qed.
-
 End Context.
 
-#[export] Hint Resolve is_cancel_l is_cancel_r is_cancel_l_r is_un_antidistr
-  is_inj is_invol is_un_absorb : typeclass_instances.
+#[export] Hint Resolve is_fixed is_inj is_invol
+  is_cancel_l is_cancel_r is_cancel_l_r is_antidistr : typeclass_instances.
