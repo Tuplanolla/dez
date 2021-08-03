@@ -5,7 +5,7 @@ From Maniunfold Require Export
 From Maniunfold.Has Require Export
   Addition Zero Multiplication One.
 From Maniunfold.Is Require Export
-  Monoid Commutative Distributive Absorbing.
+  Monoid Commutative Distributive Absorbing Degenerate.
 From Maniunfold.ShouldHave Require Import
   ArithmeticNotations.
 
@@ -22,21 +22,17 @@ Section Context.
 
 Context (A : Type) `(IsSemiring A).
 
-Import Addition.Subclass Zero.Subclass Negation.Subclass
-  Multiplication.Subclass One.Subclass.
-
-Ltac conversions := typeclasses
-  convert bin_op into add and null_op into zero or
-  convert bin_op into mul and null_op into one.
-
-Goal 0 = 1 -> forall x y : A, x = y.
-Proof with conversions.
-  intros e x y.
-  rewrite <- (unl_bin_op_l x)...
-  rewrite <- (unl_bin_op_l y)...
-  rewrite <- e.
-  rewrite (absorb_elem_l x).
-  rewrite (absorb_elem_l y).
+#[local] Instance is_degen : IsDegen 0 1.
+Proof.
+  intros a x y.
+  assert (f : forall z : A, z = 0).
+  { intros z.
+    pose proof f_equal (_*_ z) a as b.
+    rewrite (unl_bin_op_r z) in b.
+    rewrite (absorb_elem_r z) in b.
+    rewrite b.
+    reflexivity. }
+  rewrite (f x), (f y).
   reflexivity. Qed.
 
 End Context.

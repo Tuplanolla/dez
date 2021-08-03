@@ -54,14 +54,14 @@ Context (A : Type) (Hf : HasUnOp A) (Hk : HasBinOp A).
 
 (** Chiral commutativity is just commutativity of partial applications. *)
 
-#[local] Instance comm_r_is_inj `(!IsCommR /_ _*_)
+#[local] Instance comm_r_is_comm `(!IsCommR /_ _*_)
   (x : A) : IsComm /_ (_*_ x).
 Proof.
   intros y.
   rewrite comm_r.
   reflexivity. Qed.
 
-#[local] Instance comm_l_is_inj `(!IsCommL /_ _*_)
+#[local] Instance comm_l_is_comm `(!IsCommL /_ _*_)
   (y : A) : IsComm /_ (flip _*_ y).
 Proof.
   intros x.
