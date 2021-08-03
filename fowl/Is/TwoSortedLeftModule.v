@@ -3,7 +3,7 @@ From Maniunfold.Has Require Export
   Multiplication One
   Action.
 From Maniunfold.Is Require Export
-  OneSortedRing OneSortedAbelianGroup
+  Ring OneSortedAbelianGroup
   TwoSortedLeftRightDistributive TwoSortedLeftCompatible
   TwoSortedLeftUnital TwoSortedLeftLeftDistributive.
 
@@ -15,7 +15,7 @@ Class IsLMod (A B : Type)
   `(HasMul A) `(HasOne A)
   `(HasAdd B) `(HasZero B) `(HasNeg B)
   `(HasActL A B) : Prop := {
-  A_add_zero_neg_mul_one_is_ring :> IsRing add zero neg mul one;
+  A_zero_neg_add_one_mul_is_ring :> IsRing zero neg add one mul;
   B_add_zero_neg_is_ab_grp :> IsAbGrp add zero neg;
   A_B_add_add_act_l_is_two_l_distr_r :> IsTwoLDistrR add add act_l;
   A_B_mul_act_l_is_l_compat :> IsLCompat mul act_l;

@@ -1,19 +1,29 @@
 (** * Distributivity and Antidistributivity of a Function and a Binary Operation over a Binary Operation *)
 
 From Maniunfold.Has Require Export
-  Addition Multiplication.
-From Maniunfold.ShouldHave Require Import
-  ArithmeticNotations.
+  BinaryOperation Addition Multiplication.
+From Maniunfold.ShouldHave Require
+  AdditiveNotations ArithmeticNotations.
+
+Section Context.
+
+Import AdditiveNotations.
 
 (** This has the same shape as [opp_add_distr]. *)
 
 Class IsDistr (A B : Type) (f : A -> B)
-  (Hk : HasAdd A) (Hm : HasAdd B) : Prop :=
+  (Hk : HasBinOp A) (Hm : HasBinOp B) : Prop :=
   distr (x y : A) : f (x + y) = f x + f y.
 
 Class IsAntidistr (A B : Type) (f : A -> B)
-  (Hk : HasAdd A) (Hm : HasAdd B) : Prop :=
+  (Hk : HasBinOp A) (Hm : HasBinOp B) : Prop :=
   antidistr (x y : A) : f (x + y) = f y + f x.
+
+End Context.
+
+Section Context.
+
+Import ArithmeticNotations.
 
 (** This has the same shape as [mul_add_distr_l]. *)
 
@@ -29,3 +39,5 @@ Class IsDistrLR (A : Type) (Hk : HasMul A) (Hm : HasAdd A) : Prop := {
   is_distr_l :> IsDistrL _*_ _+_;
   is_distr_r :> IsDistrR _*_ _+_;
 }.
+
+End Context.

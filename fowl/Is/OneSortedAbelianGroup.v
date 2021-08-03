@@ -2,9 +2,9 @@ From Maniunfold.Has Require Export
   BinaryOperation NullaryOperation
   UnaryOperation.
 From Maniunfold.Is Require Export
-  Commutative Group OneSortedUnaryDistributive.
+  Commutative Group Distributive.
 From Maniunfold.ShouldHave Require Import
-  OneSortedAdditiveNotations.
+  AdditiveNotations.
 
 (** Abelian group, commutative group. *)
 
@@ -18,15 +18,12 @@ Section Context.
 
 Context (A : Type) `{IsAbGrp A}.
 
-Theorem A_bin_op_un_op_un_distr : forall x y : A,
-  - (x + y) = - x + - y.
+#[local] Instance is_distr : IsDistr -_ _+_ _+_.
 Proof.
   intros x y.
   rewrite (comm x y).
-  rewrite (un_antidistr y x).
-  reflexivity. Defined.
-
-Global Instance A_bin_op_un_op_is_un_distr : IsUnDistr bin_op un_op.
-Proof. intros x y. apply A_bin_op_un_op_un_distr. Defined.
+  apply (antidistr y x). Qed.
 
 End Context.
+
+#[export] Hint Resolve is_distr : typeclass_instances.

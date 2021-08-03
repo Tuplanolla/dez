@@ -92,7 +92,7 @@ Proof.
     reflexivity.
   - rewrite (iter_op_succ p (- x)).
     rewrite (iter_op_succ p x).
-    rewrite (un_antidistr x (Pos.iter_op bin_op p x)).
+    rewrite (antidistr x (Pos.iter_op bin_op p x)).
     rewrite IH.
     rewrite (iter_op_comm p (- x)).
     reflexivity. Defined.
@@ -106,7 +106,7 @@ Theorem n_op_un_op_two_l_bin_comm (n : N) (x : A) :
 Proof.
   destruct n as [| p].
   - cbv [n_op].
-    rewrite un_absorb.
+    rewrite fixed.
     reflexivity.
   - cbv [n_op].
     (* Here [rewrite] does not work for some reason. *)
@@ -121,7 +121,7 @@ Theorem z_op_un_op_two_l_bin_comm (n : Z) (x : A) :
 Proof.
   destruct n as [| p | p].
   - cbv [z_op].
-    rewrite un_absorb.
+    rewrite fixed.
     reflexivity.
   - cbv [z_op].
     etransitivity; [| apply (positive_op_un_op_two_l_bin_comm p x)].

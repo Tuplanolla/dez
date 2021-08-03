@@ -5,7 +5,7 @@ From Maniunfold.Has Require Export
   OneSortedEnumeration OneSortedCardinality.
 From Maniunfold.Is Require Export
   OneSortedFinite Isomorphism TwoSortedBimodule
-  OneSortedRing TwoSortedUnitalAssociativeAlgebra TwoSortedGradedAlgebra.
+  Ring TwoSortedUnitalAssociativeAlgebra TwoSortedGradedAlgebra.
 From Maniunfold.Offers Require Export
   OneSortedPositiveOperations OneSortedNaturalOperations
   OneSortedIntegerOperations.

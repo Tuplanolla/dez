@@ -6,7 +6,7 @@ From Maniunfold.Has Require Export
   ThreeSortedGradedBinaryFunction.
 From Maniunfold.Is Require Export
   TwoSortedLeftDistributive ThreeSortedBicompatible
-  OneSortedRing TwoSortedLeftModule TwoSortedRightModule
+  Ring TwoSortedLeftModule TwoSortedRightModule
   TwoSortedGradedLeftModule TwoSortedGradedRightModule
   ThreeSortedGradedBimodule
   TwoSortedGradedBimodule

@@ -1,7 +1,7 @@
 From Maniunfold.Has Require Import
   Reciprocation.
 From Maniunfold.Is Require Import
-  OneSortedRing.
+  Ring.
 From Maniunfold.ShouldHave Require Import
   OneSortedArithmeticNotations.
 

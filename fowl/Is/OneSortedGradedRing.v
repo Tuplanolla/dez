@@ -7,7 +7,7 @@ From Maniunfold.Is Require Export
 
 (** Graded noncommutative ring.
     The grading is carried by [A] and the ring by [P].
-    See [Is.OneSortedRing]. *)
+    See [Is.Ring]. *)
 
 Class IsGrdRing (A : Type) (P : A -> Type)
   `(HasBinOp A) `(HasNullOp A)

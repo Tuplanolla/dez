@@ -3,7 +3,7 @@ From Coq Require Import
 From Maniunfold.Is Require Export
   OneSortedAbelianGroup Semigroup
   Monoid OneSortedSemiring
-  OneSortedRing OneSortedCommutativeSemigroup OneSortedCommutativeMonoid
+  Ring OneSortedCommutativeSemigroup OneSortedCommutativeMonoid
   OneSortedCommutativeSemiring OneSortedCommutativeRing
   Equivalence PartialEquivalence Isomorphism.
 
@@ -134,7 +134,7 @@ Global Instance Z_add_zero_mul_one_is_comm_semiring :
   IsCommSemiring add zero mul one.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_add_zero_neg_mul_one_is_ring : IsRing add zero neg mul one.
+Global Instance Z_zero_neg_add_one_mul_is_ring : IsRing zero neg add one mul.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_mul_is_comm : IsComm mul.

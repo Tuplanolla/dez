@@ -11,11 +11,11 @@ From Maniunfold.Has Require Export
   OneSortedEnumeration OneSortedCardinality.
 From Maniunfold.Is Require Export
   OneSortedFinite Isomorphism
-  OneSortedRing TwoSortedUnitalAssociativeAlgebra TwoSortedGradedAlgebra.
+  Ring TwoSortedUnitalAssociativeAlgebra TwoSortedGradedAlgebra.
 From Maniunfold.Is Require Export
   OneSortedAbelianGroup Semigroup
   Monoid OneSortedSemiring
-  OneSortedRing.
+  Ring.
 From Maniunfold.Offers Require Export
   OneSortedPositiveOperations OneSortedNaturalOperations
   OneSortedIntegerOperations.
@@ -341,7 +341,7 @@ Next Obligation with conversions.
   rewrite lookup_fmap in Hyp.
   pose proof fmap_Some_1 _ _ _ Hyp as Hyp'.
   destruct Hyp' as [a [hx hy]].
-  rewrite <- un_absorb in hy... apply inj in hy. subst a.
+  rewrite <- (fixed (x := 0) (f := -_)) in hy. apply inj in hy. subst a.
   apply (poly_lookup_wf x i hx). Defined.
 
 (** Multiplication of polynomials.
@@ -779,8 +779,8 @@ Global Instance poly_add_zero_mul_one_is_comm_semiring :
   IsCommSemiring add zero mul one.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_add_zero_neg_mul_one_is_ring :
-  IsRing add zero neg mul one.
+Global Instance poly_zero_neg_add_one_mul_is_ring :
+  IsRing zero neg add one mul.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_mul_is_comm : IsComm mul.
