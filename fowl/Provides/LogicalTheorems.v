@@ -3,7 +3,7 @@
 From Maniunfold Require Export
   Init.
 From Maniunfold.Is Require Export
-  Extensional OneSortedSemiring.
+  Extensional Semiring.
 
 (** ** Equalities *)
 

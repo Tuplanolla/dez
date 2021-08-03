@@ -14,7 +14,7 @@ Class IsDistMon (A : Type)
   is_tot_ord :> IsTotOrd _<=_;
   is_lower_bnd :> IsLowerBnd 0 _<=_;
   is_mon :> IsMon 0 _+_;
-  is_comm :> IsComm _+_;
+  is_comm :> IsCommBinOp _+_;
   is_mono_bin_op :> IsMonoBinOp _<=_ _+_;
 }.
 
@@ -29,7 +29,7 @@ Class IsPartOrdCommSemigrp (A : Type)
   some_property_l (x y : A) : x <= x + y;
   (* some_property_r (x y : A) : y <= x + y; *)
   is_semigrp :> IsSemigrp _+_;
-  is_comm :> IsComm _+_;
+  is_comm :> IsCommBinOp _+_;
   is_mono_bin_op :> IsMonoBinOp _<=_ _+_;
 }.
 
@@ -44,15 +44,15 @@ Class IsMetric (A B : Type)
 
 (** TODO Commutative torsors here? *)
 
-Class IsComm' (A B : Type) (Hd : HasDist A B) : Prop :=
-  comm' (x y : B) : dist x y = dist y x.
+Class IsCommBinOp' (A B : Type) (Hd : HasDist A B) : Prop :=
+  comm_bin_op' (x y : B) : dist x y = dist y x.
 
 Section Context.
 
 Context (A B : Type) (HR : HasOrdRel A) (Hx : HasNullOp A) (Hk : HasBinOp A)
   (Hd : HasDist A B) `(!IsMetric _<=_ 0 _+_ dist).
 
-#[local] Instance is_comm' : IsComm' dist.
+#[local] Instance is_comm' : IsCommBinOp' dist.
 Proof. intros x y. Abort.
 
 (** Also [0 <= dist x y] and [dist x y = 0 <-> x = y]. *)

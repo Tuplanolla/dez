@@ -1,6 +1,6 @@
 From Maniunfold.Is Require Export
   OneSortedAbelianGroup Semigroup
-  Monoid OneSortedSemiring
+  Monoid Semiring
   Ring OneSortedCommutativeSemigroup OneSortedCommutativeMonoid
   OneSortedCommutativeSemiring OneSortedCommutativeRing.
 
@@ -24,7 +24,7 @@ Proof. intros x y z. eautodestruct. Defined.
 Global Instance unit_bin_op_is_semigrp : IsSemigrp (bin_op (A := unit)).
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance unit_bin_op_is_comm : IsComm (bin_op (A := unit)).
+Global Instance unit_bin_op_is_comm : IsCommBinOp (bin_op (A := unit)).
 Proof. intros x y. eautodestruct. Defined.
 
 Global Instance unit_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := unit)).
@@ -82,7 +82,7 @@ Proof. intros x y z. eautodestruct. Defined.
 Global Instance unit_bin_op_is_semigrp : IsSemigrp (bin_op (A := unit)).
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance unit_bin_op_is_comm : IsComm (bin_op (A := unit)).
+Global Instance unit_bin_op_is_comm : IsCommBinOp (bin_op (A := unit)).
 Proof. intros x y. eautodestruct. Defined.
 
 Global Instance unit_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := unit)).
@@ -112,7 +112,7 @@ Global Instance unit_has_neg : HasNeg unit := un_op.
 Global Instance unit_has_mul : HasMul unit := bin_op.
 Global Instance unit_has_one : HasOne unit := null_op.
 
-Global Instance unit_add_is_comm : IsComm add.
+Global Instance unit_add_is_comm : IsCommBinOp add.
 Proof. intros x y. eautodestruct. Defined.
 
 Global Instance unit_add_mul_is_distr_l : IsDistrL mul add.
@@ -144,7 +144,7 @@ Global Instance unit_zero_neg_add_one_mul_is_ring :
   IsRing zero neg add one mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance unit_mul_is_comm : IsComm mul.
+Global Instance unit_mul_is_comm : IsCommBinOp mul.
 Proof. intros x y. eautodestruct. Defined.
 
 Global Instance unit_add_zero_neg_mul_one_is_comm_ring :

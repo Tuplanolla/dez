@@ -1,23 +1,21 @@
-(** * Semiring (bad) *)
+(** * Semiring *)
 
 From Maniunfold Require Export
   TypeclassTactics.
 From Maniunfold.Has Require Export
   Addition Zero Multiplication One.
 From Maniunfold.Is Require Export
-  Commutative Monoid Distributive
-  Absorbing.
+  Monoid Commutative Distributive Absorbing.
 From Maniunfold.ShouldHave Require Import
-  OneSortedArithmeticNotations.
+  ArithmeticNotations.
 
 Class IsSemiring (A : Type)
-  (Hk : HasAdd A) (Hx : HasZero A)
-  (Hm : HasMul A) (Hy : HasOne A) : Prop := {
-  add_zero_is_mon :> IsMon zero add;
-  mul_one_is_mon :> IsMon one mul;
-  add_is_comm :> IsComm add;
-  add_mul_is_distr :> IsDistrLR mul add;
-  zero_mul_is_absorb_elem_l_r :> IsAbsorbElemLR zero mul;
+  (Hx : HasZero A) (Hk : HasAdd A) (Hy : HasOne A) (Hm : HasMul A) : Prop := {
+  add_is_mon :> IsMon 0 _+_;
+  add_is_comm :> IsCommBinOp _+_;
+  mul_is_mon :> IsMon 1 _*_;
+  is_distr_l_r :> IsDistrLR _*_ _+_;
+  is_absorb_elem_l_r :> IsAbsorbElemLR 0 _*_;
 }.
 
 Section Context.

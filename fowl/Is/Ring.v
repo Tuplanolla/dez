@@ -10,7 +10,7 @@ From Maniunfold.Is Require Export
   Group Commutative Monoid Distributive
   Cancellative Absorbing OneSortedSignedAbsorbing OneSortedBinaryCommutative
   OneSortedBinaryCrossing OneSortedBinarySplitCancellative
-  OneSortedDegenerate OneSortedSemiring OneSortedGradedRing
+  OneSortedDegenerate Semiring OneSortedGradedRing
   Unital.
 From Maniunfold.ShouldHave Require Import
   AdditiveNotations ArithmeticNotations.
@@ -20,9 +20,9 @@ From Maniunfold.ShouldHave Require
 Class IsRing (A : Type)
   (Hx : HasZero A) (Hf : HasNeg A) (Hk : HasAdd A)
   (Hy : HasOne A) (Hm : HasMul A) : Prop := {
-  is_grp :> IsGrp 0 -_ _+_;
-  is_comm :> IsComm _+_;
-  is_mon :> IsMon 1 _*_;
+  add_is_grp :> IsGrp 0 -_ _+_;
+  add_is_comm :> IsCommBinOp _+_;
+  mul_is_mon :> IsMon 1 _*_;
   is_distr_l_r :> IsDistrLR _*_ _+_;
 }.
 
@@ -58,6 +58,11 @@ Proof with conversions.
 #[local] Instance is_absorb_elem_l_r : IsAbsorbElemLR 0 _*_.
 Proof. split; typeclasses eauto. Qed.
 
+#[local] Instance is_semiring : IsSemiring 0 _+_ 1 _*_.
+Proof. split; typeclasses eauto. Qed.
+
+#[local] Notation "`(- 1)" := (- 1).
+
 Theorem neg_mul_one_l_sgn_absorb (x : A) : (- 1) * x = - x.
 Proof with conversions.
   apply (cancel_l ((- 1) * x) (- x) (1 * x))...
@@ -87,50 +92,43 @@ Proof. exact @neg_mul_one_r_sgn_absorb. Qed.
 Global Instance neg_mul_one_is_sgn_absorb : IsSgnAbsorb neg mul one.
 Proof. split; typeclasses eauto. Qed.
 
-Theorem neg_mul_l_bin_comm (x y : A) : - (x * y) = x * (- y).
+#[local] Instance is_comm_l : IsCommL -_ _*_.
 Proof with conversions.
-  rewrite <- (r_sgn_absorb (x * y)).
-  rewrite <- (assoc x y (- 1))...
-  rewrite r_sgn_absorb.
+  intros x y.
+  typeclasses convert un_op into neg and bin_op into mul.
+  apply (cancel_l ((- x) * y) (- (x * y)) (x * y))...
+  rewrite <- (distr_r x (- x) y).
+  rewrite (inv_r x)...
+  rewrite (absorb_elem_l y).
+  rewrite (inv_r (x * y))...
   reflexivity. Qed.
 
-Global Instance neg_mul_is_l_bin_comm : IsLBinComm neg mul.
-Proof. exact @neg_mul_l_bin_comm. Qed.
-
-Theorem neg_mul_r_bin_comm (x y : A) : - (x * y) = (- x) * y.
+#[local] Instance is_comm_r : IsCommR -_ _*_.
 Proof with conversions.
-  rewrite <- (l_sgn_absorb (x * y)).
-  rewrite (assoc (- 1) x y)...
-  rewrite l_sgn_absorb.
+  intros x y.
+  typeclasses convert un_op into neg and bin_op into mul.
+  apply (cancel_l (x * (- y)) (- (x * y)) (x * y))...
+  rewrite <- (distr_l x y (- y)).
+  rewrite (inv_r y)...
+  rewrite (absorb_elem_r x).
+  rewrite (inv_r (x * y))...
   reflexivity. Qed.
 
-Global Instance neg_mul_is_r_bin_comm : IsRBinComm neg mul.
-Proof. exact @neg_mul_r_bin_comm. Qed.
-
-Global Instance neg_mul_is_bin_comm : IsBinComm neg mul.
+#[local] Instance is_comm_l_r : IsCommLR -_ _*_.
 Proof. split; typeclasses eauto. Qed.
 
-Theorem neg_mul_bin_crs (x y : A) : (- x) * y = x * (- y).
+Lemma comm_l_r (x y : A) : (- x) * y = x * (- y).
 Proof with conversions.
-  rewrite <- (l_bin_comm x y).
-  rewrite <- (r_bin_comm x y).
+  rewrite (comm_l x y)...
+  rewrite (comm_r x y)...
   reflexivity. Qed.
 
-Global Instance neg_mul_is_bin_crs : IsBinCrs neg mul.
-Proof. exact @neg_mul_bin_crs. Qed.
-
-Theorem neg_mul_bin_spt_cancel (x y : A) : (- x) * (- y) = x * y.
+Lemma invol_l_r (x y : A) : (- x) * (- y) = x * y.
 Proof with conversions.
-  rewrite <- (r_bin_comm x (- y)).
-  rewrite <- (l_bin_comm x y).
+  rewrite (comm_l x (- y)).
+  rewrite (comm_r x y).
   rewrite (invol (x * y)).
   reflexivity. Qed.
-
-Global Instance neg_mul_is_bin_spt_cancel : IsBinSptCancel neg mul.
-Proof. exact @neg_mul_bin_spt_cancel. Qed.
-
-Global Instance add_zero_mul_one_is_semiring : IsSemiring add zero mul one.
-Proof. split; typeclasses eauto. Qed.
 
 Theorem one_zero_degen (x : A) (e : 1 = 0) : x = 0.
 Proof with conversions.
@@ -152,7 +150,8 @@ Proof with conversions.
   { rewrite e.
     rewrite (inv_r (z * y))...
     reflexivity. }
-  rewrite l_bin_comm in e'.
+  rewrite <- comm_r in e'...
+  typeclasses convert un_op into neg.
   rewrite <- distr_l in e'.
   apply a in e'.
   destruct e' as [e' | e'].

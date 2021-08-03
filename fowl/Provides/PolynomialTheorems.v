@@ -14,7 +14,7 @@ From Maniunfold.Is Require Export
   Ring TwoSortedUnitalAssociativeAlgebra TwoSortedGradedAlgebra.
 From Maniunfold.Is Require Export
   OneSortedAbelianGroup Semigroup
-  Monoid OneSortedSemiring
+  Monoid Semiring
   Ring.
 From Maniunfold.Offers Require Export
   OneSortedPositiveOperations OneSortedNaturalOperations
@@ -557,7 +557,7 @@ Proof with conversions.
 Global Instance poly_bin_op_is_semigrp : IsSemigrp poly_add.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_bin_op_is_comm : IsComm poly_add.
+Global Instance poly_bin_op_is_comm : IsCommBinOp poly_add.
 Proof with conversions.
   intros x y. cbv [bin_op poly_has_bin_op poly_add].
   cbv [union_with map_union_with].
@@ -573,9 +573,9 @@ Proof with conversions.
   cbv [union_with option_union_with].
   decide (a + b <> 0) as [Fab | Fab];
   decide (b + a <> 0) as [Fba | Fba]; stabilize; cbn.
-  - f_equal. rewrite comm... reflexivity.
-  - exfalso. apply Fab. rewrite comm... apply Fba.
-  - exfalso. apply Fba. rewrite comm... apply Fab.
+  - f_equal. rewrite comm_bin_op... reflexivity.
+  - exfalso. apply Fab. rewrite comm_bin_op... apply Fba.
+  - exfalso. apply Fba. rewrite comm_bin_op... apply Fab.
   - reflexivity. Defined.
 
 Global Instance poly_bin_op_is_comm_semigrp : IsCommSemigrp poly_add.
@@ -690,7 +690,7 @@ Proof with conversions.
 Global Instance poly_bin_op_is_semigrp : IsSemigrp poly_mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_bin_op_is_comm : IsComm poly_mul.
+Global Instance poly_bin_op_is_comm : IsCommBinOp poly_mul.
 Proof.
   intros x y.
   cbv [bin_op poly_has_bin_op]; cbv [poly_mul].
@@ -783,7 +783,7 @@ Global Instance poly_zero_neg_add_one_mul_is_ring :
   IsRing zero neg add one mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_mul_is_comm : IsComm mul.
+Global Instance poly_mul_is_comm : IsCommBinOp mul.
 Proof. intros x y. Admitted.
 
 Global Instance poly_add_zero_neg_mul_one_is_comm_ring :
@@ -823,7 +823,7 @@ Proof with conversions.
     cbv [map_sum]. rewrite <- insert_empty. rewrite map_fold_insert_L.
     + cbn. rewrite map_fold_empty. rewrite unl_bin_op_r. cbv [poly_value_eval].
       rewrite unl_bin_op_l. reflexivity.
-    + cbn. intros ? ? a b c **. rewrite assoc... rewrite (comm a b)...
+    + cbn. intros ? ? a b c **. rewrite assoc... rewrite (comm_bin_op a b)...
       rewrite <- assoc... reflexivity.
     + rewrite lookup_empty. reflexivity.
   - apply dec_stable in F10. rewrite F10.

@@ -7,6 +7,6 @@ From Maniunfold.Is Require Export
 
 Class IsCommMon (A : Type)
   `(HasBinOp A) `(HasNullOp A) : Prop := {
-  A_bin_op_is_comm :> IsComm (bin_op (A := A));
+  A_bin_op_is_comm :> IsCommBinOp (bin_op (A := A));
   A_bin_op_null_op_is_mon :> IsMon null_op bin_op;
 }.
