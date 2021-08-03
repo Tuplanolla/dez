@@ -87,5 +87,5 @@ Proof.
 
 End Context.
 
-#[export] Hint Resolve is_fixed is_inj is_invol
+#[export] Hint Resolve is_fixed is_invol is_inj
   is_cancel_l is_cancel_r is_cancel_l_r is_antidistr : typeclass_instances.
