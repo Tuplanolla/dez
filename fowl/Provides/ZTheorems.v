@@ -127,7 +127,7 @@ Proof. intros x. apply Z.mul_0_r. Defined.
 Global Instance Z_zero_mul_is_absorb_elem_l_r : IsAbsorbElemLR zero mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_add_zero_mul_one_is_semiring : IsSemiring add zero mul one.
+Global Instance Z_zero_add_one_mul_is_semiring : IsSemiring zero add one mul.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_add_zero_mul_one_is_comm_semiring :

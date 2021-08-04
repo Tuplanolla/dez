@@ -62,7 +62,7 @@ Proof.
 
 (** TODO This could be nicer. *)
 
-#[local] Instance is_semiring : IsSemiring _\/_ 0 _/\_ 1.
+#[local] Instance is_semiring : IsSemiring 0 _\/_ 1 _/\_.
 Proof.
   repeat split; hnf; unfold zero, add, one, mul, null_op, bin_op;
   intros; apply prop_ext; intuition. Qed.

@@ -27,24 +27,6 @@ Class IsCommLR (A : Type) (Hf : HasUnOp A) (Hk : HasBinOp A) : Prop := {
 Class IsCommBinOp (A : Type) (Hk : HasBinOp A) : Prop :=
   comm_bin_op (x y : A) : x * y = y * x.
 
-Section Context.
-
-#[local] Open Scope left_torsion_scope.
-
-Class IsCommTorL (A B : Type) (Hl : HasTorL A B) : Prop :=
-  comm_tor_l (x y : B) : y / x = x / y.
-
-End Context.
-
-Section Context.
-
-#[local] Open Scope right_torsion_scope.
-
-Class IsCommTorR (A B : Type) (Hr : HasTorR A B) : Prop :=
-  comm_tor_r (x y : B) : y / x = x / y.
-
-End Context.
-
 Class IsComm (A : Type) (f g : A -> A) : Prop :=
   comm (x : A) : f (g x) = g (f x).
 
@@ -70,3 +52,46 @@ Proof.
   reflexivity. Qed.
 
 End Context.
+
+Section Context.
+
+#[local] Open Scope left_torsion_scope.
+
+Class IsCommTorL (A B : Type) (Hl : HasTorL A B) : Prop :=
+  comm_tor_l (x y : B) : y / x = x / y.
+
+End Context.
+
+Section Context.
+
+#[local] Open Scope right_torsion_scope.
+
+Class IsCommTorR (A B : Type) (Hr : HasTorR A B) : Prop :=
+  comm_tor_r (x y : B) : y / x = x / y.
+
+End Context.
+
+Section Context.
+
+#[local] Open Scope left_torsion_scope.
+
+Context (A : Type) (Hl : HasTorL A A) `(!IsCommTorL _/_).
+
+#[local] Instance tor_l_is_comm_bin_op : IsCommBinOp _/_.
+Proof. intros x y. apply comm_tor_l. Qed.
+
+End Context.
+
+Section Context.
+
+#[local] Open Scope right_torsion_scope.
+
+Context (A : Type) (Hr : HasTorR A A) `(!IsCommTorR _/_).
+
+#[local] Instance tor_r_is_comm_bin_op : IsCommBinOp _/_.
+Proof. intros x y. apply comm_tor_r. Qed.
+
+End Context.
+
+#[export] Hint Resolve tor_l_is_comm_bin_op
+  tor_r_is_comm_bin_op : typeclass_instances.

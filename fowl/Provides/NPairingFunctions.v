@@ -12,6 +12,9 @@ From Maniunfold.Provides Require Export
 
 Import ListNotations N.
 
+(** TODO This breaks [lia] for some reason. *)
+
+#[local] Unset Keyed Unification.
 #[local] Open Scope N_scope.
 
 (** We define pairing functions by partitioning natural numbers

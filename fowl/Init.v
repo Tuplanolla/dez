@@ -56,6 +56,11 @@ From Equations.Prop Require Export
 #[global] Unset Contextual Implicit.
 #[global] Set Reversible Pattern Implicit.
 
+(** We enable keyed unification,
+    because [rewrite] does not work properly otherwise. *)
+
+#[global] Set Keyed Unification.
+
 (** We need to enable universe polymorphism
     for unification of strict propositions,
     even though the feature is experimental and

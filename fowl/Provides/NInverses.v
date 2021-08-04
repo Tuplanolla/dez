@@ -452,7 +452,7 @@ Proof.
   unfold unmiff_round_down.
   pose proof inflate_miff a as l.
   apply (@mono_unmiff_round_down unmiff_round_up _) in l.
-  rewrite sect_miff_round_up in l.
+  setoid_rewrite sect_miff_round_up in l.
   apply l. Qed.
 
 Lemma unmiff_round_up_elim (a : A) (b : B)
@@ -470,7 +470,7 @@ Proof.
     assert (lb1 : a <= unmiff_round_up b) by lia.
     clear fb lb.
     pose proof (@mono_unmiff_round_down unmiff_round_up _) b (miff a) ltac:(lia) as lb0.
-    rewrite sect_miff_round_up in lb0.
+    setoid_rewrite sect_miff_round_up in lb0.
     lia. Qed.
 
 End Context.

@@ -14,7 +14,11 @@ From Maniunfold.Provides Require Import
 From Coq Require Import Lia List Recdef.
 Import ListNotations Pos.
 
-(** TODO Why does this break? *)
+(** TODO This breaks [lia] for some reason. *)
+
+#[local] Unset Keyed Unification.
+
+(** TODO Why does this break too? *)
 
 Unset Universe Polymorphism.
 

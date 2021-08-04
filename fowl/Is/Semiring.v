@@ -20,6 +20,8 @@ Class IsSemiring (A : Type)
 
 Section Context.
 
+Import One.Subclass Multiplication.Subclass.
+
 Context (A : Type) `(IsSemiring A).
 
 #[local] Instance is_degen : IsDegen 0 1.
@@ -28,7 +30,7 @@ Proof.
   assert (f : forall z : A, z = 0).
   { intros z.
     pose proof f_equal (_*_ z) a as b.
-    rewrite (unl_bin_op_r z) in b.
+    setoid_rewrite (unl_bin_op_r z) in b.
     rewrite (absorb_elem_r z) in b.
     rewrite b.
     reflexivity. }

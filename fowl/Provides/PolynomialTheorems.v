@@ -529,30 +529,32 @@ Proof with conversions.
   decide (b + c <> 0) as [Fbc | Fbc]; stabilize; cbn.
   - decide (a + (b + c) <> 0) as [Fa_bc | Fa_bc];
     decide ((a + b) + c <> 0) as [Fab_c | Fab_c]; stabilize; cbn.
-    + f_equal. rewrite assoc... reflexivity.
-    + exfalso. apply Fa_bc. rewrite assoc... apply Fab_c.
-    + exfalso. apply Fab_c. rewrite <- assoc... apply Fa_bc.
+    + f_equal. setoid_rewrite assoc... reflexivity.
+    + exfalso. apply Fa_bc. setoid_rewrite assoc... apply Fab_c.
+    + exfalso. apply Fab_c. setoid_rewrite <- assoc... apply Fa_bc.
     + reflexivity.
   - decide ((a + b) + c <> 0) as [Fab_c | Fab_c];
     stabilize; cbn.
-    + f_equal. rewrite <- assoc... rewrite Fbc. rewrite unl_bin_op_r. reflexivity.
-    + exfalso. rewrite <- assoc in Fab_c...
-      rewrite Fbc in Fab_c. rewrite unl_bin_op_r in Fab_c.
+    + f_equal. setoid_rewrite <- assoc... rewrite Fbc.
+      setoid_rewrite unl_bin_op_r. reflexivity.
+    + exfalso. setoid_rewrite <- assoc in Fab_c...
+      rewrite Fbc in Fab_c. setoid_rewrite unl_bin_op_r in Fab_c.
       subst a. apply (poly_lookup_wf x i). apply Dx.
   - decide (a + (b + c) <> 0) as [Fa_bc | Fa_bc];
     stabilize; cbn.
-    + f_equal. rewrite assoc... rewrite Fab. rewrite unl_bin_op_l. reflexivity.
-    + exfalso. rewrite assoc in Fa_bc...
-      rewrite Fab in Fa_bc. rewrite unl_bin_op_l in Fa_bc.
+    + f_equal. setoid_rewrite assoc... rewrite Fab.
+      setoid_rewrite unl_bin_op_l. reflexivity.
+    + exfalso. setoid_rewrite assoc in Fa_bc...
+      rewrite Fab in Fa_bc. setoid_rewrite unl_bin_op_l in Fa_bc.
       subst c. apply (poly_lookup_wf z i). apply Dz.
   - f_equal. assert (Ha : a = a + (b + - b)).
-    { rewrite inv_r. rewrite unl_bin_op_r. reflexivity. }
+    { setoid_rewrite inv_r. setoid_rewrite unl_bin_op_r. reflexivity. }
     assert (Hc : c = (- b + b) + c).
-    { rewrite inv_l. rewrite unl_bin_op_l. reflexivity. }
-    rewrite Ha. rewrite assoc...
-    rewrite Fab. rewrite unl_bin_op_l.
-    rewrite Hc. rewrite <- assoc...
-    rewrite Fbc. rewrite unl_bin_op_r. reflexivity. Defined.
+    { setoid_rewrite inv_l. setoid_rewrite unl_bin_op_l. reflexivity. }
+    rewrite Ha. setoid_rewrite assoc...
+    rewrite Fab. setoid_rewrite unl_bin_op_l.
+    rewrite Hc. setoid_rewrite <- assoc...
+    rewrite Fbc. setoid_rewrite unl_bin_op_r. reflexivity. Defined.
 
 Global Instance poly_bin_op_is_semigrp : IsSemigrp poly_add.
 Proof. split; typeclasses eauto. Defined.
@@ -573,9 +575,9 @@ Proof with conversions.
   cbv [union_with option_union_with].
   decide (a + b <> 0) as [Fab | Fab];
   decide (b + a <> 0) as [Fba | Fba]; stabilize; cbn.
-  - f_equal. rewrite comm_bin_op... reflexivity.
-  - exfalso. apply Fab. rewrite comm_bin_op... apply Fba.
-  - exfalso. apply Fba. rewrite comm_bin_op... apply Fab.
+  - f_equal. setoid_rewrite comm_bin_op at 1... reflexivity.
+  - exfalso. apply Fab. setoid_rewrite comm_bin_op... apply Fba.
+  - exfalso. apply Fba. setoid_rewrite comm_bin_op... apply Fab.
   - reflexivity. Defined.
 
 Global Instance poly_bin_op_is_comm_semigrp : IsCommSemigrp poly_add.
@@ -772,7 +774,7 @@ Proof. intros x. Admitted.
 Global Instance poly_zero_mul_is_absorb_elem_l_r : IsAbsorbElemLR zero mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_add_zero_mul_one_is_semiring : IsSemiring add zero mul one.
+Global Instance poly_zero_add_one_mul_is_semiring : IsSemiring zero add one mul.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_add_zero_mul_one_is_comm_semiring :
@@ -821,10 +823,12 @@ Proof with conversions.
   decide (1 <> (0 : A)) as [F10 | F10].
   - rewrite map_imap_singleton.
     cbv [map_sum]. rewrite <- insert_empty. rewrite map_fold_insert_L.
-    + cbn. rewrite map_fold_empty. rewrite unl_bin_op_r. cbv [poly_value_eval].
-      rewrite unl_bin_op_l. reflexivity.
-    + cbn. intros ? ? a b c **. rewrite assoc... rewrite (comm_bin_op a b)...
-      rewrite <- assoc... reflexivity.
+    + cbn. rewrite map_fold_empty. setoid_rewrite unl_bin_op_r.
+      cbv [poly_value_eval].
+      setoid_rewrite unl_bin_op_l. reflexivity.
+    + cbn. intros ? ? a b c **. setoid_rewrite assoc...
+      setoid_rewrite (comm_bin_op a b) at 1...
+      setoid_rewrite <- assoc... reflexivity.
     + rewrite lookup_empty. reflexivity.
   - apply dec_stable in F10. rewrite F10.
     rewrite map_imap_empty. reflexivity. Defined.

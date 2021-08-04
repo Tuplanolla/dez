@@ -745,7 +745,7 @@ Proof. intros x. apply N.mul_0_r. Defined.
 Global Instance N_zero_mul_is_absorb_elem_l_r : IsAbsorbElemLR zero mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance N_add_zero_mul_one_is_semiring : IsSemiring add zero mul one.
+Global Instance N_zero_add_one_mul_is_semiring : IsSemiring zero add one mul.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance N_mul_is_comm : IsCommBinOp mul.

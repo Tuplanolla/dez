@@ -162,6 +162,8 @@ digraph Is {
   IsAssoc -> IsCompat
   IsAssoc -> IsCompatL
   IsAssoc -> IsCompatR
+  IsCommTorL -> IsCommBinOp
+  IsCommTorR -> IsCommBinOp
   IsContr -> IsProp
   IsContr -> IsTrunc
   IsFunExtDep -> IsFunExt
@@ -177,8 +179,8 @@ digraph Is {
   IsProp -> IsSet
   IsProp -> IsTrunc
   IsRing -> IsAbsorbElemLR
-  IsRing -> IsSemiring
   IsRing -> IsCommLR
+  IsRing -> IsSemiring
   IsSemiring -> IsDegen
   IsSet -> IsTrunc
   IsStrMono -> IsMono
