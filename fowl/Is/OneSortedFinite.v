@@ -15,7 +15,7 @@ Local Open Scope N_scope.
 Class IsFin (A : Type) `(HasCard A)
   (f : A -> {n : N | n < card A})
   (g : {n : N | n < card A} -> A) : Prop :=
-  A_iso_is_iso :> IsIso f g.
+  A_iso_is_iso_l_r :> IsIsoLR f g.
 
 Module Export Bishop.
 

@@ -94,7 +94,7 @@ Proof.
 
 (** Life with proof irrelevance is dull. *)
 
-Local Instance bihomogen_is_iso {A B C D E : Type}
+Local Instance bihomogen_is_iso_l_r {A B C D E : Type}
   `{HasActL A C} `{HasActR B D}
   `{HasActL A E} `{HasActR B E}
   `{HasBinFn C D E}
@@ -103,7 +103,7 @@ Local Instance bihomogen_is_iso {A B C D E : Type}
   `{!@IsTwoUnlL A E act_l null_op}
   `{!@IsTwoUnlR B D act_r null_op}
   `{!@IsTwoUnlR B E act_r null_op} :
-  IsIso (fst bihomogen_has_iso) (snd bihomogen_has_iso).
+  IsIsoLR (fst bihomogen_has_iso) (snd bihomogen_has_iso).
 Proof.
   split.
   - intros x. apply proof_irrelevance.

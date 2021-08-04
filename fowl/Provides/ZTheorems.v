@@ -182,7 +182,7 @@ Definition Z_of_double_N (n : N) : Z :=
     end
   end.
 
-Global Instance Z_N_is_iso : IsIso Z_to_double_N Z_of_double_N.
+Global Instance Z_N_is_iso_l_r : IsIsoLR Z_to_double_N Z_of_double_N.
 Proof.
   split.
   - intros x. destruct x as [| p | p].

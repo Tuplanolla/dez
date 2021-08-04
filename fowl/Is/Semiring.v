@@ -1,11 +1,9 @@
 (** * Semiring *)
 
-From Maniunfold Require Export
-  TypeclassTactics.
 From Maniunfold.Has Require Export
   Addition Zero Multiplication One.
 From Maniunfold.Is Require Export
-  Monoid Commutative Distributive Absorbing Degenerate.
+  Monoid Commutative Distributive Absorbing Truncated.
 From Maniunfold.ShouldHave Require Import
   ArithmeticNotations.
 
@@ -20,21 +18,19 @@ Class IsSemiring (A : Type)
 
 Section Context.
 
-Import One.Subclass Multiplication.Subclass.
-
 Context (A : Type) `(IsSemiring A).
 
-#[local] Instance is_degen : IsDegen 0 1.
+#[local] Instance is_contr (a : 0 = 1) : IsContr A.
 Proof.
-  intros a x y.
-  assert (f : forall z : A, z = 0).
-  { intros z.
-    pose proof f_equal (_*_ z) a as b.
-    setoid_rewrite (unl_bin_op_r z) in b.
-    rewrite (absorb_elem_r z) in b.
-    rewrite b.
-    reflexivity. }
-  rewrite (f x), (f y).
+  hnf.
+  exists 0.
+  intros x.
+  pose proof f_equal (_*_ x) a as b.
+  setoid_rewrite (unl_bin_op_r x) in b.
+  rewrite (absorb_elem_r x) in b.
+  rewrite b.
   reflexivity. Qed.
 
 End Context.
+
+#[export] Hint Resolve is_contr : typeclass_instances.

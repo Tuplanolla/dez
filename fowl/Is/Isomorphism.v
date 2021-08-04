@@ -43,7 +43,12 @@ End Context.
 
 End LFromR.
 
-Class IsIso (A B : Type) (f : A -> B) (g : B -> A) : Prop := {
+(** We favor left isomorphisms and
+    derive right ones from them automatically. *)
+
+Export RFromL.
+
+Class IsIsoLR (A B : Type) (f : A -> B) (g : B -> A) : Prop := {
   is_iso_l :> IsIsoL f g;
   is_iso_r :> IsIsoR f g;
 }.
@@ -52,11 +57,11 @@ Module Flipped.
 
 Section Context.
 
-Context (A B : Type) (f : A -> B) (g : B -> A) `(!IsIso f g).
+Context (A B : Type) (f : A -> B) (g : B -> A) `(!IsIsoLR f g).
 
 (** A flipped isomorphism is an isomorphism. *)
 
-#[local] Instance is_iso : IsIso g f.
+#[local] Instance is_iso_l_r : IsIsoLR g f.
 Proof.
   split.
   - intros b. apply iso_r.
@@ -64,6 +69,6 @@ Proof.
 
 End Context.
 
-#[export] Hint Resolve is_iso : typeclass_instances.
+#[export] Hint Resolve is_iso_l_r : typeclass_instances.
 
 End Flipped.

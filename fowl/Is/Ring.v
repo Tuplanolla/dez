@@ -10,7 +10,7 @@ From Maniunfold.Is Require Export
   Group Commutative Monoid Distributive
   Cancellative Absorbing OneSortedSignedAbsorbing OneSortedBinaryCommutative
   OneSortedBinaryCrossing OneSortedBinarySplitCancellative
-  Degenerate Semiring OneSortedGradedRing
+  Semiring OneSortedGradedRing
   Unital.
 From Maniunfold.ShouldHave Require Import
   AdditiveNotations ArithmeticNotations.
