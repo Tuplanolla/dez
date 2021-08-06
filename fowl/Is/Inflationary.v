@@ -15,3 +15,8 @@ Class IsInflBinOpL (A : Type) (HR : HasOrdRel A) (Hk : HasBinOp A) : Prop :=
 
 Class IsInflBinOpR (A : Type) (HR : HasOrdRel A) (Hk : HasBinOp A) : Prop :=
   infl_bin_op_r (x y : A) : x <= x + y.
+
+Class IsInflBinOpLR (A : Type) (HR : HasOrdRel A) (Hk : HasBinOp A) : Prop := {
+  is_infl_bin_op_l :> IsInflBinOpL _<=_ _+_;
+  is_infl_bin_op_r :> IsInflBinOpR _<=_ _+_;
+}.

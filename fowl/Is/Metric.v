@@ -3,7 +3,7 @@
 From Maniunfold.Has Require Export
   NullaryOperation BinaryOperation OrderRelations Distance.
 From Maniunfold.Is Require Export
-  TotalOrder Bounded Monoid Commutative Monotonic.
+  Triangular TotalOrder Bounded Monoid Commutative Monotonic Inflationary.
 From Maniunfold.ShouldHave Require Import
   OrderRelationNotations AdditiveNotations.
 
@@ -14,7 +14,7 @@ Class IsDistMon (A : Type)
   is_tot_ord :> IsTotOrd _<=_;
   is_lower_bnd :> IsLowerBnd 0 _<=_;
   is_mon :> IsMon 0 _+_;
-  is_comm :> IsCommBinOp _+_;
+  is_comm_bin_op :> IsCommBinOp _+_;
   is_mono_bin_op :> IsMonoBinOp _<=_ _+_;
 }.
 
@@ -26,10 +26,9 @@ Class IsPartOrdCommSemigrp (A : Type)
   (HR : HasOrdRel A) (Hx : HasNullOp A) (Hk : HasBinOp A) : Prop := {
   is_part_ord :> IsPartOrd _<=_;
   is_refl :> IsRefl _<=_;
-  some_property_l (x y : A) : x <= x + y;
-  (* some_property_r (x y : A) : y <= x + y; *)
+  is_infl_bin_op_l_r :> IsInflBinOpLR _<=_ _+_;
   is_semigrp :> IsSemigrp _+_;
-  is_comm :> IsCommBinOp _+_;
+  is_comm_bin_op :> IsCommBinOp _+_;
   is_mono_bin_op :> IsMonoBinOp _<=_ _+_;
 }.
 
@@ -39,20 +38,15 @@ Class IsMetric (A B : Type)
   (HR : HasOrdRel A) (Hx : HasNullOp A) (Hk : HasBinOp A)
   (Hd : HasDist A B) : Prop := {
   is_dist_mon :> IsDistMon _<=_ 0 _+_;
-  triangle (x y z : B) : dist x z <= dist x y + dist y z;
+  is_triangle :> IsTriangle _<=_ _+_;
 }.
-
-(** TODO Commutative torsors here? *)
-
-Class IsCommBinOp' (A B : Type) (Hd : HasDist A B) : Prop :=
-  comm_bin_op' (x y : B) : dist x y = dist y x.
 
 Section Context.
 
 Context (A B : Type) (HR : HasOrdRel A) (Hx : HasNullOp A) (Hk : HasBinOp A)
   (Hd : HasDist A B) `(!IsMetric _<=_ 0 _+_ dist).
 
-#[local] Instance is_comm' : IsCommBinOp' dist.
+#[local] Instance is_comm_tor_l : IsCommTorL dist.
 Proof. intros x y. Abort.
 
 (** Also [0 <= dist x y] and [dist x y = 0 <-> x = y]. *)

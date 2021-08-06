@@ -31,7 +31,6 @@ digraph Is {
   IsContr [label = "\N\ncontr : exists x : A, forall y : A, x = y"]
   IsCotrans [label = "\N\ncotrans (x y z : A) (a : x ~ z) : x ~ y \\/ y ~ z"]
   IsDefl [label = "\N\ndeflate (x : A) : f x <= x"]
-  IsDegen [label = "\N\ndegen (a : 1 = 0) (x y : A) : x = y"]
   IsDistr [label = "\N\ndistr (x y : A) : f (x + y) = f x + f y"]
   IsDistrL [label = "\N\ndistr_l (x y z : A) : x * (y + z) = x * y + x * z"]
   IsDistrLR [label = "\N"]
@@ -181,7 +180,7 @@ digraph Is {
   IsRing -> IsAbsorbElemLR
   IsRing -> IsCommLR
   IsRing -> IsSemiring
-  IsSemiring -> IsDegen
+  IsSemiring -> IsContr
   IsSet -> IsTrunc
   IsStrMono -> IsMono
   IsTotOrd -> IsRefl
