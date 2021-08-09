@@ -3,9 +3,9 @@ From Coq Require Import
   NArith.NArith.
 From Coq Require Import
   Lists.List Logic.FinFun.
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   OneSortedEnumeration OneSortedCardinality.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Isomorphism.
 
 Local Open Scope N_scope.

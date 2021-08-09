@@ -1,4 +1,4 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Arrow.
 
 Class HasIden {A : Type} (has_arrow : HasArrow A) : Type :=

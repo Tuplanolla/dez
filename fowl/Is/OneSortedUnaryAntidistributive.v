@@ -1,7 +1,7 @@
 (* bad *)
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation UnaryOperation.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OneSortedAdditiveNotations.
 
 Class IsUnAntidistr (A : Type)

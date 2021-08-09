@@ -1,12 +1,12 @@
 From Coq Require Import
   ZArith.ZArith.
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Action.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Group.
-From Maniunfold.Offers Require Export
+From DEZ.Offers Require Export
   OneSortedPositiveOperations OneSortedNaturalOperations.
-From Maniunfold.ShouldOffer Require Import
+From DEZ.ShouldOffer Require Import
   OneSortedAdditivePositiveOperationNotations.
 
 Section Context.

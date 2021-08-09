@@ -1,6 +1,6 @@
 (** * Distance or Metric *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Torsion.
 
 Class HasDist (A B : Type) : Type := dist (x y : B) : A.

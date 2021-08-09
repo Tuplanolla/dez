@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation FieldOperations FieldIdentities.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   CommutativeMonoid Monoid Bidistributive.
 
 Class IsSemiring {A : Type} {has_eqv : HasEqv A}

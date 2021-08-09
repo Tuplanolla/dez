@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Relation.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   RelationNotations.
 
 Class IsConnex {A : Type} (has_rel : HasRel A) : Prop :=

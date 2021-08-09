@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Morphism IdentityMorphism InverseMorphism ComposedMorphism.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   CategoricalNotations.
 
 Class IsCatInvL (A : Type) (HC : HasHom A)

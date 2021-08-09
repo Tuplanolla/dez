@@ -1,8 +1,8 @@
-From Maniunfold.Has Require Import
+From DEZ.Has Require Import
   Addition Zero Negation Multiplication One Reciprocation.
-From Maniunfold.Offers Require Import
+From DEZ.Offers Require Import
   OneSortedIntegerOperations.
-From Maniunfold.ShouldHave Require Export
+From DEZ.ShouldHave Require Export
   OneSortedArithmeticNotations.
 
 Notation "'_*_'" := (z_op add zero neg) : Z_scope.

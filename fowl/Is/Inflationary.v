@@ -1,8 +1,8 @@
 (** * Inflationarity or Progressivity of a Function and a Binary Operation *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   OrderRelations BinaryOperation.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OrderRelationNotations AdditiveNotations.
 
 Class IsInfl (A : Type) (HR : HasOrdRel A) (f : A -> A) : Prop :=

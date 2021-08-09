@@ -1,6 +1,6 @@
 (** * Magma or Groupoid *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation.
 
 (** This class would have some fields if we used the setoid model. *)

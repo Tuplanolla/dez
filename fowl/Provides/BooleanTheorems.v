@@ -1,9 +1,9 @@
 (* bad *)
 From Coq Require Import
   Lists.List Logic.ProofIrrelevance NArith.NArith ZArith.ZArith.
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   OneSortedEnumeration OneSortedCardinality.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   OneSortedFinite Isomorphism TwoSortedGradedAlgebra.
 
 Definition is_left (A B : Prop) (s : sumbool A B) : bool :=

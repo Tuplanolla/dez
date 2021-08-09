@@ -1,4 +1,4 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Relation.
 
 Class HasArrow (A : Type) : Type := arrow : A -> A -> Prop.

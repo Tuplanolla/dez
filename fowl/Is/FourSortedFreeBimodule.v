@@ -1,12 +1,12 @@
 (* bad *)
 From Coq Require Import
   Lists.List Logic.ProofIrrelevance NArith.NArith.
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   OneSortedEnumeration OneSortedCardinality
   Addition Zero Negation
   Multiplication One
   Action.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Isomorphism OneSortedFinite ThreeSortedBimodule.
 
 Local Open Scope N_scope.

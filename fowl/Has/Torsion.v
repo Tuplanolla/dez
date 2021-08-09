@@ -1,6 +1,6 @@
 (** * Torsion or Action over a Principal Homogeneous Space *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation.
 
 Class HasTorL (A B : Type) : Type := tor_l (x y : B) : A.

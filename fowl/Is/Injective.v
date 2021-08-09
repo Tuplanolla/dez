@@ -1,8 +1,8 @@
 (** * Injectivity of a Function *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   AdditiveNotations.
 
 Class IsInj (A B : Type) (f : A -> B) : Prop :=

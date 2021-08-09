@@ -1,4 +1,4 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Power.
 
 Delimit Scope exponential_scope with exponential.

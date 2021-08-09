@@ -1,7 +1,7 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Addition Zero Negation
   Multiplication One.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Ring Commutative.
 
 (** Commutative ring. *)

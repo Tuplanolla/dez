@@ -1,8 +1,8 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation OrderRelation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Proper Antisymmetric Transitive Connex.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OrderNotations.
 
 Class IsTotalOrder {A : Type} {has_eqv : HasEqv A}

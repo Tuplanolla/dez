@@ -1,7 +1,7 @@
 (* bad *)
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation NullaryOperation Action.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Monoid TwoSortedLeftSemigroupAction TwoSortedLeftUnital.
 
 Class IsLMonAct (A B : Type)

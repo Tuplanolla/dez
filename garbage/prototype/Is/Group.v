@@ -1,8 +1,8 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation GroupOperation GroupIdentity GroupInverse.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Proper Monoid Biinvertible Involutive Antidistributive.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   AdditiveGroupNotations.
 
 Class IsGroup {A : Type} {has_eqv : HasEqv A}

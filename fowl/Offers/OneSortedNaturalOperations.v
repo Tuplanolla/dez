@@ -1,12 +1,12 @@
 From Coq Require Import
   NArith.NArith.
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Action.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Monoid.
-From Maniunfold.Offers Require Export
+From DEZ.Offers Require Export
   OneSortedPositiveOperations.
-From Maniunfold.ShouldOffer Require Import
+From DEZ.ShouldOffer Require Import
   OneSortedAdditivePositiveOperationNotations.
 
 Section Context.

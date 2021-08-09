@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation ThreeSortedGradedBinaryFunction.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OneSortedAdditiveNotations.
 
 (** Graded action; left chirality.

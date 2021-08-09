@@ -1,7 +1,7 @@
 (* bad *)
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Addition ThreeSortedBinaryFunction.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OneSortedArithmeticNotations.
 
 Class IsRBiaddve (A B C : Type)

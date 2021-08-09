@@ -9,9 +9,9 @@
     ZTheorems Zero)
   ; (libraries <ocaml_libraries>)
   ; (flags <coq_flags>)
-  (theories Maniunfold))
+  (theories DEZ))
 
 (library
   (name camel)
-  (public_name maniunfold.camel)
+  (public_name dez.camel)
   (synopsis "Server Library for Verified Symbolic Manipulation"))

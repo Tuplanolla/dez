@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation GroupOperation GroupIdentity.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Setoid Monoid Commutative.
 
 Class IsCommutativeMonoid {A : Type} {has_eqv : HasEqv A}

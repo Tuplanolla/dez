@@ -1,9 +1,9 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation
   FieldOperations FieldIdentities FieldInverses.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Proper Ring Biinvertible.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   FieldNotations.
 
 (** TODO Remember division by zero.

@@ -1,8 +1,8 @@
 From Coq Require Import
   Morphisms NArith.
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
-From Maniunfold.Is Require Import
+From DEZ.Is Require Import
   TotalOrder Semiring MonoidHomomorphism.
 
 Module Equivalence.

@@ -1,4 +1,4 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   GroupOperation.
 
 (** We do not use the abbreviation [id],

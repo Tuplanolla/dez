@@ -1,7 +1,7 @@
 (* bad *)
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation Action.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Semigroup TwoSortedLeftMagmaAction TwoSortedLeftCompatible.
 
 Class IsLSemigrpAct (A B : Type)

@@ -1,12 +1,12 @@
 From Coq Require Import
   List NArith.
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
-From Maniunfold.Is Require Import
+From DEZ.Is Require Import
   NontrivialRing FinitelyEnumerable.
-From Maniunfold.Provides Require Import
+From DEZ.Provides Require Import
   OptionTheorems ZTheorems FiniteTheorems.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   FieldNotations.
 
 Import ListNotations.

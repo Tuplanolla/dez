@@ -1,4 +1,4 @@
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
 
 Class HasPt (A : Type) : Type := pt : A.

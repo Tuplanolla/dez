@@ -2,7 +2,7 @@
 
 From Coq Require Import
   PArith.PArith NArith.NArith ZArith.ZArith.
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
 
 (** Succeed when the given term is a constant of type [A -> B] and

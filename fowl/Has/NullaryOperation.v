@@ -1,6 +1,6 @@
 (** * Nullary Operation or Identity Element *)
 
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
 
 Class HasNullOp (A : Type) : Type := null_op : A.

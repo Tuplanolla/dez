@@ -1,6 +1,6 @@
 (** * Additive and Multiplicative Notations for Algebraic Operations *)
 
-From Maniunfold.Has Require Import
+From DEZ.Has Require Import
   Zero Negation Addition One Reciprocation Multiplication ScalarMultiplication.
 
 Reserved Notation "x '*<' y" (left associativity, at level 40).

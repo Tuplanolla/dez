@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Reflexive Symmetric Transitive.
 
 Class IsSetoid {A : Type} (has_eqv : HasEqv A) : Prop := {

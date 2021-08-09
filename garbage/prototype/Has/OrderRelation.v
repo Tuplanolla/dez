@@ -1,4 +1,4 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Relation EquivalenceRelation.
 
 Class HasOrd (A : Type) : Type := ord : A -> A -> Prop.

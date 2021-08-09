@@ -1,7 +1,7 @@
 (* bad *)
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Addition Action.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   TwoSortedLeftLeftDistributive TwoSortedLeftRightDistributive.
 
 Class IsTwoDistrL (A B : Type)

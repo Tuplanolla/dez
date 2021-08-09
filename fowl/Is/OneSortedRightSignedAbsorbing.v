@@ -1,7 +1,7 @@
 (* bad *)
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Negation Multiplication One.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OneSortedArithmeticNotations.
 
 Class IsRSgnAbsorb (A : Type)

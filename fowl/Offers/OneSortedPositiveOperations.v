@@ -1,10 +1,10 @@
 From Coq Require Import
   PArith.PArith.
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Action.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Semigroup.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OneSortedAdditiveNotations.
 
 Section Context.

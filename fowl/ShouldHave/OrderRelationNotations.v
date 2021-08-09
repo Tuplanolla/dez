@@ -1,6 +1,6 @@
 (** * Notations for Order Relations *)
 
-From Maniunfold.Has Require Import
+From DEZ.Has Require Import
   OrderRelations.
 
 Declare Scope relation_scope.

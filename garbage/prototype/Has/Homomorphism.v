@@ -1,4 +1,4 @@
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
 
 Class HasHom (A B : Type) : Type := hom : A -> B.

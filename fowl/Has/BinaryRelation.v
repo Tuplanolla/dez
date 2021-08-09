@@ -1,6 +1,6 @@
 (** * Binary Relation *)
 
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
 
 Class HasBinRel (A : Type) : Type := bin_rel (x y : A) : Prop.

@@ -1,4 +1,4 @@
-From Maniunfold.Offers Require Export
+From DEZ.Offers Require Export
   FieldConstants.
 
 (** Numeral notations do not work with type classes,

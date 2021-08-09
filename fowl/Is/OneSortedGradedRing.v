@@ -1,8 +1,8 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation NullaryOperation
   Addition Zero Negation
   OneSortedGradedMultiplication OneSortedGradedOne.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   OneSortedAbelianGroup OneSortedGradedDistributive OneSortedGradedMonoid.
 
 (** Graded noncommutative ring.

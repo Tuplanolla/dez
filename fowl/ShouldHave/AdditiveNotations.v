@@ -1,6 +1,6 @@
 (** * Additive Notations for Algebraic Operations *)
 
-From Maniunfold.Has Require Import
+From DEZ.Has Require Import
   Torsion Action NullaryOperation UnaryOperation BinaryOperation.
 
 (** Some programming languages like Octave

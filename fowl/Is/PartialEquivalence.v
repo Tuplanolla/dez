@@ -1,10 +1,10 @@
 (** * Partial Equivalence *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Symmetric Transitive.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   EquivalenceRelationNotations.
 
 Fail Fail Class IsPartEq (A : Type) (HR : HasEqRel A) : Prop := {

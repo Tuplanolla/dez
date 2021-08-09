@@ -1,6 +1,6 @@
 (** * Morphism or Hom-Set *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryRelation.
 
 Class HasHom (A : Type) : Type := hom (x y : A) : Prop.

@@ -1,10 +1,10 @@
 (** * Monotonicity and Strict Monotonicity of a Function and a Binary Operation *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Decidability OrderRelations BinaryOperation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Preorder CoherentOrderRelations.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OrderRelationNotations AdditiveNotations.
 
 Fail Fail Class IsMono (A B : Type)

@@ -1,10 +1,10 @@
 (** * Semiring *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Addition Zero Multiplication One.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Monoid Commutative Distributive Absorbing Truncated.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   ArithmeticNotations.
 
 Class IsSemiring (A : Type)

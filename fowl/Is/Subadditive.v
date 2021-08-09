@@ -1,8 +1,8 @@
 (** * Subadditivity or Triangle Inequality *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   OrderRelations BinaryOperation Distance.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OrderRelationNotations AdditiveNotations.
 
 Class IsSubadd (A B : Type)

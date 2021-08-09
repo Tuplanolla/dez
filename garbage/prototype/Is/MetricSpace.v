@@ -1,8 +1,8 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation OrderRelation GroupOperation GroupIdentity Distance.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Proper TotalOrder CommutativeMonoid Heterocommutative.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OrderNotations AdditiveGroupNotations.
 
 (** TODO Review literature on "generalized", "monoidal" or

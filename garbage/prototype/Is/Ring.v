@@ -1,10 +1,10 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation FieldOperations FieldIdentities FieldInverses.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Semiring Group AbelianGroup Monoid.
-From Maniunfold.Is Require Import
+From DEZ.Is Require Import
   Involutive Antidistributive LeftAbsorbing RightAbsorbing Biabsorbing.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   AdditiveGroupNotations FieldNotations.
 
 Class IsRing {A : Type} {has_eqv : HasEqv A}

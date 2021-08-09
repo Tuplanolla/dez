@@ -1,6 +1,6 @@
 (** * One or Multiplicative Identity *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   NullaryOperation.
 
 Class HasOne (A : Type) : Type := one : A.

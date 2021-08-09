@@ -1,6 +1,6 @@
 (** * Involutivity of a Function *)
 
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
 
 Class IsInvol (A : Type) (f : A -> A) : Prop :=

@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation Composition.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Proper Setoid Associative.
 
 Class IsSemicategory {A : Type}

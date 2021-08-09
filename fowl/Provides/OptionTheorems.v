@@ -1,6 +1,6 @@
 From Coq Require Import
   Bool.Sumbool Classes.DecidableClass Classes.SetoidDec.
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
 
 Definition is_Some (A : Type) (x : option A) : bool :=

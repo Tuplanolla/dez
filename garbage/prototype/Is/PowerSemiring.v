@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation FieldOperations FieldIdentities Power.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Semiring LeftHeterodistributive RightHeteroabsorbing.
 
 Class IsPowerSemiring {A : Type} {has_eqv : HasEqv A}

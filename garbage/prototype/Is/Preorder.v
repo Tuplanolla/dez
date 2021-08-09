@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation OrderRelation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Proper Reflexive Transitive.
 
 Class IsPreorder {A : Type} {has_eqv : HasEqv A}

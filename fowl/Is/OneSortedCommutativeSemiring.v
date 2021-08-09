@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Addition Zero Multiplication One.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Commutative Semiring.
 
 (** Commutative semiring. *)

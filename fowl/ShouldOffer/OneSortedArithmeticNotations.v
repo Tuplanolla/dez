@@ -1,6 +1,6 @@
-From Maniunfold.Offers Require Import
+From DEZ.Offers Require Import
   OneSortedArithmetic.
-From Maniunfold.ShouldHave Require Export
+From DEZ.ShouldHave Require Export
   OneSortedArithmeticNotations.
 
 Notation "'_-_'" := (sub _ _) : ring_scope.

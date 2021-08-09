@@ -1,8 +1,8 @@
 (** * Lower and Upper Bound *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   OrderRelations.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OrderRelationNotations.
 
 Class IsLowerBnd (A : Type) (x : A) (HR : HasOrdRel A) : Prop :=

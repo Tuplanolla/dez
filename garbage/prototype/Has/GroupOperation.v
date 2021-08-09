@@ -1,4 +1,4 @@
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
 
 (** We do not use the abbreviation [op],

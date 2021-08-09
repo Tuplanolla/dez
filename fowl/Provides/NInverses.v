@@ -1,8 +1,8 @@
 From Coq Require Import
   Lia Lists.List NArith.NArith Bool.Sumbool.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Fixed Injective Monotonic Comonotonic Isomorphism.
-From Maniunfold.Provides Require Export
+From DEZ.Provides Require Export
   NTheorems OptionTheorems PositiveTheorems ProductTheorems.
 
 (** TODO This may be built into [setoid_rewrite]. *)

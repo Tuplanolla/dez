@@ -1,7 +1,7 @@
 (* bad *)
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Action Torsion.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   TwoSortedAdditiveNotations.
 
 Local Open Scope l_mod_scope.

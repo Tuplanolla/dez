@@ -1,4 +1,4 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   GroupOperation.
 
 Class HasPow (A : Type) : Type := pow : A -> A -> A.

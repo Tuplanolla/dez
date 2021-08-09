@@ -1,8 +1,8 @@
 (** * Contractivity or Shortness of a Function *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Distance OrderRelations.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OrderRelationNotations.
 
 Class IsContract (A B C : Type)

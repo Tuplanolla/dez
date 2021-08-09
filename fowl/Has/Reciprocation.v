@@ -1,6 +1,6 @@
 (** * Reciprocal or Multiplicative Inverse *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   UnaryOperation.
 
 Class HasRecip (A : Type) : Type := recip (x : A) : A.

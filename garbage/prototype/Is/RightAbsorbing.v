@@ -1,8 +1,8 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation FieldOperations FieldIdentities.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Setoid.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   FieldNotations.
 
 Class IsRightAbsorbing {A : Type} {has_eqv : HasEqv A}

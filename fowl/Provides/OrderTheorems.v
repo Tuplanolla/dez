@@ -1,8 +1,8 @@
 (** * Properties of Orders *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   OrderRelations.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OrderRelationNotations.
 
 (** Orders and strict orders can be defined in terms of each other. *)

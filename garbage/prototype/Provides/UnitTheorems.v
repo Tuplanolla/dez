@@ -1,8 +1,8 @@
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
-From Maniunfold.Is Require Import
+From DEZ.Is Require Import
   LeftModule.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   FieldNotations.
 
 Definition unit_eqv (x y : unit) : Prop := True.

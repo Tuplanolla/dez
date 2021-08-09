@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation OrderRelation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Preorder Antisymmetric.
 
 Class IsPartialOrder {A : Type} {has_eqv : HasEqv A}

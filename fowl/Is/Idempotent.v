@@ -1,10 +1,10 @@
 (** * Idempotency of an Element and a Binary Operation and a Function *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Extensional.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   MultiplicativeNotations.
 
 Class IsIdemElem (A : Type) (x : A) (Hk : HasBinOp A) : Prop :=

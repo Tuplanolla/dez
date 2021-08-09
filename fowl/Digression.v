@@ -1,6 +1,6 @@
 From Coq Require Import
   Lists.List ZArith.ZArith.
-From Maniunfold.Provides Require Export
+From DEZ.Provides Require Export
   LogicalTheorems.
 
 Import ListNotations.

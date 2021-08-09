@@ -1,10 +1,10 @@
 (** * Strict Partial Order *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   OrderRelations.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Irreflexive Transitive.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OrderRelationNotations.
 
 Fail Fail Class IsStrPartOrd (A : Type) (HR : HasOrdRel A) : Prop := {

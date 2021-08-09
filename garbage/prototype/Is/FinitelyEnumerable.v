@@ -1,10 +1,10 @@
 From Coq Require Import
   List.
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation Enum.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Setoid.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   EquivalenceNotations.
 
 (** TODO Prove that this is isomorphic to an initial segment of [N]. *)

@@ -1,6 +1,6 @@
 (** * Multiplicative Notations for Algebraic Operations *)
 
-From Maniunfold.Has Require Import
+From DEZ.Has Require Import
   Torsion Action NullaryOperation UnaryOperation BinaryOperation.
 
 Reserved Notation "x '*<' y" (left associativity, at level 40).

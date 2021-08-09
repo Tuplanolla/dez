@@ -1,8 +1,8 @@
 (** * Compatibility of a Binary Operation and an Action *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation Action.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   MultiplicativeNotations.
 
 Class IsCompatL (A B : Type) (Hk : HasBinOp A) (Hl : HasActL A B) : Prop :=

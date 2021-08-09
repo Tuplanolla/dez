@@ -1,8 +1,8 @@
 (** * Distributivity and Antidistributivity of a Function and a Binary Operation over a Binary Operation *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation Addition Multiplication.
-From Maniunfold.ShouldHave Require
+From DEZ.ShouldHave Require
   AdditiveNotations ArithmeticNotations.
 
 Section Context.

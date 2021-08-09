@@ -1,6 +1,6 @@
 (** * Left and Right Inverse or Section and Retraction of a Function and Isomorphism or Equivalence or Bijection *)
 
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
 
 Class IsIsoL (A B : Type) (f : A -> B) (g : B -> A) : Prop :=

@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Homomorphism EquivalenceRelation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Proper Setoid.
 
 Class IsSetoidHomomorphism {A B : Type}

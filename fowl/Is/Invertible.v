@@ -1,8 +1,8 @@
 (** * Invertibility of a Unary Operation over a Binary Operation *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   NullaryOperation UnaryOperation BinaryOperation.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   AdditiveNotations.
 
 Class IsInvL (A : Type)

@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Action NullaryOperation.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   AdditiveNotations.
 
 (** Unital; left chirality.

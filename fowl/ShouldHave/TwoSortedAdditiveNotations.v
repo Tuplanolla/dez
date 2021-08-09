@@ -1,4 +1,4 @@
-From Maniunfold.Has Require Import
+From DEZ.Has Require Import
   UnaryOperation
   Action Torsion.
 

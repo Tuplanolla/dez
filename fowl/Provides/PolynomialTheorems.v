@@ -6,26 +6,26 @@ From Coq Require Import
   ZArith.ZArith.
 From stdpp Require Import
   option finite fin_maps gmap gmultiset pmap.
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Unsquashing
   OneSortedEnumeration OneSortedCardinality.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   OneSortedFinite Isomorphism
   Ring TwoSortedUnitalAssociativeAlgebra TwoSortedGradedAlgebra.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   OneSortedAbelianGroup Semigroup
   Monoid Semiring
   Ring.
-From Maniunfold.Offers Require Export
+From DEZ.Offers Require Export
   OneSortedPositiveOperations OneSortedNaturalOperations
   OneSortedIntegerOperations.
-From Maniunfold.Provides Require Export
+From DEZ.Provides Require Export
   NTheorems ZTheorems.
-From Maniunfold.ShouldHave Require
+From DEZ.ShouldHave Require
   OneSortedAdditiveNotations OneSortedMultiplicativeNotations.
-From Maniunfold.ShouldHave Require
+From DEZ.ShouldHave Require
   OneSortedArithmeticNotations.
-From Maniunfold.ShouldOffer Require
+From DEZ.ShouldOffer Require
   OneSortedArithmeticOperationNotations.
 
 Generalizable All Variables.

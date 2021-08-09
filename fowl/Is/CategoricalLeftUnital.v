@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Morphism ComposedMorphism IdentityMorphism.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   CategoricalNotations.
 
 Class IsCatUnlL (A : Type) `(HasHom A) `(!HasCompHom hom) `(!HasIdHom hom) : Prop :=

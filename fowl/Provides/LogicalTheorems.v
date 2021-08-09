@@ -1,8 +1,8 @@
 (** * Basic Logic *)
 
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Extensional Semiring.
 
 (** ** Equalities *)

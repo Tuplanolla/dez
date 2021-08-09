@@ -1,9 +1,9 @@
 (* bad *)
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation NullaryOperation
   GradedAction GradedAction
   ThreeSortedGradedBinaryFunction.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   FourSortedGradedLeftBihomogeneous FourSortedGradedRightBihomogeneous.
 
 Class IsGrdBihomogen (A : Type) (P Q R S T : A -> Type)

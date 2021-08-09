@@ -47,6 +47,7 @@ main :: $(PYFILES:.py=.pyc)
 	'#! /usr/bin/env python3' \
 	'import main' \
 	'main.main()' > $@
+	$(HIDE) chmod +x $@
 
 %.pyc :: %.py .Makefile.d
 	$(SHOW) echo PY $<

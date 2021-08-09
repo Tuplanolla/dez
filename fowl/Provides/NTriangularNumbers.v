@@ -2,9 +2,9 @@
 
 From Coq Require Import
   Lia Lists.List NArith.NArith.
-From Maniunfold Require Import
+From DEZ Require Import
   DatatypeTactics RewritingTactics.
-From Maniunfold.Provides Require Export
+From DEZ.Provides Require Export
   LogicalTheorems NTheorems OptionTheorems ProductTheorems.
 
 Import ListNotations N.

@@ -1,9 +1,9 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation NullaryOperation
   UnaryOperation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Commutative Group Distributive.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   AdditiveNotations.
 
 (** Abelian group, commutative group. *)

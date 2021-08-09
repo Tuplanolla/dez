@@ -1,6 +1,6 @@
 (** * Unsquashing or Large Elimination for Strict Propositions *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Decidability.
 
 Class HasUnsquash (A : Type) : Type := unsquash (x : Squash A) : A.

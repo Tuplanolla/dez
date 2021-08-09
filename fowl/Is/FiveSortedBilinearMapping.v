@@ -1,8 +1,8 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Addition Zero Negation
   Multiplication One
   Action ThreeSortedBinaryFunction.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   TwoSortedLeftModule TwoSortedRightModule
   ThreeSortedBimodule ThreeSortedBiadditive FiveSortedBihomogeneous.
 
@@ -41,11 +41,11 @@ Class IsBilinMap (A B C D E : Type)
 
 From Coq Require Import
   Logic.ProofIrrelevance.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   TwoSortedUnital Isomorphism
   TwoSortedLeftDistributive ThreeSortedBicompatible
   Ring.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OneSortedArithmeticNotations TwoSortedMultiplicativeNotations.
 
 Section Context.

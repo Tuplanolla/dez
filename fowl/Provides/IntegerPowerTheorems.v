@@ -1,15 +1,15 @@
 (* bad *)
 From Coq Require Import
   ZArith.ZArith.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Magma Semigroup Monoid Group
   TwoSortedLeftBinaryCommutative.
-From Maniunfold.Offers Require Export
+From DEZ.Offers Require Export
   OneSortedPositiveOperations OneSortedNaturalOperations
   OneSortedIntegerOperations.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OneSortedAdditiveNotations.
-From Maniunfold.ShouldOffer Require Import
+From DEZ.ShouldOffer Require Import
   OneSortedAdditiveOperationNotations.
 
 Fact succ_xI (n : positive) :

@@ -1,7 +1,7 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation
   GradedAction GradedAction.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OneSortedAdditiveNotations.
 
 (** Graded binary operation.

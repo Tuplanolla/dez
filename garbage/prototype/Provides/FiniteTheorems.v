@@ -1,12 +1,12 @@
 From Coq Require Import
   NArith.
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
-From Maniunfold.Is Require Import
+From DEZ.Is Require Import
   Setoid TotalOrder Ring FinitelyEnumerable.
-From Maniunfold.Provides Require Import
+From DEZ.Provides Require Import
   NTheorems.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OrderNotations FieldNotations.
 
 Definition F (p : positive) : Set := {n : N | (n < Npos p)%N}.

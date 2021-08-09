@@ -1,8 +1,8 @@
-From Maniunfold.Has Require Import
+From DEZ.Has Require Import
   Reciprocation.
-From Maniunfold.Is Require Import
+From DEZ.Is Require Import
   Ring.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OneSortedArithmeticNotations.
 
 Section Context.

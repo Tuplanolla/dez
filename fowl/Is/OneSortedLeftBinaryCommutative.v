@@ -1,9 +1,9 @@
 (* bad *)
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Negation Multiplication.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   TwoSortedRightBinaryCommutative.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OneSortedArithmeticNotations.
 
 Class IsRBinComm (A : Type)

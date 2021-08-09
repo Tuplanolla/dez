@@ -1,9 +1,9 @@
 (* bad *)
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Addition Zero Negation
   Multiplication One
   GradedAction GradedAction.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   ThreeSortedGradedBimodule.
 
 Class IsTwoGrdBimod (A : Type) (P Q : A -> Type)

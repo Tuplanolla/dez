@@ -1,14 +1,14 @@
 From Coq Require Import
   ZArith.
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
-From Maniunfold.Is Require Import
+From DEZ.Is Require Import
   Group.
-From Maniunfold.Offers Require Import
+From DEZ.Offers Require Import
   PositivePowers NaturalPowers IntegerPowers.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OrderNotations.
-From Maniunfold.ShouldOffer Require Import
+From DEZ.ShouldOffer Require Import
   AdditiveGroupNotations.
 
 Section Context.

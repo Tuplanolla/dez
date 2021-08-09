@@ -1,9 +1,9 @@
 (include_subdirs qualified)
 
 (coq.theory
-  (name Maniunfold)
+  (name DEZ)
   ; TODO There is no public name for some reason.
-  ; (public_name maniunfold.fowl)
+  ; (public_name dez.fowl)
   ; (package <package>)
   (synopsis "Formal Specification")
   ; (modules <ordered_set_lang>)

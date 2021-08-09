@@ -1,8 +1,8 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation Relation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Setoid.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   RelationNotations EquivalenceNotations.
 
 Class IsAntisymmetric {A : Type} {has_eqv : HasEqv A}

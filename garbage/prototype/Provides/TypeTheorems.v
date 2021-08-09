@@ -1,8 +1,8 @@
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
-From Maniunfold.Is Require Import
+From DEZ.Is Require Import
   Isomorphism CommutativeSemiring CommutativePowerSemiring.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   RelationNotations FieldNotations.
 
 (* Section Context.

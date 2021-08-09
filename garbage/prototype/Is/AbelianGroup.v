@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation GroupOperation GroupIdentity GroupInverse.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Group Commutative.
 
 Class IsAbelianGroup {A : Type} {has_eqv : HasEqv A}

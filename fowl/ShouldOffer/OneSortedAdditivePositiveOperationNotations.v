@@ -1,6 +1,6 @@
-From Maniunfold.Offers Require Import
+From DEZ.Offers Require Import
   OneSortedPositiveOperations.
-From Maniunfold.ShouldHave Require Export
+From DEZ.ShouldHave Require Export
   OneSortedAdditiveNotations.
 
 Notation "'_*_'" := (positive_op bin_op) : positive_scope.

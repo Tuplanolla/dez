@@ -2,14 +2,14 @@
 
 From Coq Require Import
   Classes.DecidableClass Classes.Morphisms Lia NArith.NArith Setoids.Setoid.
-From Maniunfold Require Import
+From DEZ Require Import
   DatatypeTactics RewritingTactics.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   OneSortedAbelianGroup Semigroup
   Monoid Semiring
   OneSortedCommutativeSemigroup OneSortedCommutativeMonoid
   OneSortedCommutativeSemiring.
-From Maniunfold.Provides Require Import
+From DEZ.Provides Require Import
   PositiveTheorems.
 
 Module N.

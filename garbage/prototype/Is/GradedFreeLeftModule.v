@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Basis Enum.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   FreeLeftModule.
 
 (** TODO What is this supposed to be? *)

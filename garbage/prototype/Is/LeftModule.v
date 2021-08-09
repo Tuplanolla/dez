@@ -1,8 +1,8 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   ScalarMultiplication.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Proper Ring AbelianGroup.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   FieldNotations AdditiveGroupNotations ModuleNotations.
 
 (** TODO It is a bit awkward to have to import subclass notations first. *)

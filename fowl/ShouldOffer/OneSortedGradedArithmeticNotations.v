@@ -1,6 +1,6 @@
-From Maniunfold.Offers Require Import
+From DEZ.Offers Require Import
   OneSortedGradedArithmetic.
-From Maniunfold.ShouldHave Require Export
+From DEZ.ShouldHave Require Export
   OneSortedGradedArithmeticNotations.
 
 Notation "x '-' y" := (grd_sub _ _ _ _ _ _ _ x y) : grd_ring_scope.

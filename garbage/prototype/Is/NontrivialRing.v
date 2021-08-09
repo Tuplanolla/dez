@@ -1,8 +1,8 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation FieldOperations FieldIdentities FieldInverses.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Ring.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   FieldNotations.
 
 Class IsNontrivialRing {A : Type} {has_eqv : HasEqv A}

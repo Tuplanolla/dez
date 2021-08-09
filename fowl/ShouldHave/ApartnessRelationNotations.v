@@ -1,6 +1,6 @@
 (** * Notations for Apartness Relations *)
 
-From Maniunfold.Has Require Import
+From DEZ.Has Require Import
   ApartnessRelation.
 
 Reserved Notation "x '#' y" (no associativity, at level 70).

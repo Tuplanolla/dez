@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Action NullaryOperation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   TwoSortedLeftUnital TwoSortedRightUnital.
 
 (** Unital.

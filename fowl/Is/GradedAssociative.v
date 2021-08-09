@@ -1,9 +1,9 @@
 (* bad *)
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation GradedBinaryOperation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Associative.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OneSortedGradedAdditiveNotations.
 
 Class IsGrdAssoc (A : Type) (P : A -> Type)

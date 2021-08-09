@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   ScalarMultiplication.
-From Maniunfold.ShouldHave Require Export
+From DEZ.ShouldHave Require Export
   EquivalenceNotations.
 
 Delimit Scope module_scope with module.

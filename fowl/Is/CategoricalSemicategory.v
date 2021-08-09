@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Morphism ComposedMorphism.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   CategoricalAssociative CategoricalMagmoid.
 
 Class IsSemicat (A : Type) `(HasHom A) `(!HasCompHom hom) : Prop := {

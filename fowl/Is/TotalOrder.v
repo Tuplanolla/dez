@@ -1,12 +1,12 @@
 (** * Total Order *)
 
-From Maniunfold Require Export
+From DEZ Require Export
   TypeclassTactics.
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   OrderRelations.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Preorder PartialOrder Connex Reflexive.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OrderRelationNotations.
 
 Class IsTotOrd (A : Type) (HR : HasOrdRel A) : Prop := {

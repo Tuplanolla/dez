@@ -1,6 +1,6 @@
 (** * Notations for Equivalence Relations *)
 
-From Maniunfold.Has Require Import
+From DEZ.Has Require Import
   EquivalenceRelation.
 
 Declare Scope relation_scope.

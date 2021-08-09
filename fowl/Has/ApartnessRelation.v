@@ -1,6 +1,6 @@
 (** * Apartness Relation *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryRelation.
 
 Class HasApartRel (A : Type) : Type := apart_rel (x y : A) : Prop.

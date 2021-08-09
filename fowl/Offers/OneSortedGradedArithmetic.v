@@ -1,10 +1,10 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation UnaryOperation
   OneSortedGradedAddition OneSortedGradedNegation
   OneSortedGradedMultiplication OneSortedGradedReciprocation.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OneSortedGradedArithmeticNotations.
-From Maniunfold.ShouldOffer Require Import
+From DEZ.ShouldOffer Require Import
   OneSortedArithmeticNotations.
 
 Section Context.

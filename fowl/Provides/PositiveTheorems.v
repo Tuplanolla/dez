@@ -1,8 +1,8 @@
 From Coq Require Import
   Classes.DecidableClass Classes.Morphisms Lia PArith.PArith.
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   One.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   OneSortedAbelianGroup Semigroup
   Monoid OneSortedCommutativeSemigroup OneSortedCommutativeMonoid.
 

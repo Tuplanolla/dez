@@ -3,7 +3,7 @@ open Component_types
 open Thrift
 open Util
 
-module Log = (val Logs.src_log (Logs.Src.create "maniunfold.fur"))
+module Log = (val Logs.src_log (Logs.Src.create "dez.fur"))
 
 let start ?(addr="127.0.0.1") ?(port=8191) () =
   (** TODO Do we need this exclusion for signals? *)

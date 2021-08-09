@@ -1,11 +1,11 @@
 (** * Group *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   NullaryOperation UnaryOperation BinaryOperation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Monoid Invertible
   Fixed Involutive Injective Cancellative Distributive.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   AdditiveNotations.
 
 Class IsGrp (A : Type)

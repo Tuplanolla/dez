@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Arrow Composition Identity.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Semicategory Biidentifiable.
 
 Class IsCategory {A : Type}

@@ -1,6 +1,6 @@
 (** * Addition or Binary Summation *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation.
 
 Class HasAdd (A : Type) : Type := add (x y : A) : A.

@@ -2,9 +2,9 @@
 
 From Coq Require Import
   NArith.NArith.
-From Maniunfold.Has Require Import
+From DEZ.Has Require Import
   Unsquashing.
-From Maniunfold.Provides Require Export
+From DEZ.Provides Require Export
   LogicalTheorems NTheorems PositiveTheorems.
 
 (** TODO We should turn these lemmas into typeclass instances. *)

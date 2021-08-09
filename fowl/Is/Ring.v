@@ -2,19 +2,19 @@
 
 From Coq Require Import
   Logic.Eqdep_dec.
-From Maniunfold Require Export
+From DEZ Require Export
   TypeclassTactics.
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Zero Negation Addition One Multiplication.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Group Commutative Monoid Distributive
   Cancellative Absorbing OneSortedSignedAbsorbing OneSortedBinaryCommutative
   OneSortedBinaryCrossing OneSortedBinarySplitCancellative
   Semiring OneSortedGradedRing
   Unital.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   AdditiveNotations ArithmeticNotations.
-From Maniunfold.ShouldHave Require
+From DEZ.ShouldHave Require
   OneSortedGradedAdditiveNotations OneSortedGradedArithmeticNotations.
 
 Class IsRing (A : Type)

@@ -1,8 +1,8 @@
-From Maniunfold.Has Require Import
+From DEZ.Has Require Import
   Addition Zero Multiplication One.
-From Maniunfold.Offers Require Import
+From DEZ.Offers Require Import
   OneSortedNaturalOperations.
-From Maniunfold.ShouldHave Require Export
+From DEZ.ShouldHave Require Export
   OneSortedArithmeticNotations.
 
 Notation "'_*_'" := (nat_op zero add) : nat_scope.

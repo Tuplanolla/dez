@@ -1,7 +1,7 @@
 (* bad *)
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Action ThreeSortedBinaryFunction.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   FourSortedLeftBihomogeneous FourSortedRightBihomogeneous.
 
 Class IsBihomogen (A B C D E : Type)

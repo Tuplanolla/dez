@@ -1,6 +1,6 @@
 From Coq Require Import
   PArith.PArith Program.Wf.
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
 
 From Coq Require Import Lia List Recdef.

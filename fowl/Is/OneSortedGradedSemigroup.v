@@ -1,7 +1,7 @@
 (* bad *)
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation GradedBinaryOperation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Semigroup GradedAssociative OneSortedGradedMagma.
 
 Class IsGrdSemigrp (A : Type) (P : A -> Type)

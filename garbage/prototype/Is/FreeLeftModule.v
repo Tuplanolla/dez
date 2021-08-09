@@ -1,10 +1,10 @@
 From Coq Require Import
   List.
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Basis Enum.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Proper FinitelyEnumerable LeftModule.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   FieldNotations ModuleNotations.
 
 (** TODO Investigate whether the use of

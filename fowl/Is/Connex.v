@@ -1,8 +1,8 @@
 (** * Connexity or Connectedness or Totality of a Binary Relation *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryRelation.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   BinaryRelationNotations.
 
 (** This has the same shape as [le_ge_cases]. *)

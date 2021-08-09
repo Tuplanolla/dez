@@ -1,6 +1,6 @@
 (** * Notations for Categories *)
 
-From Maniunfold.Has Require Import
+From DEZ.Has Require Import
   Morphism.
 
 Declare Scope category_scope.

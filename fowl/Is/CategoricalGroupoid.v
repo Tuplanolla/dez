@@ -1,9 +1,9 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Morphism ComposedMorphism IdentityMorphism
   InverseMorphism.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   CategoricalCategory CategoricalInvertible CategoricalInvolutive.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   CategoricalNotations.
 
 Class IsGrpd (A : Type)

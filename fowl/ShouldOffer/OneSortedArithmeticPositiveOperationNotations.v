@@ -1,8 +1,8 @@
-From Maniunfold.Has Require Import
+From DEZ.Has Require Import
   Addition Multiplication.
-From Maniunfold.Offers Require Import
+From DEZ.Offers Require Import
   OneSortedPositiveOperations.
-From Maniunfold.ShouldHave Require Export
+From DEZ.ShouldHave Require Export
   OneSortedArithmeticNotations.
 
 Notation "'_*_'" := (positive_op add) : positive_scope.

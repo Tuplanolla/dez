@@ -1,4 +1,4 @@
-From Maniunfold.ShouldOffer Require Export
+From DEZ.ShouldOffer Require Export
   OneSortedAdditivePositiveOperationNotations
   OneSortedAdditiveNaturalOperationNotations
   OneSortedAdditiveIntegerOperationNotations.

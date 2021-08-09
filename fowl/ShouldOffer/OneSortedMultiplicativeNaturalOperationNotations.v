@@ -1,6 +1,6 @@
-From Maniunfold.Offers Require Import
+From DEZ.Offers Require Import
   OneSortedNaturalOperations.
-From Maniunfold.ShouldHave Require Export
+From DEZ.ShouldHave Require Export
   OneSortedMultiplicativeNotations.
 
 Notation "x '^' n" := (nat_op null_op bin_op n x) : nat_scope.

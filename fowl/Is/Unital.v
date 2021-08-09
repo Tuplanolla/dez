@@ -1,8 +1,8 @@
 (** * Unitality of a Binary Operation *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   NullaryOperation BinaryOperation Action.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   MultiplicativeNotations.
 
 (** This has the same shape as [add_0_l]. *)

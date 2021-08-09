@@ -1,8 +1,8 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation GroupOperation GroupIdentity GroupInverse.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Setoid.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   AdditiveGroupNotations.
 
 Class IsRightInvertible {A : Type} {has_eqv : HasEqv A}

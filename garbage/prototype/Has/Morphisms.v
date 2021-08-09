@@ -1,4 +1,4 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Relation.
 
 Class HasMorph (A : Type) : Type := morph : A -> A -> Prop.

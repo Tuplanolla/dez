@@ -1,8 +1,8 @@
 (** * Comonotonicity and Strict Comonotonicity of a Function *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   OrderRelations.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OrderRelationNotations.
 
 Class IsComono (A B : Type)

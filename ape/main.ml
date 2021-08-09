@@ -44,7 +44,7 @@ let reporter ppf =
     end in
   {Logs.report = report}
 
-module Log = (val Logs.src_log (Logs.Src.create "maniunfold.ape"))
+module Log = (val Logs.src_log (Logs.Src.create "dez.ape"))
 
 (** Configure logging. *)
 let config_logging ppf =

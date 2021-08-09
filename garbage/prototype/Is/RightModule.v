@@ -1,8 +1,8 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   ScalarMultiplication.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Proper Ring AbelianGroup.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   FieldNotations AdditiveGroupNotations ModuleNotations.
 
 Class IsRightModule {A S : Type} {A_has_eqv : HasEqv A}

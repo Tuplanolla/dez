@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   UnaryOperation BinaryOperation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   OneSortedLeftBinaryCommutative OneSortedRightBinaryCommutative.
 
 Class IsBinComm (A : Type)

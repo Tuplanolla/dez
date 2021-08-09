@@ -1,9 +1,9 @@
 (* bad *)
 From Coq Require Import
   NArith.NArith Lists.List.
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   OneSortedCardinality.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   OneSortedFinite Isomorphism.
 
 Local Open Scope N_scope.

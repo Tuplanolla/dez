@@ -1,8 +1,8 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Homomorphism EquivalenceRelation GroupOperation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   SetoidHomomorphism Semigroup.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   AdditiveGroupNotations.
 
 (** TODO Rename [preserves_operation] and the like. *)

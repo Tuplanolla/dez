@@ -5,7 +5,7 @@ import signal
 import sys
 from def_signal import SignalBehavior
 
-logger = logging.getLogger('maniunfold.scales')
+logger = logging.getLogger('dez.scales')
 
 def config_logging(loc=None):
   '''

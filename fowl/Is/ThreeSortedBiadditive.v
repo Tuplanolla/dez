@@ -1,7 +1,7 @@
 (* bad *)
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Addition ThreeSortedBinaryFunction.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   ThreeSortedLeftBiadditive ThreeSortedRightBiadditive.
 
 Class IsBiaddve (A B C : Type)

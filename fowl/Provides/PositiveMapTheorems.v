@@ -6,9 +6,9 @@
 
 From Coq Require Import
   Classes.DecidableClass PArith.PArith Program.Wf.
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Unsquashing.
-From Maniunfold.Provides Require Import
+From DEZ.Provides Require Import
   LogicalTheorems OptionTheorems PositiveTheorems PositivePairingFunctions.
 
 From Coq Require Import Lia List Recdef.

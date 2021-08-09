@@ -1,10 +1,10 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation FieldOperations.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Setoid.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   FieldNotations.
-From Maniunfold.ShouldHave Require Export
+From DEZ.ShouldHave Require Export
   EquivalenceNotations.
 
 Class IsLeftDistributive {A : Type} {has_eqv : HasEqv A}

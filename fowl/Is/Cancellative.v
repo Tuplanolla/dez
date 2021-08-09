@@ -2,11 +2,11 @@
 
 From Coq Require Import
   Logic.FunctionalExtensionality.
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   NullaryOperation BinaryOperation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Injective.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   AdditiveNotations.
 
 Class IsCancelL (A : Type) (Hk : HasBinOp A) : Prop :=

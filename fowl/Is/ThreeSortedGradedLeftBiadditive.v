@@ -1,17 +1,17 @@
 (* bad *)
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   UnaryOperation Addition Action
   Addition Zero Negation
   OneSortedGradedMultiplication OneSortedGradedOne
   ThreeSortedGradedBinaryFunction.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   TwoSortedLeftDistributive ThreeSortedBicompatible
   Ring TwoSortedLeftModule TwoSortedRightModule
   TwoSortedGradedLeftModule TwoSortedGradedRightModule
   ThreeSortedGradedBimodule
   TwoSortedGradedBimodule
   TwoSortedUnital Isomorphism.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OneSortedArithmeticNotations.
 
 Class IsGrdLBiaddve (A : Type) (P Q R : A -> Type)

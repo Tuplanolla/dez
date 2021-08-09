@@ -1,11 +1,11 @@
 (* bad *)
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation NullaryOperation
   GradedBinaryOperation GradedNullaryOperation
   GradedAction.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   OneSortedGradedRing OneSortedAbelianGroup.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OneSortedArithmeticNotations OneSortedAdditiveNotations
   OneSortedGradedMultiplicativeNotations
   TwoSortedGradedMultiplicativeNotations.

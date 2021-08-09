@@ -2,7 +2,7 @@
 ; (for dune version 2.7.1)
 (using coq 0.2)
 ; (for coq version 8.12.0)
-(name maniunfold)
+(name dez)
 (version 0.0.0)
 ; (implicit_transitive_deps <bool>)
 ; (wrapped_executables <bool>)
@@ -21,13 +21,13 @@
 (license GPL-3.0-or-later)
 (authors "Sampsa Kiiskinen")
 (maintainers "Sampsa Kiiskinen")
-(source (github Tuplanolla/maniunfold))
+(source (github Tuplanolla/dez))
 ; (bug-reports <url>)
-(homepage http://users.jyu.fi/~sapekiis/maniunfold/)
+(homepage http://users.jyu.fi/~sapekiis/dez/)
 ; (documentation <url>)
 
 (package
-  (name maniunfold)
+  (name dez)
   (synopsis "Formalization of Discrete Exterior Calculus")
   (description "This is a repository for a research project that aims to
 develop a type-theoretical model of discrete exterior calculus,

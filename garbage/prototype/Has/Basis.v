@@ -1,4 +1,4 @@
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
 
 Class HasBasis (I A : Type) : Type := basis : I -> A.

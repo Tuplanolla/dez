@@ -2,9 +2,9 @@
 
 From Coq Require Import
   Logic.FunctionalExtensionality.
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   UnaryOperation BinaryOperation Torsion.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   MultiplicativeNotations.
 
 (** This has the same shape as [mul_opp_l]. *)

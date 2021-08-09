@@ -1,6 +1,6 @@
 (** * Decidability and Decidable Equality *)
 
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
 
 Fail Fail Class HasDec (A : Prop) : Type := {

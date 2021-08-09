@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   FieldOperations FieldIdentities FieldInverses.
-From Maniunfold.ShouldHave Require Export
+From DEZ.ShouldHave Require Export
   EquivalenceNotations.
 
 Delimit Scope field_scope with field.

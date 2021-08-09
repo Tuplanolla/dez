@@ -1,8 +1,8 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Homomorphism EquivalenceRelation GroupOperation GroupIdentity GroupInverse.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   MonoidHomomorphism Group.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   AdditiveGroupNotations.
 
 Class IsGroupHomomorphism {A B : Type}

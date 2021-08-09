@@ -1,8 +1,8 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Addition Zero Negation
   Multiplication One
   Action.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Unital AssociativeAlgebra.
 
 (** Noncommutative algebra over a noncommutative ring.

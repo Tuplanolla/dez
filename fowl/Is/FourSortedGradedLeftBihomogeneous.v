@@ -1,10 +1,10 @@
 (* bad *)
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation
   GradedAction ThreeSortedGradedBinaryFunction.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Associative.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   TwoSortedGradedMultiplicativeNotations.
 
 Local Open Scope grd_l_mod_scope.

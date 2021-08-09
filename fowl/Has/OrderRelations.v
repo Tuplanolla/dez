@@ -1,6 +1,6 @@
 (** * Order Relation and Strict Order Relation *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryRelation.
 
 Class HasOrdRel (A : Type) : Type := ord_rel (x y : A) : Prop.

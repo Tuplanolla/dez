@@ -1,10 +1,10 @@
 (** * Monoid *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   NullaryOperation BinaryOperation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Semigroup Unital.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   AdditiveNotations.
 
 Class IsMon (A : Type) (Hx : HasNullOp A) (Hk : HasBinOp A) : Prop := {

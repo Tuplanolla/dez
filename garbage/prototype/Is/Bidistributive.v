@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation FieldOperations.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   LeftDistributive RightDistributive.
 
 Class IsBidistributive {A : Type} {has_eqv : HasEqv A}

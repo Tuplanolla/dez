@@ -1,6 +1,6 @@
-From Maniunfold.Offers Require Export
+From DEZ.Offers Require Export
   PositivePowers NaturalPowers IntegerPowers.
-From Maniunfold.ShouldHave Require Export
+From DEZ.ShouldHave Require Export
   AdditiveGroupNotations.
 
 Notation "n '*' x" := (popr n x) : positive_scope.

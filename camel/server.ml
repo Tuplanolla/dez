@@ -1,4 +1,4 @@
-module Log = (val Logs.src_log (Logs.Src.create "maniunfold.camel"))
+module Log = (val Logs.src_log (Logs.Src.create "dez.camel"))
 
 let crunch coeffs point =
   Log.info (fun m -> m "Crunched real hard!");

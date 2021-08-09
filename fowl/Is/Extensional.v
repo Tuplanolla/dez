@@ -2,7 +2,7 @@
 
 From Coq Require Import
   Logic.FunctionalExtensionality Logic.PropExtensionality.
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
 
 (** We declare function extensionality as a class in hopes of turning it

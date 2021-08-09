@@ -22,7 +22,7 @@ but is otherwise too simple to handle the build.
 
 ```
 $ dune build
-$ dune exec -- coqide -Q _build/default/bird Maniunfold fowl/Provides/PolynomialTheorems.v
+$ dune exec -- coqide -Q _build/default/bird DEZ fowl/Provides/PolynomialTheorems.v
 ```
 
 I should probably list the dependencies and
@@ -100,10 +100,10 @@ in the order they are used.
 Superclasses, when constructed separately, such as `IsIdem` for a `Group`,
 must also be exported, in the order they are used.
 
-If nothing else is exported from `Maniunfold`, always export `Init`.
+If nothing else is exported from `DEZ`, always export `Init`.
 
 Favor exporting in the form
-`From Maniunfold.Is Require Export OneSortedly.Magma OneSortedly.Unital`,
+`From DEZ.Is Require Export OneSortedly.Magma OneSortedly.Unital`,
 where the placement in the main hierarchy is at the top.
 
 If you export non-notation modules from notation modules,
@@ -471,7 +471,7 @@ Some rules.
 * Import
     * Coq has: refl, sym, trans, assoc, comm, distr,
       l (left), r (right), inj (injective)
-    * Maniunfold has: fn (function), un (unit), unl (unital), invol, absorb
+    * DEZ has: fn (function), un (unit), unl (unital), invol, absorb
 * Order
     * Most common properties first
       (such as `eq_rel` before `bin_op` before `un`).
@@ -654,11 +654,11 @@ in `garbage/Unification.v`.
 ```
 
 ```
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation BinaryOperation Unit UnaryOperation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Proper Monoid ExternallyInvertible.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
 Class IsGrp {A : Type} {has_eq_rel : HasEqRel A}

@@ -4,7 +4,7 @@ from abc import *
 from queue import Queue
 from threading import Thread
 
-logger = logging.getLogger('maniunfold.snake')
+logger = logging.getLogger('dez.snake')
 
 class Solver(ABC):
   @abstractmethod

@@ -1,4 +1,4 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   GroupOperation.
 
 Class HasAdd (A : Type) : Type := add : A -> A -> A.

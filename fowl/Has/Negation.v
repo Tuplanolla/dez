@@ -1,6 +1,6 @@
 (** * Negation or Additive Inverse *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   UnaryOperation.
 
 Class HasNeg (A : Type) : Type := neg (x : A) : A.

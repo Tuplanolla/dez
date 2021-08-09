@@ -1,4 +1,4 @@
-# Maniunfold
+# Discrete Exterior Zoo
 
 This is a repository for a research project that aims to
 
@@ -25,7 +25,7 @@ The code in this repository is free software and, as such, licensed under
 The development of this project
 
 * started around 2018-05-01,
-* continues as of 2020-09-01 and
+* continues as of 2021-08-01 and
 * is expected to reach a usable state by 2022-05-01.
 
 Currently, the authors of this project are
@@ -42,14 +42,5 @@ Over the course of the project,
 * Jukka Räbinä has been partially funded by
     * the Academy of Finland grants 259925, 260076 and 295897 and
     * the European Research Council advanced grant 320773.
-
-As is tradition,
-the name of this project is a distasteful play on words,
-using a taxonomical theme to relate the concepts of
-
-* differentiable manifolds,
-  the main objects of study in differential geometry, and
-* anamorphisms,
-  the generalizations of common recursion schemes from functional programming.
 
 Stay tuned for other equally useful facts about this project.

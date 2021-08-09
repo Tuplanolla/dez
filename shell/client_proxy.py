@@ -15,7 +15,7 @@ from thrift.protocol import TBinaryProtocol
 from thrift.transport import TSocket
 from thrift.transport import TTransport
 
-logger = logging.getLogger('maniunfold.shell')
+logger = logging.getLogger('dez.shell')
 
 class SocketSolver(client.Solver):
   def __init__(self, addr, port):

@@ -2,7 +2,7 @@
 
 From Coq Require Import
   Logic.ProofIrrelevance.
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Decidability.
 
 #[local] Open Scope type_scope.

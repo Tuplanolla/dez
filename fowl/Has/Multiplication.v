@@ -1,6 +1,6 @@
 (** * Multiplication or Binary Product *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation.
 
 Class HasMul (A : Type) : Type := mul (x y : A) : A.

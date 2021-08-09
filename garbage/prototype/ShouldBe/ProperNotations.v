@@ -1,6 +1,6 @@
 From Coq Require Export
   Morphisms.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Proper.
 
 Delimit Scope signature_scope with signature.

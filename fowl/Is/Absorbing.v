@@ -1,8 +1,8 @@
 (** * Absorptivity of a Nullary Operation over a Binary Operation *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Zero Multiplication.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   ArithmeticNotations.
 
 Class IsAbsorbElemL (A : Type) (Hx : HasZero A) (Hk : HasMul A) : Prop :=

@@ -1,10 +1,10 @@
 (* bad *)
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   UnaryOperation Addition Action
   Addition Zero Negation
   OneSortedGradedMultiplication OneSortedGradedOne
   ThreeSortedGradedBinaryFunction.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   TwoSortedLeftDistributive ThreeSortedBicompatible
   Ring TwoSortedLeftModule TwoSortedRightModule
   TwoSortedGradedLeftModule TwoSortedGradedRightModule
@@ -12,7 +12,7 @@ From Maniunfold.Is Require Export
   TwoSortedGradedBimodule
   TwoSortedUnital Isomorphism
   ThreeSortedGradedLeftBiadditive ThreeSortedGradedRightBiadditive.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OneSortedArithmeticNotations TwoSortedMultiplicativeNotations
   OneSortedGradedArithmeticNotations
   TwoSortedGradedMultiplicativeNotations.

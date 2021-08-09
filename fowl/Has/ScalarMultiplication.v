@@ -1,6 +1,6 @@
 (** * Scalar Multiplication *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Action.
 
 Class HasSMulL (A B : Type) : Type := s_mul_l (a : A) (x : B) : B.

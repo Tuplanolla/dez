@@ -1,2 +1,2 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   GradedLeftAction GradedRightAction.

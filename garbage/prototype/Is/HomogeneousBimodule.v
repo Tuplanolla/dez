@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   ScalarMultiplication.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Bimodule.
 
 Class IsHomogeneousBimodule {A S : Type} {S_has_eqv : HasEqv S}

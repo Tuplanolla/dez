@@ -1,10 +1,10 @@
 (** * Partial Order or Poset *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   OrderRelations.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Preorder Antisymmetric.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OrderRelationNotations.
 
 (** We cannot define [IsPartOrd] as a notation for [PartialOrder _=_],

@@ -1,6 +1,6 @@
 (** * Action or Act *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation.
 
 Class HasActL (A B : Type) : Type := act_l (a : A) (x : B) : B.

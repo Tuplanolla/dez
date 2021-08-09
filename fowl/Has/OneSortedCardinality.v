@@ -1,6 +1,6 @@
 From Coq Require Import
   NArith.NArith.
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
 
 (** Cardinality, size, measure, numerosity.

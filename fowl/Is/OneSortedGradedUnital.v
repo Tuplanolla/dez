@@ -1,7 +1,7 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation NullaryOperation
   GradedBinaryOperation GradedNullaryOperation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   OneSortedGradedLeftUnital OneSortedGradedRightUnital.
 
 Class IsGrdUnl (A : Type) (P : A -> Type)

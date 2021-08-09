@@ -1,10 +1,10 @@
 From Coq Require Import
   ZArith.
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   GroupOperation GroupIdentity.
-From Maniunfold.Offers Require Import
+From DEZ.Offers Require Import
   PositivePowers.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   AdditiveGroupNotations.
 
 Definition nopr {A : Type} {has_opr : HasOpr A}

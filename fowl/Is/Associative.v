@@ -1,10 +1,10 @@
 (** * Associativity of a Binary Operation and an Action *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation Action.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Compatible.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   MultiplicativeNotations.
 
 (** This has the same shape as [mul_assoc]. *)

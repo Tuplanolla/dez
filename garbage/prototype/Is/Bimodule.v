@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   ScalarMultiplication.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   LeftModule RightModule Heteroassociative.
 
 Class IsBimodule {A LS RS : Type} {A_has_eqv : HasEqv A}

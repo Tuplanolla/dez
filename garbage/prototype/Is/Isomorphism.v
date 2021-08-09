@@ -1,8 +1,8 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation Homomorphism.
-From Maniunfold.ShouldHave Require Export
+From DEZ.ShouldHave Require Export
   EquivalenceNotations.
-From Maniunfold.Is Require Import
+From DEZ.Is Require Import
   Proper Setoid.
 
 (** TODO This overloading of [hom] is probably stupid. *)

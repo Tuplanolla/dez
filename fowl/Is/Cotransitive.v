@@ -1,8 +1,8 @@
 (** * Cotransitivity of a Binary Relation *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryRelation.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   BinaryRelationNotations.
 
 Class IsCotrans (A : Type) (HR : HasBinRel A) : Prop :=

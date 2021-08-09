@@ -1,7 +1,7 @@
 (* bad *)
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation Addition OneSortedGradedMultiplication.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OneSortedArithmeticNotations OneSortedGradedArithmeticNotations.
 
 Class IsGrdDistrR (A : Type) (P : A -> Type)

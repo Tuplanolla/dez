@@ -1,4 +1,4 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   ScalarOperations.
 
 Class HasLSMul (S A : Type) : Type := lsmul : S -> A -> A.

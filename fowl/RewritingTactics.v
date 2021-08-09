@@ -1,6 +1,6 @@
 (** * Higher-Order Tactics for Rewriting *)
 
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
 
 (** Reduce a call to the given [1]-parameter function

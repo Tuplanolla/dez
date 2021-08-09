@@ -1,10 +1,10 @@
 (** * Equivalence *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   EquivalenceRelation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Reflexive Symmetric Transitive.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   EquivalenceRelationNotations.
 
 Fail Fail Class IsEq (A : Type) (HR : HasEqRel A) : Prop := {

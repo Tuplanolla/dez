@@ -1,10 +1,10 @@
 (** * Apartness or Constructive Inequality *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   ApartnessRelation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Irreflexive Symmetric Cotransitive.
-From Maniunfold.ShouldHave Require Export
+From DEZ.ShouldHave Require Export
   ApartnessRelationNotations.
 
 Class IsApart (A : Type) (HR : HasApartRel A) : Prop := {

@@ -2,12 +2,12 @@
 
 From Coq Require Import
   Reals.Reals.
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   NullaryOperation BinaryOperation OrderRelations Distance.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Indiscernible Subadditive
   TotalOrder Bounded Monoid Commutative Monotonic Inflationary.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OrderRelationNotations AdditiveNotations.
 
 Module Classical.

@@ -2,11 +2,11 @@ From Coq Require
   Extraction.
 From Coq Require Import
   ZArith.ZArith.
-From Maniunfold.Offers Require Export
+From DEZ.Offers Require Export
   OneSortedIntegerOperations.
-From Maniunfold.Provides Require Export
+From DEZ.Provides Require Export
   ZTheorems PolynomialTheorems.
-From Maniunfold.ShouldOffer Require Import
+From DEZ.ShouldOffer Require Import
   OneSortedArithmeticNotations OneSortedArithmeticOperationNotations.
 
 (** It may not be a good idea to expand all types,

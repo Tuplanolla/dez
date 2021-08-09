@@ -1,8 +1,8 @@
 (** * Identity of Indiscernibles *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   NullaryOperation Distance.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   AdditiveNotations.
 
 Class IsIndisc (A B : Type) (Hx : HasNullOp A) (Hd : HasDist A B) : Prop :=

@@ -1,8 +1,8 @@
 (** * Identity Morphism *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Morphism.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   MorphismNotations.
 
 Class HasIdHom (A : Type) (HC : HasHom A) : Type :=

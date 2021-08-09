@@ -1,8 +1,8 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation NullaryOperation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   TwoSortedLeftUnital.
-From Maniunfold.ShouldHave Require Import
+From DEZ.ShouldHave Require Import
   OneSortedAdditiveNotations.
 
 (** Unital, having an identity element; left chirality. *)

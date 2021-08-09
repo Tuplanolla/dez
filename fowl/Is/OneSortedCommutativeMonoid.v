@@ -1,6 +1,6 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   BinaryOperation NullaryOperation.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   Commutative Monoid.
 
 (** Commutative monoid, abelian monoid. *)

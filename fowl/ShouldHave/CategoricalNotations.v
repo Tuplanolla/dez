@@ -1,8 +1,8 @@
 (** * Indexed Notations for Categories *)
 
-From Maniunfold.Has Require Import
+From DEZ.Has Require Import
   ComposedMorphism IdentityMorphism InverseMorphism.
-From Maniunfold.ShouldHave Require Export
+From DEZ.ShouldHave Require Export
   MorphismNotations.
 
 Notation "'_o_'" := (comp_hom _ _ _) : category_scope.

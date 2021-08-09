@@ -1,6 +1,6 @@
 (** * Zero or Additive Identity *)
 
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   NullaryOperation.
 
 Class HasZero (A : Type) : Type := zero : A.

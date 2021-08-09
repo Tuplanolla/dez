@@ -1,4 +1,4 @@
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
 
 (** TODO Consider using a universal property over a concrete list. *)

@@ -1,4 +1,4 @@
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   Homomorphism.
 
 Class HasEndo (A : Type) : Type := endo : A -> A.

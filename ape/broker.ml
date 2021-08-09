@@ -3,7 +3,7 @@ open Polynomial_types
 open Thrift
 open Util
 
-module Log = (val Logs.src_log (Logs.Src.create "maniunfold.ape"))
+module Log = (val Logs.src_log (Logs.Src.create "dez.ape"))
 
 type state =
   | Idle

@@ -1,6 +1,6 @@
 From Coq Require Import
   ZArith.
-From Maniunfold.Has Require Export
+From DEZ.Has Require Export
   GroupOperation.
 
 Import Pos.

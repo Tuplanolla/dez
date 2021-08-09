@@ -1,6 +1,6 @@
 (** * Fixed Point of a Function *)
 
-From Maniunfold Require Export
+From DEZ Require Export
   Init.
 
 Class IsFixed (A : Type) (x : A) (f : A -> A) : Prop :=

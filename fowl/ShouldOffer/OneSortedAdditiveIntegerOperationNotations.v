@@ -1,6 +1,6 @@
-From Maniunfold.Offers Require Import
+From DEZ.Offers Require Import
   OneSortedIntegerOperations.
-From Maniunfold.ShouldHave Require Export
+From DEZ.ShouldHave Require Export
   OneSortedAdditiveNotations.
 
 Notation "'_*_'" := (z_op null_op un_op bin_op) : Z_scope.

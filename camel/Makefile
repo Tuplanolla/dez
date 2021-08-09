@@ -3,7 +3,7 @@ SHOW:=$(if $(VERBOSE),@ true||,@)
 
 MKDIR:=mkdir -p
 COQC:=coqc
-COQFLAGS:=-Q ../fowl Maniunfold
+COQFLAGS:=-Q ../fowl DEZ
 CAMLFLAGS:=-I gen-ocaml
 CAMLDEP:=ocamlfind ocamldep
 CAMLDEPFLAGS:=$(CAMLFLAGS) -native

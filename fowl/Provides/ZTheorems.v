@@ -1,6 +1,6 @@
 From Coq Require Import
   ZArith.ZArith.
-From Maniunfold.Is Require Export
+From DEZ.Is Require Export
   OneSortedAbelianGroup Semigroup
   Monoid Semiring
   Ring OneSortedCommutativeSemigroup OneSortedCommutativeMonoid
