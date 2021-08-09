@@ -440,20 +440,22 @@ but, alas, they are too intertwined for such a separation to be useful.
 
 Do these things.
 
+* Rename the project.
+* Remove operational type class use from predicative classes
+  unless overloading is needed.
+* Write Coqdoc documentation comments for each class instead of each module.
+* Finish refactoring Coq modules into a flat hierarchy.
 * Free modules (with an explicit basis) can now be built.
 * Regular semigroups have two equivalent definitions;
   try to implement them as an isomorphism.
-* Perhaps specialize actions to scalar multiplications and
-  functions to bilinear ops, maps and forms.
-* Set up build automation; see diagram `habitat.dot`.
-* Integrate Thrift into the mess.
 * Now that we have one-sorted algebra (abstract algebra)
   generalized to many-sorted algebra (universal algebra) and
   oidified to one-sorted partial algebra (category theory),
   what happens if we go looking for many-sorted partial algebra?
 * Had a look at Clifford Algebras and Dirac Operators
   in Harmonic Analysis by Gilbert and Murray; it was terrible.
-* Monoidal categories now.
+* Setoid model now.
+* Monoidal categories maybe later.
 
 Some rules.
 
