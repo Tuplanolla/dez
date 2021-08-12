@@ -10,12 +10,9 @@ From DEZ.Is Require Export
   Group Commutative Monoid Distributive
   Cancellative Absorbing OneSortedSignedAbsorbing OneSortedBinaryCommutative
   OneSortedBinaryCrossing OneSortedBinarySplitCancellative
-  Semiring OneSortedGradedRing
-  Unital.
+  Semiring Unital.
 From DEZ.ShouldHave Require Import
   AdditiveNotations ArithmeticNotations.
-From DEZ.ShouldHave Require
-  OneSortedGradedAdditiveNotations OneSortedGradedArithmeticNotations.
 
 Class IsRing (A : Type)
   (Hx : HasZero A) (Hf : HasNeg A) (Hk : HasAdd A)

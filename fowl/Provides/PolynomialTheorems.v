@@ -11,7 +11,7 @@ From DEZ.Has Require Export
   OneSortedEnumeration OneSortedCardinality.
 From DEZ.Is Require Export
   OneSortedFinite Isomorphism
-  Ring TwoSortedUnitalAssociativeAlgebra TwoSortedGradedAlgebra.
+  Ring TwoSortedUnitalAssociativeAlgebra.
 From DEZ.Is Require Export
   OneSortedAbelianGroup Semigroup
   Monoid Semiring
@@ -832,73 +832,5 @@ Proof with conversions.
     + rewrite lookup_empty. reflexivity.
   - apply dec_stable in F10. rewrite F10.
     rewrite map_imap_empty. reflexivity. Defined.
-
-Import OneSortedGradedArithmeticNotations.
-
-Definition poly_grd (i : N) : Type := A.
-
-Global Instance poly_has_grd_mul : HasGrdMul poly_grd bin_op :=
-  fun i j : N => mul.
-Global Instance poly_has_grd_one : HasGrdOne poly_grd null_op :=
-  one.
-
-(** TODO Should never reference implicitly named variables like this. *)
-
-Global Instance poly_is_grd_assoc :
-  IsGrdAssoc (P := poly_grd) Additive.N_has_bin_op grd_mul.
-Proof.
-  esplit. intros i j k x y z. cbv [poly_grd]. rewrite rew_const.
-  cbv [grd_bin_op grd_mul poly_has_grd_mul]. apply assoc. Defined.
-
-Global Instance poly_is_grd_unl_l :
-  IsGrdUnlL (P := poly_grd) Additive.N_has_bin_op
-  Additive.N_has_null_op grd_mul grd_one.
-Proof.
-  esplit. intros i x. cbv [poly_grd]. rewrite rew_const.
-  cbv [grd_bin_op grd_mul poly_has_grd_mul
-    grd_null_op grd_one poly_has_grd_one]. apply unl_l. Defined.
-
-Global Instance poly_is_grd_unl_r :
-  IsGrdUnlR (P := poly_grd) Additive.N_has_bin_op
-  Additive.N_has_null_op grd_mul grd_one.
-Proof.
-  esplit. intros i x. cbv [poly_grd]. rewrite rew_const.
-  cbv [grd_bin_op grd_mul poly_has_grd_mul
-    grd_null_op grd_one poly_has_grd_one]. apply unl_r. Defined.
-
-Global Instance poly_is_grd_distr_l :
-  IsGrdDistrL (P := poly_grd) bin_op (fun i : N => add) grd_mul.
-Proof.
-  intros i j x y z. cbv [grd_mul poly_has_grd_mul]. apply distr_l. Defined.
-
-Global Instance poly_is_grd_distr_r :
-  IsGrdDistrR (P := poly_grd) bin_op (fun i : N => add) grd_mul.
-Proof.
-  intros i j x y z. cbv [grd_mul poly_has_grd_mul]. apply distr_r. Defined.
-
-Global Instance poly_is_grd_distr :
-  IsGrdDistr (P := poly_grd) bin_op (fun i : N => add) grd_mul.
-Proof. split; try typeclasses eauto. Defined.
-
-Global Instance poly_is_grd_ring : IsGrdRing (P := fun i : N => A)
-  bin_op null_op
-  (fun i : N => add) (fun i : N => zero) (fun i : N => neg)
-  (fun i j : N => mul) one.
-Proof. split; try typeclasses eauto. Admitted.
-
-Global Instance add_zero_neg_mul_one_is_alg :
-  IsAlg (A := A) (B := poly)
-  add zero neg mul one add zero neg mul act_l act_r.
-Proof. split; try typeclasses eauto. Admitted.
-
-Global Instance add_zero_neg_mul_one_is_assoc_alg :
-  IsAssocAlg (A := A) (B := poly)
-  add zero neg mul one add zero neg mul act_l act_r.
-Proof. split; typeclasses eauto. Defined.
-
-Global Instance add_zero_neg_mul_one_is_unl_assoc_alg :
-  IsUnlAssocAlg (A := A) (B := poly)
-  add zero neg mul one add zero neg mul one act_l act_r.
-Proof. split; typeclasses eauto. Defined.
 
 End Context.

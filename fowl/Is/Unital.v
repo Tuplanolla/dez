@@ -3,29 +3,32 @@
 From DEZ Require Export
   Init.
 
-(** ** Unital Left Action *)
+(** ** Left Unital Binary Function *)
 
 (** This has the same shape as [add_0_l]. *)
 
-Class IsUnlL (A B : Type) (x : A) (k : A -> B -> B) : Prop :=
-  unl_l (y : B) : k x y = y.
+Class IsUnlL (A B C : Type) (R : C -> A -> Prop)
+  (x : B) (k : B -> A -> C) : Prop :=
+  unl_l (y : A) : R (k x y) y.
 
-(** ** Unital Right Action *)
+(** ** Right Unital Binary Function *)
 
 (** This has the same shape as [add_0_r]. *)
 
-Class IsUnlR (A B : Type) (x : A) (k : B -> A -> B) : Prop :=
-  unl_r (y : B) : k y x = y.
+Class IsUnlR (A B C : Type) (R : C -> A -> Prop)
+  (x : B) (k : A -> B -> C) : Prop :=
+  unl_r (y : A) : R (k y x) y.
 
-(** ** Unital Actions *)
+(** ** Unital Binary Functions *)
 
-Class IsUnlLR2 (A B : Type)
-  (x : A) (k : A -> B -> B) (m : B -> A -> B) : Prop := {
-  is_unl_l :> IsUnlL x k;
-  is_unl_r :> IsUnlR x m;
+Class IsUnlLR2 (A B C : Type) (R : C -> A -> Prop)
+  (x : B) (k : B -> A -> C) (m : A -> B -> C) : Prop := {
+  is_unl_l :> IsUnlL R x k;
+  is_unl_r :> IsUnlR R x m;
 }.
 
-(** ** Unital Binary Operation *)
+(** ** Unital Torsion *)
 
-Class IsUnlLR (A : Type) (x : A) (k : A -> A -> A) : Prop :=
-  is_unl_l_r_2 :> IsUnlLR2 x k k.
+Class IsUnlLR (A B : Type) (R : A -> B -> Prop)
+  (x : B) (k : B -> B -> A) : Prop :=
+  is_unl_l_r_2 :> IsUnlLR2 R x k k.

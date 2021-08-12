@@ -1,33 +1,36 @@
-(** * Associativity of a Binary Operation and an Action *)
+(** * Associativity and Compatibility *)
 
-From DEZ.Has Require Export
-  BinaryOperation Action.
-From DEZ.Is Require Export
-  Compatible.
-From DEZ.ShouldHave Require Import
-  MultiplicativeNotations.
+From DEZ Require Export
+  Init.
+
+(** ** Associative Binary Functions *)
+
+Class IsAssoc4 (A B C D E F G : Type) (R : F -> G -> Prop)
+  (k : A -> D -> F) (m : B -> C -> D)
+  (n : E -> C -> G) (p : A -> B -> E) : Prop :=
+  assoc (x : A) (y : B) (z : C) : R (k x (m y z)) (n (p x y) z).
+
+(** ** Left Action Compatible with a Binary Operation *)
+
+Class IsCompatL (A B : Type) (R : B -> B -> Prop)
+  (k : A -> A -> A) (m : A -> B -> B) : Prop :=
+  l_is_assoc_4 :> IsAssoc4 R m m m k.
+
+(** ** Right Action Compatible with a Binary Operation *)
+
+Class IsCompatR (A B : Type) (R : B -> B -> Prop)
+  (k : A -> A -> A) (m : B -> A -> B) : Prop :=
+  r_is_assoc_4 :> IsAssoc4 R m k m m.
+
+(** ** Associative Actions *)
+
+Class IsAssoc2 (A B C : Type) (R : B -> B -> Prop)
+  (k : A -> B -> B) (m : B -> C -> B) : Prop :=
+  is_assoc_4 :> IsAssoc4 R k m m k.
+
+(** ** Associative Binary Operation *)
 
 (** This has the same shape as [mul_assoc]. *)
 
-Class IsAssoc (A : Type) (Hk : HasBinOp A) : Prop :=
-  assoc (x y z : A) : x * (y * z) = (x * y) * z.
-
-Class IsCompat (A B C : Type) (Hl : HasActL A C) (Hr : HasActR B C) : Prop :=
-  compat (a : A) (x : C) (b : B) : a *< (x >* b) = (a *< x) >* b.
-
-Section Context.
-
-Context (A : Type) (Hk : HasBinOp A) `(!IsAssoc _*_).
-
-#[local] Instance is_compat : IsCompat _*_ _*_.
-Proof. intros a x b. apply assoc. Qed.
-
-#[local] Instance is_compat_l : IsCompatL _*_ _*_.
-Proof. intros a b x. apply assoc. Qed.
-
-#[local] Instance is_compat_r : IsCompatR _*_ _*_.
-Proof. intros x a b. apply assoc. Qed.
-
-End Context.
-
-#[export] Hint Resolve is_compat is_compat_l is_compat_r : typeclass_instances.
+Class IsAssoc (A : Type) (R : A -> A -> Prop) (k : A -> A -> A) : Prop :=
+  is_assoc_2 :> IsAssoc2 R k k.

@@ -2,7 +2,7 @@
 From Coq Require Import
   ZArith.ZArith.
 From DEZ.Is Require Export
-  Magma Semigroup Monoid Group
+  Semigroup Monoid Group
   TwoSortedLeftBinaryCommutative.
 From DEZ.Offers Require Export
   OneSortedPositiveOperations OneSortedNaturalOperations

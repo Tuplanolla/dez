@@ -5,7 +5,7 @@ From DEZ.Has Require Export
   OneSortedEnumeration OneSortedCardinality.
 From DEZ.Is Require Export
   OneSortedFinite Isomorphism TwoSortedBimodule
-  Ring TwoSortedUnitalAssociativeAlgebra TwoSortedGradedAlgebra.
+  Ring TwoSortedUnitalAssociativeAlgebra.
 From DEZ.Offers Require Export
   OneSortedPositiveOperations OneSortedNaturalOperations
   OneSortedIntegerOperations.
@@ -81,32 +81,6 @@ Definition Neg (p : tensor) : tensor :={|
   tt := Map.map (List.map neg) (tt p);
 |}.
 
-(** TODO This is still wrong. *)
-
-Definition GrdMul (ps qs : tensor) : tensor :=
-  match ps, qs with
-  | {| ht := pp; tt := p |}, {| ht := qq; tt := q |} => {| ht := pp * qq; tt :=
-    fold_right (fun (k : nat) (r : t (list B)) =>
-      fold_right (fun (l : nat) (s : t (list B)) => match Map.find (Pos.of_nat k) s with
-        | Some u => Map.add (Pos.of_nat k) (app u
-          match Map.find (Pos.of_nat l) p, Map.find (Pos.of_nat (Nat.sub k l)) q with
-          | Some a, Some b => app a b (* List.map (prod_curry Addition.add) (combine a b) *)
-          | _, _ => nil
-          end) s
-        | None => Map.add (Pos.of_nat k)
-          match Map.find (Pos.of_nat l) p, Map.find (Pos.of_nat (Nat.sub k l)) q with
-          | Some a, Some b => app a b
-          | _, _ => nil
-          end s
-        end)
-      r (seq (S O) k))
-    (Map.empty (list B))
-    (seq (S O) (Pos.to_nat (Pos.add (Map_max_key_def xH p) (Map_max_key_def xH q)))) |}
-  end.
-
-Definition GrdOne : tensor :=
-  {| ht := one; tt := Map.empty (list B) |}.
-
 Definition ActL (a : A) (p : tensor) : tensor :=
   {| ht := ht p; tt := Map.map (List.map (act_l a)) (tt p) |}.
 
@@ -118,16 +92,6 @@ Global Instance N_has_bin_op : HasBinOp N := N.add.
 Global Instance N_has_null_op : HasNullOp N := N.zero.
 
 (** Instant tensor algebra; just add water. *)
-
-Global Instance lensor_is_grd_alg :
-  IsGrdAlg (A := N) (P := fun n : N => A) (Q := fun n : N => tensor)
-  (N_has_bin_op) (N_has_null_op)
-  (fun n : N => Addition.add) (fun n : N => zero) (fun n : N => neg)
-  (fun n p : N => mul) one
-  (fun n : N => Add) (fun n : N => Zero) (fun n : N => Neg)
-  (fun n p : N => GrdMul)
-  (fun n p : N => ActL) (fun n p : N => ActR).
-Proof. repeat split. Abort.
 
 End Context.
 

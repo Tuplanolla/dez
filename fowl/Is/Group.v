@@ -1,4 +1,4 @@
-(** * Group *)
+(** * Group Structure *)
 
 From DEZ.Has Require Export
   NullaryOperation UnaryOperation BinaryOperation.
@@ -8,10 +8,12 @@ From DEZ.Is Require Export
 From DEZ.ShouldHave Require Import
   AdditiveNotations.
 
-Class IsGrp (A : Type)
-  (Hx : HasNullOp A) (Hf : HasUnOp A) (Hk : HasBinOp A) : Prop := {
-  is_mon :> IsMon 0 _+_;
-  is_inv_l_r :> IsInvLR 0 -_ _+_;
+(** ** Group *)
+
+Class IsGrp (A : Type) (R : A -> A -> Prop)
+  (x : A) (f : A -> A) (k : A -> A -> A) : Prop : Prop := {
+  is_mon :> IsMon R x k;
+  is_inv_l_r :> IsInvLR R x f k;
 }.
 
 Section Context.

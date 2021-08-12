@@ -1,11 +1,11 @@
-(** * Algebraic Structure *)
+(** * Semigroup Structure *)
 
 From DEZ.Is Require Export
-  Magma Associative.
+  Equivalence Associative.
 
 (** ** Semigroup *)
 
-Class IsSemigrp (A : Type) (k : A -> A -> A) : Prop := {
-  is_mag :> IsMag eq k;
-  is_assoc :> IsAssoc k;
+Class IsSemigrp (A : Type) (R : A -> A -> Prop) (k : A -> A -> A) : Prop := {
+  is_eq :> IsEq R;
+  is_assoc :> IsAssoc R k;
 }.

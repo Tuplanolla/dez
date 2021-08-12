@@ -5,7 +5,8 @@ From DEZ.Is Require Export
 
 (** ** Monoid *)
 
-Class IsMon (A : Type) (x : A) (k : A -> A -> A) : Prop := {
-  is_semigrp :> IsSemigrp k;
-  is_unl_l_r :> IsUnlLR x k;
+Class IsMon (A : Type) (R : A -> A -> Prop)
+  (x : A) (k : A -> A -> A) : Prop := {
+  is_semigrp :> IsSemigrp R k;
+  is_unl_l_r :> IsUnlLR R x k;
 }.

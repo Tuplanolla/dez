@@ -4,7 +4,7 @@ From Coq Require Import
 From DEZ.Has Require Export
   OneSortedEnumeration OneSortedCardinality.
 From DEZ.Is Require Export
-  OneSortedFinite Isomorphism TwoSortedGradedAlgebra.
+  OneSortedFinite Isomorphism.
 
 Definition is_left (A B : Prop) (s : sumbool A B) : bool :=
   if s then true else false.
@@ -101,19 +101,6 @@ Proof. hnf. destruct i. all: apply zero. Defined.
 Local Instance unit_Z_has_neg (i : bool) :
   HasNeg (if i then unit else Z).
 Proof. hnf. intros x. destruct i. all: apply (neg x). Defined.
-
-Local Instance this_has_grd_mul :
-  HasGrdMul (fun x : bool => if x then unit else Z) bin_op.
-Proof.
-  hnf. intros i j x y. destruct i, j. all: cbv.
-  - apply tt.
-  - apply x.
-  - apply y.
-  - apply (x * y). Defined.
-
-Local Instance this_has_grd_one :
-  HasGrdOne (fun x : bool => if x then unit else Z) null_op.
-Proof. hnf. apply Z.one. Defined.
 
 Local Instance bool_bin_op_is_assoc : IsAssoc (bin_op (A := bool)).
 Proof.
