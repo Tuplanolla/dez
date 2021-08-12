@@ -25,7 +25,7 @@ Proof. reflexivity. Defined.
 
 Section Context.
 
-Context (A : Type) `{IsMag A}.
+Context (A : Type) `{HasBinOp A} `{!IsMag eq bin_op}.
 
 Fact iter_op_xI (n : positive) (x : A) :
   Pos.iter_op _+_ (xI n) x = x + Pos.iter_op _+_ n (x + x).
@@ -43,7 +43,7 @@ End Context.
 
 Section Context.
 
-Context (A : Type) `{IsSemigrp A}.
+Context (A : Type) `{HasBinOp A} `{!IsSemigrp bin_op}.
 
 Lemma iter_op_succ (n : positive) (x : A) :
   Pos.iter_op _+_ (Pos.succ n) x = x + Pos.iter_op _+_ n x.

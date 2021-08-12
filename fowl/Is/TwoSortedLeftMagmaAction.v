@@ -6,5 +6,5 @@ From DEZ.Is Require Export
 
 Class IsLMagAct (A B : Type)
   `(HasBinOp A) `(HasActL A B) : Prop := {
-  A_bin_op_is_mag :> IsMag (bin_op (A := A));
+  A_bin_op_is_mag :> IsMag eq (bin_op (A := A));
 }.

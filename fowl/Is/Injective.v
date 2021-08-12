@@ -1,9 +1,9 @@
-(** * Injectivity of a Function *)
+(** * Injectivity *)
 
-From DEZ.Has Require Export
-  BinaryOperation.
-From DEZ.ShouldHave Require Import
-  AdditiveNotations.
+From DEZ Require Export
+  Init.
+
+(** ** Injective Function *)
 
 Class IsInj (A B : Type) (f : A -> B) : Prop :=
   inj (x y : A) (a : f x = f y) : x = y.

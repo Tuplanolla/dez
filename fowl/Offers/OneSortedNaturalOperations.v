@@ -1,7 +1,7 @@
 From Coq Require Import
   NArith.NArith.
 From DEZ.Has Require Export
-  Action.
+  NullaryOperation BinaryOperation Action.
 From DEZ.Is Require Export
   Monoid.
 From DEZ.Offers Require Export

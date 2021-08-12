@@ -1,8 +1,10 @@
-(** * Magma or Groupoid *)
+(** * Algebraic Structure *)
 
-From DEZ.Has Require Export
-  BinaryOperation.
+From DEZ.Is Require Export
+  Equivalence.
 
-(** This class would have some fields if we used the setoid model. *)
+(** ** Groupoid *)
+(** ** Magma *)
 
-Class IsMag (A : Type) (Hk : HasBinOp A) : Prop := {}.
+Class IsMag (A : Type) (R : A -> A -> Prop) (k : A -> A -> A) : Prop :=
+  is_eq :> IsEq R.

@@ -120,8 +120,8 @@ Module Additive.
 
 Global Instance positive_has_bin_op : HasBinOp positive := Pos.add.
 
-Global Instance positive_bin_op_is_mag : IsMag (bin_op (A := positive)).
-Proof. Defined.
+Global Instance positive_bin_op_is_mag : IsMag eq (bin_op (A := positive)).
+Proof. hnf. typeclasses eauto. Defined.
 
 Global Instance positive_bin_op_is_assoc : IsAssoc (bin_op (A := positive)).
 Proof. intros x y z. apply Pos.add_assoc. Defined.
@@ -142,8 +142,8 @@ Module Multiplicative.
 Global Instance positive_bin_op_has_bin_op : HasBinOp positive := Pos.mul.
 Global Instance positive_has_null_op : HasNullOp positive := xH.
 
-Global Instance positive_bin_op_is_mag : IsMag (bin_op (A := positive)).
-Proof. Defined.
+Global Instance positive_bin_op_is_mag : IsMag eq (bin_op (A := positive)).
+Proof. hnf. typeclasses eauto. Defined.
 
 Global Instance positive_bin_op_is_assoc : IsAssoc (bin_op (A := positive)).
 Proof. intros x y z. apply Pos.mul_assoc. Defined.
@@ -157,13 +157,13 @@ Proof. intros x y. apply Pos.mul_comm. Defined.
 Global Instance positive_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := positive)).
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance positive_bin_op_null_op_is_unl_l : IsUnlBinOpL null_op (bin_op (A := positive)).
+Global Instance positive_bin_op_null_op_is_unl_l : IsUnlL null_op (bin_op (A := positive)).
 Proof. intros x. apply Pos.mul_1_l. Defined.
 
-Global Instance positive_bin_op_null_op_is_unl_r : IsUnlBinOpR null_op (bin_op (A := positive)).
+Global Instance positive_bin_op_null_op_is_unl_r : IsUnlR null_op (bin_op (A := positive)).
 Proof. intros x. apply Pos.mul_1_r. Defined.
 
-Global Instance positive_bin_op_null_op_is_unl : IsUnlBinOpLR null_op (bin_op (A := positive)).
+Global Instance positive_bin_op_null_op_is_unl : IsUnlLR null_op (bin_op (A := positive)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance positive_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := positive)).

@@ -122,48 +122,18 @@ Proof.
   | x : unit |- _ => destruct x
   end; try reflexivity. Defined.
 
-Local Instance bool_bin_op_is_unl_l : IsUnlBinOpL null_op (bin_op (A := bool)).
+Local Instance bool_bin_op_is_unl_l : IsUnlL null_op (bin_op (A := bool)).
 Proof.
   intros x. all: cbn; repeat match goal with
   | x : bool |- _ => destruct x
   | x : unit |- _ => destruct x
   end; try reflexivity. Defined.
 
-Local Instance bool_bin_op_is_unl_r : IsUnlBinOpR null_op (bin_op (A := bool)).
+Local Instance bool_bin_op_is_unl_r : IsUnlR null_op (bin_op (A := bool)).
 Proof.
   intros x. all: cbn; repeat match goal with
   | x : bool |- _ => destruct x
   | x : unit |- _ => destruct x
   end; try reflexivity. Defined.
-
-(** TODO If we used [Qed] with these lemmas used in [rew],
-    reduction would get stuck due to the lack of axiom K or
-    its strict proposition equivalent. *)
-
-Ltac smash := repeat match goal with
-  | x : bool |- _ => destruct x
-  | x : unit |- _ => destruct x
-  end; try reflexivity.
-
-Local Instance Z_bool_is_grd_ring :
-  IsGrdRing (A := bool) (P := fun x : bool => if x then unit else Z)
-  bin_op null_op
-  unit_Z_has_add unit_Z_has_zero unit_Z_has_neg grd_mul grd_one.
-Proof.
-  repeat split.
-  1-6: shelve.
-  - intros i j x y z.
-    all: cbn; smash. apply Z.mul_add_distr_l.
-  - intros i j x y z.
-    all: cbn; smash. apply Z.mul_add_distr_r.
-  - intros x y z. all: cbn; smash.
-  - intros x. all: cbn; smash.
-  - intros x y z. all: cbn; smash.
-  - esplit.
-    intros i j k x y z. all: cbn; smash. apply Z.mul_assoc.
-  - esplit.
-    intros i x. all: cbn -[Z.mul]; smash. apply Z.mul_1_l.
-  - esplit.
-    intros i x. all: cbn -[Z.mul]; smash. apply Z.mul_1_r. Abort.
 
 End Stuff.

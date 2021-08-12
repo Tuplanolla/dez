@@ -44,8 +44,8 @@ Proof with conversions.
   intros x.
   apply (cancel_r (0 * x) 0 (1 * x))...
   rewrite <- (distr_r 0 1 x).
-  setoid_rewrite (unl_bin_op_l 1).
-  setoid_rewrite (unl_bin_op_l x).
+  setoid_rewrite (unl_l 1).
+  setoid_rewrite (unl_l x).
   reflexivity. Qed.
 
 #[local] Instance is_absorb_elem_r : IsAbsorbElemR 0 _*_.
@@ -53,8 +53,8 @@ Proof with conversions.
   intros x.
   apply (cancel_r (x * 0) 0 (x * 1))...
   rewrite <- (distr_l x 0 1).
-  setoid_rewrite (unl_bin_op_l 1).
-  setoid_rewrite (unl_bin_op_r x).
+  setoid_rewrite (unl_l 1).
+  setoid_rewrite (unl_r x).
   reflexivity. Qed.
 
 #[local] Instance is_absorb_elem_l_r : IsAbsorbElemLR 0 _*_.
@@ -104,13 +104,13 @@ Proof with conversions.
 Lemma neg_mul_one_l_sgn_absorb (x : A) : (- 1) * x = - x.
 Proof with conversions.
   setoid_rewrite (comm_l 1 x).
-  rewrite (unl_bin_op_l x).
+  rewrite (unl_l x).
   reflexivity. Qed.
 
 Lemma neg_mul_one_r_sgn_absorb (x : A) : x * (- 1) = - x.
 Proof with conversions.
   setoid_rewrite (comm_r x 1).
-  rewrite (unl_bin_op_r x).
+  rewrite (unl_r x).
   reflexivity. Qed.
 
 Global Instance integral_domain_thing

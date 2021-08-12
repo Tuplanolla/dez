@@ -15,8 +15,8 @@ Global Instance unit_has_bin_op : HasBinOp unit := fun x y : unit => tt.
 Global Instance unit_has_null_op : HasNullOp unit := tt.
 Global Instance unit_has_un_op : HasUnOp unit := fun x : unit => tt.
 
-Global Instance unit_bin_op_is_mag : IsMag (bin_op (A := unit)).
-Proof. Defined.
+Global Instance unit_bin_op_is_mag : IsMag eq (bin_op (A := unit)).
+Proof. hnf. typeclasses eauto. Defined.
 
 Global Instance unit_bin_op_is_assoc : IsAssoc (bin_op (A := unit)).
 Proof. intros x y z. eautodestruct. Defined.
@@ -30,13 +30,13 @@ Proof. intros x y. eautodestruct. Defined.
 Global Instance unit_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := unit)).
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance unit_bin_op_null_op_is_unl_l : IsUnlBinOpL null_op (bin_op (A := unit)).
+Global Instance unit_bin_op_null_op_is_unl_l : IsUnlL null_op (bin_op (A := unit)).
 Proof. intros x. eautodestruct. Defined.
 
-Global Instance unit_bin_op_null_op_is_unl_r : IsUnlBinOpR null_op (bin_op (A := unit)).
+Global Instance unit_bin_op_null_op_is_unl_r : IsUnlR null_op (bin_op (A := unit)).
 Proof. intros x. eautodestruct. Defined.
 
-Global Instance unit_bin_op_null_op_is_unl : IsUnlBinOpLR null_op (bin_op (A := unit)).
+Global Instance unit_bin_op_null_op_is_unl : IsUnlLR null_op (bin_op (A := unit)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance unit_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := unit)).
@@ -73,8 +73,8 @@ Module Multiplicative.
 Global Instance unit_bin_op_has_bin_op : HasBinOp unit := fun x y : unit => tt.
 Global Instance unit_has_null_op : HasNullOp unit := tt.
 
-Global Instance unit_bin_op_is_mag : IsMag (bin_op (A := unit)).
-Proof. Defined.
+Global Instance unit_bin_op_is_mag : IsMag eq (bin_op (A := unit)).
+Proof. hnf. typeclasses eauto. Defined.
 
 Global Instance unit_bin_op_is_assoc : IsAssoc (bin_op (A := unit)).
 Proof. intros x y z. eautodestruct. Defined.
@@ -88,13 +88,13 @@ Proof. intros x y. eautodestruct. Defined.
 Global Instance unit_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := unit)).
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance unit_bin_op_null_op_is_unl_l : IsUnlBinOpL null_op (bin_op (A := unit)).
+Global Instance unit_bin_op_null_op_is_unl_l : IsUnlL null_op (bin_op (A := unit)).
 Proof. intros x. eautodestruct. Defined.
 
-Global Instance unit_bin_op_null_op_is_unl_r : IsUnlBinOpR null_op (bin_op (A := unit)).
+Global Instance unit_bin_op_null_op_is_unl_r : IsUnlR null_op (bin_op (A := unit)).
 Proof. intros x. eautodestruct. Defined.
 
-Global Instance unit_bin_op_null_op_is_unl : IsUnlBinOpLR null_op (bin_op (A := unit)).
+Global Instance unit_bin_op_null_op_is_unl : IsUnlLR null_op (bin_op (A := unit)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance unit_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := unit)).

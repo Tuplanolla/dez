@@ -21,53 +21,53 @@ Context (A : Type) `(IsGrp A).
 #[local] Instance is_fixed : IsFixed 0 -_.
 Proof.
   hnf.
-  rewrite <- (unl_bin_op_r (- 0)).
-  rewrite (inv_l 0).
+  rewrite <- (unl_r (- 0)).
+  setoid_rewrite (inv_l 0).
   reflexivity. Qed.
 
 #[local] Instance is_invol : IsInvol -_.
 Proof.
   intros x.
-  rewrite <- (unl_bin_op_r (- (- x))).
-  rewrite <- (inv_l x).
+  rewrite <- (unl_r (- (- x))).
+  setoid_rewrite <- (inv_l x).
   rewrite (assoc (- (- x)) (- x) x).
   rewrite (inv_l (- x)).
-  rewrite (unl_bin_op_l x).
+  rewrite (unl_l x).
   reflexivity. Qed.
 
 #[local] Instance is_inj : IsInj -_.
 Proof.
   intros x y a.
-  rewrite <- (unl_bin_op_l y).
-  rewrite <- (inv_r x).
+  rewrite <- (unl_l y).
+  setoid_rewrite <- (inv_r x).
   setoid_rewrite a.
   rewrite <- (assoc x (- y) y).
   rewrite (inv_l y).
-  rewrite (unl_bin_op_r x).
+  rewrite (unl_r x).
   reflexivity. Qed.
 
 #[local] Instance is_cancel_l : IsCancelL _+_.
 Proof.
   intros x y z a.
-  rewrite <- (unl_bin_op_l x).
-  rewrite <- (inv_l z).
+  rewrite <- (unl_l x).
+  setoid_rewrite <- (inv_l z).
   rewrite <- (assoc (- z) z x).
   setoid_rewrite a.
   rewrite (assoc (- z) z y).
   rewrite (inv_l z).
-  rewrite (unl_bin_op_l y).
+  rewrite (unl_l y).
   reflexivity. Qed.
 
 #[local] Instance is_cancel_r : IsCancelR _+_.
 Proof.
   intros x y z a.
-  rewrite <- (unl_bin_op_r x).
-  rewrite <- (inv_r z).
+  rewrite <- (unl_r x).
+  setoid_rewrite <- (inv_r z).
   rewrite (assoc x z (- z)).
   setoid_rewrite a.
   rewrite <- (assoc y z (- z)).
   rewrite (inv_r z).
-  rewrite (unl_bin_op_r y).
+  rewrite (unl_r y).
   reflexivity. Qed.
 
 #[local] Instance is_cancel_l_r : IsCancelLR _+_.
@@ -81,7 +81,7 @@ Proof.
   rewrite (assoc (x + y) (- y) (- x)).
   rewrite <- (assoc x y (- y)).
   rewrite (inv_r y).
-  rewrite (unl_bin_op_r x).
+  rewrite (unl_r x).
   rewrite (inv_r x).
   reflexivity. Qed.
 

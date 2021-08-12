@@ -504,8 +504,8 @@ Global Instance poly_has_bin_op : HasBinOp poly := poly_add.
 Global Instance poly_has_null_op : HasNullOp poly := poly_zero.
 Global Instance poly_has_un_op : HasUnOp poly := poly_neg.
 
-Global Instance poly_bin_op_is_mag : IsMag poly_add.
-Proof. Defined.
+Global Instance poly_bin_op_is_mag : IsMag eq poly_add.
+Proof. hnf. typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_is_assoc : IsAssoc poly_add.
 Proof with conversions.
@@ -536,25 +536,25 @@ Proof with conversions.
   - decide ((a + b) + c <> 0) as [Fab_c | Fab_c];
     stabilize; cbn.
     + f_equal. setoid_rewrite <- assoc... rewrite Fbc.
-      setoid_rewrite unl_bin_op_r. reflexivity.
+      setoid_rewrite unl_r. reflexivity.
     + exfalso. setoid_rewrite <- assoc in Fab_c...
-      rewrite Fbc in Fab_c. setoid_rewrite unl_bin_op_r in Fab_c.
+      rewrite Fbc in Fab_c. setoid_rewrite unl_r in Fab_c.
       subst a. apply (poly_lookup_wf x i). apply Dx.
   - decide (a + (b + c) <> 0) as [Fa_bc | Fa_bc];
     stabilize; cbn.
     + f_equal. setoid_rewrite assoc... rewrite Fab.
-      setoid_rewrite unl_bin_op_l. reflexivity.
+      setoid_rewrite unl_l. reflexivity.
     + exfalso. setoid_rewrite assoc in Fa_bc...
-      rewrite Fab in Fa_bc. setoid_rewrite unl_bin_op_l in Fa_bc.
+      rewrite Fab in Fa_bc. setoid_rewrite unl_l in Fa_bc.
       subst c. apply (poly_lookup_wf z i). apply Dz.
   - f_equal. assert (Ha : a = a + (b + - b)).
-    { setoid_rewrite inv_r. setoid_rewrite unl_bin_op_r. reflexivity. }
+    { setoid_rewrite inv_r. setoid_rewrite unl_r. reflexivity. }
     assert (Hc : c = (- b + b) + c).
-    { setoid_rewrite inv_l. setoid_rewrite unl_bin_op_l. reflexivity. }
+    { setoid_rewrite inv_l. setoid_rewrite unl_l. reflexivity. }
     rewrite Ha. setoid_rewrite assoc...
-    rewrite Fab. setoid_rewrite unl_bin_op_l.
+    rewrite Fab. setoid_rewrite unl_l.
     rewrite Hc. setoid_rewrite <- assoc...
-    rewrite Fbc. setoid_rewrite unl_bin_op_r. reflexivity. Defined.
+    rewrite Fbc. setoid_rewrite unl_r. reflexivity. Defined.
 
 Global Instance poly_bin_op_is_semigrp : IsSemigrp poly_add.
 Proof. split; typeclasses eauto. Defined.
@@ -583,21 +583,21 @@ Proof with conversions.
 Global Instance poly_bin_op_is_comm_semigrp : IsCommSemigrp poly_add.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_bin_op_null_op_is_unl_l : IsUnlBinOpL null_op poly_add.
+Global Instance poly_bin_op_null_op_is_unl_l : IsUnlL null_op poly_add.
 Proof.
   intros x. cbv [bin_op poly_has_bin_op poly_add
   null_op poly_has_null_op poly_zero].
   cbv [union_with map_union_with].
   Fail apply (left_id empty (merge (option_union_with _))). Admitted.
 
-Global Instance poly_bin_op_null_op_is_unl_r : IsUnlBinOpR null_op poly_add.
+Global Instance poly_bin_op_null_op_is_unl_r : IsUnlR null_op poly_add.
 Proof.
   intros x. cbv [bin_op poly_has_bin_op poly_add
   null_op poly_has_null_op poly_zero].
   cbv [union_with map_union_with].
   Fail apply (right_id empty (merge (option_union_with _))). Admitted.
 
-Global Instance poly_bin_op_null_op_is_unl : IsUnlBinOpLR null_op poly_add.
+Global Instance poly_bin_op_null_op_is_unl : IsUnlLR null_op poly_add.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_is_mon : IsMon null_op poly_add.
@@ -668,8 +668,8 @@ Ltac conversions := typeclasses
 Global Instance poly_has_bin_op : HasBinOp poly := poly_mul.
 Global Instance poly_has_null_op : HasNullOp poly := poly_one.
 
-Global Instance poly_bin_op_is_mag : IsMag poly_mul.
-Proof. Defined.
+Global Instance poly_bin_op_is_mag : IsMag eq poly_mul.
+Proof. hnf. typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_is_assoc : IsAssoc poly_mul.
 Proof with conversions.
@@ -702,15 +702,15 @@ Proof.
 Global Instance poly_bin_op_is_comm_semigrp : IsCommSemigrp poly_mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_bin_op_null_op_is_unl_l : IsUnlBinOpL null_op poly_mul.
+Global Instance poly_bin_op_null_op_is_unl_l : IsUnlL null_op poly_mul.
 Proof.
   intros x.
   cbv [bin_op poly_has_bin_op]; cbv [poly_mul]. Admitted.
 
-Global Instance poly_bin_op_null_op_is_unl_r : IsUnlBinOpR null_op poly_mul.
+Global Instance poly_bin_op_null_op_is_unl_r : IsUnlR null_op poly_mul.
 Proof. intros x. Admitted.
 
-Global Instance poly_bin_op_null_op_is_unl : IsUnlBinOpLR null_op poly_mul.
+Global Instance poly_bin_op_null_op_is_unl : IsUnlLR null_op poly_mul.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_is_mon : IsMon null_op poly_mul.
@@ -823,9 +823,9 @@ Proof with conversions.
   decide (1 <> (0 : A)) as [F10 | F10].
   - rewrite map_imap_singleton.
     cbv [map_sum]. rewrite <- insert_empty. rewrite map_fold_insert_L.
-    + cbn. rewrite map_fold_empty. setoid_rewrite unl_bin_op_r.
+    + cbn. rewrite map_fold_empty. setoid_rewrite unl_r.
       cbv [poly_value_eval].
-      setoid_rewrite unl_bin_op_l. reflexivity.
+      setoid_rewrite unl_l. reflexivity.
     + cbn. intros ? ? a b c **. setoid_rewrite assoc...
       setoid_rewrite (comm_bin_op a b) at 1...
       setoid_rewrite <- assoc... reflexivity.
@@ -856,7 +856,7 @@ Global Instance poly_is_grd_unl_l :
 Proof.
   esplit. intros i x. cbv [poly_grd]. rewrite rew_const.
   cbv [grd_bin_op grd_mul poly_has_grd_mul
-    grd_null_op grd_one poly_has_grd_one]. apply unl_bin_op_l. Defined.
+    grd_null_op grd_one poly_has_grd_one]. apply unl_l. Defined.
 
 Global Instance poly_is_grd_unl_r :
   IsGrdUnlR (P := poly_grd) Additive.N_has_bin_op
@@ -864,7 +864,7 @@ Global Instance poly_is_grd_unl_r :
 Proof.
   esplit. intros i x. cbv [poly_grd]. rewrite rew_const.
   cbv [grd_bin_op grd_mul poly_has_grd_mul
-    grd_null_op grd_one poly_has_grd_one]. apply unl_bin_op_r. Defined.
+    grd_null_op grd_one poly_has_grd_one]. apply unl_r. Defined.
 
 Global Instance poly_is_grd_distr_l :
   IsGrdDistrL (P := poly_grd) bin_op (fun i : N => add) grd_mul.

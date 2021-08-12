@@ -26,7 +26,7 @@ Proof.
   exists 0.
   intros x.
   pose proof f_equal (_*_ x) a as b.
-  setoid_rewrite (unl_bin_op_r x) in b.
+  setoid_rewrite (unl_r x) in b.
   rewrite (absorb_elem_r x) in b.
   rewrite b.
   reflexivity. Qed.

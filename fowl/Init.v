@@ -25,14 +25,14 @@ From Coq Require Export
 From Coq Require Export
   Classes.Morphisms Classes.DecidableClass Classes.RelationClasses.
 From Coq Require Import
-  PArith.PArith NArith.NArith ZArith.ZArith QArith.QArith Reals.Reals
-  Numbers.Cyclic.Int31.Int31 Numbers.Cyclic.Int63.Int63.
+  PArith.PArith NArith.NArith ZArith.ZArith QArith.QArith QArith.Qcanon
+  Reals.Reals Numbers.Cyclic.Int31.Int31 Numbers.Cyclic.Int63.Int63.
 From Coq Require Import
   Lists.List.
 From Equations.Prop Require Export
   Equations.
 
-(** ** Flags and Options and Tables *)
+(** ** Flags, Options and Tables *)
 
 (** We disable warnings about unsupported attributes,
     because we use some custom attributes as refactoring hints. *)
@@ -241,6 +241,9 @@ Notation "'0'" := (Qmake Z0 xH) : hex_Q_scope.
 Notation "'0'" := (Qmake Z0 xH) : Q_scope.
 Notation "'1'" := (Qmake (Zpos xH) xH) : hex_Q_scope.
 Notation "'1'" := (Qmake (Zpos xH) xH) : Q_scope.
+
+Notation "'0'" := (Qcmake (Qmake Z0 xH) eq_refl) : Qc_scope.
+Notation "'1'" := (Qcmake (Qmake (Zpos xH) xH) eq_refl) : Qc_scope.
 
 Notation "'0'" := R0 : hex_R_scope.
 Notation "'0'" := R0 : R_scope.

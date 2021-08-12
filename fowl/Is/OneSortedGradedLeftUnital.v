@@ -11,6 +11,6 @@ Class IsGrdUnlL (A : Type) (P : A -> Type)
   `(HasBinOp A) `(HasNullOp A)
   `(HasGrdBinOp A P)
   `(HasGrdNullOp A P) : Prop := {
-  A_bin_op_null_op_is_unl_l :> IsUnlBinOpL null_op bin_op;
-  grd_unl_l : forall (i : A) (x : P i), rew unl_bin_op_l i in (0 + x) = x;
+  A_bin_op_null_op_is_unl_l :> IsUnlL null_op bin_op;
+  grd_unl_l : forall (i : A) (x : P i), rew unl_l i in (0 + x) = x;
 }.

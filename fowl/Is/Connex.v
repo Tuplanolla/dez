@@ -1,9 +1,13 @@
-(** * Connexity or Connectedness or Totality of a Binary Relation *)
+(** * Properties of Binary Relations *)
 
 From DEZ.Has Require Export
   BinaryRelation.
 From DEZ.ShouldHave Require Import
   BinaryRelationNotations.
+
+(** ** Connected Binary Relation *)
+(** ** Connex Binary Relation *)
+(** ** Total Binary Relation *)
 
 (** This has the same shape as [le_ge_cases]. *)
 

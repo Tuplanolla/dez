@@ -13,8 +13,8 @@ Global Instance Z_has_bin_op : HasBinOp Z := Z.add.
 Global Instance Z_has_null_op : HasNullOp Z := Z.zero.
 Global Instance Z_has_un_op : HasUnOp Z := Z.opp.
 
-Global Instance Z_bin_op_is_mag : IsMag (bin_op (A := Z)).
-Proof. Defined.
+Global Instance Z_bin_op_is_mag : IsMag eq (bin_op (A := Z)).
+Proof. hnf. typeclasses eauto. Defined.
 
 Global Instance Z_bin_op_is_assoc : IsAssoc (bin_op (A := Z)).
 Proof. intros x y z. apply Z.add_assoc. Defined.
@@ -28,13 +28,13 @@ Proof. intros x y. apply Z.add_comm. Defined.
 Global Instance Z_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := Z)).
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_bin_op_null_op_is_unl_l : IsUnlBinOpL null_op (bin_op (A := Z)).
+Global Instance Z_bin_op_null_op_is_unl_l : IsUnlL null_op (bin_op (A := Z)).
 Proof. intros x. apply Z.add_0_l. Defined.
 
-Global Instance Z_bin_op_null_op_is_unl_r : IsUnlBinOpR null_op (bin_op (A := Z)).
+Global Instance Z_bin_op_null_op_is_unl_r : IsUnlR null_op (bin_op (A := Z)).
 Proof. intros x. apply Z.add_0_r. Defined.
 
-Global Instance Z_bin_op_null_op_is_unl : IsUnlBinOpLR null_op (bin_op (A := Z)).
+Global Instance Z_bin_op_null_op_is_unl : IsUnlLR null_op (bin_op (A := Z)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := Z)).
@@ -68,8 +68,8 @@ Module Multiplicative.
 Global Instance Z_bin_op_has_bin_op : HasBinOp Z := Z.mul.
 Global Instance Z_has_null_op : HasNullOp Z := Z.one.
 
-Global Instance Z_bin_op_is_mag : IsMag (bin_op (A := Z)).
-Proof. Defined.
+Global Instance Z_bin_op_is_mag : IsMag eq (bin_op (A := Z)).
+Proof. hnf. typeclasses eauto. Defined.
 
 Global Instance Z_bin_op_is_assoc : IsAssoc (bin_op (A := Z)).
 Proof. intros x y z. apply Z.mul_assoc. Defined.
@@ -83,13 +83,13 @@ Proof. intros x y. apply Z.mul_comm. Defined.
 Global Instance Z_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := Z)).
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_bin_op_null_op_is_unl_l : IsUnlBinOpL null_op (bin_op (A := Z)).
+Global Instance Z_bin_op_null_op_is_unl_l : IsUnlL null_op (bin_op (A := Z)).
 Proof. intros x. apply Z.mul_1_l. Defined.
 
-Global Instance Z_bin_op_null_op_is_unl_r : IsUnlBinOpR null_op (bin_op (A := Z)).
+Global Instance Z_bin_op_null_op_is_unl_r : IsUnlR null_op (bin_op (A := Z)).
 Proof. intros x. apply Z.mul_1_r. Defined.
 
-Global Instance Z_bin_op_null_op_is_unl : IsUnlBinOpLR null_op (bin_op (A := Z)).
+Global Instance Z_bin_op_null_op_is_unl : IsUnlLR null_op (bin_op (A := Z)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := Z)).

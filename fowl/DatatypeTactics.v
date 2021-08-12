@@ -1,7 +1,8 @@
-(** * Predicate Tactics for Data Types *)
+(** * Tactics for Data Types *)
 
 From Coq Require Import
-  PArith.PArith NArith.NArith ZArith.ZArith.
+  PArith.PArith NArith.NArith ZArith.ZArith QArith.QArith QArith.Qcanon
+  Reals.Reals.
 From DEZ Require Export
   Init.
 
@@ -11,7 +12,7 @@ From DEZ Require Export
 
 Ltac is_fun is_B f :=
   match f with
-  | fun _ : _ => ?b => is_B b
+  | fun _ : _ => ?x => is_B x
   | _ => fail "Not a constant"
   end.
 
@@ -29,7 +30,7 @@ Ltac is_fun' f :=
 
 Ltac is_pi is_P f :=
   match f with
-  | fun _ : _ => ?b => is_P b
+  | fun _ : _ => ?x => is_P x
   | _ => fail "Not a constant"
   end.
 
@@ -149,6 +150,24 @@ Ltac is_list' x :=
   match x with
   | nil => idtac
   | cons _ ?y => is_list' y
+  | _ => fail "Not a constant"
+  end.
+
+(** Succeed when the given term is a constant of type [exists x : A, P x] and
+    its subterms are constants of type [x : A] and [P x]
+    as determined by the tactical predicates [is_A] and [is_P]. *)
+
+Ltac is_ex is_A is_P x :=
+  match x with
+  | ex_intro _ ?a ?b => is_A a; is_P a b
+  | _ => fail "Not a constant"
+  end.
+
+(** Succeed when the given term is a constant of type [exists x : A, P x]. *)
+
+Ltac is_ex' x :=
+  match x with
+  | ex_intro _ _ _ => idtac
   | _ => fail "Not a constant"
   end.
 
@@ -272,5 +291,21 @@ Ltac is_Z n :=
   | Z0 => idtac
   | Zpos ?p => is_positive p
   | Zneg ?p => is_positive p
+  | _ => fail "Not a constant"
+  end.
+
+(** Succeed when the given term is a constant of type [Q]. *)
+
+Ltac is_Q x :=
+  match x with
+  | Qmake ?n ?p => is_Z n; is_positive ?p
+  | _ => fail "Not a constant"
+  end.
+
+(** Succeed when the given term is a constant of type [Qc]. *)
+
+Ltac is_Qc x :=
+  match x with
+  | Qcmake ?a _ => is_Q a
   | _ => fail "Not a constant"
   end.

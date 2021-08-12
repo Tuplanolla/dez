@@ -1,13 +1,11 @@
-(** * Semigroup *)
+(** * Algebraic Structure *)
 
-From DEZ.Has Require Export
-  BinaryOperation.
 From DEZ.Is Require Export
   Magma Associative.
-From DEZ.ShouldHave Require Import
-  AdditiveNotations.
 
-Class IsSemigrp (A : Type) (Hk : HasBinOp A) : Prop := {
-  is_mag :> IsMag _+_;
-  is_assoc :> IsAssoc _+_;
+(** ** Semigroup *)
+
+Class IsSemigrp (A : Type) (k : A -> A -> A) : Prop := {
+  is_mag :> IsMag eq k;
+  is_assoc :> IsAssoc k;
 }.
