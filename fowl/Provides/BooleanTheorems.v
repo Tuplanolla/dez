@@ -2,6 +2,7 @@
 From Coq Require Import
   Lists.List Logic.ProofIrrelevance NArith.NArith ZArith.ZArith.
 From DEZ.Has Require Export
+  NullaryOperation UnaryOperation BinaryOperation
   OneSortedEnumeration OneSortedCardinality.
 From DEZ.Is Require Export
   OneSortedFinite Isomorphism.

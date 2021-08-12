@@ -1,12 +1,12 @@
-(** * Symmetry of a Binary Relation *)
+(** * Symmetry *)
 
-From DEZ.Has Require Export
-  BinaryRelation.
-From DEZ.ShouldHave Require Import
-  BinaryRelationNotations.
+From DEZ Require Export
+  Init.
 
-Fail Fail Class IsSym (A : Type) (HR : HasBinRel A) : Prop :=
-  sym (x y : A) (a : x ~ y) : y ~ x.
+Fail Fail Class IsSym (A : Type) (R : A -> A -> Prop) : Prop :=
+  sym (x y : A) (a : R x y) : R y x.
+
+(** ** Symmetric Binary Relation *)
 
 Notation IsSym := Symmetric.
 Notation sym := (symmetry : IsSym _).

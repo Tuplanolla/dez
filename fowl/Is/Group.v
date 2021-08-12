@@ -11,7 +11,7 @@ From DEZ.ShouldHave Require Import
 (** ** Group *)
 
 Class IsGrp (A : Type) (R : A -> A -> Prop)
-  (x : A) (f : A -> A) (k : A -> A -> A) : Prop : Prop := {
+  (x : A) (f : A -> A) (k : A -> A -> A) : Prop := {
   is_mon :> IsMon R x k;
   is_inv_l_r :> IsInvLR R x f k;
 }.

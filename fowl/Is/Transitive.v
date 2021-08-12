@@ -1,12 +1,12 @@
-(** * Transitivity of a Binary Relation *)
+(** * Transitivity *)
 
-From DEZ.Has Require Export
-  BinaryRelation.
-From DEZ.ShouldHave Require Import
-  BinaryRelationNotations.
+From DEZ Require Export
+  Init.
 
-Fail Fail Class IsTrans (A : Type) (HR : HasBinRel A) : Prop :=
-  trans (x y z : A) (a : x ~ y) (b : y ~ z) : x ~ z.
+Fail Fail Class IsTrans (A : Type) (R : A -> A -> Prop) : Prop :=
+  trans (x y z : A) (a : R x y) (b : R y z) : R x z.
+
+(** ** Transitive Binary Relation *)
 
 Notation IsTrans := Transitive.
 Notation trans := (transitivity : IsTrans _).

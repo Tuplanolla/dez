@@ -1,12 +1,12 @@
-(** * Reflexivity of a Binary Relation *)
+(** * Reflexivity *)
 
-From DEZ.Has Require Export
-  BinaryRelation.
-From DEZ.ShouldHave Require Import
-  BinaryRelationNotations.
+From DEZ Require Export
+  Init.
 
-Fail Fail Class IsRefl (A : Type) (HR : HasBinRel A) : Prop :=
-  refl (x : A) : x ~ x.
+Fail Fail Class IsRefl (A : Type) (R : A -> A -> Prop) : Prop :=
+  refl (x : A) : R x x.
+
+(** ** Reflexive Binary Relation *)
 
 Notation IsRefl := Reflexive.
 Notation refl := (reflexivity : IsRefl _).
