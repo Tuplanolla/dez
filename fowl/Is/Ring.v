@@ -1,4 +1,4 @@
-(** * Ring *)
+(** * Ring Structure *)
 
 From Coq Require Import
   Logic.Eqdep_dec.
@@ -14,13 +14,15 @@ From DEZ.Is Require Export
 From DEZ.ShouldHave Require Import
   AdditiveNotations ArithmeticNotations.
 
-Class IsRing (A : Type)
-  (Hx : HasZero A) (Hf : HasNeg A) (Hk : HasAdd A)
-  (Hy : HasOne A) (Hm : HasMul A) : Prop := {
-  add_is_grp :> IsGrp 0 -_ _+_;
-  add_is_comm :> IsCommBinOp _+_;
-  mul_is_mon :> IsMon 1 _*_;
-  is_distr_l_r :> IsDistrLR _*_ _+_;
+(** ** Ring *)
+
+Class IsRing (A : Type) (R : A -> A -> Prop)
+  (x : A) (f : A -> A) (k : A -> A -> A)
+  (y : A) (m : A -> A -> A) : Prop := {
+  add_is_grp :> IsGrp x f k;
+  add_is_comm :> IsCommBinOp k;
+  mul_is_mon :> IsMon y m;
+  is_distr_l_r :> IsDistrLR m k;
 }.
 
 (** TODO Clean up. *)
@@ -64,10 +66,10 @@ Proof. split; typeclasses eauto. Qed.
 Proof with conversions.
   intros x y.
   typeclasses convert un_op into neg and bin_op into mul.
-  apply (cancel_l ((- x) * y) (- (x * y)) (x * y))...
-  rewrite <- (distr_r x (- x) y).
-  setoid_rewrite (inv_r x)...
-  rewrite (absorb_elem_l y).
+  apply (cancel_l (x * (- y)) (- (x * y)) (x * y))...
+  rewrite <- (distr_l x y (- y)).
+  setoid_rewrite (inv_r y)...
+  rewrite (absorb_elem_r x).
   setoid_rewrite (inv_r (x * y))...
   reflexivity. Qed.
 
@@ -75,10 +77,10 @@ Proof with conversions.
 Proof with conversions.
   intros x y.
   typeclasses convert un_op into neg and bin_op into mul.
-  apply (cancel_l (x * (- y)) (- (x * y)) (x * y))...
-  rewrite <- (distr_l x y (- y)).
-  setoid_rewrite (inv_r y)...
-  rewrite (absorb_elem_r x).
+  apply (cancel_l ((- x) * y) (- (x * y)) (x * y))...
+  rewrite <- (distr_r x (- x) y).
+  setoid_rewrite (inv_r x)...
+  rewrite (absorb_elem_l y).
   setoid_rewrite (inv_r (x * y))...
   reflexivity. Qed.
 

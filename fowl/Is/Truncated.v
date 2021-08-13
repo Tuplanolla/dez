@@ -177,3 +177,27 @@ Proof.
 #[export] Hint Resolve is_prop : typeclass_instances.
 
 End FromAxioms.
+
+(** TODO Clean up. *)
+
+From Coq Require Import
+  Logic.FunctionalExtensionality Logic.PropExtensionality.
+From DEZ.Is Require Import
+  Extensional.
+
+Lemma isProp `(IsFunExtDep) (A : Type) (B : A -> Type)
+  (h : forall (x : A), IsProp (B x)) : IsProp (forall (x : A), B x).
+Proof. hnf. intros f g. unfold IsProp in h. apply fun_ext_dep. intros x. specialize (h x (f x) (g x)). eauto. Qed.
+
+Lemma isSet `(IsFunExtDep) (A : Type) (B : A -> Type)
+  (h : forall (x : A), IsSet (B x)) : IsSet (forall (x : A), B x).
+Proof.
+  apply iff_set_prop_eq.
+  intros f g.
+  assert (x : A) by admit.
+  specialize (h x).
+  eset (k := @iff_set_prop_eq (B x)).
+  apply proj1 in k.
+  specialize (k h).
+  epose proof equal_f_dep.
+  epose proof fun_ext_dep. Abort.
