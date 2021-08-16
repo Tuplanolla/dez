@@ -655,7 +655,7 @@ Proof. intros x y z. apply N.add_assoc. Defined.
 Global Instance N_bin_op_is_semigrp : IsSemigrp (bin_op (A := N)).
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance N_bin_op_is_comm : IsCommBinOp (bin_op (A := N)).
+Global Instance N_bin_op_is_comm : IsComm (bin_op (A := N)).
 Proof. intros x y. apply N.add_comm. Defined.
 
 Global Instance N_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := N)).
@@ -694,7 +694,7 @@ Proof. intros x y z. apply N.mul_assoc. Defined.
 Global Instance N_bin_op_is_semigrp : IsSemigrp (bin_op (A := N)).
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance N_bin_op_is_comm : IsCommBinOp (bin_op (A := N)).
+Global Instance N_bin_op_is_comm : IsComm (bin_op (A := N)).
 Proof. intros x y. apply N.mul_comm. Defined.
 
 Global Instance N_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := N)).
@@ -724,7 +724,7 @@ Global Instance N_has_zero : HasZero N := N.zero.
 Global Instance N_has_mul : HasMul N := N.mul.
 Global Instance N_has_one : HasOne N := N.one.
 
-Global Instance N_add_is_comm : IsCommBinOp add.
+Global Instance N_add_is_comm : IsComm add.
 Proof. intros x y. apply N.add_comm. Defined.
 
 Global Instance N_add_mul_is_distr_l : IsDistrL mul add.
@@ -748,7 +748,7 @@ Proof. split; typeclasses eauto. Defined.
 Global Instance N_zero_add_one_mul_is_semiring : IsSemiring zero add one mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance N_mul_is_comm : IsCommBinOp mul.
+Global Instance N_mul_is_comm : IsComm mul.
 Proof. intros x y. apply N.mul_comm. Defined.
 
 Global Instance N_add_zero_mul_one_is_comm_semiring :

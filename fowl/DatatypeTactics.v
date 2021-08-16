@@ -1,8 +1,7 @@
 (** * Tactics for Data Types *)
 
 From Coq Require Import
-  PArith.PArith NArith.NArith ZArith.ZArith QArith.QArith QArith.Qcanon
-  Reals.Reals.
+  PArith.PArith NArith.NArith ZArith.ZArith QArith.QArith QArith.Qcanon.
 From DEZ Require Export
   Init.
 

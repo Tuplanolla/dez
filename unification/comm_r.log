@@ -1,0 +1,21 @@
+let T0 := ?T0 in
+fun (R : ?T0 -> ?T1 -> Prop) (f : ?T5 -> ?T4) (g : ?T2 -> ?T1)
+  (k : ?T3 -> ?T4 -> ?T0) (m : ?T3 -> ?T5 -> ?T2) =>
+forall (x : ?T3) (y : ?T5), R (k x (f y)) (g (m x y))
+     : forall (R : ?T0 -> ?T1 -> Prop) (f : ?T5 -> ?T4) (g : ?T2 -> ?T1),
+       (?T3 -> ?T4 -> ?T0) -> (?T3 -> ?T5 -> ?T2) -> Prop
+where
+?T : [ |- Type]
+?T0 : [ |- ?T]
+?T0 : [T0 := ?T0 : ?T |- Type]
+?T1 : [T0 := ?T0 : ?T |- Type]
+?T2 : [T0 := ?T0 : ?T  R : ?T0 -> ?T1 -> Prop  f : ?T5 -> ?T4 |- Type]
+?T3 : [T0 := ?T0 : ?T  R : ?T0 -> ?T1 -> Prop  f : ?T5 -> ?T4  g : ?T2 -> ?T1
+      |- Type]
+?T4 : [T0 := ?T0 : ?T  R : ?T0 -> ?T1 -> Prop  f : ?T5 -> ?T4  g : ?T2 -> ?T1
+      |- Type] (f, g cannot be used)
+?T5 : [T0 := ?T0 : ?T
+       R : ?T0 -> ?T1 -> Prop
+       f : ?T5 -> ?T4
+       g : ?T2 -> ?T1
+       k : ?T3 -> ?T4 -> ?T0 |- Type] (f, g, k cannot be used)

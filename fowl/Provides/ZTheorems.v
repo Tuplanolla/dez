@@ -22,7 +22,7 @@ Proof. intros x y z. apply Z.add_assoc. Defined.
 Global Instance Z_bin_op_is_semigrp : IsSemigrp (bin_op (A := Z)).
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_bin_op_is_comm : IsCommBinOp (bin_op (A := Z)).
+Global Instance Z_bin_op_is_comm : IsComm (bin_op (A := Z)).
 Proof. intros x y. apply Z.add_comm. Defined.
 
 Global Instance Z_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := Z)).
@@ -77,7 +77,7 @@ Proof. intros x y z. apply Z.mul_assoc. Defined.
 Global Instance Z_bin_op_is_semigrp : IsSemigrp (bin_op (A := Z)).
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_bin_op_is_comm : IsCommBinOp (bin_op (A := Z)).
+Global Instance Z_bin_op_is_comm : IsComm (bin_op (A := Z)).
 Proof. intros x y. apply Z.mul_comm. Defined.
 
 Global Instance Z_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := Z)).
@@ -106,7 +106,7 @@ Global Instance Z_has_neg : HasNeg Z := Z.opp.
 Global Instance Z_has_mul : HasMul Z := Z.mul.
 Global Instance Z_has_one : HasOne Z := Z.one.
 
-Global Instance Z_add_is_comm : IsCommBinOp add.
+Global Instance Z_add_is_comm : IsComm add.
 Proof. intros x y. apply Z.add_comm. Defined.
 
 Global Instance Z_add_mul_is_distr_l : IsDistrL mul add.
@@ -137,7 +137,7 @@ Proof. split; typeclasses eauto. Defined.
 Global Instance Z_zero_neg_add_one_mul_is_ring : IsRing zero neg add one mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_mul_is_comm : IsCommBinOp mul.
+Global Instance Z_mul_is_comm : IsComm mul.
 Proof. intros x y. apply Z.mul_comm. Defined.
 
 Global Instance Z_add_zero_neg_mul_one_is_comm_ring :

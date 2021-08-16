@@ -1,7 +1,9 @@
-(** * Involutivity of a Function *)
+(** * Involutivity *)
 
 From DEZ Require Export
   Init.
 
-Class IsInvol (A : Type) (f : A -> A) : Prop :=
-  invol (x : A) : f (f x) = x.
+(** ** Involutive Function *)
+
+Class IsInvol (A : Type) (R : A -> A -> Prop) (f : A -> A) : Prop :=
+  invol (x : A) : R (f (f x)) x.

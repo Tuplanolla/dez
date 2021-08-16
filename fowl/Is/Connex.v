@@ -1,9 +1,7 @@
-(** * Properties of Binary Relations *)
+(** * Connexity *)
 
-From DEZ.Has Require Export
-  BinaryRelation.
-From DEZ.ShouldHave Require Import
-  BinaryRelationNotations.
+From DEZ Require Export
+  Init.
 
 (** ** Connected Binary Relation *)
 (** ** Connex Binary Relation *)
@@ -11,5 +9,15 @@ From DEZ.ShouldHave Require Import
 
 (** This has the same shape as [le_ge_cases]. *)
 
-Class IsConnex (A : Type) (HR : HasBinRel A) : Prop :=
-  connex (x y : A) : x ~ y \/ y ~ x.
+Class IsConnex (A : Type) (R : A -> A -> Prop) : Prop :=
+  connex (x y : A) : R x y \/ R y x.
+
+From DEZ.Is Require Export
+  Commutative.
+
+Lemma specialization (A : Type) (R : A -> A -> Prop) :
+  IsConnex R <-> IsComm or R.
+Proof.
+  split.
+  - intros ? x y. apply connex.
+  - intros ? x y. apply (comm (R := or)). Qed.

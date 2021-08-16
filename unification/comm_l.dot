@@ -1,0 +1,24 @@
+digraph comm_l {
+  node [peripheries = 2]
+
+  T2 [label = "A0"]
+  T5 [label = "A1"]
+
+  node [peripheries = 1]
+
+  T0 [label = "C0"]
+  T1 [label = "C1"]
+  T3 [label = "B0"]
+  T4 [label = "B1"]
+
+  node [peripheries = 0]
+
+  T0 -> Prop [label = "R0"]
+  T1 -> Prop [label = "R1"]
+  T2 -> T3 [label = "m0"]
+  T2 -> T4 [label = "f"]
+  T3 -> T1 [label = "g"]
+  T4 -> T0 [label = "k0"]
+  T5 -> T0 [label = "k1"]
+  T5 -> T3 [label = "m1"]
+}

@@ -1,12 +1,12 @@
-(** * Irreflexivity of a Binary Relation *)
+(** * Irreflexivity *)
 
-From DEZ.Has Require Export
-  BinaryRelation.
-From DEZ.ShouldHave Require Import
-  BinaryRelationNotations.
+From DEZ Require Export
+  Init.
 
-Fail Fail Class IsIrrefl (A : Type) (HR : HasBinRel A) : Prop :=
-  irrefl (x : A) : ~ (x ~ x).
+(** ** Irreflexive Binary Relation *)
+
+Fail Fail Class IsIrrefl (A : Type) (R : A -> A -> Prop) : Prop :=
+  irrefl (x : A) : ~ R x x.
 
 Notation IsIrrefl := Irreflexive.
 Notation irrefl := (irreflexivity : IsIrrefl _).

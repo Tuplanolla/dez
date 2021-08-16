@@ -559,7 +559,7 @@ Proof with conversions.
 Global Instance poly_bin_op_is_semigrp : IsSemigrp poly_add.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_bin_op_is_comm : IsCommBinOp poly_add.
+Global Instance poly_bin_op_is_comm : IsComm poly_add.
 Proof with conversions.
   intros x y. cbv [bin_op poly_has_bin_op poly_add].
   cbv [union_with map_union_with].
@@ -575,9 +575,9 @@ Proof with conversions.
   cbv [union_with option_union_with].
   decide (a + b <> 0) as [Fab | Fab];
   decide (b + a <> 0) as [Fba | Fba]; stabilize; cbn.
-  - f_equal. setoid_rewrite comm_bin_op at 1... reflexivity.
-  - exfalso. apply Fab. setoid_rewrite comm_bin_op... apply Fba.
-  - exfalso. apply Fba. setoid_rewrite comm_bin_op... apply Fab.
+  - f_equal. setoid_rewrite comm at 1... reflexivity.
+  - exfalso. apply Fab. setoid_rewrite comm... apply Fba.
+  - exfalso. apply Fba. setoid_rewrite comm... apply Fab.
   - reflexivity. Defined.
 
 Global Instance poly_bin_op_is_comm_semigrp : IsCommSemigrp poly_add.
@@ -692,7 +692,7 @@ Proof with conversions.
 Global Instance poly_bin_op_is_semigrp : IsSemigrp poly_mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_bin_op_is_comm : IsCommBinOp poly_mul.
+Global Instance poly_bin_op_is_comm : IsComm poly_mul.
 Proof.
   intros x y.
   cbv [bin_op poly_has_bin_op]; cbv [poly_mul].
@@ -785,7 +785,7 @@ Global Instance poly_zero_neg_add_one_mul_is_ring :
   IsRing zero neg add one mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance poly_mul_is_comm : IsCommBinOp mul.
+Global Instance poly_mul_is_comm : IsComm mul.
 Proof. intros x y. Admitted.
 
 Global Instance poly_add_zero_neg_mul_one_is_comm_ring :
@@ -827,7 +827,7 @@ Proof with conversions.
       cbv [poly_value_eval].
       setoid_rewrite unl_l. reflexivity.
     + cbn. intros ? ? a b c **. setoid_rewrite assoc...
-      setoid_rewrite (comm_bin_op a b) at 1...
+      setoid_rewrite (comm a b) at 1...
       setoid_rewrite <- assoc... reflexivity.
     + rewrite lookup_empty. reflexivity.
   - apply dec_stable in F10. rewrite F10.

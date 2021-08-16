@@ -129,7 +129,7 @@ Proof. intros x y z. apply Pos.add_assoc. Defined.
 Global Instance positive_bin_op_is_semigrp : IsSemigrp (bin_op (A := positive)).
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance positive_bin_op_is_comm : IsCommBinOp (bin_op (A := positive)).
+Global Instance positive_bin_op_is_comm : IsComm (bin_op (A := positive)).
 Proof. intros x y. apply Pos.add_comm. Defined.
 
 Global Instance positive_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := positive)).
@@ -151,7 +151,7 @@ Proof. intros x y z. apply Pos.mul_assoc. Defined.
 Global Instance positive_bin_op_is_semigrp : IsSemigrp (bin_op (A := positive)).
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance positive_bin_op_is_comm : IsCommBinOp (bin_op (A := positive)).
+Global Instance positive_bin_op_is_comm : IsComm (bin_op (A := positive)).
 Proof. intros x y. apply Pos.mul_comm. Defined.
 
 Global Instance positive_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := positive)).

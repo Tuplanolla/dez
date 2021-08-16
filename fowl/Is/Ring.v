@@ -20,7 +20,7 @@ Class IsRing (A : Type) (R : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A)
   (y : A) (m : A -> A -> A) : Prop := {
   add_is_grp :> IsGrp x f k;
-  add_is_comm :> IsCommBinOp k;
+  add_is_comm :> IsComm k;
   mul_is_mon :> IsMon y m;
   is_distr_l_r :> IsDistrLR m k;
 }.

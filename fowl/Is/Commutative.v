@@ -15,6 +15,10 @@ Class IsWhatCommR (X Y Z' A B B' : Type) (R : X -> Y -> Prop)
   (f : B' -> B) (g : Z' -> Y) (k : A -> B -> X) (m : A -> B' -> Z') : Prop :=
   what_comm_r (x : A) (y : B') : R (k x (f y)) (g (m x y)).
 
+Class IsComm4 (A0 A1 B0 B1 : Type) (R : B0 -> B1 -> Prop)
+  (k : A0 -> A1 -> B0) (m : A1 -> A0 -> B1) : Prop :=
+  what_comm (x : A0) (y : A1) : R (k x y) (m y x).
+
 (* ** Commutativity of a Unary Operation and a Left Action *)
 
 (** This has the same shape as [mul_opp_r]. *)
@@ -47,29 +51,48 @@ Class IsCommLR (A : Type) (R : A -> A -> Prop)
 
 (** This has the same shape as [mul_comm]. *)
 
-Class IsCommBinOp (A B : Type) (R : B -> B -> Prop) (k : A -> A -> B) : Prop :=
-  comm_bin_op (x y : A) : R (k x y) (k y x).
+Class IsComm (A B : Type) (R : B -> B -> Prop) (k : A -> A -> B) : Prop :=
+  comm (x y : A) : R (k x y) (k y x).
 
-Class IsComm (A : Type) (R : A -> A -> Prop) (f g : A -> A) : Prop :=
-  comm (x : A) : R (f (g x)) (g (f x)).
+Class IsCommFun (A : Type) (R : A -> A -> Prop) (f g : A -> A) : Prop :=
+  comm_fun (x : A) : R (f (g x)) (g (f x)).
 
 Section Context.
 
-Context (A : Type) (x : A).
+Context (A : Type) `(!@IsComm (A -> A) (A -> A) _=_ _o_).
+
+#[local] Instance is_comm (f g : A -> A) : IsCommFun _=_ f g.
+Proof.
+  intros x.
+  enough ((f o g) x = (g o f) x) by assumption.
+  pose proof (comm f g) as a.
+  rewrite a.
+  reflexivity. Qed.
+
+End Context.
+
+#[export] Hint Resolve is_comm : typeclass_instances.
+
+Section Context.
+
+Context (A : Type) (x : A) (f : A -> A) (k : A -> A -> A).
 
 (** Chiral commutativity is just commutativity of partial applications. *)
 
-#[local] Instance comm_r_is_comm `(!IsCommL R f k) : IsComm R f (k x).
+#[local] Instance comm_l_is_comm `(!IsCommL _=_ f k) : IsCommFun _=_ f (k x).
 Proof.
   intros y.
-  rewrite comm_r.
+  pose proof comm_l (R := _=_) x y as a.
+  rewrite a.
   reflexivity. Qed.
 
-#[local] Instance comm_l_is_comm `(!IsCommR R f k) : IsComm R f (flip f x).
+#[local] Instance comm_r_is_comm `(!IsCommR _=_ f k) :
+  IsCommFun _=_ f (flip k x).
 Proof.
   intros y.
   unfold flip.
-  rewrite comm_l.
+  pose proof comm_r (R := _=_) y x as a.
+  rewrite a.
   reflexivity. Qed.
 
 End Context.

@@ -29,7 +29,7 @@ Class IsDistMon (A : Type)
   is_tot_ord :> IsTotOrd _<=_;
   is_lower_bnd :> IsLowerBnd 0 _<=_;
   is_mon :> IsMon 0 _+_;
-  is_comm_bin_op :> IsCommBinOp _+_;
+  is_comm :> IsComm _+_;
   is_mono_bin_op :> IsMonoBinOp _<=_ _+_;
 }.
 
@@ -43,7 +43,7 @@ Class IsPartOrdCommSemigrp (A : Type)
   is_refl :> IsRefl _<=_;
   is_infl_bin_op_l_r :> IsInflBinOpLR _<=_ _+_;
   is_semigrp :> IsSemigrp _+_;
-  is_comm_bin_op :> IsCommBinOp _+_;
+  is_comm :> IsComm _+_;
   is_mono_bin_op :> IsMonoBinOp _<=_ _+_;
 }.
 

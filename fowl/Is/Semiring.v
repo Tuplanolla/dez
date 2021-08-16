@@ -10,7 +10,7 @@ From DEZ.ShouldHave Require Import
 Class IsSemiring (A : Type)
   (Hx : HasZero A) (Hk : HasAdd A) (Hy : HasOne A) (Hm : HasMul A) : Prop := {
   add_is_mon :> IsMon eq 0 _+_;
-  add_is_comm :> IsCommBinOp _+_;
+  add_is_comm :> IsComm _+_;
   mul_is_mon :> IsMon eq 1 _*_;
   is_distr_l_r :> IsDistrLR _*_ _+_;
   is_absorb_elem_l_r :> IsAbsorbElemLR 0 _*_;
