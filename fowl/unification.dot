@@ -1,0 +1,110 @@
+/*
+There are several properties that look alike.
+
+% associativity in a monoid
+a \times (b \times c) = (a \times b) \times c
+% compatibility of scalar multiplication in a vector space
+a \cdot (b \cdot x) = (a \times b) \cdot x
+% interchangibility of chiralities in a bimodule
+a \ltimes (x \rtimes b) = (a \ltimes x) \rtimes b
+% graded associativity in a polynomial ring
+a + (b + c) \cong (a + b) + c
+\alpha_* (a + (b + c)) = (a + b) + c
+
+Make Coq solve the unification equation
+for `R (n x (m y z)) (p (k x y) z)` as follows.
+
+Check let T0 := ?[T0] in
+  fun (R : _ -> _ -> Prop) (k m n p : _ -> _ -> _) =>
+  forall x y z : _, R (n x (m y z)) (p (k x y) z).
+
+The result is the following.
+
+fun (R : ?T0 -> ?T1 -> Prop)
+  (k : ?T2 -> ?T3 -> ?T6) (m : ?T3 -> ?T4 -> ?T5)
+  (n : ?T2 -> ?T5 -> ?T0) (p : ?T6 -> ?T4 -> ?T1) =>
+  forall (x : ?T2) (y : ?T3) (z : ?T4), R (n x (m y z)) (p (k x y) z)
+
+We visualize it with a graph based
+on the quantifiers and polarities of the arguments.
+Symmetries motivate the naming.
+*/
+
+digraph assoc {
+  node [peripheries = 2]
+
+  T2 [label = "A0"]
+  T3 [label = "A1"]
+  T4 [label = "A2"]
+
+  node [peripheries = 1]
+
+  T0 [label = "C0"]
+  T1 [label = "C1"]
+  T5 [label = "B1"]
+  T6 [label = "B0"]
+
+  node [peripheries = 0]
+
+  T0 -> Prop [label = "R0"]
+  T1 -> Prop [label = "R1"]
+  T2 -> T0 [label = "n0"]
+  T2 -> T6 [label = "k0"]
+  T3 -> T5 [label = "m0"]
+  T3 -> T6 [label = "k1"]
+  T4 -> T1 [label = "p1"]
+  T4 -> T5 [label = "m1"]
+  T5 -> T0 [label = "n1"]
+  T6 -> T1 [label = "p0"]
+}
+
+/*
+Ship it!
+
+Class IsAssoc7 (A0 A1 A2 B0 B1 C0 C1 : Type) (R : C0 -> C1 -> Prop)
+  (k : A0 -> A1 -> B0) (m : A1 -> A2 -> B1)
+  (n : A0 -> B1 -> C0) (p : B0 -> A2 -> C1) : Prop :=
+  assoc (x : A0) (y : A1) (z : A2) : R (n x (m y z)) (p (k x y) z).
+
+Class IsAssoc (A : Type) (R : A -> A -> Prop) (k : A -> A -> A) : Prop :=
+  is_assoc_7 :> IsAssoc7 R k k k k.
+
+Notice how the graded case is handled with `(_ = _) o \alpha_* (_)`.
+More!
+
+Check let T0 := ?[T0] in
+  fun (R : _ -> _ -> Prop) (k m : _ -> _ -> _) =>
+  forall x y : _, R (k x y) (m y x).
+
+fun (R : ?T0 -> ?T1 -> Prop)
+  (k : ?T2 -> ?T3 -> ?T0) (m : ?T3 -> ?T2 -> ?T1) =>
+  forall (x : ?T2) (y : ?T3), R (k x y) (m y x)
+
+digraph comm {
+  node [peripheries = 2]
+
+  T2 [label = "A0"]
+  T3 [label = "A1"]
+
+  node [peripheries = 1]
+
+  T0 [label = "B0"]
+  T1 [label = "B1"]
+
+  node [peripheries = 0]
+
+  T0 -> Prop [label = "R0"]
+  T1 -> Prop [label = "R1"]
+  T2 -> T0 [label = "k0"]
+  T2 -> T1 [label = "m1"]
+  T3 -> T0 [label = "k1"]
+  T3 -> T1 [label = "m0"]
+}
+
+Class IsComm4 (A0 A1 B0 B1 : Type) (R : B0 -> B1 -> Prop)
+  (k : A0 -> A1 -> B0) (m : A1 -> A0 -> B1) : Prop :=
+  comm (x : A0) (y : A1) : R (k x y) (m y x).
+
+Class IsComm (A : Type) (R : A -> A -> Prop) (k : A -> A -> A) : Prop :=
+  is_comm_4 :> IsComm4 R k k.
+*/
