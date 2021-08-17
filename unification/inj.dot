@@ -1,0 +1,24 @@
+digraph inj {
+  node [peripheries = 2]
+
+  T2 [label = "A0"]
+  T5 [label = "A1"]
+
+  node [peripheries = 1]
+
+  T0 [label = "C"]
+  T1 [label = "B2"]
+  T3 [label = "B0"]
+  T4 [label = "B1"]
+
+  node [peripheries = 0]
+
+  T0 -> Prop [label = "R0"]
+  T1 -> Prop [label = "R1"]
+  T2 -> T1 [label = "k1"]
+  T2 -> T4 [label = "g"]
+  T3 -> T0 [label = "m0"]
+  T4 -> T0 [label = "m1"]
+  T5 -> T1 [label = "k0"]
+  T5 -> T3 [label = "f"]
+}

@@ -1,4 +1,4 @@
-digraph antidistr {
+digraph distr {
   node [peripheries = 2]
 
   T2 [label = "A0"]

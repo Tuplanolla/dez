@@ -5,6 +5,22 @@ From DEZ.Has Require Export
 From DEZ.ShouldHave Require
   AdditiveNotations ArithmeticNotations.
 
+Class IsDistr7 (A0 A1 B0 B1 B2 C0 C1 : Type) (R : C0 -> C1 -> Prop)
+  (f : A0 -> B0) (g : A1 -> B1) (h : B2 -> C0)
+  (k : A0 -> A1 -> B2) (m : B0 -> B1 -> C1) : Prop :=
+  distr' (x : A0) (y : A1) : R (h (k x y)) (m (f x) (g y)).
+
+Class IsDistr2 (A B : Type) (R : B -> B -> Prop)
+  (f : A -> B) (k : A -> A -> A) (m : B -> B -> B) : Prop :=
+  is_distr_7 :> IsDistr7 R f f f k m.
+
+Class Proper'' (A B : Type) (R : A -> A -> Prop) (S : B -> B -> Prop)
+  (f g : A -> B) : Prop :=
+  is_distr_7'' :> IsDistr7 impl f g id R S.
+
+Class IsInj' (A B : Type) (f : A -> B) : Prop :=
+  is_distr_7' :> IsDistr7 (flip impl) f f id _=_ _=_.
+
 Section Context.
 
 Import AdditiveNotations.
