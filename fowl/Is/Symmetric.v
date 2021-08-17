@@ -1,7 +1,7 @@
 (** * Symmetry *)
 
-From DEZ Require Export
-  Init.
+From DEZ.Is Require Export
+  Commutative.
 
 (** ** Symmetric Binary Relation *)
 
@@ -11,12 +11,18 @@ Fail Fail Class IsSym (A : Type) (R : A -> A -> Prop) : Prop :=
 Notation IsSym := Symmetric.
 Notation sym := (symmetry : IsSym _).
 
-From DEZ.Is Require Export
-  Commutative.
+Section Context.
 
-Lemma specialization (A : Type) (R : A -> A -> Prop) :
-  IsSym R <-> IsComm impl R.
-Proof.
-  split.
-  - intros ? x y a. apply sym. apply a.
-  - intros ? x y a. apply (comm (R := impl)). apply a. Qed.
+Context (A : Type) (R : A -> A -> Prop).
+
+(** Symmetry is just a special case of commutativity. *)
+
+#[local] Instance is_sym `(!IsComm impl R) : IsSym R.
+Proof. intros x y. exact (comm x y). Qed.
+
+#[local] Instance is_comm `(!IsSym R) : IsComm impl R.
+Proof. intros x y. exact (sym x y). Qed.
+
+End Context.
+
+#[export] Hint Resolve is_sym : typeclass_instances.

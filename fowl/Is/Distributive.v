@@ -1,4 +1,4 @@
-(** * Distributivity and Antidistributivity of a Function and a Binary Operation over a Binary Operation *)
+(** * Distributivity *)
 
 From DEZ.Has Require Export
   BinaryOperation Addition Multiplication.

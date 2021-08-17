@@ -1,12 +1,12 @@
 digraph unl_r {
   node [peripheries = 2]
 
-  T2 [label = "A1"]
+  T2 [label = "A0"]
 
   node [peripheries = 1]
 
   T0 [label = "B"]
-  T1 [label = "A0"]
+  T1 [label = "A1"]
 
   node [peripheries = 0]
 

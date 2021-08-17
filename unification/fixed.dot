@@ -1,0 +1,14 @@
+digraph fixed {
+  node [peripheries = 2]
+
+  node [peripheries = 1]
+
+  T0 [label = "B"]
+  T1 [label = "A"]
+
+  node [peripheries = 0]
+
+  T0 -> Prop [label = "R0"]
+  T1 -> Prop [label = "R1"]
+  T1 -> T0 [label = "f"]
+}

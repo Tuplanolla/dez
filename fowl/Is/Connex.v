@@ -1,7 +1,7 @@
 (** * Connexity *)
 
-From DEZ Require Export
-  Init.
+From DEZ.Is Require Export
+  Commutative.
 
 (** ** Connected Binary Relation *)
 (** ** Connex Binary Relation *)
@@ -12,12 +12,18 @@ From DEZ Require Export
 Class IsConnex (A : Type) (R : A -> A -> Prop) : Prop :=
   connex (x y : A) : R x y \/ R y x.
 
-From DEZ.Is Require Export
-  Commutative.
+Section Context.
 
-Lemma specialization (A : Type) (R : A -> A -> Prop) :
-  IsConnex R <-> IsComm or R.
-Proof.
-  split.
-  - intros ? x y. apply connex.
-  - intros ? x y. apply (comm (R := or)). Qed.
+Context (A : Type) (R : A -> A -> Prop).
+
+(** Connexity is just a special case of commutativity. *)
+
+#[local] Instance is_connex `(!IsComm _\/_ R) : IsConnex R.
+Proof. intros x y. exact (comm x y). Qed.
+
+#[local] Instance is_comm `(!IsConnex R) : IsComm _\/_ R.
+Proof. intros x y. exact (connex x y). Qed.
+
+End Context.
+
+#[export] Hint Resolve is_connex : typeclass_instances.

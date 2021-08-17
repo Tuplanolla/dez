@@ -7,8 +7,8 @@ digraph comm_r {
   node [peripheries = 1]
 
   T0 [label = "C0"]
-  T1 [label = "C1"]
   T2 [label = "B0"]
+  T1 [label = "C1"]
   T4 [label = "B1"]
 
   node [peripheries = 0]
@@ -16,9 +16,9 @@ digraph comm_r {
   T0 -> Prop [label = "R0"]
   T1 -> Prop [label = "R1"]
   T2 -> T1 [label = "g"]
-  T3 -> T0 [label = "k0"]
-  T3 -> T2 [label = "m0"]
-  T4 -> T0 [label = "k1"]
-  T5 -> T2 [label = "m1"]
+  T3 -> T0 [label = "m0"]
+  T3 -> T2 [label = "k0"]
+  T4 -> T0 [label = "m1"]
+  T5 -> T2 [label = "k1"]
   T5 -> T4 [label = "f"]
 }

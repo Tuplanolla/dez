@@ -5,5 +5,8 @@ From DEZ Require Export
 
 (** ** Fixed Point of a Function *)
 
-Class IsFixed (A : Type) (x : A) (f : A -> A) : Prop :=
-  fixed : f x = x.
+Class IsFixed2 (A B : Type) (R : B -> A -> Prop) (x : A) (f : A -> B) : Prop :=
+  fixed : R (f x) x.
+
+Class IsFixed (A : Type) (R : A -> A -> Prop) (x : A) (f : A -> A) : Prop :=
+  is_fixed_2 :> IsFixed2 R x f.
