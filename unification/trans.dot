@@ -1,0 +1,27 @@
+digraph trans {
+  node [peripheries = 2]
+
+  T2 [label = "A2"]
+  T4 [label = "A1"]
+  T6 [label = "A0"]
+
+  node [peripheries = 1]
+
+  T0 [label = "C0"]
+  T1 [label = "C1"]
+  T3 [label = "B0"]
+  T5 [label = "B1"]
+
+  node [peripheries = 0]
+
+  T0 -> Prop [label = "R0"]
+  T1 -> Prop [label = "R1"]
+  T6 -> T3 [label = "k0"]
+  T4 -> T3 [label = "k1"]
+  T4 -> T5 [label = "m0"]
+  T2 -> T5 [label = "m1"]
+  T3 -> T0 [label = "n0"]
+  T5 -> T0 [label = "n1"]
+  T6 -> T1 [label = "p0"]
+  T2 -> T1 [label = "p1"]
+}
