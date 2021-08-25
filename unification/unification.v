@@ -161,11 +161,25 @@ End Context.
 
 Section Context.
 
-Context (X Y : Type).
+Context (St X Y : Type).
 
-(** TODO Carry more than one namespace in the state. *)
+(** State carrying three namespaces. *)
 
-Definition Fresh X := nat -> X * nat.
+Definition State St X := St -> X * St.
+
+Record Names : Type := {
+  nvar : nat;
+  nun : nat;
+  nbin : nat;
+}.
+
+Definition no_names : Names := {|
+  nvar := 0;
+  nun := 0;
+  nbin := 0;
+|}.
+
+Definition Fresh := State Names.
 
 Definition fresh_map (f : X -> Y) (x : Fresh X) : Fresh Y :=
   fun n => let (x', n') := x n in (f x', n').
@@ -176,8 +190,14 @@ Definition fresh_pure (x : X) : Fresh X :=
 Definition fresh_bind (f : X -> Fresh Y) (m : Fresh X) : Fresh Y :=
   fun n => let (x, n') := m n in f x n'.
 
-Definition gensym (tt : unit): Fresh nat :=
-  fun n => (n, S n).
+Definition gensym_var (tt : unit) : Fresh nat :=
+  fun n => (nvar n, {| nvar := S (nvar n); nun := nun n; nbin := nbin n |}).
+
+Definition gensym_un (tt : unit) : Fresh nat :=
+  fun n => (nun n, {| nvar := nvar n; nun := S (nun n); nbin := nbin n |}).
+
+Definition gensym_bin (tt : unit) : Fresh nat :=
+  fun n => (nbin n, {| nvar := nvar n; nun := nun n; nbin := S (nbin n) |}).
 
 End Context.
 
@@ -191,15 +211,17 @@ Section Context.
 
 Context (X : Type).
 
-Fixpoint label (t: term): Fresh term :=
+Fixpoint label (t : term) : Fresh term :=
   match t with
   | var _ =>
-    gensym tt >>= fun n =>
+    gensym_var tt >>= fun n =>
     pure (var n)
   | un n x =>
+    gensym_un tt >>= fun n =>
     label x >>= fun x =>
     pure (un n x)
   | bin n x y =>
+    gensym_bin tt >>= fun n =>
     label x >>= fun x =>
     label y >>= fun y =>
     pure (bin n x y)
@@ -209,7 +231,7 @@ Fixpoint label (t: term): Fresh term :=
     pure (rel x y)
   end.
 
-Definition relabel (t : term) : term := fst (label t 0).
+Definition relabel (t : term) : term := fst (label t no_names).
 
 End Context.
 
