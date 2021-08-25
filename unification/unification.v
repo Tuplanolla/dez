@@ -9,74 +9,101 @@ Set Maximal Implicit Insertion.
 
 #[local] Open Scope bool_scope.
 
-Inductive term : bool -> Set :=
-  | var (n : nat) : term false
-  | un (n : nat) (x : term false) : term false
-  | bin (n : nat) (x y : term false) : term false
-  | rel (x y : term false) : term true.
+Inductive term : Set :=
+  | var (n : nat) : term
+  | un (n : nat) (x : term) : term
+  | bin (n : nat) (x y : term) : term
+  | rel (x y : term) : term.
 
-Fail Scheme Equality for term.
+Scheme Equality for term.
 
-Fixpoint eqb (b c : bool) (x : term b) (y : term c) : bool :=
-  match x, y with
-  | var n, var p => Nat.eqb n p
-  | un n x, un p y => Nat.eqb n p && eqb x y
-  | bin n x y, bin p z w => Nat.eqb n p && eqb x z && eqb y w
-  | rel x y, rel z w => eqb x z && eqb y w
-  | _, _ => false
+Fixpoint wf_fix (b : bool) (x : term) : bool :=
+  match x with
+  | var _ => b
+  | un _ x => wf_fix b x
+  | bin _ x y => wf_fix b x && wf_fix b y
+  | rel x y => if b then false else wf_fix true x && wf_fix true y
   end.
 
-Compute rel (bin 0 (var 0) (var 1)) (var 0).
+Definition wf (x : term) : bool :=
+  wf_fix false x.
 
-Fixpoint occurs (n : nat) (b : bool) (x : term b) : bool :=
+Compute wf (rel (bin 0 (var 0) (var 1)) (var 0)).
+
+Fixpoint occurs (n : nat) (x : term) : bool :=
   match x with
-  | var p => Nat.eqb n p
+  | var p => nat_beq n p
   | un _ x => occurs n x
   | bin _ x y => occurs n x || occurs n y
   | rel x y => occurs n x || occurs n y
   end.
 
-Fixpoint subb (b c : bool) (x : term b) (y : term c) : bool :=
-  eqb x y ||
+Fixpoint bsub (x y : term) : bool :=
+  term_beq x y ||
   match x, y with
-  | var _, rel _ _ => false
   | var n, y => negb (occurs n y)
-  | un n x, un p y => Nat.eqb n p && subb x y
-  | bin n x y, bin p z w => Nat.eqb n p && subb x z && subb y w
-  | rel x y, rel z w => subb x z && subb y w
+  | un n x, un p y => nat_beq n p && bsub x y
+  | bin n x y, bin p z w => nat_beq n p && bsub x z && bsub y w
+  | rel x y, rel z w => bsub x z && bsub y w
   | _, _ => false
   end.
 
-Definition sub (b c : bool) (x : term b) (y : term c) : Prop :=
-  is_true (subb x y).
+Definition sub (x y : term) : Prop :=
+  is_true (bsub x y).
 
-Compute subb
+Compute bsub
   (var 0)
   (rel (var 2) (var 0)).
 
-Compute subb
+Compute bsub
   (rel (var 2) (var 0))
   (rel (bin 0 (var 0) (var 1)) (var 0)).
 
-Compute subb
+Compute bsub
   (rel (var 1) (var 0))
   (rel (bin 0 (var 0) (var 1)) (var 0)).
 
-(** List monad goes here. *)
+Class HasMap (F : Type -> Type) : Type :=
+  map (A B : Type) (f : A -> B) (x : F A) : F B.
 
-Definition pure (A : Type) (x : A) : list A :=
-  [x].
+Arguments map {_ _ _ _} _ _.
 
-Fixpoint join (A : Type) (x : list (list A)) : list A :=
-  match x with
-  | [] => []
-  | a :: y => a ++ join y
-  end.
+Class HasPure (F : Type -> Type) : Type :=
+  pure (A : Type) (x : A) : F A.
 
-Definition bind (A B : Type) (f : A -> list B) (x : list A) : list B :=
-  join (map f x).
+Arguments pure {_ _ _} _.
+
+Class HasJoin (F : Type -> Type) : Type :=
+  join (A : Type) (x : F (F A)) : F A.
+
+Arguments join {_ _ _} _.
+
+Class HasBind (F : Type -> Type) : Type :=
+  bind (A B : Type) (f : A -> F B) (x : F A) : F B.
+
+Arguments bind {_ _ _ _} _ _.
 
 Notation "x '>>=' f" := (bind f x) (at level 20).
+
+#[local] Instance list_has_map : HasMap list := @List.map.
+
+Definition list_pure (A : Type) (x : A) : list A :=
+  [x].
+
+#[local] Instance list_has_pure : HasPure list := @list_pure.
+
+Fixpoint list_join (A : Type) (x : list (list A)) : list A :=
+  match x with
+  | [] => []
+  | a :: y => a ++ list_join y
+  end.
+
+#[local] Instance list_has_join : HasJoin list := @list_join.
+
+Definition list_bind (A B : Type) (f : A -> list B) (x : list A) : list B :=
+  join (map f x).
+
+#[local] Instance list_has_bind : HasBind list := @list_bind.
 
 Fail Fail Notation "'do' a '<-' x ';' b" := (bind (fun a : _ => b) x)
   (at level 200, a name, x at level 100, b at level 200).
@@ -103,9 +130,10 @@ Notation "x '+'' y" := (bin _ x y)
 
 End TermNotations.
 
-(** Generate all trees of depth less than [m], using only one variable. *)
+(** Generate all trees of depth exactly [m],
+    using only one variable. *)
 
-Fixpoint gen (m : nat) : list (term false) :=
+Fixpoint gen (m : nat) : list term :=
   match m with
   | O => pure (var 0)
   | S m' =>
@@ -128,20 +156,68 @@ Compute join (map gen (seq 0 3)).
 
 End Context.
 
-(** Generate all trees of depth less than [m], using more variables. *)
+(** Replace each occurrence of a variable in a tree with a distinct one,
+    following "Reaching for the Star: Tale of a Monad in Coq". *)
 
-Fixpoint gen' (m : nat) : list (term false) :=
-  match m with
-  | O => pure (var m)
-  | S m' =>
-    gen' m' >>= fun y =>
-    [un m y] ++ (gen' m' >>= fun z =>
-    [bin m y z])
+Section Context.
+
+Context (X Y : Type).
+
+(** TODO Carry more than one namespace in the state. *)
+
+Definition Fresh X := nat -> X * nat.
+
+Definition fresh_map (f : X -> Y) (x : Fresh X) : Fresh Y :=
+  fun n => let (x', n') := x n in (f x', n').
+
+Definition fresh_pure (x : X) : Fresh X :=
+  fun n => (x, n).
+
+Definition fresh_bind (f : X -> Fresh Y) (m : Fresh X) : Fresh Y :=
+  fun n => let (x, n') := m n in f x n'.
+
+Definition gensym (tt : unit): Fresh nat :=
+  fun n => (n, S n).
+
+End Context.
+
+#[local] Instance fresh_has_map : HasMap Fresh := @fresh_map.
+
+#[local] Instance fresh_has_pure : HasPure Fresh := @fresh_pure.
+
+#[local] Instance fresh_has_bind : HasBind Fresh := @fresh_bind.
+
+Section Context.
+
+Context (X : Type).
+
+Fixpoint label (t: term): Fresh term :=
+  match t with
+  | var _ =>
+    gensym tt >>= fun n =>
+    pure (var n)
+  | un n x =>
+    label x >>= fun x =>
+    pure (un n x)
+  | bin n x y =>
+    label x >>= fun x =>
+    label y >>= fun y =>
+    pure (bin n x y)
+  | rel x y =>
+    label x >>= fun x =>
+    label y >>= fun y =>
+    pure (rel x y)
   end.
+
+Definition relabel (t : term) : term := fst (label t 0).
+
+End Context.
+
+Compute map relabel (gen 2).
 
 (*
 
-`(R (k x y) x) = rel (bin 0 (var 0) (var 1)) (var 0) : term true
+`(R (k x y) x) = rel (bin 0 (var 0) (var 1)) (var 0) : term
 `(R z x) <= `(R (k x y) x) : bool
 
 x <- f x'

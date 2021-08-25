@@ -272,16 +272,6 @@ Proof.
 
 End FromAxioms.
 
-Lemma pi_is_prop `(IsFunExtDep) (A : Type) (P : A -> Type)
-  (h : forall x : A, IsProp (P x)) : IsProp (forall x : A, P x).
-Proof.
-  unfold IsProp in *.
-  intros f g.
-  apply fun_ext_dep.
-  intros x.
-  specialize (h x (f x) (g x)).
-  apply h. Qed.
-
 Lemma pi_is_set `(IsFunExtDep) (A : Type) (P : A -> Type)
   (h : forall x : A, IsSet (P x)) : IsSet (forall x : A, P x).
 Proof.
