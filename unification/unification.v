@@ -1,9 +1,10 @@
-From Coq Require Import Lists.List Program.Basics.
+From Coq Require Import Lists.List Program.Basics Program.Wf.
 
 Import ListNotations.
 
 (** Is this Herbrandization? *)
 
+Set Warnings "-notation-incompatible-format".
 Set Implicit Arguments.
 Set Maximal Implicit Insertion.
 
@@ -116,6 +117,8 @@ Notation "'-_' n x" := (un n x)
   (at level 50, format "-_ n  x", only printing).
 Notation "x '+_' n y" := (bin n x y)
   (at level 50, format "x  +_ n  y", only printing).
+Notation "x '=' y" := (rel x y)
+  (at level 70, format "x  =  y", only printing).
 
 End IndexedTermNotations.
 
@@ -127,19 +130,34 @@ Notation "'-'' x" := (un _ x)
   (at level 50, format "-'  x", only printing).
 Notation "x '+'' y" := (bin _ x y)
   (at level 50, format "x  +'  y", only printing).
+Notation "x '=' y" := (rel x y)
+  (at level 70, format "x  =  y", only printing).
 
 End TermNotations.
 
-(** Generate all trees of depth exactly [m],
+(** Generate all balanced subtrees of depth exactly [m],
     using only one variable. *)
 
-Fixpoint gen (m : nat) : list term :=
+Fail Fail Fixpoint gen (m : nat) : list term :=
   match m with
-  | O => pure (var 0)
+  | O => [var 0]
   | S m' =>
     gen m' >>= fun y =>
     [un 0 y] ++ (gen m' >>= fun z =>
     [bin 0 y z])
+  end.
+
+(** Generate all unbalanced subtrees of depth below [m],
+    using only one variable. *)
+
+Fixpoint gen (m : nat) : list term :=
+  match m with
+  | O => [var 0]
+  | S m' =>
+    [var 0] ++ (
+    gen m' >>= fun y =>
+    [un 0 y] ++ (gen m' >>= fun z =>
+    [bin 0 y z]))
   end.
 
 Compute gen 0.
@@ -150,11 +168,35 @@ Section Context.
 
 Import TermNotations.
 
-Compute join (map gen (seq 0 1)).
-Compute join (map gen (seq 0 2)).
-Compute join (map gen (seq 0 3)).
+Compute gen 0.
+Compute gen 1.
+Compute gen 2.
 
 End Context.
+
+(** Generate all unbalanced trees of depth below [m],
+    using only one variable. *)
+
+Fixpoint gen_fix (b : bool) (m : nat) : list term :=
+  match m with
+  | O => [var 0]
+  | S m' =>
+    if b then
+    [var 0] ++ (
+    gen_fix true m' >>= fun y =>
+    [un 0 y] ++ (gen_fix true m' >>= fun z =>
+    [bin 0 y z])) else
+    gen_fix true m' >>= fun y =>
+    gen_fix true m' >>= fun z =>
+    [rel y z]
+  end.
+
+Definition gen_all (m : nat) : list term :=
+  gen_fix false (S m).
+
+Compute gen_all 0.
+Compute gen_all 1.
+Compute gen_all 2.
 
 (** Replace each occurrence of a variable in a tree with a distinct one,
     following "Reaching for the Star: Tale of a Monad in Coq". *)
@@ -165,16 +207,19 @@ Context (St X Y : Type).
 
 (** State carrying three namespaces. *)
 
-Definition State St X := St -> X * St.
+Definition State St X := St -> St * X.
+
+Definition run (x : State St X) : St -> X :=
+  fun n => snd (x n).
 
 Definition fresh_map (f : X -> Y) (x : State St X) : State St Y :=
-  fun n => let (x', n') := x n in (f x', n').
+  fun n => let (n', x') := x n in (n', f x').
 
 Definition fresh_pure (x : X) : State St X :=
-  fun n => (x, n).
+  fun n => (n, x).
 
 Definition fresh_bind (f : X -> State St Y) (m : State St X) : State St Y :=
-  fun n => let (x, n') := m n in f x n'.
+  fun n => let (n', x) := m n in f x n'.
 
 Record Names : Type := {
   nvar : nat;
@@ -191,13 +236,13 @@ Definition no_names : Names := {|
 Definition Fresh := State Names.
 
 Definition gensym_var (tt : unit) : Fresh nat :=
-  fun n => (nvar n, {| nvar := S (nvar n); nun := nun n; nbin := nbin n |}).
+  fun n => ({| nvar := S (nvar n); nun := nun n; nbin := nbin n |}, nvar n).
 
 Definition gensym_un (tt : unit) : Fresh nat :=
-  fun n => (nun n, {| nvar := nvar n; nun := S (nun n); nbin := nbin n |}).
+  fun n => ({| nvar := nvar n; nun := S (nun n); nbin := nbin n |}, nun n).
 
 Definition gensym_bin (tt : unit) : Fresh nat :=
-  fun n => (nbin n, {| nvar := nvar n; nun := nun n; nbin := S (nbin n) |}).
+  fun n => ({| nvar := nvar n; nun := nun n; nbin := S (nbin n) |}, nbin n).
 
 End Context.
 
@@ -234,7 +279,7 @@ Fixpoint label (t : term) : Fresh term :=
     pure (rel x y)
   end.
 
-Definition relabel (t : term) : term := fst (label t no_names).
+Definition relabel (t : term) : term := run (label t) no_names.
 
 End Context.
 
@@ -246,21 +291,8 @@ Section Context.
 
 Import IndexedTermNotations.
 
-Compute join (map (compose (map relabel) gen) (seq 0 1)).
-Compute join (map (compose (map relabel) gen) (seq 0 2)).
-Compute join (map (compose (map relabel) gen) (seq 0 3)).
+Compute map relabel (gen_all 0).
+Compute map relabel (gen_all 1).
+Compute map relabel (gen_all 2).
 
 End Context.
-
-(*
-
-`(R (k x y) x) = rel (bin 0 (var 0) (var 1)) (var 0) : term
-`(R z x) <= `(R (k x y) x) : bool
-
-x <- f x'
-x <- k x' x''
-y <- g y'
-y <- m y' y''
-R x y
-
-*)
