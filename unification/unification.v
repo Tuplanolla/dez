@@ -1,4 +1,4 @@
-From Coq Require Import List.
+From Coq Require Import Lists.List Program.Basics.
 
 Import ListNotations.
 
@@ -167,6 +167,15 @@ Context (St X Y : Type).
 
 Definition State St X := St -> X * St.
 
+Definition fresh_map (f : X -> Y) (x : State St X) : State St Y :=
+  fun n => let (x', n') := x n in (f x', n').
+
+Definition fresh_pure (x : X) : State St X :=
+  fun n => (x, n).
+
+Definition fresh_bind (f : X -> State St Y) (m : State St X) : State St Y :=
+  fun n => let (x, n') := m n in f x n'.
+
 Record Names : Type := {
   nvar : nat;
   nun : nat;
@@ -181,15 +190,6 @@ Definition no_names : Names := {|
 
 Definition Fresh := State Names.
 
-Definition fresh_map (f : X -> Y) (x : Fresh X) : Fresh Y :=
-  fun n => let (x', n') := x n in (f x', n').
-
-Definition fresh_pure (x : X) : Fresh X :=
-  fun n => (x, n).
-
-Definition fresh_bind (f : X -> Fresh Y) (m : Fresh X) : Fresh Y :=
-  fun n => let (x, n') := m n in f x n'.
-
 Definition gensym_var (tt : unit) : Fresh nat :=
   fun n => (nvar n, {| nvar := S (nvar n); nun := nun n; nbin := nbin n |}).
 
@@ -201,11 +201,14 @@ Definition gensym_bin (tt : unit) : Fresh nat :=
 
 End Context.
 
-#[local] Instance fresh_has_map : HasMap Fresh := @fresh_map.
+#[local] Instance fresh_has_map (St : Type) : HasMap (State St) :=
+  @fresh_map St.
 
-#[local] Instance fresh_has_pure : HasPure Fresh := @fresh_pure.
+#[local] Instance fresh_has_pure (St : Type) : HasPure (State St) :=
+  @fresh_pure St.
 
-#[local] Instance fresh_has_bind : HasBind Fresh := @fresh_bind.
+#[local] Instance fresh_has_bind (St : Type) : HasBind (State St) :=
+  @fresh_bind St.
 
 Section Context.
 
@@ -235,7 +238,19 @@ Definition relabel (t : term) : term := fst (label t no_names).
 
 End Context.
 
+Compute map relabel (gen 0).
+Compute map relabel (gen 1).
 Compute map relabel (gen 2).
+
+Section Context.
+
+Import IndexedTermNotations.
+
+Compute join (map (compose (map relabel) gen) (seq 0 1)).
+Compute join (map (compose (map relabel) gen) (seq 0 2)).
+Compute join (map (compose (map relabel) gen) (seq 0 3)).
+
+End Context.
 
 (*
 
