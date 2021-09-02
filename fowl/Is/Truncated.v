@@ -7,6 +7,8 @@ From DEZ.Has Require Export
 From DEZ.Is Require Export
   Isomorphism.
 
+Unset Universe Minimization ToSet.
+
 #[local] Open Scope type_scope.
 
 (** ** Contractibility *)
@@ -15,8 +17,8 @@ From DEZ.Is Require Export
 Class IsContr (A : Type) : Prop :=
   contr : exists x : A, forall y : A, x = y.
 
-(** ** Proposition *)
 (** ** Proof Irrelevance *)
+(** ** Proposition *)
 
 Class IsProp (A : Type) : Prop :=
   irrel (x y : A) : x = y.
@@ -29,7 +31,7 @@ Fail Fail Class IsSet (A : Type) : Prop :=
 
 Notation IsSet := UIP.
 
-Arguments uip {_ _ _ _} _.
+Arguments uip {_ _ _ _} _ _.
 
 (** ** Homotopy [n]-Type *)
 (** ** [n]-Truncation *)
@@ -37,30 +39,29 @@ Arguments uip {_ _ _ _} _.
 (** While this type is indexed over [nat], which starts from [0],
     the truncation levels actually start from [-2]. *)
 
-Inductive IsTrunc : nat -> Type -> Prop :=
-  | trunc_zero (A : Type)
-    `(IsContr A) : IsTrunc O A
-  | trunc_succ (n : nat) (A : Type)
-    `(forall x y : A, IsTrunc n (x = y)) : IsTrunc (S n) A.
+Inductive IsTrunc (A : Type) : nat -> Prop :=
+  | trunc_zero `(IsContr A) : IsTrunc A O
+  | trunc_succ (n : nat)
+    `(forall x y : A, IsTrunc (x = y) n) : IsTrunc A (S n).
 
 Existing Class IsTrunc.
 
 Lemma trunc_succ_trunc_eq (A : Type) (n : nat)
-  `(IsTrunc (S n) A) (x y : A) : IsTrunc n (x = y).
+  `(IsTrunc A (S n)) (x y : A) : IsTrunc (x = y) n.
 Proof.
   match goal with
   | t : IsTrunc _ _ |- _ => inversion_clear t
-  end. auto. Qed.
+  end. eauto. Qed.
 
 (** Truncation at the next level is equivalent to truncation of identities. *)
 
 Lemma iff_trunc_succ_trunc_eq (A : Type) (n : nat) :
-  IsTrunc (S n) A <-> forall x y : A, IsTrunc n (x = y).
+  IsTrunc A (S n) <-> forall x y : A, IsTrunc (x = y) n.
 Proof. split; [apply trunc_succ_trunc_eq | apply trunc_succ]. Qed.
 
 (** Truncation is cumulative. *)
 
-Lemma trunc_trunc_succ (A : Type) (n : nat) `(IsTrunc n A) : IsTrunc (S n) A.
+Lemma trunc_trunc_succ (A : Type) (n : nat) `(IsTrunc A n) : IsTrunc A (S n).
 Proof.
   match goal with
   | t : IsTrunc _ _ |- _ => induction t as [A [x a] | n A t t']
@@ -70,10 +71,10 @@ Proof.
     intros c. rewrite c. rewrite eq_trans_sym_inv_l. reflexivity.
   - apply trunc_succ. auto. Qed.
 
-Lemma contr_trunc (A : Type) `(IsContr A) : IsTrunc 0 A.
+Lemma contr_trunc (A : Type) `(IsContr A) : IsTrunc A 0.
 Proof. apply trunc_zero. auto. Qed.
 
-Lemma trunc_contr (A : Type) `(IsTrunc 0 A) : IsContr A.
+Lemma trunc_contr (A : Type) `(IsTrunc A 0) : IsContr A.
 Proof.
   match goal with
   | t : IsTrunc _ _ |- _ => inversion_clear t
@@ -81,17 +82,17 @@ Proof.
 
 (** Contractibility is equivalent to truncation at level [-2]. *)
 
-Lemma iff_contr_trunc (A : Type) : IsContr A <-> IsTrunc 0 A.
+Lemma iff_contr_trunc (A : Type) : IsContr A <-> IsTrunc A 0.
 Proof. split; [apply contr_trunc | apply trunc_contr]. Qed.
 
-Lemma prop_trunc (A : Type) `(IsProp A) : IsTrunc 1 A.
+Lemma prop_trunc (A : Type) `(IsProp A) : IsTrunc A 1.
 Proof.
   apply iff_trunc_succ_trunc_eq.
   intros x y. apply iff_contr_trunc.
   exists (irrel x y o irrel x x ^-1). intros a.
   rewrite a. rewrite eq_trans_sym_inv_l. reflexivity. Qed.
 
-Lemma trunc_prop (A : Type) `(IsTrunc 1 A) : IsProp A.
+Lemma trunc_prop (A : Type) `(IsTrunc A 1) : IsProp A.
 Proof.
   match goal with
   | t : IsTrunc _ _ |- _ => inversion_clear t
@@ -103,16 +104,16 @@ Proof.
 
 (** Proof irrelevance is equivalent to truncation at level [-1]. *)
 
-Lemma iff_prop_trunc (A : Type) : IsProp A <-> IsTrunc 1 A.
+Lemma iff_prop_trunc (A : Type) : IsProp A <-> IsTrunc A 1.
 Proof. split; [apply prop_trunc | apply trunc_prop]. Qed.
 
-Lemma set_trunc (A : Type) `(IsSet A) : IsTrunc 2 A.
+Lemma set_trunc (A : Type) `(IsSet A) : IsTrunc A 2.
 Proof.
   apply iff_trunc_succ_trunc_eq.
   intros x y. apply iff_prop_trunc.
   intros a b. apply uip. Qed.
 
-Lemma trunc_set (A : Type) `(IsTrunc 2 A) : IsSet A.
+Lemma trunc_set (A : Type) `(IsTrunc A 2) : IsSet A.
 Proof.
   match goal with
   | t : IsTrunc _ _ |- _ => inversion_clear t
@@ -124,7 +125,7 @@ Proof.
 
 (** Uniqueness of identity proofs is equivalent to truncation at level [0]. *)
 
-Lemma iff_set_trunc (A : Type) : IsSet A <-> IsTrunc 2 A.
+Lemma iff_set_trunc (A : Type) : IsSet A <-> IsTrunc A 2.
 Proof. split; [apply set_trunc | apply trunc_set]. Qed.
 
 (** Hints that construct truncations. *)
@@ -214,11 +215,7 @@ Proof.
   - exists (const tt). intros []. reflexivity.
   - exists (const tt). intros y. unfold const. apply irrel. Qed.
 
-Section Why.
-
-Universe u.
-
-Lemma is_contr_is_prop `(IsFunExtDep) (A : Type@{u}) : IsProp (IsContr A).
+Lemma is_contr_is_prop `(IsFunExtDep) (A : Type) : IsProp (IsContr A).
 Proof.
   intros x y.
   assert (z : IsProp A).
@@ -259,8 +256,6 @@ Proof.
   - intros x. pose proof H0 x. destruct H2. assumption.
   - assumption. Qed.
 
-End Why.
-
 Module FromAxioms.
 
 #[local] Instance is_prop (A : Prop) : IsProp A.
@@ -286,7 +281,7 @@ Proof.
   Abort.
 
 Lemma trunc_pi `(IsFunExtDep) (A : Type) (P : A -> Type) (n : nat)
-  `(forall x : A, IsTrunc n (P x)) : IsTrunc n (forall x : A, P x).
+  `(forall x : A, IsTrunc (P x) n) : IsTrunc (forall x : A, P x) n.
 Proof.
   induction n as [| p t].
   - pose proof fun x : A => trunc_contr (H0 x).
@@ -295,7 +290,7 @@ Proof.
     hnf. Abort.
 
 Lemma trunc_pi `(IsFunExtDep) (A : Type) (P : A -> Type) (n : nat)
-  `(forall x : A, IsTrunc (S n) (P x)) : IsTrunc (S n) (forall x : A, P x).
+  `(forall x : A, IsTrunc (P x) (S n)) : IsTrunc (forall x : A, P x) (S n).
 Proof.
   induction n as [| p t].
   - apply prop_trunc.
