@@ -18,6 +18,12 @@ Class IsFunExtDep : Prop :=
 Class IsPropExt : Prop :=
   prop_ext (A B : Prop) (a : A <-> B) : A = B.
 
+Lemma prop_eq_iff (A B : Prop) (a : A = B) : A <-> B.
+Proof. rewrite a. reflexivity. Qed.
+
+Lemma prop_iff_eq `(IsPropExt) (A B : Prop) (a : A <-> B) : A = B.
+Proof. apply prop_ext. apply a. Qed.
+
 Section Context.
 
 Context `(IsFunExtDep).

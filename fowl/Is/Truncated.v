@@ -267,40 +267,20 @@ Proof.
 
 End FromAxioms.
 
-Lemma pi_is_set `(IsFunExtDep) (A : Type) (P : A -> Type)
-  (h : forall x : A, IsSet (P x)) : IsSet (forall x : A, P x).
-Proof.
-  apply iff_set_prop_eq.
-  intros f g.
-  epose proof fun_ext_dep (f := f) (g := g) as p.
-  epose proof equal_f_dep (f := f) (g := g) as q.
-  epose proof fun x : A => proj1 (iff_set_prop_eq (P x)) (h x) as k.
-  clear h.
-  epose proof fun x : A => k x (f x) (g x) as m.
-  apply pi_is_prop in m; try typeclasses eauto.
-  Abort.
-
-Lemma trunc_pi `(IsFunExtDep) (A : Type) (P : A -> Type) (n : nat)
+Lemma trunc_pi `(IsPropExt) `(IsFunExtDep) (A : Type) (P : A -> Prop) (n : nat)
   `(forall x : A, IsTrunc (P x) n) : IsTrunc (forall x : A, P x) n.
 Proof.
-  induction n as [| p t].
-  - pose proof fun x : A => trunc_contr (H0 x).
-    unfold IsContr in H1.
+  revert A P H1.
+  induction n as [| p t]; intros A P H1.
+  - pose proof fun x : A => trunc_contr (H1 x).
     apply iff_contr_trunc.
-    hnf. Abort.
-
-Lemma trunc_pi `(IsFunExtDep) (A : Type) (P : A -> Type) (n : nat)
-  `(forall x : A, IsTrunc (P x) (S n)) : IsTrunc (forall x : A, P x) (S n).
-Proof.
-  induction n as [| p t].
-  - apply prop_trunc.
+    apply (@pi_is_contr H0 A P). apply H2.
+  - apply trunc_succ.
     intros f g.
-    apply fun_ext_dep.
-    intros x.
-    match goal with
-    | t : forall x : A, IsTrunc _ _ |- _ => specialize (t x)
-    end.
-    apply trunc_prop in H0.
-    apply irrel.
-  - apply iff_trunc_succ_trunc_eq.
-    intros f g. Abort.
+    epose proof fun (x : A) a b =>
+    trunc_succ_trunc_eq (A := P x) (n := p) (H1 x) a b as u.
+    epose proof fun_ext_dep (f := f) (g := g) as q.
+    epose proof equal_f_dep (f := f) (g := g) as r.
+    epose proof conj q r as w.
+    epose proof prop_ext w.
+    rewrite <- H2. apply t. intros x. apply trunc_succ_trunc_eq. apply H1. Qed.
