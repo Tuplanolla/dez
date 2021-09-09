@@ -110,6 +110,9 @@ Arguments bind {_ _ _ _} _ _.
 
 Notation "x '>>=' f" := (bind f x) (at level 20).
 
+Class HasZip (F : Type -> Type) : Type :=
+  zip (A B C : Type) (f : A -> B -> C) (x : F A) (y : F B) : F C.
+
 #[local] Instance list_has_map : HasMap list := @List.map.
 
 Definition list_pure (A : Type) (x : A) : list A :=
@@ -215,6 +218,11 @@ Fixpoint tree_beq (A : Type) (beq : A -> A -> bool) (x y : tree A) : bool :=
   | Node a x, Node b y => beq a b && list_beq (tree_beq beq) x y
   end.
 
+Fixpoint tree_size (A : Type) (x : tree A) : nat :=
+  match x with
+  | Node a x => S (fold_right Nat.add 0 (map tree_size x))
+  end.
+
 Fixpoint map_tree (A B : Type) (f : A -> B) (x : tree A) : tree B :=
   match x with
   | Node x ts => Node (f x) (map (map_tree f) ts)
@@ -243,61 +251,83 @@ Definition tree_join (A : Type) (x : tree (tree A)) : tree A :=
 #[local] Instance tree_has_join : HasJoin tree := @tree_join.
 
 From Equations.Prop Require Import Equations.
+From Coq Require Import Lia.
 
-Equations unfold_tree (A B : Type) (n : nat) (x : A)
-  (f : B -> A * list B) (b : B) : tree A by struct n :=
-  unfold_tree O x f b := Node x [];
-  unfold_tree (S n) x f b :=
-    let (a, bs) := f b in
-    Node a (map (unfold_tree n x f) bs).
+Obligation Tactic := idtac.
 
-Compute unfold_tree 8 _
-  (fun x => if Nat.ltb 7 (2 * x + 1) then (x, []) else (x, [2 * x; 2 * x + 1]))
-  1.
+Equations list_zip (A B C : Type)
+  (f : A -> B -> C) (x : list A) (y : list B) : list C :=
+  list_zip f (a :: x) (b :: y) := f a b :: list_zip f x y;
+  list_zip _ _ _ := [].
 
-Compute unfold_tree 8 _
-  (fun '(m, x) => match m with
-  | O => (x, [])
-  | S m' => (x, [(m', un 0 x); (m', bin 0 x x)])
-  end)
-  (2, var 0).
+#[local] Instance list_has_zip : HasZip list := @list_zip.
+
+Equations list_zip_In (A B C : Type)
+  (x : list A) (y : list B)
+  (f : forall (a : A) (b : B), In a x -> In b y -> C) : list C
+  by wf (length x) :=
+  list_zip_In (a :: x) (b :: y) f := _;
+  list_zip_In _ _ _ := [].
+Next Obligation.
+  intros A B C a x b y f list_zip_In.
+  apply cons.
+  - apply (f a b); hnf; auto.
+  - apply (list_zip_In _ _ _ x y).
+    + intros c d ic id.
+      apply (f c d); hnf; auto.
+    + cbn [length]. lia. Qed.
+
+Lemma tree_size_In (A : Type)
+  (t : tree A) (b : A) (x : list (tree A)) (i : In t x) :
+  tree_size t < tree_size (Node b x).
+Proof.
+  induction x as [| y l li].
+  - inversion i.
+  - destruct i as [e | i].
+    + rewrite e. cbn in *. lia.
+    + specialize (li i). cbn in *. lia. Qed.
+
+Equations tree_zip (A B C : Type)
+  (f : A -> B -> C) (x : tree A) (y : tree B) : tree C
+  by wf (tree_size x + tree_size y) :=
+  tree_zip f (Node a x) (Node b y) :=
+  Node (f a b)
+  (list_zip_In x y (fun (c : tree A) (d : tree B) ic id => tree_zip f c d)).
+  (* tree_zip f (Node a x) (Node b y) :=
+  Node (f a b)
+  (list_zip (fun (c : tree A) (d : tree B) => tree_zip f c d) x y). *)
+Next Obligation.
+  intros A B C f a x b y tree_zip c d ic id.
+  pose proof tree_size_In c a x ic as sc.
+  pose proof tree_size_In d b y id as sd.
+  cbn in *. lia. Qed.
+
+#[local] Instance tree_has_zip : HasZip tree := @tree_zip.
 
 (** Generate all unbalanced subtrees of depth below [m] in hierarchical order,
     using only one variable. *)
 
-Fixpoint gen_tree_fix (m : nat) : list (tree term) :=
+Fixpoint gen_tree (m : nat) : tree term :=
   match m with
-  | O => []
+  | O => pure (var 0)
   | S m' =>
-    let vars := [] in
-    let uns :=
-      gen_tree_fix m' >>= fun '(Node a ys) =>
-      [Node (un 0 a) ys] in
-    let bins :=
-      gen_tree_fix m' >>= fun '(Node a ys) =>
-      gen_tree_fix m' >>= fun '(Node b zs) =>
-      [Node (bin 0 a b) (ys ++ zs)] in
-    [Node (var 0) vars;
-    Node (un 0 (var 0)) uns;
-    Node (bin 0 (var 0) (var 0)) bins]
+    Node (var 0) [
+    gen_tree m' >>= fun y =>
+    pure (un 0 y);
+    gen_tree m' >>= fun y =>
+    gen_tree m' >>= fun z =>
+    pure (bin 0 y z)]
   end.
-
-Definition gen_tree (m : nat) : tree term :=
-  Node (var 0) (gen_tree_fix m).
 
 Compute gen_tree 0. Compute var 0 <: [].
 Compute gen_tree 1. Compute var 0 <: [
-  var 0 <: [];
   un 0 (var 0) <: [];
   bin 0 (var 0) (var 0) <: []].
 Compute gen_tree 2. Compute var 0 <: [
-  var 0 <: [];
   un 0 (var 0) <: [
-    un 0 (var 0) <: [];
     un 0 (un 0 (var 0)) <: [];
     un 0 (bin 0 (var 0) (var 0)) <: []];
   bin 0 (var 0) (var 0) <: [
-    bin 0 (var 0) (var 0) <: [];
     bin 0 (var 0) (un 0 (var 0)) <: [];
     bin 0 (var 0) (bin 0 (var 0) (var 0)) <: [];
     bin 0 (un 0 (var 0)) (var 0) <: [];
@@ -311,53 +341,37 @@ Section Context.
 
 Import TermNotations.
 
-Compute gen_tree 0. Compute var 0 <: [].
-Compute gen_tree 1. Compute var 0 <: [
-  var 0 <: [];
-  un 0 (var 0) <: [];
-  bin 0 (var 0) (var 0) <: []].
-Compute gen_tree 2. Compute var 0 <: [
-  var 0 <: [];
-  un 0 (var 0) <: [
-    un 0 (var 0) <: [];
-    un 0 (un 0 (var 0)) <: [];
-    un 0 (bin 0 (var 0) (var 0)) <: []];
-  bin 0 (var 0) (var 0) <: [
-    bin 0 (var 0) (var 0) <: [];
-    bin 0 (var 0) (un 0 (var 0)) <: [];
-    bin 0 (var 0) (bin 0 (var 0) (var 0)) <: [];
-    bin 0 (un 0 (var 0)) (var 0) <: [];
-    bin 0 (un 0 (var 0)) (un 0 (var 0)) <: [];
-    bin 0 (un 0 (var 0)) (bin 0 (var 0) (var 0)) <: [];
-    bin 0 (bin 0 (var 0) (var 0)) (var 0) <: [];
-    bin 0 (bin 0 (var 0) (var 0)) (un 0 (var 0)) <: [];
-    bin 0 (bin 0 (var 0) (var 0)) (bin 0 (var 0) (var 0)) <: []]].
+Compute gen_tree 0.
+Compute gen_tree 1.
+Compute gen_tree 2.
+Compute gen_tree 3.
 
 End Context.
+
+(** Now, we add the relation cherry on top. *)
 
 (** Generate all unbalanced trees of depth below [m],
     using only one variable. *)
 
-Fixpoint gen_fix (b : bool) (m : nat) : list term :=
-  match m with
-  | O => [var 0]
-  | S m' =>
-    if b then
-    [var 0] ++ (
-    gen_fix true m' >>= fun y =>
-    [un 0 y] ++ (gen_fix true m' >>= fun z =>
-    [bin 0 y z])) else
-    gen_fix true m' >>= fun y =>
-    gen_fix true m' >>= fun z =>
-    [rel y z]
-  end.
-
 Definition gen_all (m : nat) : list term :=
-  gen_fix false (S m).
+  gen m >>= fun y =>
+  gen m >>= fun z =>
+  [rel y z].
 
 Compute gen_all 0.
 Compute gen_all 1.
-Compute gen_all 2.
+
+(** Generate all unbalanced trees of depth below [m] in hierarchical order,
+    using only one variable. *)
+
+Definition gen_tree_all (m : nat) : tree term :=
+  gen_tree m >>= fun a =>
+  gen_tree m >>= fun b =>
+  pure (rel a b).
+
+Compute gen_tree_all 0.
+Compute gen_tree_all 1.
+Compute gen_tree_all 2.
 
 (** Replace each occurrence of a variable in a tree with a distinct one,
     following "Reaching for the Star: Tale of a Monad in Coq". *)
@@ -460,6 +474,10 @@ Import IndexedTermNotations.
 Compute map relabel (gen_all 0).
 Compute map relabel (gen_all 1).
 Compute map relabel (gen_all 2).
+
+Compute map relabel (gen_tree_all 0).
+Compute map relabel (gen_tree_all 1).
+Compute map relabel (gen_tree_all 2).
 
 End Context.
 
