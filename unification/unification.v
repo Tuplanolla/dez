@@ -144,8 +144,8 @@ Notation "'-_' n x" := (un n x)
   (at level 50, format "'-_' n  x", only printing).
 Notation "x '+_' n y" := (bin n x y)
   (at level 50, format "x  '+_' n  y", only printing).
-Notation "x '=' y" := (rel x y)
-  (at level 70, format "x  '='  y", only printing).
+Notation "x '=_{}' y" := (rel x y)
+  (at level 70, format "x  '=_{}'  y", only printing).
 
 End IndexedTermNotations.
 
@@ -157,8 +157,8 @@ Notation "'-_{}' x" := (un _ x)
   (at level 50, format "'-_{}'  x", only printing).
 Notation "x '+_{}' y" := (bin _ x y)
   (at level 50, format "x  '+_{}'  y", only printing).
-Notation "x '=' y" := (rel x y)
-  (at level 70, format "x  '='  y", only printing).
+Notation "x '=_{}' y" := (rel x y)
+  (at level 70, format "x  '=_{}'  y", only printing).
 
 End TermNotations.
 
@@ -365,9 +365,9 @@ Compute gen_all 1.
     using only one variable. *)
 
 Definition gen_tree_all (m : nat) : tree term :=
-  gen_tree m >>= fun a =>
-  gen_tree m >>= fun b =>
-  pure (rel a b).
+  gen_tree m >>= fun y =>
+  gen_tree m >>= fun z =>
+  pure (rel y z).
 
 Compute gen_tree_all 0.
 Compute gen_tree_all 1.
