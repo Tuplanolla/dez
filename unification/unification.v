@@ -7,6 +7,8 @@ Import ListNotations.
 Set Warnings "-notation-incompatible-format".
 Set Implicit Arguments.
 Set Maximal Implicit Insertion.
+Set Universe Polymorphism.
+Unset Universe Minimization ToSet.
 
 #[local] Open Scope bool_scope.
 
@@ -37,6 +39,26 @@ Fixpoint term_leb (x y : term) : bool :=
   | rel _ _, un _ _ => false
   | rel _ _, bin _ _ _ => false
   | rel x y, rel z w => term_leb x z && term_leb y w
+  end.
+
+(** Number of branches. *)
+
+Fixpoint term_size (x : term) : nat :=
+  match x with
+  | var _ => O
+  | un _ x => S (term_size x)
+  | bin _ x y => S (term_size x + term_size y)
+  | rel x y => S (term_size x + term_size y)
+  end.
+
+(** Depth of paths. *)
+
+Fixpoint term_depth (x : term) : nat :=
+  match x with
+  | var _ => O
+  | un _ x => S (term_depth x)
+  | bin _ x y => S (max (term_depth x) (term_depth y))
+  | rel x y => S (max (term_depth x) (term_depth y))
   end.
 
 Fixpoint wf_fix (b : bool) (x : term) : bool :=
@@ -114,6 +136,11 @@ Class HasZip (F : Type -> Type) : Type :=
   zip (A B C : Type) (f : A -> B -> C) (x : F A) (y : F B) : F C.
 
 #[local] Instance list_has_map : HasMap list := @List.map.
+
+Class HasSequence (F G : Type -> Type) : Type :=
+  sequence (A : Type) (x : F (G A)) : G (F A).
+
+Arguments sequence {_ _ _ _} _.
 
 Definition list_pure (A : Type) (x : A) : list A :=
   [x].
@@ -208,15 +235,17 @@ Inductive tree (A : Type) : Type := Node {
   branches : list (tree A);
 }.
 
-Notation "a '<:' x" := (Node a x) (at level 50).
+Notation "a ':+' x" := (Node a x) (at level 50).
 
 Scheme Equality for list.
-Fail Scheme Equality for tree.
+(* Fail Scheme Equality for tree. *)
 
 Fixpoint tree_beq (A : Type) (beq : A -> A -> bool) (x y : tree A) : bool :=
   match x, y with
   | Node a x, Node b y => beq a b && list_beq (tree_beq beq) x y
   end.
+
+(** Number of elements. *)
 
 Fixpoint tree_size (A : Type) (x : tree A) : nat :=
   match x with
@@ -304,38 +333,110 @@ Next Obligation.
 
 #[local] Instance tree_has_zip : HasZip tree := @tree_zip.
 
+Definition liftA2 (F : Type -> Type) `{HasBind F} `{HasPure F}
+  (A B C : Type) (f : A -> B -> C) (x : F A) (y : F B) : F C :=
+  x >>= fun a =>
+  y >>= fun b =>
+  pure (f a b).
+
+Fixpoint list_sequence (F : Type -> Type) `{HasBind F} `{HasPure F}
+  (A : Type) (a : list (F A)) : F (list A) :=
+  match a with
+  | [] => pure []
+  | u :: us => liftA2 cons u (list_sequence A us)
+  end.
+
+#[local] Instance list_has_sequence
+  (F : Type -> Type) `{HasBind F} `{HasPure F} :
+  HasSequence list F := @list_sequence F _ _.
+
+Equations tree_sequence (F : Type -> Type) `{HasBind F} `{HasPure F}
+  (A : Type) (a : tree (F A)) : F (tree A) by wf (tree_size a) lt :=
+  tree_sequence F (Node x ts) :=
+  liftA2 Node x (sequence (map (fun a => tree_sequence F a) ts)).
+Next Obligation. intros. Admitted.
+
+#[local] Instance tree_has_sequence
+  (F : Type -> Type) `{HasBind F} `{HasPure F} :
+  HasSequence tree F := @tree_sequence F _ _.
+
 (** Generate all unbalanced subtrees of depth below [m] in hierarchical order,
     using only one variable. *)
 
-Fixpoint gen_tree (m : nat) : tree term :=
+Fixpoint tree_filter (A : Type) (f : A -> bool) (x : tree A) : tree A :=
+  match x with
+  | Node a y => if f a then Node a (map (tree_filter f) y) else pure a
+  end.
+
+Fixpoint gen_tree_n (m : nat) (n : nat) : tree term :=
   match m with
   | O => pure (var 0)
   | S m' =>
-    Node (var 0) [
-    gen_tree m' >>= fun y =>
-    pure (un 0 y);
-    gen_tree m' >>= fun y =>
-    gen_tree m' >>= fun z =>
-    pure (bin 0 y z)]
+    Node (var 0)
+    (map (fun a => tree_filter (fun x => Nat.ltb (term_size x) n) a) [
+      gen_tree_n m' n >>= fun y =>
+      pure (un 0 y);
+      gen_tree_n m' n >>= fun y =>
+      gen_tree_n (m' - term_size y) n >>= fun z =>
+      pure (bin 0 y z)])
   end.
 
-Compute gen_tree 0. Compute var 0 <: [].
-Compute gen_tree 1. Compute var 0 <: [
-  un 0 (var 0) <: [];
-  bin 0 (var 0) (var 0) <: []].
-Compute gen_tree 2. Compute var 0 <: [
-  un 0 (var 0) <: [
-    un 0 (un 0 (var 0)) <: [];
-    un 0 (bin 0 (var 0) (var 0)) <: []];
-  bin 0 (var 0) (var 0) <: [
-    bin 0 (var 0) (un 0 (var 0)) <: [];
-    bin 0 (var 0) (bin 0 (var 0) (var 0)) <: [];
-    bin 0 (un 0 (var 0)) (var 0) <: [];
-    bin 0 (un 0 (var 0)) (un 0 (var 0)) <: [];
-    bin 0 (un 0 (var 0)) (bin 0 (var 0) (var 0)) <: [];
-    bin 0 (bin 0 (var 0) (var 0)) (var 0) <: [];
-    bin 0 (bin 0 (var 0) (var 0)) (un 0 (var 0)) <: [];
-    bin 0 (bin 0 (var 0) (var 0)) (bin 0 (var 0) (var 0)) <: []]].
+Equations gen_tree (m : nat) : tree term (* by wf m lt *) :=
+  gen_tree O := pure (var 0);
+  (* gen_tree (S m') :=
+    Node (var 0) (
+    sequence (gen_tree m' >>= fun y =>
+    sequence [pure (un 0 y)]) ++
+    sequence (gen_tree m' >>= fun y =>
+    gen_tree m' >>= fun z =>
+    sequence [pure (bin 0 y z)])). *)
+  (* gen_tree (S m') :=
+    Node (var 0) (
+    sequence (gen_tree m' >>= fun y =>
+    gen_tree m' >>= fun z =>
+    sequence [pure (un 0 y); pure (bin 0 y z)])). *)
+   gen_tree (S m') :=
+     Node (var 0) [
+     gen_tree m' >>= fun y =>
+     pure (un 0 y);
+     gen_tree m' >>= fun y =>
+     gen_tree m' >>= fun z =>
+     pure (bin 0 y z)].
+(* Next Obligation. intros. lia. Qed.
+Next Obligation. intros. lia. Qed.
+Next Obligation. intros. lia. Qed. *)
+
+Compute gen_tree 0.
+Compute gen_tree 1.
+Compute gen_tree 2.
+Compute map term_size (gen_tree 0).
+Compute map term_size (gen_tree 1).
+Compute map term_size (gen_tree 2).
+Compute map term_size (gen_tree 3).
+Compute map term_size (gen_tree_n 5 3).
+Compute map term_size (gen_tree 4).
+
+Compute gen_tree 0.
+Compute gen_tree 1.
+Compute gen_tree 2.
+
+Compute gen_tree 0. Compute var 0 :+ [].
+Compute gen_tree 1. Compute var 0 :+ [
+  un 0 (var 0) :+ [];
+  bin 0 (var 0) (var 0) :+ []].
+Compute gen_tree 2. Compute var 0 :+ [
+  un 0 (var 0) :+ [
+    un 0 (un 0 (var 0)) :+ [];
+    un 0 (bin 0 (var 0) (var 0)) :+ []];
+  bin 0 (var 0) (var 0) :+ [
+    bin 0 (var 0) (un 0 (var 0)) :+ [];
+    bin 0 (var 0) (bin 0 (var 0) (var 0)) :+ [];
+    bin 0 (un 0 (var 0)) (var 0) :+ [];
+    bin 0 (un 0 (var 0)) (un 0 (var 0)) :+ [];
+    bin 0 (un 0 (var 0)) (bin 0 (var 0) (var 0)) :+ [];
+    bin 0 (bin 0 (var 0) (var 0)) (var 0) :+ [];
+    bin 0 (bin 0 (var 0) (var 0)) (un 0 (var 0)) :+ [];
+    bin 0 (bin 0 (var 0) (var 0)) (bin 0 (var 0) (var 0)) :+ []]].
 
 Section Context.
 
@@ -480,6 +581,11 @@ Compute map relabel (gen_tree_all 1).
 Compute map relabel (gen_tree_all 2).
 
 End Context.
+
+(** Now, we have a tree of all the equations and their subtype relations.
+    We can search for all the named equations,
+    identify the paths from them to the root and
+    name the intersections as the common unifiers. *)
 
 Module CursedTermNotations.
 

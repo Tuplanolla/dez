@@ -67,6 +67,7 @@ From Equations.Prop Require Export
     incurs a considerable performance penalty on type checking. *)
 
 #[global] Set Universe Polymorphism.
+#[global] Unset Universe Minimization ToSet.
 
 (** We mark equations transparent,
     because it may be necessary to [unfold] them manually
