@@ -110,14 +110,6 @@ findHoles (Rel x y) =
   (liftA2 . liftA2) Rel ((pure . pure) x) (findHoles y) <>
   (liftA2 . liftA2) Rel (findHoles x) ((pure . pure) y)
 
-findHolesSymm :: forall a. Term a -> [(a -> Term a) -> Term a]
-findHolesSymm (Null n) = pure ($ n)
-findHolesSymm (Un n x) = fmap (fmap (Un n)) (findHolesSymm x)
-findHolesSymm (Bin n x y) =
-  (liftA2 . liftA2) (Bin n) ((pure . pure) x) (findHolesSymm y)
-findHolesSymm (Rel x y) =
-  (liftA2 . liftA2) Rel ((pure . pure) x) (findHolesSymm y)
-
 subscript :: Char -> Char
 subscript x
   | ord '0' <= ord x && ord x <= ord '9' =
@@ -171,8 +163,7 @@ growTreeFrom :: forall a. a -> Term a -> Natural -> Tree (Term a)
 growTreeFrom _ x 0 = pure x
 growTreeFrom a x n = let n' = pred n in
   Node x $
-  -- findHoles x >>= \ f ->
-  findHolesSymm x >>= \ f ->
+  findHoles x >>= \ f ->
   [f (const (Un a (Null a))), f (const (Bin a (Null a) (Null a)))] >>= \ y ->
   pure (growTreeFrom a y n')
 
