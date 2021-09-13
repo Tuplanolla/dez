@@ -1,8 +1,9 @@
 -- stack ghci --package containers --package mtl --package text --package fgl --package graphviz -- GrowTrees.hs
 
-{-# LANGUAGE DeriveFunctor, ImportQualifiedPost, NumDecimals,
+{-# LANGUAGE
+    DeriveFunctor, ImportQualifiedPost, NumDecimals, StandaloneDeriving,
     RankNTypes, ScopedTypeVariables #-}
-{-# OPTIONS -Wno-orphans #-}
+{-# OPTIONS -Wno-orphans -Wno-unused-matches #-}
 
 module GrowTrees where
 
@@ -21,6 +22,14 @@ import Data.Text.Lazy (unpack)
 import Data.Tree
 import Numeric
 import Numeric.Natural
+
+lexicographically :: [Ordering] -> Ordering
+lexicographically [] = EQ
+lexicographically [x] = x
+lexicographically (x : xs) = case x of
+  LT -> LT
+  EQ -> lexicographically xs
+  GT -> GT
 
 instance Labellable () where
   toLabelValue () = toLabelValue ""
@@ -52,20 +61,36 @@ compactDrawTree = let
   f xs = xs in
   unlines . f . lines . drawTree
 
-data Term =
-  Null Natural |
-  Un Natural Term |
-  Bin Natural Term Term |
-  Rel Term Term
-  deriving (Eq, Ord, Show)
+data Term a =
+  Null a |
+  Un a (Term a) |
+  Bin a (Term a) (Term a) |
+  Rel (Term a) (Term a)
+  deriving (Functor, Show)
 
-termSize :: Term -> Natural
+deriving instance forall a. Eq a => Eq (Term a)
+deriving instance forall a. Ord a => Ord (Term a)
+
+-- Bad idea!
+{-
+instance forall a. Eq a => Eq (Term a) where
+  (==) (Null n) (Null n') = n == n'
+  (==) (Un n x) (Un n' x') = n == n' &&
+    x == x'
+  (==) (Bin n x y) (Bin n' x' y') = n == n' &&
+    ((x == x' && y == y') || (x == y' && y == x'))
+  (==) (Rel x y) (Rel x' y') =
+    ((x == x' && y == y') || (x == y' && y == x'))
+  (==) _ _ = False
+-}
+
+termSize :: forall a. Term a -> Natural
 termSize (Null _) = 0
 termSize (Un _ x) = succ (termSize x)
 termSize (Bin _ x y) = succ (termSize x + termSize y)
 termSize (Rel x y) = succ (termSize x + termSize y)
 
-fillHoles :: (Natural -> Term) -> Term -> [Term]
+fillHoles :: forall a. (a -> Term a) -> Term a -> [Term a]
 fillHoles f (Null n) = pure (f n)
 fillHoles f (Un n x) = fmap (Un n) (fillHoles f x)
 fillHoles f (Bin n x y) =
@@ -75,7 +100,7 @@ fillHoles f (Rel x y) =
   liftA2 Rel (pure x) (fillHoles f y) <>
   liftA2 Rel (fillHoles f x) (pure y)
 
-findHoles :: Term -> [(Natural -> Term) -> Term]
+findHoles :: forall a. Term a -> [(a -> Term a) -> Term a]
 findHoles (Null n) = pure ($ n)
 findHoles (Un n x) = fmap (fmap (Un n)) (findHoles x)
 findHoles (Bin n x y) =
@@ -84,6 +109,14 @@ findHoles (Bin n x y) =
 findHoles (Rel x y) =
   (liftA2 . liftA2) Rel ((pure . pure) x) (findHoles y) <>
   (liftA2 . liftA2) Rel (findHoles x) ((pure . pure) y)
+
+findHolesSymm :: forall a. Term a -> [(a -> Term a) -> Term a]
+findHolesSymm (Null n) = pure ($ n)
+findHolesSymm (Un n x) = fmap (fmap (Un n)) (findHolesSymm x)
+findHolesSymm (Bin n x y) =
+  (liftA2 . liftA2) (Bin n) ((pure . pure) x) (findHolesSymm y)
+findHolesSymm (Rel x y) =
+  (liftA2 . liftA2) Rel ((pure . pure) x) (findHolesSymm y)
 
 subscript :: Char -> Char
 subscript x
@@ -94,58 +127,60 @@ subscript x
 showSubscript :: forall a. Integral a => a -> ShowS
 showSubscript n = showString (fmap subscript (showInt n mempty))
 
-drawTermsIxed :: Term -> ShowS
+drawTermsIxed :: forall a. Integral a => Term a -> ShowS
 drawTermsIxed (Null n) = showString "x" . showSubscript n
-drawTermsIxed (Un n x) = showString "(\172" . showSubscript n . showString " " .
+-- Technically, the operator is `'\8902'`, but `'\9733'` often looks better.
+drawTermsIxed (Un n x) = showString "(\9733" . showSubscript n . showString " " .
   drawTermsIxed x . showString ")"
 drawTermsIxed (Bin n x y) = showString "(" .
   drawTermsIxed x . showString " \8743" . showSubscript n . showString " " .
   drawTermsIxed y . showString ")"
-drawTermsIxed (Rel x y) = showString "(" .
+drawTermsIxed (Rel x y) =
   drawTermsIxed x . showString " = " .
-  drawTermsIxed y . showString ")"
+  drawTermsIxed y
 
-drawTermIxed :: Term -> String
+drawTermIxed :: forall a. Integral a => Term a -> String
 drawTermIxed x = drawTermsIxed x mempty
 
-drawTerms :: Term -> ShowS
+drawTerms :: forall a. Integral a => Term a -> ShowS
 drawTerms (Null _) = showString "x"
-drawTerms (Un _ x) = showString "(\172 " .
+drawTerms (Un _ x) = showString "(\9733 " .
   drawTerms x . showString ")"
 drawTerms (Bin _ x y) = showString "(" .
   drawTerms x . showString " \8743 " .
   drawTerms y . showString ")"
-drawTerms (Rel x y) = showString "(" .
+drawTerms (Rel x y) =
   drawTerms x . showString " = " .
-  drawTerms y . showString ")"
+  drawTerms y
 
-drawTerm :: Term -> String
+drawTerm :: forall a. Integral a => Term a -> String
 drawTerm x = drawTerms x mempty
 
 -- The path `[x, (x + x), (x + (- x)), ((- x) + (- x))]` is missing!
-growTreeWrong :: Natural -> Tree Term
-growTreeWrong 0 = pure (Null 0)
-growTreeWrong n = let n' = pred n in
-  Node (Null 0) [
-  growTreeWrong n' >>= \ x ->
-  pure (Un 0 x),
-  growTreeWrong n' >>= \ x ->
-  growTreeWrong n' >>= \ y ->
-  pure (Bin 0 x y)]
+growTreeWrong :: forall a. a -> Natural -> Tree (Term a)
+growTreeWrong a 0 = pure (Null a)
+growTreeWrong a n = let n' = pred n in
+  Node (Null a) [
+  growTreeWrong a n' >>= \ x ->
+  pure (Un a x),
+  growTreeWrong a n' >>= \ x ->
+  growTreeWrong a n' >>= \ y ->
+  pure (Bin a x y)]
 
-growTreeFrom :: Term -> Natural -> Tree Term
-growTreeFrom x 0 = pure x
-growTreeFrom x n = let n' = pred n in
+growTreeFrom :: forall a. a -> Term a -> Natural -> Tree (Term a)
+growTreeFrom _ x 0 = pure x
+growTreeFrom a x n = let n' = pred n in
   Node x $
-  findHoles x >>= \ f ->
-  [f (const (Un 0 (Null 0))), f (const (Bin 0 (Null 0) (Null 0)))] >>= \ y ->
-  pure (growTreeFrom y n')
+  -- findHoles x >>= \ f ->
+  findHolesSymm x >>= \ f ->
+  [f (const (Un a (Null a))), f (const (Bin a (Null a) (Null a)))] >>= \ y ->
+  pure (growTreeFrom a y n')
 
-growTree :: Natural -> Tree Term
-growTree = growTreeFrom (Null 0)
+growTree :: forall a. a -> Natural -> Tree (Term a)
+growTree a = growTreeFrom a (Null a)
 
-growTreeRooted :: Natural -> Tree Term
-growTreeRooted = growTreeFrom (Rel (Null 0) (Null 0))
+growTreeRooted :: forall a. a -> Natural -> Tree (Term a)
+growTreeRooted a = growTreeFrom a (Rel (Null a) (Null a))
 
 data Names = Names {
   nameNull :: Natural,
@@ -167,7 +202,7 @@ gensymUn = state $ \ n -> (nameUn n, n {nameUn = succ (nameUn n)})
 gensymBin :: Fresh Natural
 gensymBin = state $ \ n -> (nameBin n, n {nameBin = succ (nameBin n)})
 
-labelingMachine :: Term -> Fresh Term
+labelingMachine :: Term Natural -> Fresh (Term Natural)
 labelingMachine (Null _) =
   gensymNull >>= \ n ->
   pure (Null n)
@@ -185,7 +220,7 @@ labelingMachine (Rel x y) =
   labelingMachine y >>= \ b ->
   pure (Rel a b)
 
-label :: Term -> Term
+label :: Term Natural -> Term Natural
 label x = evalState (labelingMachine x) defNames
 
 type Assign a = ((Node, Map a Node), Gr a ())
@@ -207,17 +242,20 @@ cseMachine (Node a xs) =
       pure n
     Just i -> pure i
 
-defAssign :: Assign Term
+defAssign :: Assign (Term Natural)
 defAssign = ((0, mempty), Graph.empty)
 
-cse :: Tree Term -> Gr Term ()
+cse :: Tree (Term Natural) -> Gr (Term Natural) ()
 cse x = snd (execState (cseMachine x) defAssign)
 
 main :: IO ()
-main = do
-  let n = 3 :: Natural
-  let t = growTree n
-  let t' = treeTakeWhile (\ x -> termSize x <= n) (growTree 1e+3)
+main = let
+  n :: Natural
+  n = 3
+  t :: Tree (Term Natural)
+  t = growTree 0 n
+  t' :: Maybe (Tree (Term Natural))
+  t' = treeTakeWhile (\ x -> termSize x <= n) (growTree 0 1e+3) in do
   if t' == Just t then
     putStrLn "Growth matches measure!" else
     putStrLn "Growth does not match measure!"
