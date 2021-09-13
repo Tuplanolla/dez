@@ -1,13 +1,14 @@
-{-# LANGUAGE ImportQualifiedPost, NumDecimals, RankNTypes #-}
+-- stack ghci --package containers --package mtl --package text --package fgl --package graphviz -- GrowTrees.hs
 
--- stack ghci --package containers --package mtl --package fgl --package graphviz --package text -- GrowTrees.hs
+{-# LANGUAGE DeriveFunctor, ImportQualifiedPost, NumDecimals,
+    RankNTypes, ScopedTypeVariables #-}
+{-# OPTIONS -Wno-orphans #-}
 
 module GrowTrees where
 
 import Control.Applicative
 import Control.Monad.State
 import Data.Char
-import Data.Foldable
 import Data.Graph.Inductive.Graph
 import Data.Graph.Inductive.Graph qualified as Graph
 import Data.Graph.Inductive.PatriciaTree
@@ -24,9 +25,10 @@ import Numeric.Natural
 instance Labellable () where
   toLabelValue () = toLabelValue ""
 
-printPreview :: (Labellable a, Labellable b, Ord b, Graph gr) =>
+printPreview :: forall a b gr. (Labellable a, Labellable b, Ord b, Graph gr) =>
   gr a b -> String
 printPreview g = let
+  params :: forall n. GraphvizParams n a b () a
   params = nonClusteredParams {
     globalAttributes = [GraphAttrs [RankDir FromLeft]],
     fmtNode = \ (_, l) -> [toLabel l],
@@ -53,13 +55,15 @@ compactDrawTree = let
 data Term =
   Null Natural |
   Un Natural Term |
-  Bin Natural Term Term
+  Bin Natural Term Term |
+  Rel Term Term
   deriving (Eq, Ord, Show)
 
 termSize :: Term -> Natural
-termSize (Null n) = 0
-termSize (Un n x) = succ (termSize x)
-termSize (Bin n x y) = succ (termSize x + termSize y)
+termSize (Null _) = 0
+termSize (Un _ x) = succ (termSize x)
+termSize (Bin _ x y) = succ (termSize x + termSize y)
+termSize (Rel x y) = succ (termSize x + termSize y)
 
 fillHoles :: (Natural -> Term) -> Term -> [Term]
 fillHoles f (Null n) = pure (f n)
@@ -67,13 +71,19 @@ fillHoles f (Un n x) = fmap (Un n) (fillHoles f x)
 fillHoles f (Bin n x y) =
   liftA2 (Bin n) (pure x) (fillHoles f y) <>
   liftA2 (Bin n) (fillHoles f x) (pure y)
+fillHoles f (Rel x y) =
+  liftA2 Rel (pure x) (fillHoles f y) <>
+  liftA2 Rel (fillHoles f x) (pure y)
 
-findHoles :: Term -> [Term -> Term]
-findHoles (Null n) = pure id
+findHoles :: Term -> [(Natural -> Term) -> Term]
+findHoles (Null n) = pure ($ n)
 findHoles (Un n x) = fmap (fmap (Un n)) (findHoles x)
 findHoles (Bin n x y) =
   (liftA2 . liftA2) (Bin n) ((pure . pure) x) (findHoles y) <>
   (liftA2 . liftA2) (Bin n) (findHoles x) ((pure . pure) y)
+findHoles (Rel x y) =
+  (liftA2 . liftA2) Rel ((pure . pure) x) (findHoles y) <>
+  (liftA2 . liftA2) Rel (findHoles x) ((pure . pure) y)
 
 subscript :: Char -> Char
 subscript x
@@ -91,16 +101,22 @@ drawTermsIxed (Un n x) = showString "(\172" . showSubscript n . showString " " .
 drawTermsIxed (Bin n x y) = showString "(" .
   drawTermsIxed x . showString " \8743" . showSubscript n . showString " " .
   drawTermsIxed y . showString ")"
+drawTermsIxed (Rel x y) = showString "(" .
+  drawTermsIxed x . showString " = " .
+  drawTermsIxed y . showString ")"
 
 drawTermIxed :: Term -> String
 drawTermIxed x = drawTermsIxed x mempty
 
 drawTerms :: Term -> ShowS
-drawTerms (Null n) = showString "x"
-drawTerms (Un n x) = showString "(\172 " .
+drawTerms (Null _) = showString "x"
+drawTerms (Un _ x) = showString "(\172 " .
   drawTerms x . showString ")"
-drawTerms (Bin n x y) = showString "(" .
+drawTerms (Bin _ x y) = showString "(" .
   drawTerms x . showString " \8743 " .
+  drawTerms y . showString ")"
+drawTerms (Rel x y) = showString "(" .
+  drawTerms x . showString " = " .
   drawTerms y . showString ")"
 
 drawTerm :: Term -> String
@@ -117,17 +133,19 @@ growTreeWrong n = let n' = pred n in
   growTreeWrong n' >>= \ y ->
   pure (Bin 0 x y)]
 
--- Remove `f (Un (Null 0))` to generate associahedral trees.
 growTreeFrom :: Term -> Natural -> Tree Term
 growTreeFrom x 0 = pure x
 growTreeFrom x n = let n' = pred n in
   Node x $
   findHoles x >>= \ f ->
-  [f (Un 0 (Null 0)), f (Bin 0 (Null 0) (Null 0))] >>= \ y ->
+  [f (const (Un 0 (Null 0))), f (const (Bin 0 (Null 0) (Null 0)))] >>= \ y ->
   pure (growTreeFrom y n')
 
 growTree :: Natural -> Tree Term
 growTree = growTreeFrom (Null 0)
+
+growTreeRooted :: Natural -> Tree Term
+growTreeRooted = growTreeFrom (Rel (Null 0) (Null 0))
 
 data Names = Names {
   nameNull :: Natural,
@@ -153,15 +171,19 @@ labelingMachine :: Term -> Fresh Term
 labelingMachine (Null _) =
   gensymNull >>= \ n ->
   pure (Null n)
-labelingMachine (Un n x) =
+labelingMachine (Un _ x) =
   gensymUn >>= \ n ->
   labelingMachine x >>= \ a ->
   pure (Un n a)
-labelingMachine (Bin n x y) =
+labelingMachine (Bin _ x y) =
   gensymBin >>= \ n ->
   labelingMachine x >>= \ a ->
   labelingMachine y >>= \ b ->
   pure (Bin n a b)
+labelingMachine (Rel x y) =
+  labelingMachine x >>= \ a ->
+  labelingMachine y >>= \ b ->
+  pure (Rel a b)
 
 label :: Term -> Term
 label x = evalState (labelingMachine x) defNames
@@ -193,7 +215,7 @@ cse x = snd (execState (cseMachine x) defAssign)
 
 main :: IO ()
 main = do
-  let n = 3
+  let n = 3 :: Natural
   let t = growTree n
   let t' = treeTakeWhile (\ x -> termSize x <= n) (growTree 1e+3)
   if t' == Just t then
@@ -201,4 +223,4 @@ main = do
     putStrLn "Growth does not match measure!"
   putStr . compactDrawTree . fmap (show . termSize) $ t
   putStr . compactDrawTree . fmap drawTerm $ fmap label t
-  preview . nmap drawTerm $ cse (fmap label t)
+  preview . nmap drawTermIxed $ cse (fmap label t)
