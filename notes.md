@@ -440,7 +440,6 @@ but, alas, they are too intertwined for such a separation to be useful.
 
 Do these things.
 
-* Rename the project.
 * Remove operational type class use from predicative classes
   unless overloading is needed.
 * Write Coqdoc documentation comments for each class instead of each module.

@@ -1,19 +1,26 @@
-(** * Absorptivity of a Nullary Operation over a Binary Operation *)
+(** * Absorptivity *)
 
-From DEZ.Has Require Export
-  Zero Multiplication.
-From DEZ.ShouldHave Require Import
-  ArithmeticNotations.
+From DEZ Require Export
+  Init.
 
-Class IsAbsorbElemL (A : Type) (Hx : HasZero A) (Hk : HasMul A) : Prop :=
-  absorb_elem_l (x : A) : 0 * x = 0.
+(** ** Left Absorbing Element of a Binary Operation *)
 
-Class IsAbsorbElemR (A : Type) (Hx : HasZero A) (Hk : HasMul A) : Prop :=
-  absorb_elem_r (x : A) : x * 0 = 0.
+Class IsAbsorbElemL (A : Type) (R : A -> A -> Prop)
+  (x : A) (k : A -> A -> A) : Prop :=
+  absorb_elem_l (y : A) : R (k x y) x.
 
-Class IsAbsorbElemLR (A : Type) (Hx : HasZero A) (Hk : HasMul A) : Prop := {
-  is_absorb_elem_l :> IsAbsorbElemL 0 _*_;
-  is_absorb_elem_r :> IsAbsorbElemR 0 _*_;
+(** ** Right Absorbing Element of a Binary Operation *)
+
+Class IsAbsorbElemR (A : Type) (R : A -> A -> Prop)
+  (x : A) (k : A -> A -> A) : Prop :=
+  absorb_elem_r (y : A) : R (k y x) x.
+
+(** ** Absorbing Element of a Binary Operation *)
+
+Class IsAbsorbElemLR (A : Type) (R : A -> A -> Prop)
+  (x : A) (k : A -> A -> A) : Prop := {
+  is_absorb_elem_l :> IsAbsorbElemL R x k;
+  is_absorb_elem_r :> IsAbsorbElemR R x k;
 }.
 
 (** TODO Unary absorptivity is just a fixed point of a unary operation! *)

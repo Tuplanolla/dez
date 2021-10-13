@@ -14,7 +14,7 @@ Class IsAssoc7 (A0 A1 A2 B0 B1 C0 C1 : Type) (R : C0 -> C1 -> Prop)
 
 Class IsCompatL (A B : Type) (R : B -> B -> Prop)
   (k : A -> A -> A) (m : A -> B -> B) : Prop :=
-  l_is_assoc_7 :> IsAssoc7 R m m m k.
+  l_is_assoc_7 :> IsAssoc7 R k m m m.
 
 (** ** Right Action Compatible with a Binary Operation *)
 
@@ -26,7 +26,7 @@ Class IsCompatR (A B : Type) (R : B -> B -> Prop)
 
 Class IsAssoc3 (A B C : Type) (R : B -> B -> Prop)
   (k : A -> B -> B) (m : B -> C -> B) : Prop :=
-  is_assoc_7 :> IsAssoc7 R k m m k.
+  is_assoc_7 :> IsAssoc7 R k m k m.
 
 (** ** Associative Binary Operation *)
 

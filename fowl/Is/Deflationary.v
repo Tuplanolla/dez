@@ -1,9 +1,23 @@
-(** * Deflationarity or Regressivity of a Function and a Binary Operation *)
+(** * Deflationarity *)
 
 From DEZ.Has Require Export
   OrderRelations BinaryOperation.
 From DEZ.ShouldHave Require Import
   OrderRelationNotations AdditiveNotations.
+
+Class IsDeflGen (A B : Type) (R : B -> A -> Prop) (f : A -> B) : Prop :=
+  defl_gen (x : A) : R (f x) x.
+
+Class IsDeflGenL (A B C : Type) (R : C -> B -> Prop)
+  (k : A -> B -> C) : Prop :=
+  defl_gen_l (x : A) (y : B) : R (k x y) y.
+
+Class IsDeflGenR (A B C : Type) (R : C -> A -> Prop)
+  (k : A -> B -> C) : Prop :=
+  defl_gen_r (x : A) (y : B) : R (k x y) x.
+
+(** ** Deflationary Function *)
+(** ** Regressive Function *)
 
 Class IsDefl (A : Type) (HR : HasOrdRel A) (f : A -> A) : Prop :=
   defl (x : A) : f x <= x.

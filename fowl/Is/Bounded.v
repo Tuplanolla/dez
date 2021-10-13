@@ -1,12 +1,14 @@
-(** * Lower and Upper Bound *)
+(** * Boundedness *)
 
-From DEZ.Has Require Export
-  OrderRelations.
-From DEZ.ShouldHave Require Import
-  OrderRelationNotations.
+From DEZ Require Export
+  Init.
 
-Class IsLowerBnd (A : Type) (x : A) (HR : HasOrdRel A) : Prop :=
-  lower_bnd (y : A) : x <= y.
+(** * Lower Bound *)
 
-Class IsUpperBnd (A : Type) (x : A) (HR : HasOrdRel A) : Prop :=
-  upper_bnd (y : A) : y <= x.
+Class IsLowerBnd (A : Type) (x : A) (R : A -> A -> Prop) : Prop :=
+  lower_bnd (y : A) : R x y.
+
+(** * Upper Bound *)
+
+Class IsUpperBnd (A : Type) (x : A) (R : A -> A -> Prop) : Prop :=
+  upper_bnd (y : A) : R y x.

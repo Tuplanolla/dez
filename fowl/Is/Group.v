@@ -1,12 +1,12 @@
 (** * Group Structure *)
 
 From DEZ.Has Require Export
-  NullaryOperation UnaryOperation BinaryOperation.
+  EquivalenceRelation NullaryOperation UnaryOperation BinaryOperation.
 From DEZ.Is Require Export
   Monoid Invertible
   Fixed Involutive Injective Cancellative Distributive.
 From DEZ.ShouldHave Require Import
-  AdditiveNotations.
+  EquivalenceRelationNotations AdditiveNotations.
 
 (** ** Group *)
 
@@ -14,29 +14,44 @@ Class IsGrp (A : Type) (R : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A) : Prop := {
   is_mon :> IsMon R x k;
   is_inv_l_r :> IsInvLR R x f k;
+  (** TODO Relocate these. *)
+  is_proper :> Proper (R ==> R) f;
+  is_proper' :> Proper (R ==> R ==> R) k;
 }.
 
 Section Context.
 
-Context (A : Type) `(IsGrp A).
+(** TODO We can use notations if we declare things as follows. *)
 
-#[local] Instance is_fixed : IsFixed 0 -_.
+Context (A : Type) (R : HasEqRel A)
+  (x : HasNullOp A) (f : HasUnOp A) (k : HasBinOp A)
+  `(!IsGrp R x f k).
+
+Ltac notations :=
+  change R with _==_ in *;
+  change x with 0 in *;
+  change f with -_ in *;
+  change k with _+_ in *.
+
+#[local] Instance is_fixed : IsFixed R x f.
 Proof.
   hnf.
-  rewrite <- (unl_r (- 0)).
-  setoid_rewrite (inv_l 0).
+  setoid_rewrite <- (unl_r (f x)).
+  setoid_rewrite (inv_l x).
   reflexivity. Qed.
 
-#[local] Instance is_invol : IsInvol -_.
+#[local] Instance is_invol : IsInvol R f.
 Proof.
-  intros x.
-  rewrite <- (unl_r (- (- x))).
-  setoid_rewrite <- (inv_l x).
-  rewrite (assoc (- (- x)) (- x) x).
-  rewrite (inv_l (- x)).
-  rewrite (unl_l x).
+  notations.
+  intros y.
+  setoid_rewrite <- (unl_r (- (- y))).
+  setoid_rewrite <- (inv_l y).
+  setoid_rewrite (assoc (- (- y)) (- y) y).
+  setoid_rewrite (inv_l (- y)).
+  setoid_rewrite (unl_l y).
   reflexivity. Qed.
 
+(*
 #[local] Instance is_inj : IsInj -_.
 Proof.
   intros x y a.
@@ -86,8 +101,13 @@ Proof.
   rewrite (unl_r x).
   rewrite (inv_r x).
   reflexivity. Qed.
+*)
 
 End Context.
 
+#[export] Hint Resolve is_fixed is_invol : typeclass_instances.
+
+(*
 #[export] Hint Resolve is_fixed is_invol is_inj
   is_cancel_l is_cancel_r is_cancel_l_r is_antidistr : typeclass_instances.
+*)

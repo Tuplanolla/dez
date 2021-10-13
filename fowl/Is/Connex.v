@@ -7,6 +7,9 @@ From DEZ.Is Require Export
 (** ** Connex Binary Relation *)
 (** ** Total Binary Relation *)
 
+Fail Fail Class IsConnex (A : Type) (R : A -> A -> Prop) : Prop :=
+  is_comm :> IsComm _\/_ R.
+
 (** This has the same shape as [le_ge_cases]. *)
 
 Class IsConnex (A : Type) (R : A -> A -> Prop) : Prop :=

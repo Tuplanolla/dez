@@ -1,12 +1,12 @@
-(** * Antisymmetry of a Binary Relation *)
+(** * Antisymmetry *)
 
-From DEZ.Has Require Export
-  BinaryRelation.
-From DEZ.ShouldHave Require Import
-  BinaryRelationNotations.
+From DEZ Require Export
+  Init.
 
-Fail Fail Class IsAntisym (A : Type) (HR : HasBinRel A) : Prop :=
-  antisym (x y : A) (a : x ~ y) (b : y ~ x) : x = y.
+(** ** Antisymmetric Binary Relation *)
 
-Notation IsAntisym := (Antisymmetric _ _=_).
-Notation antisym := (@antisymmetry _ _ _ _ _ : IsAntisym _).
+Fail Fail Class IsAntisym (A : Type) (R S : A -> A -> Prop) : Prop :=
+  antisym (x y : A) (a : S x y) (b : S y x) : R x y.
+
+Notation IsAntisym R S := (Antisymmetric _ R S).
+Notation antisym := (@antisymmetry _ _ _ _ _ : IsAntisym _ _).

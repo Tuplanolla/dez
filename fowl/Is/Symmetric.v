@@ -9,7 +9,7 @@ Fail Fail Class IsSym (A : Type) (R : A -> A -> Prop) : Prop :=
   sym (x y : A) (a : R x y) : R y x.
 
 Notation IsSym := Symmetric.
-Notation sym := (symmetry : IsSym _).
+Notation sym := (@symmetry _ _ _ : IsSym _).
 
 Section Context.
 

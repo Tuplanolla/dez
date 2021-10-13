@@ -1,14 +1,12 @@
-(** * Apartness or Constructive Inequality *)
+(** * Apartness *)
 
-From DEZ.Has Require Export
-  ApartnessRelation.
 From DEZ.Is Require Export
   Irreflexive Symmetric Cotransitive.
-From DEZ.ShouldHave Require Export
-  ApartnessRelationNotations.
 
-Class IsApart (A : Type) (HR : HasApartRel A) : Prop := {
-  is_irrefl :> IsIrrefl _#_;
-  is_sym :> IsSym _#_;
-  is_cotrans :> IsCotrans _#_;
+(** ** Constructive Inequality *)
+
+Class IsApart (A : Type) (R : A -> A -> Prop) : Prop := {
+  is_irrefl :> IsIrrefl R;
+  is_sym :> IsSym R;
+  is_cotrans :> IsCotrans R;
 }.

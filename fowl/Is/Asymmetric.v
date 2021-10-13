@@ -1,12 +1,12 @@
-(** * Asymmetry of a Binary Relation *)
+(** * Asymmetry *)
 
-From DEZ.Has Require Export
-  BinaryRelation.
-From DEZ.ShouldHave Require Import
-  BinaryRelationNotations.
+From DEZ Require Export
+  Init.
 
-Fail Fail Class IsAsym (A : Type) (HR : HasBinRel A) : Prop :=
-  asym (x y : A) (a : x ~ y) (b : y ~ x) : 0.
+(** ** Asymmetric Binary Relation *)
+
+Fail Fail Class IsAsym (A : Type) (R : A -> A -> A) : Prop :=
+  asym (x y : A) (a : R x y) (b : R y x) : 0.
 
 Notation IsAsym := Asymmetric.
 Notation asym := (asymmetry : IsAsym _).
