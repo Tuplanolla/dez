@@ -23,11 +23,16 @@ Section Context.
 
 (** TODO We can use notations if we declare things as follows. *)
 
-Context (A : Type) (R : HasEqRel A)
-  (x : HasNullOp A) (f : HasUnOp A) (k : HasBinOp A)
+Context (A : Type) (R : A -> A -> Prop)
+  (x : A) (f : A -> A) (k : A -> A -> A)
   `(!IsGrp R x f k).
 
-Ltac notations :=
+#[local] Instance has_eq_rel : HasEqRel A := R.
+#[local] Instance has_null_op : HasNullOp A := x.
+#[local] Instance has_un_op : HasUnOp A := f.
+#[local] Instance has_bin_op : HasBinOp A := k.
+
+Ltac notate :=
   change R with _==_ in *;
   change x with 0 in *;
   change f with -_ in *;
@@ -42,7 +47,7 @@ Proof.
 
 #[local] Instance is_invol : IsInvol R f.
 Proof.
-  notations.
+  notate.
   intros y.
   setoid_rewrite <- (unl_r (- (- y))).
   setoid_rewrite <- (inv_l y).
