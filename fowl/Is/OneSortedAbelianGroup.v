@@ -10,8 +10,8 @@ From DEZ.ShouldHave Require Import
 
 Class IsAbGrp (A : Type) `(HasBinOp A)
   `(HasNullOp A) `(HasUnOp A) : Prop := {
-  A_bin_op_is_comm :> IsComm (bin_op (A := A));
-  A_bin_op_null_op_un_op_is_grp :> IsGrp null_op un_op bin_op;
+  A_bin_op_is_comm :> IsComm _=_ (bin_op (A := A));
+  A_bin_op_null_op_un_op_is_grp :> IsGrp _=_ null_op un_op bin_op;
 }.
 
 Section Context.

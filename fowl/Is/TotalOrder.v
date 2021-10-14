@@ -28,7 +28,7 @@ Ltac conversions := typeclasses
 #[local] Instance is_refl : IsRefl _<=_.
 Proof with conversions.
   intros x.
-  destruct (connex x x) as [l | l]...
+  destruct (connex x x) as [l | l].
   - apply l.
   - apply l. Qed.
 

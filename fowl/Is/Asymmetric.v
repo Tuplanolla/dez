@@ -5,7 +5,7 @@ From DEZ Require Export
 
 (** ** Asymmetric Binary Relation *)
 
-Fail Fail Class IsAsym (A : Type) (R : A -> A -> A) : Prop :=
+Fail Fail Class IsAsym (A : Type) (R : A -> A -> Prop) : Prop :=
   asym (x y : A) (a : R x y) (b : R y x) : 0.
 
 Notation IsAsym := Asymmetric.

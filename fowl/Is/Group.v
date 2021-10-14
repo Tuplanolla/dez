@@ -3,7 +3,7 @@
 From DEZ.Has Require Export
   EquivalenceRelation NullaryOperation UnaryOperation BinaryOperation.
 From DEZ.Is Require Export
-  Monoid Invertible
+  Monoid Invertible Proper
   Fixed Involutive Injective Cancellative Distributive.
 From DEZ.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
@@ -14,9 +14,7 @@ Class IsGrp (A : Type) (R : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A) : Prop := {
   is_mon :> IsMon R x k;
   is_inv_l_r :> IsInvLR R x f k;
-  (** TODO Relocate these. *)
-  is_proper :> Proper (R ==> R) f;
-  is_proper' :> Proper (R ==> R ==> R) k;
+  is_proper :> IsProper (R ==> R) f;
 }.
 
 Section Context.
@@ -56,63 +54,61 @@ Proof.
   setoid_rewrite (unl_l y).
   reflexivity. Qed.
 
-(*
-#[local] Instance is_inj : IsInj -_.
+#[local] Instance is_inj : IsInj R R f.
 Proof.
-  intros x y a.
-  rewrite <- (unl_l y).
-  setoid_rewrite <- (inv_r x).
+  notate.
+  intros y z a.
+  setoid_rewrite <- (unl_l z).
+  setoid_rewrite <- (inv_r y).
   setoid_rewrite a.
-  rewrite <- (assoc x (- y) y).
-  rewrite (inv_l y).
-  rewrite (unl_r x).
+  setoid_rewrite <- (assoc y (- z) z).
+  setoid_rewrite (inv_l z).
+  setoid_rewrite (unl_r y).
   reflexivity. Qed.
 
-#[local] Instance is_cancel_l : IsCancelL _+_.
+#[local] Instance is_cancel_l : IsCancelL R k.
 Proof.
-  intros x y z a.
-  rewrite <- (unl_l x).
-  setoid_rewrite <- (inv_l z).
-  rewrite <- (assoc (- z) z x).
+  notate.
+  intros y z w a.
+  setoid_rewrite <- (unl_l y).
+  setoid_rewrite <- (inv_l w).
+  setoid_rewrite <- (assoc (- w) w y).
   setoid_rewrite a.
-  rewrite (assoc (- z) z y).
-  rewrite (inv_l z).
-  rewrite (unl_l y).
+  setoid_rewrite (assoc (- w) w z).
+  setoid_rewrite (inv_l w).
+  setoid_rewrite (unl_l z).
   reflexivity. Qed.
 
-#[local] Instance is_cancel_r : IsCancelR _+_.
+#[local] Instance is_cancel_r : IsCancelR R k.
 Proof.
-  intros x y z a.
-  rewrite <- (unl_r x).
-  setoid_rewrite <- (inv_r z).
-  rewrite (assoc x z (- z)).
+  notate.
+  intros y z w a.
+  setoid_rewrite <- (unl_r y).
+  setoid_rewrite <- (inv_r w).
+  setoid_rewrite (assoc y w (- w)).
   setoid_rewrite a.
-  rewrite <- (assoc y z (- z)).
-  rewrite (inv_r z).
-  rewrite (unl_r y).
+  setoid_rewrite <- (assoc z w (- w)).
+  setoid_rewrite (inv_r w).
+  setoid_rewrite (unl_r z).
   reflexivity. Qed.
 
-#[local] Instance is_cancel_l_r : IsCancelLR _+_.
+#[local] Instance is_cancel_l_r : IsCancelLR R k.
 Proof. split; typeclasses eauto. Qed.
 
-#[local] Instance is_antidistr : IsAntidistr -_ _+_ _+_.
+#[local] Instance is_antidistr : IsAntidistr R f k k.
 Proof.
-  intros x y.
-  apply (cancel_l (- (x + y)) ((- y) + (- x)) (x + y)).
-  rewrite (inv_r (x + y)).
-  rewrite (assoc (x + y) (- y) (- x)).
-  rewrite <- (assoc x y (- y)).
-  rewrite (inv_r y).
-  rewrite (unl_r x).
-  rewrite (inv_r x).
+  notate.
+  intros y z.
+  apply (cancel_l (- (y + z)) ((- z) + (- y)) (y + z)).
+  setoid_rewrite (inv_r (y + z)).
+  setoid_rewrite (assoc (y + z) (- z) (- y)).
+  setoid_rewrite <- (assoc y z (- z)).
+  setoid_rewrite (inv_r z).
+  setoid_rewrite (unl_r y).
+  setoid_rewrite (inv_r y).
   reflexivity. Qed.
-*)
 
 End Context.
 
-#[export] Hint Resolve is_fixed is_invol : typeclass_instances.
-
-(*
 #[export] Hint Resolve is_fixed is_invol is_inj
   is_cancel_l is_cancel_r is_cancel_l_r is_antidistr : typeclass_instances.
-*)

@@ -14,7 +14,7 @@ Fail Fail Notation IsPartOrd := (PartialOrder _=_).
 
 Class IsPartOrd (A : Type) (HR : HasOrdRel A) : Prop := {
   is_preord :> IsPreord _<=_;
-  is_antisym :> IsAntisym _<=_;
+  is_antisym :> IsAntisym _=_ _<=_;
 }.
 
 Section Context.

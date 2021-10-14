@@ -5,5 +5,6 @@ From DEZ Require Export
 
 (** ** Injective Function *)
 
-Class IsInj (A B : Type) (f : A -> B) : Prop :=
-  inj (x y : A) (a : f x = f y) : x = y.
+Class IsInj (A B : Type) (R : B -> B -> Prop) (S : A -> A -> Prop)
+  (f : A -> B) : Prop :=
+  inj (x y : A) (a : R (f x) (f y)) : S x y.

@@ -9,17 +9,17 @@ From DEZ.Is Require Export
 From DEZ.ShouldHave Require Import
   AdditiveNotations.
 
-Class IsCancelL (A : Type) (Hk : HasBinOp A) : Prop :=
-  cancel_l (x y z : A) (a : z + x = z + y) : x = y.
+Class IsCancelL (A : Type) (R : A -> A -> Prop) (Hk : HasBinOp A) : Prop :=
+  cancel_l (x y z : A) (a : R (z + x) (z + y)) : R x y.
 
 (** This has the same shape as [add_reg_l]. *)
 
-Class IsCancelR (A : Type) (Hk : HasBinOp A) : Prop :=
-  cancel_r (x y z : A) (a : x + z = y + z) : x = y.
+Class IsCancelR (A : Type) (R : A -> A -> Prop) (Hk : HasBinOp A) : Prop :=
+  cancel_r (x y z : A) (a : R (x + z) (y + z)) : R x y.
 
-Class IsCancelLR (A : Type) (Hk : HasBinOp A) : Prop := {
-  is_cancel_l :> IsCancelL _+_;
-  is_cancel_r :> IsCancelR _+_;
+Class IsCancelLR (A : Type) (R : A -> A -> Prop) (Hk : HasBinOp A) : Prop := {
+  is_cancel_l :> IsCancelL R _+_;
+  is_cancel_r :> IsCancelR R _+_;
 }.
 
 (** This has the same shape as [mul_reg_l]. *)
@@ -44,11 +44,11 @@ Module LFromR.
 
 Section Context.
 
-Context (A : Type) (Hk : HasBinOp A) `(!IsCancelL _+_).
+Context (A : Type) (Hk : HasBinOp A) `(!IsCancelL _=_ _+_).
 
 (** Flipped right cancellation is a left cancellation. *)
 
-#[local] Instance is_cancel_r : IsCancelR (flip _+_).
+#[local] Instance is_cancel_r : IsCancelR _=_ (flip _+_).
 Proof.
   intros x y z a.
   (** This is really stupid. *)
@@ -67,11 +67,11 @@ Module RFromL.
 
 Section Context.
 
-Context (A : Type) (Hk : HasBinOp A) `(!IsCancelR _+_).
+Context (A : Type) (Hk : HasBinOp A) `(!IsCancelR _=_ _+_).
 
 (** Flipped left cancellation is a right cancellation. *)
 
-#[local] Instance is_cancel_l : IsCancelL (flip _+_).
+#[local] Instance is_cancel_l : IsCancelL _=_ (flip _+_).
 Proof.
   intros x y z a.
   (** This is really stupid. *)
@@ -92,7 +92,8 @@ Context (A : Type) (Hk : HasBinOp A).
 
 (** Cancellativity is just injectivity of partial applications. *)
 
-#[local] Instance cancel_r_is_inj `(!IsCancelR _+_) : IsInj _+_.
+#[local] Instance cancel_r_is_inj `(!IsCancelR _=_ _+_) :
+  IsInj _=_ _=_ _+_.
 Proof.
   intros x y a.
   assert (z : A) by assumption.
@@ -100,7 +101,8 @@ Proof.
   apply cancel_r in a'.
   apply a'. Qed.
 
-#[local] Instance cancel_l_is_inj `(!IsCancelL _+_) : IsInj (flip _+_).
+#[local] Instance cancel_l_is_inj `(!IsCancelL _=_ _+_) :
+  IsInj _=_ _=_ (flip _+_).
 Proof.
   intros x y a.
   assert (z : A) by assumption.
