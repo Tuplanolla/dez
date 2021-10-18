@@ -3,6 +3,10 @@
 From DEZ Require Export
   Init.
 
+Class IsInjGen (A B C D : Type) (R : C -> D -> Prop) (S : A -> B -> Prop)
+  (f : A -> C) (g : B -> D) : Prop :=
+  inj_gen (x : A) (y : B) (a : R (f x) (g y)) : S x y.
+
 (** ** Injective Function *)
 
 Class IsInj (A B : Type) (R : B -> B -> Prop) (S : A -> A -> Prop)

@@ -24,20 +24,20 @@ Class IsCancelLR (A : Type) (R : A -> A -> Prop) (Hk : HasBinOp A) : Prop := {
 
 (** This has the same shape as [mul_reg_l]. *)
 
-Class IsNonzeroCancelL (A : Type)
+Class IsNonzeroCancelL (A : Type) (R : A -> A -> Prop)
   (Hx : HasNullOp A) (Hk : HasBinOp A) : Prop :=
-  nonzero_cancel_l (x y z : A) (f : z <> 0) (a : z + x = z + y) : x = y.
+  nonzero_cancel_l (x y z : A) (f : ~ R z 0) (a : R (z + x) (z + y)) : R x y.
 
 (** This has the same shape as [mul_reg_r]. *)
 
-Class IsNonzeroCancelR (A : Type)
+Class IsNonzeroCancelR (A : Type) (R : A -> A -> Prop)
   (Hx : HasNullOp A) (Hk : HasBinOp A) : Prop :=
-  nonzero_cancel_r (x y z : A) (f : z <> 0) (a : x + z = y + z) : x = y.
+  nonzero_cancel_r (x y z : A) (f : ~ R z 0) (a : R (x + z) (y + z)) : R x y.
 
-Class IsNonzeroCancelLR (A : Type)
+Class IsNonzeroCancelLR (A : Type) (R : A -> A -> Prop)
   (Hx : HasNullOp A) (Hk : HasBinOp A) : Prop := {
-  is_nonzero_cancel_l :> IsNonzeroCancelL 0 _+_;
-  is_nonzero_cancel_r :> IsNonzeroCancelR 0 _+_;
+  is_nonzero_cancel_l :> IsNonzeroCancelL R 0 _+_;
+  is_nonzero_cancel_r :> IsNonzeroCancelR R 0 _+_;
 }.
 
 Module LFromR.

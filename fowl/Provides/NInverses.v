@@ -55,7 +55,7 @@ Instance has_str_ord_rel : HasStrOrdRel N := lt.
 (** TODO This might be a better way to specialize. Investigate. *)
 
 Class IsInjMiff (f : HasMiff) : Prop :=
-  is_inj :> IsInj f.
+  is_inj :> IsInj _=_ _=_ f.
 
 Notation inj_miff := (inj (f := miff) : IsInjMiff miff).
 

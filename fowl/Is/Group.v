@@ -38,8 +38,9 @@ Ltac notate :=
 
 #[local] Instance is_fixed : IsFixed R x f.
 Proof.
-  hnf.
-  setoid_rewrite <- (unl_r (f x)).
+  notate.
+  unfold IsFixed, IsFixed2.
+  setoid_rewrite <- (unl_r (- x)).
   setoid_rewrite (inv_l x).
   reflexivity. Qed.
 

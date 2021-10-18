@@ -1,10 +1,8 @@
 From Coq Require Import
   ZArith.ZArith.
 From DEZ.Is Require Export
-  OneSortedAbelianGroup Semigroup
-  Monoid Semiring
-  Ring OneSortedCommutativeSemigroup OneSortedCommutativeMonoid
-  OneSortedCommutativeSemiring OneSortedCommutativeRing
+  AbelianGroup Semigroup
+  Monoid Semiring Ring
   Equivalence PartialEquivalence Isomorphism.
 
 Module Additive.
@@ -25,9 +23,6 @@ Proof. split; typeclasses eauto. Defined.
 Global Instance Z_bin_op_is_comm : IsComm (bin_op (A := Z)).
 Proof. intros x y. apply Z.add_comm. Defined.
 
-Global Instance Z_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := Z)).
-Proof. split; typeclasses eauto. Defined.
-
 Global Instance Z_bin_op_null_op_is_unl_l : IsUnlL null_op (bin_op (A := Z)).
 Proof. intros x. apply Z.add_0_l. Defined.
 
@@ -38,9 +33,6 @@ Global Instance Z_bin_op_null_op_is_unl : IsUnlLR null_op (bin_op (A := Z)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := Z)).
-Proof. split; typeclasses eauto. Defined.
-
-Global Instance Z_bin_op_null_op_is_comm_mon : IsCommMon (bin_op (A := Z)) null_op.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_bin_op_null_op_un_op_is_inv_l_hom :
@@ -80,9 +72,6 @@ Proof. split; typeclasses eauto. Defined.
 Global Instance Z_bin_op_is_comm : IsComm (bin_op (A := Z)).
 Proof. intros x y. apply Z.mul_comm. Defined.
 
-Global Instance Z_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := Z)).
-Proof. split; typeclasses eauto. Defined.
-
 Global Instance Z_bin_op_null_op_is_unl_l : IsUnlL null_op (bin_op (A := Z)).
 Proof. intros x. apply Z.mul_1_l. Defined.
 
@@ -93,9 +82,6 @@ Global Instance Z_bin_op_null_op_is_unl : IsUnlLR null_op (bin_op (A := Z)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := Z)).
-Proof. split; typeclasses eauto. Defined.
-
-Global Instance Z_bin_op_null_op_is_comm_mon : IsCommMon (bin_op (A := Z)) null_op.
 Proof. split; typeclasses eauto. Defined.
 
 End Multiplicative.
@@ -130,19 +116,11 @@ Proof. split; typeclasses eauto. Defined.
 Global Instance Z_zero_add_one_mul_is_semiring : IsSemiring zero add one mul.
 Proof. split; typeclasses eauto. Defined.
 
-Global Instance Z_add_zero_mul_one_is_comm_semiring :
-  IsCommSemiring add zero mul one.
-Proof. split; typeclasses eauto. Defined.
-
 Global Instance Z_zero_neg_add_one_mul_is_ring : IsRing zero neg add one mul.
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance Z_mul_is_comm : IsComm mul.
 Proof. intros x y. apply Z.mul_comm. Defined.
-
-Global Instance Z_add_zero_neg_mul_one_is_comm_ring :
-  IsCommRing add zero neg mul one.
-Proof. split; typeclasses eauto. Defined.
 
 (** TODO Organize the rest. *)
 

@@ -33,17 +33,27 @@ Context (A : Type) (R : A -> A -> Prop)
 #[local] Instance has_one : HasOne A := y.
 #[local] Instance has_mul : HasMul A := m.
 
-Ltac notate :=
+Ltac note := progress (
   change R with _==_ in *;
   change x with 0 in *;
   change k with _+_ in *;
   change y with 1 in *;
-  change m with _*_ in *.
+  change m with _*_ in *).
+
+Import Zero.Subclass Negation.Subclass Addition.Subclass
+  One.Subclass Multiplication.Subclass.
+
+Ltac subclass := progress (
+  try change bin_rel with eq_rel in *;
+  try change null_op with zero in *;
+  try change bin_op with add in *;
+  try change null_op with one in *;
+  try change bin_op with mul in *).
 
 #[local] Instance is_contr (a : R 0 1) : IsContrGen R.
 Proof.
   hnf.
-  notate.
+  note.
   exists 0.
   intros z.
   assert (b : z * 0 == z * 1).

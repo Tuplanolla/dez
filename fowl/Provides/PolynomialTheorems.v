@@ -13,7 +13,7 @@ From DEZ.Is Require Export
   OneSortedFinite Isomorphism
   Ring TwoSortedUnitalAssociativeAlgebra.
 From DEZ.Is Require Export
-  OneSortedAbelianGroup Semigroup
+  AbelianGroup Semigroup
   Monoid Semiring
   Ring.
 From DEZ.Offers Require Export

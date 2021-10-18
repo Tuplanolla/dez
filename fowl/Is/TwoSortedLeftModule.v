@@ -3,7 +3,7 @@ From DEZ.Has Require Export
   Multiplication One
   Action.
 From DEZ.Is Require Export
-  Ring OneSortedAbelianGroup
+  Ring AbelianGroup
   TwoSortedLeftRightDistributive TwoSortedLeftCompatible
   TwoSortedLeftUnital TwoSortedLeftLeftDistributive.
 

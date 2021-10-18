@@ -3,8 +3,7 @@ From Coq Require Import
 From DEZ.Has Require Export
   One.
 From DEZ.Is Require Export
-  OneSortedAbelianGroup Semigroup
-  Monoid OneSortedCommutativeSemigroup OneSortedCommutativeMonoid.
+  AbelianGroup Semigroup Monoid.
 
 Module Pos.
 
@@ -132,9 +131,6 @@ Proof. split; typeclasses eauto. Defined.
 Global Instance positive_bin_op_is_comm : IsComm (bin_op (A := positive)).
 Proof. intros x y. apply Pos.add_comm. Defined.
 
-Global Instance positive_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := positive)).
-Proof. split; typeclasses eauto. Defined.
-
 End Additive.
 
 Module Multiplicative.
@@ -154,9 +150,6 @@ Proof. split; typeclasses eauto. Defined.
 Global Instance positive_bin_op_is_comm : IsComm (bin_op (A := positive)).
 Proof. intros x y. apply Pos.mul_comm. Defined.
 
-Global Instance positive_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := positive)).
-Proof. split; typeclasses eauto. Defined.
-
 Global Instance positive_bin_op_null_op_is_unl_l : IsUnlL null_op (bin_op (A := positive)).
 Proof. intros x. apply Pos.mul_1_l. Defined.
 
@@ -167,9 +160,6 @@ Global Instance positive_bin_op_null_op_is_unl : IsUnlLR null_op (bin_op (A := p
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance positive_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := positive)).
-Proof. split; typeclasses eauto. Defined.
-
-Global Instance positive_bin_op_null_op_is_comm_mon : IsCommMon (bin_op (A := positive)) null_op.
 Proof. split; typeclasses eauto. Defined.
 
 End Multiplicative.

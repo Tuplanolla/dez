@@ -5,10 +5,7 @@ From Coq Require Import
 From DEZ Require Import
   DatatypeTactics RewritingTactics.
 From DEZ.Is Require Export
-  OneSortedAbelianGroup Semigroup
-  Monoid Semiring
-  OneSortedCommutativeSemigroup OneSortedCommutativeMonoid
-  OneSortedCommutativeSemiring.
+  AbelianGroup Semigroup Monoid Semiring.
 From DEZ.Provides Require Import
   PositiveTheorems.
 
@@ -658,9 +655,6 @@ Proof. split; typeclasses eauto. Defined.
 Global Instance N_bin_op_is_comm : IsComm (bin_op (A := N)).
 Proof. intros x y. apply N.add_comm. Defined.
 
-Global Instance N_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := N)).
-Proof. split; typeclasses eauto. Defined.
-
 Global Instance N_bin_op_null_op_is_unl_l : IsUnlL null_op (bin_op (A := N)).
 Proof. intros x. apply N.add_0_l. Defined.
 
@@ -671,9 +665,6 @@ Global Instance N_bin_op_null_op_is_unl : IsUnlLR null_op (bin_op (A := N)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance N_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := N)).
-Proof. split; typeclasses eauto. Defined.
-
-Global Instance N_bin_op_null_op_is_comm_mon : IsCommMon (bin_op (A := N)) null_op.
 Proof. split; typeclasses eauto. Defined.
 
 End Additive.
@@ -697,9 +688,6 @@ Proof. split; typeclasses eauto. Defined.
 Global Instance N_bin_op_is_comm : IsComm (bin_op (A := N)).
 Proof. intros x y. apply N.mul_comm. Defined.
 
-Global Instance N_bin_op_is_comm_semigrp : IsCommSemigrp (bin_op (A := N)).
-Proof. split; typeclasses eauto. Defined.
-
 Global Instance N_bin_op_null_op_is_unl_l : IsUnlL null_op (bin_op (A := N)).
 Proof. intros x. apply N.mul_1_l. Defined.
 
@@ -710,9 +698,6 @@ Global Instance N_bin_op_null_op_is_unl : IsUnlLR null_op (bin_op (A := N)).
 Proof. split; typeclasses eauto. Defined.
 
 Global Instance N_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := N)).
-Proof. split; typeclasses eauto. Defined.
-
-Global Instance N_bin_op_null_op_is_comm_mon : IsCommMon (bin_op (A := N)) null_op.
 Proof. split; typeclasses eauto. Defined.
 
 End Multiplicative.
@@ -750,7 +735,3 @@ Proof. split; typeclasses eauto. Defined.
 
 Global Instance N_mul_is_comm : IsComm mul.
 Proof. intros x y. apply N.mul_comm. Defined.
-
-Global Instance N_add_zero_mul_one_is_comm_semiring :
-  IsCommSemiring add zero mul one.
-Proof. split; typeclasses eauto. Defined.

@@ -2,10 +2,11 @@
 From Coq Require Import
   Lists.List Logic.ProofIrrelevance NArith.NArith ZArith.ZArith.
 From DEZ.Has Require Export
+  Zero Negation Addition One Multiplication
   NullaryOperation UnaryOperation BinaryOperation
   OneSortedEnumeration OneSortedCardinality.
 From DEZ.Is Require Export
-  OneSortedFinite Isomorphism.
+  OneSortedFinite Isomorphism Monoid.
 
 Definition is_left (A B : Prop) (s : sumbool A B) : bool :=
   if s then true else false.
