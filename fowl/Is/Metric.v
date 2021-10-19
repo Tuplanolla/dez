@@ -12,12 +12,13 @@ From DEZ.ShouldHave Require Import
 
 Module Classical.
 
-(** This is the usual definition. *)
+(** This is the usual definition in the setoid model. *)
 
-Class IsMetric (A : Type) (Hd : HasDist R A) : Prop := {
-  is_indisc :> IsIndisc R0 dist;
-  is_comm_tor_l :> IsComm _=_ dist;
-  is_subadd :> IsSubadd Rle Rplus dist;
+Class IsMetric (A : Type) (T : A -> A -> Prop)
+  (S : R -> R -> Prop) (d : A -> A -> R) : Prop := {
+  is_indisc :> IsIndisc S T R0 d;
+  is_comm :> IsComm S d;
+  is_subadd :> IsSubadd Rle Rplus d;
 }.
 
 End Classical.

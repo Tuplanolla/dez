@@ -18,9 +18,6 @@ Class IsSemiring (A : Type) (R : A -> A -> Prop)
   is_absorb_elem_l_r :> IsAbsorbElemLR R x m;
 }.
 
-Class IsContrGen (A : Type) (R : A -> A -> Prop) : Prop :=
-  contr_gen : exists x : A, forall y : A, R x y.
-
 Section Context.
 
 Context (A : Type) (R : A -> A -> Prop)

@@ -8,16 +8,16 @@ From DEZ.ShouldHave Require Import
   OrderRelationNotations AdditiveNotations.
 
 Fail Fail Class IsMono (A B : Type)
-  (HRA : HasOrdRel A) (HRB : HasOrdRel B) (f : A -> B) : Prop :=
+  (R : HasOrdRel A) (S : HasOrdRel B) (f : A -> B) : Prop :=
   mono (x y : A) (a : x <= y) : f x <= f y.
 
-Notation IsMono HRA HRB := (Proper (HRA ==> HRB)).
+Notation IsMono R S := (Proper (R ==> S)).
 Notation mono := (proper_prf : IsMono _ _ _).
 
 (** Strict monotonicity over an order relation is just
     monotonicity over a strict order relation. *)
 
-Notation IsStrMono HRA HRB := (Proper (HRA ==> HRB)) (only parsing).
+Notation IsStrMono R S := (Proper (R ==> S)) (only parsing).
 Notation str_mono := (proper_prf : IsMono _ _ _) (only parsing).
 
 Section Context.

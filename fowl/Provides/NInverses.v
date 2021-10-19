@@ -2,6 +2,8 @@ From Coq Require Import
   Lia Lists.List NArith.NArith Bool.Sumbool.
 From DEZ.Is Require Export
   Fixed Injective Monotonic Comonotonic Isomorphism.
+From DEZ.Provides Require Export
+  OptionTheorems.
 
 (** TODO This may be built into [setoid_rewrite]. *)
 
@@ -59,8 +61,8 @@ Class IsInjMiff (f : HasMiff) : Prop :=
 
 Notation inj_miff := (inj (f := miff) : IsInjMiff miff).
 
-Notation IsFixedMiff := (IsFixed 0).
-Notation fixed_miff := (@fixed _ 0 _ _ : _ 0 = 0).
+Notation IsFixedMiff := (IsFixed _=_ 0).
+Notation fixed_miff := (@fixed _ _ _=_ 0 _ _ : _ 0 = 0).
 
 Notation IsStrMonoMiff miff := (Proper (lt ==> lt) miff).
 Notation str_mono_miff := (proper_prf (R := lt ==> lt) (m := miff) : IsStrMonoMiff miff).
