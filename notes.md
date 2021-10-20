@@ -114,25 +114,56 @@ the scope stack will be broken and life will be suffering.
 Operative classes are prefixed with `Has` and predicative classes with `Is`.
 Abbreviations shorter than six characters are favored, whenever possible.
 
-Fields are prefixed with the nouns and then the verb.
-For example, we would have `bin_op_null_op_is_mon :> IsMon bin_op null_op`.
-
-Explicit type arguments, as they appear in many-sorted structures,
-are included in the names, but implicit ones need not.
-For example, we would have
-`A_B_mul_l_act_is_l_compat :> IsLCompat A B mul l_act` and
-`add_zero_neg_is_ab_grp :> IsAbGrp (A := B) add zero neg`.
-
-The previous paragraph also applies to constraints,
-such as `{A_has_add : HasAdd A}`.
-Note that we make an exception with implicit generalization,
-where the explicitly provided implicit arguments are not to be mentioned.
-This happens, for example, with
-`Context {A : Type} `{is_grp : IsGrp A}`.
-
 Instance fields contain the verb `is`, while plain fields do not.
 For example, we would have `bin_op_is_assoc :> IsAssoc bin_op` and
 `bin_op_assoc : forall x y z : A, x + (y + z) = (x + y) + z`.
+
+We avoid using
+
+* `O`, because it looks like zero,
+* `o`, because it is used for function composition,
+* `I`, because it looks like one and is used for the interval pretype,
+* `i`, out of sympathy for `I` and the imaginary numbers,
+* `l`, because it looks like one,
+* `U`, because it looks like a type universe and
+* `H`, because it is reserved by Coq for automatic names.
+
+So, following the tradition,
+
+* types of type `Type` are named
+  `A`, `B`, `C`, `D`, `E`, ...,
+* type functions of type `Type -> Type` are named
+  `F`, `G`, `J`, `K`, `L`, ...,
+* type operators of type `Type -> Type -> Type` are named
+  `K`, `L`, `M`, `N`, `P`, ...,
+* type families of type `A -> Type` are named
+  `P`, `Q`, `R`, `S`, `T`, ...,
+* higher type families of type `A -> A -> Type` are named
+  `C`, `D`, `E`, `F`, `G`, ...,
+* structures of type `A` are named
+  `x`, `y`, `z`, `w`, `v`, ...,
+* functions of type `A -> B` are named
+  `f`, `g`, `h`, `j`, `k`, ...,
+* operators of type `A -> B -> C` are named
+  `k`, `m`, `n`, `p`, `q`, ...,
+* higher structures of type `x : A |- P x` are named
+  `a`, `b`, `c`, `d`, `e`, ...,
+* even higher structures of type `x : A, a : P x |- Q a` are named
+  `s`, `t`, `u`, `v`, `w`, ...,
+
+although the rules should be broken with good reasons.
+Here is how the names are laid out spatially.
+
+```
+a b c d e f g h j k m n p q r s t u v w x y z
+|->       |->     |->         |->       |->
+A B C D E F G J K L M N P Q R S T V W X Y Z
+|-> |->   |->   |->     |->
+```
+
+It is a bit annoying how the capital letters
+are so cramped to the initial segment,
+but otherwise traditions serve us just fine.
 
 ### Scopes
 

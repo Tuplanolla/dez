@@ -1,4 +1,4 @@
-(** * Distance Monoid or Generalized Metric Space *)
+(** * Metric Space *)
 
 From Coq Require Import
   Reals.Reals.
@@ -10,18 +10,20 @@ From DEZ.Is Require Export
 From DEZ.ShouldHave Require Import
   OrderRelationNotations AdditiveNotations.
 
-Module Classical.
+Module Real.
+
+(** ** Real Metric Space *)
 
 (** This is the usual definition in the setoid model. *)
 
-Class IsMetric (A : Type) (T : A -> A -> Prop)
+Class IsRMetric (A : Type) (T : A -> A -> Prop)
   (S : R -> R -> Prop) (d : A -> A -> R) : Prop := {
   is_indisc :> IsIndisc S T R0 d;
   is_comm :> IsComm S d;
   is_subadd :> IsSubadd Rle Rplus d;
 }.
 
-End Classical.
+End Real.
 
 (** This generalization was thoroughly investigated by Gabe Conant. *)
 
