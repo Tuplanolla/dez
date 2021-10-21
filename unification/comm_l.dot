@@ -13,8 +13,8 @@ digraph comm_l {
 
   node [peripheries = 0]
 
-  T0 -> Prop [label = "R0"]
-  T1 -> Prop [label = "R1"]
+  T0 -> Prop [label = "X0"]
+  T1 -> Prop [label = "X1"]
   T2 -> T1 [label = "g"]
   T3 -> T0 [label = "m0"]
   T4 -> T2 [label = "k0"]

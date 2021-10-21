@@ -13,8 +13,8 @@ digraph inj {
 
   node [peripheries = 0]
 
-  T0 -> Prop [label = "R0"]
-  T1 -> Prop [label = "R1"]
+  T0 -> Prop [label = "X0"]
+  T1 -> Prop [label = "X1"]
   T2 -> T1 [label = "k1"]
   T2 -> T4 [label = "g"]
   T3 -> T0 [label = "m0"]

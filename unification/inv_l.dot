@@ -11,8 +11,8 @@ digraph inv_l {
 
   node [peripheries = 0]
 
-  T0 -> Prop [label = "R0"]
-  T1 -> Prop [label = "R1"]
+  T0 -> Prop [label = "X0"]
+  T1 -> Prop [label = "X1"]
   T2 -> T0 [label = "k0"]
   T3 -> T0 [label = "k1"]
   T3 -> T2 [label = "f"]

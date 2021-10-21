@@ -3,6 +3,18 @@
 From DEZ Require Export
   Init.
 
+Module Superclass.
+
+Class IsAbsorbElemL3 (A0 A1 B : Type) (X : B -> A0 -> Prop)
+  (x : A0) (k : A0 -> A1 -> B) : Prop :=
+  absorb_elem_l (y : A1) : X (k x y) x.
+
+Class IsAbsorbElemR3 (A0 A1 B : Type) (X : B -> A0 -> Prop)
+  (x : A0) (k : A1 -> A0 -> B) : Prop :=
+  absorb_elem_r (y : A1) : X (k y x) x.
+
+End Superclass.
+
 (** ** Left Absorbing Element of a Binary Operation *)
 
 Class IsAbsorbElemL (A : Type) (X : A -> A -> Prop)

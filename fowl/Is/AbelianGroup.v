@@ -12,17 +12,17 @@ From DEZ.ShouldHave Require Import
 
 Class IsAbGrp (A : Type) (X : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A) : Prop := {
-  is_comm :> IsComm R k;
-  is_grp :> IsGrp R x f k;
+  is_comm :> IsComm X k;
+  is_grp :> IsGrp X x f k;
 }.
 
 Section Context.
 
 Context (A : Type) (X : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A)
-  `(!IsAbGrp R x f k).
+  `(!IsAbGrp X x f k).
 
-#[local] Instance is_distr : IsDistr R f k k.
+#[local] Instance is_distr : IsDistr X f k k.
 Proof.
   intros y z.
   setoid_rewrite (comm y z).

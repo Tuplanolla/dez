@@ -8,7 +8,7 @@ digraph fixed {
 
   node [peripheries = 0]
 
-  T0 -> Prop [label = "R0"]
-  T1 -> Prop [label = "R1"]
+  T0 -> Prop [label = "X0"]
+  T1 -> Prop [label = "X1"]
   T1 -> T0 [label = "f"]
 }

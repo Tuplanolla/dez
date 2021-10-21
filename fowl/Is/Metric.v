@@ -69,7 +69,7 @@ Proof.
   intros x y.
   unfold tor_l.
   pose proof subadd x y x as b.
-  pose proof connex (R := _<=_) (dist x y) (dist y x) as [a | a];
+  pose proof connex (X := _<=_) (dist x y) (dist y x) as [a | a];
   change bin_rel with _<=_ in a. Abort.
 
 (** Also [0 <= dist x y] and [dist x y = 0 <-> x = y]. *)
