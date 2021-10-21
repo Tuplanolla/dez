@@ -16,28 +16,28 @@ From DEZ.ShouldHave Require Import
 
 (** ** Ring *)
 
-Class IsRing (A : Type) (R : A -> A -> Prop)
+Class IsRing (A : Type) (X : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A)
   (y : A) (m : A -> A -> A) : Prop := {
-  add_is_grp :> IsGrp R x f k;
-  add_is_comm :> IsComm R k;
-  mul_is_mon :> IsMon R y m;
-  is_distr_l_r :> IsDistrLR R m k;
+  add_is_grp :> IsGrp X x f k;
+  add_is_comm :> IsComm X k;
+  mul_is_mon :> IsMon X y m;
+  is_distr_l_r :> IsDistrLR X m k;
 }.
 
 (** TODO Clean up. *)
 
 Section Context.
 
-Context (A : Type) (R : A -> A -> Prop)
+Context (A : Type) (X : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A)
   (y : A) (m : A -> A -> A)
-  `(!IsRing R x f k y m).
+  `(!IsRing X x f k y m).
 
 (** Declare the underlying equivalence relation as an equivalence relation and
     the underlying operations as operations. *)
 
-#[local] Instance has_eq_rel : HasEqRel A := R.
+#[local] Instance has_eq_rel : HasEqRel A := X.
 #[local] Instance has_zero : HasZero A := x.
 #[local] Instance has_neg : HasNeg A := f.
 #[local] Instance has_add : HasAdd A := k.
@@ -45,7 +45,7 @@ Context (A : Type) (R : A -> A -> Prop)
 #[local] Instance has_mul : HasMul A := m.
 
 Ltac note := progress (
-  change R with _==_ in *;
+  change X with _==_ in *;
   change x with 0 in *;
   change f with -_ in *;
   change k with _+_ in *;
@@ -75,7 +75,7 @@ Ltac subclass := progress (
   try change null_op with one in *;
   try change bin_op with mul in *).
 
-#[local] Instance is_absorb_elem_l : IsAbsorbElemL R x m.
+#[local] Instance is_absorb_elem_l : IsAbsorbElemL X x m.
 Proof.
   note.
   intros z.
@@ -85,7 +85,7 @@ Proof.
   setoid_rewrite (unl_l z).
   reflexivity. Qed.
 
-#[local] Instance is_absorb_elem_r : IsAbsorbElemR R x m.
+#[local] Instance is_absorb_elem_r : IsAbsorbElemR X x m.
 Proof with subclass.
   note.
   intros z.
@@ -95,13 +95,13 @@ Proof with subclass.
   setoid_rewrite (unl_r z).
   reflexivity. Qed.
 
-#[local] Instance is_absorb_elem_l_r : IsAbsorbElemLR R x m.
+#[local] Instance is_absorb_elem_l_r : IsAbsorbElemLR X x m.
 Proof. split; typeclasses eauto. Qed.
 
-#[local] Instance is_semiring : IsSemiring R x k y m.
+#[local] Instance is_semiring : IsSemiring X x k y m.
 Proof. split; typeclasses eauto. Qed.
 
-#[local] Instance is_comm_l : IsCommL R f m.
+#[local] Instance is_comm_l : IsCommL X f m.
 Proof with subclass.
   note.
   intros z w.
@@ -112,7 +112,7 @@ Proof with subclass.
   setoid_rewrite (inv_r (z * w)).
   reflexivity. Qed.
 
-#[local] Instance is_comm_r : IsCommR R f m.
+#[local] Instance is_comm_r : IsCommR X f m.
 Proof with subclass.
   note.
   intros z w.
@@ -123,7 +123,7 @@ Proof with subclass.
   setoid_rewrite (inv_r (z * w)).
   reflexivity. Qed.
 
-#[local] Instance is_comm_l_r : IsCommLR R f m.
+#[local] Instance is_comm_l_r : IsCommLR X f m.
 Proof. split; typeclasses eauto. Qed.
 
 Lemma comm_l_r (z w : A) : (- z) * w == z * (- w).

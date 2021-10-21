@@ -3,10 +3,10 @@
 From DEZ.Is Require Export
   Reflexive Symmetric Transitive.
 
-Fail Fail Class IsEq (A : Type) (R : A -> A -> Prop) : Prop := {
-  is_refl :> IsRefl R;
-  is_sym :> IsSym R;
-  is_trans :> IsTrans R;
+Fail Fail Class IsEq (A : Type) (X : A -> A -> Prop) : Prop := {
+  is_refl :> IsRefl X;
+  is_sym :> IsSym X;
+  is_trans :> IsTrans X;
 }.
 
 (** ** Equivalence *)

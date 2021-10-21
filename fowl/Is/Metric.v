@@ -16,10 +16,10 @@ Module Real.
 
 (** This is the usual definition in the setoid model. *)
 
-Class IsRMetric (A : Type) (T : A -> A -> Prop)
-  (S : R -> R -> Prop) (d : A -> A -> R) : Prop := {
-  is_indisc :> IsIndisc S T R0 d;
-  is_comm :> IsComm S d;
+Class IsRMetric (A : Type) (X : A -> A -> Prop) (Y : R -> R -> Prop)
+  (d : A -> A -> R) : Prop := {
+  is_indisc :> IsIndisc Y X R0 d;
+  is_comm :> IsComm Y d;
   is_subadd :> IsSubadd Rle Rplus d;
 }.
 

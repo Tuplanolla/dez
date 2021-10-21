@@ -5,8 +5,8 @@ From DEZ.Is Require Export
 
 (** ** Constructive Inequality *)
 
-Class IsApart (A : Type) (R : A -> A -> Prop) : Prop := {
-  is_irrefl :> IsIrrefl R;
-  is_sym :> IsSym R;
-  is_cotrans :> IsCotrans R;
+Class IsApart (A : Type) (X : A -> A -> Prop) : Prop := {
+  is_irrefl :> IsIrrefl X;
+  is_sym :> IsSym X;
+  is_cotrans :> IsCotrans X;
 }.

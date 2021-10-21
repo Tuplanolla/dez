@@ -3,20 +3,20 @@
 From DEZ Require Export
   Init.
 
-Class IsCotransGen (A B : Type) (P : B -> Prop) (R : B -> B -> Prop)
+Class IsCotransGen (A B : Type) (P : B -> Prop) (X : B -> B -> Prop)
   (k : A -> A -> B) : Prop :=
-  cotrans_gen (x y z : A) (a : P (k x z)) : R (k x y) (k y z).
+  cotrans_gen (x y z : A) (a : P (k x z)) : X (k x y) (k y z).
 
 (** ** Cotransitive Binary Relation *)
 
-Class IsCotrans (A : Type) (R : A -> A -> Prop) : Prop :=
-  cotrans (x y z : A) (a : R x z) : R x y \/ R y z.
+Class IsCotrans (A : Type) (X : A -> A -> Prop) : Prop :=
+  cotrans (x y z : A) (a : X x z) : X x y \/ X y z.
 
 Section Context.
 
-Context (A : Type) (R : A -> A -> Prop) `(!IsCotrans R).
+Context (A : Type) (X : A -> A -> Prop) `(!IsCotrans X).
 
-#[local] Instance is_cotrans_gen : IsCotransGen id _\/_ R.
+#[local] Instance is_cotrans_gen : IsCotransGen id _\/_ X.
 Proof. exact cotrans. Qed.
 
 End Context.

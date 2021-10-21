@@ -5,16 +5,16 @@ From DEZ.Has Require Export
 From DEZ.ShouldHave Require Import
   OrderRelationNotations AdditiveNotations.
 
-Class IsDeflGen (A B : Type) (R : B -> A -> Prop) (f : A -> B) : Prop :=
-  defl_gen (x : A) : R (f x) x.
+Class IsDeflGen (A B : Type) (X : B -> A -> Prop) (f : A -> B) : Prop :=
+  defl_gen (x : A) : X (f x) x.
 
-Class IsDeflGenL (A B C : Type) (R : C -> B -> Prop)
+Class IsDeflGenL (A B C : Type) (X : C -> B -> Prop)
   (k : A -> B -> C) : Prop :=
-  defl_gen_l (x : A) (y : B) : R (k x y) y.
+  defl_gen_l (x : A) (y : B) : X (k x y) y.
 
-Class IsDeflGenR (A B C : Type) (R : C -> A -> Prop)
+Class IsDeflGenR (A B C : Type) (X : C -> A -> Prop)
   (k : A -> B -> C) : Prop :=
-  defl_gen_r (x : A) (y : B) : R (k x y) x.
+  defl_gen_r (x : A) (y : B) : X (k x y) x.
 
 (** ** Deflationary Function *)
 (** ** Regressive Function *)

@@ -5,5 +5,5 @@ From DEZ Require Export
 
 (** ** Involutive Function *)
 
-Class IsInvol (A : Type) (R : A -> A -> Prop) (f : A -> A) : Prop :=
-  invol (x : A) : R (f (f x)) x.
+Class IsInvol (A : Type) (X : A -> A -> Prop) (f : A -> A) : Prop :=
+  invol (x : A) : X (f (f x)) x.

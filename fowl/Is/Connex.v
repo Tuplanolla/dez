@@ -7,24 +7,24 @@ From DEZ.Is Require Export
 (** ** Connex Binary Relation *)
 (** ** Total Binary Relation *)
 
-Fail Fail Class IsConnex (A : Type) (R : A -> A -> Prop) : Prop :=
-  is_comm :> IsComm _\/_ R.
+Fail Fail Class IsConnex (A : Type) (X : A -> A -> Prop) : Prop :=
+  is_comm :> IsComm _\/_ X.
 
 (** This has the same shape as [le_ge_cases]. *)
 
-Class IsConnex (A : Type) (R : A -> A -> Prop) : Prop :=
-  connex (x y : A) : R x y \/ R y x.
+Class IsConnex (A : Type) (X : A -> A -> Prop) : Prop :=
+  connex (x y : A) : X x y \/ X y x.
 
 Section Context.
 
-Context (A : Type) (R : A -> A -> Prop).
+Context (A : Type) (X : A -> A -> Prop).
 
 (** Connexity is just a special case of commutativity. *)
 
-#[local] Instance is_connex `(!IsComm _\/_ R) : IsConnex R.
+#[local] Instance is_connex `(!IsComm _\/_ X) : IsConnex X.
 Proof. intros x y. exact (comm x y). Qed.
 
-#[local] Instance is_comm `(!IsConnex R) : IsComm _\/_ R.
+#[local] Instance is_comm `(!IsConnex X) : IsComm _\/_ X.
 Proof. intros x y. exact (connex x y). Qed.
 
 End Context.

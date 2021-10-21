@@ -5,9 +5,9 @@ From DEZ.Is Require Export
 
 (** ** Partial Equivalence *)
 
-Fail Fail Class IsPartEq (A : Type) (R : A -> A -> Prop) : Prop := {
-  is_sym :> IsSym R;
-  is_trans :> IsTrans R;
+Fail Fail Class IsPartEq (A : Type) (X : A -> A -> Prop) : Prop := {
+  is_sym :> IsSym X;
+  is_trans :> IsTrans X;
 }.
 
 Notation IsPartEq := PER.

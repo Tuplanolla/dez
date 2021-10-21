@@ -5,8 +5,8 @@ From DEZ Require Export
 
 (** ** Reflexive Binary Relation *)
 
-Fail Fail Class IsRefl (A : Type) (R : A -> A -> Prop) : Prop :=
-  refl (x : A) : R x x.
+Fail Fail Class IsRefl (A : Type) (X : A -> A -> Prop) : Prop :=
+  refl (x : A) : X x x.
 
 Notation IsRefl := Reflexive.
 Notation refl := (reflexivity : IsRefl _).

@@ -5,16 +5,16 @@ From Coq Require Import
 From DEZ Require Export
   Init.
 
-Class IsFunExtGen (R : forall {A : Type}, A -> A -> Prop) : Prop :=
+Class IsFunExtGen (X : forall {A : Type}, A -> A -> Prop) : Prop :=
   fun_ext_gen (A B : Type) (f g : A -> B)
-  (a : forall x : A, R (f x) (g x)) : R f g.
+  (a : forall x : A, X (f x) (g x)) : X f g.
 
-Class IsFunExtDepGen (R : forall {A : Type}, A -> A -> Prop) : Prop :=
+Class IsFunExtDepGen (X : forall {A : Type}, A -> A -> Prop) : Prop :=
   fun_ext_dep_gen (A : Type) (P : A -> Type) (f g : forall x : A, P x)
-  (a : forall x : A, R (f x) (g x)) : R f g.
+  (a : forall x : A, X (f x) (g x)) : X f g.
 
-Class IsPropExtGen (R : forall {A : Type}, A -> A -> Prop) : Prop :=
-  prop_ext_gen (A B : Prop) (a : A <-> B) : R A B.
+Class IsPropExtGen (X : forall {A : Type}, A -> A -> Prop) : Prop :=
+  prop_ext_gen (A B : Prop) (a : A <-> B) : X A B.
 
 (** We declare function extensionality as a class in hopes of turning it
     into a theorem once a better metatheory is implemented. *)

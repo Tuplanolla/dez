@@ -9,35 +9,35 @@ From DEZ.Is Require Export
 From DEZ.ShouldHave Require Import
   AdditiveNotations.
 
-Class IsCancelL (A : Type) (R : A -> A -> Prop) (Hk : HasBinOp A) : Prop :=
-  cancel_l (x y z : A) (a : R (z + x) (z + y)) : R x y.
+Class IsCancelL (A : Type) (X : A -> A -> Prop) (Hk : HasBinOp A) : Prop :=
+  cancel_l (x y z : A) (a : X (z + x) (z + y)) : X x y.
 
 (** This has the same shape as [add_reg_l]. *)
 
-Class IsCancelR (A : Type) (R : A -> A -> Prop) (Hk : HasBinOp A) : Prop :=
-  cancel_r (x y z : A) (a : R (x + z) (y + z)) : R x y.
+Class IsCancelR (A : Type) (X : A -> A -> Prop) (Hk : HasBinOp A) : Prop :=
+  cancel_r (x y z : A) (a : X (x + z) (y + z)) : X x y.
 
-Class IsCancelLR (A : Type) (R : A -> A -> Prop) (Hk : HasBinOp A) : Prop := {
-  is_cancel_l :> IsCancelL R _+_;
-  is_cancel_r :> IsCancelR R _+_;
+Class IsCancelLR (A : Type) (X : A -> A -> Prop) (Hk : HasBinOp A) : Prop := {
+  is_cancel_l :> IsCancelL X _+_;
+  is_cancel_r :> IsCancelR X _+_;
 }.
 
 (** This has the same shape as [mul_reg_l]. *)
 
-Class IsNonzeroCancelL (A : Type) (R : A -> A -> Prop)
+Class IsNonzeroCancelL (A : Type) (X : A -> A -> Prop)
   (Hx : HasNullOp A) (Hk : HasBinOp A) : Prop :=
-  nonzero_cancel_l (x y z : A) (f : ~ R z 0) (a : R (z + x) (z + y)) : R x y.
+  nonzero_cancel_l (x y z : A) (f : ~ X z 0) (a : X (z + x) (z + y)) : X x y.
 
 (** This has the same shape as [mul_reg_r]. *)
 
-Class IsNonzeroCancelR (A : Type) (R : A -> A -> Prop)
+Class IsNonzeroCancelR (A : Type) (X : A -> A -> Prop)
   (Hx : HasNullOp A) (Hk : HasBinOp A) : Prop :=
-  nonzero_cancel_r (x y z : A) (f : ~ R z 0) (a : R (x + z) (y + z)) : R x y.
+  nonzero_cancel_r (x y z : A) (f : ~ X z 0) (a : X (x + z) (y + z)) : X x y.
 
-Class IsNonzeroCancelLR (A : Type) (R : A -> A -> Prop)
+Class IsNonzeroCancelLR (A : Type) (X : A -> A -> Prop)
   (Hx : HasNullOp A) (Hk : HasBinOp A) : Prop := {
-  is_nonzero_cancel_l :> IsNonzeroCancelL R 0 _+_;
-  is_nonzero_cancel_r :> IsNonzeroCancelR R 0 _+_;
+  is_nonzero_cancel_l :> IsNonzeroCancelL X 0 _+_;
+  is_nonzero_cancel_r :> IsNonzeroCancelR X 0 _+_;
 }.
 
 Module LFromR.

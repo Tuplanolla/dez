@@ -9,29 +9,29 @@ From DEZ.ShouldHave Require Import
 
 (** ** Semiring *)
 
-Class IsSemiring (A : Type) (R : A -> A -> Prop)
+Class IsSemiring (A : Type) (X : A -> A -> Prop)
   (x : A) (k : A -> A -> A) (y : A) (m : A -> A -> A) : Prop := {
-  add_is_mon :> IsMon R x k;
-  add_is_comm :> IsComm R k;
-  mul_is_mon :> IsMon R y m;
-  is_distr_l_r :> IsDistrLR R m k;
-  is_absorb_elem_l_r :> IsAbsorbElemLR R x m;
+  add_is_mon :> IsMon X x k;
+  add_is_comm :> IsComm X k;
+  mul_is_mon :> IsMon X y m;
+  is_distr_l_r :> IsDistrLR X m k;
+  is_absorb_elem_l_r :> IsAbsorbElemLR X x m;
 }.
 
 Section Context.
 
-Context (A : Type) (R : A -> A -> Prop)
+Context (A : Type) (X : A -> A -> Prop)
   (x : A) (k : A -> A -> A) (y : A) (m : A -> A -> A)
-  `(!IsSemiring R x k y m).
+  `(!IsSemiring X x k y m).
 
-#[local] Instance has_eq_rel : HasEqRel A := R.
+#[local] Instance has_eq_rel : HasEqRel A := X.
 #[local] Instance has_zero : HasZero A := x.
 #[local] Instance has_add : HasAdd A := k.
 #[local] Instance has_one : HasOne A := y.
 #[local] Instance has_mul : HasMul A := m.
 
 Ltac note := progress (
-  change R with _==_ in *;
+  change X with _==_ in *;
   change x with 0 in *;
   change k with _+_ in *;
   change y with 1 in *;
@@ -47,7 +47,7 @@ Ltac subclass := progress (
   try change null_op with one in *;
   try change bin_op with mul in *).
 
-#[local] Instance is_contr (a : R 0 1) : IsContrGen R.
+#[local] Instance is_contr (a : X 0 1) : IsContrGen X.
 Proof.
   hnf.
   note.

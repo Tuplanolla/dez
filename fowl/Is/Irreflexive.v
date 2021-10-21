@@ -5,8 +5,8 @@ From DEZ Require Export
 
 (** ** Irreflexive Binary Relation *)
 
-Fail Fail Class IsIrrefl (A : Type) (R : A -> A -> Prop) : Prop :=
-  irrefl (x : A) : ~ R x x.
+Fail Fail Class IsIrrefl (A : Type) (X : A -> A -> Prop) : Prop :=
+  irrefl (x : A) : ~ X x x.
 
 Notation IsIrrefl := Irreflexive.
 Notation irrefl := (irreflexivity : IsIrrefl _).

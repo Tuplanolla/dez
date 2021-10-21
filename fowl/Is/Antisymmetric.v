@@ -5,8 +5,8 @@ From DEZ Require Export
 
 (** ** Antisymmetric Binary Relation *)
 
-Fail Fail Class IsAntisym (A : Type) (R S : A -> A -> Prop) : Prop :=
-  antisym (x y : A) (a : S x y) (b : S y x) : R x y.
+Fail Fail Class IsAntisym (A : Type) (X Y : A -> A -> Prop) : Prop :=
+  antisym (x y : A) (a : Y x y) (b : Y y x) : X x y.
 
-Notation IsAntisym R S := (Antisymmetric _ R S).
+Notation IsAntisym X Y := (Antisymmetric _ X Y).
 Notation antisym := (@antisymmetry _ _ _ _ _ : IsAntisym _ _).

@@ -5,8 +5,8 @@ From DEZ Require Export
 
 (** ** Transitive Binary Relation *)
 
-Fail Fail Class IsTrans (A : Type) (R : A -> A -> Prop) : Prop :=
-  trans (x y z : A) (a : R x y) (b : R y z) : R x z.
+Fail Fail Class IsTrans (A : Type) (X : A -> A -> Prop) : Prop :=
+  trans (x y z : A) (a : X x y) (b : X y z) : X x z.
 
 Notation IsTrans := Transitive.
 Notation trans := (transitivity : IsTrans _).

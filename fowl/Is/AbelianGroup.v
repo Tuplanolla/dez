@@ -10,7 +10,7 @@ From DEZ.ShouldHave Require Import
 (** ** Abelian Group *)
 (** ** Commutative Group *)
 
-Class IsAbGrp (A : Type) (R : A -> A -> Prop)
+Class IsAbGrp (A : Type) (X : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A) : Prop := {
   is_comm :> IsComm R k;
   is_grp :> IsGrp R x f k;
@@ -18,7 +18,7 @@ Class IsAbGrp (A : Type) (R : A -> A -> Prop)
 
 Section Context.
 
-Context (A : Type) (R : A -> A -> Prop)
+Context (A : Type) (X : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A)
   `(!IsAbGrp R x f k).
 

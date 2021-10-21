@@ -5,10 +5,10 @@ From DEZ Require Export
 
 (** * Lower Bound *)
 
-Class IsLowerBnd (A : Type) (x : A) (R : A -> A -> Prop) : Prop :=
-  lower_bnd (y : A) : R x y.
+Class IsLowerBnd (A : Type) (x : A) (X : A -> A -> Prop) : Prop :=
+  lower_bnd (y : A) : X x y.
 
 (** * Upper Bound *)
 
-Class IsUpperBnd (A : Type) (x : A) (R : A -> A -> Prop) : Prop :=
-  upper_bnd (y : A) : R y x.
+Class IsUpperBnd (A : Type) (x : A) (X : A -> A -> Prop) : Prop :=
+  upper_bnd (y : A) : X y x.

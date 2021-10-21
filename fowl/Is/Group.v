@@ -10,33 +10,33 @@ From DEZ.ShouldHave Require Import
 
 (** ** Group *)
 
-Class IsGrp (A : Type) (R : A -> A -> Prop)
+Class IsGrp (A : Type) (X : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A) : Prop := {
-  is_mon :> IsMon R x k;
-  is_inv_l_r :> IsInvLR R x f k;
-  is_proper :> IsProper (R ==> R) f;
+  is_mon :> IsMon X x k;
+  is_inv_l_r :> IsInvLR X x f k;
+  is_proper :> IsProper (X ==> X) f;
 }.
 
 Section Context.
 
 (** TODO We can use notations if we declare things as follows. *)
 
-Context (A : Type) (R : A -> A -> Prop)
+Context (A : Type) (X : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A)
-  `(!IsGrp R x f k).
+  `(!IsGrp X x f k).
 
-#[local] Instance has_eq_rel : HasEqRel A := R.
+#[local] Instance has_eq_rel : HasEqRel A := X.
 #[local] Instance has_null_op : HasNullOp A := x.
 #[local] Instance has_un_op : HasUnOp A := f.
 #[local] Instance has_bin_op : HasBinOp A := k.
 
 Ltac notate :=
-  change R with _==_ in *;
+  change X with _==_ in *;
   change x with 0 in *;
   change f with -_ in *;
   change k with _+_ in *.
 
-#[local] Instance is_fixed : IsFixed R x f.
+#[local] Instance is_fixed : IsFixed X x f.
 Proof.
   notate.
   unfold IsFixed, IsFixed2.
@@ -44,7 +44,7 @@ Proof.
   setoid_rewrite (inv_l x).
   reflexivity. Qed.
 
-#[local] Instance is_invol : IsInvol R f.
+#[local] Instance is_invol : IsInvol X f.
 Proof.
   notate.
   intros y.
@@ -55,7 +55,7 @@ Proof.
   setoid_rewrite (unl_l y).
   reflexivity. Qed.
 
-#[local] Instance is_inj : IsInj R R f.
+#[local] Instance is_inj : IsInj X X f.
 Proof.
   notate.
   intros y z a.
@@ -67,7 +67,7 @@ Proof.
   setoid_rewrite (unl_r y).
   reflexivity. Qed.
 
-#[local] Instance is_cancel_l : IsCancelL R k.
+#[local] Instance is_cancel_l : IsCancelL X k.
 Proof.
   notate.
   intros y z w a.
@@ -80,7 +80,7 @@ Proof.
   setoid_rewrite (unl_l z).
   reflexivity. Qed.
 
-#[local] Instance is_cancel_r : IsCancelR R k.
+#[local] Instance is_cancel_r : IsCancelR X k.
 Proof.
   notate.
   intros y z w a.
@@ -93,10 +93,10 @@ Proof.
   setoid_rewrite (unl_r z).
   reflexivity. Qed.
 
-#[local] Instance is_cancel_l_r : IsCancelLR R k.
+#[local] Instance is_cancel_l_r : IsCancelLR X k.
 Proof. split; typeclasses eauto. Qed.
 
-#[local] Instance is_antidistr : IsAntidistr R f k k.
+#[local] Instance is_antidistr : IsAntidistr X f k k.
 Proof.
   notate.
   intros y z.
