@@ -125,8 +125,9 @@ We avoid using
 * `I`, because it looks like one and is used for the interval pretype,
 * `i`, out of sympathy for `I` and the imaginary numbers,
 * `l`, because it looks like one,
-* `U`, because it looks like a type universe and
-* `H`, because it is reserved by Coq for automatic names.
+* `U`, because it looks like a type universe,
+* `H`, because it is reserved by Coq for automatic names and
+* `N`, `Z`, `Q` and `R`, because they are reserved by Coq for numbers.
 
 So, following the tradition,
 
@@ -135,11 +136,11 @@ So, following the tradition,
 * type functions of type `Type -> Type` are named
   `F`, `G`, `J`, `K`, `L`, ...,
 * type operators of type `Type -> Type -> Type` are named
-  `K`, `L`, `M`, `N`, `P`, ...,
+  `K`, `L`, `M`, `P`, `S`, ...,
 * type families of type `A -> Type` are named
-  `P`, `Q`, `R`, `S`, `T`, ...,
+  `P`, `S`, `T`, `V`, `W`, ...,
 * higher type families of type `A -> A -> Type` are named
-  `C`, `D`, `E`, `F`, `G`, ...,
+  `X`, `Y`, `W`, `V`, `T`, ...,
 * structures of type `A` are named
   `x`, `y`, `z`, `w`, `v`, ...,
 * functions of type `A -> B` are named
@@ -148,7 +149,7 @@ So, following the tradition,
   `k`, `m`, `n`, `p`, `q`, ...,
 * higher structures of type `x : A |- P x` are named
   `a`, `b`, `c`, `d`, `e`, ...,
-* even higher structures of type `x : A, a : P x |- Q a` are named
+* even higher structures of type `x : A, a : P x |- S a` are named
   `s`, `t`, `u`, `v`, `w`, ...,
 
 although the rules should be broken with good reasons.
@@ -157,13 +158,14 @@ Here is how the names are laid out spatially.
 ```
 a b c d e f g h j k m n p q r s t u v w x y z
 |->       |->     |->         |->       |->
-A B C D E F G J K L M N P Q R S T V W X Y Z
-|-> |->   |->   |->     |->
+A B C D E F G J K L M P S T V W X Y
+|->       |->   |->   |->       |->
 ```
 
-It is a bit annoying how the capital letters
-are so cramped to the initial segment,
-but otherwise traditions serve us just fine.
+It is a bit annoying how we have to shift `C` to `X`,
+because otherwise the capital letters
+would be so cramped to the initial segment.
+However, otherwise traditions serve us just fine.
 
 ### Scopes
 
