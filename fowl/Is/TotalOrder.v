@@ -20,13 +20,13 @@ Context (A : Type) (HR : HasOrdRel A) `(!IsTotOrd _<=_).
 
 Import OrderRelations.Subclass.
 
-Ltac conversions := typeclasses
-  convert bin_rel into ord_rel.
+Ltac subclass := progress (
+  try change bin_rel with ord_rel in *).
 
 (** Total orders are reflexive. *)
 
 #[local] Instance is_refl : IsRefl _<=_.
-Proof with conversions.
+Proof with subclass.
   intros x.
   destruct (connex x x) as [l | l].
   - apply l.

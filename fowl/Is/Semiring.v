@@ -31,11 +31,11 @@ Context (A : Type) (X : A -> A -> Prop)
 #[local] Instance has_mul : HasMul A := m.
 
 Ltac note := progress (
-  change X with _==_ in *;
-  change x with 0 in *;
-  change k with _+_ in *;
-  change y with 1 in *;
-  change m with _*_ in *).
+  try change X with _==_ in *;
+  try change x with 0 in *;
+  try change k with _+_ in *;
+  try change y with 1 in *;
+  try change m with _*_ in *).
 
 Import Zero.Subclass Negation.Subclass Addition.Subclass
   One.Subclass Multiplication.Subclass.

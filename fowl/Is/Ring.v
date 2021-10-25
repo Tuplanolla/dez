@@ -45,12 +45,12 @@ Context (A : Type) (X : A -> A -> Prop)
 #[local] Instance has_mul : HasMul A := m.
 
 Ltac note := progress (
-  change X with _==_ in *;
-  change x with 0 in *;
-  change f with -_ in *;
-  change k with _+_ in *;
-  change y with 1 in *;
-  change m with _*_ in *).
+  try change X with _==_ in *;
+  try change x with 0 in *;
+  try change f with -_ in *;
+  try change k with _+_ in *;
+  try change y with 1 in *;
+  try change m with _*_ in *).
 
 (** Specialize binary relations into the underlying equivalence relation and
     either specialize operations into the underlying additive operations or
@@ -58,14 +58,6 @@ Ltac note := progress (
 
 Import Zero.Subclass Negation.Subclass Addition.Subclass
   One.Subclass Multiplication.Subclass.
-
-Fail Fail Ltac subclass :=
-  progress (change bin_rel with eq_rel in *;
-    (change null_op with zero in *;
-      change un_op with neg in *;
-      change bin_op with add in *) ||
-    (change null_op with one in *;
-      change bin_op with mul in *)).
 
 Ltac subclass := progress (
   try change bin_rel with eq_rel in *;

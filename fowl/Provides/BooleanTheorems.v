@@ -104,21 +104,21 @@ Local Instance unit_Z_has_neg (i : bool) :
   HasNeg (if i then unit else Z).
 Proof. hnf. intros x. destruct i. all: apply (neg x). Defined.
 
-Local Instance bool_bin_op_is_assoc : IsAssoc (bin_op (A := bool)).
+Local Instance bool_bin_op_is_assoc : IsAssoc _=_ orb.
 Proof.
   intros x y z. all: cbn; repeat match goal with
   | x : bool |- _ => destruct x
   | x : unit |- _ => destruct x
   end; try reflexivity. Defined.
 
-Local Instance bool_bin_op_is_unl_l : IsUnlL null_op (bin_op (A := bool)).
+Local Instance bool_bin_op_is_unl_l : IsUnlL _=_ null_op (bin_op (A := bool)).
 Proof.
   intros x. all: cbn; repeat match goal with
   | x : bool |- _ => destruct x
   | x : unit |- _ => destruct x
   end; try reflexivity. Defined.
 
-Local Instance bool_bin_op_is_unl_r : IsUnlR null_op (bin_op (A := bool)).
+Local Instance bool_bin_op_is_unl_r : IsUnlR _=_ null_op (bin_op (A := bool)).
 Proof.
   intros x. all: cbn; repeat match goal with
   | x : bool |- _ => destruct x
