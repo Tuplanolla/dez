@@ -1,36 +1,48 @@
-(** * Total Order *)
+(** * Total Ordering *)
 
-From DEZ Require Export
-  TypeclassTactics.
 From DEZ.Has Require Export
-  OrderRelations.
+  EquivalenceRelation OrderRelations.
 From DEZ.Is Require Export
-  Preorder PartialOrder Connex Reflexive.
+  PartialOrder Connex Reflexive.
 From DEZ.ShouldHave Require Import
-  OrderRelationNotations.
+  EquivalenceRelationNotations OrderRelationNotations.
 
-Class IsTotOrd (A : Type) (HR : HasOrdRel A) : Prop := {
-  is_part_ord :> IsPartOrd _<=_;
-  is_connex :> IsConnex _<=_;
+(** ** Total Order *)
+
+Class IsTotOrd (A : Type) (X Y : A -> A -> Prop) : Prop := {
+  is_part_ord :> IsPartOrd X Y;
+  is_connex :> IsConnex Y;
 }.
 
 Section Context.
 
-Context (A : Type) (HR : HasOrdRel A) `(!IsTotOrd _<=_).
+Context (A : Type) (X Y : A -> A -> Prop)
+  `(!IsTotOrd X Y).
 
-Import OrderRelations.Subclass.
+#[local] Instance has_eq_rel : HasEqRel A := X.
+#[local] Instance has_ord_rel : HasOrdRel A := Y.
 
-Ltac subclass := progress (
-  try change bin_rel with ord_rel in *).
+Ltac note := progress (
+  try change X with _==_ in *;
+  try change Y with _<=_ in *).
 
 (** Total orders are reflexive. *)
 
-#[local] Instance is_refl : IsRefl _<=_.
-Proof with subclass.
+#[local] Instance is_refl : IsRefl Y.
+Proof.
+  note.
   intros x.
-  destruct (connex x x) as [l | l].
-  - apply l.
-  - apply l. Qed.
+  destruct (connex x x) as [l | l]; auto. Qed.
+
+(** Total orders are transitive. *)
+
+#[local] Instance is_trans : IsTrans Y.
+Proof. typeclasses eauto. Qed.
+
+(** Total orders are antisymmetric. *)
+
+#[local] Instance is_antisym : IsAntisym X Y.
+Proof. typeclasses eauto. Qed.
 
 End Context.
 

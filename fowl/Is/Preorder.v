@@ -1,15 +1,13 @@
-(** * Preorder *)
+(** * Preordering *)
 
-From DEZ.Has Require Export
-  OrderRelations.
 From DEZ.Is Require Export
   Reflexive Transitive.
-From DEZ.ShouldHave Require Import
-  OrderRelationNotations.
 
-Fail Fail Class IsPreord (A : Type) (HR : HasOrdRel A) : Prop := {
-  is_refl :> IsRefl _<=_;
-  is_trans :> IsTrans _<=_;
+(** ** Preorder *)
+
+Fail Fail Class IsPreord (A : Type) (X : A -> A -> Prop) : Prop := {
+  is_refl :> IsRefl X;
+  is_trans :> IsTrans X;
 }.
 
 Notation IsPreord := PreOrder.
