@@ -3,7 +3,7 @@
 From DEZ.Has Require Export
   EquivalenceRelation OrderRelations.
 From DEZ.Is Require Export
-  Preorder Antisymmetric Equivalence.
+  Preorder Antisymmetric Proper Equivalence.
 From DEZ.ShouldHave Require Import
   EquivalenceRelationNotations OrderRelationNotations.
 
@@ -19,13 +19,13 @@ Fail Fail Notation IsPartOrd := PartialOrder.
 Class IsPartOrd (A : Type) (X Y : A -> A -> Prop) : Prop := {
   is_preord :> IsPreord Y;
   is_antisym :> IsAntisym X Y;
+  is_proper :> IsProper (X ==> X ==> _<->_) Y;
 }.
-
-(** These instances witness the compatibility of the definitions. *)
 
 Section Context.
 
-Context (A : Type) (X Y : A -> A -> Prop).
+Context (A : Type) (X Y : A -> A -> Prop)
+  `(!IsEq X).
 
 #[local] Instance has_eq_rel : HasEqRel A := X.
 #[local] Instance has_ord_rel : HasOrdRel A := Y.
@@ -34,13 +34,22 @@ Ltac note := progress (
   try change X with _==_ in *;
   try change Y with _<=_ in *).
 
-#[local] Instance is_part_ord `(!IsEq X)
+(** Our definition is equivalent to the one in the standard library. *)
+
+#[local] Instance is_part_ord
   `(!IsPreord Y) `(!PartialOrder X Y) : IsPartOrd X Y.
 Proof. split; typeclasses eauto. Qed.
 
 #[local] Instance partial_order
-  `(!IsEq X) `(!IsPartOrd X Y) : PartialOrder X Y.
-Proof. Fail split; typeclasses eauto. Admitted.
+  `(!IsPartOrd X Y) : PartialOrder X Y.
+Proof.
+  intros x y.
+  unfold pointwise_lifting, relation_conjunction.
+  unfold predicate_intersection. unfold pointwise_extension. unfold flip.
+  pose proof antisym x y.
+  pose proof is_proper x y as a.
+  unfold "_==>_" in a.
+  intuition. Qed.
 
 End Context.
 

@@ -13,11 +13,11 @@ Fail Fail Notation IsAntisym := (Antisymmetric _).
 Class IsAntisym (A : Type) (X Y : A -> A -> Prop) : Prop :=
   antisym (x y : A) (a : Y x y) (b : Y y x) : X x y.
 
-(** These instances witness the compatibility of the definitions. *)
-
 Section Context.
 
 Context (A : Type) (X Y : A -> A -> Prop) `(!IsEq X).
+
+(** Our definition is equivalent to the one in the standard library. *)
 
 #[local] Instance is_antisym `(!Antisymmetric A X Y) : IsAntisym X Y.
 Proof. auto. Qed.
