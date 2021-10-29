@@ -3,7 +3,7 @@
 From DEZ.Has Require Export
   EquivalenceRelation OrderRelations.
 From DEZ.Is Require Export
-  Preorder Antisymmetric Proper Equivalence.
+  Equivalence Preorder Antisymmetric Proper.
 From DEZ.ShouldHave Require Import
   EquivalenceRelationNotations OrderRelationNotations.
 
@@ -17,6 +17,7 @@ From DEZ.ShouldHave Require Import
 Fail Fail Notation IsPartOrd := PartialOrder.
 
 Class IsPartOrd (A : Type) (X Y : A -> A -> Prop) : Prop := {
+  is_eq :> IsEq X;
   is_preord :> IsPreord Y;
   is_antisym :> IsAntisym X Y;
   is_proper :> IsProper (X ==> X ==> _<->_) Y;
@@ -47,8 +48,9 @@ Proof.
   unfold pointwise_lifting, relation_conjunction.
   unfold predicate_intersection. unfold pointwise_extension. unfold flip.
   pose proof antisym x y.
-  pose proof is_proper x y as a.
-  unfold "_==>_" in a.
+  pose proof fun a : X x y => is_proper x x (reflexivity x) x y a.
+  pose proof fun a : X x y => is_proper y y (reflexivity y) y x (symmetry a).
+  note.
   intuition. Qed.
 
 End Context.
