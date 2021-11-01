@@ -39,18 +39,18 @@ Ltac note := progress (
 
 #[local] Instance is_part_ord
   `(!IsPreord Y) `(!PartialOrder X Y) : IsPartOrd X Y.
-Proof. split; typeclasses eauto. Qed.
+Proof. esplit; typeclasses eauto. Qed.
 
 #[local] Instance partial_order
   `(!IsPartOrd X Y) : PartialOrder X Y.
 Proof.
+  note.
   intros x y.
   unfold pointwise_lifting, relation_conjunction.
   unfold predicate_intersection. unfold pointwise_extension. unfold flip.
   pose proof antisym x y.
-  pose proof fun a : X x y => is_proper x x (reflexivity x) x y a.
-  pose proof fun a : X x y => is_proper y y (reflexivity y) y x (symmetry a).
-  note.
+  pose proof fun a : x == y => is_proper x x (reflexivity x) x y a.
+  pose proof fun a : x == y => is_proper y y (reflexivity y) y x (symmetry a).
   intuition. Qed.
 
 End Context.

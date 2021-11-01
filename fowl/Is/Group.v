@@ -19,8 +19,6 @@ Class IsGrp (A : Type) (X : A -> A -> Prop)
 
 Section Context.
 
-(** TODO We can use notations if we declare things as follows. *)
-
 Context (A : Type) (X : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A)
   `(!IsGrp X x f k).
@@ -30,15 +28,15 @@ Context (A : Type) (X : A -> A -> Prop)
 #[local] Instance has_un_op : HasUnOp A := f.
 #[local] Instance has_bin_op : HasBinOp A := k.
 
-Ltac notate :=
-  change X with _==_ in *;
-  change x with 0 in *;
-  change f with -_ in *;
-  change k with _+_ in *.
+Ltac note := progress (
+  try change X with _==_ in *;
+  try change x with 0 in *;
+  try change f with -_ in *;
+  try change k with _+_ in *).
 
 #[local] Instance is_fixed : IsFixed X x f.
 Proof.
-  notate.
+  note.
   unfold IsFixed, IsFixed2.
   setoid_rewrite <- (unl_r (- x)).
   setoid_rewrite (inv_l x).
@@ -46,7 +44,7 @@ Proof.
 
 #[local] Instance is_invol : IsInvol X f.
 Proof.
-  notate.
+  note.
   intros y.
   setoid_rewrite <- (unl_r (- (- y))).
   setoid_rewrite <- (inv_l y).
@@ -57,7 +55,7 @@ Proof.
 
 #[local] Instance is_inj : IsInj X X f.
 Proof.
-  notate.
+  note.
   intros y z a.
   setoid_rewrite <- (unl_l z).
   setoid_rewrite <- (inv_r y).
@@ -69,7 +67,7 @@ Proof.
 
 #[local] Instance is_cancel_l : IsCancelL X k.
 Proof.
-  notate.
+  note.
   intros y z w a.
   setoid_rewrite <- (unl_l y).
   setoid_rewrite <- (inv_l w).
@@ -82,7 +80,7 @@ Proof.
 
 #[local] Instance is_cancel_r : IsCancelR X k.
 Proof.
-  notate.
+  note.
   intros y z w a.
   setoid_rewrite <- (unl_r y).
   setoid_rewrite <- (inv_r w).
@@ -94,11 +92,11 @@ Proof.
   reflexivity. Qed.
 
 #[local] Instance is_cancel_l_r : IsCancelLR X k.
-Proof. split; typeclasses eauto. Qed.
+Proof. esplit; typeclasses eauto. Qed.
 
 #[local] Instance is_antidistr : IsAntidistr X f k k.
 Proof.
-  notate.
+  note.
   intros y z.
   apply (cancel_l (- (y + z)) ((- z) + (- y)) (y + z)).
   setoid_rewrite (inv_r (y + z)).
@@ -113,3 +111,188 @@ End Context.
 
 #[export] Hint Resolve is_fixed is_invol is_inj
   is_cancel_l is_cancel_r is_cancel_l_r is_antidistr : typeclass_instances.
+
+(** Now, let us make a mess! *)
+
+From DEZ.Has Require Import
+  Decidability.
+From DEZ.Is Require Import
+  Extensional.
+From Coq Require Import
+  Lists.List.
+
+(** This alternative definition is closer to the one in abstract algebra. *)
+
+Module Existential.
+
+#[local] Reserved Notation "'f'".
+
+Class IsGrp (A : Type) (X : A -> A -> Prop)
+  (x : A) (k : A -> A -> A) : Type := {
+  is_mon :> IsMon X x k;
+  inv_l_r (y : A) : {z : A | X (k z y) x /\ X (k y z) x}
+    where "'f'" := (fun x : A => proj1_sig (inv_l_r x));
+  is_proper :> IsProper (X ==> X) f;
+}.
+
+End Existential.
+
+(** The definitions are equivalent. *)
+
+Section Context.
+
+Lemma choice (A B : Type) (X : A -> B -> Prop) :
+  (forall x : A, {y : B | X x y}) -> {f : A -> B | forall x : A, X x (f x)}.
+Proof.
+  intro Hs. exists (fun x : A => proj1_sig (Hs x)).
+  intros x. destruct (Hs x) as [y HX]. cbn. apply HX. Defined.
+
+Lemma cochoice (A B : Type) (X : A -> B -> Prop) :
+  {f : A -> B | forall x : A, X x (f x)} -> forall x : A, {y : B | X x y}.
+Proof.
+  intros [f HX]. intros x. exists (f x). cbn. apply (HX x). Defined.
+
+Lemma choiceT (A B : Type) (X : A -> B -> Type) :
+  (forall x : A, {y : B & X x y}) -> {f : A -> B & forall x : A, X x (f x)}.
+Proof.
+  intro Hs. exists (fun x : A => projT1 (Hs x)).
+  intros x. destruct (Hs x) as [y HX]. cbn. apply HX. Defined.
+
+Lemma cochoiceT (A B : Type) (X : A -> B -> Type) :
+  {f : A -> B & forall x : A, X x (f x)} -> forall x : A, {y : B & X x y}.
+Proof.
+  intros [f HX]. intros x. exists (f x). cbn. apply (HX x). Defined.
+
+Lemma sectT `(!IsFunExtDep) (A B : Type) (X : A -> B -> Type)
+  (a : forall x : A, {y : B & X x y}) : cochoiceT _ (choiceT a) = a.
+Proof.
+  unfold choiceT, cochoiceT. apply fun_ext_dep. intros x.
+  destruct (a x) as [y b]. f_equal. Defined.
+
+Lemma retrT `(!IsFunExtDep) (A B : Type) (X : A -> B -> Type)
+  (a : {f : A -> B & forall x : A, X x (f x)}) : choiceT (cochoiceT _ a) = a.
+Proof.
+  unfold choiceT, cochoiceT. destruct a as [f b]. f_equal. Defined.
+
+Context (A : Type) (X : A -> A -> Prop)
+  (x : A) (k : A -> A -> A).
+
+Lemma herbrandize : {f : A -> A | IsGrp X x f k} -> Existential.IsGrp X x k.
+Proof.
+  intros [f ?]. esplit. all: shelve. Unshelve.
+  - intros y. exists (f y). split.
+    + apply inv_l.
+    + apply inv_r.
+  - typeclasses eauto.
+  - intros y z a. cbv. apply is_proper. apply a. Defined.
+
+Lemma skolemize : Existential.IsGrp X x k -> {f : A -> A | IsGrp X x f k}.
+Proof.
+  intros ?.
+  set (f (y : A) := proj1_sig (Existential.inv_l_r y)).
+  set (g (y : A) := proj2_sig (Existential.inv_l_r y)).
+  exists f. esplit.
+  - typeclasses eauto.
+  - split.
+    + intros y. destruct (g y) as [l r]. apply l.
+    + intros y. destruct (g y) as [l r]. apply r.
+  - typeclasses eauto. Defined.
+
+End Context.
+
+#[global] Instance and_has_dec (A B : Prop)
+  (d : HasDec A) (e : HasDec B) : HasDec (A /\ B).
+Proof.
+  destruct d as [[] x], e as [[] y].
+  - exists true. intuition.
+  - exists false. intuition.
+  - exists false. intuition.
+  - exists false. intuition. Defined.
+
+#[global] Instance or_has_dec (A B : Prop)
+  (d : HasDec A) (e : HasDec B) : HasDec (A \/ B).
+Proof.
+  destruct d as [[] x], e as [[] y].
+  - exists true. intuition.
+  - exists true. intuition.
+  - exists true. intuition.
+  - exists false. intuition. Defined.
+
+Import ListNotations.
+
+Section Context.
+
+Context (A : Type) (d : forall x y : A, {x = y} + {x <> y})
+  (x : A) (f : A -> A) (k : A -> A -> A).
+
+#[local] Instance has_eq_dec : HasEqDec A := d.
+
+Definition F : Type := list (bool * A).
+
+Definition rel (x y : F) : Prop := if eq_dec x y then true else false.
+
+Definition null : F := [].
+
+Definition un (a : F) : F :=
+  let b := rev a in
+  map (fun x : bool * A => (negb (fst x), snd x)) b.
+
+(* b a' c a' + a c' b b *)
+(* b a' c + c' b b *)
+(* b a' + b b *)
+(* b a' b b *)
+
+Fail Fail Fixpoint bin (a b : F) {struct b} : F :=
+  let c := rev a in
+  match c, b with
+  | (i, x) :: xs, (j, y) :: ys => if decide (i = negb j /\ x = y) then
+      bin (rev xs) ys else
+      a ++ b
+  | _, [] => a
+  | [], _ => b
+  end.
+
+Fixpoint bin_rev (a b : F) {struct b} : F * F :=
+  match a, b with
+  | (i, x) :: xs, (j, y) :: ys => if decide (i = negb j /\ x = y) then
+      bin_rev xs ys else
+      (a, b)
+  | _, [] => (a, [])
+  | [], _ => ([], b)
+  end.
+
+Definition bin (a b : F) : F :=
+  let (c, d) := bin_rev (rev a) b in
+  rev c ++ d.
+
+#[local] Instance is_grp : IsGrp rel null un bin.
+Proof.
+  esplit.
+  - esplit.
+    + esplit.
+      * esplit.
+        -- admit.
+        -- admit.
+        -- admit.
+      * admit.
+      * admit.
+    + esplit.
+      * admit.
+      * admit.
+  - esplit.
+    + admit.
+    + admit.
+  - admit. Admitted.
+
+End Context.
+
+#[local] Open Scope nat_scope.
+
+Compute
+  let a := (false, 1) in
+  let b := (false, 2) in
+  let c := (false, 3) in
+  let a' := (negb (fst a), snd a) in
+  let b' := (negb (fst b), snd b) in
+  let c' := (negb (fst c), snd c) in
+  bin eq_dec [b; a'; c; a'] [a; c'; b; b].

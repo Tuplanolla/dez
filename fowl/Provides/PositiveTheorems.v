@@ -126,7 +126,7 @@ Global Instance positive_bin_op_is_assoc : IsAssoc (bin_op (A := positive)).
 Proof. intros x y z. apply Pos.add_assoc. Defined.
 
 Global Instance positive_bin_op_is_semigrp : IsSemigrp (bin_op (A := positive)).
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance positive_bin_op_is_comm : IsComm (bin_op (A := positive)).
 Proof. intros x y. apply Pos.add_comm. Defined.
@@ -145,7 +145,7 @@ Global Instance positive_bin_op_is_assoc : IsAssoc (bin_op (A := positive)).
 Proof. intros x y z. apply Pos.mul_assoc. Defined.
 
 Global Instance positive_bin_op_is_semigrp : IsSemigrp (bin_op (A := positive)).
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance positive_bin_op_is_comm : IsComm (bin_op (A := positive)).
 Proof. intros x y. apply Pos.mul_comm. Defined.
@@ -157,10 +157,10 @@ Global Instance positive_bin_op_null_op_is_unl_r : IsUnlR null_op (bin_op (A := 
 Proof. intros x. apply Pos.mul_1_r. Defined.
 
 Global Instance positive_bin_op_null_op_is_unl : IsUnlLR null_op (bin_op (A := positive)).
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance positive_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := positive)).
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 End Multiplicative.
 

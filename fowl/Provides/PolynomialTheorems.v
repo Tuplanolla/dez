@@ -557,7 +557,7 @@ Proof with conversions.
     rewrite Fbc. setoid_rewrite unl_r. reflexivity. Defined.
 
 Global Instance poly_bin_op_is_semigrp : IsSemigrp poly_add.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_is_comm : IsComm poly_add.
 Proof with conversions.
@@ -581,7 +581,7 @@ Proof with conversions.
   - reflexivity. Defined.
 
 Global Instance poly_bin_op_is_comm_semigrp : IsCommSemigrp poly_add.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_is_unl_l : IsUnlL null_op poly_add.
 Proof.
@@ -598,14 +598,14 @@ Proof.
   Fail apply (right_id empty (merge (option_union_with _))). Admitted.
 
 Global Instance poly_bin_op_null_op_is_unl : IsUnlLR null_op poly_add.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_is_mon : IsMon null_op poly_add.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_is_comm_mon :
   IsCommMon poly_add null_op.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_un_op_is_inv_l_hom :
   IsInvL null_op un_op poly_add.
@@ -625,15 +625,15 @@ Proof.
 
 Global Instance poly_bin_op_null_op_un_op_is_inv_hom :
   IsInvLR null_op un_op poly_add.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_un_op_is_grp :
   IsGrp null_op un_op poly_add.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_un_op_is_ab_grp :
   IsAbGrp poly_add null_op un_op.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 End Context.
 
@@ -690,7 +690,7 @@ Proof with conversions.
   generalize dependent m. Admitted.
 
 Global Instance poly_bin_op_is_semigrp : IsSemigrp poly_mul.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_is_comm : IsComm poly_mul.
 Proof.
@@ -700,7 +700,7 @@ Proof.
   generalize dependent x. Admitted.
 
 Global Instance poly_bin_op_is_comm_semigrp : IsCommSemigrp poly_mul.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_is_unl_l : IsUnlL null_op poly_mul.
 Proof.
@@ -711,14 +711,14 @@ Global Instance poly_bin_op_null_op_is_unl_r : IsUnlR null_op poly_mul.
 Proof. intros x. Admitted.
 
 Global Instance poly_bin_op_null_op_is_unl : IsUnlLR null_op poly_mul.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_is_mon : IsMon null_op poly_mul.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance poly_bin_op_null_op_is_comm_mon :
   IsCommMon poly_mul null_op.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 End Context.
 
@@ -763,7 +763,7 @@ Global Instance poly_add_mul_is_distr_r : IsDistrR mul add.
 Proof. intros x y z. Admitted.
 
 Global Instance poly_add_mul_is_distr : IsDistrLR mul add.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance poly_zero_mul_is_absorb_elem_l : IsAbsorbElemL zero mul.
 Proof. intros x. Admitted.
@@ -772,25 +772,25 @@ Global Instance poly_zero_mul_is_absorb_elem_r : IsAbsorbElemR zero mul.
 Proof. intros x. Admitted.
 
 Global Instance poly_zero_mul_is_absorb_elem_l_r : IsAbsorbElemLR zero mul.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance poly_zero_add_one_mul_is_semiring : IsSemiring zero add one mul.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance poly_add_zero_mul_one_is_comm_semiring :
   IsCommSemiring add zero mul one.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance poly_zero_neg_add_one_mul_is_ring :
   IsRing zero neg add one mul.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance poly_mul_is_comm : IsComm mul.
 Proof. intros x y. Admitted.
 
 Global Instance poly_add_zero_neg_mul_one_is_comm_ring :
   IsCommRing add zero neg mul one.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 (** We can now prove that the evaluation map is a homomorphism. *)
 

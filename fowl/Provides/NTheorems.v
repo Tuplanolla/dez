@@ -650,7 +650,7 @@ Global Instance N_bin_op_is_assoc : IsAssoc (bin_op (A := N)).
 Proof. intros x y z. apply N.add_assoc. Defined.
 
 Global Instance N_bin_op_is_semigrp : IsSemigrp (bin_op (A := N)).
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance N_bin_op_is_comm : IsComm (bin_op (A := N)).
 Proof. intros x y. apply N.add_comm. Defined.
@@ -662,10 +662,10 @@ Global Instance N_bin_op_null_op_is_unl_r : IsUnlR null_op (bin_op (A := N)).
 Proof. intros x. apply N.add_0_r. Defined.
 
 Global Instance N_bin_op_null_op_is_unl : IsUnlLR null_op (bin_op (A := N)).
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance N_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := N)).
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 End Additive.
 
@@ -683,7 +683,7 @@ Global Instance N_bin_op_is_assoc : IsAssoc (bin_op (A := N)).
 Proof. intros x y z. apply N.mul_assoc. Defined.
 
 Global Instance N_bin_op_is_semigrp : IsSemigrp (bin_op (A := N)).
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance N_bin_op_is_comm : IsComm (bin_op (A := N)).
 Proof. intros x y. apply N.mul_comm. Defined.
@@ -695,10 +695,10 @@ Global Instance N_bin_op_null_op_is_unl_r : IsUnlR null_op (bin_op (A := N)).
 Proof. intros x. apply N.mul_1_r. Defined.
 
 Global Instance N_bin_op_null_op_is_unl : IsUnlLR null_op (bin_op (A := N)).
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance N_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := N)).
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 End Multiplicative.
 
@@ -719,7 +719,7 @@ Global Instance N_add_mul_is_distr_r : IsDistrR mul add.
 Proof. intros x y z. apply N.mul_add_distr_r. Defined.
 
 Global Instance N_add_mul_is_distr : IsDistrLR mul add.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance N_zero_mul_is_absorb_elem_l : IsAbsorbElemL zero mul.
 Proof. intros x. apply N.mul_0_l. Defined.
@@ -728,10 +728,10 @@ Global Instance N_zero_mul_is_absorb_elem_r : IsAbsorbElemR zero mul.
 Proof. intros x. apply N.mul_0_r. Defined.
 
 Global Instance N_zero_mul_is_absorb_elem_l_r : IsAbsorbElemLR zero mul.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance N_zero_add_one_mul_is_semiring : IsSemiring zero add one mul.
-Proof. split; typeclasses eauto. Defined.
+Proof. esplit; typeclasses eauto. Defined.
 
 Global Instance N_mul_is_comm : IsComm mul.
 Proof. intros x y. apply N.mul_comm. Defined.
