@@ -222,12 +222,38 @@ Import ListNotations.
 
 Section Context.
 
+Inductive digit (A : Type) : Type :=
+  | One (a : A) : digit A
+  | Two (a b : A) : digit A
+  | Three (a b c : A) : digit A
+  | Four (a b c d : A) : digit A.
+
+Inductive node (A : Type) : Type :=
+  | Node2 (a b : A) : node A
+  | Node3 (a b c : A) : node A.
+
+Inductive queue (A : Type) : Type :=
+  | Empty : queue A
+  | Single (a : A) : queue A
+  | Deep (l : digit A) (t : queue (node A)) (r : digit A) : queue A.
+
 Context (A : Type) (d : forall x y : A, {x = y} + {x <> y})
   (x : A) (f : A -> A) (k : A -> A -> A).
 
 #[local] Instance has_eq_dec : HasEqDec A := d.
 
+(** We should use finger trees for this.
+    It is possible to achieve constant time cons, snoc,
+    logarithmic time append and linear time iteration.
+    See the paper by Hinze and Paterson for details. *)
+
 Definition F : Type := list (bool * A).
+
+Definition F_wf (a : F) : Prop :=
+  forall (n : nat) (i j : bool) (x y : A),
+  nth_error a n = Some (i, x) ->
+  nth_error a (S n) = Some (j, y) ->
+  i = j \/ x <> y.
 
 Definition rel (x y : F) : Prop := if eq_dec x y then true else false.
 
@@ -237,15 +263,11 @@ Definition un (a : F) : F :=
   let b := rev a in
   map (fun x : bool * A => (negb (fst x), snd x)) b.
 
-(* b a' c a' + a c' b b *)
-(* b a' c + c' b b *)
-(* b a' + b b *)
-(* b a' b b *)
-
 Fail Fail Fixpoint bin (a b : F) {struct b} : F :=
   let c := rev a in
   match c, b with
-  | (i, x) :: xs, (j, y) :: ys => if decide (i = negb j /\ x = y) then
+  | (i, x) :: xs, (j, y) :: ys => if
+      decide (i = negb j /\ x = y) then
       bin (rev xs) ys else
       a ++ b
   | _, [] => a
@@ -254,7 +276,8 @@ Fail Fail Fixpoint bin (a b : F) {struct b} : F :=
 
 Fixpoint bin_rev (a b : F) {struct b} : F * F :=
   match a, b with
-  | (i, x) :: xs, (j, y) :: ys => if decide (i = negb j /\ x = y) then
+  | (i, x) :: xs, (j, y) :: ys => if
+      decide (i = negb j /\ x = y) then
       bin_rev xs ys else
       (a, b)
   | _, [] => (a, [])
@@ -287,6 +310,11 @@ Proof.
 End Context.
 
 #[local] Open Scope nat_scope.
+
+(* b a' c a' + a c' b b *)
+(* b a' c + c' b b *)
+(* b a' + b b *)
+(* b a' b b *)
 
 Compute
   let a := (false, 1) in

@@ -9,47 +9,46 @@ From DEZ.Is Require Export
 
 Module Additive.
 
-#[local] Instance add_Z_has_null_op : HasNullOp Z := Z.zero.
-#[local] Instance add_Z_has_un_op : HasUnOp Z := Z.opp.
-#[local] Instance add_Z_has_bin_op : HasBinOp Z := Z.add.
+#[local] Instance Z_has_null_op : HasNullOp Z := Z.zero.
+#[local] Instance Z_has_un_op : HasUnOp Z := Z.opp.
+#[local] Instance Z_has_bin_op : HasBinOp Z := Z.add.
 
-#[local] Instance add_Z_is_assoc : IsAssoc eq Z.add.
-Proof. intros x y z. apply Z.add_assoc. Qed.
+#[local] Instance Z_is_assoc : IsAssoc eq Z.add.
+Proof. intros x y z. apply Z.assoc. Qed.
 
-#[local] Instance add_Z_is_semigrp : IsSemigrp eq Z.add.
+#[local] Instance Z_is_semigrp : IsSemigrp eq Z.add.
 Proof. esplit; typeclasses eauto. Qed.
 
-#[local] Instance add_Z_is_unl_l : IsUnlL eq Z.zero Z.add.
-Proof. intros x. apply Z.add_0_l. Qed.
+#[local] Instance Z_is_unl_l : IsUnlL eq Z.zero Z.add.
+Proof. intros x. apply Z.0_l. Qed.
 
-#[local] Instance add_Z_is_unl_r : IsUnlR eq Z.zero Z.add.
-Proof. intros x. apply Z.add_0_r. Qed.
+#[local] Instance Z_is_unl_r : IsUnlR eq Z.zero Z.add.
+Proof. intros x. apply Z.0_r. Qed.
 
-#[local] Instance add_Z_is_unl : IsUnlLR eq Z.zero Z.add.
+#[local] Instance Z_is_unl : IsUnlLR eq Z.zero Z.add.
 Proof. esplit; typeclasses eauto. Qed.
 
-#[local] Instance add_Z_is_mon : IsMon eq Z.zero Z.add.
+#[local] Instance Z_is_mon : IsMon eq Z.zero Z.add.
 Proof. esplit; typeclasses eauto. Qed.
 
-#[local] Instance add_Z_is_inv_l : IsInvL eq Z.zero Z.opp Z.add.
-Proof. intros x. apply Z.add_opp_diag_l. Qed.
+#[local] Instance Z_is_inv_l : IsInvL eq Z.zero Z.opp Z.add.
+Proof. intros x. apply Z.opp_diag_l. Qed.
 
-#[local] Instance add_Z_is_inv_r : IsInvR eq Z.zero Z.opp Z.add.
-Proof. intros x. apply Z.add_opp_diag_r. Qed.
+#[local] Instance Z_is_inv_r : IsInvR eq Z.zero Z.opp Z.add.
+Proof. intros x. apply Z.opp_diag_r. Qed.
 
-#[local] Instance add_Z_is_inv : IsInvLR eq Z.zero Z.opp Z.add.
+#[local] Instance Z_is_inv : IsInvLR eq Z.zero Z.opp Z.add.
 Proof. esplit; typeclasses eauto. Qed.
 
-#[local] Instance add_Z_is_grp : IsGrp eq Z.zero Z.opp Z.add.
+#[local] Instance Z_is_grp : IsGrp eq Z.zero Z.opp Z.add.
 Proof. esplit; typeclasses eauto. Qed.
 
-#[local] Instance add_Z_is_comm : IsComm eq Z.add.
-Proof. intros x y. apply Z.add_comm. Qed.
+#[local] Instance Z_is_comm : IsComm eq Z.add.
+Proof. intros x y. apply Z.comm. Qed.
 
-#[export] Hint Resolve add_Z_has_bin_op add_Z_has_null_op add_Z_has_un_op
-  add_Z_is_assoc add_Z_is_semigrp add_Z_is_unl_l add_Z_is_unl_r add_Z_is_unl
-  add_Z_is_mon add_Z_is_inv_l add_Z_is_inv_r add_Z_is_inv add_Z_is_grp
-  add_Z_is_comm : typeclass_instances.
+#[export] Hint Resolve Z_has_bin_op Z_has_null_op Z_has_un_op Z_is_assoc
+  Z_is_semigrp Z_is_unl_l Z_is_unl_r Z_is_unl Z_is_mon Z_is_inv_l Z_is_inv_r
+  Z_is_inv Z_is_grp Z_is_comm : typeclass_instances.
 
 End Additive.
 
