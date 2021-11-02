@@ -119,7 +119,9 @@ From DEZ.Has Require Import
 From DEZ.Is Require Import
   Extensional.
 From Coq Require Import
-  Lists.List.
+  Extraction Lists.List.
+
+Module Mess.
 
 (** This alternative definition is closer to the one in abstract algebra. *)
 
@@ -218,24 +220,22 @@ Proof.
   - exists true. intuition.
   - exists false. intuition. Defined.
 
+#[local] Instance Forall_has_eq_dec (A : Type) (a : list (A * A))
+  (d : HasEqDec A) : HasDec (Forall
+  (fun a : A * A => match a with (x, y) => x = y end) a).
+Proof.
+  pose proof (Forall_dec
+  (fun a : A * A => match a with (x, y) => x = y end)
+  (fun a : A * A => match a with (x, y) => eq_dec x y end)) as e.
+  destruct (e a) as [b | b].
+  - exists true. intuition.
+  - exists false. split.
+    + intros c. inversion c.
+    + intuition. Defined.
+
 Import ListNotations.
 
 Section Context.
-
-Inductive digit (A : Type) : Type :=
-  | One (a : A) : digit A
-  | Two (a b : A) : digit A
-  | Three (a b c : A) : digit A
-  | Four (a b c d : A) : digit A.
-
-Inductive node (A : Type) : Type :=
-  | Node2 (a b : A) : node A
-  | Node3 (a b c : A) : node A.
-
-Inductive queue (A : Type) : Type :=
-  | Empty : queue A
-  | Single (a : A) : queue A
-  | Deep (l : digit A) (t : queue (node A)) (r : digit A) : queue A.
 
 Context (A : Type) (d : forall x y : A, {x = y} + {x <> y})
   (x : A) (f : A -> A) (k : A -> A -> A).
@@ -247,13 +247,23 @@ Context (A : Type) (d : forall x y : A, {x = y} + {x <> y})
     logarithmic time append and linear time iteration.
     See the paper by Hinze and Paterson for details. *)
 
-Definition F : Type := list (bool * A).
+Definition F_sup : Type := list (bool * A).
 
-Definition F_wf (a : F) : Prop :=
+Definition F_wfb (a : F_sup) : bool :=
+  forallb (fun '((i, x), (j, y)) => decide (i = j \/ x <> y))
+  (combine a (skipn 1 a)).
+
+Definition F_wf (a : F_sup) : Prop :=
   forall (n : nat) (i j : bool) (x y : A),
   nth_error a n = Some (i, x) ->
   nth_error a (S n) = Some (j, y) ->
   i = j \/ x <> y.
+
+(** Technically, we should form this quotient, but we are lazy. *)
+
+Fail Fail Definition F : Type := {x : F_sup $ Squash (F_wfb x)}.
+
+Definition F : Type := F_sup.
 
 Definition rel (x y : F) : Prop := if eq_dec x y then true else false.
 
@@ -324,3 +334,7 @@ Compute
   let b' := (negb (fst b), snd b) in
   let c' := (negb (fst c), snd c) in
   bin eq_dec [b; a'; c; a'] [a; c'; b; b].
+
+End Mess.
+
+Extraction Mess.

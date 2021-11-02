@@ -1,128 +1,83 @@
+From DEZ.Has Require Export
+  Reciprocation.
 From DEZ.Is Require Export
-  AbelianGroup Semigroup
-  Monoid Semiring Ring.
+  Group Semigroup Monoid Semiring Ring.
 
 Ltac eautodestruct :=
   repeat match goal with
   | x : unit |- _ => destruct x
   end; eauto.
 
-Module Additive.
+Equations tt1 (x : unit) : unit :=
+  tt1 _ := tt.
 
-Global Instance unit_has_bin_op : HasBinOp unit := fun x y : unit => tt.
-Global Instance unit_has_null_op : HasNullOp unit := tt.
-Global Instance unit_has_un_op : HasUnOp unit := fun x : unit => tt.
+Equations tt2 (x y : unit) : unit :=
+  tt2 _ _ := tt.
 
-Global Instance unit_bin_op_is_mag : IsMag eq (bin_op (A := unit)).
-Proof. hnf. typeclasses eauto. Defined.
+#[local] Instance unit_has_null_op : HasNullOp unit := tt.
+#[local] Instance unit_has_un_op : HasUnOp unit := tt1.
+#[local] Instance unit_has_bin_op : HasBinOp unit := tt2.
 
-Global Instance unit_bin_op_is_assoc : IsAssoc (bin_op (A := unit)).
-Proof. intros x y z. eautodestruct. Defined.
+#[local] Instance is_assoc : IsAssoc eq tt2.
+Proof. intros x y z. eautodestruct. Qed.
 
-Global Instance unit_bin_op_is_semigrp : IsSemigrp (bin_op (A := unit)).
-Proof. esplit; typeclasses eauto. Defined.
+#[local] Instance is_semigrp : IsSemigrp eq tt2.
+Proof. esplit; typeclasses eauto. Qed.
 
-Global Instance unit_bin_op_is_comm : IsComm (bin_op (A := unit)).
-Proof. intros x y. eautodestruct. Defined.
+#[local] Instance is_comm : IsComm eq tt2.
+Proof. intros x y. eautodestruct. Qed.
 
-Global Instance unit_bin_op_null_op_is_unl_l : IsUnlL null_op (bin_op (A := unit)).
-Proof. intros x. eautodestruct. Defined.
+#[local] Instance is_unl_l : IsUnlL eq tt tt2.
+Proof. intros x. eautodestruct. Qed.
 
-Global Instance unit_bin_op_null_op_is_unl_r : IsUnlR null_op (bin_op (A := unit)).
-Proof. intros x. eautodestruct. Defined.
+#[local] Instance is_unl_r : IsUnlR eq tt tt2.
+Proof. intros x. eautodestruct. Qed.
 
-Global Instance unit_bin_op_null_op_is_unl : IsUnlLR null_op (bin_op (A := unit)).
-Proof. esplit; typeclasses eauto. Defined.
+#[local] Instance is_unl_l_r : IsUnlLR eq tt tt2.
+Proof. esplit; typeclasses eauto. Qed.
 
-Global Instance unit_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := unit)).
-Proof. esplit; typeclasses eauto. Defined.
+#[local] Instance is_mon : IsMon eq tt tt2.
+Proof. esplit; typeclasses eauto. Qed.
 
-Global Instance unit_bin_op_null_op_un_op_is_inv_l_hom :
-  IsInvL null_op un_op (bin_op (A := unit)).
-Proof. intros x. eautodestruct. Defined.
+#[local] Instance is_inv_l : IsInvL eq tt tt1 tt2.
+Proof. intros x. eautodestruct. Qed.
 
-Global Instance unit_bin_op_null_op_un_op_is_inv_r_hom :
-  IsInvR null_op un_op (bin_op (A := unit)).
-Proof. intros x. eautodestruct. Defined.
+#[local] Instance is_inv_r : IsInvR eq tt tt1 tt2.
+Proof. intros x. eautodestruct. Qed.
 
-Global Instance unit_bin_op_null_op_un_op_is_inv_hom :
-  IsInvLR null_op un_op (bin_op (A := unit)).
-Proof. esplit; typeclasses eauto. Defined.
+#[local] Instance is_inv_l_r : IsInvLR eq tt tt1 tt2.
+Proof. esplit; typeclasses eauto. Qed.
 
-Global Instance unit_bin_op_null_op_un_op_is_grp :
-  IsGrp null_op un_op (bin_op (A := unit)).
-Proof. esplit; typeclasses eauto. Defined.
+#[local] Instance is_grp : IsGrp eq tt tt1 tt2.
+Proof. esplit; typeclasses eauto. Qed.
 
-Global Instance unit_bin_op_null_op_un_op_is_ab_grp :
-  IsAbGrp (bin_op (A := unit)) null_op un_op.
-Proof. esplit; typeclasses eauto. Defined.
+#[local] Instance unit_has_zero : HasZero unit := tt.
+#[local] Instance unit_has_neg : HasNeg unit := tt1.
+#[local] Instance unit_has_add : HasAdd unit := tt2.
+#[local] Instance unit_has_one : HasOne unit := tt.
+#[local] Instance unit_has_recip : HasRecip unit := tt1.
+#[local] Instance unit_has_mul : HasMul unit := tt2.
 
-End Additive.
+#[local] Instance is_distr_l : IsDistrL eq tt2 tt2.
+Proof. intros x y z. eautodestruct. Qed.
 
-Module Multiplicative.
+#[local] Instance is_distr_r : IsDistrR eq tt2 tt2.
+Proof. intros x y z. eautodestruct. Qed.
 
-Global Instance unit_bin_op_has_bin_op : HasBinOp unit := fun x y : unit => tt.
-Global Instance unit_has_null_op : HasNullOp unit := tt.
+#[local] Instance unit_add_mul_is_distr_l_r : IsDistrLR eq tt2 tt2.
+Proof. esplit; typeclasses eauto. Qed.
 
-Global Instance unit_bin_op_is_mag : IsMag eq (bin_op (A := unit)).
-Proof. hnf. typeclasses eauto. Defined.
+#[local] Instance is_absorb_elem_l : IsAbsorbElemL eq tt tt2.
+Proof. intros x. eautodestruct. Qed.
 
-Global Instance unit_bin_op_is_assoc : IsAssoc (bin_op (A := unit)).
-Proof. intros x y z. eautodestruct. Defined.
+#[local] Instance is_absorb_elem_r : IsAbsorbElemR eq tt tt2.
+Proof. intros x. eautodestruct. Qed.
 
-Global Instance unit_bin_op_is_semigrp : IsSemigrp (bin_op (A := unit)).
-Proof. esplit; typeclasses eauto. Defined.
+#[local] Instance is_absorb_elem_l_r : IsAbsorbElemLR eq tt tt2.
+Proof. esplit; typeclasses eauto. Qed.
 
-Global Instance unit_bin_op_is_comm : IsComm (bin_op (A := unit)).
-Proof. intros x y. eautodestruct. Defined.
+#[local] Instance is_semiring : IsSemiring eq tt tt2 tt tt2.
+Proof. esplit; typeclasses eauto. Qed.
 
-Global Instance unit_bin_op_null_op_is_unl_l : IsUnlL null_op (bin_op (A := unit)).
-Proof. intros x. eautodestruct. Defined.
-
-Global Instance unit_bin_op_null_op_is_unl_r : IsUnlR null_op (bin_op (A := unit)).
-Proof. intros x. eautodestruct. Defined.
-
-Global Instance unit_bin_op_null_op_is_unl : IsUnlLR null_op (bin_op (A := unit)).
-Proof. esplit; typeclasses eauto. Defined.
-
-Global Instance unit_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := unit)).
-Proof. esplit; typeclasses eauto. Defined.
-
-End Multiplicative.
-
-Global Instance unit_has_add : HasAdd unit := bin_op.
-Global Instance unit_has_zero : HasZero unit := null_op.
-Global Instance unit_has_neg : HasNeg unit := un_op.
-Global Instance unit_has_mul : HasMul unit := bin_op.
-Global Instance unit_has_one : HasOne unit := null_op.
-
-Global Instance unit_add_is_comm : IsComm add.
-Proof. intros x y. eautodestruct. Defined.
-
-Global Instance unit_add_mul_is_distr_l : IsDistrL mul add.
-Proof. intros x y z. eautodestruct. Defined.
-
-Global Instance unit_add_mul_is_distr_r : IsDistrR mul add.
-Proof. intros x y z. eautodestruct. Defined.
-
-Global Instance unit_add_mul_is_distr : IsDistrLR mul add.
-Proof. esplit; typeclasses eauto. Defined.
-
-Global Instance unit_zero_mul_is_absorb_elem_l : IsAbsorbElemL zero mul.
-Proof. intros x. eautodestruct. Defined.
-
-Global Instance unit_zero_mul_is_absorb_elem_r : IsAbsorbElemR zero mul.
-Proof. intros x. eautodestruct. Defined.
-
-Global Instance unit_zero_mul_is_absorb_elem_l_r : IsAbsorbElemLR zero mul.
-Proof. esplit; typeclasses eauto. Defined.
-
-Global Instance unit_zero_add_one_mul_is_semiring : IsSemiring zero add one mul.
-Proof. esplit; typeclasses eauto. Defined.
-
-Global Instance unit_zero_neg_add_one_mul_is_ring :
-  IsRing zero neg add one mul.
-Proof. esplit; typeclasses eauto. Defined.
-
-Global Instance unit_mul_is_comm : IsComm mul.
-Proof. intros x y. eautodestruct. Defined.
+#[local] Instance is_ring : IsRing eq tt tt1 tt2 tt tt2.
+Proof. esplit; typeclasses eauto. Qed.

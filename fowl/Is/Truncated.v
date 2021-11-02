@@ -266,6 +266,22 @@ Proof.
   - intros x. pose proof H0 x. destruct H2. assumption.
   - assumption. Qed.
 
+Lemma pi_is_set `(IsPropExt) `(IsFunExtDep) (A : Type) (P : A -> Type)
+  `(forall x : A, IsSet (P x)) : IsSet (forall x : A, P x).
+Proof.
+  rename H1 into h.
+  pose proof fun (x : A) (a b : P x) =>
+  set_prop_eq (h x) (x := a) (y := b) as h'.
+  intros f g.
+  pose proof fun x : A => h' x (f x) (g x) as k.
+  pose proof pi_is_prop _ k as k'. cbv beta in k'.
+  enough (IsProp (f = g)) by auto.
+  pose proof (equal_f_dep (f := f) (g := g)) as l.
+  pose proof (fun_ext_dep (f := f) (g := g)) as r.
+  pose proof conj l r as e.
+  pose proof prop_ext e as w.
+  rewrite w. apply k'. Qed.
+
 Module FromAxioms.
 
 #[local] Instance is_prop (A : Prop) : IsProp A.
@@ -287,10 +303,28 @@ Proof.
     apply (@pi_is_contr H0 A P). apply H2.
   - apply trunc_succ.
     intros f g.
-    epose proof fun (x : A) a b =>
+    pose proof fun (x : A) a b =>
     trunc_succ_trunc_eq (A := P x) (n := p) (H1 x) a b as u.
-    epose proof fun_ext_dep (f := f) (g := g) as q.
-    epose proof equal_f_dep (f := f) (g := g) as r.
-    epose proof conj q r as w.
-    epose proof prop_ext w.
+    pose proof fun_ext_dep (f := f) (g := g) as q.
+    pose proof equal_f_dep (f := f) (g := g) as r.
+    pose proof conj q r as w.
+    pose proof prop_ext w.
     rewrite <- H2. apply t. intros x. apply trunc_succ_trunc_eq. apply H1. Qed.
+
+#[local] Instance bool_is_set : IsSet bool.
+Proof. intros x y a b. apply EqDec.eqdec_uip. apply bool_EqDec. Qed.
+
+(** Let us write something extra dubious! *)
+
+Unset Universe Checking.
+
+Lemma cohedberg `(IsPropExt) `(IsFunExtDep) :
+  ~ forall (A : Type) `(IsSet A), HasEqDec A.
+Proof.
+  intros f.
+  pose proof f (nat -> bool) as g.
+  assert (x : IsSet (nat -> bool)).
+  apply (pi_is_set _ _). intros _. apply (@bool_is_set).
+  pose proof g x as h.
+  clear f g x.
+  (** Metatheoretical contradiction! *) Abort.
