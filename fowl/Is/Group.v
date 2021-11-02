@@ -112,6 +112,72 @@ End Context.
 #[export] Hint Resolve is_fixed is_invol is_inj
   is_cancel_l is_cancel_r is_cancel_l_r is_antidistr : typeclass_instances.
 
+(** ** Group Homomorphism *)
+
+Class IsGrpHom (A B : Type)
+  (X : A -> A -> Prop) (x : A) (f : A -> A) (k : A -> A -> A)
+  (Y : B -> B -> Prop) (y : B) (g : B -> B) (m : B -> B -> B)
+  (h : A -> B) : Prop := {
+  dom_is_grp :> IsGrp X x f k;
+  codom_is_grp :> IsGrp Y y g m;
+  (** The next two are useless for groups. *)
+  hom_preserves_null_op : Y (h x) y;
+  hom_preserves_un_op : forall z : A, Y (h (f z)) (g (h z));
+  hom_preserves_bin_op : forall z w : A, Y (h (k z w)) (m (h z) (h w));
+  hom_is_proper :> IsProper (X ==> Y) h;
+}.
+
+Section Context.
+
+Context (A B : Type)
+  (X : A -> A -> Prop) (x : A) (f : A -> A) (k : A -> A -> A)
+  (Y : B -> B -> Prop) (y : B) (g : B -> B) (m : B -> B -> B)
+  (h : A -> B) `(!IsGrpHom X x f k Y y g m h).
+
+#[local] Instance dom_has_eq_rel : HasEqRel A := X.
+#[local] Instance dom_has_null_op : HasNullOp A := x.
+#[local] Instance dom_has_un_op : HasUnOp A := f.
+#[local] Instance dom_has_bin_op : HasBinOp A := k.
+#[local] Instance codom_has_eq_rel : HasEqRel B := Y.
+#[local] Instance codom_has_null_op : HasNullOp B := y.
+#[local] Instance codom_has_un_op : HasUnOp B := g.
+#[local] Instance codom_has_bin_op : HasBinOp B := m.
+
+Ltac note := progress (
+  try change X with (eq_rel (A := A)) in *;
+  try change x with (null_op (A := A)) in *;
+  try change f with (un_op (A := A)) in *;
+  try change k with (bin_op (A := A)) in *;
+  try change Y with (eq_rel (A := B)) in *;
+  try change y with (null_op (A := B)) in *;
+  try change g with (un_op (A := B)) in *;
+  try change m with (bin_op (A := B)) in *).
+
+#[local] Lemma hom_preserves_null_op' : Y (h x) y.
+Proof.
+  note.
+  pose proof hom_preserves_bin_op 0 0 as a.
+  setoid_rewrite <- (unl_r (h (0 + 0))) in a.
+  setoid_rewrite (unl_l 0) in a.
+  apply cancel_l in a.
+  setoid_rewrite <- a.
+  reflexivity. Qed.
+
+#[local] Lemma hom_preserves_un_op' : forall z : A, Y (h (f z)) (g (h z)).
+Proof.
+  intros z.
+  note.
+  pose proof hom_preserves_bin_op z (- z) as a.
+  setoid_rewrite (inv_r z) in a.
+  eapply cancel_l with (h z).
+  setoid_rewrite <- a.
+  setoid_rewrite inv_r.
+  rewrite hom_preserves_null_op'.
+  note.
+  reflexivity. Qed.
+
+End Context.
+
 (** Now, let us make a mess! *)
 
 From DEZ.Has Require Import
@@ -119,7 +185,7 @@ From DEZ.Has Require Import
 From DEZ.Is Require Import
   Extensional.
 From Coq Require Import
-  Extraction Lists.List.
+  Extraction Lists.List ZArith.ZArith.
 
 Module Mess.
 
@@ -319,7 +385,37 @@ Proof.
 
 End Context.
 
-#[local] Open Scope nat_scope.
+Section Context.
+
+#[local] Instance Z_has_eq_dec : HasEqDec Z := Z.eq_dec.
+
+#[local] Open Scope Z_scope.
+
+Definition hm (x : F Z) : Z :=
+  fold_right Z.add Z.zero (map (fun a : bool * Z =>
+  match a with
+  (i, x) => if i then Z.opp x else x
+  end) x).
+
+#[local] Instance is_grp_hom :
+  IsGrpHom (rel eq_dec) (null Z) un (bin Z.eq_dec) eq Z.zero Z.opp Z.add hm.
+Proof.
+  esplit.
+  - apply is_grp.
+    + apply Z.zero.
+    + apply Z.opp.
+    + apply Z.add.
+  - admit.
+  - reflexivity.
+  - intros z. unfold hm, un. rewrite map_map. admit.
+  - intros z w. unfold hm, bin. admit.
+  - intros x y. unfold rel. destruct (eq_dec x y).
+    + intros _. rewrite e. reflexivity.
+    + intros a. inversion a. Admitted.
+
+End Context.
+
+#[local] Open Scope Z_scope.
 
 (* b a' c a' + a c' b b *)
 (* b a' c + c' b b *)
@@ -333,7 +429,17 @@ Compute
   let a' := (negb (fst a), snd a) in
   let b' := (negb (fst b), snd b) in
   let c' := (negb (fst c), snd c) in
-  bin eq_dec [b; a'; c; a'] [a; c'; b; b].
+  bin Z.eq_dec [b; a'; c; a'] [a; c'; b; b].
+
+Compute
+  let a := (false, 1) in
+  let b := (false, 2) in
+  let c := (false, 3) in
+  let a' := (negb (fst a), snd a) in
+  let b' := (negb (fst b), snd b) in
+  let c' := (negb (fst c), snd c) in
+  (fold_right Z.add Z.zero [2; -1; 3; -1; 1; -3; 2; 2],
+  hm (bin Z.eq_dec [b; a'; c; a'] [a; c'; b; b])).
 
 End Mess.
 

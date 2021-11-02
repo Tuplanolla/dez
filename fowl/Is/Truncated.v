@@ -316,6 +316,37 @@ Proof. intros x y a b. apply EqDec.eqdec_uip. apply bool_EqDec. Qed.
 
 (** Let us write something extra dubious! *)
 
+Definition lep (x y : bool) : Prop := x -> y.
+
+Definition decreasing (f : nat -> bool) : Prop :=
+  forall i : nat, lep (f (S i)) (f i).
+
+Definition nat_inf : Type := {f : nat -> bool | decreasing f}.
+
+Definition zero_inf : nat_inf.
+Proof.
+  exists (const false). intros i y. apply y. Defined.
+
+Definition succ_inf (x : nat_inf) : nat_inf.
+Proof.
+  destruct x as [f a].
+  exists (fun n : nat =>
+  match n with
+  | O => true
+  | S p => f n
+  end). intros i. revert f a. induction i as [| j b]; intros f a.
+  - intros y. reflexivity.
+  - intros y. apply a. apply y. Defined.
+
+Fixpoint under (n : nat) : nat_inf :=
+  match n with
+  | O => zero_inf
+  | S p => succ_inf (under p)
+  end.
+
+Definition LPO : Type :=
+  forall x : nat_inf, HasDec (exists n : nat, x = under n).
+
 Unset Universe Checking.
 
 Lemma cohedberg `(IsPropExt) `(IsFunExtDep) :
