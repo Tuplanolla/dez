@@ -1,81 +1,87 @@
 From Coq Require Import
   ZArith.ZArith.
+From DEZ.Has Require Export
+  Decidability.
 From DEZ.Is Require Export
   Group Semigroup
   Monoid Semiring Ring
   Equivalence PartialEquivalence Isomorphism.
 
-#[local] Instance Z_has_eq_rel : HasEqRel Z := eq.
+Ltac ecrush :=
+  hnf in *; eauto with zarith.
+
+#[local] Instance has_eq_dec : HasEqDec Z := Z.eq_dec.
+#[local] Instance has_eq_rel : HasEqRel Z := eq.
 
 Module Additive.
 
-#[local] Instance Z_has_null_op : HasNullOp Z := Z.zero.
-#[local] Instance Z_has_un_op : HasUnOp Z := Z.opp.
-#[local] Instance Z_has_bin_op : HasBinOp Z := Z.add.
+#[local] Instance has_null_op : HasNullOp Z := Z.zero.
+#[local] Instance has_un_op : HasUnOp Z := Z.opp.
+#[local] Instance has_bin_op : HasBinOp Z := Z.add.
 
-#[local] Instance Z_is_assoc : IsAssoc eq Z.add.
-Proof. intros x y z. apply Z.assoc. Qed.
+#[local] Instance is_assoc : IsAssoc eq Z.add.
+Proof. ecrush. Qed.
 
-#[local] Instance Z_is_semigrp : IsSemigrp eq Z.add.
+#[local] Instance is_semigrp : IsSemigrp eq Z.add.
 Proof. esplit; typeclasses eauto. Qed.
 
-#[local] Instance Z_is_unl_l : IsUnlL eq Z.zero Z.add.
-Proof. intros x. apply Z.0_l. Qed.
+#[local] Instance is_unl_l : IsUnlL eq Z.zero Z.add.
+Proof. ecrush. Qed.
 
-#[local] Instance Z_is_unl_r : IsUnlR eq Z.zero Z.add.
-Proof. intros x. apply Z.0_r. Qed.
+#[local] Instance is_unl_r : IsUnlR eq Z.zero Z.add.
+Proof. ecrush. Qed.
 
-#[local] Instance Z_is_unl : IsUnlLR eq Z.zero Z.add.
+#[local] Instance is_unl : IsUnlLR eq Z.zero Z.add.
 Proof. esplit; typeclasses eauto. Qed.
 
-#[local] Instance Z_is_mon : IsMon eq Z.zero Z.add.
+#[local] Instance is_mon : IsMon eq Z.zero Z.add.
 Proof. esplit; typeclasses eauto. Qed.
 
-#[local] Instance Z_is_inv_l : IsInvL eq Z.zero Z.opp Z.add.
-Proof. intros x. apply Z.opp_diag_l. Qed.
+#[local] Instance is_inv_l : IsInvL eq Z.zero Z.opp Z.add.
+Proof. ecrush. Qed.
 
-#[local] Instance Z_is_inv_r : IsInvR eq Z.zero Z.opp Z.add.
-Proof. intros x. apply Z.opp_diag_r. Qed.
+#[local] Instance is_inv_r : IsInvR eq Z.zero Z.opp Z.add.
+Proof. ecrush. Qed.
 
-#[local] Instance Z_is_inv : IsInvLR eq Z.zero Z.opp Z.add.
+#[local] Instance is_inv : IsInvLR eq Z.zero Z.opp Z.add.
 Proof. esplit; typeclasses eauto. Qed.
 
-#[local] Instance Z_is_grp : IsGrp eq Z.zero Z.opp Z.add.
+#[local] Instance is_grp : IsGrp eq Z.zero Z.opp Z.add.
 Proof. esplit; typeclasses eauto. Qed.
 
-#[local] Instance Z_is_comm : IsComm eq Z.add.
-Proof. intros x y. apply Z.comm. Qed.
+#[local] Instance is_comm : IsComm eq Z.add.
+Proof. ecrush. Qed.
 
-#[export] Hint Resolve Z_has_bin_op Z_has_null_op Z_has_un_op Z_is_assoc
-  Z_is_semigrp Z_is_unl_l Z_is_unl_r Z_is_unl Z_is_mon Z_is_inv_l Z_is_inv_r
-  Z_is_inv Z_is_grp Z_is_comm : typeclass_instances.
+#[export] Hint Resolve has_bin_op has_null_op has_un_op is_assoc
+  is_semigrp is_unl_l is_unl_r is_unl is_mon is_inv_l is_inv_r
+  is_inv is_grp is_comm : typeclass_instances.
 
 End Additive.
 
-#[export] Hint Resolve Z_has_eq_rel : typeclass_instances.
+#[export] Hint Resolve has_eq_rel : typeclass_instances.
 
 Module Multiplicative.
 
 Global Instance Z_bin_op_has_bin_op : HasBinOp Z := Z.mul.
-Global Instance Z_has_null_op : HasNullOp Z := Z.one.
+Global Instance has_null_op : HasNullOp Z := Z.one.
 
 Global Instance Z_bin_op_is_mag : IsMag eq (bin_op (A := Z)).
 Proof. hnf. typeclasses eauto. Qed.
 
 Global Instance Z_bin_op_is_assoc : IsAssoc (bin_op (A := Z)).
-Proof. intros x y z. apply Z.mul_assoc. Qed.
+Proof. ecrush. Qed.
 
 Global Instance Z_bin_op_is_semigrp : IsSemigrp (bin_op (A := Z)).
 Proof. esplit; typeclasses eauto. Qed.
 
 Global Instance Z_bin_op_is_comm : IsComm (bin_op (A := Z)).
-Proof. intros x y. apply Z.mul_comm. Qed.
+Proof. ecrush. Qed.
 
 Global Instance Z_bin_op_null_op_is_unl_l : IsUnlL null_op (bin_op (A := Z)).
-Proof. intros x. apply Z.mul_1_l. Qed.
+Proof. ecrush. Qed.
 
 Global Instance Z_bin_op_null_op_is_unl_r : IsUnlR null_op (bin_op (A := Z)).
-Proof. intros x. apply Z.mul_1_r. Qed.
+Proof. ecrush. Qed.
 
 Global Instance Z_bin_op_null_op_is_unl : IsUnlLR null_op (bin_op (A := Z)).
 Proof. esplit; typeclasses eauto. Qed.
@@ -85,29 +91,29 @@ Proof. esplit; typeclasses eauto. Qed.
 
 End Multiplicative.
 
-Global Instance Z_has_add : HasAdd Z := Z.add.
-Global Instance Z_has_zero : HasZero Z := Z.zero.
-Global Instance Z_has_neg : HasNeg Z := Z.opp.
-Global Instance Z_has_mul : HasMul Z := Z.mul.
-Global Instance Z_has_one : HasOne Z := Z.one.
+Global Instance has_add : HasAdd Z := Z.add.
+Global Instance has_zero : HasZero Z := Z.zero.
+Global Instance has_neg : HasNeg Z := Z.opp.
+Global Instance has_mul : HasMul Z := Z.mul.
+Global Instance has_one : HasOne Z := Z.one.
 
 Global Instance Z_add_is_comm : IsComm add.
-Proof. intros x y. apply Z.add_comm. Qed.
+Proof. ecrush. Qed.
 
 Global Instance Z_add_mul_is_distr_l : IsDistrL mul add.
-Proof. intros x y z. apply Z.mul_add_distr_l. Qed.
+Proof. ecrush. Qed.
 
 Global Instance Z_add_mul_is_distr_r : IsDistrR mul add.
-Proof. intros x y z. apply Z.mul_add_distr_r. Qed.
+Proof. ecrush. Qed.
 
 Global Instance Z_add_mul_is_distr : IsDistrLR mul add.
 Proof. esplit; typeclasses eauto. Qed.
 
 Global Instance Z_zero_mul_is_absorb_elem_l : IsAbsorbElemL zero mul.
-Proof. intros x. apply Z.mul_0_l. Qed.
+Proof. ecrush. Qed.
 
 Global Instance Z_zero_mul_is_absorb_elem_r : IsAbsorbElemR zero mul.
-Proof. intros x. apply Z.mul_0_r. Qed.
+Proof. ecrush. Qed.
 
 Global Instance Z_zero_mul_is_absorb_elem_l_r : IsAbsorbElemLR zero mul.
 Proof. esplit; typeclasses eauto. Qed.
@@ -119,20 +125,20 @@ Global Instance Z_zero_neg_add_one_mul_is_ring : IsRing zero neg add one mul.
 Proof. esplit; typeclasses eauto. Qed.
 
 Global Instance Z_mul_is_comm : IsComm mul.
-Proof. intros x y. apply Z.mul_comm. Qed.
+Proof. ecrush. Qed.
 
 (** TODO Organize the rest. *)
 
-Global Instance Z_has_eq_rel : HasEqRel Z := Z.eq.
+Global Instance has_eq_rel : HasEqRel Z := Z.eq.
 
 Global Instance Z_eq_is_refl : IsRefl Z.eq.
-Proof. intros x. reflexivity. Qed.
+Proof. ecrush. Qed.
 
 Global Instance Z_eq_is_sym : IsSym Z.eq.
-Proof. intros x y p. symmetry; auto. Qed.
+Proof. ecrush. Qed.
 
 Global Instance Z_eq_is_trans : IsTrans Z.eq.
-Proof. intros x y z p q. transitivity y; auto. Qed.
+Proof. ecrush. Qed.
 
 Global Instance Z_eq_is_part_eq : IsPartEq Z.eq.
 Proof. esplit; typeclasses eauto. Qed.

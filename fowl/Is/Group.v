@@ -29,10 +29,10 @@ Context (A : Type) (X : A -> A -> Prop)
 #[local] Instance has_bin_op : HasBinOp A := k.
 
 Ltac note := progress (
-  try change X with _==_ in *;
-  try change x with 0 in *;
-  try change f with -_ in *;
-  try change k with _+_ in *).
+  try change X with eq_rel in *;
+  try change x with null_op in *;
+  try change f with un_op in *;
+  try change k with bin_op in *).
 
 #[local] Instance is_fixed : IsFixed X x f.
 Proof.
@@ -112,6 +112,32 @@ End Context.
 #[export] Hint Resolve is_fixed is_invol is_inj
   is_cancel_l is_cancel_r is_cancel_l_r is_antidistr : typeclass_instances.
 
+(** ** Homomorphism Preserves Nullary Operations *)
+
+Class IsNullPres (A B : Type) (X : B -> B -> Prop)
+  (x : A) (y : B) (h : A -> B) : Prop :=
+  null_pres : X (h x) y.
+
+Class IsNullPres' (A B C : Type) (X : B -> C -> Prop)
+  (x : A) (y : C) (h : A -> B) : Prop :=
+  null_pres' : X (h x) y.
+
+#[global] Instance is_null_pres (A B : Type) (X : B -> B -> Prop)
+  (x : A) (y : B) (h : A -> B) `(!IsNullPres' X x y h) : IsNullPres X x y h.
+Proof. apply null_pres'. Qed.
+
+(** ** Homomorphism Preserves Unary Operations *)
+
+Class IsUnPres (A B : Type) (X : B -> B -> Prop)
+  (f : A -> A) (g : B -> B) (h : A -> B) : Prop :=
+  un_pres (x : A) : X (h (f x)) (g (h x)).
+
+(** ** Homomorphism Preserves Binary Operations *)
+
+Class IsBinPres (A B : Type) (X : B -> B -> Prop)
+  (k : A -> A -> A) (m : B -> B -> B) (h : A -> B) : Prop :=
+  bin_pres (x y : A) : X (h (k x y)) (m (h x) (h y)).
+
 (** ** Group Homomorphism *)
 
 Class IsGrpHom (A B : Type)
@@ -120,10 +146,7 @@ Class IsGrpHom (A B : Type)
   (h : A -> B) : Prop := {
   dom_is_grp :> IsGrp X x f k;
   codom_is_grp :> IsGrp Y y g m;
-  (** The next two are useless for groups. *)
-  hom_preserves_null_op : Y (h x) y;
-  hom_preserves_un_op : forall z : A, Y (h (f z)) (g (h z));
-  hom_preserves_bin_op : forall z w : A, Y (h (k z w)) (m (h z) (h w));
+  hom_is_bin_pres :> IsBinPres Y k m h;
   hom_is_proper :> IsProper (X ==> Y) h;
 }.
 
@@ -153,28 +176,27 @@ Ltac note := progress (
   try change g with (un_op (A := B)) in *;
   try change m with (bin_op (A := B)) in *).
 
-#[local] Lemma hom_preserves_null_op' : Y (h x) y.
+#[local] Instance hom_is_null_pres : IsNullPres Y x y h.
 Proof.
+  unfold IsNullPres.
   note.
-  pose proof hom_preserves_bin_op 0 0 as a.
+  pose proof bin_pres 0 0 as a.
   setoid_rewrite <- (unl_r (h (0 + 0))) in a.
   setoid_rewrite (unl_l 0) in a.
   apply cancel_l in a.
   setoid_rewrite <- a.
   reflexivity. Qed.
 
-#[local] Lemma hom_preserves_un_op' : forall z : A, Y (h (f z)) (g (h z)).
+#[local] Instance hom_is_un_pres : IsUnPres Y f g h.
 Proof.
-  intros z.
   note.
-  pose proof hom_preserves_bin_op z (- z) as a.
+  intros z.
+  pose proof bin_pres z (- z) as a.
   setoid_rewrite (inv_r z) in a.
   eapply cancel_l with (h z).
   setoid_rewrite <- a.
   setoid_rewrite inv_r.
-  rewrite hom_preserves_null_op'.
-  note.
-  reflexivity. Qed.
+  apply null_pres. Qed.
 
 End Context.
 
@@ -412,13 +434,26 @@ Proof.
     + apply Z.zero.
     + apply Z.opp.
     + apply Z.add.
-  - admit.
-  - reflexivity.
-  - intros z. unfold hm, un. admit.
+  - (** Yes, [+%Z] forms a group. *) admit.
   - intros z w. unfold hm, bin. admit.
-  - intros x y. unfold rel. destruct (eq_dec x y).
+  - intros z w. unfold rel. destruct (eq_dec z w).
     + intros _. rewrite e. reflexivity.
     + intros a. inversion a. Admitted.
+
+Equations tt1 (x : unit) : unit :=
+  tt1 _ := tt.
+
+Equations tt2 (x y : unit) : unit :=
+  tt2 _ _ := tt.
+
+#[local] Instance is_grp_hom' :
+  IsGrpHom eq Z.zero Z.opp Z.add eq tt tt1 tt2 (const tt).
+Proof.
+  esplit.
+  - (** Yes, [+%Z] forms a group. *) admit.
+  - (** Yes, [+%unit] forms a group. *) admit.
+  - intros ? ?. reflexivity.
+  - intros ? ? _. reflexivity. Admitted.
 
 End Context.
 
