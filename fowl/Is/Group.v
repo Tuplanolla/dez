@@ -335,13 +335,20 @@ Definition rel (x y : F) : Prop := if eq_dec x y then true else false.
 
 Definition null : F := [].
 
+Fail Fail Definition un (a : F) : F :=
+  map (fun x : bool * A => (negb (fst x), snd x)) (rev a).
+
+Fixpoint un_rev (b a : F) : F :=
+  match a with
+  | [] => b
+  | (i, x) :: xs => un_rev ((negb i, x) :: b) xs
+  end.
+
 Definition un (a : F) : F :=
-  let b := rev a in
-  map (fun x : bool * A => (negb (fst x), snd x)) b.
+  un_rev [] a.
 
 Fail Fail Fixpoint bin (a b : F) {struct b} : F :=
-  let c := rev a in
-  match c, b with
+  match rev a, b with
   | (i, x) :: xs, (j, y) :: ys => if
       decide (i = negb j /\ x = y) then
       bin (rev xs) ys else
@@ -353,7 +360,7 @@ Fail Fail Fixpoint bin (a b : F) {struct b} : F :=
 Fixpoint bin_rev (a b : F) {struct b} : F * F :=
   match a, b with
   | (i, x) :: xs, (j, y) :: ys => if
-      decide (i = negb j /\ x = y) then
+      decide (i = j /\ x = y) then
       bin_rev xs ys else
       (a, b)
   | _, [] => (a, [])
@@ -361,8 +368,8 @@ Fixpoint bin_rev (a b : F) {struct b} : F * F :=
   end.
 
 Definition bin (a b : F) : F :=
-  let (c, d) := bin_rev (rev a) b in
-  rev c ++ d.
+  let (c, d) := bin_rev (un a) b in
+  un c ++ d.
 
 #[local] Instance is_grp : IsGrp rel null un bin.
 Proof.
@@ -407,7 +414,7 @@ Proof.
     + apply Z.add.
   - admit.
   - reflexivity.
-  - intros z. unfold hm, un. rewrite map_map. admit.
+  - intros z. unfold hm, un. admit.
   - intros z w. unfold hm, bin. admit.
   - intros x y. unfold rel. destruct (eq_dec x y).
     + intros _. rewrite e. reflexivity.
@@ -416,6 +423,18 @@ Proof.
 End Context.
 
 #[local] Open Scope Z_scope.
+
+(* - (b a' c a c' b b) *)
+(* b' b' c a' c' a b' *)
+
+Compute
+  let a := (false, 1) in
+  let b := (false, 2) in
+  let c := (false, 3) in
+  let a' := (negb (fst a), snd a) in
+  let b' := (negb (fst b), snd b) in
+  let c' := (negb (fst c), snd c) in
+  un [b; a'; c; a; c'; b; b].
 
 (* b a' c a' + a c' b b *)
 (* b a' c + c' b b *)
@@ -443,4 +462,4 @@ Compute
 
 End Mess.
 
-Extraction Mess.
+(* Extraction Mess. *)
