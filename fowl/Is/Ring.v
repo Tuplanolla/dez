@@ -45,12 +45,12 @@ Context (A : Type) (X : A -> A -> Prop)
 #[local] Instance has_mul : HasMul A := m.
 
 Ltac note := progress (
-  try change X with _==_ in *;
-  try change x with 0 in *;
-  try change f with -_ in *;
-  try change k with _+_ in *;
-  try change y with 1 in *;
-  try change m with _*_ in *).
+  try change X with eq_rel in *;
+  try change x with zero in *;
+  try change f with neg in *;
+  try change k with add in *;
+  try change y with one in *;
+  try change m with mul in *).
 
 (** Specialize binary relations into the underlying equivalence relation and
     either specialize operations into the underlying additive operations or

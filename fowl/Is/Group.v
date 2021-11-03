@@ -446,8 +446,11 @@ Equations tt1 (x : unit) : unit :=
 Equations tt2 (x y : unit) : unit :=
   tt2 _ _ := tt.
 
+Equations const_tt (x : Z) : unit :=
+  const_tt _ := tt.
+
 #[local] Instance is_grp_hom' :
-  IsGrpHom eq Z.zero Z.opp Z.add eq tt tt1 tt2 (const tt).
+  IsGrpHom eq Z.zero Z.opp Z.add eq tt tt1 tt2 const_tt.
 Proof.
   esplit.
   - (** Yes, [+%Z] forms a group. *) admit.
