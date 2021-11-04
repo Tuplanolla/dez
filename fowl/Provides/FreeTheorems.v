@@ -11,6 +11,8 @@ From DEZ.Provides Require Export
 From DEZ.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
+#[local] Notation "'(' x ';' a ')'" := (exist _ x a).
+
 Module Mess.
 
 #[global] Instance prod_has_eq_dec (A B : Type)
@@ -40,14 +42,14 @@ Proof.
   - left. intuition.
   - right. intuition. Defined.
 
-#[local] Instance Forall_has_dec (A : Type) (P : A -> Prop)
+#[global] Instance Forall_has_dec (A : Type) (P : A -> Prop)
   (d : forall x : A, HasDec (P x)) (a : list A) : HasDec (Forall P a) :=
   Forall_dec P d a.
 
-#[local] Instance not_has_dec (A : Prop) (d : HasDec A) : HasDec (~ A) :=
+#[global] Instance not_has_dec (A : Prop) (d : HasDec A) : HasDec (~ A) :=
   has_dec Decidable_not.
 
-#[local] Instance Sexists_has_eq_dec (A : Type) (P : A -> SProp)
+#[global] Instance Sexists_has_eq_dec (A : Type) (P : A -> SProp)
   (e : HasEqDec A) : HasEqDec {x : A $ P x}.
 Proof.
   intros [x a] [y b]. destruct (e x y) as [s | s].
@@ -113,23 +115,21 @@ Equations free_wfb (s : list (bool * A)) : bool :=
   free_wfb s := decide (Forall wfb (combine s (skipn 1 s))).
 
 Equations free : Type :=
-  free := {s : list (bool * A) $ Squash (free_wfb s)}.
+  free := {s : list (bool * A) | (free_wfb s)}.
 
-#[local] Notation "'(' x ';' a ')'" := (Sexists _ x a).
-
-Equations rel (x y : free) : Prop :=
+Equations rel (x y : free) : bool :=
   rel (s; _) (t; _) := decide (s = t).
 
 Equations null : free :=
   null := ([]; _).
-Next Obligation. apply squash. reflexivity. Qed.
+Next Obligation. reflexivity. Qed.
 
 Equations un (x : free) : free :=
   un (s; _) := (map (prod_bimap negb id) (rev s); _).
 Next Obligation.
   intros s ws.
-  apply unsquash in ws. apply Decidable_sound in ws.
-  apply squash. apply Decidable_complete.
+  Fail apply unsquash in ws. apply Decidable_sound in ws.
+  Fail apply squash. apply Decidable_complete.
   change (fun x : (bool * A) * (bool * A) => is_true (wfb x))
   with (is_true o wfb) in *.
   induction s as [| [i x] [| [j y] u] w].
@@ -168,16 +168,21 @@ Equations bin_fix (s t : list (bool * A)) :
 
 Equations bin (x y : free) : free :=
   bin (s; _) (t; _) :=
-  let (s', t') := bin_fix (rev s) t in
-  (rev s' ++ t'; _).
+    let (s', t') := bin_fix (rev s) t in
+    (rev s' ++ t'; _).
 Next Obligation.
   intros s ws t wt s' t'.
-  apply unsquash in ws, wt. apply Decidable_sound in ws, wt.
-  apply squash. apply Decidable_complete.
+  Fail apply unsquash in ws, wt. apply Decidable_sound in ws, wt.
+  Fail apply squash. apply Decidable_complete.
   change (fun x : (bool * A) * (bool * A) => is_true (wfb x))
   with (is_true o wfb) in *. Admitted.
 
-#[local] Instance is_grp : IsGrp rel null un bin.
+#[local] Instance has_eq_rel : HasEqRel free := eq.
+#[local] Instance has_null_op : HasNullOp free := null.
+#[local] Instance has_un_op : HasUnOp free := un.
+#[local] Instance has_bin_op : HasBinOp free := bin.
+
+#[local] Instance is_grp : IsGrp eq null un bin.
 Proof.
   esplit.
   - esplit.
@@ -200,51 +205,54 @@ End Context.
 
 Arguments free _ {_}.
 
+#[export] Hint Resolve has_eq_rel
+  has_null_op has_un_op has_bin_op is_grp : typeclass_instances.
+
 Section Context.
 
 Context (A : Type) {d : HasEqDec A} (f : A -> Z).
 
-#[local] Open Scope Z_scope.
-
-Definition hm (s : free A) : Z :=
-  fold_right Z.add Z.zero
-  (map (fun t : bool * A => let (x, a) := t in
-  if x then Z.opp (f a) else f a) (Spr1 s)).
+Equations eval (s : free A) : Z :=
+  eval (s; _) := fold_right Z.add Z.zero
+    (map (fun a : bool * A => let (i, x) := a in
+    if i then Z.opp (f x) else f x) s).
 
 #[local] Instance is_grp_hom :
-  IsGrpHom rel null un bin eq Z.zero Z.opp Z.add hm.
+  IsGrpHom eq null un bin eq Z.zero Z.opp Z.add eval.
 Proof.
   esplit.
   - apply is_grp.
   - apply Additive.is_grp.
-  - intros z w. unfold hm. admit.
+  - intros z w. unfold eval. admit.
   - intros [z ?] [w ?]. unfold rel. destruct (eq_dec z w).
-    + intros _. unfold hm, Spr1. rewrite e. reflexivity.
+    + intros _. unfold eval, proj1_sig. rewrite e. reflexivity.
     + intros a. inversion a. Admitted.
 
-Equations tt1 (x : unit) : unit :=
-  tt1 _ := tt.
+End Context.
 
-Equations tt2 (x y : unit) : unit :=
-  tt2 _ _ := tt.
+Section Context.
 
-Equations const_tt (x : Z) : unit :=
+Context (A : Type) (X : A -> A -> Prop)
+  (x : A) (f : A -> A) (k : A -> A -> A)
+  `(!IsGrp X x f k).
+
+Equations const_tt (x : A) : unit :=
   const_tt _ := tt.
 
 #[local] Instance is_grp_hom' :
-  IsGrpHom eq Z.zero Z.opp Z.add eq tt tt1 tt2 const_tt.
+  IsGrpHom X x f k eq tt tt1 tt2 const_tt.
 Proof.
   esplit.
-  - (** Yes, [+%Z] forms a group. *) admit.
-  - (** Yes, [+%unit] forms a group. *) admit.
+  - typeclasses eauto.
+  - typeclasses eauto.
   - intros ? ?. reflexivity.
-  - intros ? ? _. reflexivity. Admitted.
+  - intros ? ? _. reflexivity. Qed.
 
 End Context.
 
 End Mess.
 
-Import ListNotations.
+(* Import ListNotations.
 
 #[local] Open Scope Z_scope.
 
@@ -258,7 +266,7 @@ Compute
   let a' := (negb (fst a), snd a) in
   let b' := (negb (fst b), snd b) in
   let c' := (negb (fst c), snd c) in
-  Mess.un (Sexists _ [b; a'; c; a; c'; b; b] _).
+  Mess.un ([b; a'; c; a; c'; b; b]; _).
 
 (* b a' c a' + a c' b b *)
 (* b a' c + c' b b *)
@@ -282,6 +290,4 @@ Compute
   let b' := (negb (fst b), snd b) in
   let c' := (negb (fst c), snd c) in
   (fold_right Z.add Z.zero [2; -1; 3; -1; 1; -3; 2; 2],
-  Mess.hm (Mess.bin [b; a'; c; a'] [a; c'; b; b])).
-
-(* Extraction Mess. *)
+  Mess.eval (Mess.bin [b; a'; c; a'] [a; c'; b; b])). *)

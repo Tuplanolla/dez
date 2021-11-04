@@ -96,3 +96,11 @@ Proof. esplit; typeclasses eauto. Qed.
 
 #[local] Instance is_ring : IsRing eq tt tt1 tt2 tt tt2.
 Proof. esplit; typeclasses eauto. Qed.
+
+#[export] Hint Resolve unit_is_contr unit_has_eq_dec unit_has_eq_rel
+  unit_has_null_op unit_has_un_op unit_has_bin_op is_assoc is_semigrp is_comm
+  is_unl_l is_unl_r is_unl_l_r is_mon is_inv_l is_inv_r is_inv_l_r is_grp
+  unit_has_zero unit_has_neg unit_has_add unit_has_one unit_has_recip
+  unit_has_mul is_distr_l is_distr_r is_distr_l_r is_absorb_elem_l
+  is_absorb_elem_r is_absorb_elem_l_r is_semiring is_ring :
+  typeclass_instances.
