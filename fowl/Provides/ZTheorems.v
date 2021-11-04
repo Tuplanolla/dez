@@ -60,7 +60,7 @@ End Additive.
 
 #[export] Hint Resolve has_eq_rel : typeclass_instances.
 
-Module Multiplicative.
+(* Module Multiplicative.
 
 Global Instance Z_bin_op_has_bin_op : HasBinOp Z := Z.mul.
 Global Instance has_null_op : HasNullOp Z := Z.one.
@@ -180,4 +180,4 @@ Proof.
     + destruct p as [q | q |].
       * cbn. rewrite (Pos.pred_double_succ q). reflexivity.
       * reflexivity.
-      * reflexivity. Qed.
+      * reflexivity. Qed. *)

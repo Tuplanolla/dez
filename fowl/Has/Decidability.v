@@ -3,16 +3,9 @@
 From DEZ Require Export
   Init.
 
-Fail Fail Class HasDec (A : Prop) : Type := {
-  decide : bool;
-  Decidable_spec : decide = true <-> A;
-}.
+Class HasDec (A : Prop) : Type := dec : {A} + {~ A}.
 
-Notation HasDec := Decidable.
-
-Arguments decide _ {_}.
-
-Typeclasses Transparent decide.
+Typeclasses Transparent HasDec.
 
 (** The [decide] tactic should have a form
     that accepts a disjunctive pattern with two branches. *)
@@ -27,24 +20,42 @@ Arguments eq_dec {_ _} _ _.
 
 Typeclasses Transparent EqDec.
 
+(** We need some instances to bridge the gap
+    between our definition, the standard library and the equations plugin.
+    Without them, we could not [decide (tt = tt)], for example. *)
+
 Section Context.
 
-Context (A : Type) (Hd : HasEqDec A) (x y : A).
+Context (A : Prop).
 
-(** We need this instance to bridge the gap
-    between the standard library and the equations plugin.
-    Without it, we could not [decide (tt = tt)], for example. *)
-
-#[local] Instance has_dec : HasDec (x = y).
+#[local] Instance has_dec (d : Decidable A) : HasDec A.
 Proof.
-  destruct (eq_dec x y) as [e | f].
-  - exists true. split.
-    + intros _. apply e.
-    + intros _. reflexivity.
+  destruct d as [[] ?].
+  - left. intuition.
+  - right. intuition. Defined.
+
+#[local] Instance decidable (d : HasDec A) : Decidable A.
+Proof.
+  destruct d as [x | f].
+  - exists true. intuition.
   - exists false. split.
-    + intros e. inversion e.
-    + intros e. contradiction. Defined.
+    + congruence.
+    + intuition. Defined.
 
 End Context.
 
-#[export] Hint Resolve has_dec : typeclass_instances.
+#[export] Hint Resolve decidable : typeclass_instances.
+
+Section Context.
+
+Context (A : Type).
+
+#[local] Instance has_eq_dec (d : forall x y : A, HasDec (x = y)) :
+  HasEqDec A := d.
+
+#[local] Instance eq_has_dec (e : HasEqDec A) (x y : A) :
+  HasDec (x = y) := e x y.
+
+End Context.
+
+#[export] Hint Resolve eq_has_dec : typeclass_instances.
