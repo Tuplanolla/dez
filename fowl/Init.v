@@ -2,7 +2,8 @@
 
 (** ** Imports and Exports *)
 
-(** We export [StrictProp] to be able
+(** We import [String] to declare version information,
+    export [StrictProp] to be able
     to use strict propositions without ceremony,
     export [Basics], [Tactics] and [Relations]
     to make their utility functions available everywhere,
@@ -18,6 +19,8 @@
     because we want to ensure that the options we set are not overridden
     by other libraries. *)
 
+From Coq Require Import
+  Strings.String.
 From Coq Require Export
   Logic.StrictProp.
 From Coq Require Export
@@ -31,6 +34,13 @@ From Coq Require Import
   Lists.List.
 From Equations.Prop Require Export
   Equations.
+
+(** ** Version Information *)
+
+(** We have tested this development with the following versions. *)
+
+Definition Coq_Version := "8.14.0"%string.
+Definition OCaml_Version := "4.12.0"%string.
 
 (** ** Flags, Options and Tables *)
 
@@ -574,9 +584,9 @@ Notation "'{' a '$' B '}'" := (Ssig (fun a : _ => B)) : type_scope.
 Notation "'{_:_$_}'" := @Ssig : type_scope.
 Notation "'{' a ':' A '$' B '}'" := (@Ssig A (fun a : _ => B)) : type_scope.
 
-Section Context.
-
 #[local] Set Cumulative StrictProp.
+
+Section Context.
 
 Corollary Spr1_equation_1 (A : Type) (P : A -> SProp) (a : A) (b : P a) :
   Spr1 (Sexists P a b) = a.

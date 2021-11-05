@@ -225,7 +225,7 @@ Proof.
   - exists (const tt). intros []. reflexivity.
   - exists (const tt). intros y. unfold const. apply irrel. Qed.
 
-Lemma is_contr_is_prop `(IsFunExtDep) (A : Type) : IsProp (IsContr A).
+Lemma is_contr_is_prop `(IsFunExtDep) (A : Prop) : IsProp (IsContr A).
 Proof.
   intros x y.
   assert (z : IsProp A).
@@ -238,7 +238,7 @@ Proof.
   intros u v. apply fun_ext_dep. intros t. apply irrel.
   eapply irrel. Qed.
 
-Lemma is_contr_is_contr `(IsFunExtDep) (A : Type) `(IsContr A) :
+Lemma is_contr_is_contr `(IsFunExtDep) (A : Prop) `(IsContr A) :
   IsContr (IsContr A).
 Proof.
   apply prop_contr.

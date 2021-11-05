@@ -106,7 +106,7 @@ Proof.
 
 Section Context.
 
-Context (A : Type) {d : HasEqDec A}.
+Context (A : Type) {e : HasEqDec A}.
 
 Equations wfb (a : (bool * A) * (bool * A)) : bool :=
   wfb ((i, x), (j, y)) := decide (~ (i <> j /\ x = y)).
@@ -210,7 +210,7 @@ Arguments free _ {_}.
 
 Section Context.
 
-Context (A : Type) {d : HasEqDec A} (f : A -> Z).
+Context (A : Type) {e : HasEqDec A} (f : A -> Z).
 
 Equations eval (s : free A) : Z :=
   eval (s; _) := fold_right Z.add Z.zero
@@ -225,7 +225,7 @@ Proof.
   - apply Additive.is_grp.
   - intros z w. unfold eval. admit.
   - intros [z ?] [w ?]. unfold rel. destruct (eq_dec z w).
-    + intros _. unfold eval, proj1_sig. rewrite e. reflexivity.
+    + intros _. unfold eval, proj1_sig. rewrite e0. reflexivity.
     + intros a. inversion a. Admitted.
 
 End Context.
@@ -252,7 +252,7 @@ End Context.
 
 End Mess.
 
-(* Import ListNotations.
+Import Additive ListNotations.
 
 #[local] Open Scope Z_scope.
 
@@ -266,7 +266,7 @@ Compute
   let a' := (negb (fst a), snd a) in
   let b' := (negb (fst b), snd b) in
   let c' := (negb (fst c), snd c) in
-  Mess.un ([b; a'; c; a; c'; b; b]; _).
+  proj1_sig (Mess.un (e := Z.eq_dec) ([b; a'; c; a; c'; b; b]; _)).
 
 (* b a' c a' + a c' b b *)
 (* b a' c + c' b b *)
@@ -280,7 +280,7 @@ Compute
   let a' := (negb (fst a), snd a) in
   let b' := (negb (fst b), snd b) in
   let c' := (negb (fst c), snd c) in
-  Mess.bin [b; a'; c; a'] [a; c'; b; b].
+  proj1_sig (Mess.bin (e := Z.eq_dec) ([b; a'; c; a']; _) ([a; c'; b; b]; _)).
 
 Compute
   let a := (false, 1) in
@@ -290,4 +290,4 @@ Compute
   let b' := (negb (fst b), snd b) in
   let c' := (negb (fst c), snd c) in
   (fold_right Z.add Z.zero [2; -1; 3; -1; 1; -3; 2; 2],
-  Mess.eval (Mess.bin [b; a'; c; a'] [a; c'; b; b])). *)
+  Mess.eval id (Mess.bin (e := Z.eq_dec) ([b; a'; c; a']; _) ([a; c'; b; b]; _))).

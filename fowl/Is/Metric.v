@@ -29,7 +29,7 @@ End Real.
 
 Class IsDistMon (A : Type)
   (HR : HasOrdRel A) (Hx : HasNullOp A) (Hk : HasBinOp A) : Prop := {
-  is_tot_ord :> IsTotOrd _<=_;
+  is_tot_ord :> IsTotOrd _=_ _<=_;
   is_lower_bnd :> IsLowerBnd 0 _<=_;
   is_mon :> IsMon _=_ 0 _+_;
   is_comm :> IsComm _=_ _+_;
@@ -42,7 +42,7 @@ Module Alternative.
 
 Class IsPartOrdCommSemigrp (A : Type)
   (HR : HasOrdRel A) (Hx : HasNullOp A) (Hk : HasBinOp A) : Prop := {
-  is_part_ord :> IsPartOrd _<=_;
+  is_part_ord :> IsPartOrd _=_ _<=_;
   is_refl :> IsRefl _<=_;
   is_infl_bin_op_l_r :> IsInflBinOpLR _<=_ _+_;
   is_semigrp :> IsSemigrp _=_ _+_;
