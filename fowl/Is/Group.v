@@ -29,10 +29,10 @@ Context (A : Type) (X : A -> A -> Prop)
 #[local] Instance has_bin_op : HasBinOp A := k.
 
 Ltac note := progress (
-  try change X with eq_rel in *;
-  try change x with null_op in *;
-  try change f with un_op in *;
-  try change k with bin_op in *).
+  try change X with (eq_rel (A := A)) in *;
+  try change x with (null_op (A := A)) in *;
+  try change f with (un_op (A := A)) in *;
+  try change k with (bin_op (A := A)) in *).
 
 #[local] Instance is_fixed : IsFixed X x f.
 Proof.

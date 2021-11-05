@@ -11,7 +11,7 @@ From DEZ.Provides Require Export
 From DEZ.ShouldHave Require Import
   EquivalenceRelationNotations AdditiveNotations.
 
-#[local] Notation "'(' x ';' a ')'" := (exist _ x a).
+#[local] Open Scope sig_scope.
 
 Module Mess.
 

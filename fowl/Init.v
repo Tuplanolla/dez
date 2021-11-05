@@ -173,6 +173,13 @@ Reserved Notation "'/' x" (right associativity, at level 35).
 Reserved Notation "y '/' x" (left associativity, at level 40).
 Reserved Notation "y '^' x" (right associativity, at level 30).
 
+Reserved Notation "'(' x ',' y ',' .. ',' z ')'" (at level 0).
+Reserved Notation "'(' a ';' .. ';' b ';' c ')'" (at level 0).
+
+Reserved Notation "'{' a '|' B '}'" (at level 0, a at level 99).
+Reserved Notation "'{' a ':' A '|' B '}'" (at level 0, a at level 99).
+Reserved Notation "'{' a '&' B '}'" (at level 0, a at level 99).
+Reserved Notation "'{' a ':' A '&' B '}'" (at level 0, a at level 99).
 Reserved Notation "'{' a '$' B '}'" (at level 0, a at level 99).
 Reserved Notation "'{' a ':' A '$' B '}'" (at level 0, a at level 99).
 
@@ -440,6 +447,11 @@ Arguments option_map {_ _} _ !_.
 
 Notation "'_+_'" := sum : type_scope.
 Notation "A '+' B" := (sum A B) : type_scope.
+
+Notation "'(_,_)'" := pair : core_scope.
+Notation "'(' x ',' y ',' .. ',' z ')'" :=
+  (pair .. (pair x y) .. z) : core_scope.
+
 Notation "'_*_'" := prod : type_scope.
 Notation "A '*' B" := (prod A B) : type_scope.
 
@@ -522,6 +534,12 @@ Arguments idProp {_} _ /.
 Arguments ex {_} _.
 Arguments ex_intro {_} _ _ _.
 
+Declare Scope ex_scope.
+
+Notation "'(_;_)'" := (ex_intro _) : ex_scope.
+Notation "'(' a ';' .. ';' b ';' c ')'" :=
+  (ex_intro _ a .. (ex_intro _ b c) ..) : ex_scope.
+
 Corollary ex_proj1_equation_1 (A : Prop) (P : A -> Prop) (a : A) (b : P a) :
   ex_proj1 (ex_intro P a b) = a.
 Proof. reflexivity. Qed.
@@ -538,6 +556,17 @@ Arguments ex_proj2 {_ _} !_.
 
 Arguments sig {_} _.
 Arguments exist {_} _ _ _.
+
+Declare Scope sig_scope.
+
+Notation "'(_;_)'" := (exist _) : sig_scope.
+Notation "'(' a ';' .. ';' b ';' c ')'" :=
+  (exist _ a .. (exist _ b c) ..) : sig_scope.
+
+Notation "'{_|_}'" := sig : type_scope.
+Notation "'{' a '|' B '}'" := (sig (fun a : _ => B)) : type_scope.
+Notation "'{_:_|_}'" := @sig : type_scope.
+Notation "'{' a ':' A '|' B '}'" := (@sig A (fun a : _ => B)) : type_scope.
 
 Corollary proj1_sig_equation_1 (A : Type) (P : A -> Prop) (a : A) (b : P a) :
   proj1_sig (exist P a b) = a.
@@ -556,6 +585,17 @@ Arguments proj2_sig {_ _} !_.
 Arguments sigT {_} _.
 Arguments existT {_} _ _ _.
 
+Declare Scope sigT_scope.
+
+Notation "'(_;_)'" := (existT _) : sigT_scope.
+Notation "'(' a ';' .. ';' b ';' c ')'" :=
+  (existT _ a .. (existT _ b c) ..) : sigT_scope.
+
+Notation "'{_&_}'" := sigT : type_scope.
+Notation "'{' a '&' B '}'" := (sigT (fun a : _ => B)) : type_scope.
+Notation "'{_:_&_}'" := @sigT : type_scope.
+Notation "'{' a ':' A '&' B '}'" := (@sigT A (fun a : _ => B)) : type_scope.
+
 Corollary projT1_equation_1 (A : Type) (P : A -> Type) (a : A) (b : P a) :
   projT1 (existT P a b) = a.
 Proof. reflexivity. Qed.
@@ -570,14 +610,20 @@ Proof. reflexivity. Qed.
 Arguments projT1 {_ _} !_.
 Arguments projT2 {_ _} !_.
 
+Arguments Ssig {_} _.
+Arguments Sexists {_} _ _ _.
+
+Declare Scope Ssig_scope.
+
+Notation "'(_;_)'" := (Sexists _) : Ssig_scope.
+Notation "'(' a ';' .. ';' b ';' c ')'" :=
+  (Sexists _ a .. (Sexists _ b c) ..) : Ssig_scope.
+
 (** We should have similar notations for [Ssig] as there are for [sig].
     The mnemonic for [$] in the notation is that it is a combination
     of [|] from the notation for [sig] and [S] from the name of [Ssig].
     Besides, using [!] would conflict with
     the lonely notations of the equations plugin. *)
-
-Arguments Ssig {_} _.
-Arguments Sexists {_} _ _ _.
 
 Notation "'{_$_}'" := Ssig : type_scope.
 Notation "'{' a '$' B '}'" := (Ssig (fun a : _ => B)) : type_scope.
