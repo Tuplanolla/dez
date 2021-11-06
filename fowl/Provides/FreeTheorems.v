@@ -109,13 +109,96 @@ Proof.
 
 Section Context.
 
+Lemma nth_nil (A : Type) (n : nat) (d : A) : nth n [] d = d.
+Proof. destruct n as [| p]; reflexivity. Qed.
+
+Lemma nth_firstn (A : Type) (n p : nat) (a : list A) (d : A) (s : n < p) :
+  nth n (firstn p a) d = nth n a d.
+Proof.
+  revert n p d s.
+  induction a as [| x b t]; intros n p d s; destruct n as [| q], p as [| r].
+  - lia.
+  - rewrite firstn_nil. reflexivity.
+  - lia.
+  - rewrite firstn_nil. reflexivity.
+  - lia.
+  - rewrite firstn_cons. reflexivity.
+  - lia.
+  - rewrite firstn_cons. apply t. lia. Qed.
+
+Lemma nth_skipn (A : Type) (n p : nat) (a : list A) (d : A) (s : p < n) :
+  nth n (skipn p a) d = nth (n - p) a d.
+Proof.
+  revert n p d s.
+  induction a as [| x b t]; intros n p d s; destruct n as [| q], p as [| r].
+  - lia.
+  - lia.
+  - rewrite skipn_nil. reflexivity.
+  - rewrite skipn_nil. rewrite nth_overflow. cbn.
+    destruct (q - r) as [| u]; reflexivity.
+    unfold length. lia.
+  - lia.
+  - lia.
+  - rewrite skipn_O. cbn. reflexivity.
+  - rewrite skipn_cons.
+    destruct r as [| u] eqn : p. Admitted.
+
 Context (A : Type) {e : HasEqDec A}.
 
 Equations wfb_def (a b : (bool * A)) : bool :=
   wfb_def (i, x) (j, y) := decide (~ (i <> j /\ x = y)).
 
+#[local] Instance wfb_def_is_refl : IsRefl wfb_def.
+Proof. intros [i x]. apply Decidable_complete. intuition. Qed.
+
+#[local] Instance wfb_def_is_sym : IsSym wfb_def.
+Proof.
+  intros [i x] [j y] w. apply Decidable_sound in w.
+  apply Decidable_complete. intuition. Qed.
+
 Equations wfb (s : list (bool * A)) : bool :=
   wfb s := decide (Forall (prod_uncurry wfb_def) (combine s (skipn 1 s))).
+
+Equations wf (s : list (bool * A)) : Prop :=
+  wf s := forall (n : nat) (i j : bool) (x y : A),
+    nth_error s n = Some (i, x) ->
+    nth_error s (S n) = Some (j, y) ->
+    ~ (i <> j /\ x = y).
+
+Equations wf' (s : list (bool * A)) : Prop :=
+  wf' s := forall (n : nat) (i j : bool) (x y : A) (d : bool * A),
+    S n < length s ->
+    nth n s d = (i, x) ->
+    nth (S n) s d = (j, y) ->
+    ~ (i <> j /\ x = y).
+
+Lemma wf_iff_wf' (s : list (bool * A)) : wf s <-> wf' s.
+Proof.
+  split.
+  - intros w. unfold wf, wf' in *. intros n i j x y [k z] b a0 a1.
+    assert (c' : n < length s) by lia.
+    epose proof nth_error_nth' _ _ c' as d0.
+    epose proof nth_error_nth' _ _ b as d1.
+    rewrite a0 in d0.
+    rewrite a1 in d1.
+    eauto.
+  - intros w. unfold wf, wf' in *. intros n i j x y a0 a1.
+    assert (d := (i, x)).
+    epose proof nth_error_nth _ _ d a0 as d0.
+    epose proof nth_error_nth _ _ d a1 as d1.
+    assert (t0 : nth_error s n <> None) by congruence.
+    assert (t1 : nth_error s (S n) <> None) by congruence.
+    apply nth_error_Some in t0, t1. eauto. Qed.
+
+Lemma wf_iff_wfb (s : list (bool * A)) : wf s <-> wfb s.
+Proof.
+  transitivity (wf' s).
+  - apply wf_iff_wf'.
+  - split.
+    + intros w. unfold wf', wfb in *. apply Decidable_complete.
+      apply Forall_nth. intros n d c.
+      rewrite combine_firstn_r.
+      unfold prod_uncurry. Admitted.
 
 Equations free : Type :=
   free := {s : list (bool * A) | (wfb s)}.
