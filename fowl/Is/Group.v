@@ -1,7 +1,7 @@
 (** * Group Structure *)
 
 From DEZ.Has Require Export
-  EquivalenceRelation NullaryOperation UnaryOperation BinaryOperation.
+  EquivalenceRelation NullaryOperation UnaryOperation BinaryOperation Action.
 From DEZ.Is Require Export
   Monoid Invertible Proper
   Fixed Involutive Injective Cancellative Distributive.
@@ -21,7 +21,7 @@ Section Context.
 
 Context (A : Type) (X : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A)
-  `(!IsGrp X x f k).
+  `{!IsGrp X x f k}.
 
 #[local] Instance has_eq_rel : HasEqRel A := X.
 #[local] Instance has_null_op : HasNullOp A := x.
@@ -112,6 +112,24 @@ End Context.
 #[export] Hint Resolve is_fixed is_invol is_inj
   is_cancel_l is_cancel_r is_cancel_l_r is_antidistr : typeclass_instances.
 
+From Coq Require Import
+  ZArith.ZArith.
+
+Section Context.
+
+Context (A : Type)
+  {X : HasEqRel A} {x : HasNullOp A} {f : HasUnOp A} {k : HasBinOp A}
+  `{!IsGrp X x f k}.
+
+Equations act (n : Z) (y : A) : A :=
+  act Z0 y := 0;
+  act (Zpos n) y := Pos.iter_op _+_ n y;
+  act (Zneg n) y := - Pos.iter_op _+_ n y.
+
+#[export] Instance has_act_l : HasActL Z A := act.
+
+End Context.
+
 (** ** Homomorphism Preserves Nullary Operations *)
 
 Class IsNullPres (A B : Type) (X : B -> B -> Prop)
@@ -155,7 +173,7 @@ Section Context.
 Context (A B : Type)
   (X : A -> A -> Prop) (x : A) (f : A -> A) (k : A -> A -> A)
   (Y : B -> B -> Prop) (y : B) (g : B -> B) (m : B -> B -> B)
-  (h : A -> B) `(!IsGrpHom X x f k Y y g m h).
+  (h : A -> B) `{!IsGrpHom X x f k Y y g m h}.
 
 #[local] Instance dom_has_eq_rel : HasEqRel A := X.
 #[local] Instance dom_has_null_op : HasNullOp A := x.
