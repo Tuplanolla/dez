@@ -2,8 +2,6 @@
 
 From Coq Require Import
   Logic.Eqdep_dec.
-From DEZ Require Export
-  TypeclassTactics.
 From DEZ.Has Require Export
   Zero Negation Addition One Multiplication.
 From DEZ.Is Require Export

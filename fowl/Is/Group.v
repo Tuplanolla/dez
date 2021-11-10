@@ -121,12 +121,10 @@ Context (A : Type)
   {X : HasEqRel A} {x : HasNullOp A} {f : HasUnOp A} {k : HasBinOp A}
   `{!IsGrp X x f k}.
 
-Equations act (n : Z) (y : A) : A :=
-  act Z0 y := 0;
-  act (Zpos n) y := Pos.iter_op _+_ n y;
-  act (Zneg n) y := - Pos.iter_op _+_ n y.
-
-#[export] Instance has_act_l : HasActL Z A := act.
+Equations rep (n : Z) (y : A) : A :=
+  rep Z0 y := 0;
+  rep (Zpos n) y := Pos.iter_op _+_ n y;
+  rep (Zneg n) y := - Pos.iter_op _+_ n y.
 
 End Context.
 
@@ -218,10 +216,21 @@ Proof.
 
 End Context.
 
+(** ** Left Group Action *)
+
+Class IsGrpActL (A B : Type)
+  (X : A -> A -> Prop) (x : A) (f : A -> A) (k : A -> A -> A)
+  (Y : B -> B -> Prop) (a : A -> B -> B) : Prop := {
+  is_grp :> IsGrp X x f k;
+  act_is_unl_l :> IsUnlL Y x a;
+  act_is_assoc :> IsCompatL Y k a;
+  act_is_proper :> IsProper (X ==> Y ==> Y) a;
+}.
+
 (** Now, let us make a mess! *)
 
 From DEZ.Has Require Import
-  Decidability.
+  Decisions.
 From DEZ.Is Require Import
   Extensional.
 From Coq Require Import

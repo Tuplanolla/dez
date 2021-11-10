@@ -1,7 +1,7 @@
 From Coq Require Import
   ZArith.ZArith.
 From DEZ.Has Require Export
-  Decidability.
+  Decisions.
 From DEZ.Is Require Export
   Group Semigroup
   Monoid Semiring Ring

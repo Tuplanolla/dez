@@ -3,7 +3,7 @@
 From Coq Require Import
   Extraction Lia Lists.List ZArith.ZArith.
 From DEZ.Has Require Export
-  Decidability Unsquashing.
+  Decisions Unsquashing.
 From DEZ.Is Require Export
   Group Truncated.
 From DEZ.Provides Require Export

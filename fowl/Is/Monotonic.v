@@ -1,7 +1,7 @@
 (** * Monotonicity and Strict Monotonicity of a Function and a Binary Operation *)
 
 From DEZ.Has Require Export
-  Decidability OrderRelations BinaryOperation.
+  Decisions OrderRelations BinaryOperation.
 From DEZ.Is Require Export
   Preorder CoherentOrderRelations.
 From DEZ.ShouldHave Require Import

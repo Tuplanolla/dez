@@ -28,6 +28,22 @@ $ dune exec -- coqide -Q _build/default/bird DEZ fowl/Provides/PolynomialTheorem
 I should probably list the dependencies and
 some installation and usage instructions here as well.
 
+### Rework the Following Sections
+
+New experience suggests to do things a little differently.
+
+When defining contexts,
+always mark types explicit and type classes implicit.
+If type classes are operational,
+give the variables explicit names.
+If type classes are predicative,
+do not give the variables explicit names,
+but do use `!` to give the classes explicit arguments.
+When providing explicit arguments to type classes,
+always refer to operational classes by their most specific name.
+If implicit arguments are inferred incorrectly,
+fix them with `Arguments` after the context ends.
+
 ### Coherence Conditions
 
 When defining operational classes or their instances,
@@ -169,28 +185,7 @@ However, otherwise traditions serve us just fine.
 
 ### Scopes
 
-Should probably say something about overloading notations here.
-Also, using `Import` and `Local Open Scope` for standard library scopes.
-
-We have scopes based on the subfield classification.
-
-* group-like `grp_scope`
-* ring-like `ring_scope`
-* lattice-like `lat_scope`
-* module-like `mod_scope`
-* algebra-like `alg_scope`
-* category-like `cat_scope`
-* relation-like `rel_scope`
-
-### Class Duality
-
-When defining things in `Offers`,
-use a context with only `Has` things in it,
-without implicit generalization.
-
-When defining things in `Provides`,
-use a context with only `Is` things in it,
-with implicit generalization.
+Should write something here.
 
 ### Name Playground
 

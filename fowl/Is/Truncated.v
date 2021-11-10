@@ -3,7 +3,7 @@
 From Coq Require Import
   Logic.ProofIrrelevance.
 From DEZ.Has Require Export
-  Decidability.
+  Decisions.
 From DEZ.Is Require Export
   Isomorphism.
 
