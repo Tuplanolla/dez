@@ -367,7 +367,7 @@ Section Context.
 
 Context (A : Type) (X : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A)
-  `(!IsGrp X x f k).
+  `{!IsGrp X x f k}.
 
 Equations const_tt (x : A) : unit :=
   const_tt _ := tt.
@@ -384,43 +384,3 @@ Proof.
 End Context.
 
 End Mess.
-
-Import Additive ListNotations.
-
-#[local] Open Scope Z_scope.
-
-(* - (b a' c a c' b b) *)
-(* b' b' c a' c' a b' *)
-
-Compute
-  let a := (false, 1) in
-  let b := (false, 2) in
-  let c := (false, 3) in
-  let a' := (negb (fst a), snd a) in
-  let b' := (negb (fst b), snd b) in
-  let c' := (negb (fst c), snd c) in
-  proj1_sig (Mess.un (e := Z.eq_dec) ([b; a'; c; a; c'; b; b]; _)).
-
-(* b a' c a' + a c' b b *)
-(* b a' c + c' b b *)
-(* b a' + b b *)
-(* b a' b b *)
-
-Compute
-  let a := (false, 1) in
-  let b := (false, 2) in
-  let c := (false, 3) in
-  let a' := (negb (fst a), snd a) in
-  let b' := (negb (fst b), snd b) in
-  let c' := (negb (fst c), snd c) in
-  proj1_sig (Mess.bin (e := Z.eq_dec) ([b; a'; c; a']; _) ([a; c'; b; b]; _)).
-
-Compute
-  let a := (false, 1) in
-  let b := (false, 2) in
-  let c := (false, 3) in
-  let a' := (negb (fst a), snd a) in
-  let b' := (negb (fst b), snd b) in
-  let c' := (negb (fst c), snd c) in
-  (fold_right Z.add Z.zero [2; -1; 3; -1; 1; -3; 2; 2],
-  Mess.eval_Z_add id (Mess.bin (e := Z.eq_dec) ([b; a'; c; a']; _) ([a; c'; b; b]; _))).
