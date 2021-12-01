@@ -5,7 +5,7 @@ From DEZ.Has Require Export
 From DEZ.Is Require Export
   Equivalence Preorder Antisymmetric Proper.
 From DEZ.ShouldHave Require Import
-  EquivalenceRelationNotations OrderRelationNotations.
+  EquivalenceNotations OrderRelationNotations.
 
 (** ** Partial Order *)
 (** ** Poset *)

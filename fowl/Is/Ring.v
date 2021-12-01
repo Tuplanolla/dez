@@ -10,7 +10,7 @@ From DEZ.Is Require Export
   OneSortedBinaryCrossing OneSortedBinarySplitCancellative
   Semiring Unital.
 From DEZ.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations ArithmeticNotations.
+  EquivalenceNotations AdditiveNotations ArithmeticNotations.
 
 (** ** Ring *)
 

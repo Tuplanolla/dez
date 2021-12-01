@@ -9,7 +9,7 @@ From DEZ.Is Require Export
 From DEZ.Provides Require Export
   BooleanTheorems (* ListTheorems *) ProductTheorems UnitTheorems ZTheorems.
 From DEZ.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations.
+  EquivalenceNotations AdditiveNotations.
 
 #[local] Instance list_has_null_op (A : Type) : HasNullOp (list A) := nil.
 #[local] Instance list_has_bin_op (A : Type) : HasBinOp (list A) := app.

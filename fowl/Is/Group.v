@@ -6,7 +6,7 @@ From DEZ.Is Require Export
   Monoid Invertible Proper
   Fixed Involutive Injective Cancellative Distributive.
 From DEZ.ShouldHave Require Import
-  EquivalenceRelationNotations AdditiveNotations.
+  EquivalenceNotations AdditiveNotations.
 
 (** ** Group *)
 

@@ -5,7 +5,7 @@ From DEZ.Has Require Export
 From DEZ.Is Require Export
   Monoid Commutative Distributive Absorbing Truncated.
 From DEZ.ShouldHave Require Import
-  EquivalenceRelationNotations ArithmeticNotations.
+  EquivalenceNotations ArithmeticNotations.
 
 (** ** Semiring *)
 
