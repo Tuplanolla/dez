@@ -93,7 +93,7 @@ Context (A : Type) (Hk : HasBinOp A).
 (** Cancellativity is just injectivity of partial applications. *)
 
 #[local] Instance cancel_r_is_inj `(!IsCancelR _=_ _+_) :
-  IsInj _=_ _=_ _+_.
+  IsInj2 _=_ _=_ _+_.
 Proof.
   intros x y a.
   assert (z : A) by assumption.
@@ -102,7 +102,7 @@ Proof.
   apply a'. Qed.
 
 #[local] Instance cancel_l_is_inj `(!IsCancelL _=_ _+_) :
-  IsInj _=_ _=_ (flip _+_).
+  IsInj2 _=_ _=_ (flip _+_).
 Proof.
   intros x y a.
   assert (z : A) by assumption.
