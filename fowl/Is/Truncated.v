@@ -14,17 +14,11 @@ Unset Universe Minimization ToSet.
 (** ** Contractibility *)
 (** ** Singleton *)
 
-Class IsContrGen (A B : Type) (X : A -> B -> Prop) : Prop :=
-  contr_gen : exists x : A, forall y : B, X x y.
-
 Class IsContr (A : Type) : Prop :=
   contr : exists x : A, forall y : A, x = y.
 
 (** ** Proof Irrelevance *)
 (** ** Proposition *)
-
-Class IsPropGen (A B : Type) (X : A -> B -> Prop) : Prop :=
-  irrel_gen (x : A) (y : B) : X x y.
 
 Class IsProp (A : Type) : Prop :=
   irrel (x y : A) : x = y.
@@ -32,16 +26,22 @@ Class IsProp (A : Type) : Prop :=
 (** ** Set *)
 (** ** Uniqueness of Identity Proofs *)
 
-Class IsSetGen (A B : Type) (X : A -> B -> Prop)
-  (S : forall {x : A} {y : B}, X x y -> X x y -> Prop) : Prop :=
-  uip_gen (x : A) (y : B) (a b : X x y) : S a b.
-
 Fail Fail Class IsSet (A : Type) : Prop :=
   uip (x y : A) (a b : x = y) : a = b.
 
 Notation IsSet := UIP.
 
 Arguments uip {_ _ _ _} _ _.
+
+Class IsContrGen (A B : Type) (X : A -> B -> Prop) : Prop :=
+  contr_gen : exists x : A, forall y : B, X x y.
+
+Class IsPropGen (A B : Type) (X : A -> B -> Prop) : Prop :=
+  irrel_gen (x : A) (y : B) : X x y.
+
+Class IsSetGen (A B : Type) (X Y : A -> B -> Prop)
+  (Z : forall {x : A} {y : B}, X x y -> Y x y -> Prop) : Prop :=
+  uip_gen (x : A) (y : B) (a : X x y) (b : Y x y) : Z a b.
 
 (** ** Homotopy [n]-Type *)
 (** ** [n]-Truncation *)

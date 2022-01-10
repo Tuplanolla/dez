@@ -119,9 +119,6 @@ Module Additive.
 
 Global Instance positive_has_bin_op : HasBinOp positive := Pos.add.
 
-Global Instance positive_bin_op_is_mag : IsMag eq (bin_op (A := positive)).
-Proof. hnf. typeclasses eauto. Defined.
-
 Global Instance positive_bin_op_is_assoc : IsAssoc (bin_op (A := positive)).
 Proof. intros x y z. apply Pos.add_assoc. Defined.
 
@@ -137,9 +134,6 @@ Module Multiplicative.
 
 Global Instance positive_bin_op_has_bin_op : HasBinOp positive := Pos.mul.
 Global Instance positive_has_null_op : HasNullOp positive := xH.
-
-Global Instance positive_bin_op_is_mag : IsMag eq (bin_op (A := positive)).
-Proof. hnf. typeclasses eauto. Defined.
 
 Global Instance positive_bin_op_is_assoc : IsAssoc (bin_op (A := positive)).
 Proof. intros x y z. apply Pos.mul_assoc. Defined.

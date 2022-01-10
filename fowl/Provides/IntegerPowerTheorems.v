@@ -25,7 +25,7 @@ Proof. reflexivity. Defined.
 
 Section Context.
 
-Context (A : Type) `{HasBinOp A} `{!IsMag eq bin_op}.
+Context (A : Type) `{HasBinOp A} `{!IsAssoc eq bin_op}.
 
 Fact iter_op_xI (n : positive) (x : A) :
   Pos.iter_op _+_ (xI n) x = x + Pos.iter_op _+_ n (x + x).

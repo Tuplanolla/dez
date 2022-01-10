@@ -59,7 +59,7 @@ Instance has_str_ord_rel : HasStrOrdRel N := lt.
 Class IsInjMiff (f : HasMiff) : Prop :=
   is_inj :> IsInj2 _=_ _=_ f.
 
-Notation inj_miff := (inj (f := miff) : IsInjMiff miff).
+Notation inj_miff := (inj2 (f := miff) : IsInjMiff miff).
 
 Notation IsFixedMiff := (IsFixed _=_ 0).
 Notation fixed_miff := (@fixed _ _ _=_ 0 _ _ : _ 0 = 0).
