@@ -4,7 +4,7 @@ From DEZ.Has Require Export
   Decisions.
 From DEZ.Is Require Export
   Group Semigroup
-  Monoid Semiring Ring
+  Monoid
   Equivalence PartialEquivalence Isomorphism.
 
 Ltac ecrush :=
@@ -46,8 +46,12 @@ Proof. ecrush. Qed.
 #[local] Instance is_inv : IsInvLR eq Z.zero Z.opp Z.add.
 Proof. esplit; typeclasses eauto. Qed.
 
-#[local] Instance is_grp : IsGrp eq Z.zero Z.opp Z.add.
-Proof. esplit; typeclasses eauto. Qed.
+#[local] Instance is_set_gen : IsSetGen (X := eq) (fun x y : Z => eq).
+Proof. intros x y a b. apply uip. Qed.
+
+#[local] Instance is_grp :
+  IsGrp (X := eq) (fun _ _ : Z => eq) Z.zero Z.opp Z.add.
+Proof. esplit; try typeclasses eauto. Qed.
 
 #[local] Instance is_comm : IsComm eq Z.add.
 Proof. ecrush. Qed.

@@ -3,15 +3,17 @@
 From DEZ.Has Require Export
   EquivalenceRelation NullaryOperation UnaryOperation BinaryOperation Action.
 From DEZ.Is Require Export
-  Monoid Invertible Proper
+  Truncated Monoid Invertible Proper
   Fixed Involutive Injective Cancellative Distributive Preserving.
 From DEZ.ShouldHave Require Import
   EquivalenceNotations AdditiveNotations.
 
 (** ** Group *)
 
-Class IsGrp (A : Type) (X : A -> A -> Prop)
+Class IsGrp (A : Type)
+  (X : A -> A -> Prop) (X' : forall {x y : A}, X x y -> X x y -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A) : Prop := {
+  is_set :> IsSetGen (@X');
   is_mon :> IsMon X x k;
   is_inv_l_r :> IsInvLR X x f k;
   is_proper :> IsProper (X ==> X) f;
@@ -19,11 +21,13 @@ Class IsGrp (A : Type) (X : A -> A -> Prop)
 
 Section Context.
 
-Context (A : Type) (X : A -> A -> Prop)
+Context (A : Type)
+  (X : A -> A -> Prop) (X' : forall {x y : A}, X x y -> X x y -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A)
-  `{!IsGrp X x f k}.
+  `{!IsGrp (@X') x f k}.
 
 #[local] Instance has_eq_rel : HasEqRel A := X.
+#[local] Instance has_eq_rel' (x y : A) : HasEqRel (X x y) := X'.
 #[local] Instance has_null_op : HasNullOp A := x.
 #[local] Instance has_un_op : HasUnOp A := f.
 #[local] Instance has_bin_op : HasBinOp A := k.
@@ -118,8 +122,9 @@ From Coq Require Import
 Section Context.
 
 Context (A : Type)
-  {X : HasEqRel A} {x : HasNullOp A} {f : HasUnOp A} {k : HasBinOp A}
-  `{!IsGrp X x f k}.
+  {X : HasEqRel A} {X' : forall x y : A, HasEqRel (X x y)}
+  {x : HasNullOp A} {f : HasUnOp A} {k : HasBinOp A}
+  `{!IsGrp X' x f k}.
 
 Equations rep (n : Z) (y : A) : A :=
   rep Z0 y := 0;
@@ -131,11 +136,13 @@ End Context.
 (** ** Group Homomorphism *)
 
 Class IsGrpHom (A B : Type)
-  (X : A -> A -> Prop) (x : A) (f : A -> A) (k : A -> A -> A)
-  (Y : B -> B -> Prop) (y : B) (g : B -> B) (m : B -> B -> B)
+  (X : A -> A -> Prop) (X' : forall {x y : A}, X x y -> X x y -> Prop)
+  (x : A) (f : A -> A) (k : A -> A -> A)
+  (Y : B -> B -> Prop) (Y' : forall {x y : B}, Y x y -> Y x y -> Prop)
+  (y : B) (g : B -> B) (m : B -> B -> B)
   (h : A -> B) : Prop := {
-  dom_is_grp :> IsGrp X x f k;
-  codom_is_grp :> IsGrp Y y g m;
+  dom_is_grp :> IsGrp (@X') x f k;
+  codom_is_grp :> IsGrp (@Y') y g m;
   hom_is_bin_pres :> IsBinPres Y k m h;
   hom_is_proper :> IsProper (X ==> Y) h;
 }.
@@ -143,15 +150,19 @@ Class IsGrpHom (A B : Type)
 Section Context.
 
 Context (A B : Type)
-  (X : A -> A -> Prop) (x : A) (f : A -> A) (k : A -> A -> A)
-  (Y : B -> B -> Prop) (y : B) (g : B -> B) (m : B -> B -> B)
-  (h : A -> B) `{!IsGrpHom X x f k Y y g m h}.
+  (X : A -> A -> Prop) (X' : forall {x y : A}, X x y -> X x y -> Prop)
+  (x : A) (f : A -> A) (k : A -> A -> A)
+  (Y : B -> B -> Prop) (Y' : forall {x y : B}, Y x y -> Y x y -> Prop)
+  (y : B) (g : B -> B) (m : B -> B -> B)
+  (h : A -> B) `{!IsGrpHom (@X') x f k (@Y') y g m h}.
 
 #[local] Instance dom_has_eq_rel : HasEqRel A := X.
+#[local] Instance dom_has_eq_rel' (x y : A) : HasEqRel (X x y) := X'.
 #[local] Instance dom_has_null_op : HasNullOp A := x.
 #[local] Instance dom_has_un_op : HasUnOp A := f.
 #[local] Instance dom_has_bin_op : HasBinOp A := k.
 #[local] Instance codom_has_eq_rel : HasEqRel B := Y.
+#[local] Instance codom_has_eq_rel' (x y : B) : HasEqRel (Y x y) := Y'.
 #[local] Instance codom_has_null_op : HasNullOp B := y.
 #[local] Instance codom_has_un_op : HasUnOp B := g.
 #[local] Instance codom_has_bin_op : HasBinOp B := m.
@@ -193,9 +204,10 @@ End Context.
 (** ** Left Group Action *)
 
 Class IsGrpActL (A B : Type)
-  (X : A -> A -> Prop) (x : A) (f : A -> A) (k : A -> A -> A)
+  (X : A -> A -> Prop) (X' : forall {x y : A}, X x y -> X x y -> Prop)
+  (x : A) (f : A -> A) (k : A -> A -> A)
   (Y : B -> B -> Prop) (a : A -> B -> B) : Prop := {
-  is_grp :> IsGrp X x f k;
+  is_grp :> IsGrp (@X') x f k;
   act_is_unl_l :> IsUnlL Y x a;
   act_is_assoc :> IsCompatL Y k a;
   act_is_proper :> IsProper (X ==> Y ==> Y) a;
@@ -264,30 +276,6 @@ Lemma retrT `(!IsFunExtDep) (A B : Type) (X : A -> B -> Type)
   (a : {f : A -> B & forall x : A, X x (f x)}) : choiceT (cochoiceT _ a) = a.
 Proof.
   unfold choiceT, cochoiceT. destruct a as [f b]. f_equal. Defined.
-
-Context (A : Type) (X : A -> A -> Prop)
-  (x : A) (k : A -> A -> A).
-
-Lemma herbrandize : {f : A -> A | IsGrp X x f k} -> Existential.IsGrp X x k.
-Proof.
-  intros [f ?]. esplit. all: shelve. Unshelve.
-  - intros y. exists (f y). split.
-    + apply inv_l.
-    + apply inv_r.
-  - typeclasses eauto.
-  - intros y z a. cbv. apply is_proper. apply a. Defined.
-
-Lemma skolemize : Existential.IsGrp X x k -> {f : A -> A | IsGrp X x f k}.
-Proof.
-  intros ?.
-  set (f (y : A) := proj1_sig (Existential.inv_l_r y)).
-  set (g (y : A) := proj2_sig (Existential.inv_l_r y)).
-  exists f. esplit.
-  - typeclasses eauto.
-  - split.
-    + intros y. destruct (g y) as [l r]. apply l.
-    + intros y. destruct (g y) as [l r]. apply r.
-  - typeclasses eauto. Defined.
 
 End Context.
 
