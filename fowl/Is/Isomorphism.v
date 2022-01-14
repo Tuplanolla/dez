@@ -72,3 +72,24 @@ End Context.
 #[export] Hint Resolve is_iso_l_r : typeclass_instances.
 
 End Flipped.
+
+(** TODO Something in this vein. *)
+
+From DEZ.Is Require Export
+  Truncated.
+
+Class IsEquiv (A B : Type) (f : A -> B) : Prop := {
+  is_iso_l' : exists g : B -> A, IsIsoL f g;
+  is_iso_r' : exists g : B -> A, IsIsoR f g;
+}.
+
+Class IsEquivType (A B : Type) : Prop :=
+  equiv_type : exists f : A -> B, IsEquiv f.
+
+(** True propositions are isomorphic to the unit type. *)
+
+Lemma unit_is_equiv_type (A : Type) (x : A) `(IsProp A) : IsEquivType unit A.
+Proof.
+  exists (const x). split.
+  - exists (const tt). intros []. reflexivity.
+  - exists (const tt). intros y. unfold const. apply irrel. Qed.
