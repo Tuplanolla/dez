@@ -88,8 +88,8 @@ Class IsEquivType (A B : Type) : Prop :=
 
 (** True propositions are isomorphic to the unit type. *)
 
-Lemma unit_is_equiv_type (A : Type) (x : A) `(IsProp A) : IsEquivType unit A.
+Lemma unit_is_equiv_type (A : Type) (x : A) `(IsPropEq A) : IsEquivType unit A.
 Proof.
   exists (const x). split.
   - exists (const tt). intros []. reflexivity.
-  - exists (const tt). intros y. unfold const. apply irrel. Qed.
+  - exists (const tt). intros y. unfold const. apply irrel_eq. Qed.

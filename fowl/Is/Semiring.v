@@ -49,7 +49,7 @@ Ltac subclass := progress (
   try change null_op with one in *;
   try change bin_op with mul in *).
 
-#[local] Instance is_contr (a : X 0 1) : IsContrGen X.
+#[local] Instance is_contr (a : X 0 1) : IsContr X.
 Proof.
   hnf.
   note.
