@@ -9,4 +9,4 @@ Fail Fail Class IsRefl (A : Type) (X : A -> A -> Prop) : Prop :=
   refl (x : A) : X x x.
 
 Notation IsRefl := Reflexive.
-Notation refl := (reflexivity : IsRefl _).
+Notation refl := reflexivity.
