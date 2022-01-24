@@ -1,11 +1,11 @@
-(** * Groupoid Structure *)
+(** * Homotopy Levels *)
 
 From Coq Require Import
-  Logic.ProofIrrelevance.
+  Logic.FunctionalExtensionality Logic.PropExtensionality.
 From DEZ.Has Require Export
   Decisions.
 From DEZ.Is Require Export
-  Reflexive Symmetric Transitive Equivalence.
+  Reflexive Symmetric Transitive Equivalence Extensional.
 From DEZ.ShouldHave Require Import
   EquivalenceNotations.
 
@@ -26,10 +26,10 @@ Section Context.
 
 Context (A : Type).
 
-#[local] Instance is_contr_eq_is_contr `{IsContrEq A} : @IsContr A _=_.
+#[local] Instance is_contr_eq_is_contr `{IsContrEq A} : @IsContr A eq.
 Proof. exact contr_eq. Qed.
 
-#[local] Instance is_contr_is_contr_eq `{!@IsContr A _=_} : IsContrEq A.
+#[local] Instance is_contr_is_contr_eq `{@IsContr A eq} : IsContrEq A.
 Proof. exact contr. Qed.
 
 End Context.
@@ -47,10 +47,10 @@ Section Context.
 
 Context (A : Type).
 
-#[local] Instance is_prop_eq_is_prop `{IsPropEq A} : @IsProp A _=_.
+#[local] Instance is_prop_eq_is_prop `{IsPropEq A} : @IsProp A eq.
 Proof. exact irrel_eq. Qed.
 
-#[local] Instance is_prop_is_prop_eq `{!@IsProp A _=_} : IsPropEq A.
+#[local] Instance is_prop_is_prop_eq `{@IsProp A eq} : IsPropEq A.
 Proof. exact irrel. Qed.
 
 End Context.
@@ -76,10 +76,10 @@ Context (A : Type).
 
 Let Y (x y : A) (a b : x = y) := a = b.
 
-#[local] Instance is_set_eq_is_set `{!IsSetEq A} : @IsSet A _=_ (@Y).
+#[local] Instance is_set_eq_is_set `{IsSetEq A} : @IsSet A eq (@Y).
 Proof. exact uip_eq. Qed.
 
-#[local] Instance is_set_is_set_eq `{!@IsSet A _=_ (@Y)} : IsSetEq A.
+#[local] Instance is_set_is_set_eq `{@IsSet A eq (@Y)} : IsSetEq A.
 Proof. exact uip. Qed.
 
 End Context.
@@ -92,14 +92,16 @@ End Context.
 
 Inductive IsHLevel (A : Type) (X : forall {A : Type}, A -> A -> Prop) :
   nat -> Prop :=
-  | h_level_zero `{!@IsContr A X} : IsHLevel A (@X) O
+  | h_level_zero
+    `{@IsContr A X} : IsHLevel A (@X) O
   | h_level_succ (n : nat)
     `{forall x y : A, IsHLevel (X x y) (@X) n} : IsHLevel A (@X) (S n).
 
 Existing Class IsHLevel.
 
 Inductive IsHLevelEq (A : Type) : nat -> Prop :=
-  | h_level_eq_zero `{IsContrEq A} : IsHLevelEq A O
+  | h_level_eq_zero
+    `{IsContrEq A} : IsHLevelEq A O
   | h_level_eq_succ (n : nat)
     `{forall x y : A, IsHLevelEq (x = y) n} : IsHLevelEq A (S n).
 
@@ -123,7 +125,7 @@ Proof.
     pose proof (c x y) as d. eauto. Qed.
 
 #[local] Instance is_h_level_is_h_level_eq (n : nat)
-  `{!@IsHLevel A (@X) n} : IsHLevelEq A n.
+  `{@IsHLevel A (@X) n} : IsHLevelEq A n.
 Proof.
   match goal with
   | h : IsHLevel _ _ _ |- _ => rename h into a
@@ -154,7 +156,7 @@ Proof.
 Lemma iff_is_h_level_is_contr :
   IsHLevel A (@X) O <-> @IsContr A X.
 Proof.
-  split.
+  esplit.
   - typeclasses eauto.
   - apply h_level_zero. Qed.
 
@@ -179,7 +181,7 @@ Proof.
 Lemma iff_is_h_level_succ_is_h_level_eqv (n : nat) :
   IsHLevel A (@X) (S n) <-> forall x y : A, IsHLevel (X x y) (@X) n.
 Proof.
-  split.
+  esplit.
   - typeclasses eauto.
   - apply (@h_level_succ). Qed.
 
@@ -225,16 +227,16 @@ Section Context.
 Context (A : Type).
 
 #[local] Instance eq_is_h_level_is_contr
-  `{IsHLevel A (@eq) 0} : @IsContr A _=_.
+  `{IsHLevel A (@eq) 0} : @IsContr A eq.
 Proof. apply is_h_level_is_contr. Qed.
 
 #[local] Instance eq_is_contr_is_h_level
-  `{@IsContr A _=_} : IsHLevel A (@eq) 0.
+  `{@IsContr A eq} : IsHLevel A (@eq) 0.
 Proof. apply (h_level_zero _). Qed.
 
 Lemma iff_eq_is_h_level_is_contr :
-  IsHLevel A (@eq) 0 <-> @IsContr A _=_.
-Proof. split; typeclasses eauto. Qed.
+  IsHLevel A (@eq) 0 <-> @IsContr A eq.
+Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
 
@@ -245,7 +247,7 @@ Section Context.
 Context (A : Type).
 
 #[local] Instance eq_is_prop_is_h_level
-  `{@IsProp A _=_} : IsHLevel A (@eq) 1.
+  `{@IsProp A eq} : IsHLevel A (@eq) 1.
 Proof.
   apply iff_is_h_level_succ_is_h_level_eqv.
   intros x y. apply iff_is_h_level_is_contr.
@@ -253,19 +255,19 @@ Proof.
   intros a. rewrite a. rewrite eq_trans_sym_inv_l. reflexivity. Qed.
 
 #[local] Instance eq_is_h_level_is_prop
-  `{IsHLevel A (@eq) 1} : @IsProp A _=_.
+  `{IsHLevel A (@eq) 1} : @IsProp A eq.
 Proof.
   match goal with
   | h : IsHLevel _ _ _ |- _ => rename h into a
   end.
   intros x y.
-  assert (b : @IsContr (x = y) _=_).
+  assert (b : @IsContr (x = y) eq).
   { inversion_clear a. apply iff_is_h_level_is_contr. eauto. }
   apply b. Qed.
 
 Lemma iff_eq_is_h_level_is_prop :
-  IsHLevel A (@eq) 1 <-> @IsProp A _=_.
-Proof. split; typeclasses eauto. Qed.
+  IsHLevel A (@eq) 1 <-> @IsProp A eq.
+Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
 
@@ -278,26 +280,26 @@ Context (A : Type).
 Let Y (x y : A) (a b : x = y) := a = b.
 
 #[local] Instance eq_is_set_is_h_level
-  `{@IsSet A _=_ (@Y)} : IsHLevel A (@eq) 2.
+  `{@IsSet A eq (@Y)} : IsHLevel A (@eq) 2.
 Proof.
   apply iff_is_h_level_succ_is_h_level_eqv.
   intros x y. apply iff_eq_is_h_level_is_prop.
-  intros a b. apply (@uip A _=_ (@Y)). eauto. Qed.
+  intros a b. apply (@uip A eq (@Y)). eauto. Qed.
 
 #[local] Instance eq_is_h_level_is_set
-  `{IsHLevel A (@eq) 2} : @IsSet A _=_ (@Y).
+  `{IsHLevel A (@eq) 2} : @IsSet A eq (@Y).
 Proof.
   match goal with
   | h : IsHLevel _ _ _ |- _ => rename h into a
   end.
   intros x y.
-  assert (b : @IsProp (x = y) _=_).
+  assert (b : @IsProp (x = y) eq).
   { inversion_clear a. apply iff_eq_is_h_level_is_prop. eauto. }
   apply b. Qed.
 
 Lemma iff_eq_is_h_level_is_set :
-  IsHLevel A (@eq) 2 <-> @IsSet A _=_ (@Y).
-Proof. split; typeclasses eauto. Qed.
+  IsHLevel A (@eq) 2 <-> @IsSet A eq (@Y).
+Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
 
@@ -329,16 +331,16 @@ Section Context.
 Context (A : Type).
 
 #[local] Instance eq_is_prop_is_contr_eq
-  `{@IsProp A _=_} (x y : A) : @IsContr (x = y) _=_.
+  `{@IsProp A eq} (x y : A) : @IsContr (x = y) eq.
 Proof. eauto with h_intro h_elim. Qed.
 
 #[local] Instance eq_is_contr_eq_is_prop
-  `{forall x y : A, @IsContr (x = y) _=_} : @IsProp A _=_.
+  `{forall x y : A, @IsContr (x = y) eq} : @IsProp A eq.
 Proof. eauto with h_intro h_elim. Qed.
 
 Lemma iff_eq_is_prop_is_contr_eq :
-  @IsProp A _=_ <-> forall x y : A, @IsContr (x = y) _=_.
-Proof. split; typeclasses eauto. Qed.
+  @IsProp A eq <-> forall x y : A, @IsContr (x = y) eq.
+Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
 
@@ -352,16 +354,16 @@ Context (A : Type).
 Let Y (x y : A) (a b : x = y) := a = b.
 
 #[local] Instance eq_is_set_is_prop_eq
-  `{@IsSet A _=_ (@Y)} (x y : A) : @IsProp (x = y) _=_.
+  `{@IsSet A eq (@Y)} (x y : A) : @IsProp (x = y) eq.
 Proof. eauto with h_intro h_elim. Qed.
 
 #[local] Instance eq_is_prop_eq_is_set
-  `{forall x y : A, @IsProp (x = y) _=_} : @IsSet A _=_ (@Y).
+  `{forall x y : A, @IsProp (x = y) eq} : @IsSet A eq (@Y).
 Proof. eauto with h_intro h_elim. Qed.
 
 Lemma iff_eq_is_set_is_prop_eq :
-  @IsSet A _=_ (@Y) <-> forall x y : A, @IsProp (x = y) _=_.
-Proof. split; typeclasses eauto. Qed.
+  @IsSet A eq (@Y) <-> forall x y : A, @IsProp (x = y) eq.
+Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
 
@@ -371,7 +373,7 @@ Section Context.
 
 Context (A : Type).
 
-#[local] Instance eq_is_contr_is_prop `{@IsContr A _=_} : @IsProp A _=_.
+#[local] Instance eq_is_contr_is_prop `{@IsContr A eq} : @IsProp A eq.
 Proof. eauto with h_intro h_elim. Qed.
 
 End Context.
@@ -384,7 +386,7 @@ Context (A : Type).
 
 Let Y (x y : A) (a b : x = y) := a = b.
 
-#[local] Instance eq_is_prop_is_set `{@IsProp A _=_} : @IsSet A _=_ (@Y).
+#[local] Instance eq_is_prop_is_set `{@IsProp A eq} : @IsSet A eq (@Y).
 Proof. eauto with h_intro h_elim. Qed.
 
 End Context.
@@ -392,7 +394,7 @@ End Context.
 (** Inhabited propositions are contractible. *)
 
 #[local] Instance eq_is_prop_is_contr (A : Type) (x : A)
-  `{@IsProp A _=_} : @IsContr A _=_.
+  `{@IsProp A eq} : @IsContr A eq.
 Proof. exists x. apply irrel. Qed.
 
 (** Decidable propositions have unique identity proofs. *)
@@ -401,221 +403,75 @@ Section Context.
 
 Let Y (x y : bool) (a b : x = y) := a = b.
 
-#[local] Instance eq_bool_is_set : @IsSet bool _=_ (@Y).
+#[local] Instance eq_bool_is_set : @IsSet bool eq (@Y).
 Proof. intros x y a b. apply eqdec_uip. apply bool_EqDec. Qed.
 
 End Context.
 
-(** TODO Clean up. *)
-
-#[bad]
-#[local] Instance h_level_contr_eq (A : Type) `(IsHLevelEq A 0) : IsContrEq A.
-Proof. inversion_clear H. eauto. Qed.
-
-#[bad]
-#[local] Instance contr_eq_h_level (A : Type) `(IsContrEq A) : IsHLevelEq A 0.
-Proof. apply h_level_eq_zero. Qed.
-
-#[bad]
-Lemma iff_contr_eq_h_level (A : Type) : IsContrEq A <-> IsHLevelEq A 0.
-Proof. split; [apply contr_eq_h_level | apply h_level_contr_eq]. Qed.
-
-#[bad]
-#[local] Instance h_level_eq_succ_h_level_eq (A : Type) (n : nat)
-  `{IsHLevelEq A (S n)} (x y : A) : IsHLevelEq (x = y) n.
+Lemma eq_pi_is_prop `{IsFunExtDep} (A : Type) (P : A -> Type)
+  `{forall x : A, @IsProp (P x) eq} : @IsProp (forall x : A, P x) eq.
 Proof.
   match goal with
-  | s : IsHLevelEq _ _ |- _ => inversion_clear s
+  | h : forall _ : _, IsProp _ |- _ => rename h into f
   end.
-  eauto. Qed.
+  intros g h. apply fun_ext_dep. intros x. apply f. Qed.
 
-#[bad] Lemma iff_h_level_eq_succ_h_level_eq
-  (A : Type) (n : nat) :
-  IsHLevelEq A (S n) <-> forall x y : A, IsHLevelEq (x = y) n.
-Proof.
-  split.
-  - intros a. apply h_level_eq_succ_h_level_eq.
-  - intros a. apply h_level_eq_succ. Qed.
-
-#[bad]
-Lemma is_h_level_eq_is_h_level_eq_suck (A : Type) (n : nat)
-  `(IsHLevelEq A n) : IsHLevelEq A (S n).
+Lemma eq_pi_is_set `{IsPropExt} `{IsFunExtDep} (A : Type) (P : A -> Type)
+  `{forall x : A, @IsSet (P x) eq (fun y z : P x => eq)} :
+  @IsSet (forall x : A, P x) eq (fun y z : forall x : A, P x => eq).
 Proof.
   match goal with
-  | h : IsHLevelEq _ _ |- _ => induction h as [A [x a] | n A t t']
+  | h : forall _ : _, IsSet _ |- _ => rename h into f
   end.
-  - apply iff_h_level_eq_succ_h_level_eq.
-    intros y z. apply contr_eq_h_level. exists (a z o a y ^-1).
-    intros c. rewrite c.
-    unfold symmetry, eq_Symmetric, transitivity, eq_Transitive.
-    rewrite eq_trans_sym_inv_l. reflexivity.
-  - apply h_level_eq_succ. Qed.
-
-Section Context.
-
-Context (A : Type).
-
-#[bad]
-Lemma prop_h_level `(IsPropEq A) : IsHLevelEq A 1.
-Proof.
-  apply iff_h_level_eq_succ_h_level_eq.
-  intros x y. apply iff_contr_eq_h_level.
-  exists (irrel_eq x y o irrel_eq x x ^-1). intros a.
-  rewrite a. rewrite eq_trans_sym_inv_l. reflexivity. Qed.
-
-#[bad]
-Lemma h_level_prop `(IsHLevelEq A 1) : IsPropEq A.
-Proof.
-  match goal with
-  | h : IsHLevelEq _ _ |- _ => inversion_clear h
-  end.
-  intros x y.
-  assert (a : IsContrEq (x = y)).
-  { apply iff_contr_eq_h_level. auto. }
-  apply a. Qed.
-
-#[bad]
-Lemma iff_prop_h_level : IsPropEq A <-> IsHLevelEq A 1.
-Proof. split; [apply prop_h_level | apply h_level_prop]. Qed.
-
-#[bad]
-Lemma set_h_level `(IsSetEq A) : IsHLevelEq A 2.
-Proof.
-  apply iff_h_level_eq_succ_h_level_eq.
-  intros x y. apply (@is_h_level_is_h_level_eq).
-  apply iff_is_h_level_succ_is_h_level_eqv.
-  intros a b. Admitted.
-
-#[bad]
-Lemma h_level_set `(IsHLevelEq A 2) : IsSetEq A.
-Proof.
-  match goal with
-  | h : IsHLevelEq _ _ |- _ => inversion_clear h
-  end.
-  intros x y.
-  assert (a : IsPropEq (x = y)). Admitted.
-
-#[bad]
-Lemma iff_set_h_level : IsSetEq A <-> IsHLevelEq A 2.
-Proof. split; [apply set_h_level | apply h_level_set]. Qed.
-
-End Context.
-
-From Coq Require Import
-  Logic.FunctionalExtensionality Logic.PropExtensionality.
-From DEZ.Is Require Import
-  Extensional.
-From Equations.Prop Require Import
-  Logic.
-
-Lemma pi_is_prop `(IsFunExtDep) (A : Type) (P : A -> Type)
-  `(forall x : A, IsPropEq (P x)) : IsPropEq (forall x : A, P x).
-Proof.
-  rename H0 into h.
-  unfold IsPropEq in *.
-  intros f g.
-  apply fun_ext_dep.
-  intros x.
-  specialize (h x (f x) (g x)).
-  apply h. Qed.
-
-Lemma pi_is_contr_eq `(IsFunExtDep) (A : Type) (P : A -> Prop)
-  `(forall x : A, IsContrEq (P x)) : IsContrEq (forall x : A, P x).
-Proof.
-  assert (forall x : A, IsPropEq (P x)).
-  { intros x. apply (@eq_is_contr_is_prop). apply H0. }
-  apply pi_is_prop in H1; try eauto.
-  apply eq_is_prop_is_contr.
-  - intros x. pose proof H0 x. destruct H2. assumption.
-  - assumption. Qed.
-
-Lemma pi_is_set `(IsPropExt) `(IsFunExtDep) (A : Type) (P : A -> Type)
-  `(forall x : A, IsSetEq (P x)) : IsSetEq (forall x : A, P x).
-Proof.
-  rename H1 into h.
   pose proof fun (x : A) (a b : P x) =>
-  @eq_is_set_is_prop_eq _ (h x) a b as h'.
-  intros f g.
-  pose proof fun x : A => h' x (f x) (g x) as k.
-  pose proof pi_is_prop _ k as k'. cbv beta in k'.
-  enough (IsPropEq (f = g)) by auto.
-  pose proof (equal_f_dep (f := f) (g := g)) as l.
-  pose proof (fun_ext_dep (f := f) (g := g)) as r.
+  @eq_is_set_is_prop_eq _ (f x) a b as h'.
+  intros g h.
+  pose proof fun x : A => h' x (g x) (h x) as k.
+  (* k' : IsPropEq (forall x : A, g x = h x) *)
+  assert (k' : @IsProp (forall x : A, @eq (P x) (g x) (h x)) eq)
+  by apply eq_pi_is_prop.
+  enough (@IsProp (g = h) eq) by auto.
+  pose proof (equal_f_dep (f := g) (g := h)) as l.
+  pose proof (fun_ext_dep (f := g) (g := h)) as r.
   pose proof conj l r as e.
   pose proof prop_ext e as w.
   rewrite w. apply k'. Qed.
 
+Lemma eq_pi_is_contr `{IsFunExtDep} (A : Type) (P : A -> Prop)
+  `{forall x : A, @IsContr (P x) eq} : @IsContr (forall x : A, P x) eq.
+Proof.
+  match goal with
+  | h : forall _ : _, IsContr _ |- _ => rename h into a
+  end.
+  assert (b : forall x : A, @IsProp (P x) eq).
+  { intros x. apply (@eq_is_contr_is_prop). apply a. }
+  apply (@eq_pi_is_prop) in b; eauto. apply eq_is_prop_is_contr; eauto.
+  intros x. pose proof a x as c. apply c. Qed.
+
+Lemma eq_h_level_is_h_level `{IsPropExt} `{IsFunExtDep}
+  (A : Type) (P : A -> Prop) (n : nat)
+  `{forall x : A, @IsHLevel (P x) (@eq) n} :
+  @IsHLevel (forall x : A, P x) (@eq) n.
+Proof.
+  match goal with
+  | h : forall _ : _, IsHLevel _ _ _ |- _ => rename h into f
+  end.
+  revert A P f. induction n as [| p t]; intros A P f.
+  - pose proof fun x : A => @is_h_level_is_contr _ _ (f x) as m.
+    apply iff_is_h_level_is_contr.
+    apply eq_pi_is_contr.
+  - apply (@h_level_succ).
+    intros g h.
+    pose proof fun_ext_dep (f := g) (g := h) as q.
+    pose proof equal_f_dep (f := g) (g := h) as r.
+    pose proof conj q r as w.
+    pose proof prop_ext w as m.
+    rewrite <- m. apply t. intros x.
+    apply is_h_level_succ_is_h_level_eqv. Qed.
+
 Module FromAxioms.
 
-#[local] Instance is_prop (A : Prop) : IsPropEq A.
-Proof.
-  intros x y.
-  apply proof_irrelevance. Qed.
-
-#[export] Hint Resolve is_prop : typeclass_instances.
+#[export] Instance prop_is_prop (A : Prop) : @IsProp A eq.
+Proof. intros x y. apply proof_irrelevance. Qed.
 
 End FromAxioms.
-
-Lemma h_level_pi `(IsPropExt) `(IsFunExtDep) (A : Type) (P : A -> Prop) (n : nat)
-  `(forall x : A, IsHLevelEq (P x) n) : IsHLevelEq (forall x : A, P x) n.
-Proof.
-  revert A P H1.
-  induction n as [| p t]; intros A P H1.
-  - pose proof fun x : A => h_level_contr_eq (H1 x).
-    apply iff_contr_eq_h_level.
-    apply (@pi_is_contr_eq H0 A P). apply H2.
-  - apply (@h_level_eq_succ).
-    intros f g.
-    pose proof fun (x : A) a b =>
-    h_level_eq_succ_h_level_eq (A := P x) (n := p) (H := H1 x) a b as u.
-    pose proof fun_ext_dep (f := f) (g := g) as q.
-    pose proof equal_f_dep (f := f) (g := g) as r.
-    pose proof conj q r as w.
-    pose proof prop_ext w.
-    rewrite <- H2. apply t. intros x. apply h_level_eq_succ_h_level_eq. Qed.
-
-(** Let us write something extra dubious! *)
-
-Definition lep (x y : bool) : Prop := x -> y.
-
-Definition decreasing (f : nat -> bool) : Prop :=
-  forall i : nat, lep (f (S i)) (f i).
-
-Definition nat_inf : Type := {f : nat -> bool | decreasing f}.
-
-Definition zero_inf : nat_inf.
-Proof.
-  exists (const false). intros i y. apply y. Defined.
-
-Definition succ_inf (x : nat_inf) : nat_inf.
-Proof.
-  destruct x as [f a].
-  exists (fun n : nat =>
-  match n with
-  | O => true
-  | S p => f n
-  end). intros i. revert f a. induction i as [| j b]; intros f a.
-  - intros y. reflexivity.
-  - intros y. apply a. apply y. Defined.
-
-Fixpoint under (n : nat) : nat_inf :=
-  match n with
-  | O => zero_inf
-  | S p => succ_inf (under p)
-  end.
-
-Definition LPO : Type :=
-  forall x : nat_inf, HasDec (exists n : nat, x = under n).
-
-Unset Universe Checking.
-
-Lemma cohedberg `(IsPropExt) `(IsFunExtDep) :
-  ~ forall (A : Type) `(IsSetEq A), HasEqDec A.
-Proof.
-  intros f.
-  pose proof f (nat -> bool) as g.
-  assert (x : IsSetEq (nat -> bool)).
-  apply (pi_is_set _ _). intros _. apply (@bool_is_set).
-  pose proof g x as h.
-  clear f g x.
-  (** Metatheoretical contr_eqadiction! *) Abort.
