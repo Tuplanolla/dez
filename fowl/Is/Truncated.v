@@ -70,19 +70,13 @@ Class IsSet (A : Type) (X : A -> A -> Prop)
   (Y : forall {x y : A}, X x y -> X x y -> Prop) : Prop :=
   uip (x y : A) (a b : X x y) : Y a b.
 
-Section Context.
-
-Context (A : Type).
-
-Let Y (x y : A) (a b : x = y) := a = b.
-
-#[local] Instance is_set_eq_is_set `{IsSetEq A} : @IsSet A eq (@Y).
+#[local] Instance is_set_eq_is_set (A : Type)
+  `{IsSetEq A} : @IsSet A eq (fun (x y : A) (a b : x = y) => a = b).
 Proof. exact uip_eq. Qed.
 
-#[local] Instance is_set_is_set_eq `{@IsSet A eq (@Y)} : IsSetEq A.
+#[local] Instance is_set_is_set_eq (A : Type)
+  `{@IsSet A eq (fun (x y : A) (a b : x = y) => a = b)} : IsSetEq A.
 Proof. exact uip. Qed.
-
-End Context.
 
 (** ** Homotopy [(2 + n)]-Type *)
 (** ** Type of Homotopy Level [n] *)
@@ -92,16 +86,14 @@ End Context.
 
 Inductive IsHLevel (A : Type) (X : forall {A : Type}, A -> A -> Prop) :
   nat -> Prop :=
-  | h_level_zero
-    `{@IsContr A X} : IsHLevel A (@X) O
+  | h_level_zero `{@IsContr A X} : IsHLevel A (@X) O
   | h_level_succ (n : nat)
     `{forall x y : A, IsHLevel (X x y) (@X) n} : IsHLevel A (@X) (S n).
 
 Existing Class IsHLevel.
 
 Inductive IsHLevelEq (A : Type) : nat -> Prop :=
-  | h_level_eq_zero
-    `{IsContrEq A} : IsHLevelEq A O
+  | h_level_eq_zero `{IsContrEq A} : IsHLevelEq A O
   | h_level_eq_succ (n : nat)
     `{forall x y : A, IsHLevelEq (x = y) n} : IsHLevelEq A (S n).
 
@@ -122,7 +114,7 @@ Proof.
   revert A X a. induction n as [| p b]; intros A X a.
   - constructor. inversion_clear a. eauto.
   - constructor. intros x y. inversion_clear a as [| ? c].
-    pose proof (c x y) as d. eauto. Qed.
+    pose proof c x y as d. eauto. Qed.
 
 #[local] Instance is_h_level_is_h_level_eq (n : nat)
   `{@IsHLevel A (@X) n} : IsHLevelEq A n.
@@ -133,7 +125,64 @@ Proof.
   revert A X a. induction n as [| p b]; intros A X a.
   - constructor. inversion_clear a. eauto.
   - constructor. intros x y. inversion_clear a as [| ? c].
-    pose proof (c x y) as d. eauto. Qed.
+    pose proof c x y as d. eauto. Qed.
+
+End Context.
+
+(** TODO Can this work? *)
+
+Equations h_relation (A : Type) (n : nat) : Type :=
+  h_relation A O := A -> A -> Prop;
+  h_relation A (S n) := {X : A -> A -> Prop &
+    forall x y : A, h_relation (X x y) n}.
+
+Compute h_relation nat 0.
+Compute h_relation nat 1.
+Compute h_relation nat 2.
+
+Equations h_relations (A : Type) : Type :=
+  h_relations A := forall n : nat, h_relation A n.
+
+#[local] Open Scope sigT_scope.
+
+Equations eq_h_relation (A : Type) (n : nat) : h_relation A n by struct n :=
+  eq_h_relation A O := eq;
+  eq_h_relation A (S n) := @existT (A -> A -> Prop)
+    (fun X : A -> A -> Prop => forall x y : A, h_relation (X x y) n)
+    eq (fun x y : A => eq_h_relation (x = y) n).
+
+Equations eq_h_relations (A : Type) : h_relations A :=
+  eq_h_relations A := eq_h_relation A.
+
+Inductive IsHLevelNat (A : Type) (X : h_relations A) : nat -> Prop :=
+  | h_level_nat_zero `{!IsContr (X O)} : IsHLevelNat A X O
+  | h_level_nat_succ (n : nat) (* ?? *) : IsHLevelNat A X (S n).
+
+Existing Class IsHLevelNat.
+
+Section Context.
+
+Context (A : Type).
+
+#[local] Instance is_h_level_eq_is_h_level_nat (n : nat)
+  `{IsHLevelEq A n} : IsHLevelNat A (eq_h_relation A) n.
+Proof.
+  match goal with
+  | h : IsHLevelEq _ _ |- _ => rename h into a
+  end.
+  revert A a. induction n as [| p b]; intros A a.
+  - constructor. inversion_clear a. eauto.
+  - constructor. Abort.
+
+#[local] Instance is_h_level_nat_is_h_level_eq (n : nat)
+  `{!IsHLevelNat A (eq_h_relation A) n} : IsHLevelEq A n.
+Proof.
+  match goal with
+  | h : IsHLevelNat _ _ _ |- _ => rename h into a
+  end.
+  revert A a. induction n as [| p b]; intros A a.
+  - constructor. inversion_clear a. eauto.
+  - constructor. Abort.
 
 End Context.
 
