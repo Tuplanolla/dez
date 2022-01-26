@@ -1,361 +1,477 @@
-(** * Groupoid Structure *)
+(** * Homotopy Levels *)
 
 From Coq Require Import
-  Logic.ProofIrrelevance.
+  Logic.FunctionalExtensionality Logic.PropExtensionality.
 From DEZ.Has Require Export
   Decisions.
 From DEZ.Is Require Export
-  Isomorphism.
+  Reflexive Symmetric Transitive Equivalence Extensional.
+From DEZ.ShouldHave Require Import
+  EquivalenceNotations.
 
-Unset Universe Minimization ToSet.
+#[local] Unset Universe Minimization ToSet.
 
 #[local] Open Scope type_scope.
 
 (** ** Contractibility *)
 (** ** Singleton *)
 
-Class IsContr (A : Type) : Prop :=
-  contr : exists x : A, forall y : A, x = y.
+Class IsContr (A : Type) (X : A -> A -> Prop) : Prop :=
+  contr : exists x : A, forall y : A, X x y.
+
+Class IsContrEq (A : Type) : Prop :=
+  contr_eq : exists x : A, forall y : A, x = y.
+
+Section Context.
+
+Context (A : Type).
+
+#[local] Instance is_contr_eq_is_contr `{IsContrEq A} : @IsContr A eq.
+Proof. exact contr_eq. Qed.
+
+#[local] Instance is_contr_is_contr_eq `{@IsContr A eq} : IsContrEq A.
+Proof. exact contr. Qed.
+
+End Context.
 
 (** ** Proof Irrelevance *)
 (** ** Proposition *)
 
-Class IsProp (A : Type) : Prop :=
-  irrel (x y : A) : x = y.
+Class IsProp (A : Type) (X : A -> A -> Prop) : Prop :=
+  irrel (x y : A) : X x y.
+
+Class IsPropEq (A : Type) : Prop :=
+  irrel_eq (x y : A) : x = y.
+
+Section Context.
+
+Context (A : Type).
+
+#[local] Instance is_prop_eq_is_prop `{IsPropEq A} : @IsProp A eq.
+Proof. exact irrel_eq. Qed.
+
+#[local] Instance is_prop_is_prop_eq `{@IsProp A eq} : IsPropEq A.
+Proof. exact irrel. Qed.
+
+End Context.
 
 (** ** Set *)
 (** ** Uniqueness of Identity Proofs *)
 
-Fail Fail Class IsSet (A : Type) : Prop :=
-  uip (x y : A) (a b : x = y) : a = b.
+Fail Fail Class IsSetEq (A : Type) : Prop :=
+  uip_eq (x y : A) (a b : x = y) : a = b.
 
-Notation IsSet := UIP.
+Arguments uip {_ _} _ _ _ _.
 
-Arguments uip {_ _ _ _} _ _.
+Notation IsSetEq := UIP.
+Notation uip_eq := uip.
 
-Class IsContrGen (A B : Type) (X : A -> B -> Prop) : Prop :=
-  contr_gen : exists x : A, forall y : B, X x y.
+Class IsSet (A : Type) (X : A -> A -> Prop)
+  (Y : forall {x y : A}, X x y -> X x y -> Prop) : Prop :=
+  uip (x y : A) (a b : X x y) : Y a b.
 
-Class IsPropGen (A B : Type) (X : A -> B -> Prop) : Prop :=
-  irrel_gen (x : A) (y : B) : X x y.
+Section Context.
 
-Class IsSetGen (A B : Type) (X Y : A -> B -> Prop)
-  (Z : forall {x : A} {y : B}, X x y -> Y x y -> Prop) : Prop :=
-  uip_gen (x : A) (y : B) (a : X x y) (b : Y x y) : Z a b.
+Context (A : Type).
 
-(** ** Homotopy [n]-Type *)
-(** ** [n]-Truncation *)
+Let Y (x y : A) (a b : x = y) := a = b.
 
-(** While this type is indexed over [nat], which starts from [0],
-    the truncation levels actually start from [-2]. *)
+#[local] Instance is_set_eq_is_set `{IsSetEq A} : @IsSet A eq (@Y).
+Proof. exact uip_eq. Qed.
 
-Inductive IsTrunc (A : Type) : nat -> Prop :=
-  | trunc_zero `(IsContr A) : IsTrunc A O
-  | trunc_succ (n : nat)
-    `(forall x y : A, IsTrunc (x = y) n) : IsTrunc A (S n).
+#[local] Instance is_set_is_set_eq `{@IsSet A eq (@Y)} : IsSetEq A.
+Proof. exact uip. Qed.
 
-Existing Class IsTrunc.
+End Context.
 
-Lemma trunc_succ_trunc_eq (A : Type) (n : nat)
-  `(IsTrunc A (S n)) (x y : A) : IsTrunc (x = y) n.
+(** ** Homotopy [(2 + n)]-Type *)
+(** ** Type of Homotopy Level [n] *)
+
+(** For the sake of convenience, we count up from [0],
+    even though homotopy levels conventionally count up from [-2]. *)
+
+Inductive IsHLevel (A : Type) (X : forall {A : Type}, A -> A -> Prop) :
+  nat -> Prop :=
+  | h_level_zero
+    `{@IsContr A X} : IsHLevel A (@X) O
+  | h_level_succ (n : nat)
+    `{forall x y : A, IsHLevel (X x y) (@X) n} : IsHLevel A (@X) (S n).
+
+Existing Class IsHLevel.
+
+Inductive IsHLevelEq (A : Type) : nat -> Prop :=
+  | h_level_eq_zero
+    `{IsContrEq A} : IsHLevelEq A O
+  | h_level_eq_succ (n : nat)
+    `{forall x y : A, IsHLevelEq (x = y) n} : IsHLevelEq A (S n).
+
+Existing Class IsHLevelEq.
+
+Section Context.
+
+Context (A : Type).
+
+Let X (A : Type) (x y : A) := x = y.
+
+#[local] Instance is_h_level_eq_is_h_level (n : nat)
+  `{IsHLevelEq A n} : IsHLevel A (@X) n.
 Proof.
   match goal with
-  | t : IsTrunc _ _ |- _ => inversion_clear t
-  end. eauto. Qed.
-
-(** Truncation at the next level is equivalent to truncation of identities. *)
-
-Lemma iff_trunc_succ_trunc_eq (A : Type) (n : nat) :
-  IsTrunc A (S n) <-> forall x y : A, IsTrunc (x = y) n.
-Proof. split; [apply trunc_succ_trunc_eq | apply trunc_succ]. Qed.
-
-(** Truncation is cumulative. *)
-
-Lemma trunc_trunc_succ (A : Type) (n : nat) `(IsTrunc A n) : IsTrunc A (S n).
-Proof.
-  match goal with
-  | t : IsTrunc _ _ |- _ => induction t as [A [x a] | n A t t']
+  | h : IsHLevelEq _ _ |- _ => rename h into a
   end.
-  - apply iff_trunc_succ_trunc_eq.
-    intros y z. apply trunc_zero. exists (a z o a y ^-1).
-    intros c. rewrite c. rewrite eq_trans_sym_inv_l. reflexivity.
-  - apply trunc_succ. auto. Qed.
+  revert A X a. induction n as [| p b]; intros A X a.
+  - constructor. inversion_clear a. eauto.
+  - constructor. intros x y. inversion_clear a as [| ? c].
+    pose proof (c x y) as d. eauto. Qed.
 
-Lemma contr_trunc (A : Type) `(IsContr A) : IsTrunc A 0.
-Proof. apply trunc_zero. auto. Qed.
-
-Lemma trunc_contr (A : Type) `(IsTrunc A 0) : IsContr A.
+#[local] Instance is_h_level_is_h_level_eq (n : nat)
+  `{@IsHLevel A (@X) n} : IsHLevelEq A n.
 Proof.
   match goal with
-  | t : IsTrunc _ _ |- _ => inversion_clear t
-  end. auto. Qed.
+  | h : IsHLevel _ _ _ |- _ => rename h into a
+  end.
+  revert A X a. induction n as [| p b]; intros A X a.
+  - constructor. inversion_clear a. eauto.
+  - constructor. intros x y. inversion_clear a as [| ? c].
+    pose proof (c x y) as d. eauto. Qed.
 
-(** Contractibility is equivalent to truncation at level [-2]. *)
+End Context.
 
-Lemma iff_contr_trunc (A : Type) : IsContr A <-> IsTrunc A 0.
-Proof. split; [apply contr_trunc | apply trunc_contr]. Qed.
+Section Context.
 
-Lemma prop_trunc (A : Type) `(IsProp A) : IsTrunc A 1.
-Proof.
-  apply iff_trunc_succ_trunc_eq.
-  intros x y. apply iff_contr_trunc.
-  exists (irrel x y o irrel x x ^-1). intros a.
-  rewrite a. rewrite eq_trans_sym_inv_l. reflexivity. Qed.
+Context (A : Type) (X : forall {A : Type}, A -> A -> Prop).
 
-Lemma trunc_prop (A : Type) `(IsTrunc A 1) : IsProp A.
+(** Inversion of [h_level_zero]. *)
+
+#[local] Instance is_h_level_is_contr
+  `{IsHLevel A (@X) O} : @IsContr A X.
 Proof.
   match goal with
-  | t : IsTrunc _ _ |- _ => inversion_clear t
+  | h : IsHLevel _ _ _ |- _ => rename h into a
+  end.
+  inversion_clear a. eauto. Qed.
+
+(** Biconditionality of [h_level_zero]. *)
+
+Lemma iff_is_h_level_is_contr :
+  IsHLevel A (@X) O <-> @IsContr A X.
+Proof.
+  esplit.
+  - typeclasses eauto.
+  - apply h_level_zero. Qed.
+
+End Context.
+
+Section Context.
+
+Context (A : Type) (X : forall {A : Type}, A -> A -> Prop).
+
+(** Inversion of [h_level_succ]. *)
+
+#[local] Instance is_h_level_succ_is_h_level_eqv (n : nat)
+  `{IsHLevel A (@X) (S n)} (x y : A) : IsHLevel (X x y) (@X) n.
+Proof.
+  match goal with
+  | h : IsHLevel _ _ _ |- _ => rename h into a
+  end.
+  inversion_clear a. eauto. Qed.
+
+(** Biconditionality of [h_level_succ]. *)
+
+Lemma iff_is_h_level_succ_is_h_level_eqv (n : nat) :
+  IsHLevel A (@X) (S n) <-> forall x y : A, IsHLevel (X x y) (@X) n.
+Proof.
+  esplit.
+  - typeclasses eauto.
+  - apply (@h_level_succ). Qed.
+
+End Context.
+
+(** Homotopy levels are cumulative. *)
+
+Section Context.
+
+Context (A : Type).
+
+#[local] Instance eq_is_h_level_is_h_level_succ (n : nat)
+  `{IsHLevel A (@eq) n} : IsHLevel A (@eq) (S n).
+Proof.
+  match goal with
+  | h : IsHLevel _ _ _ |- _ => rename h into a
+  end.
+  revert A a. induction n as [| p c]; intros A a.
+  - apply iff_is_h_level_is_contr in a. destruct a as [x f].
+    apply iff_is_h_level_succ_is_h_level_eqv.
+    intros y z. apply h_level_zero. exists (f z o f y ^-1).
+    intros b. rewrite b. rewrite eq_trans_sym_inv_l. reflexivity.
+  - apply (@h_level_succ).
+    intros x y. apply c. apply (@is_h_level_succ_is_h_level_eqv). apply a. Qed.
+
+#[local] Instance eq_is_h_level_is_h_level_add (p n : nat)
+  `{IsHLevel A (@eq) n} : IsHLevel A (@eq) (p + n).
+Proof.
+  match goal with
+  | h : IsHLevel _ _ _ |- _ => rename h into a
+  end.
+  revert n a. induction p as [| q c]; intros n a.
+  - eauto.
+  - replace (S q + n)%nat with (S (q + n))%nat by reflexivity.
+    apply eq_is_h_level_is_h_level_succ. Qed.
+
+End Context.
+
+(** Homotopy level [-2] corresponds to contractibility. *)
+
+Section Context.
+
+Context (A : Type).
+
+#[local] Instance eq_is_h_level_is_contr
+  `{IsHLevel A (@eq) 0} : @IsContr A eq.
+Proof. apply is_h_level_is_contr. Qed.
+
+#[local] Instance eq_is_contr_is_h_level
+  `{@IsContr A eq} : IsHLevel A (@eq) 0.
+Proof. apply (h_level_zero _). Qed.
+
+Lemma iff_eq_is_h_level_is_contr :
+  IsHLevel A (@eq) 0 <-> @IsContr A eq.
+Proof. esplit; typeclasses eauto. Qed.
+
+End Context.
+
+(** Homotopy level [-1] corresponds to proof irrelevance. *)
+
+Section Context.
+
+Context (A : Type).
+
+#[local] Instance eq_is_prop_is_h_level
+  `{@IsProp A eq} : IsHLevel A (@eq) 1.
+Proof.
+  apply iff_is_h_level_succ_is_h_level_eqv.
+  intros x y. apply iff_is_h_level_is_contr.
+  exists (irrel x y o irrel x x ^-1).
+  intros a. rewrite a. rewrite eq_trans_sym_inv_l. reflexivity. Qed.
+
+#[local] Instance eq_is_h_level_is_prop
+  `{IsHLevel A (@eq) 1} : @IsProp A eq.
+Proof.
+  match goal with
+  | h : IsHLevel _ _ _ |- _ => rename h into a
   end.
   intros x y.
-  assert (a : IsContr (x = y)).
-  { apply iff_contr_trunc. auto. }
-  apply a. Qed.
+  assert (b : @IsContr (x = y) eq).
+  { inversion_clear a. apply iff_is_h_level_is_contr. eauto. }
+  apply b. Qed.
 
-(** Proof irrelevance is equivalent to truncation at level [-1]. *)
+Lemma iff_eq_is_h_level_is_prop :
+  IsHLevel A (@eq) 1 <-> @IsProp A eq.
+Proof. esplit; typeclasses eauto. Qed.
 
-Lemma iff_prop_trunc (A : Type) : IsProp A <-> IsTrunc A 1.
-Proof. split; [apply prop_trunc | apply trunc_prop]. Qed.
+End Context.
 
-Lemma set_trunc (A : Type) `(IsSet A) : IsTrunc A 2.
+(** Homotopy level [0] corresponds to uniqueness of identity proofs. *)
+
+Section Context.
+
+Context (A : Type).
+
+Let Y (x y : A) (a b : x = y) := a = b.
+
+#[local] Instance eq_is_set_is_h_level
+  `{@IsSet A eq (@Y)} : IsHLevel A (@eq) 2.
 Proof.
-  apply iff_trunc_succ_trunc_eq.
-  intros x y. apply iff_prop_trunc.
-  intros a b. apply uip. Qed.
+  apply iff_is_h_level_succ_is_h_level_eqv.
+  intros x y. apply iff_eq_is_h_level_is_prop.
+  intros a b. apply (@uip A eq (@Y)). eauto. Qed.
 
-Lemma trunc_set (A : Type) `(IsTrunc A 2) : IsSet A.
+#[local] Instance eq_is_h_level_is_set
+  `{IsHLevel A (@eq) 2} : @IsSet A eq (@Y).
 Proof.
   match goal with
-  | t : IsTrunc _ _ |- _ => inversion_clear t
+  | h : IsHLevel _ _ _ |- _ => rename h into a
   end.
   intros x y.
-  assert (a : IsProp (x = y)).
-  { apply iff_prop_trunc. auto. }
-  apply a. Qed.
+  assert (b : @IsProp (x = y) eq).
+  { inversion_clear a. apply iff_eq_is_h_level_is_prop. eauto. }
+  apply b. Qed.
 
-(** Uniqueness of identity proofs is equivalent to truncation at level [0]. *)
+Lemma iff_eq_is_h_level_is_set :
+  IsHLevel A (@eq) 2 <-> @IsSet A eq (@Y).
+Proof. esplit; typeclasses eauto. Qed.
 
-Lemma iff_set_trunc (A : Type) : IsSet A <-> IsTrunc A 2.
-Proof. split; [apply set_trunc | apply trunc_set]. Qed.
+End Context.
 
-(** Hints that construct truncations. *)
+(** Hints that introduce and eliminate homotopy levels. *)
 
-Create HintDb trunc.
+Create HintDb h_intro.
 
-#[export] Hint Resolve trunc_zero trunc_succ trunc_trunc_succ
-  contr_trunc prop_trunc set_trunc : trunc.
+#[export] Hint Resolve
+  h_level_zero h_level_succ
+  is_h_level_eq_is_h_level is_h_level_succ_is_h_level_eqv
+  eq_is_h_level_is_h_level_succ eq_is_h_level_is_h_level_add
+  eq_is_contr_is_h_level eq_is_prop_is_h_level eq_is_set_is_h_level : h_intro.
 
-(** Hints that eliminate truncations. *)
+Create HintDb h_elim.
 
-Create HintDb untrunc.
+#[export] Hint Resolve
+  is_h_level_is_contr h_level_succ
+  is_h_level_is_h_level_eq is_h_level_succ_is_h_level_eqv
+  eq_is_h_level_is_h_level_succ eq_is_h_level_is_h_level_add
+  eq_is_h_level_is_contr eq_is_h_level_is_prop eq_is_h_level_is_set : h_elim.
 
-#[export] Hint Resolve trunc_succ_trunc_eq trunc_trunc_succ
-  trunc_contr trunc_prop trunc_set : untrunc.
-
-Lemma prop_contr_eq (A : Type) `(IsProp A) (x y : A) : IsContr (x = y).
-Proof. eauto 7 with trunc untrunc. Qed.
-
-Lemma contr_eq_prop (A : Type) `(forall x y : A, IsContr (x = y)) : IsProp A.
-Proof. eauto 7 with trunc untrunc. Qed.
+(** We now have enough machinery to automatically prove some basic results. *)
 
 (** Proof irrelevance is equivalent
     to contractibility of identity proofs. *)
 
-Lemma iff_prop_contr_eq (A : Type) :
-  IsProp A <-> forall x y : A, IsContr (x = y).
-Proof.
-  split; [apply prop_contr_eq | apply contr_eq_prop] ||
-  split; eauto 7 with trunc untrunc. Qed.
+Section Context.
 
-Lemma set_prop_eq (A : Type) `(IsSet A) (x y : A) : IsProp (x = y).
-Proof. eauto 7 with trunc untrunc. Qed.
+Context (A : Type).
 
-Lemma prop_eq_set (A : Type)
-  `(forall x y : A, IsProp (x = y)) (x y : A) : IsSet A.
-Proof. eauto 7 with trunc untrunc. Qed.
+#[local] Instance eq_is_prop_is_contr_eq
+  `{@IsProp A eq} (x y : A) : @IsContr (x = y) eq.
+Proof. eauto with h_intro h_elim. Qed.
+
+#[local] Instance eq_is_contr_eq_is_prop
+  `{forall x y : A, @IsContr (x = y) eq} : @IsProp A eq.
+Proof. eauto with h_intro h_elim. Qed.
+
+Lemma iff_eq_is_prop_is_contr_eq :
+  @IsProp A eq <-> forall x y : A, @IsContr (x = y) eq.
+Proof. esplit; typeclasses eauto. Qed.
+
+End Context.
 
 (** Uniqueness of identity proofs is equivalent
     to proof irrelevance of identity proofs. *)
 
-Lemma iff_set_prop_eq (A : Type) : IsSet A <-> forall x y : A, IsProp (x = y).
-Proof.
-  split; [apply set_prop_eq | apply prop_eq_set] ||
-  split; eauto 7 with trunc untrunc. Qed.
+Section Context.
+
+Context (A : Type).
+
+Let Y (x y : A) (a b : x = y) := a = b.
+
+#[local] Instance eq_is_set_is_prop_eq
+  `{@IsSet A eq (@Y)} (x y : A) : @IsProp (x = y) eq.
+Proof. eauto with h_intro h_elim. Qed.
+
+#[local] Instance eq_is_prop_eq_is_set
+  `{forall x y : A, @IsProp (x = y) eq} : @IsSet A eq (@Y).
+Proof. eauto with h_intro h_elim. Qed.
+
+Lemma iff_eq_is_set_is_prop_eq :
+  @IsSet A eq (@Y) <-> forall x y : A, @IsProp (x = y) eq.
+Proof. esplit; typeclasses eauto. Qed.
+
+End Context.
 
 (** Contractibility implies proof irrelevance. *)
 
-Lemma contr_prop (A : Type) `(IsContr A) : IsProp A.
-Proof. eauto 7 with trunc untrunc. Qed.
+Section Context.
+
+Context (A : Type).
+
+#[local] Instance eq_is_contr_is_prop `{@IsContr A eq} : @IsProp A eq.
+Proof. eauto with h_intro h_elim. Qed.
+
+End Context.
 
 (** Proof irrelevance implies uniqueness of identity proofs. *)
 
-Lemma prop_set (A : Type) `(IsProp A) : IsSet A.
-Proof. eauto 7 with trunc untrunc. Qed.
+Section Context.
 
-#[export] Hint Resolve prop_contr_eq set_prop_eq
-  contr_prop prop_set : typeclass_instances.
+Context (A : Type).
 
-(** True propositions are contractible. *)
+Let Y (x y : A) (a b : x = y) := a = b.
 
-Lemma prop_contr (A : Type) (x : A) `(IsProp A) : IsContr A.
+#[local] Instance eq_is_prop_is_set `{@IsProp A eq} : @IsSet A eq (@Y).
+Proof. eauto with h_intro h_elim. Qed.
+
+End Context.
+
+(** Inhabited propositions are contractible. *)
+
+#[local] Instance eq_is_prop_is_contr (A : Type) (x : A)
+  `{@IsProp A eq} : @IsContr A eq.
 Proof. exists x. apply irrel. Qed.
 
-(** TODO Clean up. *)
+(** Decidable propositions have unique identity proofs. *)
 
-From Coq Require Import
-  Logic.FunctionalExtensionality Logic.PropExtensionality.
-From DEZ.Is Require Import
-  Extensional.
-From Equations.Prop Require Import
-  Logic.
+Section Context.
 
-(** True propositions are isomorphic to the unit type. *)
+Let Y (x y : bool) (a b : x = y) := a = b.
 
-Class IsEquiv (A B : Type) (f : A -> B) : Prop := {
-  is_iso_l : exists g : B -> A, IsIsoL f g;
-  is_iso_r : exists g : B -> A, IsIsoR f g;
-}.
+#[local] Instance eq_bool_is_set : @IsSet bool eq (@Y).
+Proof. intros x y a b. apply eqdec_uip. apply bool_EqDec. Qed.
 
-Class IsEquivType (A B : Type) : Prop :=
-  equiv_type : exists f : A -> B, IsEquiv f.
+End Context.
 
-Lemma unit_is_equiv_type (A : Type) (x : A) `(IsProp A) : IsEquivType unit A.
+Lemma eq_pi_is_prop `{IsFunExtDep} (A : Type) (P : A -> Type)
+  `{forall x : A, @IsProp (P x) eq} : @IsProp (forall x : A, P x) eq.
 Proof.
-  exists (const x). split.
-  - exists (const tt). intros []. reflexivity.
-  - exists (const tt). intros y. unfold const. apply irrel. Qed.
+  match goal with
+  | h : forall _ : _, IsProp _ |- _ => rename h into f
+  end.
+  intros g h. apply fun_ext_dep. intros x. apply f. Qed.
 
-Lemma is_contr_is_prop `(IsFunExtDep) (A : Prop) : IsProp (IsContr A).
+Lemma eq_pi_is_set `{IsPropExt} `{IsFunExtDep} (A : Type) (P : A -> Type)
+  `{forall x : A, @IsSet (P x) eq (fun y z : P x => eq)} :
+  @IsSet (forall x : A, P x) eq (fun y z : forall x : A, P x => eq).
 Proof.
-  intros x y.
-  assert (z : IsProp A).
-  { apply contr_prop. apply x. }
-  assert (w : IsSet A).
-  { apply prop_set. apply z. }
-  destruct x as [x a], y as [y b].
-  apply eq_ex with (a y).
-  assert (IsProp (forall z : A, y = z)).
-  intros u v. apply fun_ext_dep. intros t. apply irrel.
-  eapply irrel. Qed.
-
-Lemma is_contr_is_contr `(IsFunExtDep) (A : Prop) `(IsContr A) :
-  IsContr (IsContr A).
-Proof.
-  apply prop_contr.
-  - assumption.
-  - apply is_contr_is_prop. assumption. Qed.
-
-Lemma pi_is_prop `(IsFunExtDep) (A : Type) (P : A -> Type)
-  `(forall x : A, IsProp (P x)) : IsProp (forall x : A, P x).
-Proof.
-  rename H0 into h.
-  unfold IsProp in *.
-  intros f g.
-  apply fun_ext_dep.
-  intros x.
-  specialize (h x (f x) (g x)).
-  apply h. Qed.
-
-Lemma pi_is_contr `(IsFunExtDep) (A : Type) (P : A -> Prop)
-  `(forall x : A, IsContr (P x)) : IsContr (forall x : A, P x).
-Proof.
-  assert (forall x : A, IsProp (P x)).
-  { intros x. apply contr_prop. apply H0. }
-  apply pi_is_prop in H1; try typeclasses eauto.
-  apply prop_contr.
-  - intros x. pose proof H0 x. destruct H2. assumption.
-  - assumption. Qed.
-
-Lemma pi_is_set `(IsPropExt) `(IsFunExtDep) (A : Type) (P : A -> Type)
-  `(forall x : A, IsSet (P x)) : IsSet (forall x : A, P x).
-Proof.
-  rename H1 into h.
+  match goal with
+  | h : forall _ : _, IsSet _ |- _ => rename h into f
+  end.
   pose proof fun (x : A) (a b : P x) =>
-  set_prop_eq (h x) (x := a) (y := b) as h'.
-  intros f g.
-  pose proof fun x : A => h' x (f x) (g x) as k.
-  pose proof pi_is_prop _ k as k'. cbv beta in k'.
-  enough (IsProp (f = g)) by auto.
-  pose proof (equal_f_dep (f := f) (g := g)) as l.
-  pose proof (fun_ext_dep (f := f) (g := g)) as r.
+  @eq_is_set_is_prop_eq _ (f x) a b as h'.
+  intros g h.
+  pose proof fun x : A => h' x (g x) (h x) as k.
+  (* k' : IsPropEq (forall x : A, g x = h x) *)
+  assert (k' : @IsProp (forall x : A, @eq (P x) (g x) (h x)) eq)
+  by apply eq_pi_is_prop.
+  enough (@IsProp (g = h) eq) by auto.
+  pose proof (equal_f_dep (f := g) (g := h)) as l.
+  pose proof (fun_ext_dep (f := g) (g := h)) as r.
   pose proof conj l r as e.
   pose proof prop_ext e as w.
   rewrite w. apply k'. Qed.
 
+Lemma eq_pi_is_contr `{IsFunExtDep} (A : Type) (P : A -> Prop)
+  `{forall x : A, @IsContr (P x) eq} : @IsContr (forall x : A, P x) eq.
+Proof.
+  match goal with
+  | h : forall _ : _, IsContr _ |- _ => rename h into a
+  end.
+  assert (b : forall x : A, @IsProp (P x) eq).
+  { intros x. apply (@eq_is_contr_is_prop). apply a. }
+  apply (@eq_pi_is_prop) in b; eauto. apply eq_is_prop_is_contr; eauto.
+  intros x. pose proof a x as c. apply c. Qed.
+
+Lemma eq_h_level_is_h_level `{IsPropExt} `{IsFunExtDep}
+  (A : Type) (P : A -> Prop) (n : nat)
+  `{forall x : A, @IsHLevel (P x) (@eq) n} :
+  @IsHLevel (forall x : A, P x) (@eq) n.
+Proof.
+  match goal with
+  | h : forall _ : _, IsHLevel _ _ _ |- _ => rename h into f
+  end.
+  revert A P f. induction n as [| p t]; intros A P f.
+  - pose proof fun x : A => @is_h_level_is_contr _ _ (f x) as m.
+    apply iff_is_h_level_is_contr.
+    apply eq_pi_is_contr.
+  - apply (@h_level_succ).
+    intros g h.
+    pose proof fun_ext_dep (f := g) (g := h) as q.
+    pose proof equal_f_dep (f := g) (g := h) as r.
+    pose proof conj q r as w.
+    pose proof prop_ext w as m.
+    rewrite <- m. apply t. intros x.
+    apply is_h_level_succ_is_h_level_eqv. Qed.
+
 Module FromAxioms.
 
-#[local] Instance is_prop (A : Prop) : IsProp A.
-Proof.
-  intros x y.
-  apply proof_irrelevance. Qed.
-
-#[export] Hint Resolve is_prop : typeclass_instances.
+#[export] Instance prop_is_prop (A : Prop) : @IsProp A eq.
+Proof. intros x y. apply proof_irrelevance. Qed.
 
 End FromAxioms.
-
-Lemma trunc_pi `(IsPropExt) `(IsFunExtDep) (A : Type) (P : A -> Prop) (n : nat)
-  `(forall x : A, IsTrunc (P x) n) : IsTrunc (forall x : A, P x) n.
-Proof.
-  revert A P H1.
-  induction n as [| p t]; intros A P H1.
-  - pose proof fun x : A => trunc_contr (H1 x).
-    apply iff_contr_trunc.
-    apply (@pi_is_contr H0 A P). apply H2.
-  - apply trunc_succ.
-    intros f g.
-    pose proof fun (x : A) a b =>
-    trunc_succ_trunc_eq (A := P x) (n := p) (H1 x) a b as u.
-    pose proof fun_ext_dep (f := f) (g := g) as q.
-    pose proof equal_f_dep (f := f) (g := g) as r.
-    pose proof conj q r as w.
-    pose proof prop_ext w.
-    rewrite <- H2. apply t. intros x. apply trunc_succ_trunc_eq. apply H1. Qed.
-
-#[local] Instance bool_is_set : IsSet bool.
-Proof. intros x y a b. apply EqDec.eqdec_uip. apply bool_EqDec. Qed.
-
-(** Let us write something extra dubious! *)
-
-Definition lep (x y : bool) : Prop := x -> y.
-
-Definition decreasing (f : nat -> bool) : Prop :=
-  forall i : nat, lep (f (S i)) (f i).
-
-Definition nat_inf : Type := {f : nat -> bool | decreasing f}.
-
-Definition zero_inf : nat_inf.
-Proof.
-  exists (const false). intros i y. apply y. Defined.
-
-Definition succ_inf (x : nat_inf) : nat_inf.
-Proof.
-  destruct x as [f a].
-  exists (fun n : nat =>
-  match n with
-  | O => true
-  | S p => f n
-  end). intros i. revert f a. induction i as [| j b]; intros f a.
-  - intros y. reflexivity.
-  - intros y. apply a. apply y. Defined.
-
-Fixpoint under (n : nat) : nat_inf :=
-  match n with
-  | O => zero_inf
-  | S p => succ_inf (under p)
-  end.
-
-Definition LPO : Type :=
-  forall x : nat_inf, HasDec (exists n : nat, x = under n).
-
-Unset Universe Checking.
-
-Lemma cohedberg `(IsPropExt) `(IsFunExtDep) :
-  ~ forall (A : Type) `(IsSet A), HasEqDec A.
-Proof.
-  intros f.
-  pose proof f (nat -> bool) as g.
-  assert (x : IsSet (nat -> bool)).
-  apply (pi_is_set _ _). intros _. apply (@bool_is_set).
-  pose proof g x as h.
-  clear f g x.
-  (** Metatheoretical contradiction! *) Abort.
