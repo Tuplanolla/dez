@@ -90,20 +90,16 @@ End Context.
 (** For the sake of convenience, we count up from [0],
     even though homotopy levels conventionally count up from [-2]. *)
 
-Inductive IsHLevel (A : Type) (X : forall {A : Type}, A -> A -> Prop) :
-  nat -> Prop :=
-  | h_level_zero
-    `{@IsContr A X} : IsHLevel A (@X) O
-  | h_level_succ (n : nat)
-    `{forall x y : A, IsHLevel (X x y) (@X) n} : IsHLevel A (@X) (S n).
+Equations IsHLevel (A : Type) (X : forall {A : Type}, A -> A -> Prop)
+  (n : nat) : Prop by struct n :=
+  IsHLevel A X O := IsContr (X A);
+  IsHLevel A X (S n) := forall x y : A, IsHLevel (X A x y) X n.
 
 Existing Class IsHLevel.
 
-Inductive IsHLevelEq (A : Type) : nat -> Prop :=
-  | h_level_eq_zero
-    `{IsContrEq A} : IsHLevelEq A O
-  | h_level_eq_succ (n : nat)
-    `{forall x y : A, IsHLevelEq (x = y) n} : IsHLevelEq A (S n).
+Equations IsHLevelEq (A : Type) (n : nat) : Prop by struct n :=
+  IsHLevelEq A O := IsContr (@eq A);
+  IsHLevelEq A (S n) := forall x y : A, IsHLevelEq (x = y) n.
 
 Existing Class IsHLevelEq.
 
@@ -120,9 +116,9 @@ Proof.
   | h : IsHLevelEq _ _ |- _ => rename h into a
   end.
   revert A X a. induction n as [| p b]; intros A X a.
-  - constructor. inversion_clear a. eauto.
-  - constructor. intros x y. inversion_clear a as [| ? c].
-    pose proof (c x y) as d. eauto. Qed.
+  - hnf in a. eauto.
+  - intros x y. hnf in a.
+    pose proof (a x y) as d. eauto. Qed.
 
 #[local] Instance is_h_level_is_h_level_eq (n : nat)
   `{@IsHLevel A (@X) n} : IsHLevelEq A n.
@@ -131,9 +127,9 @@ Proof.
   | h : IsHLevel _ _ _ |- _ => rename h into a
   end.
   revert A X a. induction n as [| p b]; intros A X a.
-  - constructor. inversion_clear a. eauto.
-  - constructor. intros x y. inversion_clear a as [| ? c].
-    pose proof (c x y) as d. eauto. Qed.
+  - hnf in a. eauto.
+  - intros x y. hnf in a.
+    pose proof (a x y) as d. eauto. Qed.
 
 End Context.
 
@@ -149,7 +145,7 @@ Proof.
   match goal with
   | h : IsHLevel _ _ _ |- _ => rename h into a
   end.
-  inversion_clear a. eauto. Qed.
+  hnf in a. eauto. Qed.
 
 (** Biconditionality of [h_level_zero]. *)
 
@@ -158,7 +154,7 @@ Lemma iff_is_h_level_is_contr :
 Proof.
   esplit.
   - typeclasses eauto.
-  - apply h_level_zero. Qed.
+  - cbv. eauto. Qed.
 
 End Context.
 
@@ -174,7 +170,7 @@ Proof.
   match goal with
   | h : IsHLevel _ _ _ |- _ => rename h into a
   end.
-  inversion_clear a. eauto. Qed.
+  hnf in a. eauto. Qed.
 
 (** Biconditionality of [h_level_succ]. *)
 
@@ -183,7 +179,7 @@ Lemma iff_is_h_level_succ_is_h_level_eqv (n : nat) :
 Proof.
   esplit.
   - typeclasses eauto.
-  - apply (@h_level_succ). Qed.
+  - cbv. eauto. Qed.
 
 End Context.
 
@@ -202,10 +198,9 @@ Proof.
   revert A a. induction n as [| p c]; intros A a.
   - apply iff_is_h_level_is_contr in a. destruct a as [x f].
     apply iff_is_h_level_succ_is_h_level_eqv.
-    intros y z. apply h_level_zero. exists (f z o f y ^-1).
+    intros y z. exists (f z o f y ^-1).
     intros b. rewrite b. rewrite eq_trans_sym_inv_l. reflexivity.
-  - apply (@h_level_succ).
-    intros x y. apply c. apply (@is_h_level_succ_is_h_level_eqv). apply a. Qed.
+  - intros x y. apply c. apply (@is_h_level_succ_is_h_level_eqv). apply a. Qed.
 
 #[local] Instance eq_is_h_level_is_h_level_add (p n : nat)
   `{IsHLevel A (@eq) n} : IsHLevel A (@eq) (p + n).
@@ -216,7 +211,7 @@ Proof.
   revert n a. induction p as [| q c]; intros n a.
   - eauto.
   - replace (S q + n)%nat with (S (q + n))%nat by reflexivity.
-    apply eq_is_h_level_is_h_level_succ. Qed.
+    apply eq_is_h_level_is_h_level_succ. eauto. Qed.
 
 End Context.
 
@@ -228,11 +223,11 @@ Context (A : Type).
 
 #[local] Instance eq_is_h_level_is_contr
   `{IsHLevel A (@eq) 0} : @IsContr A eq.
-Proof. apply is_h_level_is_contr. Qed.
+Proof. apply is_h_level_is_contr. eauto. Qed.
 
 #[local] Instance eq_is_contr_is_h_level
   `{@IsContr A eq} : IsHLevel A (@eq) 0.
-Proof. apply (h_level_zero _). Qed.
+Proof. eauto. Qed.
 
 Lemma iff_eq_is_h_level_is_contr :
   IsHLevel A (@eq) 0 <-> @IsContr A eq.
@@ -262,7 +257,7 @@ Proof.
   end.
   intros x y.
   assert (b : @IsContr (x = y) eq).
-  { inversion_clear a. apply iff_is_h_level_is_contr. eauto. }
+  { hnf in a. apply is_h_level_is_contr. eauto. }
   apply b. Qed.
 
 Lemma iff_eq_is_h_level_is_prop :
@@ -294,7 +289,7 @@ Proof.
   end.
   intros x y.
   assert (b : @IsProp (x = y) eq).
-  { inversion_clear a. apply iff_eq_is_h_level_is_prop. eauto. }
+  { hnf in a. apply eq_is_h_level_is_prop. }
   apply b. Qed.
 
 Lemma iff_eq_is_h_level_is_set :
@@ -308,7 +303,6 @@ End Context.
 Create HintDb h_intro.
 
 #[export] Hint Resolve
-  h_level_zero h_level_succ
   is_h_level_eq_is_h_level is_h_level_succ_is_h_level_eqv
   eq_is_h_level_is_h_level_succ eq_is_h_level_is_h_level_add
   eq_is_contr_is_h_level eq_is_prop_is_h_level eq_is_set_is_h_level : h_intro.
@@ -316,7 +310,7 @@ Create HintDb h_intro.
 Create HintDb h_elim.
 
 #[export] Hint Resolve
-  is_h_level_is_contr h_level_succ
+  is_h_level_is_contr
   is_h_level_is_h_level_eq is_h_level_succ_is_h_level_eqv
   eq_is_h_level_is_h_level_succ eq_is_h_level_is_h_level_add
   eq_is_h_level_is_contr eq_is_h_level_is_prop eq_is_h_level_is_set : h_elim.
@@ -460,14 +454,13 @@ Proof.
   - pose proof fun x : A => @is_h_level_is_contr _ _ (f x) as m.
     apply iff_is_h_level_is_contr.
     apply eq_pi_is_contr.
-  - apply (@h_level_succ).
-    intros g h.
+  - intros g h.
     pose proof fun_ext_dep (f := g) (g := h) as q.
     pose proof equal_f_dep (f := g) (g := h) as r.
     pose proof conj q r as w.
     pose proof prop_ext w as m.
     rewrite <- m. apply t. intros x.
-    apply is_h_level_succ_is_h_level_eqv. Qed.
+    apply is_h_level_succ_is_h_level_eqv. eauto. Qed.
 
 Module FromAxioms.
 
