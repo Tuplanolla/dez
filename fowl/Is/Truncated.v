@@ -133,6 +133,72 @@ Proof.
 
 End Context.
 
+(** Just doodling some things from
+    "A Syntactical Approach to Weak omega-Groupoids". *)
+
+CoInductive Glob : Type := {
+  obj : Type;
+  hom (x y : obj) : Glob;
+}.
+
+CoInductive Glom (A B : Glob) : Type := {
+  slap (x : obj A) : obj B;
+  resp (x y : obj A) : Glom (hom A x y) (hom B (slap x) (slap y));
+}.
+
+CoFixpoint eq_Glob (A : Type) : Glob.
+Proof.
+  apply (@Build_Glob A). intros x y.
+  apply (@Build_Glob (x = y)). intros a b.
+  apply (@Build_Glob (a = b)). intros s t.
+  apply (eq_Glob (s = t)). Restart.
+  apply (@Build_Glob A). intros x y.
+  apply (eq_Glob (x = y)). Defined.
+
+CoFixpoint nat_Glob : Glob.
+Proof.
+  apply (@Build_Glob nat). intros x y.
+  apply (@Build_Glob (x = y)). intros a b. pose proof uip_eq x y a b as u.
+  apply (@Build_Glob False). intros [] []. Defined.
+
+Equations IsHLevelNat (X : Glob) (n : nat) : Prop by struct n :=
+  IsHLevelNat X O := exists x : obj X, forall y : obj X,
+    inhabited (obj (hom X x y));
+  IsHLevelNat X (S n) := forall x y : obj X,
+    IsHLevelNat (hom X x y) n.
+
+Existing Class IsHLevelNat.
+
+Section Context.
+
+Context (A : Type).
+
+#[local] Instance is_h_level_eq_is_h_level_nat (n : nat)
+  `{IsHLevelEq A n} : IsHLevelNat (eq_Glob A) n.
+Proof.
+  match goal with
+  | h : IsHLevelEq _ _ |- _ => rename h into a
+  end.
+  revert A a. induction n as [| p b]; intros A a.
+  - hnf in a. hnf. destruct a as [x f].
+    exists x. intros y. apply inhabits. cbv in *. apply f.
+  - intros x y. hnf in a.
+    pose proof (a x y) as d. cbn in *. eauto. Qed.
+
+#[local] Instance is_h_level_nat_is_h_level_eq (n : nat)
+  `{@IsHLevelNat (eq_Glob A) n} : IsHLevelEq A n.
+Proof.
+  match goal with
+  | h : IsHLevelNat _ _ |- _ => rename h into a
+  end.
+  revert A a. induction n as [| p b]; intros A a.
+  - hnf in a. hnf. destruct a as [x f]. cbv in *.
+    exists x. apply f.
+  - intros x y. hnf in a.
+    pose proof (a x y) as d. cbn in *. apply b. eauto. Qed.
+
+End Context.
+
 Section Context.
 
 Context (A : Type) (X : forall {A : Type}, A -> A -> Prop).
