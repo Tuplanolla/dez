@@ -141,10 +141,43 @@ CoInductive Glob : Type := {
   hom (x y : obj) : Glob;
 }.
 
+Declare Scope glob_scope.
+
+#[local] Open Scope glob_scope.
+
+CoFixpoint Gprod (A B : Glob) : Glob.
+Proof.
+  exists (obj A * obj B). intros [a0 b0] [a1 b1]. apply Gprod.
+  - apply (hom A a0 a1).
+  - apply (hom B b0 b1). Defined.
+
+#[local] Notation "A '*' B" := (Gprod A B)
+  (at level 40, left associativity) : glob_scope.
+
 CoInductive Glom (A B : Glob) : Type := {
   slap (x : obj A) : obj B;
   resp (x y : obj A) : Glom (hom A x y) (hom B (slap x) (slap y));
 }.
+
+#[local] Notation "A '-->' B" := (Glom A B)
+  (at level 55, right associativity) : glob_scope.
+
+CoFixpoint Grefl (A : Glob) : Glom A A.
+Proof. exists id%core. intros x y. apply Grefl. Defined.
+
+CoFixpoint Gtrans (A B C : Glob) (F : Glom A B) (G : Glom B C) : Glom A C.
+Proof.
+  exists (slap G o slap F)%core. intros x y. eapply Gtrans.
+  - eapply resp.
+  - eapply resp. Defined.
+
+CoFixpoint Gspan (A B C : Glob) (F : Glom A B) (G : Glom A C) :
+  Glom A (Gprod B C).
+Proof.
+  set (f (a : obj A) := (slap F a, slap G a)). exists f.
+  intros x y. apply Gspan.
+  - apply resp.
+  - apply resp. Defined.
 
 CoFixpoint eq_Glob (A : Type) : Glob.
 Proof.
@@ -199,17 +232,17 @@ Proof.
 
 End Context.
 
-CoFixpoint X_Glob (A : Type) (X : forall {A : Type}, A -> A -> Prop) : Glob.
+CoFixpoint Slob (A : Type) (X : forall {A : Type}, A -> A -> Prop) : Glob.
 Proof.
   apply (@Build_Glob A). intros x y.
-  apply (X_Glob (X A x y) X). Defined.
+  apply (Slob (X A x y) X). Defined.
 
 Section Context.
 
 Context (A : Type) (X : forall {A : Type}, A -> A -> Prop).
 
 #[local] Instance is_h_level_is_h_level_nat (n : nat)
-  `{IsHLevel A (@X) n} : IsHLevelNat (X_Glob A (@X)) n.
+  `{IsHLevel A (@X) n} : IsHLevelNat (Slob A (@X)) n.
 Proof.
   match goal with
   | h : IsHLevel _ _ _ |- _ => rename h into a
@@ -221,7 +254,7 @@ Proof.
     pose proof (a x y) as d. cbn in *. eauto. Qed.
 
 #[local] Instance is_h_level_nat_is_h_level (n : nat)
-  `{@IsHLevelNat (X_Glob A (@X)) n} : IsHLevel A (@X) n.
+  `{@IsHLevelNat (Slob A (@X)) n} : IsHLevel A (@X) n.
 Proof.
   match goal with
   | h : IsHLevelNat _ _ |- _ => rename h into a
