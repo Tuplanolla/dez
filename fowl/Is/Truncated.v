@@ -525,6 +525,17 @@ End Context.
   `{@IsProp A eq} : @IsContr A eq.
 Proof. exists x. apply irrel. Qed.
 
+(** Propositional extensionality (poor man's univalence)
+    makes functional extensionality an equality. *)
+
+Lemma prop_fun_ext_dep `{IsPropExt} `{IsFunExtDep}
+  (A : Type) (P : A -> Type) (f g : forall x : A, P x) :
+  (f = g) = (forall x : A, f x = g x).
+Proof.
+  apply prop_ext. split.
+  - intros a x. apply equal_f_dep. apply a.
+  - intros a. apply fun_ext_dep. apply a. Qed.
+
 (** Decidable propositions have unique identity proofs. *)
 
 Section Context.
@@ -536,45 +547,43 @@ Proof. intros x y a b. apply eqdec_uip. apply bool_EqDec. Qed.
 
 End Context.
 
-Lemma eq_pi_is_prop `{IsFunExtDep} (A : Type) (P : A -> Type)
+(** Families of propositions are propositions. *)
+
+Lemma eq_pi_is_prop `{IsFunExtDep} (A : Type) (P : A -> Prop)
   `{forall x : A, @IsProp (P x) eq} : @IsProp (forall x : A, P x) eq.
 Proof.
   match goal with
-  | h : forall _ : _, IsProp _ |- _ => rename h into f
+  | h : forall _ : _, IsProp _ |- _ => rename h into p
   end.
-  intros g h. apply fun_ext_dep. intros x. apply f. Qed.
+  intros g h. apply fun_ext_dep. intros x. apply p. Qed.
 
-Lemma eq_pi_is_set `{IsPropExt} `{IsFunExtDep} (A : Type) (P : A -> Type)
-  `{forall x : A, @IsSet (P x) eq (fun y z : P x => eq)} :
-  @IsSet (forall x : A, P x) eq (fun y z : forall x : A, P x => eq).
-Proof.
-  match goal with
-  | h : forall _ : _, IsSet _ |- _ => rename h into f
-  end.
-  pose proof fun (x : A) (a b : P x) =>
-  @eq_is_set_is_prop_eq _ (f x) a b as h'.
-  intros g h.
-  pose proof fun x : A => h' x (g x) (h x) as k.
-  (* k' : IsPropEq (forall x : A, g x = h x) *)
-  assert (k' : @IsProp (forall x : A, @eq (P x) (g x) (h x)) eq)
-  by apply eq_pi_is_prop.
-  enough (@IsProp (g = h) eq) by auto.
-  pose proof (equal_f_dep (f := g) (g := h)) as l.
-  pose proof (fun_ext_dep (f := g) (g := h)) as r.
-  pose proof conj l r as e.
-  pose proof prop_ext e as w.
-  rewrite w. apply k'. Qed.
+(** Families of contractible types are contractible. *)
 
 Lemma eq_pi_is_contr `{IsFunExtDep} (A : Type) (P : A -> Prop)
   `{forall x : A, @IsContr (P x) eq} : @IsContr (forall x : A, P x) eq.
 Proof.
   match goal with
-  | h : forall _ : _, IsContr _ |- _ => rename h into a
+  | h : forall _ : _, IsContr _ |- _ => rename h into c
   end.
-  assert (b : forall x : A, @IsProp (P x) eq).
-  { intros x. apply (@eq_is_contr_is_prop). apply a. }
-  apply (@eq_pi_is_prop) in b; eauto. apply eq_is_prop_is_contr; eauto.
-  intros x. pose proof a x as c. apply c. Qed.
+  apply (@eq_is_prop_is_contr).
+  - intros x. apply c.
+  - apply (@eq_pi_is_prop _). intros x. apply eq_is_contr_is_prop. Qed.
+
+(** Families of sets are sets. *)
+
+Lemma eq_pi_is_set `{IsPropExt} `{IsFunExtDep} (A : Type) (P : A -> Prop)
+  `{forall x : A, @IsSet (P x) eq (fun y z : P x => eq)} :
+  @IsSet (forall x : A, P x) eq (fun y z : forall x : A, P x => eq).
+Proof.
+  match goal with
+  | h : forall _ : _, IsSet _ |- _ => rename h into s
+  end.
+  intros f g.
+  pose proof prop_fun_ext_dep f g as t. rewrite t. clear t.
+  apply (@eq_pi_is_prop _).
+  intros x. apply @eq_is_set_is_prop_eq. apply s. Qed.
+
+(** Fibrations are at the same homotopy level as their fibers. *)
 
 Lemma eq_h_level_is_h_level `{IsPropExt} `{IsFunExtDep}
   (A : Type) (P : A -> Prop) (n : nat)
@@ -582,19 +591,14 @@ Lemma eq_h_level_is_h_level `{IsPropExt} `{IsFunExtDep}
   @IsHLevel (forall x : A, P x) (@eq) n.
 Proof.
   match goal with
-  | h : forall _ : _, IsHLevel _ _ _ |- _ => rename h into f
+  | h : forall _ : _, IsHLevel _ _ _ |- _ => rename h into a
   end.
-  revert A P f. induction n as [| p t]; intros A P f.
-  - pose proof fun x : A => @is_h_level_is_contr _ _ (f x) as m.
-    apply iff_is_h_level_is_contr.
-    apply eq_pi_is_contr.
-  - intros g h.
-    pose proof fun_ext_dep (f := g) (g := h) as q.
-    pose proof equal_f_dep (f := g) (g := h) as r.
-    pose proof conj q r as w.
-    pose proof prop_ext w as m.
-    rewrite <- m. apply t. intros x.
-    apply is_h_level_succ_is_h_level. eauto. Qed.
+  revert A P a. induction n as [| p b]; intros A P a.
+  - apply iff_is_h_level_is_contr. apply (@eq_pi_is_contr _).
+    intros x. apply is_h_level_is_contr. apply a.
+  - intros f g.
+    pose proof prop_fun_ext_dep f g as t. rewrite t. clear t.
+    apply b. intros x. apply is_h_level_succ_is_h_level. apply a. Qed.
 
 Module FromAxioms.
 
