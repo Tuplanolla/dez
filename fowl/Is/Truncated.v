@@ -216,7 +216,7 @@ Proof.
   - hnf in a. hnf. destruct a as [x f].
     exists x. intros y. apply inhabits. cbv in *. apply f.
   - intros x y. hnf in a.
-    pose proof (a x y) as d. cbn in *. eauto. Qed.
+    pose proof a x y as d. cbn in *. eauto. Qed.
 
 #[local] Instance eq_is_h_level_nat_is_h_level_eq (n : nat)
   `{@IsHLevelNat (eq_Glob A) n} : IsHLevelEq A n.
@@ -228,7 +228,7 @@ Proof.
   - hnf in a. hnf. destruct a as [x f]. cbv in *.
     exists x. apply f.
   - intros x y. hnf in a.
-    pose proof (a x y) as d. cbn in *. apply b. eauto. Qed.
+    pose proof a x y as d. cbn in *. apply b. eauto. Qed.
 
 End Context.
 
@@ -251,7 +251,7 @@ Proof.
   - hnf in a. hnf. destruct a as [x f].
     exists x. intros y. apply inhabits. cbv in *. apply f.
   - intros x y. hnf in a.
-    pose proof (a x y) as d. cbn in *. eauto. Qed.
+    pose proof a x y as d. cbn in *. eauto. Qed.
 
 #[local] Instance is_h_level_nat_is_h_level (n : nat)
   `{@IsHLevelNat (Slob A (@X)) n} : IsHLevel A (@X) n.
@@ -263,7 +263,7 @@ Proof.
   - hnf in a. hnf. destruct a as [x f]. cbv in *.
     exists x. apply f.
   - intros x y. hnf in a.
-    pose proof (a x y) as d. cbn in *. eauto. Qed.
+    pose proof a x y as d. cbn in *. eauto. Qed.
 
 End Context.
 
