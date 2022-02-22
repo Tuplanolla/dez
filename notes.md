@@ -270,46 +270,46 @@ has the follwing classes we want to be compatible with.
 * `SetoidTactics`
     * `DefaultRelation`
 
-Another review of Coq 8.13.0 and Equations 1.2.4.
+Another review of Coq 8.15.0 and Equations 1.2.4.
 
 * `Classes.DecidableClass` `Decidable`
-* `Classes.SetoidClass` `Setoid`
-* `Classes.SetoidClass` `PartialSetoid`
 * `Classes.EquivDec` `DecidableEquivalence`
 * `Classes.EquivDec` `EqDec`
 * `Classes.Init` `Unconvertible`
-* `Classes.Morphisms` `Proper`
-* `Classes.Morphisms` `ProperProxy`
-* `Classes.Morphisms` `PartialApplication`
-* `Classes.Morphisms` `Params`
 * `Classes.Morphisms` `Normalizes`
-* `Classes.RelationClasses` `Reflexive`
-* `Classes.RelationClasses` `Irreflexive`
-* `Classes.RelationClasses` `Symmetric`
-* `Classes.RelationClasses` `Asymmetric`
-* `Classes.RelationClasses` `Transitive`
-* `Classes.RelationClasses` `PreOrder`
-* `Classes.RelationClasses` `StrictOrder`
-* `Classes.RelationClasses` `PER`
-* `Classes.RelationClasses` `Equivalence`
+* `Classes.Morphisms` `Params`
+* `Classes.Morphisms` `PartialApplication`
+* `Classes.Morphisms` `ProperProxy`
+* `Classes.Morphisms` `Proper`
 * `Classes.RelationClasses` `Antisymmetric`
-* `Classes.RelationClasses` `subrelation`
-* `Classes.RelationClasses` `RewriteRelation`
+* `Classes.RelationClasses` `Asymmetric`
+* `Classes.RelationClasses` `Equivalence`
+* `Classes.RelationClasses` `Irreflexive`
+* `Classes.RelationClasses` `PER`
 * `Classes.RelationClasses` `PartialOrder`
+* `Classes.RelationClasses` `PreOrder`
+* `Classes.RelationClasses` `Reflexive`
+* `Classes.RelationClasses` `RewriteRelation`
+* `Classes.RelationClasses` `StrictOrder`
+* `Classes.RelationClasses` `Symmetric`
+* `Classes.RelationClasses` `Transitive`
+* `Classes.RelationClasses` `subrelation`
 * `Classes.RelationPairs` `Measure`
+* `Classes.SetoidClass` `PartialSetoid`
+* `Classes.SetoidClass` `Setoid`
 * `Classes.SetoidDec` `DecidableSetoid`
 * `Classes.SetoidDec` `EqDec`
 * `Classes.SetoidTactics` `DefaultRelation`
 
-* `Prop.Classes` `WellFounded`
-* `Prop.Classes` `NoCyclePackage`
-* `Prop.Classes` `NoConfusionPackage`
-* `Prop.Classes` `UIP`
 * `Prop.Classes` `EqDec`
 * `Prop.Classes` `EqDecPoint`
-* `Prop.Classes` `ImpossibleCall`
-* `Prop.Classes` `FunctionalInduction`
 * `Prop.Classes` `FunctionalElimination`
+* `Prop.Classes` `FunctionalInduction`
+* `Prop.Classes` `ImpossibleCall`
+* `Prop.Classes` `NoConfusionPackage`
+* `Prop.Classes` `NoCyclePackage`
+* `Prop.Classes` `UIP`
+* `Prop.Classes` `WellFounded`
 
 ### Subclass Specialization
 

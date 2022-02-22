@@ -39,7 +39,7 @@ From Equations.Prop Require Export
 
 (** We have tested this development with the following versions. *)
 
-Definition Coq_Version := "8.14.0"%string.
+Definition Coq_Version := "8.15.0"%string.
 Definition OCaml_Version := "4.12.0"%string.
 
 (** ** Flags, Options and Tables *)
@@ -47,43 +47,43 @@ Definition OCaml_Version := "4.12.0"%string.
 (** We disable warnings about unsupported attributes,
     because we use some custom attributes as refactoring hints. *)
 
-#[global] Set Warnings "-unsupported-attributes".
+#[export] Set Warnings "-unsupported-attributes".
 
 (** We disable warnings about overriding notations,
     because we overload many standard library notations
     with operational typeclasses. *)
 
-#[global] Set Warnings "-notation-overridden".
+#[export] Set Warnings "-notation-overridden".
 
 (** We turn on automatically inferred implicit arguments and
     make them maximally inserted and conservatively detected,
     since most typeclasses follow the same design pattern. *)
 
-#[global] Set Implicit Arguments.
-#[global] Set Maximal Implicit Insertion.
-#[global] Set Strict Implicit.
-#[global] Set Strongly Strict Implicit.
-#[global] Unset Contextual Implicit.
-#[global] Set Reversible Pattern Implicit.
+#[export] Set Implicit Arguments.
+#[export] Set Maximal Implicit Insertion.
+#[export] Set Strict Implicit.
+#[export] Set Strongly Strict Implicit.
+#[export] Unset Contextual Implicit.
+#[export] Set Reversible Pattern Implicit.
 
 (** We enable keyed unification,
     because [rewrite] does not work properly otherwise. *)
 
-#[global] Set Keyed Unification.
+#[export] Set Keyed Unification.
 
 (** We need to enable universe polymorphism
     for unification of strict propositions,
     even though the feature is experimental and
     incurs a considerable performance penalty on type checking. *)
 
-#[global] Set Universe Polymorphism.
-#[global] Unset Universe Minimization ToSet.
+#[export] Set Universe Polymorphism.
+#[export] Unset Universe Minimization ToSet.
 
 (** We mark equations transparent,
     because it may be necessary to [unfold] them manually
     when [simp] would either fail to progress or diverge. *)
 
-#[global] Set Equations Transparent.
+#[export] Set Equations Transparent.
 
 (** We do not allow automatic solution of obligations,
     because we do not want the addition or removal of hints
@@ -94,36 +94,36 @@ Definition OCaml_Version := "4.12.0"%string.
     try typeclasses eauto 10 with program;
     try program_solve_wf]. *)
 
-#[global] Obligation Tactic := try program_solve_wf.
+#[export] Obligation Tactic := try program_solve_wf.
 
 (** We do not use implicit generalization,
     because the consequences of accidental misuse
     are worse than the convenience it permits. *)
 
-#[global] Generalizable No Variables.
+#[export] Generalizable No Variables.
 
 (** We reset the interpretation scope stack,
     because it is very sensitive to changes.
     The initial scope stack can be inspected
     with [Print Scopes] and [Print Visibility]. *)
 
-#[global] Close Scope equations_scope.
-#[global] Close Scope list_scope.
-#[global] Close Scope Q_scope.
-#[global] Close Scope bool_scope.
-#[global] Close Scope nat_scope.
-#[global] Close Scope type_scope.
-#[global] Close Scope function_scope.
-#[global] Close Scope core_scope.
+#[export] Close Scope equations_scope.
+#[export] Close Scope list_scope.
+#[export] Close Scope Q_scope.
+#[export] Close Scope bool_scope.
+#[export] Close Scope nat_scope.
+#[export] Close Scope type_scope.
+#[export] Close Scope function_scope.
+#[export] Close Scope core_scope.
 
-#[global] Open Scope equations_scope.
-#[global] Open Scope signature_scope.
-#[global] Open Scope list_scope.
-#[global] Open Scope bool_scope.
-#[global] Open Scope nat_scope.
-#[global] Open Scope type_scope.
-#[global] Open Scope function_scope.
-#[global] Open Scope core_scope.
+#[export] Open Scope equations_scope.
+#[export] Open Scope signature_scope.
+#[export] Open Scope list_scope.
+#[export] Open Scope bool_scope.
+#[export] Open Scope nat_scope.
+#[export] Open Scope type_scope.
+#[export] Open Scope function_scope.
+#[export] Open Scope core_scope.
 
 (** We use anonymous goals and obligations to define local lemmas,
     which is why we do not want to see them in search results. *)
@@ -143,24 +143,23 @@ Add Search Blacklist "FunctionalInduction_".
     While doing so is not strictly necessary,
     this list also serves as a quick reference. *)
 
-Reserved Notation "'0'".
-Reserved Notation "'1'".
-
-Reserved Notation "A '->' B"
-  (right associativity, at level 99, B at level 200).
-Reserved Notation "A '<-' B"
-  (left associativity, at level 98, B at level 199).
-Reserved Notation "A '<->' B" (no associativity, at level 95).
+Reserved Notation "x '->' y"
+  (right associativity, at level 99, y at level 200).
+Reserved Notation "x '<-' y"
+  (right associativity, at level 99, y at level 200).
+Reserved Notation "x '<->' y"
+  (no associativity, at level 95).
 
 Reserved Notation "x '=' y" (no associativity, at level 70).
 Reserved Notation "x '<>' y" (no associativity, at level 70).
 
-Reserved Notation "f '^-1'" (left associativity, at level 25).
-Reserved Notation "g 'o' f" (left associativity, at level 40).
+Reserved Notation "'id'" (at level 0).
+Reserved Notation "x '^-1'" (left associativity, at level 25).
+Reserved Notation "y 'o' x" (left associativity, at level 40).
 
 Reserved Notation "'~' x" (right associativity, at level 75).
-Reserved Notation "x '/\' y" (right associativity, at level 80).
 Reserved Notation "x '\/' y" (right associativity, at level 85).
+Reserved Notation "x '/\' y" (right associativity, at level 80).
 Reserved Notation "y '<=' x" (no associativity, at level 70).
 Reserved Notation "y '<' x" (no associativity, at level 70).
 Reserved Notation "y '>=' x" (no associativity, at level 70).
@@ -174,21 +173,21 @@ Reserved Notation "y '/' x" (left associativity, at level 40).
 Reserved Notation "y '^' x" (right associativity, at level 30).
 
 Reserved Notation "'(' x ',' y ',' .. ',' z ')'" (at level 0).
-Reserved Notation "'(' a ';' .. ';' b ';' c ')'" (at level 0).
+Reserved Notation "'(' x ';' .. ';' y ';' z ')'" (at level 0).
 
-Reserved Notation "'{' a '|' B '}'" (at level 0, a at level 99).
-Reserved Notation "'{' a ':' A '|' B '}'" (at level 0, a at level 99).
-Reserved Notation "'{' a '&' B '}'" (at level 0, a at level 99).
-Reserved Notation "'{' a ':' A '&' B '}'" (at level 0, a at level 99).
-Reserved Notation "'{' a '$' B '}'" (at level 0, a at level 99).
-Reserved Notation "'{' a ':' A '$' B '}'" (at level 0, a at level 99).
+Reserved Notation "'{' x '|' y '}'" (at level 0, x at level 99).
+Reserved Notation "'{' x ':' A '|' y '}'" (at level 0, x at level 99).
+Reserved Notation "'{' x '&' y '}'" (at level 0, x at level 99).
+Reserved Notation "'{' x ':' A '&' y '}'" (at level 0, x at level 99).
+Reserved Notation "'{' x '$' y '}'" (at level 0, x at level 99).
+Reserved Notation "'{' x ':' A '$' y '}'" (at level 0, x at level 99).
 
-Reserved Notation "R '==>' S" (right associativity, at level 55).
-Reserved Notation "R '-->' S" (right associativity, at level 55).
-Reserved Notation "R '<==' S" (left associativity, at level 54).
-Reserved Notation "R '<--' S" (left associativity, at level 54).
-Reserved Notation "R '<==>' S" (no associativity, at level 45).
-Reserved Notation "R '<-->' S" (no associativity, at level 45).
+Reserved Notation "x '==>' y" (right associativity, at level 55).
+Reserved Notation "x '-->' y" (right associativity, at level 55).
+Reserved Notation "x '<==' y" (right associativity, at level 55).
+Reserved Notation "x '<--' y" (right associativity, at level 55).
+Reserved Notation "x '<==>' y" (no associativity, at level 45).
+Reserved Notation "x '<-->' y" (no associativity, at level 45).
 
 Reserved Notation "x '==' y" (no associativity, at level 70).
 Reserved Notation "x '===' y" (no associativity, at level 70).
@@ -196,7 +195,7 @@ Reserved Notation "x '===' y" (no associativity, at level 70).
 (** ** Numeral Definitions *)
 
 (** We export the [rew] notations from [Logic]
-    to use them like transport in homotopy type theory. *)
+    to use them like transport from homotopy type theory. *)
 
 Export EqNotations.
 Import ListNotations.
@@ -299,10 +298,10 @@ Notation "'~_'" := not : type_scope.
 Notation "'~' A" := (not A) : type_scope.
 Notation "'-_'" := notT : type_scope.
 Notation "'-' A" := (notT A) : type_scope.
-Notation "'_/\_'" := and : type_scope.
-Notation "A '/\' B" := (and A B) : type_scope.
 Notation "'_\/_'" := or : type_scope.
 Notation "A '\/' B" := (or A B) : type_scope.
+Notation "'_/\_'" := and : type_scope.
+Notation "A '/\' B" := (and A B) : type_scope.
 
 (** We adapt the convention that each lemma declared as a [Corollary]
     could be generated by the equations plugin. *)
@@ -432,8 +431,8 @@ Arguments is_true !_.
 
 Coercion is_true : bool >-> Sortclass.
 
-Corollary option_map_equation_1 (A B : Type) (f : A -> B) (a : A) :
-  option_map f (Some a) = Some (f a).
+Corollary option_map_equation_1 (A B : Type) (f : A -> B) (x : A) :
+  option_map f (Some x) = Some (f x).
 Proof. reflexivity. Qed.
 
 Corollary option_map_equation_2 (A B : Type) (f : A -> B) :
@@ -494,19 +493,14 @@ Arguments app {_} !_ _.
 Corollary ID_equation_1 : ID = forall A : Type, A -> A.
 Proof. reflexivity. Qed.
 
-#[export] Hint Rewrite @ID_equation_1 : ID.
+#[export] Hint Rewrite @ID_equation_1 : id.
 
 Arguments ID /.
-
-(** We turn [id] into a keyword to reuse it with concepts like categories.
-    We put the rewrite hints for [id] into the same database as those of [ID],
-    because it is impossible to refer to databases hidden
-    behind keywords or qualified names. *)
 
 Corollary id_equation_1 (A : Prop) (x : A) : Datatypes.id x = x.
 Proof. reflexivity. Qed.
 
-#[export] Hint Rewrite @id_equation_1 : ID.
+#[export] Hint Rewrite @id_equation_1 : id.
 
 Arguments Datatypes.id {_} _ /.
 
@@ -539,15 +533,15 @@ Declare Scope ex_scope.
 Bind Scope ex_scope with ex.
 
 Notation "'(_;_)'" := (ex_intro _) : ex_scope.
-Notation "'(' a ';' .. ';' b ';' c ')'" :=
-  (ex_intro _ a .. (ex_intro _ b c) ..) : ex_scope.
+Notation "'(' x ';' .. ';' y ';' z ')'" :=
+  (ex_intro _ x .. (ex_intro _ y z) ..) : ex_scope.
 
-Corollary ex_proj1_equation_1 (A : Prop) (P : A -> Prop) (a : A) (b : P a) :
-  ex_proj1 (ex_intro P a b) = a.
+Corollary ex_proj1_equation_1 (A : Prop) (P : A -> Prop) (x : A) (a : P x) :
+  ex_proj1 (ex_intro P x a) = x.
 Proof. reflexivity. Qed.
 
-Corollary ex_proj2_equation_1 (A : Prop) (P : A -> Prop) (a : A) (b : P a) :
-  ex_proj2 (ex_intro P a b) = b.
+Corollary ex_proj2_equation_1 (A : Prop) (P : A -> Prop) (x : A) (a : P x) :
+  ex_proj2 (ex_intro P x a) = a.
 Proof. reflexivity. Qed.
 
 #[export] Hint Rewrite @ex_proj1_equation_1 : ex_proj1.
@@ -564,20 +558,20 @@ Declare Scope sig_scope.
 Bind Scope sig_scope with sig.
 
 Notation "'(_;_)'" := (exist _) : sig_scope.
-Notation "'(' a ';' .. ';' b ';' c ')'" :=
-  (exist _ a .. (exist _ b c) ..) : sig_scope.
+Notation "'(' x ';' .. ';' y ';' z ')'" :=
+  (exist _ x .. (exist _ y z) ..) : sig_scope.
 
 Notation "'{_|_}'" := sig : type_scope.
-Notation "'{' a '|' B '}'" := (sig (fun a : _ => B)) : type_scope.
+Notation "'{' x '|' y '}'" := (sig (fun x : _ => y)) : type_scope.
 Notation "'{_:_|_}'" := @sig : type_scope.
-Notation "'{' a ':' A '|' B '}'" := (@sig A (fun a : _ => B)) : type_scope.
+Notation "'{' x ':' A '|' y '}'" := (@sig A (fun x : _ => y)) : type_scope.
 
-Corollary proj1_sig_equation_1 (A : Type) (P : A -> Prop) (a : A) (b : P a) :
-  proj1_sig (exist P a b) = a.
+Corollary proj1_sig_equation_1 (A : Type) (P : A -> Prop) (x : A) (a : P x) :
+  proj1_sig (exist P x a) = x.
 Proof. reflexivity. Qed.
 
-Corollary proj2_sig_equation_1 (A : Type) (P : A -> Prop) (a : A) (b : P a) :
-  proj2_sig (exist P a b) = b.
+Corollary proj2_sig_equation_1 (A : Type) (P : A -> Prop) (x : A) (a : P x) :
+  proj2_sig (exist P x a) = a.
 Proof. reflexivity. Qed.
 
 #[export] Hint Rewrite @proj1_sig_equation_1 : proj1_sig.
@@ -594,20 +588,20 @@ Declare Scope sigT_scope.
 Bind Scope sigT_scope with sigT.
 
 Notation "'(_;_)'" := (existT _) : sigT_scope.
-Notation "'(' a ';' .. ';' b ';' c ')'" :=
-  (existT _ a .. (existT _ b c) ..) : sigT_scope.
+Notation "'(' x ';' .. ';' y ';' z ')'" :=
+  (existT _ x .. (existT _ y z) ..) : sigT_scope.
 
 Notation "'{_&_}'" := sigT : type_scope.
-Notation "'{' a '&' B '}'" := (sigT (fun a : _ => B)) : type_scope.
+Notation "'{' x '&' y '}'" := (sigT (fun x : _ => y)) : type_scope.
 Notation "'{_:_&_}'" := @sigT : type_scope.
-Notation "'{' a ':' A '&' B '}'" := (@sigT A (fun a : _ => B)) : type_scope.
+Notation "'{' x ':' A '&' y '}'" := (@sigT A (fun x : _ => y)) : type_scope.
 
-Corollary projT1_equation_1 (A : Type) (P : A -> Type) (a : A) (b : P a) :
-  projT1 (existT P a b) = a.
+Corollary projT1_equation_1 (A : Type) (P : A -> Type) (x : A) (a : P x) :
+  projT1 (existT P x a) = x.
 Proof. reflexivity. Qed.
 
-Corollary projT2_equation_1 (A : Type) (P : A -> Type) (a : A) (b : P a) :
-  projT2 (existT P a b) = b.
+Corollary projT2_equation_1 (A : Type) (P : A -> Type) (x : A) (a : P x) :
+  projT2 (existT P x a) = a.
 Proof. reflexivity. Qed.
 
 #[export] Hint Rewrite @projT1_equation_1 : projT1.
@@ -624,8 +618,8 @@ Declare Scope Ssig_scope.
 Bind Scope Ssig_scope with Ssig.
 
 Notation "'(_;_)'" := (Sexists _) : Ssig_scope.
-Notation "'(' a ';' .. ';' b ';' c ')'" :=
-  (Sexists _ a .. (Sexists _ b c) ..) : Ssig_scope.
+Notation "'(' x ';' .. ';' y ';' z ')'" :=
+  (Sexists _ x .. (Sexists _ y z) ..) : Ssig_scope.
 
 (** We should have similar notations for [Ssig] as there are for [sig].
     The mnemonic for [$] in the notation is that it is a combination
@@ -634,23 +628,25 @@ Notation "'(' a ';' .. ';' b ';' c ')'" :=
     the lonely notations of the equations plugin. *)
 
 Notation "'{_$_}'" := Ssig : type_scope.
-Notation "'{' a '$' B '}'" := (Ssig (fun a : _ => B)) : type_scope.
+Notation "'{' x '$' y '}'" := (Ssig (fun x : _ => y)) : type_scope.
 Notation "'{_:_$_}'" := @Ssig : type_scope.
-Notation "'{' a ':' A '$' B '}'" := (@Ssig A (fun a : _ => B)) : type_scope.
+Notation "'{' x ':' A '$' y '}'" := (@Ssig A (fun x : _ => y)) : type_scope.
+
+Module StrictProp.
 
 #[local] Set Cumulative StrictProp.
 
-Section Context.
-
-Corollary Spr1_equation_1 (A : Type) (P : A -> SProp) (a : A) (b : P a) :
-  Spr1 (Sexists P a b) = a.
+Corollary Spr1_equation_1 (A : Type) (P : A -> SProp) (x : A) (a : P x) :
+  Spr1 (Sexists P x a) = x.
 Proof. reflexivity. Qed.
 
-Corollary Spr2_equation_1 (A : Type) (P : A -> SProp) (a : A) (b : P a) :
-  Spr2 (Sexists P a b) = b.
+Corollary Spr2_equation_1 (A : Type) (P : A -> SProp) (x : A) (a : P x) :
+  Spr2 (Sexists P x a) = a.
 Proof. reflexivity. Qed.
 
-End Context.
+End StrictProp.
+
+Export StrictProp.
 
 #[export] Hint Rewrite @Spr1_equation_1 : Spr1.
 #[export] Hint Rewrite @Spr2_equation_1 : Spr2.
@@ -658,12 +654,12 @@ End Context.
 Arguments Spr1 {_ _} !_.
 Arguments Spr2 {_ _} !_.
 
-Corollary sig_of_sigT_equation_1 (A : Type) (P : A -> Prop) (a : A) (b : P a) :
-  sig_of_sigT (existT P a b) = exist P a b.
+Corollary sig_of_sigT_equation_1 (A : Type) (P : A -> Prop) (x : A) (a : P x) :
+  sig_of_sigT (existT P x a) = exist P x a.
 Proof. reflexivity. Qed.
 
-Corollary sigT_of_sig_equation_1 (A : Type) (P : A -> Prop) (a : A) (b : P a) :
-  sigT_of_sig (exist P a b) = existT P a b.
+Corollary sigT_of_sig_equation_1 (A : Type) (P : A -> Prop) (x : A) (a : P x) :
+  sigT_of_sig (exist P x a) = existT P x a.
 Proof. reflexivity. Qed.
 
 #[export] Hint Rewrite @sig_of_sigT_equation_1 : sig_of_sigT.
@@ -680,8 +676,8 @@ Arguments sigT_of_sig {_ _} !_.
     in which case we just accompany them with dependent versions. *)
 
 Fail Fail Equations compose (A B C : Type)
-  (g : B -> C) (f : A -> B) (a : A) : C :=
-  compose g f a := g (f a).
+  (g : B -> C) (f : A -> B) (x : A) : C :=
+  compose g f x := g (f x).
 
 (** Using [o] as a variable name should be prohibited by law,
     which is why we turn it into a notation instead. *)
@@ -699,18 +695,18 @@ Proof. reflexivity. Qed.
 Arguments compose {_ _ _} _ _ _ /.
 
 Equations compose_dep
-  (A : Type) (P : A -> Type) (Q : forall a : A, P a -> Type)
-  (g : forall (a : A) (b : P a), Q a b) (f : forall a : A, P a)
-  (a : A) : Q a (f a) :=
-  compose_dep g f a := g a (f a).
+  (A : Type) (P : A -> Type) (Q : forall x : A, P x -> Type)
+  (g : forall (x : A) (a : P x), Q x a) (f : forall x : A, P x)
+  (x : A) : Q x (f x) :=
+  compose_dep g f x := g x (f x).
 
 Arguments compose_dep {_ _ _} _ _ _ /.
 
 (** The equations plugin does not generate subtype lemmas,
     which is why we have to write them by hand. *)
 
-Lemma compose_nondep (A B C : Type) (g : B -> C) (f : A -> B) (a : A) :
-  compose_dep (const g) f a = compose g f a.
+Lemma compose_nondep (A B C : Type) (g : B -> C) (f : A -> B) (x : A) :
+  compose_dep (const g) f x = compose g f x.
 Proof. reflexivity. Qed.
 
 Fail Fail Equations arrow (A B : Type) : Type :=
@@ -753,8 +749,8 @@ Lemma const_nondep (A B : Type) (a : A) (b : B) :
 Proof. reflexivity. Qed.
 
 Fail Fail Equations flip (A B C : Type)
-  (f : A -> B -> C) (b : B) (a : A) : C :=
-  flip f b a := f a b.
+  (f : A -> B -> C) (y : B) (x : A) : C :=
+  flip f y x := f x y.
 
 Corollary flip_equation_1 (A B C : Type) (f : A -> B -> C) (x : B) (y : A) :
   flip f x y = f y x.
@@ -765,17 +761,17 @@ Proof. reflexivity. Qed.
 Arguments flip {_ _ _} _ _ _ /.
 
 Equations flip_dep (A B : Type) (P : A -> B -> Type)
-  (f : forall (a : A) (b : B), P a b) (b : B) (a : A) : P a b :=
-  flip_dep f b a := f a b.
+  (f : forall (x : A) (y : B), P x y) (y : B) (x : A) : P x y :=
+  flip_dep f y x := f x y.
 
 Arguments flip_dep {_ _ _} _ _ _ /.
 
-Lemma flip_nondep (A B C : Type) (f : A -> B -> C) (b : B) (a : A) :
-  flip_dep f b a = flip f b a.
+Lemma flip_nondep (A B C : Type) (f : A -> B -> C) (y : B) (x : A) :
+  flip_dep f y x = flip f y x.
 Proof. reflexivity. Qed.
 
-Fail Fail Equations apply (A B : Type) (f : A -> B) (a : A) : B :=
-  apply f a := f a.
+Fail Fail Equations apply (A B : Type) (f : A -> B) (x : A) : B :=
+  apply f x := f x.
 
 Corollary apply_equation_1 (A B : Type) (f : A -> B) (x : A) :
   apply f x = f x.
@@ -786,8 +782,8 @@ Proof. reflexivity. Qed.
 Arguments apply {_ _} _ _ /.
 
 Equations apply_dep (A : Type) (P : A -> Type)
-  (f : forall a : A, P a) (a : A) : P a :=
-  apply_dep f a := f a.
+  (f : forall x : A, P x) (x : A) : P x :=
+  apply_dep f x := f x.
 
 Arguments apply_dep {_ _} _ _ /.
 
@@ -835,39 +831,39 @@ Proof. reflexivity. Qed.
     which is why we redefine them all here. *)
 
 Equations conj_curry (A B C : Prop)
-  (f : A /\ B -> C) (a : A) (b : B) : C :=
-  conj_curry f a b := f (conj a b).
+  (f : A /\ B -> C) (x : A) (y : B) : C :=
+  conj_curry f x y := f (conj x y).
 
 Arguments conj_curry {_ _ _} _ _ _ /.
 
 Equations conj_uncurry (A B C : Prop)
-  (f : A -> B -> C) (x : A /\ B) : C :=
-  conj_uncurry f (conj a b) := f a b.
+  (f : A -> B -> C) (a : A /\ B) : C :=
+  conj_uncurry f (conj x y) := f x y.
 
 Arguments conj_uncurry {_ _ _} _ !_.
 
 Equations ex_curry (A : Prop) (P : A -> Prop) (B : Prop)
-  (f : (exists a : A, P a) -> B) (a : A) (b : P a) : B :=
-  ex_curry f a b := f (ex_intro P a b).
+  (f : (exists x : A, P x) -> B) (x : A) (a : P x) : B :=
+  ex_curry f x a := f (ex_intro P x a).
 
 Arguments ex_curry {_ _ _} _ _ _ /.
 
 Equations ex_curry_dep
-  (A : Prop) (P : A -> Prop) (Q : forall a : A, P a -> Prop)
-  (f : forall x : exists a : A, P a, Q (ex_proj1 x) (ex_proj2 x))
-  (a : A) (b : P a) : Q a b :=
-  ex_curry_dep _ f a b := f (ex_intro P a b).
+  (A : Prop) (P : A -> Prop) (Q : forall x : A, P x -> Prop)
+  (f : forall a : exists x : A, P x, Q (ex_proj1 a) (ex_proj2 a))
+  (x : A) (a : P x) : Q x a :=
+  ex_curry_dep _ f x a := f (ex_intro P x a).
 
 Arguments ex_curry_dep {_ _ _} _ _ _ /.
 
 Lemma ex_curry_nondep (A : Prop) (P : A -> Prop) (B : Prop)
-  (f : (exists a : A, P a) -> B) (a : A) (b : P a) :
-  ex_curry_dep f a b = ex_curry f a b.
+  (f : (exists x : A, P x) -> B) (x : A) (a : P x) :
+  ex_curry_dep f x a = ex_curry f x a.
 Proof. reflexivity. Qed.
 
 Equations ex_uncurry (A : Prop) (P : A -> Prop) (B : Prop)
-  (f : forall a : A, P a -> B) (x : exists a : A, P a) : B :=
-  ex_uncurry f (ex_intro _ a b) := f a b.
+  (f : forall x : A, P x -> B) (a : exists x : A, P x) : B :=
+  ex_uncurry f (ex_intro _ x a) := f x a.
 
 Arguments ex_uncurry {_ _ _} _ !_.
 
@@ -875,238 +871,238 @@ Arguments ex_uncurry {_ _ _} _ !_.
     which is why we have to write them by hand. *)
 
 Lemma ex_uncurry_proj (A : Prop) (P : A -> Prop) (B : Prop)
-  (f : forall a : A, P a -> B) (x : exists a : A, P a) :
-  ex_uncurry f x = f (ex_proj1 x) (ex_proj2 x).
-Proof. destruct x as [a b]. reflexivity. Qed.
+  (f : forall x : A, P x -> B) (a : exists x : A, P x) :
+  ex_uncurry f a = f (ex_proj1 a) (ex_proj2 a).
+Proof. destruct a as [x a]. reflexivity. Qed.
 
 Equations ex_uncurry_dep
-  (A : Prop) (P : A -> Prop) (Q : forall a : A, P a -> Prop)
-  (f : forall (a : A) (b : P a), Q a b)
-  (x : exists a : A, P a) : Q (ex_proj1 x) (ex_proj2 x) :=
-  ex_uncurry_dep f (ex_intro _ a b) := f a b.
+  (A : Prop) (P : A -> Prop) (Q : forall x : A, P x -> Prop)
+  (f : forall (x : A) (a : P x), Q x a)
+  (a : exists x : A, P x) : Q (ex_proj1 a) (ex_proj2 a) :=
+  ex_uncurry_dep f (ex_intro _ x a) := f x a.
 
 Arguments ex_uncurry_dep {_ _ _} _ !_.
 
 Lemma ex_uncurry_dep_proj
-  (A : Prop) (P : A -> Prop) (Q : forall a : A, P a -> Prop)
-  (f : forall (a : A) (b : P a), Q a b)
-  (x : exists a : A, P a) :
-  ex_uncurry_dep f x = f (ex_proj1 x) (ex_proj2 x).
-Proof. destruct x as [a b]. reflexivity. Qed.
+  (A : Prop) (P : A -> Prop) (Q : forall x : A, P x -> Prop)
+  (f : forall (x : A) (a : P x), Q x a)
+  (a : exists x : A, P x) :
+  ex_uncurry_dep f a = f (ex_proj1 a) (ex_proj2 a).
+Proof. destruct a as [x a]. reflexivity. Qed.
 
 Lemma ex_uncurry_nondep (A : Prop) (P : A -> Prop) (B : Prop)
-  (f : forall a : A, P a -> B) (x : exists a : A, P a) :
-  ex_uncurry_dep f x = ex_uncurry f x.
-Proof. destruct x as [a b]. reflexivity. Qed.
+  (f : forall x : A, P x -> B) (a : exists x : A, P x) :
+  ex_uncurry_dep f a = ex_uncurry f a.
+Proof. destruct a as [x a]. reflexivity. Qed.
 
 Equations prod_curry (A B C : Type)
-  (f : A * B -> C) (a : A) (b : B) : C :=
-  prod_curry f a b := f (a, b).
+  (f : A * B -> C) (x : A) (y : B) : C :=
+  prod_curry f x y := f (x, y).
 
 Arguments prod_curry {_ _ _} _ _ _ /.
 
 Equations prod_curry_dep (A B : Type) (P : A -> B -> Type)
-  (f : forall x : A * B, P (fst x) (snd x)) (a : A) (b : B) : P a b :=
-  prod_curry_dep _ f a b := f (a, b).
+  (f : forall x : A * B, P (fst x) (snd x)) (x : A) (y : B) : P x y :=
+  prod_curry_dep _ f x y := f (x, y).
 
 Arguments prod_curry_dep {_ _ _} _ _ _ /.
 
-Lemma prod_curry_nondep (A B C : Type) (f : A * B -> C) (a : A) (b : B) :
-  prod_curry_dep f a b = prod_curry f a b.
+Lemma prod_curry_nondep (A B C : Type) (f : A * B -> C) (x : A) (y : B) :
+  prod_curry_dep f x y = prod_curry f x y.
 Proof. reflexivity. Qed.
 
 Equations prod_uncurry (A B C : Type)
   (f : A -> B -> C) (x : A * B) : C :=
-  prod_uncurry f (a, b) := f a b.
+  prod_uncurry f (x, y) := f x y.
 
 Arguments prod_uncurry {_ _ _} _ !_.
 
 Lemma prod_uncurry_proj (A B C : Type)
-  (f : A -> B -> C) (x : A * B) :
-  prod_uncurry f x = f (fst x) (snd x).
-Proof. destruct x as [a b]. reflexivity. Qed.
+  (f : A -> B -> C) (a : A * B) :
+  prod_uncurry f a = f (fst a) (snd a).
+Proof. destruct a as [x y]. reflexivity. Qed.
 
 Equations prod_uncurry_dep (A B : Type) (P : A -> B -> Type)
-  (f : forall (a : A) (b : B), P a b) (x : A * B) : P (fst x) (snd x) :=
-  prod_uncurry_dep f (a, b) := f a b.
+  (f : forall (x : A) (y : B), P x y) (a : A * B) : P (fst a) (snd a) :=
+  prod_uncurry_dep f (x, y) := f x y.
 
 Arguments prod_uncurry_dep {_ _ _} _ !_.
 
 Lemma prod_uncurry_dep_proj (A B : Type) (P : A -> B -> Type)
-  (f : forall (a : A) (b : B), P a b) (x : A * B) :
-  prod_uncurry_dep f x = f (fst x) (snd x).
-Proof. destruct x as [a b]. reflexivity. Qed.
+  (f : forall (x : A) (y : B), P x y) (a : A * B) :
+  prod_uncurry_dep f a = f (fst a) (snd a).
+Proof. destruct a as [x y]. reflexivity. Qed.
 
-Lemma prod_uncurry_nondep (A B C : Type) (f : A -> B -> C) (x : A * B) :
-  prod_uncurry_dep f x = prod_uncurry f x.
-Proof. destruct x as [a b]. reflexivity. Qed.
+Lemma prod_uncurry_nondep (A B C : Type) (f : A -> B -> C) (a : A * B) :
+  prod_uncurry_dep f a = prod_uncurry f a.
+Proof. destruct a as [x y]. reflexivity. Qed.
 
 Equations sig_curry (A : Type) (P : A -> Prop) (B : Type)
-  (f : {a : A | P a} -> B) (a : A) (b : P a) : B :=
-  sig_curry f a b := f (exist P a b).
+  (f : {x : A | P x} -> B) (x : A) (a : P x) : B :=
+  sig_curry f x a := f (exist P x a).
 
 Arguments sig_curry {_ _ _} _ _ _ /.
 
 Equations sig_curry_dep
-  (A : Type) (P : A -> Prop) (Q : forall a : A, P a -> Type)
-  (f : forall x : {a : A | P a}, Q (proj1_sig x) (proj2_sig x))
-  (a : A) (b : P a) : Q a b :=
-  sig_curry_dep _ f a b := f (exist P a b).
+  (A : Type) (P : A -> Prop) (Q : forall x : A, P x -> Type)
+  (f : forall a : {x : A | P x}, Q (proj1_sig a) (proj2_sig a))
+  (x : A) (a : P x) : Q x a :=
+  sig_curry_dep _ f x a := f (exist P x a).
 
 Arguments sig_curry_dep {_ _ _} _ _ _ /.
 
 Lemma sig_curry_nondep (A : Type) (P : A -> Prop) (B : Type)
-  (f : {a : A | P a} -> B) (a : A) (b : P a) :
-  sig_curry_dep f a b = sig_curry f a b.
+  (f : {x : A | P x} -> B) (x : A) (a : P x) :
+  sig_curry_dep f x a = sig_curry f x a.
 Proof. reflexivity. Qed.
 
 Equations sig_uncurry (A : Type) (P : A -> Prop) (B : Type)
-  (f : forall a : A, P a -> B) (x : {a : A | P a}) : B :=
-  sig_uncurry f (exist _ a b) := f a b.
+  (f : forall x : A, P x -> B) (a : {x : A | P x}) : B :=
+  sig_uncurry f (exist _ x a) := f x a.
 
 Arguments sig_uncurry {_ _ _} _ !_.
 
 Lemma sig_uncurry_proj (A : Type) (P : A -> Prop) (B : Type)
-  (f : forall a : A, P a -> B) (x : {a : A | P a}) :
-  sig_uncurry f x = f (proj1_sig x) (proj2_sig x).
-Proof. destruct x as [a b]. reflexivity. Qed.
+  (f : forall x : A, P x -> B) (a : {x : A | P x}) :
+  sig_uncurry f a = f (proj1_sig a) (proj2_sig a).
+Proof. destruct a as [x a]. reflexivity. Qed.
 
 Equations sig_uncurry_dep
-  (A : Type) (P : A -> Prop) (Q : forall a : A, P a -> Type)
-  (f : forall (a : A) (b : P a), Q a b)
-  (x : {a : A | P a}) : Q (proj1_sig x) (proj2_sig x) :=
-  sig_uncurry_dep f (exist _ a b) := f a b.
+  (A : Type) (P : A -> Prop) (Q : forall x : A, P x -> Type)
+  (f : forall (x : A) (a : P x), Q x a)
+  (a : {x : A | P x}) : Q (proj1_sig a) (proj2_sig a) :=
+  sig_uncurry_dep f (exist _ x a) := f x a.
 
 Arguments sig_uncurry_dep {_ _ _} _ !_.
 
 Lemma sig_uncurry_dep_proj
-  (A : Type) (P : A -> Prop) (Q : forall a : A, P a -> Type)
-  (f : forall (a : A) (b : P a), Q a b)
-  (x : {a : A | P a}) :
-  sig_uncurry_dep f x = f (proj1_sig x) (proj2_sig x).
-Proof. destruct x as [a b]. reflexivity. Qed.
+  (A : Type) (P : A -> Prop) (Q : forall x : A, P x -> Type)
+  (f : forall (x : A) (a : P x), Q x a)
+  (a : {x : A | P x}) :
+  sig_uncurry_dep f a = f (proj1_sig a) (proj2_sig a).
+Proof. destruct a as [x a]. reflexivity. Qed.
 
 Lemma sig_uncurry_nondep (A : Type) (P : A -> Prop) (B : Type)
-  (f : forall a : A, P a -> B) (x : {a : A | P a}) :
-  sig_uncurry_dep f x = sig_uncurry f x.
-Proof. destruct x as [a b]. reflexivity. Qed.
+  (f : forall x : A, P x -> B) (a : {x : A | P x}) :
+  sig_uncurry_dep f a = sig_uncurry f a.
+Proof. destruct a as [x a]. reflexivity. Qed.
 
 Equations sigT_curry (A : Type) (P : A -> Type) (B : Type)
-  (f : {a : A & P a} -> B) (a : A) (b : P a) : B :=
-  sigT_curry f a b := f (existT P a b).
+  (f : {x : A & P x} -> B) (x : A) (a : P x) : B :=
+  sigT_curry f x a := f (existT P x a).
 
 Arguments sigT_curry {_ _ _} _ _ _ /.
 
 Equations sigT_curry_dep
-  (A : Type) (P : A -> Type) (Q : forall a : A, P a -> Type)
-  (f : forall x : {a : A & P a}, Q (projT1 x) (projT2 x))
-  (a : A) (b : P a) : Q a b :=
-  sigT_curry_dep _ f a b := f (existT P a b).
+  (A : Type) (P : A -> Type) (Q : forall x : A, P x -> Type)
+  (f : forall a : {x : A & P x}, Q (projT1 a) (projT2 a))
+  (x : A) (a : P x) : Q x a :=
+  sigT_curry_dep _ f x a := f (existT P x a).
 
 Arguments sigT_curry_dep {_ _ _} _ _ _ /.
 
 Lemma sigT_curry_nondep (A : Type) (P : A -> Type) (B : Type)
-  (f : {a : A & P a} -> B) (a : A) (b : P a) :
-  sigT_curry_dep f a b = sigT_curry f a b.
+  (f : {x : A & P x} -> B) (x : A) (a : P x) :
+  sigT_curry_dep f x a = sigT_curry f x a.
 Proof. reflexivity. Qed.
 
 Equations sigT_uncurry (A : Type) (P : A -> Type) (B : Type)
-  (f : forall a : A, P a -> B) (x : {a : A & P a}) : B :=
-  sigT_uncurry f (existT _ a b) := f a b.
+  (f : forall x : A, P x -> B) (a : {x : A & P x}) : B :=
+  sigT_uncurry f (existT _ x a) := f x a.
 
 Arguments sigT_uncurry {_ _ _} _ !_.
 
 Lemma sigT_uncurry_proj (A : Type) (P : A -> Type) (B : Type)
-  (f : forall a : A, P a -> B) (x : {a : A & P a}) :
-  sigT_uncurry f x = f (projT1 x) (projT2 x).
-Proof. destruct x as [a b]. reflexivity. Qed.
+  (f : forall x : A, P x -> B) (a : {x : A & P x}) :
+  sigT_uncurry f a = f (projT1 a) (projT2 a).
+Proof. destruct a as [x a]. reflexivity. Qed.
 
 Equations sigT_uncurry_dep
-  (A : Type) (P : A -> Type) (Q : forall a : A, P a -> Type)
-  (f : forall (a : A) (b : P a), Q a b)
-  (x : {a : A & P a}) : Q (projT1 x) (projT2 x) :=
-  sigT_uncurry_dep f (existT _ a b) := f a b.
+  (A : Type) (P : A -> Type) (Q : forall x : A, P x -> Type)
+  (f : forall (x : A) (a : P x), Q x a)
+  (a : {x : A & P x}) : Q (projT1 a) (projT2 a) :=
+  sigT_uncurry_dep f (existT _ x a) := f x a.
 
 Arguments sigT_uncurry_dep {_ _ _} _ !_.
 
 Lemma sigT_uncurry_dep_proj
-  (A : Type) (P : A -> Type) (Q : forall a : A, P a -> Type)
-  (f : forall (a : A) (b : P a), Q a b)
-  (x : {a : A & P a}) :
-  sigT_uncurry_dep f x = f (projT1 x) (projT2 x).
-Proof. destruct x as [a b]. reflexivity. Qed.
+  (A : Type) (P : A -> Type) (Q : forall x : A, P x -> Type)
+  (f : forall (x : A) (a : P x), Q x a)
+  (a : {x : A & P x}) :
+  sigT_uncurry_dep f a = f (projT1 a) (projT2 a).
+Proof. destruct a as [x a]. reflexivity. Qed.
 
 Lemma sigT_uncurry_nondep (A : Type) (P : A -> Type) (B : Type)
-  (f : forall a : A, P a -> B) (x : {a : A & P a}) :
-  sigT_uncurry_dep f x = sigT_uncurry f x.
-Proof. destruct x as [a b]. reflexivity. Qed.
+  (f : forall x : A, P x -> B) (a : {x : A & P x}) :
+  sigT_uncurry_dep f a = sigT_uncurry f a.
+Proof. destruct a as [x a]. reflexivity. Qed.
 
 Equations Ssig_curry (A : Type) (P : A -> SProp) (B : Type)
-  (f : {a : A $ P a} -> B) (a : A) (b : P a) : B :=
-  Ssig_curry f a b := f (Sexists P a b).
+  (f : {x : A $ P x} -> B) (x : A) (a : P x) : B :=
+  Ssig_curry f x a := f (Sexists P x a).
 
 Arguments Ssig_curry {_ _ _} _ _ _ /.
 
 Equations Ssig_curry_dep
-  (A : Type) (P : A -> SProp) (Q : forall a : A, P a -> Type)
-  (f : forall x : {a : A $ P a}, Q (Spr1 x) (Spr2 x))
-  (a : A) (b : P a) : Q a b :=
-  Ssig_curry_dep _ f a b := f (Sexists P a b).
+  (A : Type) (P : A -> SProp) (Q : forall x : A, P x -> Type)
+  (f : forall a : {x : A $ P x}, Q (Spr1 a) (Spr2 a))
+  (x : A) (a : P x) : Q x a :=
+  Ssig_curry_dep _ f x a := f (Sexists P x a).
 
 Arguments Ssig_curry_dep {_ _ _} _ _ _ /.
 
 Lemma Ssig_curry_nondep (A : Type) (P : A -> SProp) (B : Type)
-  (f : {a : A $ P a} -> B) (a : A) (b : P a) :
-  Ssig_curry_dep f a b = Ssig_curry f a b.
+  (f : {x : A $ P x} -> B) (x : A) (a : P x) :
+  Ssig_curry_dep f x a = Ssig_curry f x a.
 Proof. reflexivity. Qed.
 
 Equations Ssig_uncurry (A : Type) (P : A -> SProp) (B : Type)
-  (f : forall a : A, P a -> B) (x : {a : A $ P a}) : B :=
-  Ssig_uncurry f (Sexists _ a b) := f a b.
+  (f : forall x : A, P x -> B) (a : {x : A $ P x}) : B :=
+  Ssig_uncurry f (Sexists _ x a) := f x a.
 
 Arguments Ssig_uncurry {_ _ _} _ !_.
 
 Lemma Ssig_uncurry_proj (A : Type) (P : A -> SProp) (B : Type)
-  (f : forall a : A, P a -> B) (x : {a : A $ P a}) :
-  Ssig_uncurry f x = f (Spr1 x) (Spr2 x).
-Proof. destruct x as [a b]. reflexivity. Qed.
+  (f : forall x : A, P x -> B) (a : {x : A $ P x}) :
+  Ssig_uncurry f a = f (Spr1 a) (Spr2 a).
+Proof. destruct a as [x a]. reflexivity. Qed.
 
 Equations Ssig_uncurry_dep
-  (A : Type) (P : A -> SProp) (Q : forall a : A, P a -> Type)
-  (f : forall (a : A) (b : P a), Q a b)
-  (x : {a : A $ P a}) : Q (Spr1 x) (Spr2 x) :=
-  Ssig_uncurry_dep f (Sexists _ a b) := f a b.
+  (A : Type) (P : A -> SProp) (Q : forall x : A, P x -> Type)
+  (f : forall (x : A) (a : P x), Q x a)
+  (a : {x : A $ P x}) : Q (Spr1 a) (Spr2 a) :=
+  Ssig_uncurry_dep f (Sexists _ x a) := f x a.
 
 Arguments Ssig_uncurry_dep {_ _ _} _ !_.
 
 Lemma Ssig_uncurry_dep_proj
-  (A : Type) (P : A -> SProp) (Q : forall a : A, P a -> Type)
-  (f : forall (a : A) (b : P a), Q a b)
-  (x : {a : A $ P a}) :
-  Ssig_uncurry_dep f x = f (Spr1 x) (Spr2 x).
-Proof. destruct x as [a b]. reflexivity. Qed.
+  (A : Type) (P : A -> SProp) (Q : forall x : A, P x -> Type)
+  (f : forall (x : A) (a : P x), Q x a)
+  (a : {x : A $ P x}) :
+  Ssig_uncurry_dep f a = f (Spr1 a) (Spr2 a).
+Proof. destruct a as [x a]. reflexivity. Qed.
 
 Lemma Ssig_uncurry_nondep (A : Type) (P : A -> SProp) (B : Type)
-  (f : forall a : A, P a -> B) (x : {a : A $ P a}) :
-  Ssig_uncurry_dep f x = Ssig_uncurry f x.
-Proof. destruct x as [a b]. reflexivity. Qed.
+  (f : forall x : A, P x -> B) (a : {x : A $ P x}) :
+  Ssig_uncurry_dep f a = Ssig_uncurry f a.
+Proof. destruct a as [x a]. reflexivity. Qed.
 
 (** ** Opacity and Transparency *)
 
 (** Flip these switches and push those carts to make unification smart. *)
 
-Typeclasses Opaque iff all Logic.subrelation unique uniqueness.
+#[export] Typeclasses Opaque iff all Logic.subrelation unique uniqueness.
 
-Typeclasses Transparent andb orb implb xorb negb is_true
+#[export] Typeclasses Transparent andb orb implb xorb negb is_true
   option_map fst snd length app ID Datatypes.id IDProp idProp.
 
-Typeclasses Transparent ex_proj1 ex_proj2 proj1_sig proj2_sig
+#[export] Typeclasses Transparent ex_proj1 ex_proj2 proj1_sig proj2_sig
   projT1 projT2 Spr1 Spr2 sig_of_sigT sigT_of_sig.
 
-Typeclasses Transparent compose compose_dep arrow impl
+#[export] Typeclasses Transparent compose compose_dep arrow impl
   const const_dep flip flip_dep apply apply_dep.
 
-Typeclasses Transparent conj_curry conj_uncurry
+#[export] Typeclasses Transparent conj_curry conj_uncurry
   ex_curry ex_curry_dep ex_uncurry ex_uncurry_dep
   prod_curry prod_curry_dep prod_uncurry prod_uncurry_dep
   sig_curry sig_curry_dep sig_uncurry sig_uncurry_dep

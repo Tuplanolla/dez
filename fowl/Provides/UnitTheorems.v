@@ -18,7 +18,10 @@ Equations tt1 (x : unit) : unit :=
 Equations tt2 (x y : unit) : unit :=
   tt2 _ _ := tt.
 
-#[local] Instance unit_is_contr : IsContr unit.
+#[local] Instance unit_is_contr : @IsContr unit eq.
+Proof. ecrush. Qed.
+
+#[local] Instance unit_is_prop : @IsProp unit eq.
 Proof. ecrush. Qed.
 
 Fail Fail Scheme Equality for unit.

@@ -23,7 +23,7 @@ Makefile ::
 
 _CoqMakefile :: _CoqMakefile.args _CoqMakefile.local
 	$(SHOW) echo COQ_MAKEFILE -o $@
-	$(HIDE) coq_makefile -f $< -o $@ -opt
+	$(HIDE) coq_makefile -f $< -o $@
 
 _CoqMakefile.args :: _CoqProject _CoqFiles
 	$(SHOW) echo TEE $@

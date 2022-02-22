@@ -3,6 +3,8 @@
 From DEZ Require Export
   Init.
 
+(** ** Conditional Reduction *)
+
 (** Reduce a call to the given [1]-parameter function
     in the goal and hypotheses.
     The call to the function [f] is only reduced when
@@ -80,10 +82,11 @@ Ltac reduce_3 p0 p1 p2 f :=
 Ltac reduce_4 p0 p1 p2 p3 f :=
   fail "Not implemented".
 
+(** ** Conditional Commutation *)
+
 (** Commute the arguments of a call
     to the given [2]-parameter function in the goal and hypotheses,
-    so that the argument at index [0] comes first
-    (there are no other guarantees as the ordering is partial).
+    so that the argument at index [0] is favored.
     The arguments of the function [f] are only sorted when
     it makes the argument at the appropriate index
     satisfy the tactical predicate [p],
@@ -114,8 +117,7 @@ Ltac recomm_2_0 p f e :=
 
 (** Commute the arguments of a call
     to the given [2]-parameter function in the goal and hypotheses,
-    so that the argument at index [1] comes first
-    (there are no other guarantees as the ordering is partial).
+    so that the argument at index [1] is favored.
     The arguments of the function [f] are only sorted when
     it makes the argument at the appropriate index
     satisfy the tactical predicate [p],
@@ -138,8 +140,7 @@ Ltac recomm_2_1 p f e :=
 
 (** Commute the arguments of a call
     to the given [3]-parameter function in the goal and hypotheses,
-    so that the argument at index [0] comes first
-    (there are no other guarantees as the ordering is partial).
+    so that the argument at index [0] is favored.
     The arguments of the function [f] are only sorted when
     it makes the argument at the appropriate index
     satisfy the tactical predicate [p],
@@ -200,8 +201,7 @@ Ltac recomm_3_0 p f e :=
 
 (** Commute the arguments of a call
     to the given [3]-parameter function in the goal and hypotheses,
-    so that the argument at index [1] comes first
-    (there are no other guarantees as the ordering is partial).
+    so that the argument at index [1] is favored.
     The arguments of the function [f] are only sorted when
     it makes the argument at the appropriate index
     satisfy the tactical predicate [p],
@@ -244,8 +244,7 @@ Ltac recomm_3_1 p f e :=
 
 (** Commute the arguments of a call
     to the given [3]-parameter function in the goal and hypotheses,
-    so that the argument at index [2] comes first
-    (there are no other guarantees as the ordering is partial).
+    so that the argument at index [2] is favored.
     The arguments of the function [f] are only sorted when
     it makes the argument at the appropriate index
     satisfy the tactical predicate [p],
@@ -300,10 +299,11 @@ Ltac recomm_4_2 p f e :=
 Ltac recomm_4_3 p f e :=
   fail "Not implemented".
 
+(** ** Conditional Association *)
+
 (** Associate the arguments of two nested calls
     to the given [2]-parameter function in the goal and hypotheses,
-    so that the arguments at the deeper level come first
-    (there are no other guarantees as the ordering is partial).
+    so that the arguments at the deeper level are favored.
     The arguments of the function [f] are only reassociated when
     it makes the arguments at the appropriate indexes
     satisfy the tactical predicate [p],
@@ -361,8 +361,7 @@ Ltac reassoc_2 p f e10 :=
 
 (** Associate the arguments of two nested calls
     to the given [3]-parameter function in the goal and hypotheses,
-    so that the arguments at the deeper level come first
-    (there are no other guarantees as the ordering is partial).
+    so that the arguments at the deeper level are favored.
     The arguments of the function [f] are only reassociated when
     it makes the arguments at the appropriate indexes
     satisfy the tactical predicate [p],

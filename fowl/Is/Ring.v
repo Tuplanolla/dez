@@ -131,6 +131,10 @@ Proof with subclass.
   setoid_rewrite (invol (z * w)).
   reflexivity. Qed.
 
+(** TODO What? *)
+
+#[local] Notation "'-' '1'" := (- (1)) (format "'-'  '1'").
+
 Lemma neg_mul_one_l_sgn_absorb (z : A) : (- 1) * z == - z.
 Proof with subclass.
   note.

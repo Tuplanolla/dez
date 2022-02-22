@@ -5,6 +5,8 @@ From Coq Require Import
 From DEZ Require Export
   Init.
 
+(** ** Constant Checking *)
+
 (** Succeed when the given term is a constant of type [A -> B] and
     its subterms are constants of type [B]
     as determined by the tactical predicate [is_B]. *)
