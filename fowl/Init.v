@@ -695,9 +695,9 @@ Proof. reflexivity. Qed.
 Arguments compose {_ _ _} _ _ _ /.
 
 Equations compose_dep
-  (A : Type) (P : A -> Type) (Q : forall x : A, P x -> Type)
-  (g : forall (x : A) (a : P x), Q x a) (f : forall x : A, P x)
-  (x : A) : Q x (f x) :=
+  (A : Type) (P : A -> Type) (S : forall x : A, P x -> Type)
+  (g : forall (x : A) (a : P x), S x a) (f : forall x : A, P x)
+  (x : A) : S x (f x) :=
   compose_dep g f x := g x (f x).
 
 Arguments compose_dep {_ _ _} _ _ _ /.
@@ -804,7 +804,7 @@ Proof. reflexivity. Qed.
 Arguments respectful {_ _} _ _ /.
 
 Notation "'_==>_'" := respectful : signature_scope.
-Notation "R '==>' S" := (respectful R S) : signature_scope.
+Notation "X '==>' Y" := (respectful X Y) : signature_scope.
 
 Corollary respectful_hetero_equation_1
   (A B : Type) (C : A -> Type) (D : B -> Type)
@@ -819,8 +819,8 @@ Proof. reflexivity. Qed.
 Arguments respectful_hetero {_ _ _ _} _ _ /.
 
 Lemma respectful_nondep (A B : Type)
-  (R : relation A) (R' : relation B) (f g : A -> B) :
-  respectful_hetero R (const (const R')) f g = respectful R R' f g.
+  (X : relation A) (Y : relation B) (f g : A -> B) :
+  respectful_hetero X (const (const Y)) f g = respectful X Y f g.
 Proof. reflexivity. Qed.
 
 (** ** Currying and Uncurrying *)
@@ -849,9 +849,9 @@ Equations ex_curry (A : Prop) (P : A -> Prop) (B : Prop)
 Arguments ex_curry {_ _ _} _ _ _ /.
 
 Equations ex_curry_dep
-  (A : Prop) (P : A -> Prop) (Q : forall x : A, P x -> Prop)
-  (f : forall a : exists x : A, P x, Q (ex_proj1 a) (ex_proj2 a))
-  (x : A) (a : P x) : Q x a :=
+  (A : Prop) (P : A -> Prop) (S : forall x : A, P x -> Prop)
+  (f : forall a : exists x : A, P x, S (ex_proj1 a) (ex_proj2 a))
+  (x : A) (a : P x) : S x a :=
   ex_curry_dep _ f x a := f (ex_intro P x a).
 
 Arguments ex_curry_dep {_ _ _} _ _ _ /.
@@ -876,16 +876,16 @@ Lemma ex_uncurry_proj (A : Prop) (P : A -> Prop) (B : Prop)
 Proof. destruct a as [x a]. reflexivity. Qed.
 
 Equations ex_uncurry_dep
-  (A : Prop) (P : A -> Prop) (Q : forall x : A, P x -> Prop)
-  (f : forall (x : A) (a : P x), Q x a)
-  (a : exists x : A, P x) : Q (ex_proj1 a) (ex_proj2 a) :=
+  (A : Prop) (P : A -> Prop) (S : forall x : A, P x -> Prop)
+  (f : forall (x : A) (a : P x), S x a)
+  (a : exists x : A, P x) : S (ex_proj1 a) (ex_proj2 a) :=
   ex_uncurry_dep f (ex_intro _ x a) := f x a.
 
 Arguments ex_uncurry_dep {_ _ _} _ !_.
 
 Lemma ex_uncurry_dep_proj
-  (A : Prop) (P : A -> Prop) (Q : forall x : A, P x -> Prop)
-  (f : forall (x : A) (a : P x), Q x a)
+  (A : Prop) (P : A -> Prop) (S : forall x : A, P x -> Prop)
+  (f : forall (x : A) (a : P x), S x a)
   (a : exists x : A, P x) :
   ex_uncurry_dep f a = f (ex_proj1 a) (ex_proj2 a).
 Proof. destruct a as [x a]. reflexivity. Qed.
@@ -944,9 +944,9 @@ Equations sig_curry (A : Type) (P : A -> Prop) (B : Type)
 Arguments sig_curry {_ _ _} _ _ _ /.
 
 Equations sig_curry_dep
-  (A : Type) (P : A -> Prop) (Q : forall x : A, P x -> Type)
-  (f : forall a : {x : A | P x}, Q (proj1_sig a) (proj2_sig a))
-  (x : A) (a : P x) : Q x a :=
+  (A : Type) (P : A -> Prop) (S : forall x : A, P x -> Type)
+  (f : forall a : {x : A | P x}, S (proj1_sig a) (proj2_sig a))
+  (x : A) (a : P x) : S x a :=
   sig_curry_dep _ f x a := f (exist P x a).
 
 Arguments sig_curry_dep {_ _ _} _ _ _ /.
@@ -968,16 +968,16 @@ Lemma sig_uncurry_proj (A : Type) (P : A -> Prop) (B : Type)
 Proof. destruct a as [x a]. reflexivity. Qed.
 
 Equations sig_uncurry_dep
-  (A : Type) (P : A -> Prop) (Q : forall x : A, P x -> Type)
-  (f : forall (x : A) (a : P x), Q x a)
-  (a : {x : A | P x}) : Q (proj1_sig a) (proj2_sig a) :=
+  (A : Type) (P : A -> Prop) (S : forall x : A, P x -> Type)
+  (f : forall (x : A) (a : P x), S x a)
+  (a : {x : A | P x}) : S (proj1_sig a) (proj2_sig a) :=
   sig_uncurry_dep f (exist _ x a) := f x a.
 
 Arguments sig_uncurry_dep {_ _ _} _ !_.
 
 Lemma sig_uncurry_dep_proj
-  (A : Type) (P : A -> Prop) (Q : forall x : A, P x -> Type)
-  (f : forall (x : A) (a : P x), Q x a)
+  (A : Type) (P : A -> Prop) (S : forall x : A, P x -> Type)
+  (f : forall (x : A) (a : P x), S x a)
   (a : {x : A | P x}) :
   sig_uncurry_dep f a = f (proj1_sig a) (proj2_sig a).
 Proof. destruct a as [x a]. reflexivity. Qed.
@@ -994,9 +994,9 @@ Equations sigT_curry (A : Type) (P : A -> Type) (B : Type)
 Arguments sigT_curry {_ _ _} _ _ _ /.
 
 Equations sigT_curry_dep
-  (A : Type) (P : A -> Type) (Q : forall x : A, P x -> Type)
-  (f : forall a : {x : A & P x}, Q (projT1 a) (projT2 a))
-  (x : A) (a : P x) : Q x a :=
+  (A : Type) (P : A -> Type) (S : forall x : A, P x -> Type)
+  (f : forall a : {x : A & P x}, S (projT1 a) (projT2 a))
+  (x : A) (a : P x) : S x a :=
   sigT_curry_dep _ f x a := f (existT P x a).
 
 Arguments sigT_curry_dep {_ _ _} _ _ _ /.
@@ -1018,16 +1018,16 @@ Lemma sigT_uncurry_proj (A : Type) (P : A -> Type) (B : Type)
 Proof. destruct a as [x a]. reflexivity. Qed.
 
 Equations sigT_uncurry_dep
-  (A : Type) (P : A -> Type) (Q : forall x : A, P x -> Type)
-  (f : forall (x : A) (a : P x), Q x a)
-  (a : {x : A & P x}) : Q (projT1 a) (projT2 a) :=
+  (A : Type) (P : A -> Type) (S : forall x : A, P x -> Type)
+  (f : forall (x : A) (a : P x), S x a)
+  (a : {x : A & P x}) : S (projT1 a) (projT2 a) :=
   sigT_uncurry_dep f (existT _ x a) := f x a.
 
 Arguments sigT_uncurry_dep {_ _ _} _ !_.
 
 Lemma sigT_uncurry_dep_proj
-  (A : Type) (P : A -> Type) (Q : forall x : A, P x -> Type)
-  (f : forall (x : A) (a : P x), Q x a)
+  (A : Type) (P : A -> Type) (S : forall x : A, P x -> Type)
+  (f : forall (x : A) (a : P x), S x a)
   (a : {x : A & P x}) :
   sigT_uncurry_dep f a = f (projT1 a) (projT2 a).
 Proof. destruct a as [x a]. reflexivity. Qed.
@@ -1044,9 +1044,9 @@ Equations Ssig_curry (A : Type) (P : A -> SProp) (B : Type)
 Arguments Ssig_curry {_ _ _} _ _ _ /.
 
 Equations Ssig_curry_dep
-  (A : Type) (P : A -> SProp) (Q : forall x : A, P x -> Type)
-  (f : forall a : {x : A $ P x}, Q (Spr1 a) (Spr2 a))
-  (x : A) (a : P x) : Q x a :=
+  (A : Type) (P : A -> SProp) (S : forall x : A, P x -> Type)
+  (f : forall a : {x : A $ P x}, S (Spr1 a) (Spr2 a))
+  (x : A) (a : P x) : S x a :=
   Ssig_curry_dep _ f x a := f (Sexists P x a).
 
 Arguments Ssig_curry_dep {_ _ _} _ _ _ /.
@@ -1068,16 +1068,16 @@ Lemma Ssig_uncurry_proj (A : Type) (P : A -> SProp) (B : Type)
 Proof. destruct a as [x a]. reflexivity. Qed.
 
 Equations Ssig_uncurry_dep
-  (A : Type) (P : A -> SProp) (Q : forall x : A, P x -> Type)
-  (f : forall (x : A) (a : P x), Q x a)
-  (a : {x : A $ P x}) : Q (Spr1 a) (Spr2 a) :=
+  (A : Type) (P : A -> SProp) (S : forall x : A, P x -> Type)
+  (f : forall (x : A) (a : P x), S x a)
+  (a : {x : A $ P x}) : S (Spr1 a) (Spr2 a) :=
   Ssig_uncurry_dep f (Sexists _ x a) := f x a.
 
 Arguments Ssig_uncurry_dep {_ _ _} _ !_.
 
 Lemma Ssig_uncurry_dep_proj
-  (A : Type) (P : A -> SProp) (Q : forall x : A, P x -> Type)
-  (f : forall (x : A) (a : P x), Q x a)
+  (A : Type) (P : A -> SProp) (S : forall x : A, P x -> Type)
+  (f : forall (x : A) (a : P x), S x a)
   (a : {x : A $ P x}) :
   Ssig_uncurry_dep f a = f (Spr1 a) (Spr2 a).
 Proof. destruct a as [x a]. reflexivity. Qed.
