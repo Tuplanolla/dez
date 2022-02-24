@@ -44,6 +44,20 @@ always refer to operational classes by their most specific name.
 If implicit arguments are inferred incorrectly,
 fix them with `Arguments` after the context ends.
 
+Prefer `export`ing instances instead of marking them `local`;
+if there are potential cycles or conflicts,
+hide coherent alternatives in modules.
+
+Take note of this distinction for operational classes.
+
+```
+Class HasIdHom (A : Type) {X : HasHom A} : Type :=
+  id_hom (x : A) : x --> x.
+
+Class HasIdHom' (A : Type) (X : A -> A -> Prop) : Type :=
+  id_hom' (x : A) : X x x.
+```
+
 ### Coherence Conditions
 
 When defining operational classes or their instances,

@@ -1,3 +1,4 @@
+(* maybe *)
 From DEZ Require Export
   Init.
 
@@ -5,4 +6,4 @@ From DEZ Require Export
 
 Class HasBinFn (A B C : Type) : Type := bin_fn : A -> B -> C.
 
-Typeclasses Transparent HasBinFn.
+#[export] Typeclasses Transparent HasBinFn.

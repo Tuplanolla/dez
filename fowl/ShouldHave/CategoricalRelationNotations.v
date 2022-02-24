@@ -1,7 +1,7 @@
-(** * Notations for Categories *)
+(** * Notations for Categorical Relations *)
 
-From DEZ.Has Require Import
-  Morphism.
+From DEZ.Has Require Export
+  CategoricalRelation.
 
 Declare Scope category_scope.
 Delimit Scope category_scope with cat.

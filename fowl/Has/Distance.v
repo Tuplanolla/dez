@@ -1,25 +1,25 @@
-(** * Distance or Metric *)
+(** * Measuring Distances *)
 
 From DEZ.Has Require Export
-  Torsion.
+  Form.
 
-Class HasDist (A B : Type) : Type := dist (x y : B) : A.
+(** ** Distance Function *)
+(** ** Metric *)
 
-Typeclasses Transparent HasDist.
+Class HasDist (A B : Type) : Type := dist (a b : B) : A.
+
+#[export] Typeclasses Transparent HasDist.
 
 Module Subclass.
 
 Section Context.
 
-Context (A B : Type) (Hd : HasDist A B).
+Context (A B : Type).
 
-(** Distance is a torsion. *)
+(** A distance function is a form. *)
 
-#[local] Instance has_tor_l : HasTorL A B := dist.
-#[local] Instance has_tor_r : HasTorR A B := dist.
+#[export] Instance dist_has_form {d : HasDist A B} : HasForm A B := dist.
 
 End Context.
-
-#[export] Hint Resolve has_tor_l has_tor_r : typeclass_instances.
 
 End Subclass.

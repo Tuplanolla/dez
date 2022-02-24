@@ -1,3 +1,4 @@
+(* maybe *)
 (** * Unsquashing or Large Elimination for Strict Propositions *)
 
 From DEZ.Has Require Export
@@ -5,7 +6,7 @@ From DEZ.Has Require Export
 
 Class HasUnsquash (A : Type) : Type := unsquash (x : Squash A) : A.
 
-Typeclasses Transparent HasUnsquash.
+#[export] Typeclasses Transparent HasUnsquash.
 
 Section Context.
 

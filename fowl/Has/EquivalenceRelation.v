@@ -1,11 +1,12 @@
+(* maybe *)
 (** * Equivalence Relation *)
 
 From DEZ.Has Require Export
-  BinaryRelation.
+  Relation.
 
 Class HasEqRel (A : Type) : Type := eq_rel (x y : A) : Prop.
 
-Typeclasses Transparent HasEqRel.
+#[export] Typeclasses Transparent HasEqRel.
 
 Module Subclass.
 

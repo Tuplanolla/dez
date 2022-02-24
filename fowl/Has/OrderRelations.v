@@ -1,12 +1,13 @@
+(* maybe *)
 (** * Order Relation and Strict Order Relation *)
 
 From DEZ.Has Require Export
-  BinaryRelation.
+  Relation.
 
 Class HasOrdRel (A : Type) : Type := ord_rel (x y : A) : Prop.
 Class HasStrOrdRel (A : Type) : Type := str_ord_rel (x y : A) : Prop.
 
-Typeclasses Transparent HasOrdRel HasStrOrdRel.
+#[export] Typeclasses Transparent HasOrdRel HasStrOrdRel.
 
 Module Subclass.
 

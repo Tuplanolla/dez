@@ -1,3 +1,4 @@
+(* maybe *)
 From Coq Require Import
   NArith.NArith.
 From DEZ Require Export
@@ -11,4 +12,4 @@ Class HasCard (A : Type) : Type := card : N.
 Arguments card : clear implicits.
 Arguments card _ {_}.
 
-Typeclasses Transparent HasCard.
+#[export] Typeclasses Transparent HasCard.

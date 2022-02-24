@@ -3,36 +3,47 @@ digraph Has {
 
   node [fontname = monospace]
 
-  HasActL [label = "\N\nact_l (a : A) (x : B) : B"]
-  HasActR [label = "\N\nact_r (x : B) (a : A) : B"]
+  HasOp [label = "\N\nop : {F : Type -> Type & F A}"]
+  HasRel [label = "\N\nrel : {F : Type -> Type & F A}"]
+
+  // This Library
+
+  node [style = solid]
+
+  HasActL [label = "\N\nact_l (x : A) (a : B) : B"]
+  HasActR [label = "\N\nact_r (a : B) (x : A) : B"]
   HasAdd [label = "\N\nadd (x y : A) : A"]
-  HasApartRel [label = "\N\napart_rel (x y : A) : Prop"]
+  HasApartRel [label = "\N\napart_rel (x y : A) : Prop", color = red]
   HasBinOp [label = "\N\nbin_op (x y : A) : A"]
+  HasNullRel [label = "\N\nnull_rel : Prop"]
+  HasUnRel [label = "\N\nun_rel (x : A) : Prop"]
   HasBinRel [label = "\N\nbin_rel (x y : A) : Prop"]
   HasCompHom [label = "\N\ncomp_hom (x y z : A) (a : y --> z) (b : x --> y) : x --> z"]
-  HasDec [label = "\N\ndecide : bool"]
-  HasDist [label = "\N\ndist (x y : B) : A"]
-  HasEqRel [label = "\N\neq_rel (x y : A) : Prop"]
+  HasDec [label = "\N\ndecide : bool", color = red]
+  HasDist [label = "\N\ndist (a b : B) : A"]
+  HasEqRel [label = "\N\neq_rel (x y : A) : Prop", color = red]
+  HasForm [label = "\N\nform (a b : B) : A"]
+  HasHom [label = "\N\nhom (x y : A) : Prop"]
   HasIdHom [label = "\N\nid_hom (x : A) : x --> x"]
   HasInvHom [label = "\N\ninv_hom (x y : A) (a : x --> y) : y --> x"]
-  HasHom [label = "\N\nhom (x y : A) : Prop"]
   HasMul [label = "\N\nmul (x y : A) : A"]
   HasNeg [label = "\N\nneg (x : A) : A"]
   HasNullOp [label = "\N\nnull_op : A"]
   HasOne [label = "\N\none : A"]
-  HasOrdRel [label = "\N\nord_rel (x y : A) : Prop"]
-  HasStrOrdRel [label = "\N\nstr_ord_rel (x y : A) : Prop"]
+  HasOrdRel [label = "\N\nord_rel (x y : A) : Prop", color = red]
   HasRecip [label = "\N\nrecip (x : A) : A"]
-  HasSMulL [label = "\N\ns_mul_l (a : A) (x : B) : B"]
-  HasSMulR [label = "\N\ns_mul_r (x : B) (a : A) : B"]
-  HasTor [label = "\N\ntor (x y : B) : A"]
-  HasTorL [label = "\N\ntor_l (x y : B) : A"]
-  HasTorR [label = "\N\ntor_r (x y : B) : A"]
+  HasSMulL [label = "\N\ns_mul_l (x : A) (a : B) : B"]
+  HasSMulR [label = "\N\ns_mul_r (a : B) (x : A) : B"]
+  HasStrOrdRel [label = "\N\nstr_ord_rel (x y : A) : Prop", color = red]
   HasUnOp [label = "\N\nun_op (x : A) : A"]
-  HasUnsquash [label = "\N\nunsquash (x : Squash A) : A"]
+  HasUnsquash [label = "\N\nunsquash (x : Squash A) : A", color = red]
   HasZero [label = "\N\nzero : A"]
 
-  // Superclasses and Substructures
+  // Other Libraries
+
+  node [style = dashed]
+
+  // Superclasses and Constraints
 
   edge [style = solid]
 
@@ -48,16 +59,22 @@ digraph Has {
 
   edge [style = dashed]
 
+  HasBinOp -> HasOp
+  HasBinRel -> HasRel
+  HasNullOp -> HasOp
+  HasNullRel -> HasRel
+  HasUnOp -> HasOp
+  HasUnRel -> HasRel
+
   // This Library
 
   HasActL -> HasBinOp
   HasActR -> HasBinOp
   HasAdd -> HasBinOp
   HasApartRel -> HasBinRel
-  HasDist -> HasTor
-  HasDist -> HasTorL
-  HasDist -> HasTorR
+  HasDist -> HasForm
   HasEqRel -> HasBinRel
+  HasForm -> HasBinOp
   HasHom -> HasBinRel
   HasMul -> HasBinOp
   HasNeg -> HasUnOp
@@ -67,9 +84,6 @@ digraph Has {
   HasSMulL -> HasActL
   HasSMulR -> HasActR
   HasStrOrdRel -> HasBinRel
-  HasTor -> HasBinOp
-  HasTorL -> HasBinOp
-  HasTorR -> HasBinOp
   HasZero -> HasNullOp
 
   // Other Libraries

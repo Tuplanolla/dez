@@ -1,3 +1,4 @@
+(* maybe *)
 (** * Decidability and Decidable Equality *)
 
 From DEZ Require Export
@@ -5,7 +6,7 @@ From DEZ Require Export
 
 Class HasDec (A : Prop) : Type := dec : {A} + {~ A}.
 
-Typeclasses Transparent HasDec.
+#[export] Typeclasses Transparent HasDec.
 
 (** The [decide] tactic should have a form
     that accepts a disjunctive pattern with two branches. *)
@@ -18,7 +19,7 @@ Notation HasEqDec := EqDec.
 
 Arguments eq_dec {_ _} _ _.
 
-Typeclasses Transparent EqDec.
+#[export] Typeclasses Transparent EqDec.
 
 (** We need some instances to bridge the gap
     between our definition, the standard library and the equations plugin.

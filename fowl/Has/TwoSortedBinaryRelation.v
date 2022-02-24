@@ -1,3 +1,4 @@
+(* maybe *)
 From DEZ Require Export
   Init.
 
@@ -5,4 +6,4 @@ From DEZ Require Export
 
 Class HasTwoBinRel (A B : Type) : Type := two_bin_rel : A -> B -> Prop.
 
-Typeclasses Transparent HasTwoBinRel.
+#[export] Typeclasses Transparent HasTwoBinRel.

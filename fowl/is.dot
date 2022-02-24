@@ -91,7 +91,7 @@ digraph Is {
   IsUnlBinOpR [label = "\N\nunl_bin_op_r (x : A) : x * 1 = x"]
   IsUpperBnd [label = "\N\nupper_bnd (y : A) : y <= x"]
 
-  // Superclasses and Substructures
+  // Superclasses and Fields
 
   edge [style = solid]
 

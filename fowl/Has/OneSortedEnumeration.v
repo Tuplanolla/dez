@@ -1,3 +1,4 @@
+(* maybe *)
 From DEZ Require Export
   Init.
 
@@ -6,4 +7,4 @@ From DEZ Require Export
 
 Class HasEnum (A : Type) : Type := enum : list A.
 
-Typeclasses Transparent HasEnum.
+#[export] Typeclasses Transparent HasEnum.

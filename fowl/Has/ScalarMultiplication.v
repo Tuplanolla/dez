@@ -1,3 +1,4 @@
+(* maybe *)
 (** * Scalar Multiplication *)
 
 From DEZ.Has Require Export
@@ -6,7 +7,7 @@ From DEZ.Has Require Export
 Class HasSMulL (A B : Type) : Type := s_mul_l (a : A) (x : B) : B.
 Class HasSMulR (A B : Type) : Type := s_mul_r (x : B) (a : A) : B.
 
-Typeclasses Transparent HasSMulL HasSMulR.
+#[export] Typeclasses Transparent HasSMulL HasSMulR.
 
 Module Subclass.
 
