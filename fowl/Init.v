@@ -7,7 +7,7 @@
     to use strict propositions without ceremony,
     export [Basics], [Tactics] and [Relations]
     to make their utility functions available everywhere,
-    export [Morphisms], [DecidableClass] and [RelationClasses]
+    export [Morphisms], [DecidableClass], [EquivDec] and [RelationClasses]
     to build a symbiotic relationship with the standard library,
     import [PArith], [NArith], [ZArith], [QArith],
     [Reals], [Int31] and [Int63] in order
@@ -26,7 +26,8 @@ From Coq Require Export
 From Coq Require Export
   Program.Basics Program.Tactics Relations.Relations.
 From Coq Require Export
-  Classes.Morphisms Classes.DecidableClass Classes.RelationClasses.
+  Classes.Morphisms Classes.DecidableClass Classes.EquivDec
+  Classes.RelationClasses.
 From Coq Require Import
   PArith.PArith NArith.NArith ZArith.ZArith QArith.QArith QArith.Qcanon
   Reals.Reals Numbers.Cyclic.Int31.Int31 Numbers.Cyclic.Int63.Int63.

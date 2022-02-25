@@ -1,7 +1,9 @@
 (** * Symmetry *)
 
-From DEZ.Is Require Export
-  Commutative.
+(* From DEZ.Is Require Export
+  Commutative. *)
+From DEZ Require Export
+  Init.
 
 (** ** Symmetric Binary Relation *)
 
@@ -13,7 +15,9 @@ Arguments symmetry {_ _ _} _ _ _.
 Notation IsSym := Symmetric.
 Notation sym := symmetry.
 
-Section Context.
+(** TODO Reinstate this. *)
+
+(* Section Context.
 
 Context (A : Type) (X : A -> A -> Prop).
 
@@ -25,4 +29,4 @@ Proof. intros x y. exact (comm x y). Qed.
 #[local] Instance is_comm `{!IsSym X} : IsComm impl X.
 Proof. intros x y. exact (sym x y). Qed.
 
-End Context.
+End Context. *)
