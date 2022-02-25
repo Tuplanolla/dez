@@ -4,9 +4,9 @@ From DEZ.Has Require Export
   NullaryOperation BinaryOperation Action.
 From DEZ.Is Require Export
   Monoid.
-From DEZ.Offers Require Export
+From DEZ.Provides Require Export
   OneSortedPositiveOperations.
-From DEZ.ShouldOffer Require Import
+From DEZ.Supports Require Import
   OneSortedAdditivePositiveOperationNotations.
 
 Section Context.

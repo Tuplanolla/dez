@@ -4,7 +4,7 @@ From DEZ.Has Require Export
   EquivalenceRelation Zero Addition One Multiplication.
 From DEZ.Is Require Export
   Monoid Commutative Distributive Absorbing Truncated.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   EquivalenceNotations ArithmeticNotations.
 
 (** ** Semiring *)

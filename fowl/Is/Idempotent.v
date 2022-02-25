@@ -4,7 +4,7 @@ From DEZ.Has Require Export
   BinaryOperation.
 From DEZ.Is Require Export
   Extensional.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   MultiplicativeNotations.
 
 Class IsIdemElem (A : Type) (x : A) (Hk : HasBinOp A) : Prop :=

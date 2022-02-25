@@ -1,6 +1,6 @@
 From DEZ.Has Require Export
   UnaryOperation Action.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   OneSortedAdditiveNotations TwoSortedMultiplicativeNotations.
 
 Local Open Scope grp_scope.

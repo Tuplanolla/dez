@@ -3,7 +3,7 @@ From DEZ.Has Require Export
   InverseMorphism.
 From DEZ.Is Require Export
   CategoricalCategory CategoricalInvertible CategoricalInvolutive.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   CategoricalNotations.
 
 Class IsGrpd (A : Type)

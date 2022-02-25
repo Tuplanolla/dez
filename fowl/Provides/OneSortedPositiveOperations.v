@@ -4,7 +4,7 @@ From DEZ.Has Require Export
   Action.
 From DEZ.Is Require Export
   Semigroup.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   OneSortedAdditiveNotations.
 
 Section Context.

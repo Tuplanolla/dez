@@ -2,7 +2,7 @@
 
 From DEZ.Has Require Export
   OrderRelations BinaryOperation.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   OrderRelationNotations AdditiveNotations.
 
 Class IsInfl (A : Type) (HR : HasOrdRel A) (f : A -> A) : Prop :=

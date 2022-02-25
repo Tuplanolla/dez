@@ -2,7 +2,7 @@
 
 From DEZ.Has Require Export
   Distance OrderRelations.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   OrderRelationNotations.
 
 (** ** Expansive Function *)

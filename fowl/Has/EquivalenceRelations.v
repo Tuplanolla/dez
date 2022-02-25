@@ -17,8 +17,8 @@ Context (A : Type).
 
 (** Equivalence relation is a binary relation. *)
 
-#[export] Instance equiv_rel_has_bin_rel {X : HasEquivRel A} : HasBinRel A :=
-  equiv_rel.
+#[export] Instance equiv_rel_has_bin_rel
+  {X : HasEquivRel A} : HasBinRel A := equiv_rel.
 
 End Context.
 

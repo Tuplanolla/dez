@@ -1,6 +1,6 @@
-From DEZ.Offers Require Import
+From DEZ.Provides Require Import
   OneSortedNaturalOperations.
-From DEZ.ShouldHave Require Export
+From DEZ.Supports Require Export
   OneSortedMultiplicativeNotations.
 
 Notation "x '^' n" := (nat_op null_op bin_op n x) : nat_scope.

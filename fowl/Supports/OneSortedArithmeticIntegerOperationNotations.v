@@ -1,8 +1,8 @@
 From DEZ.Has Require Import
   Addition Zero Negation Multiplication One Reciprocation.
-From DEZ.Offers Require Import
+From DEZ.Provides Require Import
   OneSortedIntegerOperations.
-From DEZ.ShouldHave Require Export
+From DEZ.Supports Require Export
   OneSortedArithmeticNotations.
 
 Notation "'_*_'" := (z_op add zero neg) : Z_scope.

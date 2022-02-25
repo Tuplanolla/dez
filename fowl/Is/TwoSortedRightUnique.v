@@ -1,7 +1,7 @@
 (* bad *)
 From DEZ.Has Require Export
   Action Torsion.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   TwoSortedAdditiveNotations.
 
 Local Open Scope r_mod_scope.

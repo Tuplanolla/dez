@@ -2,7 +2,7 @@
 
 From DEZ.Has Require Export
   OrderRelations BinaryOperation.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   OrderRelationNotations AdditiveNotations.
 
 Class IsDeflGen (A B : Type) (X : B -> A -> Prop) (f : A -> B) : Prop :=

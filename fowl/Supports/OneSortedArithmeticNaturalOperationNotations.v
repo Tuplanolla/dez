@@ -1,8 +1,8 @@
 From DEZ.Has Require Import
   Addition Zero Multiplication One.
-From DEZ.Offers Require Import
+From DEZ.Provides Require Import
   OneSortedNaturalOperations.
-From DEZ.ShouldHave Require Export
+From DEZ.Supports Require Export
   OneSortedArithmeticNotations.
 
 Notation "'_*_'" := (nat_op zero add) : nat_scope.

@@ -6,7 +6,7 @@ From DEZ.Has Require Export
   NullaryOperation BinaryOperation.
 From DEZ.Is Require Export
   Injective.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   AdditiveNotations.
 
 Class IsCancelL (A : Type) (X : A -> A -> Prop) (Hk : HasBinOp A) : Prop :=

@@ -3,7 +3,7 @@ From DEZ.Has Require Export
   Negation Multiplication.
 From DEZ.Is Require Export
   TwoSortedLeftBinaryCommutative.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   OneSortedArithmeticNotations.
 
 Class IsLBinComm (A : Type) `(HasNeg A) `(HasMul A) : Prop :=

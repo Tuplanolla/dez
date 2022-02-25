@@ -2,7 +2,7 @@
 
 From DEZ.Has Require Import
   CategoricalOperations.
-From DEZ.ShouldHave Require Export
+From DEZ.Supports Require Export
   CategoricalRelationNotations.
 
 Notation "'id'" := (id_hom _) : category_scope.

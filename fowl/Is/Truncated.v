@@ -6,7 +6,7 @@ From DEZ.Has Require Export
   Decisions.
 From DEZ.Is Require Export
   Reflexive Symmetric Transitive Equivalence Extensional.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   EquivalenceNotations.
 
 #[local] Unset Universe Minimization ToSet.

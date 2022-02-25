@@ -8,7 +8,7 @@ From DEZ.Is Require Export
   Group Truncated.
 From DEZ.Provides Require Export
   BooleanTheorems (* ListTheorems *) ProductTheorems UnitTheorems ZTheorems.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   EquivalenceNotations AdditiveNotations.
 
 #[local] Instance list_has_null_op (A : Type) : HasNullOp (list A) := nil.

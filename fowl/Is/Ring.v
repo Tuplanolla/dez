@@ -9,7 +9,7 @@ From DEZ.Is Require Export
   Cancellative Absorbing OneSortedSignedAbsorbing OneSortedBinaryCommutative
   OneSortedBinaryCrossing OneSortedBinarySplitCancellative
   Semiring Unital.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   EquivalenceNotations AdditiveNotations ArithmeticNotations.
 
 (** ** Ring *)

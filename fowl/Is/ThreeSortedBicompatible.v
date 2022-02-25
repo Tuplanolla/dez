@@ -1,6 +1,6 @@
 From DEZ.Has Require Export
   Action.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   TwoSortedMultiplicativeNotations.
 
 Class IsBicompat (A B C : Type)

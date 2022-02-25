@@ -1,7 +1,7 @@
 (* bad *)
 From DEZ.Has Require Export
   BinaryOperation Action.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   TwoSortedMultiplicativeNotations.
 
 Local Open Scope r_mod_scope.

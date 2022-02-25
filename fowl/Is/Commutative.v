@@ -4,7 +4,7 @@ From Coq Require Import
   Logic.FunctionalExtensionality.
 From DEZ.Has Require Export
   UnaryOperation BinaryOperation Torsion.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   MultiplicativeNotations.
 
 Class IsWhatCommL (Z A V Z' A' W : Type) (X : W -> A' -> Prop)

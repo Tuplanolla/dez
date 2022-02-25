@@ -2,7 +2,7 @@
 
 From DEZ.Has Require Export
   BinaryOperation Addition Multiplication.
-From DEZ.ShouldHave Require
+From DEZ.Supports Require
   AdditiveNotations ArithmeticNotations.
 
 Class IsDistr7 (A0 A1 B0 B1 B2 C0 C1 : Type) (X : C0 -> C1 -> Prop)

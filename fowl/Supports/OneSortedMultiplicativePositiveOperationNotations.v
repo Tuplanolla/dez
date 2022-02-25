@@ -1,6 +1,6 @@
-From DEZ.Offers Require Import
+From DEZ.Provides Require Import
   OneSortedPositiveOperations.
-From DEZ.ShouldHave Require Export
+From DEZ.Supports Require Export
   OneSortedMultiplicativeNotations.
 
 Notation "'_^_'" := (positive_op bin_op) : positive_scope.

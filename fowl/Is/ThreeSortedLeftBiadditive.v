@@ -1,7 +1,7 @@
 (* bad *)
 From DEZ.Has Require Export
   Addition ThreeSortedBinaryFunction.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   OneSortedArithmeticNotations.
 
 Class IsLBiaddve (A B C : Type)

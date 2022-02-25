@@ -1,7 +1,7 @@
 (* bad *)
 From DEZ.Has Require Export
   Addition.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   OneSortedArithmeticNotations.
 
 Class IsAddve (A B : Type)

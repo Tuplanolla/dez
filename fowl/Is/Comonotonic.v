@@ -2,7 +2,7 @@
 
 From DEZ.Has Require Export
   OrderRelations.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   OrderRelationNotations.
 
 Class IsComono (A B : Type)

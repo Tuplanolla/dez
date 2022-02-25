@@ -1,7 +1,7 @@
 (* bad *)
 From DEZ.Has Require Export
   Negation Multiplication.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   OneSortedArithmeticNotations.
 
 Class IsBinSptCancel (A : Type)

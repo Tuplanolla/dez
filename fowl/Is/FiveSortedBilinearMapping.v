@@ -45,7 +45,7 @@ From DEZ.Is Require Export
   TwoSortedUnital Isomorphism
   TwoSortedLeftDistributive ThreeSortedBicompatible
   Ring.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   OneSortedArithmeticNotations TwoSortedMultiplicativeNotations.
 
 Section Context.

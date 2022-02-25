@@ -1,6 +1,6 @@
 From DEZ.Has Require Export
   Morphism ComposedMorphism IdentityMorphism.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   CategoricalNotations.
 
 Class IsCatUnlL (A : Type) `(HasHom A) `(!HasCompHom hom) `(!HasIdHom hom) : Prop :=

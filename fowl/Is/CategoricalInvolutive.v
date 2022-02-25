@@ -1,6 +1,6 @@
 From DEZ.Has Require Export
   Morphism InverseMorphism.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   CategoricalNotations.
 
 Class IsCatInvol (A : Type) `(HasHom A) `(!HasInvHom hom) : Prop :=

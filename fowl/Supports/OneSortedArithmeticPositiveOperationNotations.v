@@ -1,8 +1,8 @@
 From DEZ.Has Require Import
   Addition Multiplication.
-From DEZ.Offers Require Import
+From DEZ.Provides Require Import
   OneSortedPositiveOperations.
-From DEZ.ShouldHave Require Export
+From DEZ.Supports Require Export
   OneSortedArithmeticNotations.
 
 Notation "'_*_'" := (positive_op add) : positive_scope.

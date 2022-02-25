@@ -2,7 +2,7 @@
 
 From DEZ.Has Require Export
   CategoricalRelations.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   CategoricalRelationNotations.
 
 (** ** Identity Morphism *)

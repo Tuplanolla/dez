@@ -1,7 +1,7 @@
 (* bad *)
 From DEZ.Has Require Export
   BinaryOperation UnaryOperation.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   OneSortedAdditiveNotations.
 
 Class IsUnAntidistr (A : Type)

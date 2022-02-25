@@ -2,7 +2,7 @@ From DEZ.Has Require Export
   BinaryOperation NullaryOperation.
 From DEZ.Is Require Export
   TwoSortedLeftUnital.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   OneSortedAdditiveNotations.
 
 (** Unital, having an identity element; left chirality. *)

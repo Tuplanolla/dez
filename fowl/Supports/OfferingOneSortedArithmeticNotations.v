@@ -1,6 +1,6 @@
-From DEZ.Offers Require Import
+From DEZ.Provides Require Import
   OneSortedArithmetic.
-From DEZ.ShouldHave Require Export
+From DEZ.Supports Require Export
   OneSortedArithmeticNotations.
 
 Notation "'_-_'" := (sub _ _) : ring_scope.

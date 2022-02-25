@@ -2,7 +2,7 @@
 
 From DEZ.Has Require Export
   OrderRelations BinaryOperation Distance.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   OrderRelationNotations AdditiveNotations.
 
 Class IsSubadd (A B : Type)

@@ -4,7 +4,7 @@ From DEZ.Has Require Export
   Decisions OrderRelations BinaryOperation.
 From DEZ.Is Require Export
   Preorder CoherentOrderRelations.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   OrderRelationNotations AdditiveNotations.
 
 Fail Fail Class IsMono (A B : Type)

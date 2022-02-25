@@ -4,7 +4,7 @@ From DEZ.Has Require Export
   NullaryOperation UnaryOperation BinaryOperation.
 From DEZ.Is Require Export
   Commutative Group Distributive.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   AdditiveNotations.
 
 (** ** Abelian Group *)

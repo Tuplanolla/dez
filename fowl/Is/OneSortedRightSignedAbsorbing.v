@@ -1,7 +1,7 @@
 (* bad *)
 From DEZ.Has Require Export
   Negation Multiplication One.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   OneSortedArithmeticNotations.
 
 Class IsRSgnAbsorb (A : Type)

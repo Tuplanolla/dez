@@ -531,7 +531,7 @@ Typeclasses Transparent HasCode.
 
 #[local] Hint Mode HasCode - - : typeclass_instances.
 
-(* Offers.TwoSorted.CodeMappings *)
+(* Provides.TwoSorted.CodeMappings *)
 
 Section Context.
 

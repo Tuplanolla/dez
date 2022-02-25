@@ -1,6 +1,6 @@
 From DEZ.Has Require Export
   Morphism IdentityMorphism InverseMorphism ComposedMorphism.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   CategoricalNotations.
 
 Class IsCatInvL (A : Type) (HC : HasHom A)

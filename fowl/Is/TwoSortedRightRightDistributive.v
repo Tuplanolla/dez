@@ -1,7 +1,7 @@
 (* bad *)
 From DEZ.Has Require Export
   Addition Action.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   OneSortedArithmeticNotations TwoSortedMultiplicativeNotations.
 
 Local Open Scope ring_scope.

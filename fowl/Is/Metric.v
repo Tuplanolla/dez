@@ -7,7 +7,7 @@ From DEZ.Has Require Export
 From DEZ.Is Require Export
   Indiscernible Subadditive
   TotalOrder Bounded Monoid Commutative Monotonic Inflationary.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   OrderRelationNotations AdditiveNotations.
 
 Module Real.

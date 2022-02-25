@@ -4,7 +4,7 @@ From DEZ.Has Require Export
   EquivalenceRelation OrderRelations.
 From DEZ.Is Require Export
   PartialOrder Connex Reflexive.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   EquivalenceNotations OrderRelationNotations.
 
 (** ** Total Order *)

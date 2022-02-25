@@ -2,7 +2,7 @@
 
 From DEZ.Has Require Export
   NullaryOperation Distance EquivalenceRelation.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   AdditiveNotations EquivalenceNotations.
 
 Class IsIndiscGen (A B C D E F : Type) (X : E -> F -> Prop)

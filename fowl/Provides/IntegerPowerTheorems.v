@@ -4,12 +4,12 @@ From Coq Require Import
 From DEZ.Is Require Export
   Semigroup Monoid Group
   TwoSortedLeftBinaryCommutative.
-From DEZ.Offers Require Export
+From DEZ.Provides Require Export
   OneSortedPositiveOperations OneSortedNaturalOperations
   OneSortedIntegerOperations.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   OneSortedAdditiveNotations.
-From DEZ.ShouldOffer Require Import
+From DEZ.Supports Require Import
   OneSortedAdditiveOperationNotations.
 
 Fact succ_xI (n : positive) :

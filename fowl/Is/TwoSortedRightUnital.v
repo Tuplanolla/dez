@@ -1,6 +1,6 @@
 From DEZ.Has Require Export
   Action NullaryOperation.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   AdditiveNotations.
 
 (** Unital; left chirality.

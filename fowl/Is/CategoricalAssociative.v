@@ -1,6 +1,6 @@
 From DEZ.Has Require Export
   Morphism ComposedMorphism.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   CategoricalNotations.
 
 Class IsCatAssoc (A : Type) `(HasHom A) `(!HasCompHom hom) : Prop :=

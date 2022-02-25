@@ -4,7 +4,7 @@ From DEZ.Has Require Export
   EquivalenceRelation OrderRelations.
 From DEZ.Is Require Export
   Equivalence Preorder Antisymmetric Proper.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   EquivalenceNotations OrderRelationNotations.
 
 #[local] Open Scope relation_scope.

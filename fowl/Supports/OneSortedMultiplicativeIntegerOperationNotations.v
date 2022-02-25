@@ -1,6 +1,6 @@
-From DEZ.Offers Require Import
+From DEZ.Provides Require Import
   OneSortedIntegerOperations.
-From DEZ.ShouldHave Require Export
+From DEZ.Supports Require Export
   OneSortedMultiplicativeNotations.
 
 Notation "'_^_'" := (z_op null_op un_op bin_op) : Z_scope.

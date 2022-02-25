@@ -2,7 +2,7 @@ From DEZ.Has Require Import
   Reciprocation.
 From DEZ.Is Require Import
   Ring.
-From DEZ.ShouldHave Require Import
+From DEZ.Supports Require Import
   OneSortedArithmeticNotations.
 
 Section Context.
