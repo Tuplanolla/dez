@@ -1,7 +1,7 @@
 (** * Categorical Relations *)
 
 From DEZ.Has Require Export
-  Relation.
+  Relations.
 
 (** ** Hom-Set *)
 (** ** Morphism *)
@@ -16,7 +16,7 @@ Section Context.
 
 Context (A : Type).
 
-(** A morphism is a binary relation between objects. *)
+(** A hom-set is a binary relation between objects. *)
 
 #[export] Instance hom_has_bin_rel {X : HasHom A} : HasBinRel A := hom.
 

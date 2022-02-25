@@ -1,4 +1,4 @@
-(** * Algebraic Operations *)
+(** * Operations *)
 
 From DEZ Require Export
   Init.

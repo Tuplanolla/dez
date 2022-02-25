@@ -4,6 +4,7 @@ digraph Has {
   node [fontname = monospace]
 
   HasOp [label = "\N\nop : {F : Type -> Type & F A}"]
+  HasProp [label = "\N\nprop : {F : Type -> Type & F A}"]
   HasRel [label = "\N\nrel : {F : Type -> Type & F A}"]
 
   // This Library
@@ -13,15 +14,14 @@ digraph Has {
   HasActL [label = "\N\nact_l (x : A) (a : B) : B"]
   HasActR [label = "\N\nact_r (a : B) (x : A) : B"]
   HasAdd [label = "\N\nadd (x y : A) : A"]
-  HasApartRel [label = "\N\napart_rel (x y : A) : Prop", color = red]
   HasBinOp [label = "\N\nbin_op (x y : A) : A"]
   HasNullRel [label = "\N\nnull_rel : Prop"]
   HasUnRel [label = "\N\nun_rel (x : A) : Prop"]
   HasBinRel [label = "\N\nbin_rel (x y : A) : Prop"]
   HasCompHom [label = "\N\ncomp_hom (x y z : A) (a : y --> z) (b : x --> y) : x --> z"]
-  HasDec [label = "\N\ndecide : bool", color = red]
+  HasDec [label = "\N\ndec : {A} + {~ A}"]
   HasDist [label = "\N\ndist (a b : B) : A"]
-  HasEqRel [label = "\N\neq_rel (x y : A) : Prop", color = red]
+  HasEquivRel [label = "\N\nequiv_rel (x y : A) : Prop"]
   HasForm [label = "\N\nform (a b : B) : A"]
   HasHom [label = "\N\nhom (x y : A) : Prop"]
   HasIdHom [label = "\N\nid_hom (x : A) : x --> x"]
@@ -30,13 +30,13 @@ digraph Has {
   HasNeg [label = "\N\nneg (x : A) : A"]
   HasNullOp [label = "\N\nnull_op : A"]
   HasOne [label = "\N\none : A"]
-  HasOrdRel [label = "\N\nord_rel (x y : A) : Prop", color = red]
+  HasOrdRel [label = "\N\nord_rel (x y : A) : Prop"]
   HasRecip [label = "\N\nrecip (x : A) : A"]
   HasSMulL [label = "\N\ns_mul_l (x : A) (a : B) : B"]
   HasSMulR [label = "\N\ns_mul_r (a : B) (x : A) : B"]
-  HasStrOrdRel [label = "\N\nstr_ord_rel (x y : A) : Prop", color = red]
+  HasStrOrdRel [label = "\N\nstr_ord_rel (x y : A) : Prop"]
   HasUnOp [label = "\N\nun_op (x : A) : A"]
-  HasUnsquash [label = "\N\nunsquash (x : Squash A) : A", color = red]
+  HasUnsquash [label = "\N\nunsquash (x : Squash A) : A"]
   HasZero [label = "\N\nzero : A"]
 
   // Other Libraries
@@ -65,15 +65,15 @@ digraph Has {
   HasNullRel -> HasRel
   HasUnOp -> HasOp
   HasUnRel -> HasRel
+  HasUnsquash -> HasProp
 
   // This Library
 
   HasActL -> HasBinOp
   HasActR -> HasBinOp
   HasAdd -> HasBinOp
-  HasApartRel -> HasBinRel
   HasDist -> HasForm
-  HasEqRel -> HasBinRel
+  HasEquivRel -> HasBinRel
   HasForm -> HasBinOp
   HasHom -> HasBinRel
   HasMul -> HasBinOp
@@ -85,6 +85,8 @@ digraph Has {
   HasSMulR -> HasActR
   HasStrOrdRel -> HasBinRel
   HasZero -> HasNullOp
+
+  HasDec -> HasUnsquash
 
   // Other Libraries
 }

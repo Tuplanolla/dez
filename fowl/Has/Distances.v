@@ -1,7 +1,7 @@
 (** * Measuring Distances *)
 
 From DEZ.Has Require Export
-  Form.
+  AlgebraicForms.
 
 (** ** Distance Function *)
 (** ** Metric *)

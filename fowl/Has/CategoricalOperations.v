@@ -1,7 +1,7 @@
 (** * Categorical Operations *)
 
 From DEZ.Has Require Export
-  CategoricalRelation.
+  CategoricalRelations.
 From DEZ.ShouldHave Require Import
   CategoricalRelationNotations.
 
@@ -19,7 +19,7 @@ Class HasInvHom (A : Type) {X : HasHom A} : Type :=
 
 #[export] Typeclasses Transparent HasInvHom.
 
-(** ** Composition of Morphisms *)
+(** ** Composed Morphism *)
 
 Class HasCompHom (A : Type) {X : HasHom A} : Type :=
   comp_hom (x y z : A) (a : y --> z) (b : x --> y) : x --> z.

@@ -10,8 +10,8 @@ Delimit Scope relation_scope with rel.
 
 #[global] Open Scope relation_scope.
 
-Notation "'_==_'" := eq_rel : relation_scope.
-Notation "x '==' y" := (eq_rel x y) : relation_scope.
+Notation "'_==_'" := equiv_rel : relation_scope.
+Notation "x '==' y" := (equiv_rel x y) : relation_scope.
 
 Notation "'id'" := refl : relation_scope.
 Notation "'_^-1'" := (sym _ _) : relation_scope.

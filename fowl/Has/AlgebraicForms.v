@@ -1,10 +1,10 @@
-(** * Algebraic Forms *)
+(** * Forms *)
 
 (** This concept appears in bilinear forms and metric spaces,
     but does not have a common name, so we call it a form. *)
 
 From DEZ.Has Require Export
-  Operation.
+  AlgebraicOperations.
 
 (** ** Form *)
 

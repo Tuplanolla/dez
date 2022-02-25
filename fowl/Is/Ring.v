@@ -35,7 +35,7 @@ Context (A : Type) (X : A -> A -> Prop)
 (** Declare the underlying equivalence relation as an equivalence relation and
     the underlying operations as operations. *)
 
-#[local] Instance has_eq_rel : HasEqRel A := X.
+#[local] Instance has_equiv_rel : HasEquivRel A := X.
 #[local] Instance has_zero : HasZero A := x.
 #[local] Instance has_neg : HasNeg A := f.
 #[local] Instance has_add : HasAdd A := k.
@@ -43,7 +43,7 @@ Context (A : Type) (X : A -> A -> Prop)
 #[local] Instance has_mul : HasMul A := m.
 
 Ltac note := progress (
-  try change X with eq_rel in *;
+  try change X with equiv_rel in *;
   try change x with zero in *;
   try change f with neg in *;
   try change k with add in *;
@@ -58,7 +58,7 @@ Import Zero.Subclass Negation.Subclass Addition.Subclass
   One.Subclass Multiplication.Subclass.
 
 Ltac subclass := progress (
-  try change bin_rel with eq_rel in *;
+  try change bin_rel with equiv_rel in *;
   try change null_op with zero in *;
   try change un_op with neg in *;
   try change bin_op with add in *;

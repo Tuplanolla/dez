@@ -529,7 +529,6 @@ Arguments ex {_} _.
 Arguments ex_intro {_} _ _ _.
 
 Declare Scope ex_scope.
-
 Bind Scope ex_scope with ex.
 
 Notation "'(_;_)'" := (ex_intro _) : ex_scope.
@@ -554,7 +553,6 @@ Arguments sig {_} _.
 Arguments exist {_} _ _ _.
 
 Declare Scope sig_scope.
-
 Bind Scope sig_scope with sig.
 
 Notation "'(_;_)'" := (exist _) : sig_scope.
@@ -584,7 +582,6 @@ Arguments sigT {_} _.
 Arguments existT {_} _ _ _.
 
 Declare Scope sigT_scope.
-
 Bind Scope sigT_scope with sigT.
 
 Notation "'(_;_)'" := (existT _) : sigT_scope.
@@ -614,7 +611,6 @@ Arguments Ssig {_} _.
 Arguments Sexists {_} _ _ _.
 
 Declare Scope Ssig_scope.
-
 Bind Scope Ssig_scope with Ssig.
 
 Notation "'(_;_)'" := (Sexists _) : Ssig_scope.

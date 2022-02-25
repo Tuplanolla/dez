@@ -19,7 +19,7 @@ Section Context.
 Context (A : Type) (X Y : A -> A -> Prop)
   `(!IsTotOrd X Y).
 
-#[local] Instance has_eq_rel : HasEqRel A := X.
+#[local] Instance has_equiv_rel : HasEquivRel A := X.
 #[local] Instance has_ord_rel : HasOrdRel A := Y.
 
 Ltac note := progress (

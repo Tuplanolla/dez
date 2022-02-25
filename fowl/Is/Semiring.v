@@ -24,14 +24,14 @@ Context (A : Type) (X : A -> A -> Prop)
   (x : A) (k : A -> A -> A) (y : A) (m : A -> A -> A)
   `(!IsSemiring X x k y m).
 
-#[local] Instance has_eq_rel : HasEqRel A := X.
+#[local] Instance has_equiv_rel : HasEquivRel A := X.
 #[local] Instance has_zero : HasZero A := x.
 #[local] Instance has_add : HasAdd A := k.
 #[local] Instance has_one : HasOne A := y.
 #[local] Instance has_mul : HasMul A := m.
 
 Ltac note := progress (
-  try change X with eq_rel in *;
+  try change X with equiv_rel in *;
   try change x with zero in *;
   try change k with add in *;
   try change y with one in *;
@@ -43,7 +43,7 @@ Import Zero.Subclass Negation.Subclass Addition.Subclass
   One.Subclass Multiplication.Subclass.
 
 Ltac subclass := progress (
-  try change bin_rel with eq_rel in *;
+  try change bin_rel with equiv_rel in *;
   try change null_op with zero in *;
   try change bin_op with add in *;
   try change null_op with one in *;

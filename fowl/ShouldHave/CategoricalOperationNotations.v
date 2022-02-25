@@ -1,7 +1,7 @@
 (** * Notations for Categorical Operations *)
 
 From DEZ.Has Require Import
-  CategoricalOperation.
+  CategoricalOperations.
 From DEZ.ShouldHave Require Export
   CategoricalRelationNotations.
 

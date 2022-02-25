@@ -11,7 +11,7 @@ Ltac ecrush :=
   hnf in *; eauto with zarith.
 
 #[local] Instance has_eq_dec : HasEqDec Z := Z.eq_dec.
-#[local] Instance has_eq_rel : HasEqRel Z := eq.
+#[local] Instance has_equiv_rel : HasEquivRel Z := eq.
 
 Module Additive.
 
@@ -58,7 +58,7 @@ Proof. ecrush. Qed.
 
 End Additive.
 
-#[export] Hint Resolve has_eq_rel : typeclass_instances.
+#[export] Hint Resolve has_equiv_rel : typeclass_instances.
 
 (* Module Multiplicative.
 
@@ -129,7 +129,7 @@ Proof. ecrush. Qed.
 
 (** TODO Organize the rest. *)
 
-Global Instance has_eq_rel : HasEqRel Z := Z.eq.
+Global Instance has_equiv_rel : HasEquivRel Z := Z.eq.
 
 Global Instance Z_eq_is_refl : IsRefl Z.eq.
 Proof. ecrush. Qed.

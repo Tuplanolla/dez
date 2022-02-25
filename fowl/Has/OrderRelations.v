@@ -1,13 +1,19 @@
-(* maybe *)
-(** * Order Relation and Strict Order Relation *)
+(** * Orders *)
 
 From DEZ.Has Require Export
-  Relation.
+  Relations.
+
+(** ** Order Relation *)
 
 Class HasOrdRel (A : Type) : Type := ord_rel (x y : A) : Prop.
+
+#[export] Typeclasses Transparent HasOrdRel.
+
+(** ** Strict Order Relation *)
+
 Class HasStrOrdRel (A : Type) : Type := str_ord_rel (x y : A) : Prop.
 
-#[export] Typeclasses Transparent HasOrdRel HasStrOrdRel.
+#[export] Typeclasses Transparent HasStrOrdRel.
 
 Module Subclass.
 
@@ -15,16 +21,16 @@ Section Context.
 
 Context (A : Type).
 
-(** Order relations are binary relations. *)
+(** An order relation is a binary relation. *)
 
-#[local] Instance has_bin_rel
-  (HR : HasOrdRel A) : HasBinRel A := ord_rel.
+#[export] Instance ord_rel_has_bin_rel {X : HasOrdRel A} :
+  HasBinRel A := ord_rel.
 
-#[local] Instance str_has_bin_rel
-  (HR : HasStrOrdRel A) : HasBinRel A := str_ord_rel.
+(** A strict order relation is a binary relation. *)
+
+#[export] Instance str_ord_rel_has_bin_rel {X : HasStrOrdRel A} :
+  HasBinRel A := str_ord_rel.
 
 End Context.
-
-#[export] Hint Resolve has_bin_rel str_has_bin_rel : typeclass_instances.
 
 End Subclass.

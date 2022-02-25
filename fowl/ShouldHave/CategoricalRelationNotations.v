@@ -1,7 +1,7 @@
 (** * Notations for Categorical Relations *)
 
 From DEZ.Has Require Export
-  CategoricalRelation.
+  CategoricalRelations.
 
 Declare Scope category_scope.
 Delimit Scope category_scope with cat.

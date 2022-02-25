@@ -308,7 +308,7 @@ Next Obligation.
   cbn [length]. replace (1 - length (p0 :: v)) with O by reflexivity.
   rewrite skipn_O. Admitted.
 
-#[local] Instance has_eq_rel : HasEqRel free := eq.
+#[local] Instance has_equiv_rel : HasEquivRel free := eq.
 #[local] Instance has_null_op : HasNullOp free := null.
 #[local] Instance has_un_op : HasUnOp free := un.
 #[local] Instance has_bin_op : HasBinOp free := bin.
@@ -336,7 +336,7 @@ End Context.
 
 Arguments free _ {_}.
 
-#[export] Hint Resolve has_eq_rel
+#[export] Hint Resolve has_equiv_rel
   has_null_op has_un_op has_bin_op is_grp : typeclass_instances.
 
 Section Context.

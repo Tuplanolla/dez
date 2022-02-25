@@ -23,13 +23,13 @@ Context (A : Type) (X : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A)
   `{!IsGrp X x f k}.
 
-#[local] Instance has_eq_rel : HasEqRel A := X.
+#[local] Instance has_equiv_rel : HasEquivRel A := X.
 #[local] Instance has_null_op : HasNullOp A := x.
 #[local] Instance has_un_op : HasUnOp A := f.
 #[local] Instance has_bin_op : HasBinOp A := k.
 
 Ltac note := progress (
-  try change X with (eq_rel (A := A)) in *;
+  try change X with (equiv_rel (A := A)) in *;
   try change x with (null_op (A := A)) in *;
   try change f with (un_op (A := A)) in *;
   try change k with (bin_op (A := A)) in *).
@@ -118,7 +118,7 @@ From Coq Require Import
 Section Context.
 
 Context (A : Type)
-  {X : HasEqRel A} {x : HasNullOp A} {f : HasUnOp A} {k : HasBinOp A}
+  {X : HasEquivRel A} {x : HasNullOp A} {f : HasUnOp A} {k : HasBinOp A}
   `{!IsGrp X x f k}.
 
 Equations rep (n : Z) (y : A) : A :=
@@ -147,21 +147,21 @@ Context (A B : Type)
   (Y : B -> B -> Prop) (y : B) (g : B -> B) (m : B -> B -> B)
   (h : A -> B) `{!IsGrpHom X x f k Y y g m h}.
 
-#[local] Instance dom_has_eq_rel : HasEqRel A := X.
+#[local] Instance dom_has_equiv_rel : HasEquivRel A := X.
 #[local] Instance dom_has_null_op : HasNullOp A := x.
 #[local] Instance dom_has_un_op : HasUnOp A := f.
 #[local] Instance dom_has_bin_op : HasBinOp A := k.
-#[local] Instance codom_has_eq_rel : HasEqRel B := Y.
+#[local] Instance codom_has_equiv_rel : HasEquivRel B := Y.
 #[local] Instance codom_has_null_op : HasNullOp B := y.
 #[local] Instance codom_has_un_op : HasUnOp B := g.
 #[local] Instance codom_has_bin_op : HasBinOp B := m.
 
 Ltac note := progress (
-  try change X with (eq_rel (A := A)) in *;
+  try change X with (equiv_rel (A := A)) in *;
   try change x with (null_op (A := A)) in *;
   try change f with (un_op (A := A)) in *;
   try change k with (bin_op (A := A)) in *;
-  try change Y with (eq_rel (A := B)) in *;
+  try change Y with (equiv_rel (A := B)) in *;
   try change y with (null_op (A := B)) in *;
   try change g with (un_op (A := B)) in *;
   try change m with (bin_op (A := B)) in *).
