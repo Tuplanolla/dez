@@ -19,7 +19,7 @@ From DEZ.Supports Require Import
 Fail Fail Notation IsPartOrd := PartialOrder.
 
 Class IsPartOrd (A : Type) (X Y : A -> A -> Prop) : Prop := {
-  is_eq :> IsEq X;
+  is_eq :> IsEquiv X;
   is_preord :> IsPreord Y;
   is_antisym :> IsAntisym X Y;
   is_proper :> IsProper (X ==> X ==> _<->_) Y;
@@ -29,7 +29,7 @@ Class IsPartOrd (A : Type) (X Y : A -> A -> Prop) : Prop := {
 
 Section Context.
 
-Context (A : Type) (X Y : A -> A -> Prop) `{!IsEq X}.
+Context (A : Type) (X Y : A -> A -> Prop) `{!IsEquiv X}.
 
 #[local] Instance has_equiv_rel : HasEquivRel A := X.
 #[local] Instance has_ord_rel : HasOrdRel A := Y.

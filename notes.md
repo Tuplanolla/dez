@@ -58,6 +58,31 @@ Class HasIdHom' (A : Type) (X : A -> A -> Prop) : Type :=
   id_hom' (x : A) : X x x.
 ```
 
+Naming conventions for instances go like this.
+
+```
+Instance X_has_Y {x : HasX A} : HasY A.
+Instance Y_has_X {y : HasY A} : HasX A.
+
+Instance X_Y {x : HasX A} : Y.
+Instance Y_has_X {y : Y} : HasX A.
+
+Instance X_has_Y {x : X} : HasY A.
+Instance Y_X {y : HasY A} : X.
+
+Instance X_has_Y_G {x : HasX A} : HasY (G A).
+Instance Y_G_has_X {y : HasY (G A)} : HasX A.
+
+Instance X_F_has_Y {x : HasX (F A)} : HasY A.
+Instance Y_has_X_F {y : HasY A} : HasX (F A).
+
+Instance F_has_Y (a : F A) : HasY A.
+Instance has_X_F : HasX (F A).
+
+Definition X_G {x : HasX A} : G A.
+Definition Y_G {y : HasY (G A)} : A.
+```
+
 ### Coherence Conditions
 
 When defining operational classes or their instances,

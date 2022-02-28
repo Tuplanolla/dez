@@ -7,7 +7,7 @@ From DEZ.Is Require Export
 
 Class IsSemigrp (A : Type) (X : A -> A -> Prop) (k : A -> A -> A) : Prop := {
   (* is_set :> IsSet A; *)
-  is_eq :> IsEq X;
+  is_eq :> IsEquiv X;
   is_assoc :> IsAssoc X k;
   is_proper :> IsProper (X ==> X ==> X) k;
 }.

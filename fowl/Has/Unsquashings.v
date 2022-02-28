@@ -24,51 +24,54 @@ Proof.
 
 (** Unconstrucible types can be unsquashed. *)
 
-#[local] Instance notT_type_has_unsquash (A : Type)
+#[export] Instance notT_has_unsquash (A : Type)
   (f : - A) : HasUnsquash A.
 Proof.
-  intros xs. enough sEmpty by contradiction. induction xs as [x].
-  contradiction. Qed.
+  intros xs.
+  enough sEmpty by contradiction. induction xs as [x].
+  contradiction. Defined.
 
 (** Contradictory propositions can be unsquashed. *)
 
-#[export] Instance not_prop_has_unsquash (A : Prop)
+#[export] Instance not_has_unsquash (A : Prop)
   (f : ~ A) : HasUnsquash A.
-Proof. apply notT_type_has_unsquash. auto. Qed.
+Proof. apply notT_has_unsquash. auto. Defined.
 
 (** Uninhabited types can be unsquashed. *)
 
 #[export] Instance not_inhabited_has_unsquash (A : Type)
   (f : ~ inhabited A) : HasUnsquash A.
-Proof. apply notT_type_has_unsquash. apply iff_notT_not_inhabited. auto. Qed.
+Proof. apply notT_has_unsquash. apply iff_notT_not_inhabited. auto. Defined.
 
 (** The empty set can be unsquashed. *)
 
-#[export] Instance Empty_set_has_unsquash : HasUnsquash Empty_set.
-Proof. apply notT_type_has_unsquash. apply notT_Empty_set. Qed.
+#[export] Instance has_unsquash_Empty_set : HasUnsquash Empty_set.
+Proof. apply notT_has_unsquash. apply notT_Empty_set. Defined.
 
 (** The false proposition can be unsquashed. *)
 
-#[export] Instance False_has_unsquash : HasUnsquash False.
-Proof. apply notT_type_has_unsquash. apply not_False. Qed.
+#[export] Instance has_unsquash_False : HasUnsquash 0.
+Proof. apply notT_has_unsquash. apply not_False. Defined.
 
 (** Dependent functions with unsquashable codomains can be unsquashed. *)
 
-#[export] Instance forall_has_unsquash (A : Type) (P : A -> Type)
+#[export] Instance has_unsquash_forall (A : Type) (P : A -> Type)
   {u : forall x : A, HasUnsquash (P x)} : HasUnsquash (forall x : A, P x).
 Proof.
-  intros fs x. apply unsquash. induction fs as [f]. apply squash. auto. Qed.
+  intros fs x.
+  apply unsquash. induction fs as [f]. apply squash.
+  auto. Defined.
 
 (** Functions with unsquashable codomains can be unsquashed. *)
 
-#[local] Instance fun_has_unsquash (A B : Type)
+#[local] Instance has_unsquash_fun (A B : Type)
   {u : HasUnsquash B} : HasUnsquash (A -> B).
-Proof. apply forall_has_unsquash. Qed.
+Proof. apply has_unsquash_forall. Defined.
 
 (** Negations can be unsquashed. *)
 
-#[local] Instance not_has_unsquash (A : Prop) : HasUnsquash (~ A).
-Proof. apply forall_has_unsquash. Qed.
+#[local] Instance has_unsquash_not (A : Prop) : HasUnsquash (~ A).
+Proof. apply has_unsquash_forall. Defined.
 
 (** Decidable propositions can be unsquashed. *)
 
@@ -77,6 +80,6 @@ Proof. apply forall_has_unsquash. Qed.
 Proof.
   intros xs. decide A as [x | f].
   - auto.
-  - apply notT_type_has_unsquash.
+  - apply notT_has_unsquash.
     + auto.
-    + auto. Qed.
+    + auto. Defined.

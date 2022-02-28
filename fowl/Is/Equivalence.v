@@ -5,10 +5,10 @@ From DEZ.Is Require Export
 
 (** ** Equivalence *)
 
-Fail Fail Class IsEq (A : Type) (X : A -> A -> Prop) : Prop := {
+Fail Fail Class IsEquiv (A : Type) (X : A -> A -> Prop) : Prop := {
   is_refl :> IsRefl X;
   is_sym :> IsSym X;
   is_trans :> IsTrans X;
 }.
 
-Notation IsEq := Equivalence.
+Notation IsEquiv := Equivalence.

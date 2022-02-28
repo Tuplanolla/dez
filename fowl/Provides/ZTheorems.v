@@ -143,7 +143,7 @@ Proof. ecrush. Qed.
 Global Instance Z_eq_is_part_eq : IsPartEq Z.eq.
 Proof. esplit; typeclasses eauto. Qed.
 
-Global Instance Z_eq_is_eq : IsEq Z.eq.
+Global Instance Z_eq_is_eq : IsEquiv Z.eq.
 Proof. esplit; typeclasses eauto. Qed.
 
 (** This is the sign--parity isomorphism. *)

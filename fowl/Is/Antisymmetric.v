@@ -15,7 +15,7 @@ Class IsAntisym (A : Type) (X Y : A -> A -> Prop) : Prop :=
 
 Section Context.
 
-Context (A : Type) (X Y : A -> A -> Prop) `(!IsEq X).
+Context (A : Type) (X Y : A -> A -> Prop) `(!IsEquiv X).
 
 (** Our definition is equivalent to the one in the standard library. *)
 

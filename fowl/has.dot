@@ -15,12 +15,12 @@ digraph Has {
   HasActR [label = "\N\nact_r (a : B) (x : A) : B"]
   HasAdd [label = "\N\nadd (x y : A) : A"]
   HasBinOp [label = "\N\nbin_op (x y : A) : A"]
-  HasNullRel [label = "\N\nnull_rel : Prop"]
-  HasUnRel [label = "\N\nun_rel (x : A) : Prop"]
   HasBinRel [label = "\N\nbin_rel (x y : A) : Prop"]
   HasCompHom [label = "\N\ncomp_hom (x y z : A) (a : y --> z) (b : x --> y) : x --> z"]
   HasDec [label = "\N\ndec : {A} + {~ A}"]
   HasDist [label = "\N\ndist (a b : B) : A"]
+  HasEqDec [label = "\N\neq_dec (x y : A) : {x = y} + {x <> y}"]
+  HasEquivDec [label = "\N\nequiv_dec (x y : A) : {x == y} + {~ x == y}"]
   HasEquivRel [label = "\N\nequiv_rel (x y : A) : Prop"]
   HasForm [label = "\N\nform (a b : B) : A"]
   HasHom [label = "\N\nhom (x y : A) : Prop"]
@@ -29,6 +29,7 @@ digraph Has {
   HasMul [label = "\N\nmul (x y : A) : A"]
   HasNeg [label = "\N\nneg (x : A) : A"]
   HasNullOp [label = "\N\nnull_op : A"]
+  HasNullRel [label = "\N\nnull_rel : Prop"]
   HasOne [label = "\N\none : A"]
   HasOrdRel [label = "\N\nord_rel (x y : A) : Prop"]
   HasRecip [label = "\N\nrecip (x : A) : A"]
@@ -36,6 +37,7 @@ digraph Has {
   HasSMulR [label = "\N\ns_mul_r (a : B) (x : A) : B"]
   HasStrOrdRel [label = "\N\nstr_ord_rel (x y : A) : Prop"]
   HasUnOp [label = "\N\nun_op (x : A) : A"]
+  HasUnRel [label = "\N\nun_rel (x : A) : Prop"]
   HasUnsquash [label = "\N\nunsquash (x : Squash A) : A"]
   HasZero [label = "\N\nzero : A"]
 
@@ -50,6 +52,7 @@ digraph Has {
   // This Library
 
   HasCompHom -> HasHom
+  HasEquivRel -> HasEquivDec
   HasIdHom -> HasHom
   HasInvHom -> HasHom
 
@@ -72,6 +75,7 @@ digraph Has {
   HasActL -> HasBinOp
   HasActR -> HasBinOp
   HasAdd -> HasBinOp
+  HasDec -> HasUnsquash
   HasDist -> HasForm
   HasEquivRel -> HasBinRel
   HasForm -> HasBinOp
@@ -86,7 +90,11 @@ digraph Has {
   HasStrOrdRel -> HasBinRel
   HasZero -> HasNullOp
 
-  HasDec -> HasUnsquash
+  edge [style = dotted]
+
+  HasEqDec -> HasDec
+  HasEqDec -> HasEquivDec
+  HasEquivDec -> HasDec
 
   // Other Libraries
 }

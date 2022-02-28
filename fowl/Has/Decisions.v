@@ -1,7 +1,7 @@
 (** * Decidability *)
 
 From Coq Require
-  Classes.DecidableClass Classes.EquivDec.
+  Classes.DecidableClass Classes.EquivDec Classes.SetoidDec.
 From DEZ.Has Require Export
   EquivalenceRelations.
 From DEZ.Is Require Export
@@ -23,9 +23,11 @@ Arguments dec _ {_}.
 Tactic Notation "decide" constr(A) "as" "[" ident(x) "|" ident(f) "]" :=
   let a := fresh in _decide_ A a; [rename a into x | rename a into f].
 
-(** We need some instances to bridge the gap
-    between our definitions, the standard library and the equations plugin.
-    Without them, we could not [decide (tt = tt)], for example. *)
+(** We need some instances to bridge the gap between our definitions,
+    standard library definitions and equations plugin definitions.
+    We explicitly export instances of existing classes,
+    so that we can invoke existing tactics,
+    such as [decide (tt = tt)]. *)
 
 Section Context.
 
@@ -35,7 +37,7 @@ Context (A : Prop).
 
 (** Our decidability implies standard library decidability. *)
 
-#[local] Instance has_dec_decidable {d : HasDec A} : Decidable A.
+#[export] Instance dec_decidable {d : HasDec A} : Decidable A.
 Proof.
   destruct d as [x | f].
   - exists true. intuition.
@@ -62,23 +64,61 @@ Arguments HasEquivDec _ _ : clear implicits.
 
 Section Context.
 
-Import Classes.EquivDec. (** TODO No, use [EqDec] instead? *)
+Import Classes.EquivDec.
 
-Context (A : Type) (X : A -> A -> Prop).
+Context (A : Type) {X : HasEquivRel A} `{IsEquiv X}.
 
 (** Our decidable equivalence implies
     standard library decidable equivalence. *)
 
-#[local] Instance has_equiv_dec_decidable_equivalence
-  {d : HasEquivDec A X} `{IsEq X} : DecidableEquivalence _.
-Proof. intros x y. Admitted.
+#[export] Instance equiv_dec_eq_dec
+  {e : HasEquivDec A _==_} : EqDec A _==_ := e.
 
 (** Standard library decidable equivalence implies
     our decidable equivalence. *)
 
-#[local] Instance decidable_equivalence_has_equiv_dec
-  `{IsEq X} {d : DecidableEquivalence _} : HasEquivDec A X.
-Proof. Admitted.
+#[local] Instance eq_dec_has_equiv_dec
+  {e : EqDec A _==_} : HasEquivDec A _==_ := e.
+
+End Context.
+
+Section Context.
+
+Import Classes.SetoidDec.
+
+Context (A : Type) {X : HasEquivRel A} `{IsEquiv X}.
+
+(** Our decidable equivalence implies
+    standard library decidable equivalence. *)
+
+#[export] Instance equiv_dec_eq_dec_equiv
+  {e : HasEquivDec A _==_} : EqDec {| equiv := _==_ |} := e.
+
+(** Standard library decidable equivalence implies
+    our decidable equivalence. *)
+
+#[local] Instance eq_dec_equiv_has_equiv_dec
+  {e : EqDec {| equiv := _==_ |}} : HasEquivDec A _==_ := e.
+
+End Context.
+
+(** TODO Figure out which sides of these equivalences we want to export;
+    probably the former instance of each pair. *)
+
+Section Context.
+
+Context (A : Type) {X : HasEquivRel A}.
+
+(** Decidable equivalence implies decidability of equivalences. *)
+
+#[export] Instance equiv_dec_has_dec_equiv
+  {e : HasEquivDec A _==_} (x y : A) : HasDec (x == y) := equiv_dec x y.
+
+(** Decidability of equivalences implies decidable equivalence. *)
+
+#[local] Instance dec_equiv_has_equiv_dec
+  {d : forall x y : A, HasDec (x == y)} : HasEquivDec A _==_ :=
+  fun x y : A => dec (x == y).
 
 End Context.
 
@@ -98,11 +138,16 @@ Section Context.
 
 Context (A : Type).
 
-#[local] Instance equiv_dec_has_eq_dec
-  {d : HasEquivDec A _=_} : HasEqDec A := equiv_dec.
+(** Decidable equality implies decidability of equalities. *)
 
-#[local] Instance eq_dec_has_equiv_dec
-  {d : HasEqDec A} : HasEquivDec A _=_ := eq_dec.
+#[export] Instance eq_dec_has_dec_eq
+  {e : HasEqDec A} (x y : A) : HasDec (x = y) := eq_dec x y.
+
+(** Decidability of equalities implies decidable equality. *)
+
+#[local] Instance dec_eq_has_eq_dec
+  {d : forall x y : A, HasDec (x = y)} : HasEqDec A :=
+  fun x y : A => dec (x = y).
 
 End Context.
 
@@ -110,11 +155,14 @@ Section Context.
 
 Context (A : Type).
 
-#[local] Instance dec_has_eq_dec
-  {d : forall x y : A, HasDec (x = y)} : HasEqDec A :=
-  fun x y : A => dec (x = y).
+(** Decidable equality implies decidable equivalence over equality. *)
 
-#[local] Instance eq_dec_has_dec
-  {e : HasEqDec A} (x y : A) : HasDec (x = y) := eq_dec x y.
+#[export] Instance eq_dec_has_equiv_dec_eq
+  {e : HasEqDec A} : HasEquivDec A _=_ := eq_dec.
+
+(** Decidable equivalence over equality implies decidable equality. *)
+
+#[local] Instance equiv_dec_eq_has_eq_dec
+  {e : HasEquivDec A _=_} : HasEqDec A := equiv_dec.
 
 End Context.
