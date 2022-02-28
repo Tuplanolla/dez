@@ -1,4 +1,4 @@
-(** * Measuring Distances *)
+(** * Distances *)
 
 From DEZ.Has Require Export
   AlgebraicForms.

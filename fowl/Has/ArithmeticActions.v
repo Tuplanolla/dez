@@ -1,4 +1,4 @@
-(** * Arithmetic *)
+(** * Arithmetic Actions *)
 
 From DEZ.Has Require Export
   AlgebraicActions.

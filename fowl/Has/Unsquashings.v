@@ -1,9 +1,9 @@
-(** * Unsquashing *)
+(** * Unsquashing of Strict Propositions *)
 
 From DEZ.Has Require Export
   Decisions.
 
-(** ** Large Elimination for Strict Propositions *)
+(** ** Large Elimination *)
 (** ** Unsquashing *)
 
 Class HasUnsquash (A : Type) : Type := unsquash (x : Squash A) : A.

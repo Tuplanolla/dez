@@ -9,13 +9,13 @@ Class HasNullRel (A : Type) : Type := null_rel : Prop.
 
 #[export] Typeclasses Transparent HasNullRel.
 
-(** * Unary Relation *)
+(** ** Unary Relation *)
 
 Class HasUnRel (A : Type) : Type := un_rel (x : A) : Prop.
 
 #[export] Typeclasses Transparent HasUnRel.
 
-(** * Binary Relations *)
+(** ** Binary Relation *)
 
 Class HasBinRel (A : Type) : Type := bin_rel (x y : A) : Prop.
 

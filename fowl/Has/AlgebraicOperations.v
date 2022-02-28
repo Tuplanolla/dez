@@ -9,13 +9,13 @@ Class HasNullOp (A : Type) : Type := null_op : A.
 
 #[export] Typeclasses Transparent HasNullOp.
 
-(** * Unary Operation *)
+(** ** Unary Operation *)
 
 Class HasUnOp (A : Type) : Type := un_op (x : A) : A.
 
 #[export] Typeclasses Transparent HasUnOp.
 
-(** * Binary Operation *)
+(** ** Binary Operation *)
 
 Class HasBinOp (A : Type) : Type := bin_op (x y : A) : A.
 

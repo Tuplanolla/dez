@@ -1,9 +1,9 @@
-(** * Equivalence *)
+(** * Equivalences *)
 
 From DEZ.Is Require Export
   Reflexive Symmetric Transitive.
 
-(** ** Equivalence *)
+(** ** Equivalence Relation *)
 
 Fail Fail Class IsEquiv (A : Type) (X : A -> A -> Prop) : Prop := {
   is_refl :> IsRefl X;
