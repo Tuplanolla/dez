@@ -7,15 +7,13 @@ From DEZ.Is Require Export
 From DEZ.Supports Require Import
   EquivalenceNotations OrderNotations.
 
-#[local] Open Scope relation_scope.
-
 #[local] Existing Instance antisymmetric_is_antisym.
 
 (** ** Partial Order *)
 (** ** Poset *)
 
 (** We cannot define [IsPartOrd] as a notation for [PartialOrder],
-    because [PartialOrder] is constrained by [Equivalence] and
+    because [PartialOrder] is constrained by [Equivalence] and [PreOrder] and
     built from [relation_equivalence]. *)
 
 Fail Fail Notation IsPartOrd := PartialOrder.
@@ -27,29 +25,29 @@ Class IsPartOrd (A : Type) (X Y : A -> A -> Prop) : Prop := {
   part_ord_is_proper :> IsProper (X ==> X ==> _<->_) Y;
 }.
 
-(** Our definition is equivalent to the one in the standard library. *)
-
 Section Context.
 
-Context (A : Type) (X Y : A -> A -> Prop) `{!IsEquiv X}.
+Context (A : Type) (X Y : A -> A -> Prop) `{!IsEquiv X} `{!IsPreord Y}.
 
 #[local] Instance has_equiv_rel : HasEquivRel A := X.
 #[local] Instance has_ord_rel : HasOrdRel A := Y.
 
 Ltac note := progress (
-  try change X with _==_ in *;
-  try change Y with _<=_ in *).
+  try change X with (equiv_rel (A := A)) in *;
+  try change Y with (ord_rel (A := A)) in *).
 
-#[local] Instance is_part_ord
-  `{!IsPreord Y} `{!PartialOrder X Y} : IsPartOrd X Y.
+(** Standard library partial order implies our partial order. *)
+
+#[local] Instance partial_order_is_part_ord
+  `{!PartialOrder X Y} : IsPartOrd X Y.
 Proof. esplit; typeclasses eauto. Qed.
 
-#[local] Instance partial_order
+(** Our partial order implies standard library partial order. *)
+
+#[local] Instance part_ord_partial_order
   `{!IsPartOrd X Y} : PartialOrder X Y.
 Proof.
-  note.
-  intros x y.
-  unfold pointwise_lifting, relation_conjunction.
+  note. intros x y. unfold pointwise_lifting, relation_conjunction.
   unfold predicate_intersection. unfold pointwise_extension. unfold flip.
   pose proof antisym x y as a.
   pose proof fun a : x == y => part_ord_is_proper x x id x y a as b.

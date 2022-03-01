@@ -38,7 +38,7 @@ digraph Has {
 
   node [style = dashed]
 
-  // Constraints and Fields
+  // Constraints
 
   edge [style = solid]
 
