@@ -3,7 +3,7 @@
 From DEZ.Has Require Export
   OrderRelations.
 From DEZ.Supports Require Import
-  OrderRelationNotations.
+  OrderNotations.
 
 (** This has the same shape as [le_neq]. *)
 

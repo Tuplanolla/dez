@@ -10,7 +10,7 @@ From DEZ.Is Require Export
 Ltac ecrush :=
   hnf in *; eauto with zarith.
 
-#[local] Instance has_eq_dec : HasEqDec Z := Z.eq_dec.
+#[local] Instance has_equiv_dec : HasEqDec Z := Z.eq_dec.
 #[local] Instance has_equiv_rel : HasEquivRel Z := eq.
 
 Module Additive.
@@ -131,19 +131,19 @@ Proof. ecrush. Qed.
 
 Global Instance has_equiv_rel : HasEquivRel Z := Z.eq.
 
-Global Instance Z_eq_is_refl : IsRefl Z.eq.
+Global Instance Z_equiv_is_refl : IsRefl Z.eq.
 Proof. ecrush. Qed.
 
-Global Instance Z_eq_is_sym : IsSym Z.eq.
+Global Instance Z_equiv_is_sym : IsSym Z.eq.
 Proof. ecrush. Qed.
 
-Global Instance Z_eq_is_trans : IsTrans Z.eq.
+Global Instance Z_equiv_is_trans : IsTrans Z.eq.
 Proof. ecrush. Qed.
 
-Global Instance Z_eq_is_part_eq : IsPartEq Z.eq.
+Global Instance Z_equiv_is_part_equiv : IsPartEquiv Z.eq.
 Proof. esplit; typeclasses eauto. Qed.
 
-Global Instance Z_eq_is_eq : IsEquiv Z.eq.
+Global Instance Z_equiv_is_equiv : IsEquiv Z.eq.
 Proof. esplit; typeclasses eauto. Qed.
 
 (** This is the sign--parity isomorphism. *)

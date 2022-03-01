@@ -66,7 +66,7 @@ Proof. reflexivity. Qed.
 
 (** These instances are missing from the standard library. *)
 
-Global Program Instance Decidable_eq_positive (x y : positive) :
+Global Program Instance Decidable_equiv_positive (x y : positive) :
   Decidable (x = y) := {
   Decidable_witness := eqb x y;
   Decidable_spec := _;

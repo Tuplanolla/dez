@@ -6,8 +6,8 @@ From DEZ.Is Require Export
 (** ** Preorder *)
 
 Fail Fail Class IsPreord (A : Type) (X : A -> A -> Prop) : Prop := {
-  is_refl :> IsRefl X;
-  is_trans :> IsTrans X;
+  preord_is_refl :> IsRefl X;
+  preord_is_trans :> IsTrans X;
 }.
 
 Notation IsPreord := PreOrder.

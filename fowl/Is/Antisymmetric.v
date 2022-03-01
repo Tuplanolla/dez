@@ -15,16 +15,18 @@ Class IsAntisym (A : Type) (X Y : A -> A -> Prop) : Prop :=
 
 Section Context.
 
-Context (A : Type) (X Y : A -> A -> Prop) `(!IsEquiv X).
+Context (A : Type) (X Y : A -> A -> Prop) `{!IsEquiv X}.
 
-(** Our definition is equivalent to the one in the standard library. *)
+(** Our antisymmetry implies standard library antisymmetry. *)
 
-#[local] Instance is_antisym `(!Antisymmetric A X Y) : IsAntisym X Y.
+#[local] Instance antisym_antisymmetric
+  `{!IsAntisym X Y} : Antisymmetric A X Y.
 Proof. auto. Qed.
 
-#[local] Instance antisymmetric `(!IsAntisym X Y) : Antisymmetric A X Y.
+(** Standard library antisymmetry implies our antisymmetry. *)
+
+#[local] Instance antisymmetric_is_antisym
+  `{Antisymmetric A X Y} : IsAntisym X Y.
 Proof. auto. Qed.
 
 End Context.
-
-#[export] Hint Resolve is_antisym : typeclass_instances.

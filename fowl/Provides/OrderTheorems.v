@@ -3,7 +3,7 @@
 From DEZ.Has Require Export
   OrderRelations.
 From DEZ.Supports Require Import
-  OrderRelationNotations.
+  OrderNotations.
 
 (** Orders and strict orders can be defined in terms of each other. *)
 

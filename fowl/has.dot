@@ -4,10 +4,6 @@ digraph Has {
 
   node [fontname = monospace]
 
-  HasOp [label = "\N\nop : {F : Type -> Type & F A}"]
-  HasProp [label = "\N\nprop : {F : Type -> Type & F A}"]
-  HasRel [label = "\N\nrel : {F : Type -> Type & F A}"]
-
   node [style = solid]
 
   HasActL [label = "\N\nact_l (x : A) (a : B) : B"]
@@ -42,15 +38,7 @@ digraph Has {
 
   node [style = dashed]
 
-  HasBinOp -> HasOp
-  HasBinRel -> HasRel
-  HasNullOp -> HasOp
-  HasNullRel -> HasRel
-  HasUnOp -> HasOp
-  HasUnRel -> HasRel
-  HasUnsquash -> HasProp
-
-  // Superclasses and Constraints
+  // Constraints and Fields
 
   edge [style = solid]
 
@@ -59,7 +47,7 @@ digraph Has {
   HasIdHom -> HasHom
   HasInvHom -> HasHom
 
-  // Subclasses and Related Instances
+  // Subclasses
 
   edge [style = dashed]
 
@@ -81,7 +69,7 @@ digraph Has {
   HasStrOrdRel -> HasBinRel
   HasZero -> HasNullOp
 
-  // Specializations and Related Instances
+  // Specializations
 
   edge [style = dotted]
 

@@ -3,7 +3,7 @@
 From Coq Require Import
   Logic.FunctionalExtensionality.
 From DEZ.Has Require Export
-  NullaryOperation BinaryOperation.
+  AlgebraicOperations.
 From DEZ.Is Require Export
   Injective.
 From DEZ.Supports Require Import

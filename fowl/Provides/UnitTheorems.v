@@ -26,10 +26,10 @@ Proof. ecrush. Qed.
 
 Fail Fail Scheme Equality for unit.
 
-Equations unit_eq_dec (x y : unit) : {x = y} + {x <> y} :=
-  unit_eq_dec x y := left (irrel x y).
+Equations unit_equiv_dec (x y : unit) : {x = y} + {x <> y} :=
+  unit_equiv_dec x y := left (irrel x y).
 
-#[local] Instance unit_has_eq_dec : HasEqDec unit := unit_eq_dec.
+#[local] Instance unit_has_equiv_dec : HasEqDec unit := unit_equiv_dec.
 #[local] Instance unit_has_equiv_rel : HasEquivRel unit := eq.
 
 #[local] Instance unit_has_null_op : HasNullOp unit := tt.
@@ -100,7 +100,7 @@ Proof. esplit; typeclasses eauto. Qed.
 #[local] Instance is_ring : IsRing eq tt tt1 tt2 tt tt2.
 Proof. esplit; typeclasses eauto. Qed.
 
-#[export] Hint Resolve unit_is_contr unit_has_eq_dec unit_has_equiv_rel
+#[export] Hint Resolve unit_is_contr unit_has_equiv_dec unit_has_equiv_rel
   unit_has_null_op unit_has_un_op unit_has_bin_op is_assoc is_semigrp is_comm
   is_unl_l is_unl_r is_unl_l_r is_mon is_inv_l is_inv_r is_inv_l_r is_grp
   unit_has_zero unit_has_neg unit_has_add unit_has_one unit_has_recip

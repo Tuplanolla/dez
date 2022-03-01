@@ -3,7 +3,7 @@
 From DEZ.Has Require Export
   OrderRelations.
 From DEZ.Supports Require Import
-  OrderRelationNotations.
+  OrderNotations.
 
 Class IsComono (A B : Type)
   (HRA : HasOrdRel A) (HRB : HasOrdRel B) (f : A -> B) : Prop :=

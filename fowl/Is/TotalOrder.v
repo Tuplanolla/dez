@@ -1,11 +1,11 @@
 (** * Total Ordering *)
 
 From DEZ.Has Require Export
-  EquivalenceRelation OrderRelations.
+  EquivalenceRelations OrderRelations.
 From DEZ.Is Require Export
   PartialOrder Connex Reflexive.
 From DEZ.Supports Require Import
-  EquivalenceNotations OrderRelationNotations.
+  EquivalenceNotations OrderNotations.
 
 (** ** Total Order *)
 
@@ -16,8 +16,7 @@ Class IsTotOrd (A : Type) (X Y : A -> A -> Prop) : Prop := {
 
 Section Context.
 
-Context (A : Type) (X Y : A -> A -> Prop)
-  `(!IsTotOrd X Y).
+Context (A : Type) (X Y : A -> A -> Prop) `{!IsTotOrd X Y}.
 
 #[local] Instance has_equiv_rel : HasEquivRel A := X.
 #[local] Instance has_ord_rel : HasOrdRel A := Y.

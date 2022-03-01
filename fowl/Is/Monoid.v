@@ -1,7 +1,7 @@
 (** * Monoidal Structure *)
 
 From DEZ.Has Require Export
-  EquivalenceRelation NullaryOperation BinaryOperation.
+  AlgebraicForms AlgebraicOperations EquivalenceRelations.
 From DEZ.Is Require Export
   Semigroup Unital.
 

@@ -75,7 +75,7 @@ Proof.
 
 (** These instances are missing from the standard library. *)
 
-Global Program Instance Decidable_eq_N (x y : N) : Decidable (x = y) := {
+Global Program Instance Decidable_equiv_N (x y : N) : Decidable (x = y) := {
   Decidable_witness := eqb x y;
   Decidable_spec := _;
 }.

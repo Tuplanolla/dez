@@ -7,10 +7,7 @@ From DEZ.Is Require Export
 (** ** Connex Binary Relation *)
 (** ** Total Binary Relation *)
 
-Fail Fail Class IsConnex (A : Type) (X : A -> A -> Prop) : Prop :=
-  is_comm :> IsComm _\/_ X.
-
-(** This has the same shape as [le_ge_cases]. *)
+(** This definition has the same shape as [Nat.le_ge_cases]. *)
 
 Class IsConnex (A : Type) (X : A -> A -> Prop) : Prop :=
   connex (x y : A) : X x y \/ X y x.
@@ -19,14 +16,14 @@ Section Context.
 
 Context (A : Type) (X : A -> A -> Prop).
 
-(** Connexity is just a special case of commutativity. *)
+(** Connexity implies commutativity up to disjunction. *)
 
-#[local] Instance is_connex `(!IsComm _\/_ X) : IsConnex X.
-Proof. intros x y. exact (comm x y). Qed.
+#[export] Instance connex_is_comm_or `{!IsConnex X} : IsComm _\/_ X.
+Proof. auto. Qed.
 
-#[local] Instance is_comm `(!IsConnex X) : IsComm _\/_ X.
-Proof. intros x y. exact (connex x y). Qed.
+(** Commutativity up to disjunction implies connexity. *)
+
+#[local] Instance comm_or_is_connex `{!IsComm _\/_ X} : IsConnex X.
+Proof. auto. Qed.
 
 End Context.
-
-#[export] Hint Resolve is_connex : typeclass_instances.

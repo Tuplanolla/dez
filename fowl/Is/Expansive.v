@@ -3,7 +3,7 @@
 From DEZ.Has Require Export
   Distance OrderRelations.
 From DEZ.Supports Require Import
-  OrderRelationNotations.
+  OrderNotations.
 
 (** ** Expansive Function *)
 (** ** Long Map *)

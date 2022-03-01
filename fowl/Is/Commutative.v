@@ -3,7 +3,7 @@
 From Coq Require Import
   Logic.FunctionalExtensionality.
 From DEZ.Has Require Export
-  UnaryOperation BinaryOperation Torsion.
+  AlgebraicForms AlgebraicOperations.
 From DEZ.Supports Require Import
   MultiplicativeNotations.
 

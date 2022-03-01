@@ -22,7 +22,7 @@ Import ListNotations Pos.
 
 Unset Universe Polymorphism.
 
-Global Instance option_has_eq_dec (A : Type) `(EqDec A) : EqDec (option A).
+Global Instance option_has_equiv_dec (A : Type) `(EqDec A) : EqDec (option A).
 Proof. cbv [EqDec] in *. decide equality. Defined.
 
 Fixpoint list_omap (A B : Type) (f : A -> option B)
@@ -48,7 +48,7 @@ Inductive pos_tree (A : Type) : Type :=
 
 Arguments pos_leaf {_}.
 
-Global Instance pos_tree_has_eq_dec (A : Type) `(EqDec A) : EqDec (pos_tree A).
+Global Instance pos_tree_has_equiv_dec (A : Type) `(EqDec A) : EqDec (pos_tree A).
 Proof. cbv [EqDec]. decide equality. decide equality. Defined.
 
 Fixpoint pos_tree_wf' (A : Type) (t : pos_tree A) {struct t} : bool :=
@@ -418,13 +418,13 @@ Fixpoint pos_tree_merge (A B C : Type) (f : option A -> option B -> option C)
 Definition pos_map (A : Type) : Type :=
   {t : pos_tree A $ Squash (pos_tree_wf t)}.
 
-Global Instance Ssig_has_eq_dec (A : Type) (P : A -> SProp) `(EqDec A) :
+Global Instance Ssig_has_equiv_dec (A : Type) (P : A -> SProp) `(EqDec A) :
   EqDec (Ssig P).
 Proof. cbv [EqDec] in *. intros [] []. pose proof H Spr1 Spr0. destruct H0.
   left. apply Spr1_inj. auto.
   right. intros ?. inversion H0. contradiction. Defined.
 
-Global Instance pos_map_has_eq_dec (A : Type) `(EqDec A) : EqDec (pos_map A).
+Global Instance pos_map_has_equiv_dec (A : Type) `(EqDec A) : EqDec (pos_map A).
 Proof. typeclasses eauto. Defined.
 
 Program Definition pos_map_empty (A : Type) : pos_map A :=

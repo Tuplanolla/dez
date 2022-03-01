@@ -5,7 +5,7 @@ From DEZ.Has Require Export
 From DEZ.Is Require Export
   Preorder CoherentOrderRelations.
 From DEZ.Supports Require Import
-  OrderRelationNotations AdditiveNotations.
+  OrderNotations AdditiveNotations.
 
 Fail Fail Class IsMono (A B : Type)
   (X : HasOrdRel A) (Y : HasOrdRel B) (f : A -> B) : Prop :=

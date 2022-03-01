@@ -3,7 +3,7 @@
 From DEZ.Has Require Export
   OrderRelations BinaryOperation.
 From DEZ.Supports Require Import
-  OrderRelationNotations AdditiveNotations.
+  OrderNotations AdditiveNotations.
 
 Class IsInfl (A : Type) (HR : HasOrdRel A) (f : A -> A) : Prop :=
   infl (x : A) : x <= f x.

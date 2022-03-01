@@ -18,7 +18,7 @@ From DEZ.Supports Require Import
 
 Module Mess.
 
-#[global] Instance prod_has_eq_dec (A B : Type)
+#[global] Instance prod_has_equiv_dec (A B : Type)
   (e : HasEqDec A) (f : HasEqDec B) : HasEqDec (A * B).
 Proof.
   intros [x y] [z w]. destruct (e x z) as [a | a], (f y w) as [b | b].
@@ -52,7 +52,7 @@ Proof.
 #[global] Instance not_has_dec (A : Prop) (d : HasDec A) : HasDec (~ A) :=
   has_dec Decidable_not.
 
-#[global] Instance Sexists_has_eq_dec (A : Type) (P : A -> SProp)
+#[global] Instance Sexists_has_equiv_dec (A : Type) (P : A -> SProp)
   (e : HasEqDec A) : HasEqDec {x : A $ P x}.
 Proof.
   intros [x a] [y b]. destruct (e x y) as [s | s].

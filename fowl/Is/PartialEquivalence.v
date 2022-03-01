@@ -1,13 +1,13 @@
-(** * Partial Equivalence *)
+(** * Partial Equivalences *)
 
 From DEZ.Is Require Export
   Symmetric Transitive.
 
-(** ** Partial Equivalence *)
+(** ** Partial Equivalence Relation *)
 
-Fail Fail Class IsPartEq (A : Type) (X : A -> A -> Prop) : Prop := {
-  is_sym :> IsSym X;
-  is_trans :> IsTrans X;
+Fail Fail Class IsPartEquiv (A : Type) (X : A -> A -> Prop) : Prop := {
+  part_equiv_is_sym :> IsSym X;
+  part_equiv_is_trans :> IsTrans X;
 }.
 
-Notation IsPartEq := PER.
+Notation IsPartEquiv := PER.

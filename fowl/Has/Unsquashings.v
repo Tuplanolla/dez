@@ -3,6 +3,8 @@
 From DEZ.Has Require Export
   Decisions.
 
+#[local] Existing Instance dec_decidable.
+
 (** ** Large Elimination *)
 (** ** Unsquashing *)
 

@@ -3,10 +3,11 @@
 From DEZ.Is Require Export
   Irreflexive Symmetric Cotransitive.
 
+(** ** Aparness Relation *)
 (** ** Constructive Inequality *)
 
 Class IsApart (A : Type) (X : A -> A -> Prop) : Prop := {
-  is_irrefl :> IsIrrefl X;
-  is_sym :> IsSym X;
-  is_cotrans :> IsCotrans X;
+  apart_is_irrefl :> IsIrrefl X;
+  apart_is_sym :> IsSym X;
+  apart_is_cotrans :> IsCotrans X;
 }.

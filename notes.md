@@ -272,10 +272,10 @@ The standard library in version 8.11.0
 has the follwing classes we want to be compatible with.
 
 * `DecidableClass`
-    * `Decidable`
+    * `HasDec -> Decidable`
 * `EquivDec`
     * `DecidableEquivalence`
-    * `EqDec`
+    * `HasEquivDec -> EqDec`
 * `Init`
     * `Unconvertible`
 * `Morphisms`
@@ -293,7 +293,7 @@ has the follwing classes we want to be compatible with.
     * `IsPreord -> PreOrder`
     * `IsStrPartOrd -> StrictOrder`
     * `IsPartEq -> PER`
-    * `IsEq -> Equivalence`
+    * `IsEquiv -> Equivalence`
     * `IsAntisym -> Antisymmetric`
     * `subrelation`
     * `RewriteRelation`
@@ -305,50 +305,59 @@ has the follwing classes we want to be compatible with.
     * `PartialSetoid`
 * `SetoidDec`
     * `DecidableSetoid`
-    * `EqDec`
+    * `HasEquivDec -> EqDec`
 * `SetoidTactics`
     * `DefaultRelation`
 
 Another review of Coq 8.15.0 and Equations 1.2.4.
 
-* `Classes.DecidableClass` `Decidable`
-* `Classes.EquivDec` `DecidableEquivalence`
-* `Classes.EquivDec` `EqDec`
-* `Classes.Init` `Unconvertible`
-* `Classes.Morphisms` `Normalizes`
-* `Classes.Morphisms` `Params`
-* `Classes.Morphisms` `PartialApplication`
-* `Classes.Morphisms` `ProperProxy`
-* `Classes.Morphisms` `Proper`
-* `Classes.RelationClasses` `Antisymmetric`
-* `Classes.RelationClasses` `Asymmetric`
-* `Classes.RelationClasses` `Equivalence`
-* `Classes.RelationClasses` `Irreflexive`
-* `Classes.RelationClasses` `PER`
-* `Classes.RelationClasses` `PartialOrder`
-* `Classes.RelationClasses` `PreOrder`
-* `Classes.RelationClasses` `Reflexive`
-* `Classes.RelationClasses` `RewriteRelation`
-* `Classes.RelationClasses` `StrictOrder`
-* `Classes.RelationClasses` `Symmetric`
-* `Classes.RelationClasses` `Transitive`
-* `Classes.RelationClasses` `subrelation`
-* `Classes.RelationPairs` `Measure`
-* `Classes.SetoidClass` `PartialSetoid`
-* `Classes.SetoidClass` `Setoid`
-* `Classes.SetoidDec` `DecidableSetoid`
-* `Classes.SetoidDec` `EqDec`
-* `Classes.SetoidTactics` `DefaultRelation`
-
-* `Prop.Classes` `EqDec`
-* `Prop.Classes` `EqDecPoint`
-* `Prop.Classes` `FunctionalElimination`
-* `Prop.Classes` `FunctionalInduction`
-* `Prop.Classes` `ImpossibleCall`
-* `Prop.Classes` `NoConfusionPackage`
-* `Prop.Classes` `NoCyclePackage`
-* `Prop.Classes` `UIP`
-* `Prop.Classes` `WellFounded`
+* `Classes.DecidableClass`
+    * `Decidable`
+* `Classes.EquivDec`
+    * `DecidableEquivalence`
+    * `EqDec`
+* `Classes.Init`
+    * `Unconvertible`
+* `Classes.Morphisms`
+    * `Normalizes`
+    * `Params`
+    * `PartialApplication`
+    * `ProperProxy`
+    * `Proper`
+* `Classes.RelationClasses`
+    * `Antisymmetric`
+    * `Asymmetric`
+    * `Equivalence`
+    * `Irreflexive`
+    * `PER`
+    * `PartialOrder`
+    * `PreOrder`
+    * `Reflexive`
+    * `RewriteRelation`
+    * `StrictOrder`
+    * `Symmetric`
+    * `Transitive`
+    * `subrelation`
+* `Classes.RelationPairs`
+    * `Measure`
+* `Classes.SetoidClass`
+    * `PartialSetoid`
+    * `Setoid`
+* `Classes.SetoidDec`
+    * `DecidableSetoid`
+    * `EqDec`
+* `Classes.SetoidTactics`
+    * `DefaultRelation`
+* `Prop.Classes`
+    * `EqDec`
+    * `EqDecPoint`
+    * `FunctionalElimination`
+    * `FunctionalInduction`
+    * `ImpossibleCall`
+    * `NoConfusionPackage`
+    * `NoCyclePackage`
+    * `UIP`
+    * `WellFounded`
 
 ### Subclass Specialization
 
