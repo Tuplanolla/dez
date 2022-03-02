@@ -1,7 +1,7 @@
-(** * Partial Equivalences *)
+(** * Partial Equivalence *)
 
 From DEZ.Is Require Export
-  Symmetric Transitive Proper.
+  Symmetric Transitive.
 
 (** ** Partial Equivalence Relation *)
 
@@ -11,15 +11,5 @@ Fail Fail Class IsPartEquiv (A : Type) (X : A -> A -> Prop) : Prop := {
 }.
 
 Notation IsPartEquiv := PER.
-
-Section Context.
-
-Context (A : Type) (X : A -> A -> Prop).
-
-(** A partial equivalence relation is transitive. *)
-
-#[local] Instance part_equiv_is_proper
-  `{!IsPartEquiv X} : IsProper (X ==> X ==> _<->_) X.
-Proof. typeclasses eauto. Qed.
-
-End Context.
+Notation part_equiv_is_sym := PER_Symmetric.
+Notation part_equiv_is_trans := PER_Transitive.

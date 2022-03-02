@@ -3,46 +3,86 @@
 From DEZ.Has Require Export
   EquivalenceRelations OrderRelations.
 From DEZ.Is Require Export
-  PartialOrder Connex Reflexive.
+  Connex PartialOrder Reflexive Antisymmetric Transitive Proper Irreflexive.
 From DEZ.Supports Require Import
   EquivalenceNotations OrderNotations.
 
+(** ** Linear Order *)
+(** ** Order *)
 (** ** Total Order *)
 
 Class IsTotOrd (A : Type) (X Y : A -> A -> Prop) : Prop := {
-  is_part_ord :> IsPartOrd X Y;
-  is_connex :> IsConnex Y;
+  tot_ord_is_connex :> IsConnex Y;
+  tot_ord_is_part_ord :> IsPartOrd X Y;
 }.
 
 Section Context.
 
-Context (A : Type) (X Y : A -> A -> Prop) `{!IsTotOrd X Y}.
+Context (A : Type) (X Y : A -> A -> Prop).
 
 #[local] Instance has_equiv_rel : HasEquivRel A := X.
 #[local] Instance has_ord_rel : HasOrdRel A := Y.
 
 Ltac note := progress (
-  try change X with _==_ in *;
-  try change Y with _<=_ in *).
+  try change X with (equiv_rel (A := A)) in *;
+  try change Y with (ord_rel (A := A)) in *).
 
-(** Total orders are reflexive. *)
+(** A total order is reflexive. *)
 
-#[local] Instance is_refl : IsRefl Y.
-Proof.
-  note.
-  intros x.
-  destruct (connex x x) as [l | l]; auto. Qed.
-
-(** Total orders are transitive. *)
-
-#[local] Instance is_trans : IsTrans Y.
+#[local] Instance tot_ord_is_refl
+  `{!IsTotOrd X Y} : IsRefl Y.
 Proof. typeclasses eauto. Qed.
 
-(** Total orders are antisymmetric. *)
+(** A total order is antisymmetric. *)
 
-#[local] Instance is_antisym : IsAntisym X Y.
+#[local] Instance tot_ord_is_antisym
+  `{!IsTotOrd X Y} : IsAntisym X Y.
+Proof. typeclasses eauto. Qed.
+
+(** A total order is transitive. *)
+
+#[local] Instance tot_ord_is_trans
+  `{!IsTotOrd X Y} : IsTrans Y.
+Proof. typeclasses eauto. Qed.
+
+(** A total order is proper. *)
+
+#[local] Instance tot_ord_is_proper
+  `{!IsTotOrd X Y} : IsProper (X ==> X ==> _<->_) Y.
 Proof. typeclasses eauto. Qed.
 
 End Context.
 
-#[export] Hint Resolve is_refl : typeclass_instances.
+(** ** Strict Linear Order *)
+(** ** Strict Order *)
+(** ** Strict Total Order *)
+
+Class IsStrTotOrd (A : Type) (X Y : A -> A -> Prop) : Prop := {
+  str_tot_ord_is_connex :> IsConnex Y;
+  str_tot_ord_is_str_part_ord :> IsStrPartOrd Y;
+  str_tot_ord_is_proper :> IsProper (X ==> X ==> _<->_) Y;
+}.
+
+Section Context.
+
+Context (A : Type) (X Y : A -> A -> Prop).
+
+(** A strict total order is irreflexive. *)
+
+#[local] Instance str_tot_ord_is_irrefl
+  `{!IsStrTotOrd X Y} : IsIrrefl Y.
+Proof. typeclasses eauto. Qed.
+
+(** A strict total order is asymmetric. *)
+
+#[local] Instance tot_ord_is_asym
+  `{!IsStrTotOrd X Y} : IsAsym Y.
+Proof. typeclasses eauto. Qed.
+
+(** A strict total order is transitive. *)
+
+#[local] Instance str_tot_ord_is_trans
+  `{!IsStrTotOrd X Y} : IsTrans Y.
+Proof. typeclasses eauto. Qed.
+
+End Context.

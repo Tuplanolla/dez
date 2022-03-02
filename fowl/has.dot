@@ -2,9 +2,7 @@ digraph Has {
   label = "Operational Classes"
   rankdir = BT
 
-  node [fontname = monospace]
-
-  node [style = solid]
+  node [fontname = monospace, style = filled, fillcolor = cornsilk]
 
   HasActL [label = "\N\nact_l (x : A) (a : B) : B"]
   HasActR [label = "\N\nact_r (a : B) (x : A) : B"]

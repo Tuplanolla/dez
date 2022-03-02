@@ -83,6 +83,43 @@ Definition X_G {x : HasX A} : G A.
 Definition Y_G {y : HasY (G A)} : A.
 ```
 
+Order fields of classes first by parameters they mention and then arity.
+
+```
+Class IsNotPartOrd (A : Type) (X Y : A -> A -> Prop) : Prop := {
+  part_ord_is_equiv :> IsEquiv X; (** [X] is mentioned *)
+  part_ord_is_refl :> IsRefl Y; (** [Y] is mentioned at arity [1] *)
+  part_ord_is_trans :> IsTrans Y; (** [Y] is mentioned at arity [3] *)
+  part_ord_is_antisym :> IsAntisym X Y; (** [X] and [Y] are both mentioned *)
+}.
+```
+
+### Checklist
+
+Think you are done working on a module?
+Think again!
+
+* Check imports.
+    * Check import redundancy.
+    * Check import order.
+    * Check import reexporting.
+* Check locality annotations.
+    * Check mere `typeclasses eauto` instances are local.
+    * Check cyclic instances are local.
+* Check names of fields.
+    * Check prefix.
+    * Check suffix.
+* Check names of instances.
+    * Check prefix.
+    * Check suffix.
+* Check context variables.
+    * Check there are no redundant assumptions.
+    * Check assumptions are not too widely scoped.
+* Check syntax.
+    * Check indentation.
+    * Check double spacing.
+    * Check final line break.
+
 ### Coherence Conditions
 
 When defining operational classes or their instances,
