@@ -6,10 +6,10 @@ From DEZ.Has Require Export
 From DEZ.Is Require Export
   OneSortedFinite Isomorphism TwoSortedBimodule
   Ring TwoSortedUnitalAssociativeAlgebra.
-From DEZ.Provides Require Export
+From DEZ.Justifies Require Export
   OneSortedPositiveOperations OneSortedNaturalOperations
   OneSortedIntegerOperations.
-From DEZ.Provides Require Export
+From DEZ.Justifies Require Export
   ZTheorems.
 From DEZ.Supports Require Import
   OneSortedArithmeticNotations.

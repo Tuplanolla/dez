@@ -1,4 +1,4 @@
-(** * Group Structure *)
+(** * Semiring Structure *)
 
 From DEZ.Has Require Export
   EquivalenceRelation Zero Addition One Multiplication.

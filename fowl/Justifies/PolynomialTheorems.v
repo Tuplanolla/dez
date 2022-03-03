@@ -16,10 +16,10 @@ From DEZ.Is Require Export
   AbelianGroup Semigroup
   Monoid Semiring
   Ring.
-From DEZ.Provides Require Export
+From DEZ.Justifies Require Export
   OneSortedPositiveOperations OneSortedNaturalOperations
   OneSortedIntegerOperations.
-From DEZ.Provides Require Export
+From DEZ.Justifies Require Export
   NTheorems ZTheorems.
 From DEZ.Supports Require
   OneSortedAdditiveNotations OneSortedMultiplicativeNotations.

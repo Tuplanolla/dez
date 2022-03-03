@@ -2,12 +2,12 @@
 
 From Coq Require Import
   Classes.DecidableClass Classes.Morphisms Lia NArith.NArith Setoids.Setoid.
-From DEZ Require Import
-  DatatypeTactics RewritingTactics.
 From DEZ.Is Require Export
   AbelianGroup Semigroup Monoid Semiring.
-From DEZ.Provides Require Import
+From DEZ.Justifies Require Export
   PositiveTheorems.
+From DEZ.Provides Require Import
+  DatatypeTactics RewritingTactics.
 
 Module N.
 

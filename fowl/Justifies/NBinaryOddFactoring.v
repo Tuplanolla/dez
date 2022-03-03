@@ -4,7 +4,7 @@ From Coq Require Import
   NArith.NArith.
 From DEZ.Has Require Import
   Unsquashing.
-From DEZ.Provides Require Export
+From DEZ.Justifies Require Export
   LogicalTheorems NTheorems PositiveTheorems.
 
 (** TODO We should turn these lemmas into typeclass instances. *)

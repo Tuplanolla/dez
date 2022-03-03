@@ -4,7 +4,7 @@ From DEZ.Has Require Export
   Action.
 From DEZ.Is Require Export
   Group.
-From DEZ.Provides Require Export
+From DEZ.Justifies Require Export
   OneSortedPositiveOperations OneSortedNaturalOperations.
 From DEZ.Supports Require Import
   OneSortedAdditivePositiveOperationNotations.

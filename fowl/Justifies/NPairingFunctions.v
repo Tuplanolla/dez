@@ -6,7 +6,7 @@ From Coq Require Import
   Lia Lists.List NArith.NArith Bool.Sumbool.
 From DEZ.Has Require Export
   Unsquashing.
-From DEZ.Provides Require Export
+From DEZ.Justifies Require Export
   OptionTheorems PositiveTheorems ProductTheorems
   NBinaryOddFactoring NTriangularNumbers.
 

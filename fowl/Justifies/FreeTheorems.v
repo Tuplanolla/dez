@@ -6,7 +6,7 @@ From DEZ.Has Require Export
   Decisions Unsquashing.
 From DEZ.Is Require Export
   Group Truncated.
-From DEZ.Provides Require Export
+From DEZ.Justifies Require Export
   BooleanTheorems (* ListTheorems *) ProductTheorems UnitTheorems ZTheorems.
 From DEZ.Supports Require Import
   EquivalenceNotations AdditiveNotations.

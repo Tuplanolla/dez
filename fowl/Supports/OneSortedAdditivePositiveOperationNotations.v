@@ -1,4 +1,4 @@
-From DEZ.Provides Require Import
+From DEZ.Justifies Require Import
   OneSortedPositiveOperations.
 From DEZ.Supports Require Export
   OneSortedAdditiveNotations.

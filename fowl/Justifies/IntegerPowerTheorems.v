@@ -4,7 +4,7 @@ From Coq Require Import
 From DEZ.Is Require Export
   Semigroup Monoid Group
   TwoSortedLeftBinaryCommutative.
-From DEZ.Provides Require Export
+From DEZ.Justifies Require Export
   OneSortedPositiveOperations OneSortedNaturalOperations
   OneSortedIntegerOperations.
 From DEZ.Supports Require Import

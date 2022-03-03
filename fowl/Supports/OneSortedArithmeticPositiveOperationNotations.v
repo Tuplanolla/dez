@@ -1,6 +1,6 @@
 From DEZ.Has Require Import
   Addition Multiplication.
-From DEZ.Provides Require Import
+From DEZ.Justifies Require Import
   OneSortedPositiveOperations.
 From DEZ.Supports Require Export
   OneSortedArithmeticNotations.

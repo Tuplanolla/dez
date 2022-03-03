@@ -8,7 +8,7 @@ From Coq Require Import
   Classes.DecidableClass PArith.PArith Program.Wf.
 From DEZ.Has Require Export
   Unsquashing.
-From DEZ.Provides Require Import
+From DEZ.Justifies Require Import
   LogicalTheorems OptionTheorems PositiveTheorems PositivePairingFunctions.
 
 From Coq Require Import Lia List Recdef.

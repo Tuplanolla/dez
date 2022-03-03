@@ -2,10 +2,10 @@
 
 From Coq Require Import
   Lia Lists.List NArith.NArith.
-From DEZ Require Import
-  DatatypeTactics RewritingTactics.
-From DEZ.Provides Require Export
+From DEZ.Justifies Require Export
   LogicalTheorems NTheorems OptionTheorems ProductTheorems.
+From DEZ.Supports Require Import
+  DatatypeTactics RewritingTactics.
 
 Import ListNotations N.
 

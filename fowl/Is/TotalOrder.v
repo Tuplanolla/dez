@@ -45,12 +45,6 @@ Proof. typeclasses eauto. Qed.
   `{!IsTotOrd X Y} : IsTrans Y.
 Proof. typeclasses eauto. Qed.
 
-(** A total order is proper. *)
-
-#[local] Instance tot_ord_is_proper
-  `{!IsTotOrd X Y} : IsProper (X ==> X ==> _<->_) Y.
-Proof. typeclasses eauto. Qed.
-
 End Context.
 
 (** ** Strict Linear Order *)

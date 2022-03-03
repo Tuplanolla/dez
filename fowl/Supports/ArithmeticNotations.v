@@ -1,7 +1,7 @@
 (** * Additive and Multiplicative Notations for Algebraic Operations *)
 
 From DEZ.Has Require Import
-  Zero Negation Addition One Reciprocation Multiplication ScalarMultiplication.
+  ArithmeticOperations ArithmeticActions.
 
 Reserved Notation "x '*<' y" (left associativity, at level 40).
 Reserved Notation "x '>*' y" (left associativity, at level 40).
