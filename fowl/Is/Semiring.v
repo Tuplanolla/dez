@@ -11,18 +11,17 @@ From DEZ.Supports Require Import
 
 Class IsSemiring (A : Type) (X : A -> A -> Prop)
   (x : A) (k : A -> A -> A) (y : A) (m : A -> A -> A) : Prop := {
-  add_is_mon :> IsMon X x k;
-  add_is_comm :> IsComm X k;
-  mul_is_mon :> IsMon X y m;
-  is_distr_l_r :> IsDistrLR X m k;
-  is_absorb_elem_l_r :> IsAbsorbElemLR X x m;
+  semiring_add_is_mon :> IsMon X x k;
+  semiring_add_is_comm :> IsComm X k;
+  semiring_mul_is_mon :> IsMon X y m;
+  semiring_is_distr :> IsDistr X m k;
+  semiring_is_absorb_elem :> IsAbsorbElem X x m;
 }.
 
 Section Context.
 
 Context (A : Type) (X : A -> A -> Prop)
-  (x : A) (k : A -> A -> A) (y : A) (m : A -> A -> A)
-  `(!IsSemiring X x k y m).
+  (x : A) (k : A -> A -> A) (y : A) (m : A -> A -> A) `{!IsSemiring X x k y m}.
 
 #[local] Instance has_equiv_rel : HasEquivRel A := X.
 #[local] Instance has_zero : HasZero A := x.

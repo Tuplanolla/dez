@@ -41,7 +41,7 @@ digraph Has {
   edge [style = solid]
 
   HasCompHom -> HasHom
-  HasEquivRel -> HasEquivDec
+  HasEquivDec -> HasEquivRel
   HasIdHom -> HasHom
   HasInvHom -> HasHom
 

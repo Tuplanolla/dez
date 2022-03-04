@@ -35,6 +35,12 @@ digraph Is {
   IsCompatActR [label = "\N\ncompat_act_r (a : B) (x y : A) : X (ar a (k x y)) (ar (ar a x) y)"]
   IsCompatActs [label = "\N\ncompat_acts (x : A) (a : C) (y : B) : X (al x (ar a y)) (ar (al x a) y)"]
   IsCompatBinFns [label = "\N\ncompat_bin_fns (x : A0) (y : A1) (z : A2) : X (n x (m y z)) (p (k x y) z)"]
+  IsInvBinFnL [label = "\N\ninv_bin_fn_l (y : A) : X (k (f y) y) x"]
+  IsInvBinFnR [label = "\N\ninv_bin_fn_r (y : A) : X (k y (f y)) x"]
+  IsInvFormL [label = "\N\ninv_form_l (y : A) : X (a (f y) y) x"]
+  IsInvFormR [label = "\N\ninv_form_r (y : A) : X (a y (f y)) x"]
+  IsInvL [label = "\N\ninv_l (y : A) : X (k (f y) y) x"]
+  IsInvR [label = "\N\ninv_r (y : A) : X (k y (f y)) x"]
   IsUnlActL [label = "\N\nunl_act_l (a : B) : X (al x a) a"]
   IsUnlActR [label = "\N\nunl_act_r (a : B) : X (ar a x) a"]
   IsUnlL [label = "\N\nunl_l (y : A) : X (k x y) y"]
@@ -44,6 +50,8 @@ digraph Is {
     label = "Abstract Algebra"
 
     IsGrp [label = "\N", color = red, fillcolor = yellow]
+    IsInv [label = "\N"]
+    IsInvForm [label = "\N"]
     IsMon [label = "\N"]
     IsRing [label = "\N", color = red, fillcolor = yellow]
     IsSemigrp [label = "\N"]
@@ -80,8 +88,6 @@ digraph Is {
   IsInflateBinOpL [label = "\N\ninflate_bin_op_l (x y : A) : y <= x + y", color = red, fillcolor = yellow]
   IsInflateBinOpR [label = "\N\ninflate_bin_op_r (x y : A) : x <= x + y", color = red, fillcolor = yellow]
   IsInj [label = "\N\ninj (x y : A) (a : f x = f y) : x = y", color = red, fillcolor = yellow]
-  IsInvL [label = "\N\ninv_l (x : A) : (- x) + x = 0", color = red, fillcolor = yellow]
-  IsInvR [label = "\N\ninv_r (x : A) : x + (- x) = 0", color = red, fillcolor = yellow]
   IsInvol [label = "\N\ninvol (x : A) : f (f x) = x", color = red, fillcolor = yellow]
   IsIsoL [label = "\N\niso_l (a : A) : g (f a) = a", color = red, fillcolor = yellow]
   IsIsoR [label = "\N\niso_r (b : B) : f (g b) = b", color = red, fillcolor = yellow]
@@ -103,7 +109,6 @@ digraph Is {
   IsCancelLR [label = "\N", color = red, fillcolor = yellow]
   IsCommLR [label = "\N", color = red, fillcolor = yellow]
   IsDistrLR [label = "\N", color = red, fillcolor = yellow]
-  IsInvLR [label = "\N", color = red, fillcolor = yellow]
   IsIsoLR [label = "\N", color = red, fillcolor = yellow]
   IsMetric [label = "\N", color = red, fillcolor = yellow]
   IsNonzeroCancelLR [label = "\N", color = red, fillcolor = yellow]
@@ -142,6 +147,10 @@ digraph Is {
   }
 
   subgraph abstract_algebra_fields {
+    IsInv -> IsInvL
+    IsInv -> IsInvR
+    IsInvForm -> IsInvFormL
+    IsInvForm -> IsInvFormR
     IsUnl -> IsUnlL
     IsUnl -> IsUnlR
     IsSemigrp -> IsAssoc
@@ -149,6 +158,9 @@ digraph Is {
     IsSemigrp -> IsProper [constraint = false]
     IsMon -> IsSemigrp
     IsMon -> IsUnl
+    IsGrp -> IsInv
+    IsGrp -> IsMon
+    IsGrp -> IsProper [constraint = false]
   }
 
   edge [color = red]
@@ -163,10 +175,6 @@ digraph Is {
   IsCommTorLR -> IsCommTorR
   IsDistrLR -> IsDistrL
   IsDistrLR -> IsDistrR
-  IsGrp -> IsInvLR
-  IsGrp -> IsMon
-  IsInvLR -> IsInvL
-  IsInvLR -> IsInvR
   IsIsoLR -> IsIsoL
   IsIsoLR -> IsIsoR
   IsNonzeroCancelLR -> IsNonzeroCancelL
@@ -207,6 +215,11 @@ digraph Is {
     IsCompatActL -> IsCompatBinFns
     IsCompatActR -> IsCompatBinFns
     IsCompatActs -> IsCompatBinFns
+    IsInv -> IsInvForm
+    IsInvFormL -> IsInvBinFnL
+    IsInvFormR -> IsInvBinFnR
+    IsInvL -> IsInvFormL
+    IsInvR -> IsInvFormR
     IsMon -> IsAssoc
     IsUnlL -> IsUnlActL
     IsUnlR -> IsUnlActR
