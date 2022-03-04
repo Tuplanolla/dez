@@ -1,12 +1,12 @@
 (** * Forms *)
 
-(** This concept appears in bilinear forms and metric spaces,
-    but does not have a common name, so we call it a form. *)
-
 From DEZ.Has Require Export
-  AlgebraicOperations.
+  Operations.
 
 (** ** Form *)
+
+(** This concept appears in bilinear forms and metric spaces,
+    but does not have a common name, so we call it a form. *)
 
 Class HasForm (A B : Type) : Type := form (a b : B) : A.
 

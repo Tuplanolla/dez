@@ -1,12 +1,14 @@
 (** * Group Structure *)
 
 From DEZ.Has Require Export
-  EquivalenceRelation NullaryOperation UnaryOperation BinaryOperation Action.
+  EquivalenceRelations Operations Actions.
 From DEZ.Is Require Export
   Monoid Invertible Proper
   Fixed Involutive Injective Cancellative Distributive Preserving.
 From DEZ.Supports Require Import
-  AdditiveNotations EquivalenceNotations.
+  EquivalenceNotations AdditiveNotations.
+
+#[local] Open Scope core_scope.
 
 (** ** Group *)
 
@@ -33,12 +35,16 @@ Ltac note := progress (
   try change f with (un_op (A := A)) in *;
   try change k with (bin_op (A := A)) in *).
 
+(** Zero is a fixed point of negation. *)
+
 #[export] Instance grp_is_fixed : IsFixed X x f.
 Proof.
-  note. unfold IsFixed, IsFixed2.
+  hnf. note.
   setoid_rewrite <- (unl_r (- x)).
   setoid_rewrite (inv_l x).
   reflexivity. Qed.
+
+(** Negation is an involution. *)
 
 #[export] Instance grp_is_invol : IsInvol X f.
 Proof.
@@ -50,6 +56,8 @@ Proof.
   setoid_rewrite (unl_l y).
   reflexivity. Qed.
 
+(** Negation is injective. *)
+
 #[export] Instance grp_is_inj : IsInj X f.
 Proof.
   note. intros y z a.
@@ -60,6 +68,8 @@ Proof.
   setoid_rewrite (inv_l z).
   setoid_rewrite (unl_r y).
   reflexivity. Qed.
+
+(** Addition is left-cancellative. *)
 
 #[export] Instance grp_is_cancel_l : IsCancelL X k.
 Proof.
@@ -73,6 +83,8 @@ Proof.
   setoid_rewrite (unl_l z).
   reflexivity. Qed.
 
+(** Addition is right-cancellative. *)
+
 #[export] Instance grp_is_cancel_r : IsCancelR X k.
 Proof.
   note. intros y z w a.
@@ -85,10 +97,14 @@ Proof.
   setoid_rewrite (unl_r z).
   reflexivity. Qed.
 
+(** Addition is cancellative. *)
+
 #[export] Instance grp_is_cancel : IsCancel X k.
 Proof. esplit; typeclasses eauto. Qed.
 
-#[export] Instance grp_is_antidistr : IsAntidistr X f k k.
+(** Addition antidistributes over negation. *)
+
+#[export] Instance grp_is_antidistr : IsAntidistr X f k.
 Proof.
   note. intros y z.
   apply (cancel_l (- (y + z)) ((- z) + (- y)) (y + z)).
@@ -99,22 +115,6 @@ Proof.
   setoid_rewrite (unl_r y).
   setoid_rewrite (inv_r y).
   reflexivity. Qed.
-
-End Context.
-
-From Coq Require Import
-  ZArith.ZArith.
-
-Section Context.
-
-Context (A : Type)
-  {X : HasEquivRel A} {x : HasNullOp A} {f : HasUnOp A} {k : HasBinOp A}
-  `{!IsGrp X x f k}.
-
-Equations rep (n : Z) (y : A) : A :=
-  rep Z0 y := 0;
-  rep (Zpos n) y := Pos.iter_op _+_ n y;
-  rep (Zneg n) y := - Pos.iter_op _+_ n y.
 
 End Context.
 
@@ -156,9 +156,11 @@ Ltac note := progress (
   try change g with (un_op (A := B)) in *;
   try change m with (bin_op (A := B)) in *).
 
+(** Homomorphisms preserve zero. *)
+
 #[export] Instance grp_hom_is_null_pres : IsNullPres Y x y h.
 Proof.
-  unfold IsNullPres. note.
+  hnf. note.
   pose proof bin_pres 0 0 as a.
   setoid_rewrite <- (unl_r (h (0 + 0))) in a.
   setoid_rewrite (unl_l 0) in a.
@@ -166,15 +168,35 @@ Proof.
   setoid_rewrite <- a.
   reflexivity. Qed.
 
+(** Homomorphisms preserve negation. *)
+
 #[export] Instance grp_hom_is_un_pres : IsUnPres Y f g h.
 Proof.
   note. intros z.
   pose proof bin_pres z (- z) as a.
   setoid_rewrite (inv_r z) in a.
-  eapply cancel_l with (h z).
+  apply cancel_l with (h z).
   setoid_rewrite <- a.
   setoid_rewrite inv_r.
   apply null_pres. Qed.
+
+End Context.
+
+Section Context.
+
+Context (A : Type)
+  (X : A -> A -> Prop) (x : A) (f : A -> A) (k : A -> A -> A)
+  `{!IsGrp X x f k}.
+
+(** The identity function is a group homomorphism. *)
+
+#[export] Instance id_is_grp_hom : IsGrpHom X x f k X x f k id.
+Proof.
+  split.
+  - typeclasses eauto.
+  - typeclasses eauto.
+  - intros y z. unfold id. reflexivity.
+  - typeclasses eauto. Qed.
 
 End Context.
 
@@ -184,7 +206,25 @@ Class IsGrpActL (A B : Type)
   (X : A -> A -> Prop) (x : A) (f : A -> A) (k : A -> A -> A)
   (Y : B -> B -> Prop) (al : A -> B -> B) : Prop := {
   grp_act_l_is_grp :> IsGrp X x f k;
-  grp_act_l_is_unl_l :> IsUnlL Y x al;
-  grp_act_l_is_assoc :> IsCompatL Y k al;
+  grp_act_l_is_unl_act_l :> IsUnlActL Y x al;
+  grp_act_l_is_compat_act_l :> IsCompatActL Y k al;
   grp_act_l_is_proper :> IsProper (X ==> Y ==> Y) al;
 }.
+
+Section Context.
+
+Context (A : Type)
+  (X : A -> A -> Prop) (x : A) (f : A -> A) (k : A -> A -> A)
+  `{!IsGrp X x f k}.
+
+(** Addition is a left group action. *)
+
+#[export] Instance bin_op_is_grp_act_l : IsGrpActL X x f k X k.
+Proof.
+  split.
+  - typeclasses eauto.
+  - enough (IsUnlL X x k) by assumption. typeclasses eauto.
+  - enough (IsAssoc X k) by assumption. typeclasses eauto.
+  - typeclasses eauto. Qed.
+
+End Context.

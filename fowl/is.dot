@@ -49,7 +49,9 @@ digraph Is {
   subgraph cluster_abstract_algebra_classes {
     label = "Abstract Algebra"
 
-    IsGrp [label = "\N", color = red, fillcolor = yellow]
+    IsCancel [label = "\N"]
+    IsGrp [label = "\N"]
+    IsGrpHom [label = "\N"]
     IsInv [label = "\N"]
     IsInvForm [label = "\N"]
     IsMon [label = "\N"]
@@ -106,7 +108,6 @@ digraph Is {
   IsUpperBnd [label = "\N\nupper_bnd (y : A) : y <= x", color = red, fillcolor = yellow]
 
   IsAbsorbElemLR [label = "\N", color = red, fillcolor = yellow]
-  IsCancelLR [label = "\N", color = red, fillcolor = yellow]
   IsCommLR [label = "\N", color = red, fillcolor = yellow]
   IsDistrLR [label = "\N", color = red, fillcolor = yellow]
   IsIsoLR [label = "\N", color = red, fillcolor = yellow]
@@ -147,28 +148,32 @@ digraph Is {
   }
 
   subgraph abstract_algebra_fields {
+    IsCancel -> IsCancelL
+    IsCancel -> IsCancelR
+    IsGrp -> IsInv
+    IsGrp -> IsMon
+    IsGrp -> IsProper [constraint = false]
+    IsGrpHom -> IsBinPres
+    IsGrpHom -> IsGrp
+    IsGrpHom -> IsGrp
+    IsGrpHom -> IsProper [constraint = false]
     IsInv -> IsInvL
     IsInv -> IsInvR
     IsInvForm -> IsInvFormL
     IsInvForm -> IsInvFormR
-    IsUnl -> IsUnlL
-    IsUnl -> IsUnlR
+    IsMon -> IsSemigrp
+    IsMon -> IsUnl
     IsSemigrp -> IsAssoc
     IsSemigrp -> IsEquiv
     IsSemigrp -> IsProper [constraint = false]
-    IsMon -> IsSemigrp
-    IsMon -> IsUnl
-    IsGrp -> IsInv
-    IsGrp -> IsMon
-    IsGrp -> IsProper [constraint = false]
+    IsUnl -> IsUnlL
+    IsUnl -> IsUnlR
   }
 
   edge [color = red]
 
   IsAbsorbElemLR -> IsAbsorbElemL
   IsAbsorbElemLR -> IsAbsorbElemR
-  IsCancelLR -> IsCancelL
-  IsCancelLR -> IsCancelR
   IsCommLR -> IsCommL
   IsCommLR -> IsCommR
   IsCommTorLR -> IsCommTorL
@@ -215,6 +220,15 @@ digraph Is {
     IsCompatActL -> IsCompatBinFns
     IsCompatActR -> IsCompatBinFns
     IsCompatActs -> IsCompatBinFns
+    IsGrp -> IsAntidistr
+    IsGrp -> IsCancel
+    IsGrp -> IsCancelL
+    IsGrp -> IsCancelR
+    IsGrp -> IsFixed
+    IsGrp -> IsInj
+    IsGrp -> IsInvol
+    IsGrpHom -> IsNullPres
+    IsGrpHom -> IsUnPres
     IsInv -> IsInvForm
     IsInvFormL -> IsInvBinFnL
     IsInvFormR -> IsInvBinFnR
@@ -232,11 +246,6 @@ digraph Is {
   IsContr -> IsProp
   IsContr -> IsTrunc
   IsFunExtDep -> IsFunExt
-  IsGrp -> IsAntidistr
-  IsGrp -> IsCancelLR
-  IsGrp -> IsFixed
-  IsGrp -> IsInj
-  IsGrp -> IsInvol
   IsIdemBinOp -> IsIdemElem
   IsMono -> IsStrMono
   IsMonoBinOp -> IsMonoBinOpL

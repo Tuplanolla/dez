@@ -1,7 +1,7 @@
 (** * Additive Notations for Algebraic Operations *)
 
 From DEZ.Has Require Import
-  AlgebraicOperations AlgebraicActions.
+  Operations Actions.
 
 (** Some programming languages like Octave
     use [.+] and [.*] for scalar operations,

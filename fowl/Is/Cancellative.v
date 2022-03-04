@@ -3,7 +3,7 @@
 From Coq Require Import
   Logic.FunctionalExtensionality.
 From DEZ.Has Require Export
-  AlgebraicOperations.
+  Operations.
 From DEZ.Is Require Export
   Injective.
 From DEZ.Supports Require Import
@@ -17,7 +17,7 @@ Class IsCancelL (A : Type) (X : A -> A -> Prop) (Hk : HasBinOp A) : Prop :=
 Class IsCancelR (A : Type) (X : A -> A -> Prop) (Hk : HasBinOp A) : Prop :=
   cancel_r (x y z : A) (a : X (x + z) (y + z)) : X x y.
 
-Class IsCancelLR (A : Type) (X : A -> A -> Prop) (Hk : HasBinOp A) : Prop := {
+Class IsCancel (A : Type) (X : A -> A -> Prop) (Hk : HasBinOp A) : Prop := {
   is_cancel_l :> IsCancelL X _+_;
   is_cancel_r :> IsCancelR X _+_;
 }.

@@ -1,7 +1,7 @@
 (** * Multiplicative Notations for Algebraic Operations *)
 
 From DEZ.Has Require Import
-  AlgebraicOperations AlgebraicActions.
+  Operations Actions.
 
 Reserved Notation "x '*<' y" (left associativity, at level 40).
 Reserved Notation "x '>*' y" (left associativity, at level 40).

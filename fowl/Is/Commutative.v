@@ -3,7 +3,7 @@
 From Coq Require Import
   Logic.FunctionalExtensionality.
 From DEZ.Has Require Export
-  AlgebraicForms AlgebraicOperations.
+  Forms Operations.
 From DEZ.Supports Require Import
   MultiplicativeNotations.
 

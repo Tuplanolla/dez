@@ -1,7 +1,7 @@
 (** * Arithmetic Actions *)
 
 From DEZ.Has Require Export
-  AlgebraicActions.
+  Actions.
 
 (** ** Left Scalar Multiplication *)
 
@@ -21,12 +21,12 @@ Section Context.
 
 Context (A B : Type).
 
-(** A left scalar multiplication is a left action. *)
+(** Left scalar multiplication is a left action. *)
 
 #[export] Instance s_mul_l_has_act_l
   {al : HasSMulL A B} : HasActL A B := s_mul_l.
 
-(** A right scalar multiplication is a right action. *)
+(** Right scalar multiplication is a right action. *)
 
 #[export] Instance s_mul_r_has_act_r
   {ar : HasSMulR A B} : HasActR A B := s_mul_r.

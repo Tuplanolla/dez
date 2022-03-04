@@ -3,7 +3,7 @@
 From Coq Require Import
   Logic.Eqdep_dec.
 From DEZ.Has Require Export
-  Zero Negation Addition One Multiplication.
+  EquivalenceRelations ArithmeticOperations.
 From DEZ.Is Require Export
   Group Commutative Monoid Distributive
   Cancellative Absorbing OneSortedSignedAbsorbing OneSortedBinaryCommutative

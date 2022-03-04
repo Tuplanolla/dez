@@ -81,6 +81,9 @@ Instance has_X_F : HasX (F A).
 
 Definition X_G {x : HasX A} : G A.
 Definition Y_G {y : HasY (G A)} : A.
+
+Instance Z_has_Y : HasY Z.
+Instance Z_has_X_F : HasX (F Z).
 ```
 
 Order fields of classes first by parameters they mention and then arity.

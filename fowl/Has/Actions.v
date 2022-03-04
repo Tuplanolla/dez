@@ -1,7 +1,7 @@
 (** * Actions *)
 
 From DEZ.Has Require Export
-  AlgebraicOperations.
+  Operations.
 
 (** ** Left Act *)
 (** ** Left Action *)

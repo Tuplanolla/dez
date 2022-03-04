@@ -1,7 +1,7 @@
 (** * Distributivity *)
 
 From DEZ.Has Require Export
-  BinaryOperation Addition Multiplication.
+  Operations ArithmeticOperations.
 From DEZ.Supports Require
   AdditiveNotations ArithmeticNotations.
 
@@ -10,7 +10,7 @@ Class IsDistr7 (A0 A1 B0 B1 B2 C0 C1 : Type) (X : C0 -> C1 -> Prop)
   (k : A0 -> A1 -> B2) (m : B0 -> B1 -> C1) : Prop :=
   distr' (x : A0) (y : A1) : X (h (k x y)) (m (f x) (g y)).
 
-Class IsDistr2 (A B : Type) (X : B -> B -> Prop)
+Class IsDistr3 (A B : Type) (X : B -> B -> Prop)
   (f : A -> B) (k : A -> A -> A) (m : B -> B -> B) : Prop :=
   is_distr_7 :> IsDistr7 X f f f k m.
 
@@ -25,14 +25,22 @@ Section Context.
 
 Import AdditiveNotations.
 
+Class IsDistr2 (A B : Type) (X : B -> B -> Prop) (f : A -> B)
+  (Hk : HasBinOp A) (Hm : HasBinOp B) : Prop :=
+  distr2 (x y : A) : X (f (x + y)) (f x + f y).
+
 (** This has the same shape as [opp_add_distr]. *)
 
-Class IsDistr (A B : Type) (X : B -> B -> Prop) (f : A -> B)
-  (Hk : HasBinOp A) (Hm : HasBinOp B) : Prop :=
+Class IsDistr (A : Type) (X : A -> A -> Prop) (f : A -> A)
+  (Hk : HasBinOp A) : Prop :=
   distr (x y : A) : X (f (x + y)) (f x + f y).
 
-Class IsAntidistr (A B : Type) (X : B -> B -> Prop) (f : A -> B)
+Class IsAntidistr2 (A B : Type) (X : B -> B -> Prop) (f : A -> B)
   (Hk : HasBinOp A) (Hm : HasBinOp B) : Prop :=
+  antidistr2 (x y : A) : X (f (x + y)) (f y + f x).
+
+Class IsAntidistr (A : Type) (X : A -> A -> Prop) (f : A -> A)
+  (Hk : HasBinOp A) : Prop :=
   antidistr (x y : A) : X (f (x + y)) (f y + f x).
 
 End Context.
