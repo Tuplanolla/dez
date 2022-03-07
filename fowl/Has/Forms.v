@@ -5,7 +5,7 @@ From DEZ.Has Require Export
 
 (** ** Form *)
 
-(** This concept appears in bilinear forms and metric spaces,
+(** This concept appears in sesquilinear forms and metrics,
     but does not have a common name, so we call it a form. *)
 
 Class HasForm (A B : Type) : Type := form (a b : B) : A.

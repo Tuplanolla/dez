@@ -4,35 +4,45 @@ digraph Has {
 
   node [fontname = monospace, style = filled, fillcolor = cornsilk]
 
-  HasActL [label = "\N\nact_l (x : A) (a : B) : B"]
-  HasActR [label = "\N\nact_r (a : B) (x : A) : B"]
-  HasAdd [label = "\N\nadd (x y : A) : A"]
-  HasBinOp [label = "\N\nbin_op (x y : A) : A"]
-  HasBinRel [label = "\N\nbin_rel (x y : A) : Prop"]
-  HasCompHom [label = "\N\ncomp_hom (x y z : A) (a : y --> z) (b : x --> y) : x --> z"]
-  HasDec [label = "\N\ndec : {A} + {~ A}"]
-  HasDist [label = "\N\ndist (a b : B) : A"]
-  HasEqDec [label = "\N\neq_dec (x y : A) : {x = y} + {x <> y}"]
-  HasEquivDec [label = "\N\nequiv_dec (x y : A) : {x == y} + {~ x == y}"]
-  HasEquivRel [label = "\N\nequiv_rel (x y : A) : Prop"]
-  HasForm [label = "\N\nform (a b : B) : A"]
-  HasHom [label = "\N\nhom (x y : A) : Prop"]
-  HasIdHom [label = "\N\nid_hom (x : A) : x --> x"]
-  HasInvHom [label = "\N\ninv_hom (x y : A) (a : x --> y) : y --> x"]
-  HasMul [label = "\N\nmul (x y : A) : A"]
-  HasNeg [label = "\N\nneg (x : A) : A"]
-  HasNullOp [label = "\N\nnull_op : A"]
-  HasNullRel [label = "\N\nnull_rel : Prop"]
-  HasOne [label = "\N\none : A"]
-  HasOrdRel [label = "\N\nord_rel (x y : A) : Prop"]
-  HasRecip [label = "\N\nrecip (x : A) : A"]
-  HasSMulL [label = "\N\ns_mul_l (x : A) (a : B) : B"]
-  HasSMulR [label = "\N\ns_mul_r (a : B) (x : A) : B"]
-  HasStrOrdRel [label = "\N\nstr_ord_rel (x y : A) : Prop"]
-  HasUnOp [label = "\N\nun_op (x : A) : A"]
-  HasUnRel [label = "\N\nun_rel (x : A) : Prop"]
-  HasUnsquash [label = "\N\nunsquash (x : Squash A) : A"]
-  HasZero [label = "\N\nzero : A"]
+  HasDec [label = "\N A : Type\ndec : {A} + {~ A}"]
+  HasEqDec [label = "\N A : Type\neq_dec (x y : A) : {x = y} + {x <> y}"]
+  HasEquivDec [label = "\N A : Type\nequiv_dec (x y : A) : {x == y} + {~ x == y}"]
+  HasUnsquash [label = "\N A : Type\nunsquash (x : Squash A) : A"]
+
+  subgraph cluster_relation_classes {
+    label = "Relations"
+
+    HasBinRel [label = "\N A : Type\nbin_rel (x y : A) : Prop"]
+    HasEquivRel [label = "\N A : Type\nequiv_rel (x y : A) : Prop"]
+    HasHom [label = "\N A : Type\nhom (x y : A) : Prop"]
+    HasNullRel [label = "\N A : Type\nnull_rel : Prop"]
+    HasOrdRel [label = "\N A : Type\nord_rel (x y : A) : Prop"]
+    HasStrOrdRel [label = "\N A : Type\nstr_ord_rel (x y : A) : Prop"]
+    HasUnRel [label = "\N A : Type\nun_rel (x : A) : Prop"]
+  }
+
+  subgraph cluster_operation_classes {
+    label = "Operations"
+
+    HasActL [label = "\N A B : Type\nact_l (x : A) (a : B) : B"]
+    HasActR [label = "\N A B : Type\nact_r (a : B) (x : A) : B"]
+    HasAdd [label = "\N A : Type\nadd (x y : A) : A"]
+    HasBinOp [label = "\N A : Type\nbin_op (x y : A) : A"]
+    HasCompHom [label = "\N A : Type\ncomp_hom (x y z : A) (a : y --> z) (b : x --> y) : x --> z"]
+    HasDist [label = "\N A B : Type\ndist (a b : B) : A"]
+    HasForm [label = "\N A B : Type\nform (a b : B) : A"]
+    HasIdHom [label = "\N A : Type\nid_hom (x : A) : x --> x"]
+    HasInvHom [label = "\N A : Type\ninv_hom (x y : A) (a : x --> y) : y --> x"]
+    HasMul [label = "\N A : Type\nmul (x y : A) : A"]
+    HasNeg [label = "\N A : Type\nneg (x : A) : A"]
+    HasNullOp [label = "\N A : Type\nnull_op : A"]
+    HasOne [label = "\N A : Type\none : A"]
+    HasRecip [label = "\N A : Type\nrecip (x : A) : A"]
+    HasSMulL [label = "\N A B : Type\ns_mul_l (x : A) (a : B) : B"]
+    HasSMulR [label = "\N A B : Type\ns_mul_r (a : B) (x : A) : B"]
+    HasUnOp [label = "\N A : Type\nun_op (x : A) : A"]
+    HasZero [label = "\N A : Type\nzero : A"]
+  }
 
   node [style = dashed]
 
@@ -74,4 +84,6 @@ digraph Has {
   HasEqDec -> HasDec
   HasEqDec -> HasEquivDec
   HasEquivDec -> HasDec
+
+  HasBinOp -> HasEqDec [style = invis]
 }

@@ -1,4 +1,4 @@
-(** * Cancellativity of a Binary Operation *)
+(** * DEPRECATED Cancellativity of a Binary Operation *)
 
 From Coq Require Import
   Logic.FunctionalExtensionality.
@@ -8,19 +8,6 @@ From DEZ.Is Require Export
   Injective.
 From DEZ.Supports Require Import
   AdditiveNotations.
-
-Class IsCancelL (A : Type) (X : A -> A -> Prop) (Hk : HasBinOp A) : Prop :=
-  cancel_l (x y z : A) (a : X (z + x) (z + y)) : X x y.
-
-(** This has the same shape as [add_reg_l]. *)
-
-Class IsCancelR (A : Type) (X : A -> A -> Prop) (Hk : HasBinOp A) : Prop :=
-  cancel_r (x y z : A) (a : X (x + z) (y + z)) : X x y.
-
-Class IsCancel (A : Type) (X : A -> A -> Prop) (Hk : HasBinOp A) : Prop := {
-  is_cancel_l :> IsCancelL X _+_;
-  is_cancel_r :> IsCancelR X _+_;
-}.
 
 (** This has the same shape as [mul_reg_l]. *)
 

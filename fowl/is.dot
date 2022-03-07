@@ -4,68 +4,75 @@ digraph Is {
 
   node [fontname = monospace, style = filled, fillcolor = cornsilk]
 
-  IsAntisym [label = "\N\nantisym (x y : A) (a : Y x y) (b : Y y x) : X x y"]
-  IsAsym [label = "\N\nasym (x y : A) (a : X x y) (b : X y x) : 0"]
-  IsComm [label = "\N\ncomm (x y : A) : X (k x y) (k y x)", color = red, fillcolor = yellow]
-  IsConnex [label = "\N\nconnex (x y : A) : X x y \\/ X y x"]
-  IsCotrans [label = "\N\ncotrans (x y z : A) (a : X x z) : X x y \\/ X y z"]
-  IsIrrefl [label = "\N\nirrefl (x : A) (a : X x x) : 0"]
-  IsProper [label = "\N\nproper (x : A) : X x x"]
-  IsRefl [label = "\N\nrefl (x : A) : X x x"]
-  IsStrConnex [label = "\N\nstr_connex (x y : A) : Y x y \\/ X x y \\/ Y y x"]
-  IsSym [label = "\N\nsym (x y : A) (a : X x y) : X y x"]
-  IsTrans [label = "\N\ntrans (x y z : A) (a : X x y) (b : X y z) : X x z"]
+  IsAntisym [label = "\N X Y : Prop\nantisym (x y : A) (a : Y x y) (b : Y y x) : X x y"]
+  IsAsym [label = "\N X : Prop\nasym (x y : A) (a : X x y) (b : X y x) : 0"]
+  IsComm [label = "\N X k : Prop\ncomm (x y : A) : X (k x y) (k y x)", color = red, fillcolor = yellow]
+  IsConnex [label = "\N X : Prop\nconnex (x y : A) : X x y \\/ X y x"]
+  IsCotrans [label = "\N X : Prop\ncotrans (x y z : A) (a : X x z) : X x y \\/ X y z"]
+  IsIrrefl [label = "\N X : Prop\nirrefl (x : A) (a : X x x) : 0"]
+  IsProper [label = "\N X : Prop\nproper (x : A) : X x x"]
+  IsRefl [label = "\N X : Prop\nrefl (x : A) : X x x"]
+  IsStrConnex [label = "\N X Y : Prop\nstr_connex (x y : A) : Y x y \\/ X x y \\/ Y y x"]
+  IsSym [label = "\N X : Prop\nsym (x y : A) (a : X x y) : X y x"]
+  IsTrans [label = "\N X : Prop\ntrans (x y z : A) (a : X x y) (b : X y z) : X x z"]
 
   subgraph cluster_order_theory_classes {
     label = "Order Theory"
 
-    IsApart [label = "\N"]
-    IsEquiv [label = "\N"]
-    IsPartEquiv [label = "\N"]
-    IsPartOrd [label = "\N"]
-    IsPreord [label = "\N"]
-    IsStrPartOrd [label = "\N"]
-    IsStrPreord [label = "\N"]
-    IsStrTotOrd [label = "\N"]
-    IsTotOrd [label = "\N"]
+    IsApart [label = "\N X : Prop"]
+    IsEquiv [label = "\N X : Prop"]
+    IsPartEquiv [label = "\N X : Prop"]
+    IsPartOrd [label = "\N X Y : Prop"]
+    IsPreord [label = "\N X : Prop"]
+    IsStrPartOrd [label = "\N X : Prop"]
+    IsStrPreord [label = "\N X : Prop"]
+    IsStrTotOrd [label = "\N X Y : Prop"]
+    IsTotOrd [label = "\N X Y : Prop"]
   }
 
-  IsAssoc [label = "\N\nassoc (x y z : A) : X (k x (k y z)) (k (k x y) z)"]
-  IsCompatActL [label = "\N\ncompat_act_l (x y : A) (a : B) : X (al x (al y a)) (al (k x y) a)"]
-  IsCompatActR [label = "\N\ncompat_act_r (a : B) (x y : A) : X (ar a (k x y)) (ar (ar a x) y)"]
-  IsCompatActs [label = "\N\ncompat_acts (x : A) (a : C) (y : B) : X (al x (ar a y)) (ar (al x a) y)"]
-  IsCompatBinFns [label = "\N\ncompat_bin_fns (x : A0) (y : A1) (z : A2) : X (n x (m y z)) (p (k x y) z)"]
-  IsInvBinFnL [label = "\N\ninv_bin_fn_l (y : A) : X (k (f y) y) x"]
-  IsInvBinFnR [label = "\N\ninv_bin_fn_r (y : A) : X (k y (f y)) x"]
-  IsInvFormL [label = "\N\ninv_form_l (y : A) : X (a (f y) y) x"]
-  IsInvFormR [label = "\N\ninv_form_r (y : A) : X (a y (f y)) x"]
-  IsInvL [label = "\N\ninv_l (y : A) : X (k (f y) y) x"]
-  IsInvR [label = "\N\ninv_r (y : A) : X (k y (f y)) x"]
-  IsUnlActL [label = "\N\nunl_act_l (a : B) : X (al x a) a"]
-  IsUnlActR [label = "\N\nunl_act_r (a : B) : X (ar a x) a"]
-  IsUnlL [label = "\N\nunl_l (y : A) : X (k x y) y"]
-  IsUnlR [label = "\N\nunl_r (y : A) : X (k y x) y"]
+  IsAssoc [label = "\N X k : Prop\nassoc (x y z : A) : X (k x (k y z)) (k (k x y) z)"]
+  IsCancelL [label = "\N X k : Prop\n"]
+  IsCancelR [label = "\N X k : Prop\n"]
+  IsCancelFormL [label = "\N X Y s : Prop\ncancel_form_l (x y z : A) (a : Y (s x y) (s x z)) : X y z"]
+  IsCancelFormR [label = "\N X Y s : Prop\ncancel_form_r (x y z : A) (a : Y (s x z) (s y z)) : X x y"]
+  IsCompatActL [label = "\N X k al : Prop\ncompat_act_l (x y : A) (a : B) : X (al x (al y a)) (al (k x y) a)"]
+  IsCompatActR [label = "\N X k ar : Prop\ncompat_act_r (a : B) (x y : A) : X (ar a (k x y)) (ar (ar a x) y)"]
+  IsCompatActs [label = "\N X al ar : Prop\ncompat_acts (x : A) (a : C) (y : B) : X (al x (ar a y)) (ar (al x a) y)"]
+  IsCompatBinFns [label = "\N X k m n p : Prop\ncompat_bin_fns (x : A0) (y : A1) (z : A2) : X (n x (m y z)) (p (k x y) z)"]
+  IsFixed [label = "\N X x f : Prop\nfixed : X (f x) x"]
+  IsInj [label = "\N X f : Prop\ninj (x y : A) (a : X (f x) (f y)) : X x y"]
+  IsInjFn [label = "\N X Y f : Prop\ninj_fn (x y : A) (a : Y (f x) (f y)) : X x y"]
+  IsInvBinFnL [label = "\N X x f k : Prop\ninv_bin_fn_l (y : A) : X (k (f y) y) x"]
+  IsInvBinFnR [label = "\N X x f k : Prop\ninv_bin_fn_r (y : A) : X (k y (f y)) x"]
+  IsInvFormL [label = "\N X x f s : Prop\ninv_form_l (y : A) : X (s (f y) y) x"]
+  IsInvFormR [label = "\N X x f s : Prop\ninv_form_r (y : A) : X (s y (f y)) x"]
+  IsInvL [label = "\N X x f k : Prop\ninv_l (y : A) : X (k (f y) y) x"]
+  IsInvR [label = "\N X x f k : Prop\ninv_r (y : A) : X (k y (f y)) x"]
+  IsInvol [label = "\N X f : Prop\ninvol (x : A) : X (f (f x)) x"]
+  IsUnlActL [label = "\N X x al : Prop\nunl_act_l (a : B) : X (al x a) a"]
+  IsUnlActR [label = "\N X x ar : Prop\nunl_act_r (a : B) : X (ar a x) a"]
+  IsUnlL [label = "\N X x k : Prop\nunl_l (y : A) : X (k x y) y"]
+  IsUnlR [label = "\N X x k : Prop\nunl_r (y : A) : X (k y x) y"]
 
   subgraph cluster_abstract_algebra_classes {
     label = "Abstract Algebra"
 
-    IsCancel [label = "\N"]
-    IsGrp [label = "\N"]
-    IsGrpHom [label = "\N"]
-    IsInv [label = "\N"]
-    IsInvForm [label = "\N"]
-    IsMon [label = "\N"]
-    IsRing [label = "\N", color = red, fillcolor = yellow]
-    IsSemigrp [label = "\N"]
-    IsSemiring [label = "\N", color = red, fillcolor = yellow]
-    IsUnl [label = "\N"]
+    IsCancel [label = "\N X k : Prop"]
+    IsCancelForm [label = "\N X Y s : Prop"]
+    IsGrp [label = "\N X x f k : Prop"]
+    IsGrpHom [label = "\N X x f k Y y g m h : Prop"]
+    IsInv [label = "\N X x f k : Prop"]
+    IsInvForm [label = "\N X x f s : Prop"]
+    IsMon [label = "\N X x k : Prop"]
+    IsRing [label = "\N X x f k y m : Prop", color = red, fillcolor = yellow]
+    IsSemigrp [label = "\N X k : Prop"]
+    IsSemiring [label = "\N X x k y m : Prop", color = red, fillcolor = yellow]
+    IsUnl [label = "\N X x k : Prop"]
   }
 
   IsAbsorbElemL [label = "\N\nabsorb_elem_l (x : A) : 0 * x = 0", color = red, fillcolor = yellow]
   IsAbsorbElemR [label = "\N\nabsorb_elem_r (x : A) : x * 0 = 0", color = red, fillcolor = yellow]
   IsAntidistr [label = "\N\nantidistr (x y : A) : f (x + y) = f y + f x", color = red, fillcolor = yellow]
-  IsCancelL [label = "\N\ncancel_l (x y z : A) (a : z + x = z + y) : x = y", color = red, fillcolor = yellow]
-  IsCancelR [label = "\N\ncancel_r (x y z : A) (a : x + z = y + z) : x = y", color = red, fillcolor = yellow]
   IsCohOrdRels [label = "\N\ncoh_ord_rels (x y : A) : x < y <-> x <= y /\\ x <> y", color = red, fillcolor = yellow]
   IsCommBinOp [label = "\N\ncomm (x y : A) : x * y = y * x", color = red, fillcolor = yellow]
   IsCommL [label = "\N\ncomm_l (x y : A) : (/ x) * y = / (x * y)", color = red, fillcolor = yellow]
@@ -80,7 +87,6 @@ digraph Is {
   IsDistrR [label = "\N\ndistr_r (x y z : A) : (x + y) * z = x * z + y * z", color = red, fillcolor = yellow]
   IsExpand [label = "\N\ncontract (x y : A) : dist (f x) (f y) <= dist x y", color = red, fillcolor = yellow]
   IsExpand [label = "\N\nexpand (x y : A) : dist x y <= dist (f x) (f y)", color = red, fillcolor = yellow]
-  IsFixed [label = "\N\nfixed : f x = x", color = red, fillcolor = yellow]
   IsFunExt [label = "\N\nfun_ext (A B : Type) (f g : A -> B) (a : forall x : A, f x = g x) : f = g", color = red, fillcolor = yellow]
   IsFunExtDep [label = "\N\nfun_ext_dep (A : Type) (P : A -> Type) (f g : forall x : A, P x) (a : forall x : A, f x = g x) : f = g", color = red, fillcolor = yellow]
   IsIdem [label = "\N\nidem (x : A) : f (f x) = f x", color = red, fillcolor = yellow]
@@ -89,8 +95,6 @@ digraph Is {
   IsInfl [label = "\N\ninfl (x : A) : x <= f x", color = red, fillcolor = yellow]
   IsInflateBinOpL [label = "\N\ninflate_bin_op_l (x y : A) : y <= x + y", color = red, fillcolor = yellow]
   IsInflateBinOpR [label = "\N\ninflate_bin_op_r (x y : A) : x <= x + y", color = red, fillcolor = yellow]
-  IsInj [label = "\N\ninj (x y : A) (a : f x = f y) : x = y", color = red, fillcolor = yellow]
-  IsInvol [label = "\N\ninvol (x : A) : f (f x) = x", color = red, fillcolor = yellow]
   IsIsoL [label = "\N\niso_l (a : A) : g (f a) = a", color = red, fillcolor = yellow]
   IsIsoR [label = "\N\niso_r (b : B) : f (g b) = b", color = red, fillcolor = yellow]
   IsLowerBnd [label = "\N\nlower_bnd (y : A) : x <= y", color = red, fillcolor = yellow]
@@ -106,14 +110,6 @@ digraph Is {
   IsStrMono [label = "\N\nstr_mono (x y : A) (a : x < y) : f x < f y", color = red, fillcolor = yellow]
   IsTrunc [label = "\N\ntrunc_zero (A : Type) : IsTrunc O A\ntrunc_succ (n : nat) (A : Type) : IsTrunc (S n) A", color = red, fillcolor = yellow]
   IsUpperBnd [label = "\N\nupper_bnd (y : A) : y <= x", color = red, fillcolor = yellow]
-
-  IsAbsorbElemLR [label = "\N", color = red, fillcolor = yellow]
-  IsCommLR [label = "\N", color = red, fillcolor = yellow]
-  IsDistrLR [label = "\N", color = red, fillcolor = yellow]
-  IsIsoLR [label = "\N", color = red, fillcolor = yellow]
-  IsMetric [label = "\N", color = red, fillcolor = yellow]
-  IsNonzeroCancelLR [label = "\N", color = red, fillcolor = yellow]
-  IsCommTorLR [label = "\N", color = red, fillcolor = yellow]
 
   node [style = dashed]
 
@@ -150,6 +146,8 @@ digraph Is {
   subgraph abstract_algebra_fields {
     IsCancel -> IsCancelL
     IsCancel -> IsCancelR
+    IsCancelForm -> IsCancelFormL
+    IsCancelForm -> IsCancelFormR
     IsGrp -> IsInv
     IsGrp -> IsMon
     IsGrp -> IsProper [constraint = false]
@@ -172,25 +170,23 @@ digraph Is {
 
   edge [color = red]
 
-  IsAbsorbElemLR -> IsAbsorbElemL
-  IsAbsorbElemLR -> IsAbsorbElemR
-  IsCommLR -> IsCommL
-  IsCommLR -> IsCommR
+  IsAbsorbElem -> IsAbsorbElemL
+  IsAbsorbElem -> IsAbsorbElemR
   IsCommTorLR -> IsCommTorL
   IsCommTorLR -> IsCommTorR
-  IsDistrLR -> IsDistrL
-  IsDistrLR -> IsDistrR
+  IsDistr -> IsDistrL
+  IsDistr -> IsDistrR
   IsIsoLR -> IsIsoL
   IsIsoLR -> IsIsoR
   IsNonzeroCancelLR -> IsNonzeroCancelL
   IsNonzeroCancelLR -> IsNonzeroCancelR
   IsRing -> IsCommBinOp
-  IsRing -> IsDistrLR
+  IsRing -> IsDistr
   IsRing -> IsGrp
   IsRing -> IsMon
-  IsSemiring -> IsAbsorbElemLR
+  IsSemiring -> IsAbsorbElem
   IsSemiring -> IsCommBinOp
-  IsSemiring -> IsDistrLR
+  IsSemiring -> IsDistr
   IsSemiring -> IsMon
 
   // Derivations
@@ -217,24 +213,25 @@ digraph Is {
 
   subgraph abstract_algebra_derivations {
     IsAssoc -> IsCompatActs
+    IsCancel -> IsCancelForm
+    IsCancelL -> IsCancelFormL
+    IsCancelR -> IsCancelFormR
     IsCompatActL -> IsCompatBinFns
     IsCompatActR -> IsCompatBinFns
     IsCompatActs -> IsCompatBinFns
     IsGrp -> IsAntidistr
     IsGrp -> IsCancel
-    IsGrp -> IsCancelL
-    IsGrp -> IsCancelR
     IsGrp -> IsFixed
     IsGrp -> IsInj
     IsGrp -> IsInvol
     IsGrpHom -> IsNullPres
     IsGrpHom -> IsUnPres
+    IsInj -> IsInjFn
     IsInv -> IsInvForm
     IsInvFormL -> IsInvBinFnL
     IsInvFormR -> IsInvBinFnR
     IsInvL -> IsInvFormL
     IsInvR -> IsInvFormR
-    IsMon -> IsAssoc
     IsUnlL -> IsUnlActL
     IsUnlR -> IsUnlActR
   }
@@ -252,8 +249,8 @@ digraph Is {
   IsMonoBinOp -> IsMonoBinOpR
   IsProp -> IsSet
   IsProp -> IsTrunc
-  IsRing -> IsAbsorbElemLR
-  IsRing -> IsCommLR
+  IsRing -> IsAbsorbElem
+  IsRing -> IsComm
   IsRing -> IsSemiring
   IsSemiring -> IsContr
   IsSet -> IsTrunc

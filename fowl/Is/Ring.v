@@ -85,10 +85,10 @@ Proof with subclass.
   setoid_rewrite (unl_r z).
   reflexivity. Qed.
 
-#[local] Instance is_absorb_elem_l_r : IsAbsorbElemLR X x m.
+#[export] Instance is_absorb_elem_l_r : IsAbsorbElemLR X x m.
 Proof. esplit; typeclasses eauto. Qed.
 
-#[local] Instance is_semiring : IsSemiring X x k y m.
+#[export] Instance is_semiring : IsSemiring X x k y m.
 Proof. esplit; typeclasses eauto. Qed.
 
 #[local] Instance is_comm_l : IsCommL X f m.
@@ -113,7 +113,7 @@ Proof with subclass.
   setoid_rewrite (inv_r (z * w)).
   reflexivity. Qed.
 
-#[local] Instance is_comm_l_r : IsCommLR X f m.
+#[export] Instance is_comm_l_r : IsCommLR X f m.
 Proof. esplit; typeclasses eauto. Qed.
 
 Lemma comm_l_r (z w : A) : (- z) * w == z * (- w).

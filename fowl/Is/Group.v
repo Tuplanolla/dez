@@ -3,8 +3,8 @@
 From DEZ.Has Require Export
   EquivalenceRelations Operations Actions.
 From DEZ.Is Require Export
-  Monoid Invertible Proper
-  Fixed Involutive Injective Cancellative Distributive Preserving.
+  Monoid Invertible Proper Fixed Involutive Injective Distributive
+  Preserving Unital Associative.
 From DEZ.Supports Require Import
   EquivalenceNotations AdditiveNotations.
 
@@ -71,21 +71,21 @@ Proof.
 
 (** Addition is left-cancellative. *)
 
-#[export] Instance grp_is_cancel_l : IsCancelL X k.
+#[local] Instance grp_is_cancel_l : IsCancelL X k.
 Proof.
   note. intros y z w a.
-  setoid_rewrite <- (unl_l y).
-  setoid_rewrite <- (inv_l w).
-  setoid_rewrite <- (assoc (- w) w y).
+  setoid_rewrite <- (unl_l z).
+  setoid_rewrite <- (inv_l y).
+  setoid_rewrite <- (assoc (- y) y z).
   setoid_rewrite a.
-  setoid_rewrite (assoc (- w) w z).
-  setoid_rewrite (inv_l w).
-  setoid_rewrite (unl_l z).
+  setoid_rewrite (assoc (- y) y w).
+  setoid_rewrite (inv_l y).
+  setoid_rewrite (unl_l w).
   reflexivity. Qed.
 
 (** Addition is right-cancellative. *)
 
-#[export] Instance grp_is_cancel_r : IsCancelR X k.
+#[local] Instance grp_is_cancel_r : IsCancelR X k.
 Proof.
   note. intros y z w a.
   setoid_rewrite <- (unl_r y).
@@ -102,12 +102,12 @@ Proof.
 #[export] Instance grp_is_cancel : IsCancel X k.
 Proof. esplit; typeclasses eauto. Qed.
 
-(** Addition antidistributes over negation. *)
+(** Negation antidistributes over addition. *)
 
 #[export] Instance grp_is_antidistr : IsAntidistr X f k.
 Proof.
   note. intros y z.
-  apply (cancel_l (- (y + z)) ((- z) + (- y)) (y + z)).
+  eapply (cancel_l (y + z) (- (y + z)) ((- z) + (- y))).
   setoid_rewrite (inv_r (y + z)).
   setoid_rewrite (assoc (y + z) (- z) (- y)).
   setoid_rewrite <- (assoc y z (- z)).
