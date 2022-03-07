@@ -9,30 +9,26 @@ digraph Has {
   HasEquivDec [label = "\N A : Type\nequiv_dec (x y : A) : {x == y} + {~ x == y}"]
   HasUnsquash [label = "\N A : Type\nunsquash (x : Squash A) : A"]
 
-  subgraph cluster_relation_classes {
-    label = "Relations"
+  subgraph cluster_order_theory_classes {
+    label = "Order Theory"
 
     HasBinRel [label = "\N A : Type\nbin_rel (x y : A) : Prop"]
     HasEquivRel [label = "\N A : Type\nequiv_rel (x y : A) : Prop"]
-    HasHom [label = "\N A : Type\nhom (x y : A) : Prop"]
     HasNullRel [label = "\N A : Type\nnull_rel : Prop"]
     HasOrdRel [label = "\N A : Type\nord_rel (x y : A) : Prop"]
     HasStrOrdRel [label = "\N A : Type\nstr_ord_rel (x y : A) : Prop"]
     HasUnRel [label = "\N A : Type\nun_rel (x : A) : Prop"]
   }
 
-  subgraph cluster_operation_classes {
-    label = "Operations"
+  subgraph cluster_abstract_algebra_classes {
+    label = "Abstract Algebra"
 
     HasActL [label = "\N A B : Type\nact_l (x : A) (a : B) : B"]
     HasActR [label = "\N A B : Type\nact_r (a : B) (x : A) : B"]
     HasAdd [label = "\N A : Type\nadd (x y : A) : A"]
     HasBinOp [label = "\N A : Type\nbin_op (x y : A) : A"]
-    HasCompHom [label = "\N A : Type\ncomp_hom (x y z : A) (a : y --> z) (b : x --> y) : x --> z"]
     HasDist [label = "\N A B : Type\ndist (a b : B) : A"]
     HasForm [label = "\N A B : Type\nform (a b : B) : A"]
-    HasIdHom [label = "\N A : Type\nid_hom (x : A) : x --> x"]
-    HasInvHom [label = "\N A : Type\ninv_hom (x y : A) (a : x --> y) : y --> x"]
     HasMul [label = "\N A : Type\nmul (x y : A) : A"]
     HasNeg [label = "\N A : Type\nneg (x : A) : A"]
     HasNullOp [label = "\N A : Type\nnull_op : A"]
@@ -42,6 +38,15 @@ digraph Has {
     HasSMulR [label = "\N A B : Type\ns_mul_r (a : B) (x : A) : B"]
     HasUnOp [label = "\N A : Type\nun_op (x : A) : A"]
     HasZero [label = "\N A : Type\nzero : A"]
+  }
+
+  subgraph cluster_category_theory_classes {
+    label = "Category Theory"
+
+    HasCompHom [label = "\N A : Type\ncomp_hom (x y z : A) (a : y --> z) (b : x --> y) : x --> z"]
+    HasHom [label = "\N A : Type\nhom (x y : A) : Prop"]
+    HasIdHom [label = "\N A : Type\nid_hom (x : A) : x --> x"]
+    HasInvHom [label = "\N A : Type\ninv_hom (x y : A) (a : x --> y) : y --> x"]
   }
 
   node [style = dashed]

@@ -133,3 +133,55 @@ Proof.
 #[local] Existing Instance cancel_r_is_cancel_form_r.
 
 End Context.
+
+(** TODO Exports here. *)
+
+Section Context.
+
+Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (s : A -> A -> B).
+
+(** Something implies something else. *)
+
+#[export] Instance cancel_form_l_is_cancel_form_r_flip
+  `{!IsCancelFormL X Y s} : IsCancelFormR X Y (flip s).
+Proof. intros x y z. unfold flip. apply cancel_form_l. Qed.
+
+(** Something implies something else. *)
+
+#[local] Instance cancel_form_r_is_cancel_form_l_flip
+  `{!IsCancelFormR X Y s} : IsCancelFormL X Y (flip s).
+Proof. intros x y z. unfold flip. apply cancel_form_r. Qed.
+
+End Context.
+
+Section Context.
+
+Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (s : A -> A -> B).
+
+(** Left cancellativity implies injectivity of partial applications. *)
+
+#[export] Instance cancel_form_l_is_inj_fn
+  `{!IsCancelFormL X Y s} (a : A) : IsInjFn X Y (s a).
+Proof. intros x y. apply cancel_form_l. Qed.
+
+(** Injectivity of partial applications implies left cancellativity. *)
+
+#[local] Instance inj_fn_is_cancel_form_l
+  `{!forall a : A, IsInjFn X Y (s a)} : IsCancelFormL X Y s.
+Proof. intros x y a. apply inj_fn. Qed.
+
+(** Right cancellativity implies injectivity of partial applications. *)
+
+#[export] Instance cancel_form_r_is_inj_fn
+  `{!IsCancelFormR X Y s} (a : A) : IsInjFn X Y (flip s a).
+Proof. intros x y. apply (cancel_form_r (s := s)). Qed.
+
+(** Injectivity of partial applications implies right cancellativity. *)
+
+#[local] Instance inj_fn_is_cancel_form_r
+  `{!forall a : A, IsInjFn X Y (flip s a)} : IsCancelFormR X Y s.
+Proof. intros x y a. apply (inj_fn (f := flip s a)). Qed.
+
+End Context.

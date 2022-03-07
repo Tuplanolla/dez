@@ -27,14 +27,14 @@ Context (A B : Type) (X : B -> B -> Prop)
 (** Compatibility of binary functions
     implies they are compatible as a left action and a binary operation. *)
 
-#[export] Instance compat_uni_is_compat_act_l
+#[export] Instance compat_bin_fns_is_compat_act_l
   `{!IsCompatBinFns X k al al al} : IsCompatActL X k al.
 Proof. auto. Qed.
 
 (** Compatibility of a left action and a binary operation
     implies their compatibility as binary functions. *)
 
-#[local] Instance compat_act_l_is_compat_uni
+#[local] Instance compat_act_l_is_compat_bin_fns
   `{!IsCompatActL X k al} : IsCompatBinFns X k al al al.
 Proof. auto. Qed.
 
@@ -54,14 +54,14 @@ Context (A B : Type) (X : B -> B -> Prop)
 (** Compatibility of binary functions
     implies they are compatible as a right action and a binary operation. *)
 
-#[export] Instance compat_uni_is_compat_act_r
+#[export] Instance compat_bin_fns_is_compat_act_r
   `{!IsCompatBinFns X ar k ar ar} : IsCompatActR X k ar.
 Proof. auto. Qed.
 
 (** Compatibility of a right action and a binary operation
     implies their compatibility as binary functions. *)
 
-#[local] Instance compat_act_r_is_compat_uni
+#[local] Instance compat_act_r_is_compat_bin_fns
   `{!IsCompatActR X k ar} : IsCompatBinFns X ar k ar ar.
 Proof. auto. Qed.
 
@@ -81,14 +81,14 @@ Context (A B C : Type) (X : C -> C -> Prop)
 (** Compatibility of binary functions
     implies they are compatible as actions. *)
 
-#[export] Instance compat_uni_is_compat_acts
+#[export] Instance compat_bin_fns_is_compat_acts
   `{!IsCompatBinFns X al ar al ar} : IsCompatActs X al ar.
 Proof. auto. Qed.
 
 (** Compatibility of actions
     implies their compatibility as binary functions. *)
 
-#[local] Instance compat_acts_is_compat_uni
+#[local] Instance compat_acts_is_compat_bin_fns
   `{!IsCompatActs X al ar} : IsCompatBinFns X al ar al ar.
 Proof. auto. Qed.
 

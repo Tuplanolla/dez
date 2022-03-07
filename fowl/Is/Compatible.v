@@ -1,2 +1,2 @@
 From DEZ.Is Require Export
-  Distributive.
+  Associative.

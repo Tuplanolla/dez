@@ -15,10 +15,6 @@ Class IsWhatCommR (W Y Z' A B B' : Type) (X : W -> Y -> Prop)
   (f : B' -> B) (g : Z' -> Y) (k : A -> B -> W) (m : A -> B' -> Z') : Prop :=
   what_comm_r (x : A) (y : B') : X (k x (f y)) (g (m x y)).
 
-Class IsComm4 (A0 A1 B0 B1 : Type) (X : B0 -> B1 -> Prop)
-  (k : A0 -> A1 -> B0) (m : A1 -> A0 -> B1) : Prop :=
-  what_comm (x : A0) (y : A1) : X (k x y) (m y x).
-
 (* ** Commutativity of a Unary Operation and a Left Action *)
 
 (** This has the same shape as [mul_opp_r]. *)
@@ -53,6 +49,8 @@ Class IsCommLR (A : Type) (X : A -> A -> Prop)
 
 Class IsComm (A B : Type) (X : B -> B -> Prop) (k : A -> A -> B) : Prop :=
   comm (x y : A) : X (k x y) (k y x).
+
+(** ** Distributive Unary Operation over Unary Operation *)
 
 Class IsCommFun (A : Type) (X : A -> A -> Prop) (f g : A -> A) : Prop :=
   comm_fun (x : A) : X (f (g x)) (g (f x)).
