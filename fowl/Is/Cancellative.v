@@ -149,59 +149,7 @@ Proof. intros x y. apply (cancel_form_r (s := s)). Qed.
 (** Injectivity of partial applications implies right cancellativity. *)
 
 #[local] Instance inj_fn_is_cancel_form_r
-  `{!forall a : A, IsInjFn X Y (flip s a)} : IsCancelFormR X Y s.
-Proof. intros x y a. apply (inj_fn (f := flip s a)). Qed.
-
-End Context.
-
-(** ** Left Cancellative Binary Operation with Excluded Point *)
-
-(** This has the same shape as [Z.mul_reg_l]. *)
-
-Class IsExCancelL (A : Type) (X : A -> A -> Prop) (Y : A -> A -> Prop)
-  (x : A) (k : A -> A -> A) : Prop :=
-  ex_cancel_l (y z w : A) (a : Y w x) (a : X (k w y) (k w z)) : X y z.
-
-(** ** Right Cancellative Binary Operation with Excluded Point *)
-
-(** This has the same shape as [Z.mul_reg_r]. *)
-
-Class IsExCancelR (A : Type) (X : A -> A -> Prop) (Y : A -> A -> Prop)
-  (x : A) (k : A -> A -> A) : Prop :=
-  ex_cancel_r (y z w : A) (a : Y w x) (b : X (k y w) (k z w)) : X y z.
-
-(** ** Cancellative Binary Operation with Excluded Point *)
-
-Class IsExCancel (A : Type) (X : A -> A -> Prop) (Y : A -> A -> Prop)
-  (x : A) (k : A -> A -> A) : Prop := {
-  ex_cancel_is_ex_cancel_l :> IsExCancelL X Y x k;
-  ex_cancel_is_ex_cancel_r :> IsExCancelR X Y x k;
-}.
-
-Section Context.
-
-Context (A : Type) (X : A -> A -> Prop) (Y : A -> A -> Prop)
-  (x : A) (k : A -> A -> A).
-
-(** Left cancellative binary operation
-    implies left cancellative binary operation with excluded point. *)
-
-#[export] Instance cancel_l_is_ex_cancel_l
-  `{!IsCancelL X k} : IsExCancelL X Y x k.
-Proof. intros y z w a b. eauto. Qed.
-
-(** Right cancellative binary operation
-    implies right cancellative binary operation with excluded point. *)
-
-#[export] Instance cancel_r_is_ex_cancel_r
-  `{!IsCancelR X k} : IsExCancelR X Y x k.
-Proof. intros y z w a b. eauto. Qed.
-
-(** Cancellative binary operation
-    implies cancellative binary operation with excluded point. *)
-
-#[export] Instance cancel_is_ex_cancel
-  `{!IsCancel X k} : IsExCancel X Y x k.
-Proof. esplit; typeclasses eauto. Qed.
+  `{!forall a : A, IsInjFn X Y (s a)} : IsCancelFormR X Y (flip s).
+Proof. intros x y a. apply (inj_fn (f := s a)). Qed.
 
 End Context.

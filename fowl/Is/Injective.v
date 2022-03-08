@@ -32,17 +32,3 @@ Proof. auto. Qed.
 Proof. auto. Qed.
 
 End Context.
-
-(** TODO These should be proofs. *)
-
-Class Proper' (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
-  (f g : A -> B) : Prop :=
-  is_distr_7'' :> IsDistrFns impl f g X id Y.
-
-Eval cbv [Proper' IsDistrFns id impl] in Proper' ?[X] ?[Y] ?[f] ?[g].
-
-Class IsInj' (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
-  (f : A -> B) : Prop :=
-  is_distr_7' :> IsDistrFns (flip impl) f f X id Y.
-
-Eval cbv [IsInj' IsDistrFns id flip impl] in IsInj' ?[X] ?[Y] ?[f].

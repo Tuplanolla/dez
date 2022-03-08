@@ -3,15 +3,12 @@
 From DEZ Require Export
   Init.
 
-(** ** Compatible Binary Functions *)
+(** ** Compatible Functions *)
 
-(** This unifies [IsCompatActL], [IsCompatActR],
-    [IsCompatActs] and [IsAssoc]. *)
-
-Class IsCompatBinFns (A0 A1 A2 B0 B1 C : Type) (X : C -> C -> Prop)
+Class IsCompatFns (A0 A1 A2 B0 B1 C : Type) (X : C -> C -> Prop)
   (k : A0 -> A1 -> B0) (m : A1 -> A2 -> B1)
   (n : A0 -> B1 -> C) (p : B0 -> A2 -> C) : Prop :=
-  compat_bin_fns (x : A0) (y : A1) (z : A2) : X (n x (m y z)) (p (k x y) z).
+  compat_fns (x : A0) (y : A1) (z : A2) : X (n x (m y z)) (p (k x y) z).
 
 (** ** Compatible Left Action and Binary Operation *)
 
@@ -27,15 +24,15 @@ Context (A B : Type) (X : B -> B -> Prop)
 (** Compatibility of binary functions
     implies they are compatible as a left action and a binary operation. *)
 
-#[export] Instance compat_bin_fns_is_compat_act_l
-  `{!IsCompatBinFns X k al al al} : IsCompatActL X k al.
+#[export] Instance compat_fns_is_compat_act_l
+  `{!IsCompatFns X k al al al} : IsCompatActL X k al.
 Proof. auto. Qed.
 
 (** Compatibility of a left action and a binary operation
     implies their compatibility as binary functions. *)
 
-#[local] Instance compat_act_l_is_compat_bin_fns
-  `{!IsCompatActL X k al} : IsCompatBinFns X k al al al.
+#[local] Instance compat_act_l_is_compat_fns
+  `{!IsCompatActL X k al} : IsCompatFns X k al al al.
 Proof. auto. Qed.
 
 End Context.
@@ -54,15 +51,15 @@ Context (A B : Type) (X : B -> B -> Prop)
 (** Compatibility of binary functions
     implies they are compatible as a right action and a binary operation. *)
 
-#[export] Instance compat_bin_fns_is_compat_act_r
-  `{!IsCompatBinFns X ar k ar ar} : IsCompatActR X k ar.
+#[export] Instance compat_fns_is_compat_act_r
+  `{!IsCompatFns X ar k ar ar} : IsCompatActR X k ar.
 Proof. auto. Qed.
 
 (** Compatibility of a right action and a binary operation
     implies their compatibility as binary functions. *)
 
-#[local] Instance compat_act_r_is_compat_bin_fns
-  `{!IsCompatActR X k ar} : IsCompatBinFns X ar k ar ar.
+#[local] Instance compat_act_r_is_compat_fns
+  `{!IsCompatActR X k ar} : IsCompatFns X ar k ar ar.
 Proof. auto. Qed.
 
 End Context.
@@ -81,15 +78,15 @@ Context (A B C : Type) (X : C -> C -> Prop)
 (** Compatibility of binary functions
     implies they are compatible as actions. *)
 
-#[export] Instance compat_bin_fns_is_compat_acts
-  `{!IsCompatBinFns X al ar al ar} : IsCompatActs X al ar.
+#[export] Instance compat_fns_is_compat_acts
+  `{!IsCompatFns X al ar al ar} : IsCompatActs X al ar.
 Proof. auto. Qed.
 
 (** Compatibility of actions
     implies their compatibility as binary functions. *)
 
-#[local] Instance compat_acts_is_compat_bin_fns
-  `{!IsCompatActs X al ar} : IsCompatBinFns X al ar al ar.
+#[local] Instance compat_acts_is_compat_fns
+  `{!IsCompatActs X al ar} : IsCompatFns X al ar al ar.
 Proof. auto. Qed.
 
 End Context.

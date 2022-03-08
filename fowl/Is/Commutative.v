@@ -17,7 +17,7 @@ Class IsWhatCommR (W Y Z' A B B' : Type) (X : W -> Y -> Prop)
 
 (* ** Commutativity of a Unary Operation and a Left Action *)
 
-(** This has the same shape as [mul_opp_r]. *)
+(** This has the same shape as [Z.mul_opp_r]. *)
 
 Class IsCommL (A B : Type) (X : B -> B -> Prop)
   (f : B -> B) (k : A -> B -> B) : Prop :=
@@ -25,7 +25,7 @@ Class IsCommL (A B : Type) (X : B -> B -> Prop)
 
 (* ** Commutativity of a Unary Operation and a Right Action *)
 
-(** This has the same shape as [mul_opp_l]. *)
+(** This has the same shape as [Z.mul_opp_l]. *)
 
 Class IsCommR (A B : Type) (X : B -> B -> Prop)
   (f : B -> B) (k : B -> A -> B) : Prop :=
@@ -45,7 +45,7 @@ Class IsCommLR (A : Type) (X : A -> A -> Prop)
   (f : A -> A) (k : A -> A -> A) : Prop :=
   is_comm_l_r_2 :> IsCommLR2 X f k k.
 
-(** This has the same shape as [mul_comm]. *)
+(** This has the same shape as [Z.mul_comm]. *)
 
 Class IsComm (A B : Type) (X : B -> B -> Prop) (k : A -> A -> B) : Prop :=
   comm (x y : A) : X (k x y) (k y x).
