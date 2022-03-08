@@ -1,4 +1,4 @@
-(** * Distributivity and Preservation *)
+(** * Distributivity *)
 
 From DEZ Require Export
   Init.
@@ -45,6 +45,12 @@ Class IsDistrUnOp (A : Type) (X : A -> A -> Prop)
   (f : A -> A) (k : A -> A -> A) : Prop :=
   distr_un_op (x y : A) : X (f (k x y)) (k (f x) (f y)).
 
+(** ** Antidistributive Unary Operation over Binary Operation *)
+
+Class IsAntidistrUnOp (A : Type) (X : A -> A -> Prop)
+  (f : A -> A) (k : A -> A -> A) : Prop :=
+  antidistr_un_op (x y : A) : X (f (k x y)) (k (f y) (f x)).
+
 Section Context.
 
 Context (A : Type) (X : A -> A -> Prop)
@@ -60,6 +66,18 @@ Proof. auto. Qed.
 
 #[local] Instance distr_un_op_is_distr_forms
   `{!IsDistrUnOp X f k} : IsDistrForms X f k f k.
+Proof. auto. Qed.
+
+(** Something implies something else. *)
+
+#[export] Instance distr_forms_is_antidistr_un_op_flip
+  `{!IsDistrForms X f (flip k) f k} : IsAntidistrUnOp X f (flip k).
+Proof. auto. Qed.
+
+(** Something implies something else. *)
+
+#[local] Instance antidistr_un_op_is_distr_forms_flip
+  `{!IsAntidistrUnOp X f k} : IsDistrForms X f k f (flip k).
 Proof. auto. Qed.
 
 End Context.
@@ -92,6 +110,37 @@ Class IsDistrR (A : Type) (X : A -> A -> Prop)
   (k : A -> A -> A) (m : A -> A -> A) : Prop :=
   distr_r (x y z : A) : X (k (m x y) z) (m (k x z) (k y z)).
 
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A) (m : A -> A -> A).
+
+(** Left distributive form implies left distributive binary operation. *)
+
+#[export] Instance distr_act_l_is_distr_l
+  `{!IsDistrActL X k m} : IsDistrL X k m.
+Proof. auto. Qed.
+
+(** Left distributive binary operation implies left distributive form. *)
+
+#[local] Instance distr_l_is_distr_act_l
+  `{!IsDistrL X k m} : IsDistrActL X k m.
+Proof. auto. Qed.
+
+(** Right distributive form implies right distributive binary operation. *)
+
+#[export] Instance distr_act_r_is_distr_r
+  `{!IsDistrActR X k m} : IsDistrR X k m.
+Proof. auto. Qed.
+
+(** Right distributive binary operation implies right distributive form. *)
+
+#[local] Instance distr_r_is_distr_act_r
+  `{!IsDistrR X k m} : IsDistrActR X k m.
+Proof. auto. Qed.
+
+End Context.
+
 (** ** Distributive Binary Operation over Binary Operation *)
 
 Class IsDistr (A : Type) (X : A -> A -> Prop)
@@ -99,48 +148,3 @@ Class IsDistr (A : Type) (X : A -> A -> Prop)
   distr_is_distr_l :> IsDistrL X k m;
   distr_is_distr_r :> IsDistrR X k m;
 }.
-
-(** TODO These variants are missing. *)
-
-(** ** Antidistributive Unary Operation over Binary Operation *)
-
-Class IsAntidistr (A : Type) (X : A -> A -> Prop)
-  (f : A -> A) (k : A -> A -> A) : Prop :=
-  antidistr (x y : A) : X (f (k x y)) (k (f y) (f x)).
-
-(** TODO These should be proofs. *)
-
-Class Proper' (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
-  (f g : A -> B) : Prop :=
-  is_distr_7'' :> IsDistrFns impl f g X id Y.
-
-Eval cbv [Proper' IsDistrFns id impl] in Proper' ?[X] ?[Y] ?[f] ?[g].
-
-Class IsInj' (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
-  (f : A -> B) : Prop :=
-  is_distr_7' :> IsDistrFns (flip impl) f f X id Y.
-
-Eval cbv [IsInj' IsDistrFns id flip impl] in IsInj' ?[X] ?[Y] ?[f].
-
-(** TODO These are flips. *)
-
-(** ** Homomorphism Preserving Nullary Operation *)
-
-Class IsNullPres (A B : Type) (X : B -> B -> Prop)
-  (x : A) (y : B) (f : A -> B) : Prop :=
-  null_pres : X (f x) y.
-  (* >: IsFixed *)
-
-(** ** Homomorphism Preserving Unary Operation *)
-
-Class IsUnPres (A B : Type) (X : B -> B -> Prop)
-  (f : A -> A) (g : B -> B) (h : A -> B) : Prop :=
-  un_pres (x : A) : X (h (f x)) (g (h x)).
-  (* =: IsComm *)
-
-(** ** Homomorphism Preserving Binary Operation *)
-
-Class IsBinPres (A B : Type) (X : B -> B -> Prop)
-  (k : A -> A -> A) (m : B -> B -> B) (f : A -> B) : Prop :=
-  bin_pres (x y : A) : X (f (k x y)) (m (f x) (f y)).
-  (* <: IsDistrFns *)

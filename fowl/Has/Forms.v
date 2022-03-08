@@ -20,7 +20,7 @@ Context (A : Type).
 
 (** A homogeneous form is a binary operation. *)
 
-#[export] Instance form_has_bin_op {al : HasForm A A} : HasBinOp A := form.
+#[export] Instance form_has_bin_op {s : HasForm A A} : HasBinOp A := form.
 
 End Context.
 

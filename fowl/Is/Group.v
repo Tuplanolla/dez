@@ -4,7 +4,7 @@ From DEZ.Has Require Export
   EquivalenceRelations Operations Actions.
 From DEZ.Is Require Export
   Monoid Invertible Proper Fixed Involutive Injective Cancellative Distributive
-  Preserving Unital Associative.
+  Preserving Unital Compatible Associative.
 From DEZ.Supports Require Import
   EquivalenceNotations AdditiveNotations.
 
@@ -104,7 +104,7 @@ Proof. esplit; typeclasses eauto. Qed.
 
 (** Negation antidistributes over addition. *)
 
-#[export] Instance grp_is_antidistr : IsAntidistr X f k.
+#[export] Instance grp_is_antidistr_un_op : IsAntidistrUnOp X f k.
 Proof.
   note. intros y z.
   eapply (cancel_l (y + z) (- (y + z)) ((- z) + (- y))).

@@ -30,15 +30,25 @@ digraph Is {
     IsTotOrd [label = "\N X Y : Prop"]
   }
 
+  IsAntidistrUnOp [label = "\N X f k : Prop\nantidistr_un_op (x y : A) : X (f (k x y)) (k (f y) (f x))"]
   IsAssoc [label = "\N X k : Prop\nassoc (x y z : A) : X (k x (k y z)) (k (k x y) z)"]
-  IsCancelL [label = "\N X k : Prop\n"]
-  IsCancelR [label = "\N X k : Prop\n"]
   IsCancelFormL [label = "\N X Y s : Prop\ncancel_form_l (x y z : A) (a : Y (s x y) (s x z)) : X y z"]
   IsCancelFormR [label = "\N X Y s : Prop\ncancel_form_r (x y z : A) (a : Y (s x z) (s y z)) : X x y"]
+  IsCancelL [label = "\N X k : Prop\ncancel_l (x y z : A) (a : X (k x y) (k x z)) : X y z"]
+  IsCancelR [label = "\N X k : Prop\ncancel_r (x y z : A) (a : X (k x z) (k y z)) : X x y"]
   IsCompatActL [label = "\N X k al : Prop\ncompat_act_l (x y : A) (a : B) : X (al x (al y a)) (al (k x y) a)"]
   IsCompatActR [label = "\N X k ar : Prop\ncompat_act_r (a : B) (x y : A) : X (ar a (k x y)) (ar (ar a x) y)"]
   IsCompatActs [label = "\N X al ar : Prop\ncompat_acts (x : A) (a : C) (y : B) : X (al x (ar a y)) (ar (al x a) y)"]
   IsCompatBinFns [label = "\N X k m n p : Prop\ncompat_bin_fns (x : A0) (y : A1) (z : A2) : X (n x (m y z)) (p (k x y) z)"]
+  IsDistrActL [label = "\N X al k : Prop\ndistr_act_l (x : A) (a b : B) : X (al x (k a b)) (k (al x a) (al x b))"]
+  IsDistrActR [label = "\N X ar k : Prop\ndistr_act_r (a b : B) (x : A) : X (ar (k a b) x) (k (ar a x) (ar b x))"]
+  IsDistrFns [label = "\N X f g k h m : Prop\ndistr_fns (x : A0) (y : A1) : X (h (k x y)) (m (f x) (g y))"]
+  IsDistrForms [label = "\N X f k g m : Prop\ndistr_forms (x y : A) : X (g (k x y)) (m (f x) (f y))"]
+  IsDistrL [label = "\N X k m : Prop\ndistr_l (x y z : A) : X (k x (m y z)) (m (k x y) (k x z))"]
+  IsDistrR [label = "\N X k m : Prop\ndistr_r (x y z : A) : X (k (m x y) z) (m (k x z) (k y z))"]
+  IsDistrUnOp [label = "\N X f k : Prop\ndistr_un_op (x y : A) : X (f (k x y)) (k (f x) (f y))"]
+  IsExCancelL [label = "\N X Y x k : Prop\nex_cancel_l (y z w : A) (a : Y w x) (a : X (k w y) (k w z)) : X y z"]
+  IsExCancelR [label = "\N X Y x k : Prop\nex_cancel_r (y z w : A) (a : Y w x) (b : X (k y w) (k z w)) : X y z"]
   IsFixed [label = "\N X x f : Prop\nfixed : X (f x) x"]
   IsInj [label = "\N X f : Prop\ninj (x y : A) (a : X (f x) (f y)) : X x y"]
   IsInjFn [label = "\N X Y f : Prop\ninj_fn (x y : A) (a : Y (f x) (f y)) : X x y"]
@@ -59,6 +69,7 @@ digraph Is {
 
     IsCancel [label = "\N X k : Prop"]
     IsCancelForm [label = "\N X Y s : Prop"]
+    IsDistr [label = "\N X k m : Prop"]
     IsGrp [label = "\N X x f k : Prop"]
     IsGrpHom [label = "\N X x f k Y y g m h : Prop"]
     IsInv [label = "\N X x f k : Prop"]
@@ -72,7 +83,6 @@ digraph Is {
 
   IsAbsorbElemL [label = "\N\nabsorb_elem_l (x : A) : 0 * x = 0", color = red, fillcolor = yellow]
   IsAbsorbElemR [label = "\N\nabsorb_elem_r (x : A) : x * 0 = 0", color = red, fillcolor = yellow]
-  IsAntidistr [label = "\N\nantidistr (x y : A) : f (x + y) = f y + f x", color = red, fillcolor = yellow]
   IsCohOrdRels [label = "\N\ncoh_ord_rels (x y : A) : x < y <-> x <= y /\\ x <> y", color = red, fillcolor = yellow]
   IsCommBinOp [label = "\N\ncomm (x y : A) : x * y = y * x", color = red, fillcolor = yellow]
   IsCommL [label = "\N\ncomm_l (x y : A) : (/ x) * y = / (x * y)", color = red, fillcolor = yellow]
@@ -82,9 +92,6 @@ digraph Is {
   IsComono [label = "\N\ncomono (x y : A) (a : f x <= f y) : x <= y", color = red, fillcolor = yellow]
   IsContr [label = "\N\ncontr : exists x : A, forall y : A, x = y", color = red, fillcolor = yellow]
   IsDefl [label = "\N\ndeflate (x : A) : f x <= x", color = red, fillcolor = yellow]
-  IsDistr [label = "\N\ndistr (x y : A) : f (x + y) = f x + f y", color = red, fillcolor = yellow]
-  IsDistrL [label = "\N\ndistr_l (x y z : A) : x * (y + z) = x * y + x * z", color = red, fillcolor = yellow]
-  IsDistrR [label = "\N\ndistr_r (x y z : A) : (x + y) * z = x * z + y * z", color = red, fillcolor = yellow]
   IsExpand [label = "\N\ncontract (x y : A) : dist (f x) (f y) <= dist x y", color = red, fillcolor = yellow]
   IsExpand [label = "\N\nexpand (x y : A) : dist x y <= dist (f x) (f y)", color = red, fillcolor = yellow]
   IsFunExt [label = "\N\nfun_ext (A B : Type) (f g : A -> B) (a : forall x : A, f x = g x) : f = g", color = red, fillcolor = yellow]
@@ -102,8 +109,6 @@ digraph Is {
   IsMonoBinOp [label = "\N\nmono_bin_op (x0 y0 : A) (a0 : x0 <= y0) (x1 y1 : A) (a1 : x1 <= y1) : x0 + x1 <= y0 + y1", color = red, fillcolor = yellow]
   IsMonoBinOpL [label = "\N\nmono_bin_op_l (x y z : A) (a : x <= y) : z + x <= z + y", color = red, fillcolor = yellow]
   IsMonoBinOpR [label = "\N\nmono_bin_op_r (x y z : A) (a : x <= y) : x + z <= y + z", color = red, fillcolor = yellow]
-  IsNonzeroCancelL [label = "\N\nnonzero_cancel_l (x y z : A) (f : z <> 0) (a : z + x = z + y) : x = y", color = red, fillcolor = yellow]
-  IsNonzeroCancelR [label = "\N\nnonzero_cancel_r (x y z : A) (f : z <> 0) (a : x + z = y + z) : x = y", color = red, fillcolor = yellow]
   IsProp [label = "\N\nirrel (x y : A) : x = y", color = red, fillcolor = yellow]
   IsSet [label = "\N\nuip (x y : A) (a b : x = y) : a = b", color = red, fillcolor = yellow]
   IsStrComono [label = "\N\nstr_comono (x y : A) (a : f x < f y) : x < y", color = red, fillcolor = yellow]
@@ -148,6 +153,8 @@ digraph Is {
     IsCancel -> IsCancelR
     IsCancelForm -> IsCancelFormL
     IsCancelForm -> IsCancelFormR
+    IsDistr -> IsDistrL
+    IsDistr -> IsDistrR
     IsGrp -> IsInv
     IsGrp -> IsMon
     IsGrp -> IsProper [constraint = false]
@@ -174,12 +181,8 @@ digraph Is {
   IsAbsorbElem -> IsAbsorbElemR
   IsCommTorLR -> IsCommTorL
   IsCommTorLR -> IsCommTorR
-  IsDistr -> IsDistrL
-  IsDistr -> IsDistrR
   IsIsoLR -> IsIsoL
   IsIsoLR -> IsIsoR
-  IsNonzeroCancelLR -> IsNonzeroCancelL
-  IsNonzeroCancelLR -> IsNonzeroCancelR
   IsRing -> IsCommBinOp
   IsRing -> IsDistr
   IsRing -> IsGrp
@@ -214,12 +217,18 @@ digraph Is {
   subgraph abstract_algebra_derivations {
     IsAssoc -> IsCompatActs
     IsCancel -> IsCancelForm
+    IsCancelL -> IsExCancelL
     IsCancelL -> IsCancelFormL
+    IsCancelR -> IsExCancelR
     IsCancelR -> IsCancelFormR
     IsCompatActL -> IsCompatBinFns
     IsCompatActR -> IsCompatBinFns
     IsCompatActs -> IsCompatBinFns
-    IsGrp -> IsAntidistr
+    IsDistrForms -> IsDistrFns
+    IsDistrL -> IsDistrActL
+    IsDistrR -> IsDistrActR
+    IsDistrUnOp -> IsDistrForms
+    IsGrp -> IsAntidistrUnOp
     IsGrp -> IsCancel
     IsGrp -> IsFixed
     IsGrp -> IsInj
