@@ -4,49 +4,49 @@ digraph Has {
 
   node [fontname = monospace, style = filled, fillcolor = cornsilk]
 
-  HasDec [label = "\N A : Type\ndec : {A} + {~ A}"]
-  HasEqDec [label = "\N A : Type\neq_dec (x y : A) : {x = y} + {x <> y}"]
-  HasEquivDec [label = "\N A : Type\nequiv_dec (x y : A) : {x == y} + {~ x == y}"]
-  HasUnsquash [label = "\N A : Type\nunsquash (x : Squash A) : A"]
+  HasDec [label = "\N A\ndec : {A} + {~ A}"]
+  HasEqDec [label = "\N A\neq_dec (x y : A) : {x = y} + {x <> y}"]
+  HasEquivDec [label = "\N A\nequiv_dec (x y : A) : {x == y} + {~ x == y}"]
+  HasUnsquash [label = "\N A\nunsquash (x : Squash A) : A"]
 
   subgraph cluster_order_theory_classes {
     label = "Order Theory"
 
-    HasBinRel [label = "\N A : Type\nbin_rel (x y : A) : Prop"]
-    HasEquivRel [label = "\N A : Type\nequiv_rel (x y : A) : Prop"]
-    HasNullRel [label = "\N A : Type\nnull_rel : Prop"]
-    HasOrdRel [label = "\N A : Type\nord_rel (x y : A) : Prop"]
-    HasStrOrdRel [label = "\N A : Type\nstr_ord_rel (x y : A) : Prop"]
-    HasUnRel [label = "\N A : Type\nun_rel (x : A) : Prop"]
+    HasBinRel [label = "\N A\nbin_rel (x y : A) : Prop"]
+    HasEquivRel [label = "\N A\nequiv_rel (x y : A) : Prop"]
+    HasNullRel [label = "\N A\nnull_rel : Prop"]
+    HasOrdRel [label = "\N A\nord_rel (x y : A) : Prop"]
+    HasStrOrdRel [label = "\N A\nstr_ord_rel (x y : A) : Prop"]
+    HasUnRel [label = "\N A\nun_rel (x : A) : Prop"]
   }
 
   subgraph cluster_abstract_algebra_classes {
     label = "Abstract Algebra"
 
-    HasActL [label = "\N A B : Type\nact_l (x : A) (a : B) : B"]
-    HasActR [label = "\N A B : Type\nact_r (a : B) (x : A) : B"]
-    HasAdd [label = "\N A : Type\nadd (x y : A) : A"]
-    HasBinOp [label = "\N A : Type\nbin_op (x y : A) : A"]
-    HasDist [label = "\N A B : Type\ndist (a b : B) : A"]
-    HasForm [label = "\N A B : Type\nform (a b : B) : A"]
-    HasMul [label = "\N A : Type\nmul (x y : A) : A"]
-    HasNeg [label = "\N A : Type\nneg (x : A) : A"]
-    HasNullOp [label = "\N A : Type\nnull_op : A"]
-    HasOne [label = "\N A : Type\none : A"]
-    HasRecip [label = "\N A : Type\nrecip (x : A) : A"]
-    HasSMulL [label = "\N A B : Type\ns_mul_l (x : A) (a : B) : B"]
-    HasSMulR [label = "\N A B : Type\ns_mul_r (a : B) (x : A) : B"]
-    HasUnOp [label = "\N A : Type\nun_op (x : A) : A"]
-    HasZero [label = "\N A : Type\nzero : A"]
+    HasActL [label = "\N A B\nact_l (x : A) (a : B) : B"]
+    HasActR [label = "\N A B\nact_r (a : B) (x : A) : B"]
+    HasAdd [label = "\N A\nadd (x y : A) : A"]
+    HasBinOp [label = "\N A\nbin_op (x y : A) : A"]
+    HasDist [label = "\N A B\ndist (a b : B) : A"]
+    HasForm [label = "\N A B\nform (a b : B) : A"]
+    HasMul [label = "\N A\nmul (x y : A) : A"]
+    HasNeg [label = "\N A\nneg (x : A) : A"]
+    HasNullOp [label = "\N A\nnull_op : A"]
+    HasOne [label = "\N A\none : A"]
+    HasRecip [label = "\N A\nrecip (x : A) : A"]
+    HasSMulL [label = "\N A B\ns_mul_l (x : A) (a : B) : B"]
+    HasSMulR [label = "\N A B\ns_mul_r (a : B) (x : A) : B"]
+    HasUnOp [label = "\N A\nun_op (x : A) : A"]
+    HasZero [label = "\N A\nzero : A"]
   }
 
   subgraph cluster_category_theory_classes {
     label = "Category Theory"
 
-    HasCompHom [label = "\N A : Type\ncomp_hom (x y z : A) (a : y --> z) (b : x --> y) : x --> z"]
-    HasHom [label = "\N A : Type\nhom (x y : A) : Prop"]
-    HasIdHom [label = "\N A : Type\nid_hom (x : A) : x --> x"]
-    HasInvHom [label = "\N A : Type\ninv_hom (x y : A) (a : x --> y) : y --> x"]
+    HasCompHom [label = "\N A\ncomp_hom (x y z : A) (a : y --> z) (b : x --> y) : x --> z"]
+    HasHom [label = "\N A\nhom (x y : A) : Prop"]
+    HasIdHom [label = "\N A\nid_hom (x : A) : x --> x"]
+    HasInvHom [label = "\N A\ninv_hom (x y : A) (a : x --> y) : y --> x"]
   }
 
   node [style = dashed]

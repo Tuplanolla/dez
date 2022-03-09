@@ -3,6 +3,8 @@
 From DEZ.Is Require Export
   Injective Proper.
 
+(** TODO Go through this. *)
+
 (** ** Distributive Unary Functions over Binary Functions *)
 
 Class IsDistrFns (A0 A1 B0 B1 B2 C : Type) (X : C -> C -> Prop)

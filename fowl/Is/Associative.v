@@ -14,18 +14,15 @@ Section Context.
 
 Context (A : Type) (X : A -> A -> Prop) (k : A -> A -> A).
 
-(** Compatibility of a binary operation with itself
-    implies its associativity. *)
+(** Associativity is a special case
+    of the compatibility of binary functions. *)
 
-#[export] Instance compat_acts_is_assoc
-  `{!IsCompatActs X k k} : IsAssoc X k.
+#[export] Instance assoc_is_compat_bin_fns
+  `{!IsAssoc X k} : IsCompatBinFns X k k k k.
 Proof. auto. Qed.
 
-(** Associativity of a binary operation
-    implies its compatibility with itself. *)
-
-#[local] Instance assoc_is_compat_acts
-  `{!IsAssoc X k} : IsCompatActs X k k.
+#[local] Instance compat_bin_fns_is_assoc
+  `{!IsCompatBinFns X k k k k} : IsAssoc X k.
 Proof. auto. Qed.
 
 End Context.
