@@ -17,6 +17,7 @@ digraph Is {
 
   subgraph cluster_order_theory_classes {
     label = "Order Theory"
+  bgcolor = cornsilk
 
     IsApart [label = "\N X : Prop"]
     IsEquiv [label = "\N X : Prop"]
@@ -31,12 +32,15 @@ digraph Is {
 
   subgraph cluster_inj {
   label = "Injective Fragment"
-  IsCancelFormL [label = "\N X Y s : Prop\ncancel_form_l (x y z : A) (a : Y (s x y) (s x z)) : X y z"]
-  IsCancelFormR [label = "\N X Y s : Prop\ncancel_form_r (x y z : A) (a : Y (s x z) (s y z)) : X x y"]
+  bgcolor = cornsilk
+  IsCancelBinFnL [label = "\N X Y k : Prop\ncancel_bin_fn_l (x : A) (y z : B) (a : Y (k x y) (k x z)) : X y z"]
+  IsCancelBinFnR [label = "\N X Y k : Prop\ncancel_bin_fn_r (x y : A) (z : B) (a : Y (k x z) (k y z)) : X x y"]
+  IsCancelFormL [label = "\N X Y s : Prop\ncancel_form_l (a b c : B) (t : X (s a b) (s a c)) : Y b c"]
+  IsCancelFormR [label = "\N X Y s : Prop\ncancel_form_r (a b c : B) (t : X (s a c) (s b c)) : Y a b"]
   IsCancelL [label = "\N X k : Prop\ncancel_l (x y z : A) (a : X (k x y) (k x z)) : X y z"]
   IsCancelR [label = "\N X k : Prop\ncancel_r (x y z : A) (a : X (k x z) (k y z)) : X x y"]
   IsInj [label = "\N X f : Prop\ninj (x y : A) (a : X (f x) (f y)) : X x y"]
-  IsInjFn [label = "\N X Y f : Prop\ninj_fn (x y : A) (a : Y (f x) (f y)) : X x y"]
+  IsInjUnFn [label = "\N X Y f : Prop\ninj_un_fn (x y : A) (a : Y (f x) (f y)) : X x y"]
   }
 
   subgraph cluster_assoc {
@@ -84,6 +88,9 @@ digraph Is {
   IsAbsorbElemActR [label = "\N X a ar\nabsorb_elem_act_r (x : A) : X (ar a x) a"]
   IsAbsorbElemL [label = "\N X x k\nabsorb_elem_l (y : A) : X (k y x) x"]
   IsAbsorbElemR [label = "\N X x k\nabsorb_elem_r (y : A) : X (k x y) x"]
+  IsIdem [label = "\N\nidem (x : A) : f (f x) = f x", color = red, fillcolor = yellow]
+  IsIdemBinOp [label = "\N\nidem_bin_op (x : A) : x * x = x", color = red, fillcolor = yellow]
+  IsIdemElem [label = "\N\nidem_elem : x * x = x", color = red, fillcolor = yellow]
   }
 
   subgraph cluster_comm {
@@ -121,33 +128,39 @@ digraph Is {
     IsUnl [label = "\N X x k : Prop"]
   }
 
-  IsCohOrdRels [label = "\N\ncoh_ord_rels (x y : A) : x < y <-> x <= y /\\ x <> y", color = red, fillcolor = yellow]
-  IsComono [label = "\N\ncomono (x y : A) (a : f x <= f y) : x <= y", color = red, fillcolor = yellow]
-  IsContr [label = "\N\ncontr : exists x : A, forall y : A, x = y", color = red, fillcolor = yellow]
   IsDefl [label = "\N\ndeflate (x : A) : f x <= x", color = red, fillcolor = yellow]
-  IsExpand [label = "\N\ncontract (x y : A) : dist (f x) (f y) <= dist x y", color = red, fillcolor = yellow]
-  IsExpand [label = "\N\nexpand (x y : A) : dist x y <= dist (f x) (f y)", color = red, fillcolor = yellow]
-  IsFunExt [label = "\N\nfun_ext (A B : Type) (f g : A -> B) (a : forall x : A, f x = g x) : f = g", color = red, fillcolor = yellow]
-  IsFunExtDep [label = "\N\nfun_ext_dep (A : Type) (P : A -> Type) (f g : forall x : A, P x) (a : forall x : A, f x = g x) : f = g", color = red, fillcolor = yellow]
-  IsIdem [label = "\N\nidem (x : A) : f (f x) = f x", color = red, fillcolor = yellow]
-  IsIdemBinOp [label = "\N\nidem_bin_op (x : A) : x * x = x", color = red, fillcolor = yellow]
-  IsIdemElem [label = "\N\nidem_elem : x * x = x", color = red, fillcolor = yellow]
   IsInfl [label = "\N\ninfl (x : A) : x <= f x", color = red, fillcolor = yellow]
+  IsContract [label = "\N\ncontract (x y : A) : dist (f x) (f y) <= dist x y", color = red, fillcolor = yellow]
+  IsExpand [label = "\N\nexpand (x y : A) : dist x y <= dist (f x) (f y)", color = red, fillcolor = yellow]
+  IsCohOrdRels [label = "\N\ncoh_ord_rels (x y : A) : x < y <-> x <= y /\\ x <> y", color = red, fillcolor = yellow]
   IsInflateBinOpL [label = "\N\ninflate_bin_op_l (x y : A) : y <= x + y", color = red, fillcolor = yellow]
   IsInflateBinOpR [label = "\N\ninflate_bin_op_r (x y : A) : x <= x + y", color = red, fillcolor = yellow]
-  IsIsoL [label = "\N\niso_l (a : A) : g (f a) = a", color = red, fillcolor = yellow]
-  IsIsoR [label = "\N\niso_r (b : B) : f (g b) = b", color = red, fillcolor = yellow]
-  IsLowerBnd [label = "\N\nlower_bnd (y : A) : x <= y", color = red, fillcolor = yellow]
+  IsStrComono [label = "\N\nstr_comono (x y : A) (a : f x < f y) : x < y", color = red, fillcolor = yellow]
+  IsStrMono [label = "\N\nstr_mono (x y : A) (a : x < y) : f x < f y", color = red, fillcolor = yellow]
+  IsComono [label = "\N\ncomono (x y : A) (a : f x <= f y) : x <= y", color = red, fillcolor = yellow]
   IsMono [label = "\N\nmono (x y : A) (a : x <= y) : f x <= f y", color = red, fillcolor = yellow]
   IsMonoBinOp [label = "\N\nmono_bin_op (x0 y0 : A) (a0 : x0 <= y0) (x1 y1 : A) (a1 : x1 <= y1) : x0 + x1 <= y0 + y1", color = red, fillcolor = yellow]
   IsMonoBinOpL [label = "\N\nmono_bin_op_l (x y z : A) (a : x <= y) : z + x <= z + y", color = red, fillcolor = yellow]
   IsMonoBinOpR [label = "\N\nmono_bin_op_r (x y z : A) (a : x <= y) : x + z <= y + z", color = red, fillcolor = yellow]
+  IsUpperBnd [label = "\N\nupper_bnd (y : A) : y <= x", color = red, fillcolor = yellow]
+  IsLowerBnd [label = "\N\nlower_bnd (y : A) : x <= y", color = red, fillcolor = yellow]
+
+  subgraph cluster_ext {
+  label = "Extensional Fragment"
+  IsFunExt [label = "\N\nfun_ext (A B : Type) (f g : A -> B) (a : forall x : A, f x = g x) : f = g", color = red, fillcolor = yellow]
+  IsFunExtDep [label = "\N\nfun_ext_dep (A : Type) (P : A -> Type) (f g : forall x : A, P x) (a : forall x : A, f x = g x) : f = g", color = red, fillcolor = yellow]
+  IsPropExt [label = "\N\nprop_ext (A B : Prop) (a : A <-> B) : A = B", color = red, fillcolor = yellow]
+  IsIsoL [label = "\N\niso_l (a : A) : g (f a) = a", color = red, fillcolor = yellow]
+  IsIsoR [label = "\N\niso_r (b : B) : f (g b) = b", color = red, fillcolor = yellow]
+  }
+
+  subgraph cluster_hott {
+  label = "Homotopy Fragment"
+  IsContr [label = "\N\ncontr : exists x : A, forall y : A, x = y", color = red, fillcolor = yellow]
   IsProp [label = "\N\nirrel (x y : A) : x = y", color = red, fillcolor = yellow]
   IsSet [label = "\N\nuip (x y : A) (a b : x = y) : a = b", color = red, fillcolor = yellow]
-  IsStrComono [label = "\N\nstr_comono (x y : A) (a : f x < f y) : x < y", color = red, fillcolor = yellow]
-  IsStrMono [label = "\N\nstr_mono (x y : A) (a : x < y) : f x < f y", color = red, fillcolor = yellow]
   IsTrunc [label = "\N\ntrunc_zero (A : Type) : IsTrunc O A\ntrunc_succ (n : nat) (A : Type) : IsTrunc (S n) A", color = red, fillcolor = yellow]
-  IsUpperBnd [label = "\N\nupper_bnd (y : A) : y <= x", color = red, fillcolor = yellow]
+  }
 
   node [style = dashed]
 
@@ -251,22 +264,25 @@ digraph Is {
 
   subgraph abstract_algebra_derivations {
     IsAbsorbElemL -> IsAbsorbElemActL
-    IsAbsorbElemR -> IsAbsorbElemActR
     IsAbsorbElemL -> IsFixed [style = dotted]
+    IsAbsorbElemR -> IsAbsorbElemActR
     IsAssoc -> IsCompatActs
     IsCancel -> IsCancelForm
+    IsCancelBinFnL -> IsCancelBinFnR [label = "flip"]
+    IsCancelBinFnL -> IsInjUnFn [label = "id"]
+    IsCancelBinFnR -> IsInjUnFn [label = "flip"]
+    IsCancelFormL -> IsCancelBinFnL
+    IsCancelFormR -> IsCancelBinFnR
     IsCancelL -> IsCancelFormL
     IsCancelR -> IsCancelFormR
-    IsCancelFormL -> IsInjFn [style = dotted]
-    IsCancelFormR -> IsInjFn [style = dotted]
     IsCompatActL -> IsCompatFns
     IsCompatActR -> IsCompatFns
     IsCompatActs -> IsCompatFns
+    IsDistrActL -> IsDistrUnOp [style = dotted]
+    IsDistrActR -> IsDistrUnOp [style = dotted]
     IsDistrForms -> IsDistrFns
     IsDistrL -> IsDistrActL
     IsDistrR -> IsDistrActR
-    IsDistrActL -> IsDistrUnOp [style = dotted]
-    IsDistrActR -> IsDistrUnOp [style = dotted]
     IsDistrUnOp -> IsDistrForms
     IsGrp -> IsAntidistrUnOp
     IsGrp -> IsCancel
@@ -275,7 +291,8 @@ digraph Is {
     IsGrp -> IsInvol
     IsGrpHom -> IsNullPres
     IsGrpHom -> IsUnPres
-    IsInj -> IsInjFn
+    IsIdemBinOp -> IsIdemElem [style = dotted]
+    IsInj -> IsInjUnFn
     IsInv -> IsInvForm
     IsInvFormL -> IsInvBinFnL
     IsInvFormR -> IsInvBinFnR
@@ -292,7 +309,6 @@ digraph Is {
   IsContr -> IsProp
   IsContr -> IsTrunc
   IsFunExtDep -> IsFunExt
-  IsIdemBinOp -> IsIdemElem
   IsMono -> IsStrMono
   IsMonoBinOp -> IsMonoBinOpL
   IsMonoBinOp -> IsMonoBinOpR

@@ -97,6 +97,19 @@ Class IsNotPartOrd (A : Type) (X Y : A -> A -> Prop) : Prop := {
 }.
 ```
 
+### Design Considerations to Write Elsewhere
+
+(Relating to lemmas in `Is.Cancellative`.)
+We cannot declare these definitions to be typeclass instances
+until the end of this section,
+because otherwise we will introduce cycles
+that lead to nonterminating typeclass resolution.
+
+(Relating to flipping in `Is.Cancellative`.)
+We favor left chiralities, which is why we export `L -> R`.
+We put `flip` on the right side of the arrow,
+because instance resolution works backwards.
+
 ### Checklist
 
 Think you are done working on a module?

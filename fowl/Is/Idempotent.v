@@ -1,48 +1,50 @@
-(** * Idempotency of an Element and a Binary Operation and a Function *)
+(** * Idempotency *)
 
-From DEZ.Has Require Export
-  BinaryOperation.
 From DEZ.Is Require Export
   Extensional.
-From DEZ.Supports Require Import
-  MultiplicativeNotations.
 
-Class IsIdemElem (A : Type) (x : A) (Hk : HasBinOp A) : Prop :=
-  idem_elem : x * x = x.
+(** ** Idempotent Unary Operation *)
 
-Class IsIdemBinOp (A : Type) (Hk : HasBinOp A) : Prop :=
-  idem_bin_op (x : A) : x * x = x.
+Class IsIdemUnOp (A : Type) (X : A -> A -> Prop) (f : A -> A) : Prop :=
+  idem_un_op (x : A) : X (f (f x)) (f x).
+
+(** ** Idempotent Binary Operation *)
+
+Class IsIdemBinOp (A : Type) (X : A -> A -> Prop) (k : A -> A -> A) : Prop :=
+  idem_bin_op (x : A) : X (k x x) x.
+
+(** ** Idempotent Element of Binary Operation *)
+
+Class IsIdemElem (A : Type) (X : A -> A -> Prop)
+  (x : A) (k : A -> A -> A) : Prop :=
+  idem_elem : X (k x x) x.
 
 Section Context.
 
-Context (A : Type) (Hk : HasBinOp A) `(!IsIdemBinOp _*_).
+Context (A : Type) (X : A -> A -> Prop) (k : A -> A -> A).
 
-(** For an idempotent binary operation, every element is idempotent. *)
+(** For an idempotent binary operation,
+    every element is an idempotent element. *)
 
-#[local] Instance is_idem_elem (x : A) : IsIdemElem x _*_.
+#[export] Instance idem_bin_op_is_idem_elem
+  `{!IsIdemBinOp X k} (x : A) : IsIdemElem X x k.
 Proof. apply idem_bin_op. Qed.
 
 End Context.
 
-#[export] Hint Resolve is_idem_elem : typeclass_instances.
-
-Class IsIdem (A : Type) (f : A -> A) : Prop :=
-  idem (x : A) : f (f x) = f x.
-
 Section Context.
 
-Context `(IsFunExt) (A : Type) (f : A -> A) `(!IsIdem f).
+Context `{IsFunExt} (A : Type) (f : A -> A).
 
 (** Idempotent functions are idempotent elements of the endofunction monoid. *)
 
-#[local] Instance compose_is_idem_elem : IsIdemElem f _o_.
+#[export] Instance idem_un_op_is_idem_elem_compose
+  `{!IsIdemUnOp _=_ f} : IsIdemElem _=_ f _o_.
 Proof.
   apply fun_ext.
   intros x.
   unfold compose.
-  setoid_rewrite idem.
+  setoid_rewrite idem_un_op.
   reflexivity. Qed.
 
 End Context.
-
-#[export] Hint Resolve compose_is_idem_elem : typeclass_instances.

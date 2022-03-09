@@ -20,7 +20,7 @@ Class IsRing (A : Type) (X : A -> A -> Prop)
   add_is_grp :> IsGrp X x f k;
   add_is_comm :> IsComm X k;
   mul_is_mon :> IsMon X y m;
-  is_distr_l_r :> IsDistrLR X m k;
+  is_distr :> IsDistr X m k;
 }.
 
 (** TODO Clean up. *)
@@ -85,7 +85,7 @@ Proof with subclass.
   setoid_rewrite (unl_r z).
   reflexivity. Qed.
 
-#[export] Instance is_absorb_elem_l_r : IsAbsorbElemLR X x m.
+#[export] Instance is_absorb_elem : IsAbsorbElem X x m.
 Proof. esplit; typeclasses eauto. Qed.
 
 #[export] Instance is_semiring : IsSemiring X x k y m.
@@ -113,8 +113,10 @@ Proof with subclass.
   setoid_rewrite (inv_r (z * w)).
   reflexivity. Qed.
 
-#[export] Instance is_comm_l_r : IsCommLR X f m.
+#[export] Instance is_comm : IsComm X f m.
 Proof. esplit; typeclasses eauto. Qed.
+
+(* X (k (f x) y) (k x (f y)) *)
 
 Lemma comm_l_r (z w : A) : (- z) * w == z * (- w).
 Proof with subclass.
@@ -123,7 +125,9 @@ Proof with subclass.
   setoid_rewrite (comm_r z w).
   reflexivity. Qed.
 
-Lemma invol_l_r (z w : A) : (- z) * (- w) == z * w.
+(* X (k (f x) (f y)) (k x y) *)
+
+Lemma involutivity_thing (z w : A) : (- z) * (- w) == z * w.
 Proof with subclass.
   note.
   setoid_rewrite (comm_l (- z) w).
@@ -135,12 +139,16 @@ Proof with subclass.
 
 #[local] Notation "'-' '1'" := (- (1)) (format "'-'  '1'").
 
+(* X (k (f x) y) (f y) *)
+
 Lemma neg_mul_one_l_sgn_absorb (z : A) : (- 1) * z == - z.
 Proof with subclass.
   note.
   setoid_rewrite (comm_r 1 z).
   setoid_rewrite (unl_l z).
   reflexivity. Qed.
+
+(* X (k y (f x)) (f y) *)
 
 Lemma neg_mul_one_r_sgn_absorb (z : A) : z * (- 1) == - z.
 Proof with subclass.
