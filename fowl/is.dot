@@ -17,7 +17,7 @@ digraph Is {
 
   subgraph cluster_order_theory_classes {
     label = "Order Theory"
-  bgcolor = cornsilk
+  bgcolor = azure
 
     IsApart [label = "\N X : Prop"]
     IsEquiv [label = "\N X : Prop"]
@@ -32,9 +32,13 @@ digraph Is {
 
   subgraph cluster_inj {
   label = "Injective Fragment"
-  bgcolor = cornsilk
+  bgcolor = azure
   IsCancelBinFnL [label = "\N X Y k : Prop\ncancel_bin_fn_l (x : A) (y z : B) (a : Y (k x y) (k x z)) : X y z"]
   IsCancelBinFnR [label = "\N X Y k : Prop\ncancel_bin_fn_r (x y : A) (z : B) (a : Y (k x z) (k y z)) : X x y"]
+  IsCancelActL [label = "\N X al : Prop\ncancel_act_l (x : A) (a b : B) (s : X (al x a) (al x b)) : X a b"]
+  IsCancelActLR [label = "\N X Y al : Prop\ncancel_act_l_r (x y : A) (a : B) (s : Y (al x a) (al y a)) : X x y"]
+  IsCancelActR [label = "\N X ar : Prop\ncancel_act_r (a b : B) (x : A) (s : X (ar a x) (ar b x)) : X a b"]
+  IsCancelActRL [label = "\N X Y ar : Prop\ncancel_act_r_l (a : B) (x y : A) (s : Y (ar a x) (ar a y)) : X x y"]
   IsCancelFormL [label = "\N X Y s : Prop\ncancel_form_l (a b c : B) (t : X (s a b) (s a c)) : Y b c"]
   IsCancelFormR [label = "\N X Y s : Prop\ncancel_form_r (a b c : B) (t : X (s a c) (s b c)) : Y a b"]
   IsCancelL [label = "\N X k : Prop\ncancel_l (x y z : A) (a : X (k x y) (k x z)) : X y z"]
@@ -267,14 +271,17 @@ digraph Is {
     IsAbsorbElemL -> IsFixed [style = dotted]
     IsAbsorbElemR -> IsAbsorbElemActR
     IsAssoc -> IsCompatActs
-    IsCancel -> IsCancelForm
+    IsCancelActL -> IsCancelBinFnL
+    IsCancelActLR -> IsCancelBinFnR
+    IsCancelActR -> IsCancelBinFnR
+    IsCancelActRL -> IsCancelBinFnL
     IsCancelBinFnL -> IsCancelBinFnR [label = "flip"]
     IsCancelBinFnL -> IsInjUnFn [label = "id"]
     IsCancelBinFnR -> IsInjUnFn [label = "flip"]
     IsCancelFormL -> IsCancelBinFnL
     IsCancelFormR -> IsCancelBinFnR
-    IsCancelL -> IsCancelFormL
-    IsCancelR -> IsCancelFormR
+    IsCancelL -> IsCancelBinFnL
+    IsCancelR -> IsCancelBinFnR
     IsCompatActL -> IsCompatFns
     IsCompatActR -> IsCompatFns
     IsCompatActs -> IsCompatFns

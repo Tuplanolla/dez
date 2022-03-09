@@ -19,14 +19,15 @@ Section Context.
 
 Context (A : Type) (X : A -> A -> Prop) (f : A -> A).
 
-(** Injective binary operations are special cases of injective functions. *)
+(** Injectivity of a unary operation is a special case
+    of the injectivity of a unary function. *)
 
-#[export] Instance inj_un_fn_is_inj
-  `{!IsInjUnFn X X f} : IsInj X f.
+#[export] Instance inj_is_inj_un_fn
+  `{!IsInj X f} : IsInjUnFn X X f.
 Proof. auto. Qed.
 
-#[local] Instance inj_is_inj_un_fn
-  `{!IsInj X f} : IsInjUnFn X X f.
+#[local] Instance inj_un_fn_is_inj
+  `{!IsInjUnFn X X f} : IsInj X f.
 Proof. auto. Qed.
 
 End Context.

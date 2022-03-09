@@ -75,17 +75,109 @@ Proof.
 
 End Context.
 
+(** ** Left-Cancellative Action *)
+(** ** Left-Cancellative Left Action *)
+
+Class IsCancelActL (A B : Type) (X : B -> B -> Prop)
+  (al : A -> B -> B) : Prop :=
+  cancel_act_l (x : A) (a b : B) (s : X (al x a) (al x b)) : X a b.
+
+Section Context.
+
+Context (A B : Type) (X : B -> B -> Prop)
+  (al : A -> B -> B).
+
+(** Left-cancellativity of an action is a special case
+    of the left-cancellativity of a binary function. *)
+
+#[export] Instance cancel_act_l_is_cancel_bin_fn_l
+  `{!IsCancelActL X al} : IsCancelBinFnL X X al.
+Proof. auto. Qed.
+
+#[local] Instance cancel_bin_fn_l_is_cancel_act_l
+  `{!IsCancelBinFnL X X al} : IsCancelActL X al.
+Proof. auto. Qed.
+
+End Context.
+
+(** ** Left-Cancellative Right Action *)
+
+Class IsCancelActRL (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (ar : B -> A -> B) : Prop :=
+  cancel_act_r_l (a : B) (x y : A) (s : Y (ar a x) (ar a y)) : X x y.
+
+Section Context.
+
+Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (ar : B -> A -> B).
+
+(** Left-cancellativity of a right action is a special case
+    of the left-cancellativity of a binary function. *)
+
+#[export] Instance cancel_act_r_l_is_cancel_bin_fn_l
+  `{!IsCancelActRL X Y ar} : IsCancelBinFnL X Y ar.
+Proof. auto. Qed.
+
+#[local] Instance cancel_bin_fn_l_is_cancel_act_r_l
+  `{!IsCancelBinFnL X Y ar} : IsCancelActRL X Y ar.
+Proof. auto. Qed.
+
+End Context.
+
+(** ** Right-Cancellative Left Action *)
+
+Class IsCancelActLR (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (al : A -> B -> B) : Prop :=
+  cancel_act_l_r (x y : A) (a : B) (s : Y (al x a) (al y a)) : X x y.
+
+Section Context.
+
+Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (al : A -> B -> B).
+
+(** Right-cancellativity of a left action is a special case
+    of the right-cancellativity of a binary function. *)
+
+#[export] Instance cancel_act_l_r_is_cancel_bin_fn_r
+  `{!IsCancelActLR X Y al} : IsCancelBinFnR X Y al.
+Proof. auto. Qed.
+
+#[local] Instance cancel_bin_fn_r_is_cancel_act_l_r
+  `{!IsCancelBinFnR X Y al} : IsCancelActLR X Y al.
+Proof. auto. Qed.
+
+End Context.
+
+(** ** Right-Cancellative Action *)
+(** ** Right-Cancellative Right Action *)
+
+Class IsCancelActR (A B : Type) (X : B -> B -> Prop)
+  (ar : B -> A -> B) : Prop :=
+  cancel_act_r (a b : B) (x : A) (s : X (ar a x) (ar b x)) : X a b.
+
+Section Context.
+
+Context (A B : Type) (X : B -> B -> Prop)
+  (ar : B -> A -> B).
+
+(** Right-cancellativity of an action is a special case
+    of the right-cancellativity of a binary function. *)
+
+#[export] Instance cancel_act_r_is_cancel_bin_fn_r
+  `{!IsCancelActR X ar} : IsCancelBinFnR X X ar.
+Proof. auto. Qed.
+
+#[local] Instance cancel_bin_fn_r_is_cancel_act_r
+  `{!IsCancelBinFnR X X ar} : IsCancelActR X ar.
+Proof. auto. Qed.
+
+End Context.
+
 (** ** Left-Cancellative Form *)
 
 Class IsCancelFormL (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (s : B -> B -> A) : Prop :=
   cancel_form_l (a b c : B) (t : X (s a b) (s a c)) : Y b c.
-
-(** ** Right-Cancellative Form *)
-
-Class IsCancelFormR (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
-  (s : B -> B -> A) : Prop :=
-  cancel_form_r (a b c : B) (t : X (s a c) (s b c)) : Y a b.
 
 Section Context.
 
@@ -102,6 +194,19 @@ Proof. auto. Qed.
 #[local] Instance cancel_bin_fn_l_is_cancel_form_l
   `{!IsCancelBinFnL Y X s} : IsCancelFormL X Y s.
 Proof. auto. Qed.
+
+End Context.
+
+(** ** Right-Cancellative Form *)
+
+Class IsCancelFormR (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (s : B -> B -> A) : Prop :=
+  cancel_form_r (a b c : B) (t : X (s a c) (s b c)) : Y a b.
+
+Section Context.
+
+Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (s : B -> B -> A).
 
 (** Right-cancellativity of a form is a special case
     of the right-cancellativity of a binary function. *)
@@ -138,6 +243,34 @@ Class IsCancelL (A : Type) (X : A -> A -> Prop) (k : A -> A -> A) : Prop :=
 Class IsCancelR (A : Type) (X : A -> A -> Prop) (k : A -> A -> A) : Prop :=
   cancel_r (x y z : A) (a : X (k x z) (k y z)) : X x y.
 
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop) (k : A -> A -> A).
+
+(** Left-cancellativity of a binary operation is a special case
+    of the left-cancellativity of a binary function. *)
+
+#[export] Instance cancel_l_is_cancel_bin_fn_l
+  `{!IsCancelL X k} : IsCancelBinFnL X X k.
+Proof. auto. Qed.
+
+#[local] Instance cancel_bin_fn_l_is_cancel_l
+  `{!IsCancelBinFnL X X k} : IsCancelL X k.
+Proof. auto. Qed.
+
+(** Right-cancellativity of a binary operation is a special case
+    of the right-cancellativity of a binary function. *)
+
+#[export] Instance cancel_r_is_cancel_bin_fn_r
+  `{!IsCancelR X k} : IsCancelBinFnR X X k.
+Proof. auto. Qed.
+
+#[local] Instance cancel_bin_fn_r_is_cancel_r
+  `{!IsCancelBinFnR X X k} : IsCancelR X k.
+Proof. auto. Qed.
+
+End Context.
+
 (** ** Cancellative Binary Operation *)
 (** ** Injective Binary Operation *)
 (** ** Regular Binary Operation *)
@@ -146,53 +279,3 @@ Class IsCancel (A : Type) (X : A -> A -> Prop) (k : A -> A -> A) : Prop := {
   cancel_is_cancel_l :> IsCancelL X k;
   cancel_is_cancel_r :> IsCancelR X k;
 }.
-
-Section Context.
-
-Context (A : Type) (X : A -> A -> Prop) (k : A -> A -> A).
-
-(** Left-cancellativity of a binary operation is a special case
-    of the left-cancellativity of a form. *)
-
-Lemma cancel_l_is_cancel_form_l
-  `{!IsCancelL X k} : IsCancelFormL X X k.
-Proof. auto. Qed.
-
-Lemma cancel_form_l_is_cancel_l
-  `{!IsCancelFormL X X k} : IsCancelL X k.
-Proof. auto. Qed.
-
-(** Right-cancellativity of a binary operation is a special case
-    of the right-cancellativity of a form. *)
-
-Lemma cancel_r_is_cancel_form_r
-  `{!IsCancelR X k} : IsCancelFormR X X k.
-Proof. auto. Qed.
-
-Lemma cancel_form_r_is_cancel_r
-  `{!IsCancelFormR X X k} : IsCancelR X k.
-Proof. auto. Qed.
-
-(** Cancellativity of a binary operation is a special case
-    of the cancellativity of a form. *)
-
-#[export] Instance cancel_is_cancel_form
-  `{!IsCancel X k} : IsCancelForm X X k.
-Proof.
-  esplit; eauto
-  using cancel_l_is_cancel_form_l, cancel_r_is_cancel_form_r
-  with typeclass_instances. Qed.
-
-#[local] Instance cancel_form_is_cancel
-  `{!IsCancelForm X X k} : IsCancel X k.
-Proof.
-  esplit; eauto
-  using cancel_form_l_is_cancel_l, cancel_form_r_is_cancel_r
-  with typeclass_instances. Qed.
-
-#[export] Existing Instance cancel_l_is_cancel_form_l.
-#[local] Existing Instance cancel_form_l_is_cancel_l.
-#[export] Existing Instance cancel_r_is_cancel_form_r.
-#[local] Existing Instance cancel_form_r_is_cancel_r.
-
-End Context.
