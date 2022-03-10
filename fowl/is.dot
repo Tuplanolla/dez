@@ -89,12 +89,9 @@ digraph Is {
 
   subgraph cluster_absorb {
   label = "Absorbing Fragment"
-  IsAbsorbElemActL [label = "\N X a al\nabsorb_elem_act_l (y : A) : X (al y a) b"]
+  bgcolor = azure
   IsAbsorbElemActLR [label = "\N X a al\nabsorb_elem_act_l_r (x : A) : X (al x a) a"]
-  IsAbsorbElemActR [label = "\N X a ar\nabsorb_elem_act_r (x : A) : X (ar a x) b"]
   IsAbsorbElemActRL [label = "\N X a ar\nabsorb_elem_act_r_l (x : A) : X (ar a x) a"]
-  IsAbsorbElemBinFnL [label = "\N X x y k\nabsorb_elem_bin_fn_l (z : A1) : X (k x z) y"]
-  IsAbsorbElemBinFnR [label = "\N X x y k\nabsorb_elem_bin_fn_r (z : A0) : X (k z x) y"]
   IsAbsorbElemL [label = "\N X x k\nabsorb_elem_l (y : A) : X (k x y) x"]
   IsAbsorbElemR [label = "\N X x k\nabsorb_elem_r (y : A) : X (k y x) x"]
   IsFixed [label = "\N X x f\nfixed : X (f x) x"]
@@ -103,6 +100,7 @@ digraph Is {
   IsIdemElemUnOp [label = "\N X x f\nidem_elem_un_op : X (f x) x"]
   IsIdemUnOp [label = "\N X f\nidem_un_op (x : A) : X (f (f x)) (f x)"]
   IsInvol [label = "\N X f\ninvol (x : A) : X (f (f x)) x"]
+  IsInvolElem [label = "\N X x f\ninvol_elem : X (f (f x)) x"]
   }
 
   subgraph cluster_comm {
@@ -273,15 +271,9 @@ digraph Is {
   }
 
   subgraph abstract_algebra_derivations {
-    IsAbsorbElemActL -> IsAbsorbElemBinFnL
-    IsAbsorbElemActLR -> IsAbsorbElemBinFnR
     IsAbsorbElemActLR -> IsFixed [label = "id"]
-    IsAbsorbElemActR -> IsAbsorbElemBinFnR
-    IsAbsorbElemActRL -> IsAbsorbElemBinFnL
     IsAbsorbElemActRL -> IsFixed [label = "flip"]
-    IsAbsorbElemBinFnL -> IsAbsorbElemBinFnR [label = "flip"]
-    IsAbsorbElemL -> IsAbsorbElemBinFnL
-    IsAbsorbElemR -> IsAbsorbElemBinFnR
+    IsAbsorbElemActRL -> IsAbsorbElemActLR [label = "flip"]
     IsAssoc -> IsCompatBinFns
     IsCancelActL -> IsCancelBinFnL
     IsCancelActLR -> IsCancelBinFnR
@@ -312,6 +304,7 @@ digraph Is {
     IsGrpHom -> IsUnPres
     IsIdemBinOp -> IsIdemElemBinOp [label = "id"]
     IsIdemUnOp -> IsIdemElemUnOp [label = "id"]
+    IsInvol -> IsInvolElem [label = "id"]
     IsInj -> IsInjUnFn
     IsInv -> IsInvForm
     IsInvFormL -> IsInvBinFnL
