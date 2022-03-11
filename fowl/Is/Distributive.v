@@ -1,43 +1,67 @@
 (** * Distributivity *)
 
 From DEZ.Is Require Export
-  Injective Proper.
+  Proper Injective.
 
-(** TODO Go through this. *)
+(** ** Unary Functions Distributing over Binary Functions *)
 
-(** ** Distributive Unary Functions over Binary Functions *)
-
-Class IsDistrFns (A0 A1 B0 B1 B2 C : Type) (X : C -> C -> Prop)
+Class IsDistrUnFns (A0 A1 B0 B1 B2 C : Type) (X : C -> C -> Prop)
   (f : A0 -> B0) (g : A1 -> B1) (k : A0 -> A1 -> B2)
   (h : B2 -> C) (m : B0 -> B1 -> C) : Prop :=
-  distr_fns (x : A0) (y : A1) : X (h (k x y)) (m (f x) (g y)).
-
-(** ** Distributive Unary Functions over Forms *)
-
-Class IsDistrForms (A B C : Type) (X : A -> A -> Prop)
-  (f : C -> B) (s : C -> C -> B) (g : B -> A) (t : B -> B -> A) : Prop :=
-  distr_forms (a b : C) : X (g (s a b)) (t (f a) (f b)).
+  distr_un_fns (x : A0) (y : A1) : X (h (k x y)) (m (f x) (g y)).
 
 Section Context.
 
-Context (A B C : Type) (X : A -> A -> Prop)
-  (f : C -> B) (s : C -> C -> B) (g : B -> A) (t : B -> B -> A).
+Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop) (f : A -> B).
 
-(** Something implies something else. *)
+(** Properness is a special case of distributivity. *)
 
-#[export] Instance distr_fns_is_distr_forms
-  `{!IsDistrFns X f f s g t} : IsDistrForms X f s g t.
+#[local] Instance proper_is_distr_un_fns_impl_id
+  `{!IsProper (X ==> Y) f} : IsDistrUnFns impl f f X id Y.
 Proof. auto. Qed.
 
-(** Something implies something else. *)
+#[local] Instance distr_un_fns_impl_id_is_proper
+  `{!IsDistrUnFns impl f f X id Y} : IsProper (X ==> Y) f.
+Proof. auto. Qed.
 
-#[local] Instance distr_forms_is_distr_fns
-  `{!IsDistrForms X f s g t} : IsDistrFns X f f s g t.
+(** Injectivity is a special case of distributivity. *)
+
+#[local] Instance inj_un_fn_is_distr_un_fns_flip_impl_id
+  `{!IsInjUnFn X Y f} : IsDistrUnFns (flip impl) f f X id Y.
+Proof. auto. Qed.
+
+#[local] Instance distr_un_fns_flip_impl_id_is_inj_un_fn
+  `{!IsDistrUnFns (flip impl) f f X id Y} : IsInjUnFn X Y f.
 Proof. auto. Qed.
 
 End Context.
 
-(** ** Distributive Unary Operation over Binary Operation *)
+(** ** Unary Function Distributing over Binary Operations *)
+
+Class IsDistrUnFn (A B : Type) (X : B -> B -> Prop)
+  (f : A -> B) (k : A -> A -> A) (m : B -> B -> B) : Prop :=
+  distr_un_fn (x y : A) : X (f (k x y)) (m (f x) (f y)).
+
+Section Context.
+
+Context (A B : Type) (X : B -> B -> Prop)
+  (f : A -> B) (k : A -> A -> A) (m : B -> B -> B).
+
+(** Distributivity of a unary function over a binary operation
+    is a special case of the distributivity
+    of unary functions over binary functions. *)
+
+#[export] Instance distr_un_fn_is_distr_un_fns
+  `{!IsDistrUnFn X f k m} : IsDistrUnFns X f f k f m.
+Proof. auto. Qed.
+
+#[local] Instance distr_un_fns_is_distr_un_fn
+  `{!IsDistrUnFns X f f k f m} : IsDistrUnFn X f k m.
+Proof. auto. Qed.
+
+End Context.
+
+(** ** Unary Operation Distributing over a Binary Operation *)
 
 (** This has the same shape as [Z.opp_add_distr]. *)
 
@@ -45,63 +69,165 @@ Class IsDistrUnOp (A : Type) (X : A -> A -> Prop)
   (f : A -> A) (k : A -> A -> A) : Prop :=
   distr_un_op (x y : A) : X (f (k x y)) (k (f x) (f y)).
 
-(** ** Antidistributive Unary Operation over Binary Operation *)
-
-Class IsAntidistrUnOp (A : Type) (X : A -> A -> Prop)
-  (f : A -> A) (k : A -> A -> A) : Prop :=
-  antidistr_un_op (x y : A) : X (f (k x y)) (k (f y) (f x)).
-
 Section Context.
 
 Context (A : Type) (X : A -> A -> Prop)
   (f : A -> A) (k : A -> A -> A).
 
-(** Something implies something else. *)
+(** Distributivity of a unary operation over a binary operation
+    is a special case of the distributivity
+    of unary functions over binary functions. *)
 
-#[export] Instance distr_forms_is_distr_un_op
-  `{!IsDistrForms X f k f k} : IsDistrUnOp X f k.
+#[export] Instance distr_un_op_is_distr_un_fns
+  `{!IsDistrUnOp X f k} : IsDistrUnFns X f f k f k.
 Proof. auto. Qed.
 
-(** Something implies something else. *)
-
-#[local] Instance distr_un_op_is_distr_forms
-  `{!IsDistrUnOp X f k} : IsDistrForms X f k f k.
-Proof. auto. Qed.
-
-(** Something implies something else. *)
-
-#[export] Instance distr_forms_is_antidistr_un_op_flip
-  `{!IsDistrForms X f (flip k) f k} : IsAntidistrUnOp X f (flip k).
-Proof. auto. Qed.
-
-(** Something implies something else. *)
-
-#[local] Instance antidistr_un_op_is_distr_forms_flip
-  `{!IsAntidistrUnOp X f k} : IsDistrForms X f k f (flip k).
+#[local] Instance distr_un_fns_is_distr_un_op
+  `{!IsDistrUnFns X f f k f k} : IsDistrUnOp X f k.
 Proof. auto. Qed.
 
 End Context.
 
-(** ** Left Distributive Action over Binary Operation *)
+(** ** Binary Functions Left-Distributing over Binary Functions *)
+
+Class IsDistrBinFnsL (A0 A1 A2 B0 B1 B2 C : Type) (X : C -> C -> Prop)
+  (k : A0 -> A1 -> B0) (m : A0 -> A2 -> B1) (n : A1 -> A2 -> B2)
+  (p : A0 -> B2 -> C) (q : B0 -> B1 -> C) : Prop :=
+  distr_bin_fns_l (x : A0) (y : A1) (z : A2) :
+    X (p x (n y z)) (q (k x y) (m x z)).
+
+Section Context.
+
+Context (A0 A1 A2 B0 B1 B2 C : Type) (X : C -> C -> Prop)
+  (k : A0 -> A1 -> B0) (m : A0 -> A2 -> B1) (n : A1 -> A2 -> B2)
+  (p : A0 -> B2 -> C) (q : B0 -> B1 -> C).
+
+(** Distributivity of partially-applied binary functions over binary functions
+    is a special case of their left-distributivity. *)
+
+#[export] Instance distr_bin_fns_l_is_distr_un_fns
+  `{!IsDistrBinFnsL X k m n p q} (x : A0) :
+  IsDistrUnFns X (k x) (m x) n (p x) q.
+Proof. intros y z. apply distr_bin_fns_l. Qed.
+
+#[local] Instance distr_un_fns_is_distr_bin_fns_l
+  `{!forall x : A0, IsDistrUnFns X (k x) (m x) n (p x) q} :
+  IsDistrBinFnsL X k m n p q.
+Proof. intros x y z. apply distr_un_fns. Qed.
+
+End Context.
+
+(** ** Binary Functions Right-Distributing over Binary Functions *)
+
+Class IsDistrBinFnsR (A0 A1 A2 B0 B1 B2 C : Type) (X : C -> C -> Prop)
+  (k : A0 -> A2 -> B0) (m : A1 -> A2 -> B1) (n : A0 -> A1 -> B2)
+  (p : B2 -> A2 -> C) (q : B0 -> B1 -> C) : Prop :=
+  distr_bin_fns_r (x : A0) (y : A1) (z : A2) :
+    X (p (n x y) z) (q (k x z) (m y z)).
+
+Section Context.
+
+Context (A0 A1 A2 B0 B1 B2 C : Type) (X : C -> C -> Prop)
+  (k : A0 -> A2 -> B0) (m : A1 -> A2 -> B1) (n : A0 -> A1 -> B2)
+  (p : B2 -> A2 -> C) (q : B0 -> B1 -> C).
+
+(** Distributivity of partially-applied binary functions over binary functions
+    is a special case of their right-distributivity. *)
+
+#[export] Instance distr_bin_fns_r_is_distr_un_fns
+  `{!IsDistrBinFnsR X k m n p q} (z : A2) :
+  IsDistrUnFns X (flip k z) (flip m z) n (flip p z) q.
+Proof. intros x y. unfold flip. apply distr_bin_fns_r. Qed.
+
+#[local] Instance distr_un_fns_is_distr_bin_fns_r
+  `{!forall z : A2, IsDistrUnFns X (flip k z) (flip m z) n (flip p z) q} :
+  IsDistrBinFnsR X k m n p q.
+Proof.
+  intros x y z.
+  change (k x z) with (flip k z x).
+  change (m y z) with (flip m z y).
+  change (p (n x y) z) with (flip p z (n x y)).
+  apply distr_un_fns. Qed.
+
+End Context.
+
+(** ** Left Action Distributing over a Binary Operation *)
 
 Class IsDistrActL (A B : Type) (X : B -> B -> Prop)
   (al : A -> B -> B) (k : B -> B -> B) : Prop :=
   distr_act_l (x : A) (a b : B) : X (al x (k a b)) (k (al x a) (al x b)).
 
-(** ** Right Distributive Action over Binary Operation *)
+Section Context.
+
+Context (A B : Type) (X : B -> B -> Prop)
+  (al : A -> B -> B) (k : B -> B -> B).
+
+(** Distributivity of a left action over a binary operation
+    is a special case of the left-distributivity
+    of binary functions over binary functions. *)
+
+#[export] Instance distr_act_l_is_distr_bin_fns_l
+  `{!IsDistrActL X al k} : IsDistrBinFnsL X al al k al k.
+Proof. auto. Qed.
+
+#[local] Instance distr_bin_fns_l_is_distr_act_l
+  `{!IsDistrBinFnsL X al al k al k} : IsDistrActL X al k.
+Proof. auto. Qed.
+
+End Context.
+
+(** ** Right Action Distributing over a Binary Operation *)
 
 Class IsDistrActR (A B : Type) (X : B -> B -> Prop)
   (ar : B -> A -> B) (k : B -> B -> B) : Prop :=
   distr_act_r (a b : B) (x : A) : X (ar (k a b) x) (k (ar a x) (ar b x)).
 
-(** ** Left Distributive Binary Operation over Binary Operation *)
+Section Context.
+
+Context (A B : Type) (X : B -> B -> Prop)
+  (ar : B -> A -> B) (k : B -> B -> B).
+
+(** Distributivity of a right action over a binary operation
+    is a special case of the right-distributivity
+    of binary functions over binary functions. *)
+
+#[export] Instance distr_act_r_is_distr_bin_fns_r
+  `{!IsDistrActR X ar k} : IsDistrBinFnsR X ar ar k ar k.
+Proof. auto. Qed.
+
+#[local] Instance distr_bin_fns_r_is_distr_act_r
+  `{!IsDistrBinFnsR X ar ar k ar k} : IsDistrActR X ar k.
+Proof. auto. Qed.
+
+End Context.
+
+(** ** Binary Operation Left-Distributing over a Binary Operation *)
 
 (** This has the same shape as [Z.mul_add_distr_l]. *)
 
 Class IsDistrL (A : Type) (X : A -> A -> Prop) (k m : A -> A -> A) : Prop :=
   distr_l (x y z : A) : X (k x (m y z)) (m (k x y) (k x z)).
 
-(** ** Right Distributive Binary Operation over Binary Operation *)
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A) (m : A -> A -> A).
+
+(** Left-distributivity of a binary operation over a binary operation
+    is a special case of the left-distributivity
+    of binary functions over binary functions. *)
+
+#[export] Instance distr_l_is_distr_bin_fns_l
+  `{!IsDistrL X k m} : IsDistrBinFnsL X k k m k m.
+Proof. auto. Qed.
+
+#[local] Instance distr_bin_fns_l_is_distr_l
+  `{!IsDistrBinFnsL X k k m k m} : IsDistrL X k m.
+Proof. auto. Qed.
+
+End Context.
+
+(** ** Binary Operation Right-Distributing over a Binary Operation *)
 
 (** This has the same shape as [Z.mul_add_distr_r]. *)
 
@@ -113,89 +239,23 @@ Section Context.
 Context (A : Type) (X : A -> A -> Prop)
   (k : A -> A -> A) (m : A -> A -> A).
 
-(** Left distributive form implies left distributive binary operation. *)
+(** Right-distributivity of a binary operation over a binary operation
+    is a special case of the right-distributivity
+    of binary functions over binary functions. *)
 
-#[export] Instance distr_act_l_is_distr_l
-  `{!IsDistrActL X k m} : IsDistrL X k m.
+#[export] Instance distr_r_is_distr_bin_fns_r
+  `{!IsDistrR X k m} : IsDistrBinFnsR X k k m k m.
 Proof. auto. Qed.
 
-(** Left distributive binary operation implies left distributive form. *)
-
-#[local] Instance distr_l_is_distr_act_l
-  `{!IsDistrL X k m} : IsDistrActL X k m.
-Proof. auto. Qed.
-
-(** Right distributive form implies right distributive binary operation. *)
-
-#[export] Instance distr_act_r_is_distr_r
-  `{!IsDistrActR X k m} : IsDistrR X k m.
-Proof. auto. Qed.
-
-(** Right distributive binary operation implies right distributive form. *)
-
-#[local] Instance distr_r_is_distr_act_r
-  `{!IsDistrR X k m} : IsDistrActR X k m.
+#[local] Instance distr_bin_fns_r_is_distr_r
+  `{!IsDistrBinFnsR X k k m k m} : IsDistrR X k m.
 Proof. auto. Qed.
 
 End Context.
 
-(** ** Distributive Binary Operation over Binary Operation *)
+(** ** Binary Operation Distributing over a Binary Operation *)
 
 Class IsDistr (A : Type) (X : A -> A -> Prop) (k m : A -> A -> A) : Prop := {
   distr_is_distr_l :> IsDistrL X k m;
   distr_is_distr_r :> IsDistrR X k m;
 }.
-
-Section Context.
-
-Context (A B : Type) (X : B -> B -> Prop) (al : A -> B -> B) (k : B -> B -> B).
-
-(** Left distributivity implies distributivity of partial applications. *)
-
-#[export] Instance distr_act_l_is_distr_un_op
-  `{!IsDistrActL X al k} (x : A) : IsDistrUnOp X (al x) k.
-Proof. intros a b. apply distr_act_l. Qed.
-
-(** Same in reverse. *)
-
-#[local] Instance distr_un_op_is_distr_act_l
-  `{!forall x : A, IsDistrUnOp X (al x) k} : IsDistrActL X al k.
-Proof. intros x a b. apply distr_un_op. Qed.
-
-End Context.
-
-Section Context.
-
-Context (A B : Type) (X : B -> B -> Prop) (ar : B -> A -> B) (k : B -> B -> B).
-
-(** Right distributivity implies distributivity of partial applications. *)
-
-#[export] Instance distr_act_r_is_distr_un_op
-  `{!IsDistrActR X ar k} (x : A) : IsDistrUnOp X (flip ar x) k.
-Proof. intros a b. apply (distr_act_r (ar := ar)). Qed.
-
-(** Same in reverse. *)
-
-#[local] Instance distr_un_op_is_distr_act_r
-  `{!forall x : A, IsDistrUnOp X (flip ar x) k} : IsDistrActR X ar k.
-Proof. intros a b x. apply (distr_un_op (f := flip ar x)). Qed.
-
-End Context.
-
-Section Context.
-
-Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop) (f : A -> B).
-
-(** Properness is a special case of distributivity. *)
-
-#[local] Instance distr_fns_is_proper
-  `{!IsDistrFns impl f f X id Y} : IsProper (X ==> Y) f.
-Proof. auto. Qed.
-
-(** Injectivity is a special case of distributivity. *)
-
-#[local] Instance distr_fns_is_inj_fn
-  `{!IsDistrFns (flip impl) f f X id Y} : IsInjFn X Y f.
-Proof. auto. Qed.
-
-End Context.

@@ -6,8 +6,8 @@ From DEZ Require Export
 (** ** Left-Unital Binary Function *)
 
 Fail Fail Class IsUnlBinFnL (A B C : Type) (X : C -> C -> Prop)
-  (x : A) (y : C) (k : A -> B -> C) : Prop :=
-  unl_bin_fn_l (z : B) : X (k x z) y.
+  (x : B) (y : C) (k : B -> A -> C) : Prop :=
+  unl_bin_fn_l (z : A) : X (k x z) y.
 
 (** ** Right-Unital Binary Function *)
 

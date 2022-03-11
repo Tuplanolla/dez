@@ -6,12 +6,12 @@ From DEZ.Is Require Export
 (** ** Left-Absorbing Element of a Binary Function *)
 
 Fail Fail Class IsAbsorbElemBinFnL (A B C : Type) (X : C -> C -> Prop)
-  (x : A) (y : C) (k : A -> B -> C) : Prop :=
-  absorb_elem_bin_fn_l (z : B) : X (k x z) y.
+  (x : B) (y : C) (k : B -> A -> C) : Prop :=
+  absorb_elem_bin_fn_l (z : A) : X (k x z) y.
 
 (** ** Right-Absorbing Element of a Binary Function *)
 
-Fail Fail Class IsAbsorbElemBinFnL (A B C : Type) (X : C -> C -> Prop)
+Fail Fail Class IsAbsorbElemBinFnR (A B C : Type) (X : C -> C -> Prop)
   (x : B) (y : C) (k : A -> B -> C) : Prop :=
   absorb_elem_bin_fn_r (z : A) : X (k z x) y.
 
@@ -33,8 +33,8 @@ Section Context.
 Context (A B : Type) (X : B -> B -> Prop)
   (a : B) (ar : B -> A -> B).
 
-(** Fixed point of a partially-applied flipped right action
-    is a special case of its left-absorbing element. *)
+(** A left-absorbing element of a right action
+    is a special case of a fixed point of its flipped partial application. *)
 
 #[export] Instance absorb_elem_act_r_l_is_fixed_flip
   `{!IsAbsorbElemActRL X a ar} (x : A) : IsFixed X a (flip ar x).
@@ -49,6 +49,13 @@ Proof.
 
 End Context.
 
+(** ** Right-Absorbing Element of an Action *)
+(** ** Right-Absorbing Element of a Right Action *)
+
+Fail Fail Class IsAbsorbElemActR (A B : Type) (X : B -> B -> Prop)
+  (x : A) (a : B) (ar : B -> A -> B) : Prop :=
+  absorb_elem_act_r (b : B) : X (ar b x) a.
+
 (** ** Right-Absorbing Element of a Left Action *)
 
 Class IsAbsorbElemActLR (A B : Type) (X : B -> B -> Prop)
@@ -60,8 +67,8 @@ Section Context.
 Context (A B : Type) (X : B -> B -> Prop)
   (a : B) (al : A -> B -> B).
 
-(** Fixed point of a partially-applied left action
-    is a special case of its right-absorbing element. *)
+(** A right-absorbing element of a left action
+    is a special case of a fixed point of its partial application. *)
 
 #[export] Instance absorb_elem_act_l_r_is_fixed
   `{!IsAbsorbElemActLR X a al} (x : A) : IsFixed X a (al x).
@@ -73,20 +80,13 @@ Proof. intros x. apply fixed. Qed.
 
 End Context.
 
-(** ** Right-Absorbing Element of an Action *)
-(** ** Right-Absorbing Element of a Right Action *)
-
-Fail Fail Class IsAbsorbElemActR (A B : Type) (X : B -> B -> Prop)
-  (x : A) (a : B) (ar : B -> A -> B) : Prop :=
-  absorb_elem_act_r (b : B) : X (ar b x) a.
-
 Section Context.
 
 Context (A B : Type) (X : B -> B -> Prop)
   (a : B) (ar : B -> A -> B).
 
-(** A right-absorbing element of a flipped right action
-    is a special case of a left-absorbing element of a right action. *)
+(** A left-absorbing element of a right action
+    is a special case of a right-absorbing element of a flipped left action. *)
 
 #[export] Instance absorb_elem_act_r_l_is_absorb_elem_act_l_r_flip
   `{!IsAbsorbElemActRL X a ar} : IsAbsorbElemActLR X a (flip ar).

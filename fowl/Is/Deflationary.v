@@ -1,29 +1,78 @@
 (** * Deflationarity *)
 
-From DEZ.Has Require Export
-  OrderRelations BinaryOperation.
-From DEZ.Supports Require Import
-  OrderNotations AdditiveNotations.
+From DEZ Require Export
+  Init.
 
-Class IsDeflGen (A B : Type) (X : B -> A -> Prop) (f : A -> B) : Prop :=
-  defl_gen (x : A) : X (f x) x.
+(** ** Deflationary Unary Operation *)
+(** ** Regressive Unary Operation *)
 
-Class IsDeflGenL (A B C : Type) (X : C -> B -> Prop)
-  (k : A -> B -> C) : Prop :=
-  defl_gen_l (x : A) (y : B) : X (k x y) y.
+Class IsDeflUnOp (A : Type) (X : A -> A -> Prop) (f : A -> A) : Prop :=
+  defl_un_op (x : A) : X (f x) x.
 
-Class IsDeflGenR (A B C : Type) (X : C -> A -> Prop)
-  (k : A -> B -> C) : Prop :=
-  defl_gen_r (x : A) (y : B) : X (k x y) x.
+(** ** Deflationary Left Action *)
 
-(** ** Deflationary Function *)
-(** ** Regressive Function *)
+Class IsDeflActL (A B : Type) (X : B -> B -> Prop)
+  (al : A -> B -> B) : Prop :=
+  defl_act_l (x : A) (a : B) : X (al x a) a.
 
-Class IsDefl (A : Type) (HR : HasOrdRel A) (f : A -> A) : Prop :=
-  defl (x : A) : f x <= x.
+Section Context.
 
-Class IsDeflBinOpL (A : Type) (HR : HasOrdRel A) (Hk : HasBinOp A) : Prop :=
-  defl_bin_op_l (x y : A) : x + y <= y.
+Context (A B : Type) (X : B -> B -> Prop)
+  (al : A -> B -> B).
 
-Class IsDeflBinOpR (A : Type) (HR : HasOrdRel A) (Hk : HasBinOp A) : Prop :=
-  defl_bin_op_r (x y : A) : x + y <= x.
+(** Deflationarity of a left action is a special case
+    of the deflationarity of its partial application. *)
+
+#[export] Instance defl_act_l_is_defl_un_op
+  `{!IsDeflActL X al} (x : A) : IsDeflUnOp X (al x).
+Proof. intros a. apply defl_act_l. Qed.
+
+#[local] Instance defl_un_op_is_defl_act_l
+  `{!forall x : A, IsDeflUnOp X (al x)} : IsDeflActL X al.
+Proof. intros x a. apply defl_un_op. Qed.
+
+End Context.
+
+(** ** Deflationary Right Action *)
+
+Class IsDeflActR (A B : Type) (X : B -> B -> Prop)
+  (ar : B -> A -> B) : Prop :=
+  defl_act_r (a : B) (x : A) : X (ar a x) a.
+
+Section Context.
+
+Context (A B : Type) (X : B -> B -> Prop)
+  (ar : B -> A -> B).
+
+(** Deflationarity of a left action is a special case
+    of the deflationarity of its flipped partial application. *)
+
+#[export] Instance defl_act_r_is_defl_un_op_flip
+  `{!IsDeflActR X ar} (x : A) : IsDeflUnOp X (flip ar x).
+Proof. intros a. unfold flip. apply defl_act_r. Qed.
+
+#[local] Instance defl_un_op_flip_is_defl_act_r
+  `{!forall x : A, IsDeflUnOp X (flip ar x)} : IsDeflActR X ar.
+Proof.
+  intros x a.
+  change (ar x a) with (flip ar a x).
+  apply defl_un_op. Qed.
+
+End Context.
+
+(** ** Left-Deflationary Binary Operation *)
+
+Class IsDeflL (A : Type) (X : A -> A -> Prop) (k : A -> A -> A) : Prop :=
+  defl_l (x y : A) : X (k x y) y.
+
+(** ** Right-Deflationary Binary Operation *)
+
+Class IsDeflR (A : Type) (X : A -> A -> Prop) (k : A -> A -> A) : Prop :=
+  defl_r (x y : A) : X (k x y) x.
+
+(** ** Deflationary Binary Operation *)
+
+Class IsDefl (A : Type) (X : A -> A -> Prop) (k : A -> A -> A) : Prop := {
+  defl_is_defl_l :> IsDeflL X k;
+  defl_is_defl_r :> IsDeflR X k;
+}.

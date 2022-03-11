@@ -6,25 +6,25 @@ From DEZ.Is Require Export
 (** ** Left-Cancellative Binary Function *)
 
 Class IsCancelBinFnL (A0 A1 B : Type)
-  (X : A1 -> A1 -> Prop) (Y : B -> B -> Prop)
-  (k : A0 -> A1 -> B) : Prop :=
-  cancel_bin_fn_l (x : A0) (y z : A1) (a : Y (k x y) (k x z)) : X y z.
+  (X : A0 -> A0 -> Prop) (Y : B -> B -> Prop)
+  (k : A1 -> A0 -> B) : Prop :=
+  cancel_bin_fn_l (x : A1) (y z : A0) (a : Y (k x y) (k x z)) : X y z.
 
 Section Context.
 
 Context (A0 A1 B : Type)
-  (X : A1 -> A1 -> Prop) (Y : B -> B -> Prop)
-  (k : A0 -> A1 -> B).
+  (X : A0 -> A0 -> Prop) (Y : B -> B -> Prop)
+  (k : A1 -> A0 -> B).
 
-(** Injectivity of a partially-applied binary function
-    is a special case of its left-cancellativity. *)
+(** Left-cancellativity of a binary function
+    is a special case of the injectivity of its partial application. *)
 
 #[export] Instance cancel_bin_fn_l_is_inj_un_fn
-  `{!IsCancelBinFnL X Y k} (x : A0) : IsInjUnFn X Y (k x).
+  `{!IsCancelBinFnL X Y k} (x : A1) : IsInjUnFn X Y (k x).
 Proof. intros y z. apply cancel_bin_fn_l. Qed.
 
 #[local] Instance inj_un_fn_is_cancel_bin_fn_l
-  `{!forall x : A0, IsInjUnFn X Y (k x)} : IsCancelBinFnL X Y k.
+  `{!forall x : A1, IsInjUnFn X Y (k x)} : IsCancelBinFnL X Y k.
 Proof. intros x y z. apply inj_un_fn. Qed.
 
 End Context.
@@ -42,15 +42,15 @@ Context (A0 A1 B : Type)
   (X : A0 -> A0 -> Prop) (Y : B -> B -> Prop)
   (k : A0 -> A1 -> B).
 
-(** Injectivity of a partially-applied flipped binary function
-    is a special case of its right-cancellativity. *)
+(** Right-cancellativity of a binary function
+    is a special case of the injectivity of its flipped partial application. *)
 
 #[export] Instance cancel_bin_fn_r_is_inj_un_fn_flip
   `{!IsCancelBinFnR X Y k} (z : A1) : IsInjUnFn X Y (flip k z).
 Proof. intros x y. unfold flip. apply cancel_bin_fn_r. Qed.
 
 #[local] Instance inj_un_fn_flip_is_cancel_bin_fn_r
-  `{!forall y : A1, IsInjUnFn X Y (flip k y)} : IsCancelBinFnR X Y k.
+  `{!forall z : A1, IsInjUnFn X Y (flip k z)} : IsCancelBinFnR X Y k.
 Proof.
   intros x y z.
   change (k x z) with (flip k z x). change (k y z) with (flip k z y).
@@ -63,8 +63,8 @@ Section Context.
 Context (A B C : Type) (X : B -> B -> Prop) (Y : C -> C -> Prop)
   (k : A -> B -> C).
 
-(** Right-cancellativity of a flipped binary function
-    is a special case of its left-cancellativity. *)
+(** Left-cancellativity of a binary function
+    is a special case of its flipped right-cancellativity. *)
 
 #[export] Instance cancel_bin_fn_l_is_cancel_bin_fn_r_flip
   `{!IsCancelBinFnL X Y k} : IsCancelBinFnR X Y (flip k).

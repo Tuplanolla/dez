@@ -32,7 +32,7 @@ digraph Is {
 
   subgraph cluster_cancel {
   label = "Cancellative Fragment"
-  bgcolor = azure
+  bgcolor = mistyrose
   IsCancelBinFnL [label = "\N X Y k\ncancel_bin_fn_l (x : A0) (y z : A1) (a : Y (k x y) (k x z)) : X y z"]
   IsCancelBinFnR [label = "\N X Y k\ncancel_bin_fn_r (x y : A0) (z : A1) (a : Y (k x z) (k y z)) : X x y"]
   IsCancelActL [label = "\N X al\ncancel_act_l (x : A) (a b : B) (s : X (al x a) (al x b)) : X a b"]
@@ -61,6 +61,7 @@ digraph Is {
 
   subgraph cluster_distr {
   label = "Distributive Fragment"
+  bgcolor = mistyrose
   IsAntidistrUnOp [label = "\N X f k\nantidistr_un_op (x y : A) : X (f (k x y)) (k (f y) (f x))"]
   IsDistrActL [label = "\N X al k\ndistr_act_l (x : A) (a b : B) : X (al x (k a b)) (k (al x a) (al x b))"]
   IsDistrActR [label = "\N X ar k\ndistr_act_r (a b : B) (x : A) : X (ar (k a b) x) (k (ar a x) (ar b x))"]
@@ -87,7 +88,7 @@ digraph Is {
 
   subgraph cluster_unl {
   label = "Unital Fragment"
-  bgcolor = azure
+  bgcolor = mistyrose
   IsUnlActL [label = "\N X x al\nunl_act_l (a : B) : X (al x a) a"]
   IsUnlActR [label = "\N X x ar\nunl_act_r (a : B) : X (ar a x) a"]
   IsUnlL [label = "\N X x k\nunl_l (y : A) : X (k x y) y"]
@@ -97,7 +98,7 @@ digraph Is {
 
   subgraph cluster_absorb {
   label = "Absorbing Fragment"
-  bgcolor = azure
+  bgcolor = mistyrose
   IsAbsorbElemActLR [label = "\N X a al\nabsorb_elem_act_l_r (x : A) : X (al x a) a"]
   IsAbsorbElemActRL [label = "\N X a ar\nabsorb_elem_act_r_l (x : A) : X (ar a x) a"]
   IsAbsorbElemL [label = "\N X x k\nabsorb_elem_l (y : A) : X (k x y) x"]
@@ -114,6 +115,7 @@ digraph Is {
 
   subgraph cluster_comm {
   label = "Commutative Fragment"
+  bgcolor = mistyrose
   IsComm [label = "\N X k\ncomm (x y : A) : X (k x y) (k y x)", color = red, fillcolor = yellow]
   IsCommBinOp [label = "\N\ncomm (x y : A) : x * y = y * x", color = red, fillcolor = yellow]
   IsCommL [label = "\N\ncomm_l (x y : A) : (/ x) * y = / (x * y)", color = red, fillcolor = yellow]
@@ -124,6 +126,7 @@ digraph Is {
 
   subgraph cluster_pres {
   label = "Preserving Fragment"
+  bgcolor = mistyrose
   IsBinPres [label = "\N X k m f\nbin_pres (x y : A) : X (f (k x y)) (m (f x) (f y))"]
   IsNullPres [label = "\N X x y f\nnull_pres : X (f x) y"]
   IsUnPres [label = "\N X f g h\nun_pres (x : A) : X (h (f x)) (g (h x))"]
@@ -131,6 +134,7 @@ digraph Is {
 
   subgraph cluster_abstract_algebra_classes {
     label = "Abstract Algebra"
+  bgcolor = mistyrose
 
     IsGrp [label = "\N X x f k"]
     IsGrpActL [label = "\N X x f k Y al"]
@@ -141,13 +145,26 @@ digraph Is {
     IsSemiring [label = "\N X x k y m", color = red, fillcolor = yellow]
   }
 
-  IsDefl [label = "\N\ndeflate (x : A) : f x <= x", color = red, fillcolor = yellow]
-  IsInfl [label = "\N\ninfl (x : A) : x <= f x", color = red, fillcolor = yellow]
+  subgraph cluster_infl {
+  label = "Inflationary Fragment"
+  bgcolor = mistyrose
+  IsDefl [label = "\N X k"]
+  IsDeflActL [label = "\N X al\ndefl_act_l (x : A) (a : B) : X (al x a) a"]
+  IsDeflActR [label = "\N X ar\ndefl_act_r (a : B) (x : A) : X (ar a x) a"]
+  IsDeflL [label = "\N X k\ndefl_l (x y : A) : X (k x y) y"]
+  IsDeflR [label = "\N X k\ndefl_r (x y : A) : X (k x y) x"]
+  IsDeflUnOp [label = "\N X f\ndefl_un_op (x : A) : X (f x) x"]
+  IsInfl [label = "\N X k"]
+  IsInflActL [label = "\N X al\ninfl_act_l (x : A) (a : B) : X a (al x a)"]
+  IsInflActR [label = "\N X ar\ninfl_act_r (a : B) (x : A) : X a (ar a x)"]
+  IsInflL [label = "\N X k\ninfl_l (x y : A) : X y (k x y)"]
+  IsInflR [label = "\N X k\ninfl_r (x y : A) : X x (k x y)"]
+  IsInflUnOp [label = "\N X f\ninfl_un_op (x : A) : X x (f x)"]
+  }
+
   IsContract [label = "\N\ncontract (x y : A) : dist (f x) (f y) <= dist x y", color = red, fillcolor = yellow]
   IsExpand [label = "\N\nexpand (x y : A) : dist x y <= dist (f x) (f y)", color = red, fillcolor = yellow]
   IsCohOrdRels [label = "\N\ncoh_ord_rels (x y : A) : x < y <-> x <= y /\\ x <> y", color = red, fillcolor = yellow]
-  IsInflateBinOpL [label = "\N\ninflate_bin_op_l (x y : A) : y <= x + y", color = red, fillcolor = yellow]
-  IsInflateBinOpR [label = "\N\ninflate_bin_op_r (x y : A) : x <= x + y", color = red, fillcolor = yellow]
   IsStrComono [label = "\N\nstr_comono (x y : A) (a : f x < f y) : x < y", color = red, fillcolor = yellow]
   IsStrMono [label = "\N\nstr_mono (x y : A) (a : x < y) : f x < f y", color = red, fillcolor = yellow]
   IsComono [label = "\N\ncomono (x y : A) (a : f x <= f y) : x <= y", color = red, fillcolor = yellow]
@@ -205,6 +222,14 @@ digraph Is {
     IsStrTotOrd -> IsStrPartOrd
     IsTotOrd -> IsConnex
     IsTotOrd -> IsPartOrd
+  }
+
+  subgraph metric_geometry_fields {
+    IsDefl -> IsDeflL
+    IsDefl -> IsDeflR
+    IsInfl -> IsInflL
+    IsInfl -> IsInflR
+    // TODO Partial applications.
   }
 
   subgraph abstract_algebra_fields {
@@ -310,6 +335,10 @@ digraph Is {
     IsIdemBinOp -> IsIdemElemBinOp [label = "id"]
     IsIdemUnOp -> IsIdemElemUnOp [label = "id"]
     IsInvol -> IsInvolElem [label = "id"]
+    IsInflActL -> IsInflUnOp [label = "id"]
+    IsInflActR -> IsInflUnOp [label = "id"]
+    IsDeflActL -> IsInflUnOp [label = "id"]
+    IsDeflActR -> IsInflUnOp [label = "id"]
     IsInj -> IsInjUnFn
     IsInvFormL -> IsInvBinFnL
     IsInvFormR -> IsInvBinFnR

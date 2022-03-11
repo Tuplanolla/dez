@@ -3,7 +3,8 @@
 From DEZ.Has Require Export
   EquivalenceRelations Operations Actions.
 From DEZ.Is Require Export
-  Monoid Invertible Proper Fixed Involutive Injective Cancellative Distributive
+  Monoid Invertible Proper
+  Fixed Involutive Injective Cancellative Antidistributive
   Preserving Unital Compatible Associative.
 From DEZ.Supports Require Import
   EquivalenceNotations AdditiveNotations.

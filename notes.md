@@ -110,6 +110,17 @@ We favor left chiralities, which is why we export `L -> R`.
 We put `flip` on the right side of the arrow,
 because instance resolution works backwards.
 
+Replace `Compute @IsDistrUnFns ?[A0] ?[A1] ?[B0] ?[B1] ?[B2] ?[C].`
+with `Compute @IsDistrUnFns ?[A] ?A ?[B] ?B ?A ?B.` to explore types.
+
+### To Do Next
+
+Check `Cancellative Distributive Unital Absorbing Inflationary`
+*fragments* in the diagram have updated properties.
+The `Absorbing Cancellative` modules have flip-comm theorems;
+check them and make sure `Commutative Compatible Distributive Inverible Unital`
+also have such theorems.
+
 ### Checklist
 
 Think you are done working on a module?

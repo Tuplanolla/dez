@@ -53,8 +53,8 @@ Section Context.
 
 Context (A : Type) (X : A -> A -> Prop) (f : A -> A).
 
-(** Idempotent unary operations are idempotent elements
-    of the endofunction monoid. *)
+(** An idempotent unary operation
+    is an idempotent element of the endofunction monoid. *)
 
 #[export] Instance idem_un_op_is_idem_elem_bin_op_compose
   `{!IsIdemUnOp X f} : IsIdemElemBinOp (pointwise_relation _ X) f _o_.
