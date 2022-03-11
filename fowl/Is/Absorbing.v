@@ -3,6 +3,18 @@
 From DEZ.Is Require Export
   Fixed.
 
+(** ** Left-Absorbing Element of a Binary Function *)
+
+Fail Fail Class IsAbsorbElemBinFnL (A B C : Type) (X : C -> C -> Prop)
+  (x : A) (y : C) (k : A -> B -> C) : Prop :=
+  absorb_elem_bin_fn_l (z : B) : X (k x z) y.
+
+(** ** Right-Absorbing Element of a Binary Function *)
+
+Fail Fail Class IsAbsorbElemBinFnL (A B C : Type) (X : C -> C -> Prop)
+  (x : B) (y : C) (k : A -> B -> C) : Prop :=
+  absorb_elem_bin_fn_r (z : A) : X (k z x) y.
+
 (** ** Left-Absorbing Element of an Action *)
 (** ** Left-Absorbing Element of a Left Action *)
 

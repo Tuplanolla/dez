@@ -3,21 +3,21 @@ digraph Is {
   rankdir = BT
 
   node [fontname = monospace, style = filled, fillcolor = cornsilk]
+  IsProper [label = "\N X\nproper (x : A) : X x x"]
+
+  subgraph cluster_order_theory_classes {
+    label = "Order Theory"
+  bgcolor = azure
 
   IsAntisym [label = "\N X Y\nantisym (x y : A) (a : Y x y) (b : Y y x) : X x y"]
   IsAsym [label = "\N X\nasym (x y : A) (a : X x y) (b : X y x) : 0"]
   IsConnex [label = "\N X\nconnex (x y : A) : X x y \\/ X y x"]
   IsCotrans [label = "\N X\ncotrans (x y z : A) (a : X x z) : X x y \\/ X y z"]
   IsIrrefl [label = "\N X\nirrefl (x : A) (a : X x x) : 0"]
-  IsProper [label = "\N X\nproper (x : A) : X x x"]
   IsRefl [label = "\N X\nrefl (x : A) : X x x"]
   IsStrConnex [label = "\N X Y\nstr_connex (x y : A) : Y x y \\/ X x y \\/ Y y x"]
   IsSym [label = "\N X\nsym (x y : A) (a : X x y) : X y x"]
   IsTrans [label = "\N X\ntrans (x y z : A) (a : X x y) (b : X y z) : X x z"]
-
-  subgraph cluster_order_theory_classes {
-    label = "Order Theory"
-  bgcolor = azure
 
     IsApart [label = "\N X"]
     IsEquiv [label = "\N X"]
@@ -45,6 +45,8 @@ digraph Is {
   IsCancelR [label = "\N X k\ncancel_r (x y z : A) (a : X (k x z) (k y z)) : X x y"]
   IsInj [label = "\N X f\ninj (x y : A) (a : X (f x) (f y)) : X x y"]
   IsInjUnFn [label = "\N X Y f\ninj_un_fn (x y : A) (a : Y (f x) (f y)) : X x y"]
+    IsCancel [label = "\N X k"]
+    IsCancelForm [label = "\N X Y s"]
   }
 
   subgraph cluster_assoc {
@@ -67,24 +69,30 @@ digraph Is {
   IsDistrL [label = "\N X k m\ndistr_l (x y z : A) : X (k x (m y z)) (m (k x y) (k x z))"]
   IsDistrR [label = "\N X k m\ndistr_r (x y z : A) : X (k (m x y) z) (m (k x z) (k y z))"]
   IsDistrUnOp [label = "\N X f k\ndistr_un_op (x y : A) : X (f (k x y)) (k (f x) (f y))"]
+    IsDistr [label = "\N X k m"]
   }
 
   subgraph cluster_inv {
   label = "Invertible Fragment"
+  bgcolor = azure
   IsInvBinFnL [label = "\N X x f k\ninv_bin_fn_l (y : A) : X (k (f y) y) x"]
   IsInvBinFnR [label = "\N X x f k\ninv_bin_fn_r (y : A) : X (k y (f y)) x"]
   IsInvFormL [label = "\N X x f s\ninv_form_l (y : A) : X (s (f y) y) x"]
   IsInvFormR [label = "\N X x f s\ninv_form_r (y : A) : X (s y (f y)) x"]
   IsInvL [label = "\N X x f k\ninv_l (y : A) : X (k (f y) y) x"]
   IsInvR [label = "\N X x f k\ninv_r (y : A) : X (k y (f y)) x"]
+    IsInv [label = "\N X x f k"]
+    IsInvForm [label = "\N X x f s"]
   }
 
   subgraph cluster_unl {
   label = "Unital Fragment"
+  bgcolor = azure
   IsUnlActL [label = "\N X x al\nunl_act_l (a : B) : X (al x a) a"]
   IsUnlActR [label = "\N X x ar\nunl_act_r (a : B) : X (ar a x) a"]
   IsUnlL [label = "\N X x k\nunl_l (y : A) : X (k x y) y"]
   IsUnlR [label = "\N X x k\nunl_r (y : A) : X (k y x) y"]
+    IsUnl [label = "\N X x k"]
   }
 
   subgraph cluster_absorb {
@@ -101,6 +109,7 @@ digraph Is {
   IsIdemUnOp [label = "\N X f\nidem_un_op (x : A) : X (f (f x)) (f x)"]
   IsInvol [label = "\N X f\ninvol (x : A) : X (f (f x)) x"]
   IsInvolElem [label = "\N X x f\ninvol_elem : X (f (f x)) x"]
+    IsAbsorbElem [label = "\N X x k"]
   }
 
   subgraph cluster_comm {
@@ -113,27 +122,23 @@ digraph Is {
   IsCommTorR [label = "\N\ncomm_tor_r (x y : B) : y / x = x / y", color = red, fillcolor = yellow]
   }
 
+  subgraph cluster_pres {
+  label = "Preserving Fragment"
   IsBinPres [label = "\N X k m f\nbin_pres (x y : A) : X (f (k x y)) (m (f x) (f y))"]
   IsNullPres [label = "\N X x y f\nnull_pres : X (f x) y"]
   IsUnPres [label = "\N X f g h\nun_pres (x : A) : X (h (f x)) (g (h x))"]
+  }
 
   subgraph cluster_abstract_algebra_classes {
     label = "Abstract Algebra"
 
-    IsAbsorbElem [label = "\N X x k"]
-    IsCancel [label = "\N X k"]
-    IsCancelForm [label = "\N X Y s"]
-    IsDistr [label = "\N X k m"]
     IsGrp [label = "\N X x f k"]
     IsGrpActL [label = "\N X x f k Y al"]
     IsGrpHom [label = "\N X x f k Y y g m h"]
-    IsInv [label = "\N X x f k"]
-    IsInvForm [label = "\N X x f s"]
     IsMon [label = "\N X x k"]
     IsRing [label = "\N X x f k y m", color = red, fillcolor = yellow]
     IsSemigrp [label = "\N X k"]
     IsSemiring [label = "\N X x k y m", color = red, fillcolor = yellow]
-    IsUnl [label = "\N X x k"]
   }
 
   IsDefl [label = "\N\ndeflate (x : A) : f x <= x", color = red, fillcolor = yellow]
@@ -188,11 +193,11 @@ digraph Is {
     IsPartOrd -> IsAntisym
     IsPartOrd -> IsEquiv
     IsPartOrd -> IsPreord
-    IsPartOrd -> IsProper [constraint = false]
+    // IsPartOrd -> IsProper [constraint = false]
     IsPreord -> IsRefl
     IsPreord -> IsTrans
     IsStrPartOrd -> IsIrrefl
-    IsStrTotOrd -> IsProper [constraint = false]
+    // IsStrTotOrd -> IsProper [constraint = false]
     IsStrPartOrd -> IsTrans
     IsStrPreord -> IsIrrefl
     IsStrPreord -> IsTrans
@@ -213,15 +218,15 @@ digraph Is {
     IsDistr -> IsDistrR
     IsGrp -> IsInv
     IsGrp -> IsMon
-    IsGrp -> IsProper [constraint = false]
+    // IsGrp -> IsProper [constraint = false]
     IsGrpActL -> IsCompatActL
     IsGrpActL -> IsGrp
     IsGrpActL -> IsUnlActL
-    IsGrpActL -> IsProper [constraint = false]
+    // IsGrpActL -> IsProper [constraint = false]
     IsGrpHom -> IsBinPres
     IsGrpHom -> IsGrp
     IsGrpHom -> IsGrp
-    IsGrpHom -> IsProper [constraint = false]
+    // IsGrpHom -> IsProper [constraint = false]
     IsInv -> IsInvL
     IsInv -> IsInvR
     IsInvForm -> IsInvFormL
@@ -230,7 +235,7 @@ digraph Is {
     IsMon -> IsUnl
     IsSemigrp -> IsAssoc
     IsSemigrp -> IsEquiv
-    IsSemigrp -> IsProper [constraint = false]
+    // IsSemigrp -> IsProper [constraint = false]
     IsUnl -> IsUnlL
     IsUnl -> IsUnlR
   }
@@ -306,11 +311,10 @@ digraph Is {
     IsIdemUnOp -> IsIdemElemUnOp [label = "id"]
     IsInvol -> IsInvolElem [label = "id"]
     IsInj -> IsInjUnFn
-    IsInv -> IsInvForm
     IsInvFormL -> IsInvBinFnL
     IsInvFormR -> IsInvBinFnR
-    IsInvL -> IsInvFormL
-    IsInvR -> IsInvFormR
+    IsInvL -> IsInvBinFnL
+    IsInvR -> IsInvBinFnR
     IsUnlL -> IsUnlActL
     IsUnlR -> IsUnlActR
   }
