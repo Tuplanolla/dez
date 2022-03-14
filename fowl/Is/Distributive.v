@@ -160,7 +160,7 @@ Context (A0 A1 A2 B0 B1 B2 C : Type) (X : C -> C -> Prop)
 (** Left-distributivity of binary functions is a special case
     of the right-distributivity of their flipped versions. *)
 
-#[export] Instance distr_bin_fns_l_is_distr_bin_fns_r_flip
+#[local] Instance distr_bin_fns_l_is_distr_bin_fns_r_flip
   `{!IsDistrBinFnsL X k m n p q} :
   IsDistrBinFnsR X (flip k) (flip m) n (flip p) q.
 Proof. intros y z x. unfold flip in *. eauto. Qed.

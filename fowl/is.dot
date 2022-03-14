@@ -142,9 +142,10 @@ digraph Is {
 
     IsGrp [label = "\N X x f k"]
     IsGrpActL [label = "\N X x f k Y al"]
-    IsGrpHom [label = "\N X x f k Y y g m h"]
+    IsGrpHom [label = "\N h"]
     IsMon [label = "\N X x k"]
     IsRing [label = "\N X x f k y m", color = red, fillcolor = yellow]
+    IsRingHom [label = "\N h"]
     IsSemigrp [label = "\N X k"]
     IsSemiring [label = "\N X x k y m"]
   }
@@ -253,6 +254,12 @@ digraph Is {
     IsInvForm -> IsInvFormR
     IsMon -> IsSemigrp
     IsMon -> IsUnlElem
+    IsRingHom -> IsBinPres
+    IsRingHom -> IsBinPres
+    IsRingHom -> IsNullPres
+    IsRingHom -> IsRing
+    IsRingHom -> IsRing
+    // IsRingHom -> IsProper
     IsSemigrp -> IsAssoc
     IsSemigrp -> IsEquiv
     // IsSemigrp -> IsProper

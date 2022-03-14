@@ -66,7 +66,7 @@ Context (A B C : Type) (X : B -> B -> Prop) (Y : C -> C -> Prop)
 (** Left-cancellativity of a binary function
     is a special case of the right-cancellativity of its flipped version. *)
 
-#[export] Instance cancel_bin_fn_l_is_cancel_bin_fn_r_flip
+#[local] Instance cancel_bin_fn_l_is_cancel_bin_fn_r_flip
   `{!IsCancelBinFnL X Y k} : IsCancelBinFnR X Y (flip k).
 Proof. intros y z x a. unfold flip in *. eauto. Qed.
 

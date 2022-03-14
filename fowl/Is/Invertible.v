@@ -23,7 +23,7 @@ Context (A B C : Type) (X : C -> C -> Prop)
 (** Left-invertibility of a binary operation is a special case
     of the right-invertibility of its flipped version. *)
 
-#[export] Instance inv_bin_fn_l_is_inv_bin_fn_r_flip
+#[local] Instance inv_bin_fn_l_is_inv_bin_fn_r_flip
   `{!IsInvBinFnL X x f k} : IsInvBinFnR X x f (flip k).
 Proof. intros y. unfold flip in *. eauto. Qed.
 

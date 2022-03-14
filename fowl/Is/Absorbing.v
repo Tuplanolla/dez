@@ -88,7 +88,7 @@ Context (A B : Type) (X : B -> B -> Prop)
 (** A left-absorbing element of a right action is a special case
     of a right-absorbing element of its flipped version. *)
 
-#[export] Instance absorb_elem_act_r_l_is_absorb_elem_act_l_r_flip
+#[local] Instance absorb_elem_act_r_l_is_absorb_elem_act_l_r_flip
   `{!IsAbsorbElemActRL X a ar} : IsAbsorbElemActLR X a (flip ar).
 Proof. intros x. unfold flip in *. eauto. Qed.
 
@@ -122,7 +122,7 @@ Context (A : Type) (X : A -> A -> Prop)
 (** A left-absorbing element of a binary operation is a special case
     of a right-absorbing element of its flipped version. *)
 
-#[export] Instance absorb_elem_l_is_absorb_elem_act_r_flip
+#[local] Instance absorb_elem_l_is_absorb_elem_act_r_flip
   `{!IsAbsorbElemL X x k} : IsAbsorbElemR X x (flip k).
 Proof. intros y. unfold flip in *. eauto. Qed.
 

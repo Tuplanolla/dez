@@ -67,7 +67,7 @@ Context (A B : Type) (X : B -> B -> Prop)
     is a special case of the compatibility of its flipped version
     with a flipped binary operation. *)
 
-#[export] Instance compat_act_l_is_compat_act_r_flip
+#[local] Instance compat_act_l_is_compat_act_r_flip
   `{!IsCompatActL X k al} : IsCompatActR (flip X) (flip k) (flip al).
 Proof. intros a y x. unfold flip in *. eauto. Qed.
 

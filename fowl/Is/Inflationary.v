@@ -68,7 +68,7 @@ Context (A B : Type) (X : B -> B -> Prop)
 (** Inflationarity of a left action is a special case
     of the inflationarity of its flipped version. *)
 
-#[export] Instance infl_act_l_is_infl_act_r_flip
+#[local] Instance infl_act_l_is_infl_act_r_flip
   `{!IsInflActL X al} : IsInflActR X (flip al).
 Proof. intros a x. unfold flip in *. eauto. Qed.
 
@@ -132,7 +132,7 @@ Context (A : Type) (X : A -> A -> Prop) (k : A -> A -> A).
 (** Left-inflationarity of a binary operation is a special case
     of the right-inflationarity of its flipped version. *)
 
-#[export] Instance infl_l_is_infl_r_flip
+#[local] Instance infl_l_is_infl_r_flip
   `{!IsInflL X k} : IsInflR X (flip k).
 Proof. intros y x. unfold flip in *. eauto. Qed.
 

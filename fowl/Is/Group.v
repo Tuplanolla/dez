@@ -196,7 +196,8 @@ Proof.
   split.
   - typeclasses eauto.
   - typeclasses eauto.
-  - intros y z. unfold id. reflexivity.
+  - enough (IsDistrUnOp X id k) by assumption.
+    intros y z. unfold id. reflexivity.
   - typeclasses eauto. Qed.
 
 End Context.
