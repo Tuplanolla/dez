@@ -21,8 +21,6 @@ Context (A : Type) (X : A -> A -> Prop) (x : A) (f : A -> A).
   `{!IsFixed X x f} : IsNullPres X x x f.
 Proof. auto. Qed.
 
-(** Same in reverse. *)
-
 #[local] Instance null_pres_is_fixed
   `{!IsNullPres X x x f} : IsFixed X x f.
 Proof. auto. Qed.
@@ -45,8 +43,6 @@ Context (A : Type) (X : A -> A -> Prop) (f g : A -> A).
   `{!IsCommFun X f g} : IsUnPres X g g f.
 Proof. auto. Qed.
 
-(** Same in reverse. *)
-
 #[local] Instance un_pres_is_comm_fun
   `{!IsUnPres X g g f} : IsCommFun X f g.
 Proof. auto. Qed.
@@ -61,18 +57,17 @@ Class IsBinPres (A B : Type) (X : B -> B -> Prop)
 
 Section Context.
 
-Context (A B C : Type) (X : A -> A -> Prop) (f : A -> A) (k m : A -> A -> A).
+Context (A B : Type) (X : B -> B -> Prop)
+  (f : A -> B) (k : A -> A -> A) (m : B -> B -> B).
 
 (** Preservation of a binary operation is a distributive property. *)
 
-#[export] Instance distr_forms_is_bin_pres
-  `{!IsDistrForms X f k f m} : IsBinPres X k m f.
+#[export] Instance distr_un_fn_is_bin_pres
+  `{!IsDistrUnFn X f k m} : IsBinPres X k m f.
 Proof. auto. Qed.
 
-(** Same in reverse. *)
-
-#[local] Instance bin_pres_is_distr_forms
-  `{!IsBinPres X k m f} : IsDistrForms X f k f m.
+#[local] Instance bin_pres_is_distr_un_fn
+  `{!IsBinPres X k m f} : IsDistrUnFn X f k m.
 Proof. auto. Qed.
 
 End Context.

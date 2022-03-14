@@ -37,7 +37,7 @@ Context (A B : Type) (X : B -> B -> Prop)
 (** A left-unital element of an action is a special case
     of a right-unital element of its flipped version. *)
 
-#[export] Instance unl_elem_act_l_is_unl_elem_act_r_flip
+#[local] Instance unl_elem_act_l_is_unl_elem_act_r_flip
   `{!IsUnlElemActL X x al} : IsUnlElemActR X x (flip al).
 Proof. intros a. unfold flip in *. eauto. Qed.
 
@@ -71,7 +71,7 @@ Context (A : Type) (X : A -> A -> Prop)
 (** A left-unital element of a binary operation is a special case
     of a right-unital element of its flipped version. *)
 
-#[export] Instance unl_elem_l_is_unl_elem_r_flip
+#[local] Instance unl_elem_l_is_unl_elem_r_flip
   `{!IsUnlElemL X x k} : IsUnlElemR X x (flip k).
 Proof. intros y. unfold flip in *. eauto. Qed.
 

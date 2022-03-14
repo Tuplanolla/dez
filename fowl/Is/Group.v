@@ -124,9 +124,9 @@ End Context.
 Class IsGrpHom (A B : Type)
   (X : A -> A -> Prop) (x : A) (f : A -> A) (k : A -> A -> A)
   (Y : B -> B -> Prop) (y : B) (g : B -> B) (m : B -> B -> B)
-  (h : A -> B) : Prop := {
-  grp_hom_dom_is_grp :> IsGrp X x f k;
-  grp_hom_codom_is_grp :> IsGrp Y y g m;
+  (h : A -> B) `{!IsGrp X x f k} `{!IsGrp Y y g m} : Prop := {
+  grp_hom_dom_is_grp : IsGrp X x f k;
+  grp_hom_codom_is_grp : IsGrp Y y g m;
   grp_hom_is_bin_pres :> IsBinPres Y k m h;
   grp_hom_is_proper :> IsProper (X ==> Y) h;
 }.
@@ -136,7 +136,7 @@ Section Context.
 Context (A B : Type)
   (X : A -> A -> Prop) (x : A) (f : A -> A) (k : A -> A -> A)
   (Y : B -> B -> Prop) (y : B) (g : B -> B) (m : B -> B -> B)
-  (h : A -> B) `{!IsGrpHom X x f k Y y g m h}.
+  (h : A -> B) `{!IsGrp X x f k} `{!IsGrp Y y g m} `{!IsGrpHom h}.
 
 #[local] Instance dom_has_equiv_rel : HasEquivRel A := X.
 #[local] Instance dom_has_null_op : HasNullOp A := x.
@@ -191,7 +191,7 @@ Context (A : Type)
 
 (** The identity function is a group homomorphism. *)
 
-#[export] Instance id_is_grp_hom : IsGrpHom X x f k X x f k id.
+#[export] Instance id_is_grp_hom : IsGrpHom id.
 Proof.
   split.
   - typeclasses eauto.
@@ -205,8 +205,8 @@ End Context.
 
 Class IsGrpActL (A B : Type)
   (X : A -> A -> Prop) (x : A) (f : A -> A) (k : A -> A -> A)
-  (Y : B -> B -> Prop) (al : A -> B -> B) : Prop := {
-  grp_act_l_is_grp :> IsGrp X x f k;
+  (Y : B -> B -> Prop) (al : A -> B -> B) `{!IsGrp X x f k} : Prop := {
+  grp_act_l_is_grp : IsGrp X x f k;
   grp_act_l_is_unl_elem_act_l :> IsUnlElemActL Y x al;
   grp_act_l_is_compat_act_l :> IsCompatActL Y k al;
   grp_act_l_is_proper :> IsProper (X ==> Y ==> Y) al;
@@ -220,7 +220,7 @@ Context (A : Type)
 
 (** Addition is a left group action. *)
 
-#[export] Instance bin_op_is_grp_act_l : IsGrpActL X x f k X k.
+#[export] Instance bin_op_is_grp_act_l : IsGrpActL X k.
 Proof.
   split.
   - typeclasses eauto.
