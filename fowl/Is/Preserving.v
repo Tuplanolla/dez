@@ -39,12 +39,12 @@ Context (A : Type) (X : A -> A -> Prop) (f g : A -> A).
 (** Preservation of a unary operation
     is a special case of the commutative property. *)
 
-#[export] Instance comm_fun_is_un_pres
-  `{!IsCommFun X f g} : IsUnPres X g g f.
+#[export] Instance comm_un_ops_is_un_pres
+  `{!IsCommUnOps X f g} : IsUnPres X g g f.
 Proof. auto. Qed.
 
-#[local] Instance un_pres_is_comm_fun
-  `{!IsUnPres X g g f} : IsCommFun X f g.
+#[local] Instance un_pres_is_comm_un_ops
+  `{!IsUnPres X g g f} : IsCommUnOps X f g.
 Proof. auto. Qed.
 
 End Context.

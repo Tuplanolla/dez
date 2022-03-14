@@ -120,12 +120,16 @@ digraph Is {
   subgraph cluster_comm {
   label = "Commutative Fragment"
   bgcolor = mistyrose
-  IsComm [label = "\N X k\ncomm (x y : A) : X (k x y) (k y x)", color = red, fillcolor = yellow]
-  IsCommBinOp [label = "\N\ncomm (x y : A) : x * y = y * x", color = red, fillcolor = yellow]
-  IsCommL [label = "\N\ncomm_l (x y : A) : (/ x) * y = / (x * y)", color = red, fillcolor = yellow]
-  IsCommR [label = "\N\ncomm_r (x y : A) : x * (/ y) = / (x * y)", color = red, fillcolor = yellow]
-  IsCommTorL [label = "\N\ncomm_tor_l (x y : B) : y / x = x / y", color = red, fillcolor = yellow]
-  IsCommTorR [label = "\N\ncomm_tor_r (x y : B) : y / x = x / y", color = red, fillcolor = yellow]
+  IsCommUnOps [label = "\N X f g\ncomm_un_ops (x : A) : X (f (g x)) (g (f x))"]
+  IsCommBinFnsL [label = "\N X k f g m\ncomm_bin_fns_l (x : A0) (y : A1) : X (m (f x) y) (g (k x y))"]
+  IsCommBinFnsR [label = "\N X k f g m\ncomm_bin_fns_r (x : A0) (y : A1) : X (m x (f y)) (g (k x y))"]
+  IsCommActRsL [label = "\N X ar f br\ncomm_act_rs_l (a : B) (x : A) : X (br (f a) x) (f (ar a x))"]
+  IsCommActLsR [label = "\N X al f bl\ncomm_act_ls_r (x : A) (a : B) : X (bl x (f a)) (f (al x a))"]
+  IsCommL [label = "\N X k f\ncomm_l (x y : A) : X (k (f x) y) (f (k x y))"]
+  IsCommR [label = "\N X k f\ncomm_r (x y : A) : X (k x (f y)) (f (k x y))"]
+  IsComm [label = "\N X k f"]
+  IsCommForm [label = "\N X s\ncomm_form (x y : B) : X (s x y) (s y x)"]
+  IsCommBinOp [label = "\N X k\ncomm_bin_op (x y : A) : X (k x y) (k y x)"]
   }
 
   subgraph cluster_pres {
@@ -330,7 +334,7 @@ digraph Is {
     IsCancelFormR -> IsCancelBinFnR
     IsCancelL -> IsCancelBinFnL
     IsCancelR -> IsCancelBinFnR
-    IsCommFun -> IsUnPres
+    IsCommUnOps -> IsUnPres
     IsCompatActL -> IsCompatActR [label = "flip"]
     IsCompatActL -> IsCompatBinFns
     IsCompatActR -> IsCompatBinFns
@@ -371,8 +375,6 @@ digraph Is {
 
   edge [color = red]
 
-  IsCommTorL -> IsCommBinOp
-  IsCommTorR -> IsCommBinOp
   IsContr -> IsProp
   IsContr -> IsTrunc
   IsFunExtDep -> IsFunExt

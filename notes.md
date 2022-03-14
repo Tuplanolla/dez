@@ -110,8 +110,38 @@ We favor left chiralities, which is why we export `L -> R`.
 We put `flip` on the right side of the arrow,
 because instance resolution works backwards.
 
-Replace `Compute @IsDistrUnFns ?[A0] ?[A1] ?[B0] ?[B1] ?[B2] ?[C].`
-with `Compute @IsDistrUnFns ?[A] ?A ?[B] ?B ?A ?B.` to explore types.
+You can explore specializations as follows.
+
+```
+Class IsCommBinOpL (A0 A1 B0 B1 C : Type) (X : C -> C -> Prop)
+  (f : A0 -> B0) (k : A0 -> A1 -> B1)
+  (g : B1 -> C) (m : B0 -> A1 -> C) : Prop :=
+  comm_bin_op_l (x : A0) (y : A1) : X (m (f x) y) (g (k x y)).
+
+Compute @IsCommBinOpL ?[A0] ?[A1] ?[B0] ?[B1] ?[C].
+
+(** Is there a symmetry? *)
+
+Compute @IsCommBinOpL ?[A] ?[C] ?[B] ?C ?C. (* LL does not unify *)
+Compute @IsCommBinOpL ?[B] ?[A] ?[C] ?B ?C. (* RR unifies f g *)
+Compute @IsCommBinOpL ?[A] ?[B] ?[C] ?B ?C. (* LR does not unify *)
+Compute @IsCommBinOpL ?[C] ?[B] ?[A] ?C ?B. (* RL does not unify *)
+Compute @IsCommBinOpL ?[C] ?C ?C ?[A] ?[B]. (* FF does not unify *)
+
+(** How about skew symmetry? *)
+
+Compute @IsCommBinOpL ?[C] ?C ?[A] ?[B] ?C. (* FL does not unify but is nice *)
+Compute @IsCommBinOpL ?[B] ?B ?[C] ?[A] ?C. (* FR does not unify but is nice *)
+Compute @IsCommBinOpL ?[B] ?B ?[A] ?B ?B. (* BL does not unify *)
+Compute @IsCommBinOpL ?[A] ?A ?[B] ?A ?B. (* BR unifies f g *)
+Compute @IsCommBinOpL ?[B] ?B ?B ?B ?[A]. (* BF does not unify *)
+```
+
+## What Next
+
+Finish `Commutative.v` and go through the other framgents
+`Compatible.v Associative.v Distributive.v Antidistibutive.v Invertible.v Unital.v Absorbing.v Inflationary.v`
+to see if their specializations are sensible.
 
 ### Checklist
 
