@@ -130,7 +130,7 @@ digraph Is {
 
   subgraph cluster_pres {
   label = "Preserving Fragment"
-  bgcolor = mistyrose
+  bgcolor = azure
   IsBinPres [label = "\N X k m f\nbin_pres (x y : A) : X (f (k x y)) (m (f x) (f y))"]
   IsNullPres [label = "\N X x y f\nnull_pres : X (f x) y"]
   IsUnPres [label = "\N X f g h\nun_pres (x : A) : X (h (f x)) (g (h x))"]
@@ -330,6 +330,7 @@ digraph Is {
     IsCancelFormR -> IsCancelBinFnR
     IsCancelL -> IsCancelBinFnL
     IsCancelR -> IsCancelBinFnR
+    IsCommFun -> IsUnPres
     IsCompatActL -> IsCompatActR [label = "flip"]
     IsCompatActL -> IsCompatBinFns
     IsCompatActR -> IsCompatBinFns
@@ -341,8 +342,10 @@ digraph Is {
     IsDistrBinFnsR -> IsDistrUnFns [label = "flip apply"]
     IsDistrL -> IsDistrBinFnsL
     IsDistrR -> IsDistrBinFnsR
+    IsDistrUnFn -> IsBinPres
     IsDistrUnFn -> IsDistrUnFns
     IsDistrUnOp -> IsDistrUnFns
+    IsFixed -> IsNullPres
     IsGrp -> IsAntidistrUnOp
     IsGrp -> IsCancel
     IsGrp -> IsFixed

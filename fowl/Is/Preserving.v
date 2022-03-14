@@ -3,9 +3,7 @@
 From DEZ.Is Require Export
   Fixed Commutative Distributive.
 
-(** TODO These instances are unsatisfying and not in the diagram. *)
-
-(** ** Function Preserving Nullary Operation *)
+(** ** Function Preserving a Nullary Operation *)
 
 Class IsNullPres (A B : Type) (X : B -> B -> Prop)
   (x : A) (y : B) (f : A -> B) : Prop :=
@@ -15,7 +13,8 @@ Section Context.
 
 Context (A : Type) (X : A -> A -> Prop) (x : A) (f : A -> A).
 
-(** Preservation of a nullary operation is a fixed point property. *)
+(** Preservation of a nullary operation
+    is a special case of the fixed point property. *)
 
 #[export] Instance fixed_is_null_pres
   `{!IsFixed X x f} : IsNullPres X x x f.
@@ -27,7 +26,7 @@ Proof. auto. Qed.
 
 End Context.
 
-(** ** Function Preserving Unary Operation *)
+(** ** Function Preserving a Unary Operation *)
 
 Class IsUnPres (A B : Type) (X : B -> B -> Prop)
   (f : A -> A) (g : B -> B) (h : A -> B) : Prop :=
@@ -37,7 +36,8 @@ Section Context.
 
 Context (A : Type) (X : A -> A -> Prop) (f g : A -> A).
 
-(** Preservation of a unary operation is a commutative property. *)
+(** Preservation of a unary operation
+    is a special case of the commutative property. *)
 
 #[export] Instance comm_fun_is_un_pres
   `{!IsCommFun X f g} : IsUnPres X g g f.
@@ -49,7 +49,7 @@ Proof. auto. Qed.
 
 End Context.
 
-(** ** Function Preserving Binary Operation *)
+(** ** Function Preserving a Binary Operation *)
 
 Class IsBinPres (A B : Type) (X : B -> B -> Prop)
   (k : A -> A -> A) (m : B -> B -> B) (f : A -> B) : Prop :=
@@ -60,7 +60,8 @@ Section Context.
 Context (A B : Type) (X : B -> B -> Prop)
   (f : A -> B) (k : A -> A -> A) (m : B -> B -> B).
 
-(** Preservation of a binary operation is a distributive property. *)
+(** Preservation of a binary operation
+    is a special case of the distributive property. *)
 
 #[export] Instance distr_un_fn_is_bin_pres
   `{!IsDistrUnFn X f k m} : IsBinPres X k m f.

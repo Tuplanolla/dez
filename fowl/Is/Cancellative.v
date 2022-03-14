@@ -6,25 +6,25 @@ From DEZ.Is Require Export
 (** ** Left-Cancellative Binary Function *)
 
 Class IsCancelBinFnL (A0 A1 B : Type)
-  (X : A0 -> A0 -> Prop) (Y : B -> B -> Prop)
-  (k : A1 -> A0 -> B) : Prop :=
-  cancel_bin_fn_l (x : A1) (y z : A0) (a : Y (k x y) (k x z)) : X y z.
+  (X : A1 -> A1 -> Prop) (Y : B -> B -> Prop)
+  (k : A0 -> A1 -> B) : Prop :=
+  cancel_bin_fn_l (x : A0) (y z : A1) (a : Y (k x y) (k x z)) : X y z.
 
 Section Context.
 
 Context (A0 A1 B : Type)
-  (X : A0 -> A0 -> Prop) (Y : B -> B -> Prop)
-  (k : A1 -> A0 -> B).
+  (X : A1 -> A1 -> Prop) (Y : B -> B -> Prop)
+  (k : A0 -> A1 -> B).
 
 (** Left-cancellativity of a binary function
     is a special case of the injectivity of its partial application. *)
 
 #[export] Instance cancel_bin_fn_l_is_inj_un_fn
-  `{!IsCancelBinFnL X Y k} (x : A1) : IsInjUnFn X Y (k x).
+  `{!IsCancelBinFnL X Y k} (x : A0) : IsInjUnFn X Y (k x).
 Proof. intros y z. apply cancel_bin_fn_l. Qed.
 
 #[local] Instance inj_un_fn_is_cancel_bin_fn_l
-  `{!forall x : A1, IsInjUnFn X Y (k x)} : IsCancelBinFnL X Y k.
+  `{!forall x : A0, IsInjUnFn X Y (k x)} : IsCancelBinFnL X Y k.
 Proof. intros x y z. apply inj_un_fn. Qed.
 
 End Context.
