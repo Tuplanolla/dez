@@ -1,4 +1,4 @@
 From DEZ.Has Require Export
-  Morphism ComposedMorphism.
+  CategoricalOperations.
 
 Class IsMagd (A : Type) `(HasHom A) `(!HasCompHom hom) : Prop := {}.

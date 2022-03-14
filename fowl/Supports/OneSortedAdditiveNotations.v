@@ -1,6 +1,5 @@
 From DEZ.Has Require Import
-  BinaryOperation NullaryOperation
-  UnaryOperation.
+  Operations.
 
 Declare Scope grp_scope.
 

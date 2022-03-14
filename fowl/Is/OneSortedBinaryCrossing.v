@@ -1,6 +1,6 @@
 (* bad *)
 From DEZ.Has Require Export
-  Negation Multiplication.
+  ArithmeticOperations.
 From DEZ.Supports Require Import
   OneSortedArithmeticNotations.
 

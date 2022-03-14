@@ -1,5 +1,5 @@
 From DEZ.Has Require Export
-  Morphism ComposedMorphism.
+  CategoricalOperations.
 From DEZ.Supports Require Import
   CategoricalNotations.
 

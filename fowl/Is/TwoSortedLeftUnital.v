@@ -1,5 +1,5 @@
 From DEZ.Has Require Export
-  Action NullaryOperation.
+  Operations Actions.
 From DEZ.Supports Require Import
   AdditiveNotations.
 

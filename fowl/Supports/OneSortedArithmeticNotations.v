@@ -1,6 +1,5 @@
 From DEZ.Has Require Import
-  Addition Zero Negation
-  Multiplication One Reciprocation.
+  ArithmeticOperations.
 
 Declare Scope ring_scope.
 

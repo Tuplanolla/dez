@@ -1,6 +1,6 @@
 (* bad *)
 From DEZ.Has Require Export
-  Addition ThreeSortedBinaryFunction.
+  ArithmeticOperations.
 From DEZ.Supports Require Import
   OneSortedArithmeticNotations.
 

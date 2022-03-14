@@ -1,5 +1,5 @@
 From DEZ.Has Require Export
-  Action NullaryOperation.
+  ArithmeticOperations ArithmeticActions.
 From DEZ.Is Require Export
   TwoSortedLeftUnital TwoSortedRightUnital.
 
