@@ -15,6 +15,24 @@ Class IsInvBinFnR (A B C : Type) (X : C -> C -> Prop)
   (x : C) (f : A -> B) (k : A -> B -> C) : Prop :=
   inv_bin_fn_r (y : A) : X (k y (f y)) x.
 
+Section Context.
+
+Context (A B C : Type) (X : C -> C -> Prop)
+  (x : C) (f : A -> B) (k : B -> A -> C).
+
+(** Left-invertibility of a binary operation is a special case
+    of the right-invertibility of its flipped version. *)
+
+#[export] Instance inv_bin_fn_l_is_inv_bin_fn_r_flip
+  `{!IsInvBinFnL X x f k} : IsInvBinFnR X x f (flip k).
+Proof. intros y. unfold flip in *. eauto. Qed.
+
+#[local] Instance inv_bin_fn_r_flip_is_inv_bin_fn_l
+  `{!IsInvBinFnR X x f (flip k)} : IsInvBinFnL X x f k.
+Proof. intros y. unfold flip in *. eauto. Qed.
+
+End Context.
+
 (** ** Left-Invertible Form *)
 
 Class IsInvFormL (A B : Type) (X : B -> B -> Prop)

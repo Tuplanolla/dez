@@ -3,7 +3,7 @@ digraph Is {
   rankdir = BT
 
   node [fontname = monospace, style = filled, fillcolor = cornsilk]
-  IsProper [label = "\N X\nproper (x : A) : X x x"]
+  // IsProper [label = "\N X\nproper (x : A) : X x x"]
 
   subgraph cluster_order_theory_classes {
     label = "Order Theory"
@@ -32,8 +32,8 @@ digraph Is {
 
   subgraph cluster_cancel {
   label = "Cancellative Fragment"
-  bgcolor = mistyrose
-  IsCancelBinFnL [label = "\N X Y k\ncancel_bin_fn_l (x : A0) (y z : A1) (a : Y (k x y) (k x z)) : X y z"]
+  bgcolor = azure
+  IsCancelBinFnL [label = "\N X Y k\ncancel_bin_fn_l (x : A1) (y z : A0) (a : Y (k x y) (k x z)) : X y z"]
   IsCancelBinFnR [label = "\N X Y k\ncancel_bin_fn_r (x y : A0) (z : A1) (a : Y (k x z) (k y z)) : X x y"]
   IsCancelActL [label = "\N X al\ncancel_act_l (x : A) (a b : B) (s : X (al x a) (al x b)) : X a b"]
   IsCancelActLR [label = "\N X Y al\ncancel_act_l_r (x y : A) (a : B) (s : Y (al x a) (al y a)) : X x y"]
@@ -61,15 +61,19 @@ digraph Is {
 
   subgraph cluster_distr {
   label = "Distributive Fragment"
-  bgcolor = mistyrose
+  bgcolor = azure
+  IsDistrUnFns [label = "\N X f g k h m\ndistr_un_fns (x : A0) (y : A1) : X (h (k x y)) (m (f x) (g y))"]
+  IsDistrUnFn [label = "\N X f k m\ndistr_un_fn (x y : A) : X (f (k x y)) (m (f x) (f y))"]
+  IsDistrUnOp [label = "\N X f k\ndistr_un_op (x y : A) : X (f (k x y)) (k (f x) (f y))"]
+  IsAntidistrUnFns [label = "\N X f g k h m\nantidistr_un_fns (x : A0) (y : A1) : X (h (k x y)) (m (f y) (g x))"]
+  IsAntidistrUnFn [label = "\N X f k m\nantidistr_un_fn (x y : A) : X (f (k x y)) (m (f y) (f x))"]
   IsAntidistrUnOp [label = "\N X f k\nantidistr_un_op (x y : A) : X (f (k x y)) (k (f y) (f x))"]
+  IsDistrBinFnsL [label = "\N X k m n p q\ndistr_bin_fns_l (x : A0) (y : A1) (z : A2) : X (p x (n y z)) (q (k x y) (m x z))"]
+  IsDistrBinFnsR [label = "\N X k m n p q\ndistr_bin_fns_r (x : A0) (y : A1) (z : A2) : X (p (n x y) z) (q (k x z) (m y z))"]
   IsDistrActL [label = "\N X al k\ndistr_act_l (x : A) (a b : B) : X (al x (k a b)) (k (al x a) (al x b))"]
   IsDistrActR [label = "\N X ar k\ndistr_act_r (a b : B) (x : A) : X (ar (k a b) x) (k (ar a x) (ar b x))"]
-  IsDistrFns [label = "\N X f g k h m\ndistr_fns (x : A0) (y : A1) : X (h (k x y)) (m (f x) (g y))"]
-  IsDistrForms [label = "\N X f s g t\ndistr_forms (a b : C) : X (g (s a b)) (t (f a) (f b))"]
   IsDistrL [label = "\N X k m\ndistr_l (x y z : A) : X (k x (m y z)) (m (k x y) (k x z))"]
   IsDistrR [label = "\N X k m\ndistr_r (x y z : A) : X (k (m x y) z) (m (k x z) (k y z))"]
-  IsDistrUnOp [label = "\N X f k\ndistr_un_op (x y : A) : X (f (k x y)) (k (f x) (f y))"]
     IsDistr [label = "\N X k m"]
   }
 
@@ -88,17 +92,17 @@ digraph Is {
 
   subgraph cluster_unl {
   label = "Unital Fragment"
-  bgcolor = mistyrose
-  IsUnlActL [label = "\N X x al\nunl_act_l (a : B) : X (al x a) a"]
-  IsUnlActR [label = "\N X x ar\nunl_act_r (a : B) : X (ar a x) a"]
-  IsUnlL [label = "\N X x k\nunl_l (y : A) : X (k x y) y"]
-  IsUnlR [label = "\N X x k\nunl_r (y : A) : X (k y x) y"]
-    IsUnl [label = "\N X x k"]
+  bgcolor = azure
+  IsUnlElemActL [label = "\N X x al\nunl_elem_act_l (a : B) : X (al x a) a"]
+  IsUnlElemActR [label = "\N X x ar\nunl_elem_act_r (a : B) : X (ar a x) a"]
+  IsUnlElemL [label = "\N X x k\nunl_elem_l (y : A) : X (k x y) y"]
+  IsUnlElemR [label = "\N X x k\nunl_elem_r (y : A) : X (k y x) y"]
+    IsUnlElem [label = "\N X x k"]
   }
 
   subgraph cluster_absorb {
   label = "Absorbing Fragment"
-  bgcolor = mistyrose
+  bgcolor = azure
   IsAbsorbElemActLR [label = "\N X a al\nabsorb_elem_act_l_r (x : A) : X (al x a) a"]
   IsAbsorbElemActRL [label = "\N X a ar\nabsorb_elem_act_r_l (x : A) : X (ar a x) a"]
   IsAbsorbElemL [label = "\N X x k\nabsorb_elem_l (y : A) : X (k x y) x"]
@@ -106,7 +110,7 @@ digraph Is {
   IsFixed [label = "\N X x f\nfixed : X (f x) x"]
   IsIdemBinOp [label = "\N X k\nidem_bin_op (x : A) : X (k x x) x"]
   IsIdemElemBinOp [label = "\N X x k\nidem_elem_bin_op : X (k x x) x"]
-  IsIdemElemUnOp [label = "\N X x f\nidem_elem_un_op : X (f x) x"]
+  IsIdemElemUnOp [label = "\N X x f\nidem_elem_un_op : X (f (f x)) (f x)"]
   IsIdemUnOp [label = "\N X f\nidem_un_op (x : A) : X (f (f x)) (f x)"]
   IsInvol [label = "\N X f\ninvol (x : A) : X (f (f x)) x"]
   IsInvolElem [label = "\N X x f\ninvol_elem : X (f (f x)) x"]
@@ -142,18 +146,12 @@ digraph Is {
     IsMon [label = "\N X x k"]
     IsRing [label = "\N X x f k y m", color = red, fillcolor = yellow]
     IsSemigrp [label = "\N X k"]
-    IsSemiring [label = "\N X x k y m", color = red, fillcolor = yellow]
+    IsSemiring [label = "\N X x k y m"]
   }
 
   subgraph cluster_infl {
   label = "Inflationary Fragment"
-  bgcolor = mistyrose
-  IsDefl [label = "\N X k"]
-  IsDeflActL [label = "\N X al\ndefl_act_l (x : A) (a : B) : X (al x a) a"]
-  IsDeflActR [label = "\N X ar\ndefl_act_r (a : B) (x : A) : X (ar a x) a"]
-  IsDeflL [label = "\N X k\ndefl_l (x y : A) : X (k x y) y"]
-  IsDeflR [label = "\N X k\ndefl_r (x y : A) : X (k x y) x"]
-  IsDeflUnOp [label = "\N X f\ndefl_un_op (x : A) : X (f x) x"]
+  bgcolor = azure
   IsInfl [label = "\N X k"]
   IsInflActL [label = "\N X al\ninfl_act_l (x : A) (a : B) : X a (al x a)"]
   IsInflActR [label = "\N X ar\ninfl_act_r (a : B) (x : A) : X a (ar a x)"]
@@ -210,11 +208,11 @@ digraph Is {
     IsPartOrd -> IsAntisym
     IsPartOrd -> IsEquiv
     IsPartOrd -> IsPreord
-    // IsPartOrd -> IsProper [constraint = false]
+    // IsPartOrd -> IsProper
     IsPreord -> IsRefl
     IsPreord -> IsTrans
     IsStrPartOrd -> IsIrrefl
-    // IsStrTotOrd -> IsProper [constraint = false]
+    // IsStrTotOrd -> IsProper
     IsStrPartOrd -> IsTrans
     IsStrPreord -> IsIrrefl
     IsStrPreord -> IsTrans
@@ -225,11 +223,8 @@ digraph Is {
   }
 
   subgraph metric_geometry_fields {
-    IsDefl -> IsDeflL
-    IsDefl -> IsDeflR
     IsInfl -> IsInflL
     IsInfl -> IsInflR
-    // TODO Partial applications.
   }
 
   subgraph abstract_algebra_fields {
@@ -243,26 +238,26 @@ digraph Is {
     IsDistr -> IsDistrR
     IsGrp -> IsInv
     IsGrp -> IsMon
-    // IsGrp -> IsProper [constraint = false]
+    // IsGrp -> IsProper
     IsGrpActL -> IsCompatActL
     IsGrpActL -> IsGrp
-    IsGrpActL -> IsUnlActL
-    // IsGrpActL -> IsProper [constraint = false]
+    IsGrpActL -> IsUnlElemActL
+    // IsGrpActL -> IsProper
     IsGrpHom -> IsBinPres
     IsGrpHom -> IsGrp
     IsGrpHom -> IsGrp
-    // IsGrpHom -> IsProper [constraint = false]
+    // IsGrpHom -> IsProper
     IsInv -> IsInvL
     IsInv -> IsInvR
     IsInvForm -> IsInvFormL
     IsInvForm -> IsInvFormR
     IsMon -> IsSemigrp
-    IsMon -> IsUnl
+    IsMon -> IsUnlElem
     IsSemigrp -> IsAssoc
     IsSemigrp -> IsEquiv
-    // IsSemigrp -> IsProper [constraint = false]
-    IsUnl -> IsUnlL
-    IsUnl -> IsUnlR
+    // IsSemigrp -> IsProper
+    IsUnlElem -> IsUnlElemL
+    IsUnlElem -> IsUnlElemR
   }
 
   edge [color = red]
@@ -300,31 +295,47 @@ digraph Is {
     IsTotOrd -> IsTrans
   }
 
+  subgraph metric_geometry_derivations {
+    IsInflL -> IsInflR [label = "flip"]
+    IsInflL -> IsInflUnOp [label = "apply"]
+    IsInflR -> IsInflUnOp [label = "flip apply"]
+    IsInflActL -> IsInflActR [label = "flip"]
+    IsInflActL -> IsInflUnOp [label = "apply"]
+    IsInflActR -> IsInflUnOp [label = "flip apply"]
+  }
+
   subgraph abstract_algebra_derivations {
-    IsAbsorbElemActLR -> IsFixed [label = "id"]
-    IsAbsorbElemActRL -> IsFixed [label = "flip"]
+    IsAbsorbElemActLR -> IsFixed [label = "apply"]
     IsAbsorbElemActRL -> IsAbsorbElemActLR [label = "flip"]
+    IsAbsorbElemActRL -> IsFixed [label = "flip apply"]
+    IsAbsorbElemL -> IsAbsorbElemR [label = "flip"]
+    IsAntidistrUnFn -> IsAntidistrUnFns
+    IsAntidistrUnOp -> IsAntidistrUnFns
     IsAssoc -> IsCompatBinFns
     IsCancelActL -> IsCancelBinFnL
     IsCancelActLR -> IsCancelBinFnR
     IsCancelActR -> IsCancelBinFnR
     IsCancelActRL -> IsCancelBinFnL
     IsCancelBinFnL -> IsCancelBinFnR [label = "flip"]
-    IsCancelBinFnL -> IsInjUnFn [label = "id"]
-    IsCancelBinFnR -> IsInjUnFn [label = "flip"]
+    IsCancelBinFnL -> IsInjUnFn [label = "apply"]
+    IsCancelBinFnR -> IsInjUnFn [label = "flip apply"]
     IsCancelFormL -> IsCancelBinFnL
     IsCancelFormR -> IsCancelBinFnR
     IsCancelL -> IsCancelBinFnL
     IsCancelR -> IsCancelBinFnR
+    IsCompatActL -> IsCompatActR [label = "flip"]
     IsCompatActL -> IsCompatBinFns
     IsCompatActR -> IsCompatBinFns
     IsCompatActs -> IsCompatBinFns
-    IsDistrActL -> IsDistrUnOp [style = dotted]
-    IsDistrActR -> IsDistrUnOp [style = dotted]
-    IsDistrForms -> IsDistrFns
-    IsDistrL -> IsDistrActL
-    IsDistrR -> IsDistrActR
-    IsDistrUnOp -> IsDistrForms
+    IsDistrActL -> IsDistrBinFnsL
+    IsDistrActR -> IsDistrBinFnsR
+    IsDistrBinFnsL -> IsDistrBinFnsR [label = "flip"]
+    IsDistrBinFnsL -> IsDistrUnFns [label = "apply"]
+    IsDistrBinFnsR -> IsDistrUnFns [label = "flip apply"]
+    IsDistrL -> IsDistrBinFnsL
+    IsDistrR -> IsDistrBinFnsR
+    IsDistrUnFn -> IsDistrUnFns
+    IsDistrUnOp -> IsDistrUnFns
     IsGrp -> IsAntidistrUnOp
     IsGrp -> IsCancel
     IsGrp -> IsFixed
@@ -332,20 +343,20 @@ digraph Is {
     IsGrp -> IsInvol
     IsGrpHom -> IsNullPres
     IsGrpHom -> IsUnPres
-    IsIdemBinOp -> IsIdemElemBinOp [label = "id"]
-    IsIdemUnOp -> IsIdemElemUnOp [label = "id"]
-    IsInvol -> IsInvolElem [label = "id"]
-    IsInflActL -> IsInflUnOp [label = "id"]
-    IsInflActR -> IsInflUnOp [label = "id"]
-    IsDeflActL -> IsInflUnOp [label = "id"]
-    IsDeflActR -> IsInflUnOp [label = "id"]
+    IsIdemBinOp -> IsIdemElemBinOp [label = "apply"]
+    IsIdemUnOp -> IsIdemElemBinOp [label = "compose"]
+    IsIdemUnOp -> IsIdemElemUnOp [label = "apply"]
     IsInj -> IsInjUnFn
+    IsInjUnFn -> IsDistrUnFns [label = "flip impl\nid"]
+    IsInvBinFnL -> IsInvBinFnR [label = "flip"]
     IsInvFormL -> IsInvBinFnL
     IsInvFormR -> IsInvBinFnR
     IsInvL -> IsInvBinFnL
     IsInvR -> IsInvBinFnR
-    IsUnlL -> IsUnlActL
-    IsUnlR -> IsUnlActR
+    IsInvol -> IsInvolElem [label = "apply"]
+    // IsProper -> IsDistrUnFns [label = "impl\nid"]
+    IsUnlElemActL -> IsUnlElemActR [label = "flip"]
+    IsUnlElemL -> IsUnlElemR [label = "flip"]
   }
 
   edge [color = red]

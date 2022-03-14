@@ -58,6 +58,25 @@ Proof. auto. Qed.
 
 End Context.
 
+Section Context.
+
+Context (A B : Type) (X : B -> B -> Prop)
+  (k : A -> A -> A) (al : A -> B -> B).
+
+(** Compatibility of a left action with a binary operation
+    is a special case of the compatibility of its flipped version
+    with a flipped binary operation. *)
+
+#[export] Instance compat_act_l_is_compat_act_r_flip
+  `{!IsCompatActL X k al} : IsCompatActR (flip X) (flip k) (flip al).
+Proof. intros a y x. unfold flip in *. eauto. Qed.
+
+#[local] Instance compat_act_r_flip_is_compat_act_l
+  `{!IsCompatActR (flip X) (flip k) (flip al)} : IsCompatActL X k al.
+Proof. intros x y a. unfold flip in *. eauto. Qed.
+
+End Context.
+
 (** ** Compatible Actions *)
 
 Class IsCompatActs (A B C : Type) (X : C -> C -> Prop)

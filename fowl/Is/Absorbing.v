@@ -85,19 +85,16 @@ Section Context.
 Context (A B : Type) (X : B -> B -> Prop)
   (a : B) (ar : B -> A -> B).
 
-(** A left-absorbing element of a right action
-    is a special case of a right-absorbing element of a flipped left action. *)
+(** A left-absorbing element of a right action is a special case
+    of a right-absorbing element of its flipped version. *)
 
 #[export] Instance absorb_elem_act_r_l_is_absorb_elem_act_l_r_flip
   `{!IsAbsorbElemActRL X a ar} : IsAbsorbElemActLR X a (flip ar).
-Proof. intros z. unfold flip. apply absorb_elem_act_r_l. Qed.
+Proof. intros x. unfold flip in *. eauto. Qed.
 
 #[local] Instance absorb_elem_act_l_r_flip_is_absorb_elem_act_r_l
   `{!IsAbsorbElemActLR X a (flip ar)} : IsAbsorbElemActRL X a ar.
-Proof.
-  intros z.
-  change (ar a z) with (flip ar z a).
-  apply absorb_elem_act_l_r. Qed.
+Proof. intros x. unfold flip in *. eauto. Qed.
 
 End Context.
 
@@ -116,6 +113,24 @@ Class IsAbsorbElemL (A : Type) (X : A -> A -> Prop)
 Class IsAbsorbElemR (A : Type) (X : A -> A -> Prop)
   (x : A) (k : A -> A -> A) : Prop :=
   absorb_elem_r (y : A) : X (k y x) x.
+
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop)
+  (x : A) (k : A -> A -> A).
+
+(** A left-absorbing element of a binary operation is a special case
+    of a right-absorbing element of its flipped version. *)
+
+#[export] Instance absorb_elem_l_is_absorb_elem_act_r_flip
+  `{!IsAbsorbElemL X x k} : IsAbsorbElemR X x (flip k).
+Proof. intros y. unfold flip in *. eauto. Qed.
+
+#[local] Instance absorb_elem_r_flip_is_absorb_elem_l
+  `{!IsAbsorbElemR X x (flip k)} : IsAbsorbElemL X x k.
+Proof. intros y. unfold flip in *. eauto. Qed.
+
+End Context.
 
 (** ** Absorbing Element of a Binary Operation *)
 (** ** Annihiliating Element of a Binary Operation *)

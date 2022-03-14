@@ -151,6 +151,27 @@ Proof.
 
 End Context.
 
+Section Context.
+
+Context (A0 A1 A2 B0 B1 B2 C : Type) (X : C -> C -> Prop)
+  (k : A0 -> A1 -> B0) (m : A0 -> A2 -> B1) (n : A1 -> A2 -> B2)
+  (p : A0 -> B2 -> C) (q : B0 -> B1 -> C).
+
+(** Left-distributivity of binary functions is a special case
+    of the right-distributivity of their flipped versions. *)
+
+#[export] Instance distr_bin_fns_l_is_distr_bin_fns_r_flip
+  `{!IsDistrBinFnsL X k m n p q} :
+  IsDistrBinFnsR X (flip k) (flip m) n (flip p) q.
+Proof. intros y z x. unfold flip in *. eauto. Qed.
+
+#[local] Instance distr_bin_fns_r_flip_is_distr_bin_fns_l
+  `{!IsDistrBinFnsR X (flip k) (flip m) n (flip p) q} :
+  IsDistrBinFnsL X k m n p q.
+Proof. intros x y z. unfold flip in *. eauto. Qed.
+
+End Context.
+
 (** ** Left Action Distributing over a Binary Operation *)
 
 Class IsDistrActL (A B : Type) (X : B -> B -> Prop)

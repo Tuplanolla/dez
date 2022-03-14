@@ -41,7 +41,7 @@ Ltac note := progress (
 #[export] Instance grp_is_fixed : IsFixed X x f.
 Proof.
   hnf. note.
-  setoid_rewrite <- (unl_r (- x)).
+  setoid_rewrite <- (unl_elem_r (- x)).
   setoid_rewrite (inv_l x).
   reflexivity. Qed.
 
@@ -50,11 +50,11 @@ Proof.
 #[export] Instance grp_is_invol : IsInvol X f.
 Proof.
   note. intros y.
-  setoid_rewrite <- (unl_r (- (- y))).
+  setoid_rewrite <- (unl_elem_r (- (- y))).
   setoid_rewrite <- (inv_l y).
   setoid_rewrite (assoc (- (- y)) (- y) y).
   setoid_rewrite (inv_l (- y)).
-  setoid_rewrite (unl_l y).
+  setoid_rewrite (unl_elem_l y).
   reflexivity. Qed.
 
 (** Negation is injective. *)
@@ -62,12 +62,12 @@ Proof.
 #[export] Instance grp_is_inj : IsInj X f.
 Proof.
   note. intros y z a.
-  setoid_rewrite <- (unl_l z).
+  setoid_rewrite <- (unl_elem_l z).
   setoid_rewrite <- (inv_r y).
   setoid_rewrite a.
   setoid_rewrite <- (assoc y (- z) z).
   setoid_rewrite (inv_l z).
-  setoid_rewrite (unl_r y).
+  setoid_rewrite (unl_elem_r y).
   reflexivity. Qed.
 
 (** Addition is left-cancellative. *)
@@ -75,13 +75,13 @@ Proof.
 #[local] Instance grp_is_cancel_l : IsCancelL X k.
 Proof.
   note. intros y z w a.
-  setoid_rewrite <- (unl_l z).
+  setoid_rewrite <- (unl_elem_l z).
   setoid_rewrite <- (inv_l y).
   setoid_rewrite <- (assoc (- y) y z).
   setoid_rewrite a.
   setoid_rewrite (assoc (- y) y w).
   setoid_rewrite (inv_l y).
-  setoid_rewrite (unl_l w).
+  setoid_rewrite (unl_elem_l w).
   reflexivity. Qed.
 
 (** Addition is right-cancellative. *)
@@ -89,13 +89,13 @@ Proof.
 #[local] Instance grp_is_cancel_r : IsCancelR X k.
 Proof.
   note. intros y z w a.
-  setoid_rewrite <- (unl_r y).
+  setoid_rewrite <- (unl_elem_r y).
   setoid_rewrite <- (inv_r w).
   setoid_rewrite (assoc y w (- w)).
   setoid_rewrite a.
   setoid_rewrite <- (assoc z w (- w)).
   setoid_rewrite (inv_r w).
-  setoid_rewrite (unl_r z).
+  setoid_rewrite (unl_elem_r z).
   reflexivity. Qed.
 
 (** Addition is cancellative. *)
@@ -113,7 +113,7 @@ Proof.
   setoid_rewrite (assoc (y + z) (- z) (- y)).
   setoid_rewrite <- (assoc y z (- z)).
   setoid_rewrite (inv_r z).
-  setoid_rewrite (unl_r y).
+  setoid_rewrite (unl_elem_r y).
   setoid_rewrite (inv_r y).
   reflexivity. Qed.
 
@@ -163,8 +163,8 @@ Ltac note := progress (
 Proof.
   hnf. note.
   pose proof bin_pres 0 0 as a.
-  setoid_rewrite <- (unl_r (h (0 + 0))) in a.
-  setoid_rewrite (unl_l 0) in a.
+  setoid_rewrite <- (unl_elem_r (h (0 + 0))) in a.
+  setoid_rewrite (unl_elem_l 0) in a.
   apply cancel_l in a.
   setoid_rewrite <- a.
   reflexivity. Qed.
@@ -207,7 +207,7 @@ Class IsGrpActL (A B : Type)
   (X : A -> A -> Prop) (x : A) (f : A -> A) (k : A -> A -> A)
   (Y : B -> B -> Prop) (al : A -> B -> B) : Prop := {
   grp_act_l_is_grp :> IsGrp X x f k;
-  grp_act_l_is_unl_act_l :> IsUnlActL Y x al;
+  grp_act_l_is_unl_elem_act_l :> IsUnlElemActL Y x al;
   grp_act_l_is_compat_act_l :> IsCompatActL Y k al;
   grp_act_l_is_proper :> IsProper (X ==> Y ==> Y) al;
 }.
@@ -224,7 +224,7 @@ Context (A : Type)
 Proof.
   split.
   - typeclasses eauto.
-  - enough (IsUnlL X x k) by assumption. typeclasses eauto.
+  - enough (IsUnlElemL X x k) by assumption. typeclasses eauto.
   - enough (IsAssoc X k) by assumption. typeclasses eauto.
   - typeclasses eauto. Qed.
 
