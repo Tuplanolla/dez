@@ -3,11 +3,12 @@ digraph Is {
   rankdir = BT
 
   node [fontname = monospace, style = filled, fillcolor = cornsilk]
+  edge [fontname = monospace]
+
   // IsProper [label = "\N X\nproper (x : A) : X x x"]
 
   subgraph cluster_order_theory_classes {
     label = "Order Theory"
-  bgcolor = azure
 
   IsAntisym [label = "\N X Y\nantisym (x y : A) (a : Y x y) (b : Y y x) : X x y"]
   IsAsym [label = "\N X\nasym (x y : A) (a : X x y) (b : X y x) : 0"]
@@ -32,7 +33,6 @@ digraph Is {
 
   subgraph cluster_cancel {
   label = "Cancellative Fragment"
-  bgcolor = azure
   IsCancelBinFnL [label = "\N X Y k\ncancel_bin_fn_l (x : A1) (y z : A0) (a : Y (k x y) (k x z)) : X y z"]
   IsCancelBinFnR [label = "\N X Y k\ncancel_bin_fn_r (x y : A0) (z : A1) (a : Y (k x z) (k y z)) : X x y"]
   IsCancelActL [label = "\N X al\ncancel_act_l (x : A) (a b : B) (s : X (al x a) (al x b)) : X a b"]
@@ -51,7 +51,6 @@ digraph Is {
 
   subgraph cluster_assoc {
   label = "Associative Fragment"
-  bgcolor = azure
   IsAssoc [label = "\N X k\nassoc (x y z : A) : X (k x (k y z)) (k (k x y) z)"]
   IsCompatActL [label = "\N X k al\ncompat_act_l (x y : A) (a : B) : X (al x (al y a)) (al (k x y) a)"]
   IsCompatActR [label = "\N X k ar\ncompat_act_r (a : B) (x y : A) : X (ar a (k x y)) (ar (ar a x) y)"]
@@ -61,7 +60,6 @@ digraph Is {
 
   subgraph cluster_distr {
   label = "Distributive Fragment"
-  bgcolor = azure
   IsDistrUnFns [label = "\N X f g k h m\ndistr_un_fns (x : A0) (y : A1) : X (h (k x y)) (m (f x) (g y))"]
   IsDistrUnFn [label = "\N X f k m\ndistr_un_fn (x y : A) : X (f (k x y)) (m (f x) (f y))"]
   IsDistrUnOp [label = "\N X f k\ndistr_un_op (x y : A) : X (f (k x y)) (k (f x) (f y))"]
@@ -79,7 +77,6 @@ digraph Is {
 
   subgraph cluster_inv {
   label = "Invertible Fragment"
-  bgcolor = azure
   IsInvBinFnL [label = "\N X x f k\ninv_bin_fn_l (y : A) : X (k (f y) y) x"]
   IsInvBinFnR [label = "\N X x f k\ninv_bin_fn_r (y : A) : X (k y (f y)) x"]
   IsInvFormL [label = "\N X x f s\ninv_form_l (y : A) : X (s (f y) y) x"]
@@ -92,7 +89,6 @@ digraph Is {
 
   subgraph cluster_unl {
   label = "Unital Fragment"
-  bgcolor = azure
   IsUnlElemActL [label = "\N X x al\nunl_elem_act_l (a : B) : X (al x a) a"]
   IsUnlElemActR [label = "\N X x ar\nunl_elem_act_r (a : B) : X (ar a x) a"]
   IsUnlElemL [label = "\N X x k\nunl_elem_l (y : A) : X (k x y) y"]
@@ -102,7 +98,6 @@ digraph Is {
 
   subgraph cluster_absorb {
   label = "Absorbing Fragment"
-  bgcolor = azure
   IsAbsorbElemActLR [label = "\N X a al\nabsorb_elem_act_l_r (x : A) : X (al x a) a"]
   IsAbsorbElemActRL [label = "\N X a ar\nabsorb_elem_act_r_l (x : A) : X (ar a x) a"]
   IsAbsorbElemL [label = "\N X x k\nabsorb_elem_l (y : A) : X (k x y) x"]
@@ -119,7 +114,6 @@ digraph Is {
 
   subgraph cluster_comm {
   label = "Commutative Fragment"
-  bgcolor = azure
   IsComm [label = "\N X k f"]
   IsCommActLsR [label = "\N X al f bl\ncomm_act_ls_r (x : A) (a : B) : X (bl x (f a)) (f (al x a))"]
   IsCommActRsL [label = "\N X ar f br\ncomm_act_rs_l (a : B) (x : A) : X (br (f a) x) (f (ar a x))"]
@@ -136,7 +130,6 @@ digraph Is {
 
   subgraph cluster_pres {
   label = "Preserving Fragment"
-  bgcolor = azure
   IsBinPres [label = "\N X k m f\nbin_pres (x y : A) : X (f (k x y)) (m (f x) (f y))"]
   IsNullPres [label = "\N X x y f\nnull_pres : X (f x) y"]
   IsUnPres [label = "\N X f g h\nun_pres (x : A) : X (h (f x)) (g (h x))"]
@@ -144,13 +137,12 @@ digraph Is {
 
   subgraph cluster_abstract_algebra_classes {
     label = "Abstract Algebra"
-  bgcolor = mistyrose
 
     IsGrp [label = "\N X x f k"]
     IsGrpActL [label = "\N X x f k Y al"]
     IsGrpHom [label = "\N h"]
     IsMon [label = "\N X x k"]
-    IsRing [label = "\N X x f k y m", color = red, fillcolor = yellow]
+    IsRing [label = "\N X x f k y m"]
     IsRingHom [label = "\N h"]
     IsSemigrp [label = "\N X k"]
     IsSemiring [label = "\N X x k y m"]
@@ -158,7 +150,6 @@ digraph Is {
 
   subgraph cluster_infl {
   label = "Inflationary Fragment"
-  bgcolor = azure
   IsInfl [label = "\N X k"]
   IsInflActL [label = "\N X al\ninfl_act_l (x : A) (a : B) : X a (al x a)"]
   IsInflActR [label = "\N X ar\ninfl_act_r (a : B) (x : A) : X a (ar a x)"]

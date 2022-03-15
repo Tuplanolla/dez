@@ -1,7 +1,7 @@
 (** * Identity of Indiscernibles *)
 
 From DEZ.Has Require Export
-  NullaryOperation Distance EquivalenceRelation.
+  Operations Distances EquivalenceRelations.
 From DEZ.Supports Require Import
   AdditiveNotations EquivalenceNotations.
 

@@ -20,16 +20,16 @@ Class IsContr (A : Type) (X : A -> A -> Prop) : Prop :=
   contr : exists x : A, forall y : A, X x y.
 
 Class IsContrEq (A : Type) : Prop :=
-  contr_equiv : exists x : A, forall y : A, x = y.
+  contr_eq : exists x : A, forall y : A, x = y.
 
 Section Context.
 
 Context (A : Type).
 
-#[local] Instance is_contr_equiv_is_contr `{IsContrEq A} : @IsContr A eq.
+#[local] Instance is_contr_eq_is_contr `{IsContrEq A} : @IsContr A eq.
 Proof. exact contr_eq. Qed.
 
-#[local] Instance is_contr_is_contr_equiv `{@IsContr A eq} : IsContrEq A.
+#[local] Instance is_contr_is_contr_eq `{@IsContr A eq} : IsContrEq A.
 Proof. exact contr. Qed.
 
 End Context.
@@ -41,16 +41,16 @@ Class IsProp (A : Type) (X : A -> A -> Prop) : Prop :=
   irrel (x y : A) : X x y.
 
 Class IsPropEq (A : Type) : Prop :=
-  irrel_equiv (x y : A) : x = y.
+  irrel_eq (x y : A) : x = y.
 
 Section Context.
 
 Context (A : Type).
 
-#[local] Instance is_prop_equiv_is_prop `{IsPropEq A} : @IsProp A eq.
+#[local] Instance is_prop_eq_is_prop `{IsPropEq A} : @IsProp A eq.
 Proof. exact irrel_eq. Qed.
 
-#[local] Instance is_prop_is_prop_equiv `{@IsProp A eq} : IsPropEq A.
+#[local] Instance is_prop_is_prop_eq `{@IsProp A eq} : IsPropEq A.
 Proof. exact irrel. Qed.
 
 End Context.
@@ -59,12 +59,12 @@ End Context.
 (** ** Uniqueness of Identity Proofs *)
 
 Fail Fail Class IsSetEq (A : Type) : Prop :=
-  uip_equiv (x y : A) (a b : x = y) : a = b.
+  uip_eq (x y : A) (a b : x = y) : a = b.
 
 Arguments uip {_ _} _ _ _ _.
 
 Notation IsSetEq := UIP.
-Notation uip_equiv := uip.
+Notation uip_eq := uip.
 
 Class IsSet (A : Type) (X : A -> A -> Prop)
   (Y : forall {x y : A}, X x y -> X x y -> Prop) : Prop :=
@@ -76,10 +76,10 @@ Context (A : Type).
 
 Let Y (x y : A) (a b : x = y) := a = b.
 
-#[local] Instance is_set_equiv_is_set `{IsSetEq A} : @IsSet A eq (@Y).
+#[local] Instance is_set_eq_is_set `{IsSetEq A} : @IsSet A eq (@Y).
 Proof. exact uip_eq. Qed.
 
-#[local] Instance is_set_is_set_equiv `{@IsSet A eq (@Y)} : IsSetEq A.
+#[local] Instance is_set_is_set_eq `{@IsSet A eq (@Y)} : IsSetEq A.
 Proof. exact uip. Qed.
 
 End Context.
@@ -109,7 +109,7 @@ Context (A : Type).
 
 Let X (A : Type) (x y : A) := x = y.
 
-#[local] Instance eq_is_h_level_equiv_is_h_level (n : nat)
+#[local] Instance eq_is_h_level_eq_is_h_level (n : nat)
   `{IsHLevelEq A n} : IsHLevel A (@X) n.
 Proof.
   match goal with
@@ -120,7 +120,7 @@ Proof.
   - intros x y. hnf in a.
     pose proof (a x y) as d. eauto. Qed.
 
-#[local] Instance eq_is_h_level_is_h_level_equiv (n : nat)
+#[local] Instance eq_is_h_level_is_h_level_eq (n : nat)
   `{@IsHLevel A (@X) n} : IsHLevelEq A n.
 Proof.
   match goal with
@@ -191,7 +191,7 @@ Proof.
 CoFixpoint nat_Glob : Glob.
 Proof.
   apply (@Build_Glob nat). intros x y.
-  apply (@Build_Glob (x = y)). intros a b. pose proof uip_equiv x y a b as u.
+  apply (@Build_Glob (x = y)). intros a b. pose proof uip_eq x y a b as u.
   apply (@Build_Glob False). intros [] []. Defined.
 
 Equations IsHLevelNat (X : Glob) (n : nat) : Prop by struct n :=
@@ -206,7 +206,7 @@ Section Context.
 
 Context (A : Type).
 
-#[local] Instance eq_is_h_level_equiv_is_h_level_nat (n : nat)
+#[local] Instance eq_is_h_level_eq_is_h_level_nat (n : nat)
   `{IsHLevelEq A n} : IsHLevelNat (eq_Glob A) n.
 Proof.
   match goal with
@@ -218,7 +218,7 @@ Proof.
   - intros x y. hnf in a.
     pose proof a x y as d. cbn in *. eauto. Qed.
 
-#[local] Instance eq_is_h_level_nat_is_h_level_equiv (n : nat)
+#[local] Instance eq_is_h_level_nat_is_h_level_eq (n : nat)
   `{@IsHLevelNat (eq_Glob A) n} : IsHLevelEq A n.
 Proof.
   match goal with
@@ -363,7 +363,7 @@ Proof. apply is_h_level_is_contr. eauto. Qed.
   `{@IsContr A eq} : IsHLevel A (@eq) 0.
 Proof. eauto. Qed.
 
-Lemma iff_equiv_is_h_level_is_contr :
+Lemma iff_eq_is_h_level_is_contr :
   IsHLevel A (@eq) 0 <-> @IsContr A eq.
 Proof. esplit; typeclasses eauto. Qed.
 
@@ -394,7 +394,7 @@ Proof.
   { hnf in a. apply is_h_level_is_contr. eauto. }
   apply b. Qed.
 
-Lemma iff_equiv_is_h_level_is_prop :
+Lemma iff_eq_is_h_level_is_prop :
   IsHLevel A (@eq) 1 <-> @IsProp A eq.
 Proof. esplit; typeclasses eauto. Qed.
 
@@ -412,7 +412,7 @@ Let Y (x y : A) (a b : x = y) := a = b.
   `{@IsSet A eq (@Y)} : IsHLevel A (@eq) 2.
 Proof.
   apply iff_is_h_level_succ_is_h_level.
-  intros x y. apply iff_equiv_is_h_level_is_prop.
+  intros x y. apply iff_eq_is_h_level_is_prop.
   intros a b. apply (@uip A eq (@Y)). eauto. Qed.
 
 #[local] Instance eq_is_h_level_is_set
@@ -426,7 +426,7 @@ Proof.
   { hnf in a. apply eq_is_h_level_is_prop. }
   apply b. Qed.
 
-Lemma iff_equiv_is_h_level_is_set :
+Lemma iff_eq_is_h_level_is_set :
   IsHLevel A (@eq) 2 <-> @IsSet A eq (@Y).
 Proof. esplit; typeclasses eauto. Qed.
 
@@ -437,7 +437,7 @@ End Context.
 Create HintDb h_intro.
 
 #[export] Hint Resolve
-  eq_is_h_level_equiv_is_h_level is_h_level_succ_is_h_level
+  eq_is_h_level_eq_is_h_level is_h_level_succ_is_h_level
   eq_is_h_level_is_h_level_succ eq_is_h_level_is_h_level_add
   eq_is_contr_is_h_level eq_is_prop_is_h_level eq_is_set_is_h_level : h_intro.
 
@@ -445,7 +445,7 @@ Create HintDb h_elim.
 
 #[export] Hint Resolve
   is_h_level_is_contr
-  eq_is_h_level_is_h_level_equiv is_h_level_succ_is_h_level
+  eq_is_h_level_is_h_level_eq is_h_level_succ_is_h_level
   eq_is_h_level_is_h_level_succ eq_is_h_level_is_h_level_add
   eq_is_h_level_is_contr eq_is_h_level_is_prop eq_is_h_level_is_set : h_elim.
 
@@ -462,11 +462,11 @@ Context (A : Type).
   `{@IsProp A eq} (x y : A) : @IsContr (x = y) eq.
 Proof. eauto with h_intro h_elim. Qed.
 
-#[local] Instance eq_is_contr_equiv_is_prop
+#[local] Instance eq_is_contr_eq_is_prop
   `{forall x y : A, @IsContr (x = y) eq} : @IsProp A eq.
 Proof. eauto with h_intro h_elim. Qed.
 
-Lemma iff_equiv_is_prop_is_contr_equiv :
+Lemma iff_eq_is_prop_is_contr_eq :
   @IsProp A eq <-> forall x y : A, @IsContr (x = y) eq.
 Proof. esplit; typeclasses eauto. Qed.
 
@@ -485,11 +485,11 @@ Let Y (x y : A) (a b : x = y) := a = b.
   `{@IsSet A eq (@Y)} (x y : A) : @IsProp (x = y) eq.
 Proof. eauto with h_intro h_elim. Qed.
 
-#[local] Instance eq_is_prop_equiv_is_set
+#[local] Instance eq_is_prop_eq_is_set
   `{forall x y : A, @IsProp (x = y) eq} : @IsSet A eq (@Y).
 Proof. eauto with h_intro h_elim. Qed.
 
-Lemma iff_equiv_is_set_is_prop_equiv :
+Lemma iff_eq_is_set_is_prop_eq :
   @IsSet A eq (@Y) <-> forall x y : A, @IsProp (x = y) eq.
 Proof. esplit; typeclasses eauto. Qed.
 

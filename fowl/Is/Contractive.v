@@ -1,21 +1,13 @@
 (** * Contractivity *)
 
-From DEZ.Has Require Export
-  Distance.
+From DEZ Require Export
+  Init.
 
-Class IsContractGen (A B C D E F : Type) (X : E -> F -> Prop)
-  (f : A -> C) (g : B -> D) (m : C -> D -> E) (k : A -> B -> F) : Prop :=
-  contract_gen (x : A) (y : B) : X (m (f x) (g y)) (k x y).
-
-(** ** Contractive Function *)
+(** ** Contractive Unary Function *)
 (** ** Short Map *)
 
-Fail Fail Class IsContract (A B C : Type)
-  (X : C -> C -> Prop) (HdA : HasDist C A) (HdB : HasDist C B)
-  (f : A -> B) : Prop :=
-  is_contract_gen :> IsContractGen X f f dist dist.
+(** The dual notion is an expansive unary function or a long map. *)
 
-Class IsContract (A B C : Type)
-  (X : C -> C -> Prop) (HdA : HasDist C A) (HdB : HasDist C B)
-  (f : A -> B) : Prop :=
-  contract (x y : A) : X (dist (f x) (f y)) (dist x y).
+Class IsContract (A B C : Type) (X : A -> A -> Prop)
+  (s : B -> B -> A) (t : C -> C -> A) (f : B -> C) : Prop :=
+  contract (a b : B) : X (t (f a) (f b)) (s a b).

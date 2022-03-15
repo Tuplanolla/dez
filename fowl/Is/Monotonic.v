@@ -1,11 +1,13 @@
 (** * Monotonicity and Strict Monotonicity of a Function and a Binary Operation *)
 
 From DEZ.Has Require Export
-  Decisions OrderRelations BinaryOperation.
+  Decisions OrderRelations Operations.
 From DEZ.Is Require Export
   Preorder CoherentOrderRelations.
 From DEZ.Supports Require Import
   OrderNotations AdditiveNotations.
+
+#[local] Existing Instance dec_decidable.
 
 Fail Fail Class IsMono (A B : Type)
   (X : HasOrdRel A) (Y : HasOrdRel B) (f : A -> B) : Prop :=

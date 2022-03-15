@@ -3,7 +3,7 @@
 From Coq Require Import
   Reals.Reals.
 From DEZ.Has Require Export
-  NullaryOperation BinaryOperation OrderRelations Distance.
+  Operations OrderRelations Distances.
 From DEZ.Is Require Export
   Indiscernible Subadditive
   TotalOrder Bounded Monoid Commutative Monotonic Inflationary.

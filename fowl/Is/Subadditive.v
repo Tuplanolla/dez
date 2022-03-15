@@ -1,7 +1,7 @@
 (** * Subadditivity or Triangle Inequality *)
 
 From DEZ.Has Require Export
-  OrderRelations BinaryOperation Distance.
+  OrderRelations Operations Distances.
 From DEZ.Supports Require Import
   OrderNotations AdditiveNotations.
 

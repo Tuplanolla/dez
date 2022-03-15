@@ -119,6 +119,28 @@ Proof with note.
 
 End Context.
 
+(** ** Abelian Group *)
+
+Class IsAbGrp (A : Type) (X : A -> A -> Prop)
+  (x : A) (f : A -> A) (k : A -> A -> A) : Prop := {
+  ab_grp_is_comm_bin_op :> IsCommBinOp X k;
+  ab_grp_is_grp :> IsGrp X x f k;
+}.
+
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop)
+  (x : A) (f : A -> A) (k : A -> A -> A)
+  `{!IsAbGrp X x f k}.
+
+#[export] Instance ab_grp_is_distr_un_op : IsDistrUnOp X f k.
+Proof.
+  intros y z.
+  rewrite (comm_bin_op y z).
+  apply (antidistr_un_op z y). Qed.
+
+End Context.
+
 (** ** Group Homomorphism *)
 
 Class IsGrpHom (A B : Type)

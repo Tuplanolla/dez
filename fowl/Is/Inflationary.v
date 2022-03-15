@@ -4,7 +4,9 @@ From DEZ Require Export
   Init.
 
 (** ** Inflationary Unary Operation *)
-(** ** Progressive Unary Operation *)
+(** ** Progressive Map *)
+
+(** The dual notion is an deflationary unary operation or a regressive map. *)
 
 Class IsInflUnOp (A : Type) (X : A -> A -> Prop) (f : A -> A) : Prop :=
   infl_un_op (x : A) : X x (f x).

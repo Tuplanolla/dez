@@ -231,8 +231,7 @@ Class IsDistrL (A : Type) (X : A -> A -> Prop) (k m : A -> A -> A) : Prop :=
 
 Section Context.
 
-Context (A : Type) (X : A -> A -> Prop)
-  (k : A -> A -> A) (m : A -> A -> A).
+Context (A : Type) (X : A -> A -> Prop) (k m : A -> A -> A).
 
 (** Left-distributivity of a binary operation over a binary operation
     is a special case of the left-distributivity
@@ -257,8 +256,7 @@ Class IsDistrR (A : Type) (X : A -> A -> Prop) (k m : A -> A -> A) : Prop :=
 
 Section Context.
 
-Context (A : Type) (X : A -> A -> Prop)
-  (k : A -> A -> A) (m : A -> A -> A).
+Context (A : Type) (X : A -> A -> Prop) (k m : A -> A -> A).
 
 (** Right-distributivity of a binary operation over a binary operation
     is a special case of the right-distributivity
