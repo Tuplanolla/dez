@@ -1,11 +1,11 @@
 (** * Group Structure *)
 
 From DEZ.Has Require Export
-  EquivalenceRelations Operations Actions.
+  EquivalenceRelations Operations.
 From DEZ.Is Require Export
   Monoid Invertible Proper
   Fixed Involutive Injective Cancellative Antidistributive
-  Preserving Unital Compatible Associative.
+  Preserving Unital Compatible.
 From DEZ.Supports Require Import
   EquivalenceNotations AdditiveNotations.
 
@@ -39,63 +39,63 @@ Ltac note := progress (
 (** Zero is a fixed point of negation. *)
 
 #[export] Instance grp_is_fixed : IsFixed X x f.
-Proof.
-  hnf. note.
-  setoid_rewrite <- (unl_elem_r (- x)).
-  setoid_rewrite (inv_l x).
+Proof with note.
+  hnf...
+  rewrite <- (unl_elem_r (- x)).
+  rewrite (inv_l x).
   reflexivity. Qed.
 
 (** Negation is an involution. *)
 
 #[export] Instance grp_is_invol : IsInvol X f.
-Proof.
-  note. intros y.
-  setoid_rewrite <- (unl_elem_r (- (- y))).
-  setoid_rewrite <- (inv_l y).
-  setoid_rewrite (assoc (- (- y)) (- y) y).
-  setoid_rewrite (inv_l (- y)).
-  setoid_rewrite (unl_elem_l y).
+Proof with note.
+  intros y...
+  rewrite <- (unl_elem_r (- (- y))).
+  rewrite <- (inv_l y).
+  rewrite (assoc (- (- y)) (- y) y).
+  rewrite (inv_l (- y)).
+  rewrite (unl_elem_l y).
   reflexivity. Qed.
 
 (** Negation is injective. *)
 
 #[export] Instance grp_is_inj : IsInj X f.
-Proof.
-  note. intros y z a.
-  setoid_rewrite <- (unl_elem_l z).
-  setoid_rewrite <- (inv_r y).
-  setoid_rewrite a.
-  setoid_rewrite <- (assoc y (- z) z).
-  setoid_rewrite (inv_l z).
-  setoid_rewrite (unl_elem_r y).
+Proof with note.
+  intros y z a...
+  rewrite <- (unl_elem_l z).
+  rewrite <- (inv_r y).
+  rewrite a.
+  rewrite <- (assoc y (- z) z).
+  rewrite (inv_l z).
+  rewrite (unl_elem_r y).
   reflexivity. Qed.
 
 (** Addition is left-cancellative. *)
 
 #[local] Instance grp_is_cancel_l : IsCancelL X k.
-Proof.
-  note. intros y z w a.
-  setoid_rewrite <- (unl_elem_l z).
-  setoid_rewrite <- (inv_l y).
-  setoid_rewrite <- (assoc (- y) y z).
-  setoid_rewrite a.
-  setoid_rewrite (assoc (- y) y w).
-  setoid_rewrite (inv_l y).
-  setoid_rewrite (unl_elem_l w).
+Proof with note.
+  intros y z w a...
+  rewrite <- (unl_elem_l z).
+  rewrite <- (inv_l y).
+  rewrite <- (assoc (- y) y z).
+  rewrite a.
+  rewrite (assoc (- y) y w).
+  rewrite (inv_l y).
+  rewrite (unl_elem_l w).
   reflexivity. Qed.
 
 (** Addition is right-cancellative. *)
 
 #[local] Instance grp_is_cancel_r : IsCancelR X k.
-Proof.
-  note. intros y z w a.
-  setoid_rewrite <- (unl_elem_r y).
-  setoid_rewrite <- (inv_r w).
-  setoid_rewrite (assoc y w (- w)).
-  setoid_rewrite a.
-  setoid_rewrite <- (assoc z w (- w)).
-  setoid_rewrite (inv_r w).
-  setoid_rewrite (unl_elem_r z).
+Proof with note.
+  intros y z w a...
+  rewrite <- (unl_elem_r y).
+  rewrite <- (inv_r w).
+  rewrite (assoc y w (- w)).
+  rewrite a.
+  rewrite <- (assoc z w (- w)).
+  rewrite (inv_r w).
+  rewrite (unl_elem_r z).
   reflexivity. Qed.
 
 (** Addition is cancellative. *)
@@ -106,15 +106,15 @@ Proof. esplit; typeclasses eauto. Qed.
 (** Negation antidistributes over addition. *)
 
 #[export] Instance grp_is_antidistr_un_op : IsAntidistrUnOp X f k.
-Proof.
-  note. intros y z.
-  eapply (cancel_l (y + z) (- (y + z)) ((- z) + (- y))).
-  setoid_rewrite (inv_r (y + z)).
-  setoid_rewrite (assoc (y + z) (- z) (- y)).
-  setoid_rewrite <- (assoc y z (- z)).
-  setoid_rewrite (inv_r z).
-  setoid_rewrite (unl_elem_r y).
-  setoid_rewrite (inv_r y).
+Proof with note.
+  intros y z...
+  apply (cancel_l (y + z) (- (y + z)) ((- z) + (- y)))...
+  rewrite (inv_r (y + z)).
+  rewrite (assoc (y + z) (- z) (- y)).
+  rewrite <- (assoc y z (- z)).
+  rewrite (inv_r z).
+  rewrite (unl_elem_r y).
+  rewrite (inv_r y).
   reflexivity. Qed.
 
 End Context.
@@ -160,44 +160,40 @@ Ltac note := progress (
 (** Homomorphisms preserve zero. *)
 
 #[export] Instance grp_hom_is_null_pres : IsNullPres Y x y h.
-Proof.
-  hnf. note.
-  pose proof bin_pres 0 0 as a.
-  setoid_rewrite <- (unl_elem_r (h (0 + 0))) in a.
-  setoid_rewrite (unl_elem_l 0) in a.
-  apply cancel_l in a.
-  setoid_rewrite <- a.
+Proof with note.
+  hnf...
+  apply (cancel_l (h 0) (h 0) 0).
+  rewrite <- (bin_pres 0 0).
+  rewrite (unl_elem_l 0).
+  rewrite (unl_elem_r (h 0)).
   reflexivity. Qed.
 
 (** Homomorphisms preserve negation. *)
 
 #[export] Instance grp_hom_is_un_pres : IsUnPres Y f g h.
-Proof.
-  note. intros z.
-  pose proof bin_pres z (- z) as a.
-  setoid_rewrite (inv_r z) in a.
-  apply cancel_l with (h z).
-  setoid_rewrite <- a.
-  setoid_rewrite inv_r.
+Proof with note.
+  intros z...
+  apply (cancel_l (h z) (h (- z)) (- h z)).
+  rewrite <- (bin_pres z (- z)).
+  rewrite (inv_r z).
+  rewrite (inv_r (h z)).
   apply null_pres. Qed.
 
 End Context.
 
 Section Context.
 
-Context (A : Type)
-  (X : A -> A -> Prop) (x : A) (f : A -> A) (k : A -> A -> A)
-  `{!IsGrp X x f k}.
+Context (A : Type) (X : A -> A -> Prop)
+  (x : A) (f : A -> A) (k : A -> A -> A) `{!IsGrp X x f k}.
 
-(** The identity function is a group homomorphism. *)
+(** Identity is a group homomorphism. *)
 
 #[export] Instance id_is_grp_hom : IsGrpHom id.
 Proof.
   split.
   - typeclasses eauto.
   - typeclasses eauto.
-  - enough (IsDistrUnOp X id k) by assumption.
-    intros y z. unfold id. reflexivity.
+  - enough (IsDistrUnOp X id k) by assumption. typeclasses eauto.
   - typeclasses eauto. Qed.
 
 End Context.
@@ -215,9 +211,20 @@ Class IsGrpActL (A B : Type)
 
 Section Context.
 
-Context (A : Type)
-  (X : A -> A -> Prop) (x : A) (f : A -> A) (k : A -> A -> A)
-  `{!IsGrp X x f k}.
+Context (A : Type) (X : A -> A -> Prop)
+  (x : A) (f : A -> A) (k : A -> A -> A) `{!IsGrp X x f k}.
+
+(** Identity is a left group action. *)
+
+#[export] Instance id_is_grp_act_l : IsGrpActL X (flip const).
+Proof.
+  split.
+  - typeclasses eauto.
+  - enough (IsUnlElemL X x (flip const)) by assumption.
+    intros y. unfold flip, const. reflexivity.
+  - enough (IsAssoc X (flip const)) by assumption.
+    intros y z w. unfold flip, const. reflexivity.
+  - typeclasses eauto. Qed.
 
 (** Addition is a left group action. *)
 

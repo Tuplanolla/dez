@@ -120,16 +120,18 @@ digraph Is {
   subgraph cluster_comm {
   label = "Commutative Fragment"
   bgcolor = azure
-  IsCommUnOps [label = "\N X f g\ncomm_un_ops (x : A) : X (f (g x)) (g (f x))"]
-  IsCommBinFnsL [label = "\N X k f g m\ncomm_bin_fns_l (x : A0) (y : A1) : X (m (f x) y) (g (k x y))"]
-  IsCommBinFnsR [label = "\N X k f g m\ncomm_bin_fns_r (x : A0) (y : A1) : X (m x (f y)) (g (k x y))"]
-  IsCommActRsL [label = "\N X ar f br\ncomm_act_rs_l (a : B) (x : A) : X (br (f a) x) (f (ar a x))"]
+  IsComm [label = "\N X k f"]
   IsCommActLsR [label = "\N X al f bl\ncomm_act_ls_r (x : A) (a : B) : X (bl x (f a)) (f (al x a))"]
+  IsCommActRsL [label = "\N X ar f br\ncomm_act_rs_l (a : B) (x : A) : X (br (f a) x) (f (ar a x))"]
+  IsCommBinFnsL [label = "\N X k f m g\ncomm_bin_fns_l (x : A0) (y : A1) : X (m (f x) y) (g (k x y))"]
+  IsCommBinFnsR [label = "\N X k f m g\ncomm_bin_fns_r (x : A0) (y : A1) : X (m x (f y)) (g (k x y))"]
+  IsCommBinOp [label = "\N X k\ncomm_bin_op (x y : A) : X (k x y) (k y x)"]
+  IsCommElemsBinOp [label = "\N X k x y\ncomm_elems_bin_op : X (k x y) (k y x)"]
+  IsCommElemsForm [label = "\N X s a b\ncomm_elems_form (a b : B) : X (s a b) (s b a)"]
+  IsCommForm [label = "\N X s\ncomm_form (a b : B) : X (s a b) (s b a)"]
   IsCommL [label = "\N X k f\ncomm_l (x y : A) : X (k (f x) y) (f (k x y))"]
   IsCommR [label = "\N X k f\ncomm_r (x y : A) : X (k x (f y)) (f (k x y))"]
-  IsComm [label = "\N X k f"]
-  IsCommForm [label = "\N X s\ncomm_form (x y : B) : X (s x y) (s y x)"]
-  IsCommBinOp [label = "\N X k\ncomm_bin_op (x y : A) : X (k x y) (k y x)"]
+  IsCommUnOps [label = "\N X f g\ncomm_un_ops (x : A) : X (f (g x)) (g (f x))"]
   }
 
   subgraph cluster_pres {
@@ -260,6 +262,15 @@ digraph Is {
     IsInvForm -> IsInvFormR
     IsMon -> IsSemigrp
     IsMon -> IsUnlElem
+    IsSemiring -> IsAbsorbElem
+    IsSemiring -> IsCommBinOp
+    IsSemiring -> IsDistr
+    IsSemiring -> IsMon
+    IsSemiring -> IsMon
+    IsRing -> IsCommBinOp
+    IsRing -> IsDistr
+    IsRing -> IsGrp
+    IsRing -> IsMon
     IsRingHom -> IsBinPres
     IsRingHom -> IsBinPres
     IsRingHom -> IsNullPres
@@ -277,14 +288,6 @@ digraph Is {
 
   IsIsoLR -> IsIsoL
   IsIsoLR -> IsIsoR
-  IsRing -> IsCommBinOp
-  IsRing -> IsDistr
-  IsRing -> IsGrp
-  IsRing -> IsMon
-  IsSemiring -> IsAbsorbElem
-  IsSemiring -> IsCommBinOp
-  IsSemiring -> IsDistr
-  IsSemiring -> IsMon
 
   // Derivations
 
@@ -304,7 +307,7 @@ digraph Is {
     IsStrTotOrd -> IsAsym
     IsStrTotOrd -> IsIrrefl
     IsStrTotOrd -> IsTrans
-    IsSym -> IsComm [label = "impl"]
+    IsSym -> IsCommForm [label = "impl"]
     IsTotOrd -> IsAntisym
     IsTotOrd -> IsRefl
     IsTotOrd -> IsTrans
@@ -341,11 +344,13 @@ digraph Is {
     IsCommActLsR -> IsCommBinFnsR
     IsCommActRsL -> IsCommBinFnsL
     IsCommBinFnsL -> IsCommBinFnsR [label = "flip"]
+    IsCommBinOp -> IsCommElemsBinOp [label = "apply"]
+    IsCommForm -> IsCommElemsForm [label = "apply"]
     IsCommL -> IsCommBinFnsL
     IsCommL -> IsCommUnOps [label = "flip apply"]
     IsCommR -> IsCommBinFnsR
     IsCommR -> IsCommUnOps [label = "apply"]
-    IsCommUnOps -> IsCommBinOp [label = "compose"]
+    IsCommUnOps -> IsCommElemsBinOp [label = "compose"]
     IsCommUnOps -> IsUnPres
     IsCompatActL -> IsCompatActR [label = "flip"]
     IsCompatActL -> IsCompatBinFns
@@ -381,6 +386,9 @@ digraph Is {
     IsInvR -> IsInvBinFnR
     IsInvol -> IsInvolElem [label = "apply"]
     // IsProper -> IsDistrUnFns [label = "impl\nid"]
+    IsRing -> IsAbsorbElem
+    IsRing -> IsComm
+    IsRing -> IsSemiring
     IsUnlElemActL -> IsUnlElemActR [label = "flip"]
     IsUnlElemL -> IsUnlElemR [label = "flip"]
   }
@@ -395,9 +403,6 @@ digraph Is {
   IsMonoBinOp -> IsMonoBinOpR
   IsProp -> IsSet
   IsProp -> IsTrunc
-  IsRing -> IsAbsorbElem
-  IsRing -> IsComm
-  IsRing -> IsSemiring
   IsSet -> IsTrunc
   IsStrMono -> IsMono
   IsTrunc -> IsContr

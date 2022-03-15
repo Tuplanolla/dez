@@ -1,24 +1,22 @@
 (** * Ring Structure *)
 
-From Coq Require Import
-  Logic.Eqdep_dec.
 From DEZ.Has Require Export
   EquivalenceRelations ArithmeticOperations.
 From DEZ.Is Require Export
   Group Commutative Monoid Distributive
-  Absorbing Semiring.
+  Absorbing Semiring Preserving Proper.
 From DEZ.Supports Require Import
-  EquivalenceNotations AdditiveNotations ArithmeticNotations.
+  EquivalenceNotations ArithmeticNotations.
 
 (** ** Ring *)
 
 Class IsRing (A : Type) (X : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A)
   (y : A) (m : A -> A -> A) : Prop := {
-  add_is_grp :> IsGrp X x f k;
-  add_is_comm :> IsComm X k;
-  mul_is_mon :> IsMon X y m;
-  is_distr :> IsDistr X m k;
+  ring_add_is_grp :> IsGrp X x f k;
+  ring_add_is_comm_bin_op :> IsCommBinOp X k;
+  ring_mul_is_mon :> IsMon X y m;
+  ring_is_distr :> IsDistr X m k;
 }.
 
 (** TODO Clean up. *)
@@ -27,8 +25,7 @@ Section Context.
 
 Context (A : Type) (X : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A)
-  (y : A) (m : A -> A -> A)
-  `{!IsRing X x f k y m}.
+  (y : A) (m : A -> A -> A) `{!IsRing X x f k y m}.
 
 (** Declare the underlying equivalence relation as an equivalence relation and
     the underlying operations as operations. *)
@@ -48,19 +45,7 @@ Ltac note := progress (
   try change y with (one (A := A)) in *;
   try change m with (mul (A := A)) in *).
 
-(** TODO This has become a useless detour. *)
-
-Import ArithmeticOperations.Subclass.
-
-Ltac subclass := progress (
-  try change (bin_rel (A := A)) with (equiv_rel (A := A)) in *;
-  try change (null_op (A := A)) with (zero (A := A)) in *;
-  try change (un_op (A := A)) with (neg (A := A)) in *;
-  try change (bin_op (A := A)) with (add (A := A)) in *;
-  try change (un_op (A := A)) with (one (A := A)) in *;
-  try change (bin_op (A := A)) with (mul (A := A)) in *).
-
-#[local] Instance is_absorb_elem_l : IsAbsorbElemL X x m.
+#[local] Instance ring_is_absorb_elem_l : IsAbsorbElemL X x m.
 Proof.
   note. intros z.
   apply (cancel_r (0 * z) 0 (1 * z)).
@@ -69,7 +54,7 @@ Proof.
   setoid_rewrite (unl_elem_l z).
   reflexivity. Qed.
 
-#[local] Instance is_absorb_elem_r : IsAbsorbElemR X x m.
+#[local] Instance ring_is_absorb_elem_r : IsAbsorbElemR X x m.
 Proof.
   note. intros z.
   apply (cancel_r (z * 0) 0 (z * 1)).
@@ -78,23 +63,13 @@ Proof.
   setoid_rewrite (unl_elem_r z).
   reflexivity. Qed.
 
-#[export] Instance is_absorb_elem : IsAbsorbElem X x m.
+#[export] Instance ring_is_absorb_elem : IsAbsorbElem X x m.
 Proof. esplit; typeclasses eauto. Qed.
 
-#[export] Instance is_semiring : IsSemiring X x k y m.
+#[export] Instance ring_is_semiring : IsSemiring X x k y m.
 Proof. esplit; typeclasses eauto. Qed.
 
-#[local] Instance is_comm_l : IsCommL X f m.
-Proof.
-  note. intros z w.
-  apply (cancel_l (z * w) (z * (- w)) (- (z * w))).
-  setoid_rewrite <- (distr_l z w (- w)).
-  setoid_rewrite (inv_r w).
-  setoid_rewrite (absorb_elem_r z).
-  setoid_rewrite (inv_r (z * w)).
-  reflexivity. Qed.
-
-#[local] Instance is_comm_r : IsCommR X f m.
+#[local] Instance ring_is_comm_l : IsCommL X m f.
 Proof.
   note. intros z w.
   apply (cancel_l (z * w) ((- z) * w) (- (z * w))).
@@ -104,13 +79,23 @@ Proof.
   setoid_rewrite (inv_r (z * w)).
   reflexivity. Qed.
 
-#[export] Instance is_comm : IsCommLR X f m.
+#[local] Instance ring_is_comm_r : IsCommR X m f.
+Proof.
+  note. intros z w.
+  apply (cancel_l (z * w) (z * (- w)) (- (z * w))).
+  setoid_rewrite <- (distr_l z w (- w)).
+  setoid_rewrite (inv_r w).
+  setoid_rewrite (absorb_elem_r z).
+  setoid_rewrite (inv_r (z * w)).
+  reflexivity. Qed.
+
+#[export] Instance ring_is_comm : IsComm X m f.
 Proof. esplit; typeclasses eauto. Qed.
 
 (* X (k (f x) y) (k x (f y)) *)
 
 Lemma comm_l_r (z w : A) : (- z) * w == z * (- w).
-Proof with subclass.
+Proof.
   note.
   setoid_rewrite (comm_l z w).
   setoid_rewrite (comm_r z w).
@@ -119,10 +104,10 @@ Proof with subclass.
 (* X (k (f x) (f y)) (k x y) *)
 
 Lemma involutivity_thing (z w : A) : (- z) * (- w) == z * w.
-Proof with subclass.
+Proof.
   note.
-  setoid_rewrite (comm_l (- z) w).
-  setoid_rewrite (comm_r z w).
+  setoid_rewrite (comm_r (- z) w).
+  setoid_rewrite (comm_l z w).
   setoid_rewrite (invol (z * w)).
   reflexivity. Qed.
 
@@ -135,7 +120,7 @@ Proof with subclass.
 Lemma neg_mul_one_l_sgn_absorb (z : A) : (- 1) * z == - z.
 Proof.
   note.
-  setoid_rewrite (comm_r 1 z).
+  setoid_rewrite (comm_l 1 z).
   setoid_rewrite (unl_elem_l z).
   reflexivity. Qed.
 
@@ -143,7 +128,7 @@ Proof.
 
 Lemma neg_mul_one_r_sgn_absorb (z : A) : z * (- 1) == - z.
 Proof.
-  setoid_rewrite (comm_l z 1).
+  setoid_rewrite (comm_r z 1).
   setoid_rewrite (unl_elem_r z).
   reflexivity. Qed.
 

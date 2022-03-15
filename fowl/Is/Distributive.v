@@ -1,7 +1,7 @@
 (** * Distributivity *)
 
 From DEZ.Is Require Export
-  Proper Injective.
+  Proper Injective Reflexive.
 
 (** ** Unary Functions Distributing over Binary Functions *)
 
@@ -280,3 +280,15 @@ Class IsDistr (A : Type) (X : A -> A -> Prop) (k m : A -> A -> A) : Prop := {
   distr_is_distr_l :> IsDistrL X k m;
   distr_is_distr_r :> IsDistrR X k m;
 }.
+
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop) (k : A -> A -> A).
+
+(** Identity distributes over everything. *)
+
+#[export] Instance distr_un_op_id
+  `{!IsRefl X} : IsDistrUnOp X id k.
+Proof. intros x y. unfold id. reflexivity. Qed.
+
+End Context.

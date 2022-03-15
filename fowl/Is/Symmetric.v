@@ -17,14 +17,12 @@ Section Context.
 
 Context (A : Type) (X : A -> A -> Prop).
 
-(** Symmetry implies commutativity up to implication. *)
+(** Symmetry is a special case of commutativity up to implication. *)
 
-#[export] Instance sym_is_comm_impl `{!IsSym X} : IsComm impl X.
+#[export] Instance sym_is_comm_form_impl `{!IsSym X} : IsCommForm impl X.
 Proof. auto. Qed.
 
-(** Commutativity up to implication implies symmetry. *)
-
-#[local] Instance comm_impl_is_sym `{!IsComm impl X} : IsSym X.
+#[local] Instance comm_form_impl_is_sym `{!IsCommForm impl X} : IsSym X.
 Proof. auto. Qed.
 
 End Context.

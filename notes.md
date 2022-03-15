@@ -137,10 +137,24 @@ Compute @IsCommBinOpL ?[A] ?A ?[B] ?A ?B. (* BR unifies f g *)
 Compute @IsCommBinOpL ?[B] ?B ?B ?B ?[A]. (* BF does not unify *)
 ```
 
+Explain why this has become a useless detour.
+
+```
+Import ArithmeticOperations.Subclass. (* IsRing *)
+
+Ltac subclass := progress (
+  try change (bin_rel (A := A)) with (equiv_rel (A := A)) in *;
+  try change (null_op (A := A)) with (zero (A := A)) in *;
+  try change (un_op (A := A)) with (neg (A := A)) in *;
+  try change (bin_op (A := A)) with (add (A := A)) in *;
+  try change (un_op (A := A)) with (one (A := A)) in *;
+  try change (bin_op (A := A)) with (mul (A := A)) in *).
+```
+
 ## What Next
 
 Finish `Commutative.v` and go through the other framgents
-`Compatible.v Associative.v Distributive.v Antidistibutive.v Invertible.v Unital.v Absorbing.v Inflationary.v`
+`Compatible.v Associative.v Distributive.v Antidistributive.v Invertible.v Unital.v Absorbing.v Inflationary.v`
 to see if their specializations are sensible.
 
 ### Checklist

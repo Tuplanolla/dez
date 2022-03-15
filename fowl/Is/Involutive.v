@@ -1,7 +1,7 @@
 (** * Involutivity *)
 
-From DEZ Require Export
-  Init.
+From DEZ.Is Require Export
+  Reflexive.
 
 (** ** Involutive Element of a Unary Operation *)
 

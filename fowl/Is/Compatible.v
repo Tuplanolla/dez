@@ -22,7 +22,7 @@ Context (A B : Type) (X : B -> B -> Prop)
   (k : A -> A -> A) (al : A -> B -> B).
 
 (** Compatibility of a left action with a binary operation
-    is a special case of the compatibility of binary functions. *)
+    is a special case of their compatibility as binary functions. *)
 
 #[export] Instance compat_act_l_is_compat_bin_fns
   `{!IsCompatActL X k al} : IsCompatBinFns X k al al al.
@@ -46,7 +46,7 @@ Context (A B : Type) (X : B -> B -> Prop)
   (k : A -> A -> A) (ar : B -> A -> B).
 
 (** Compatibility of a right action with a binary operation
-    is a special case of the compatibility of binary functions. *)
+    is a special case of their compatibility as binary functions. *)
 
 #[export] Instance compat_act_r_is_compat_bin_fns
   `{!IsCompatActR X k ar} : IsCompatBinFns X ar k ar ar.
@@ -64,8 +64,7 @@ Context (A B : Type) (X : B -> B -> Prop)
   (k : A -> A -> A) (al : A -> B -> B).
 
 (** Compatibility of a left action with a binary operation
-    is a special case of the compatibility of its flipped version
-    with a flipped binary operation. *)
+    is a special case of the compatibility of their flipped versions. *)
 
 #[local] Instance compat_act_l_is_compat_act_r_flip
   `{!IsCompatActL X k al} : IsCompatActR (flip X) (flip k) (flip al).
@@ -89,7 +88,7 @@ Context (A B C : Type) (X : C -> C -> Prop)
   (al : A -> C -> C) (ar : C -> B -> C).
 
 (** Compatibility of actions is a special case
-    of the compatibility of binary functions. *)
+    of their compatibility as binary functions. *)
 
 #[export] Instance compat_acts_is_compat_bin_fns
   `{!IsCompatActs X al ar} : IsCompatBinFns X al ar al ar.

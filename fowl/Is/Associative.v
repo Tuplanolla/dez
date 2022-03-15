@@ -14,8 +14,8 @@ Section Context.
 
 Context (A : Type) (X : A -> A -> Prop) (k : A -> A -> A).
 
-(** Associativity is a special case
-    of the compatibility of binary functions. *)
+(** Associativity of a binary operation
+    is a special case of its compatibility with itself. *)
 
 #[export] Instance assoc_is_compat_bin_fns
   `{!IsAssoc X k} : IsCompatBinFns X k k k k.

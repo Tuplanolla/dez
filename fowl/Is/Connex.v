@@ -16,14 +16,12 @@ Section Context.
 
 Context (A : Type) (X : A -> A -> Prop).
 
-(** Connexity implies commutativity up to disjunction. *)
+(** Connexity is a special case of commutativity up to disjunction. *)
 
-#[export] Instance connex_is_comm_or `{!IsConnex X} : IsComm _\/_ X.
+#[export] Instance connex_is_comm_form_or `{!IsConnex X} : IsCommForm _\/_ X.
 Proof. auto. Qed.
 
-(** Commutativity up to disjunction implies connexity. *)
-
-#[local] Instance comm_or_is_connex `{!IsComm _\/_ X} : IsConnex X.
+#[local] Instance comm_form_or_is_connex `{!IsCommForm _\/_ X} : IsConnex X.
 Proof. auto. Qed.
 
 End Context.
