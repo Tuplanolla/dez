@@ -1,7 +1,7 @@
 (** * Idempotency *)
 
-From DEZ.Is Require Export
-  Extensional.
+From DEZ Require Export
+  Init.
 
 (** ** Idempotent Element of a Unary Operation *)
 
@@ -59,5 +59,13 @@ Context (A : Type) (X : A -> A -> Prop) (f : A -> A).
 #[export] Instance idem_un_op_is_idem_elem_bin_op_compose
   `{!IsIdemUnOp X f} : IsIdemElemBinOp (pointwise_relation _ X) f _o_.
 Proof. intros x. unfold compose. apply idem_un_op. Qed.
+
+#[local] Instance idem_elem_bin_op_compose_is_idem_un_op
+  `{!IsIdemElemBinOp (pointwise_relation _ X) f _o_} : IsIdemUnOp X f.
+Proof.
+  intros x.
+  change (f (f x)) with ((f o f) x).
+  pose proof idem_elem_bin_op x as a.
+  apply a. Qed.
 
 End Context.

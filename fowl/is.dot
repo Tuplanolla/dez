@@ -119,7 +119,7 @@ digraph Is {
 
   subgraph cluster_comm {
   label = "Commutative Fragment"
-  bgcolor = mistyrose
+  bgcolor = azure
   IsCommUnOps [label = "\N X f g\ncomm_un_ops (x : A) : X (f (g x)) (g (f x))"]
   IsCommBinFnsL [label = "\N X k f g m\ncomm_bin_fns_l (x : A0) (y : A1) : X (m (f x) y) (g (k x y))"]
   IsCommBinFnsR [label = "\N X k f g m\ncomm_bin_fns_r (x : A0) (y : A1) : X (m x (f y)) (g (k x y))"]
@@ -239,6 +239,8 @@ digraph Is {
     IsCancel -> IsCancelR
     IsCancelForm -> IsCancelFormL
     IsCancelForm -> IsCancelFormR
+    IsComm -> IsCommL
+    IsComm -> IsCommR
     IsDistr -> IsDistrL
     IsDistr -> IsDistrR
     IsGrp -> IsInv
@@ -291,6 +293,7 @@ digraph Is {
   edge [color = black]
 
   subgraph order_theory_derivations {
+    IsConnex -> IsComm [label = "or"]
     IsConnex -> IsStrConnex
     IsEquiv -> IsPartEquiv
     IsEquiv -> IsPreord
@@ -301,6 +304,7 @@ digraph Is {
     IsStrTotOrd -> IsAsym
     IsStrTotOrd -> IsIrrefl
     IsStrTotOrd -> IsTrans
+    IsSym -> IsComm [label = "impl"]
     IsTotOrd -> IsAntisym
     IsTotOrd -> IsRefl
     IsTotOrd -> IsTrans
@@ -334,6 +338,14 @@ digraph Is {
     IsCancelFormR -> IsCancelBinFnR
     IsCancelL -> IsCancelBinFnL
     IsCancelR -> IsCancelBinFnR
+    IsCommActLsR -> IsCommBinFnsR
+    IsCommActRsL -> IsCommBinFnsL
+    IsCommBinFnsL -> IsCommBinFnsR [label = "flip"]
+    IsCommL -> IsCommBinFnsL
+    IsCommL -> IsCommUnOps [label = "flip apply"]
+    IsCommR -> IsCommBinFnsR
+    IsCommR -> IsCommUnOps [label = "apply"]
+    IsCommUnOps -> IsCommBinOp [label = "compose"]
     IsCommUnOps -> IsUnPres
     IsCompatActL -> IsCompatActR [label = "flip"]
     IsCompatActL -> IsCompatBinFns
@@ -394,12 +406,7 @@ digraph Is {
 
   // Specializations
 
-  edge [style = dotted]
-
   edge [color = black]
-
-  IsConnex -> IsComm
-  IsSym -> IsComm
 
   edge [color = red]
 }
