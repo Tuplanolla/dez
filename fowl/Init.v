@@ -45,11 +45,6 @@ Definition OCaml_Version := "4.12.0"%string.
 
 (** ** Flags, Options and Tables *)
 
-(** We disable warnings about unsupported attributes,
-    because we use some custom attributes as refactoring hints. *)
-
-#[export] Set Warnings "-unsupported-attributes".
-
 (** We disable warnings about overriding notations,
     because we overload many standard library notations
     with operational typeclasses. *)
@@ -95,36 +90,36 @@ Definition OCaml_Version := "4.12.0"%string.
     try typeclasses eauto 10 with program;
     try program_solve_wf]. *)
 
-#[export] Obligation Tactic := try program_solve_wf.
+#[global] Obligation Tactic := try program_solve_wf.
 
 (** We do not use implicit generalization,
     because the consequences of accidental misuse
     are worse than the convenience it permits. *)
 
-#[export] Generalizable No Variables.
+#[global] Generalizable No Variables.
 
 (** We reset the interpretation scope stack,
     because it is very sensitive to changes.
     The initial scope stack can be inspected
     with [Print Scopes] and [Print Visibility]. *)
 
-#[export] Close Scope equations_scope.
-#[export] Close Scope list_scope.
-#[export] Close Scope Q_scope.
-#[export] Close Scope bool_scope.
-#[export] Close Scope nat_scope.
-#[export] Close Scope type_scope.
-#[export] Close Scope function_scope.
-#[export] Close Scope core_scope.
+#[global] Close Scope equations_scope.
+#[global] Close Scope list_scope.
+#[global] Close Scope Q_scope.
+#[global] Close Scope bool_scope.
+#[global] Close Scope nat_scope.
+#[global] Close Scope type_scope.
+#[global] Close Scope function_scope.
+#[global] Close Scope core_scope.
 
-#[export] Open Scope equations_scope.
-#[export] Open Scope signature_scope.
-#[export] Open Scope list_scope.
-#[export] Open Scope bool_scope.
-#[export] Open Scope nat_scope.
-#[export] Open Scope type_scope.
-#[export] Open Scope function_scope.
-#[export] Open Scope core_scope.
+#[global] Open Scope equations_scope.
+#[global] Open Scope signature_scope.
+#[global] Open Scope list_scope.
+#[global] Open Scope bool_scope.
+#[global] Open Scope nat_scope.
+#[global] Open Scope type_scope.
+#[global] Open Scope function_scope.
+#[global] Open Scope core_scope.
 
 (** We use anonymous goals and obligations to define local lemmas,
     which is why we do not want to see them in search results. *)
@@ -193,7 +188,7 @@ Reserved Notation "x '<-->' y" (no associativity, at level 45).
 Reserved Notation "x '==' y" (no associativity, at level 70).
 Reserved Notation "x '===' y" (no associativity, at level 70).
 
-(** ** Numeral Definitions *)
+(** ** Number Definitions *)
 
 (** We export the [rew] notations from [Logic]
     to use them like transport from homotopy type theory. *)
@@ -201,72 +196,40 @@ Reserved Notation "x '===' y" (no associativity, at level 70).
 Export EqNotations.
 Import ListNotations.
 
-(** Numeral keywords are not a subset of numeral notations,
-    which is why we must repeat them here. *)
+(** Number notations require their own little song and dance. *)
 
-Notation "'0'" := False : type_scope.
-Notation "'1'" := True : type_scope.
+Module Reified.
 
-Notation "'1'" := xH : positive_scope.
+Variant PropR : Type :=
+  | FalseR
+  | TrueR.
 
-Notation "'0'" := O : nat_scope.
-Notation "'0'" := O : hex_nat_scope.
-Notation "'1'" := (S O) : nat_scope.
-Notation "'1'" := (S O) : hex_nat_scope.
+Definition prop_of_Z (n : Z) : option PropR :=
+  match n with
+  | Z0 => Some FalseR
+  | Zpos xH => Some TrueR
+  | _ => None
+  end.
 
-Notation "'0'" := N0 : N_scope.
-Notation "'1'" := (Npos xH) : N_scope.
+Definition Z_of_prop (A : PropR) : option Z :=
+  match A with
+  | FalseR => Some Z0
+  | TrueR => Some (Zpos xH)
+  end.
 
-Notation "'0'" := Z0 : Z_scope.
-Notation "'1'" := (Zpos xH) : Z_scope.
+Module Notations.
 
-(** We extend the following standard library modules. *)
+#[local] Notation Prop' := Prop (only parsing).
 
-Module Decimal.
+Number Notation Prop' prop_of_Z Z_of_prop (via PropR mapping [
+  True => TrueR,
+  False => FalseR]) : type_scope.
 
-Export Coq.Init.Decimal.
+End Notations.
 
-Notation "'0'" := (D0 Nil) : dec_uint_scope.
-Notation "'1'" := (D1 Nil) : dec_uint_scope.
+End Reified.
 
-Notation "'0'" := (Pos (D0 Nil)) : dec_int_scope.
-Notation "'1'" := (Pos (D1 Nil)) : dec_int_scope.
-
-End Decimal.
-
-Module Hexadecimal.
-
-Export Coq.Init.Hexadecimal.
-
-Notation "'0'" := (D0 Nil) : hex_uint_scope.
-Notation "'1'" := (D1 Nil) : hex_uint_scope.
-
-Notation "'0'" := (Pos (D0 Nil)) : hex_int_scope.
-Notation "'1'" := (Pos (D1 Nil)) : hex_int_scope.
-
-End Hexadecimal.
-
-(** We would rather not touch primitive integers,
-    because they are strange and fragile. *)
-
-Notation "'0'" := Int31.On : int31_scope.
-Notation "'1'" := Int31.In : int31_scope.
-
-(* Notation "'0'" := _ : int63_scope.
-Notation "'1'" := _ : int63_scope. *)
-
-Notation "'0'" := (Qmake Z0 xH) : hex_Q_scope.
-Notation "'0'" := (Qmake Z0 xH) : Q_scope.
-Notation "'1'" := (Qmake (Zpos xH) xH) : hex_Q_scope.
-Notation "'1'" := (Qmake (Zpos xH) xH) : Q_scope.
-
-Notation "'0'" := (Qcmake (Qmake Z0 xH) eq_refl) : Qc_scope.
-Notation "'1'" := (Qcmake (Qmake (Zpos xH) xH) eq_refl) : Qc_scope.
-
-Notation "'0'" := R0 : hex_R_scope.
-Notation "'0'" := R0 : R_scope.
-Notation "'1'" := R1 : hex_R_scope.
-Notation "'1'" := R1 : R_scope.
+Export Reified.Notations.
 
 (** ** Types and Propositional Connectives *)
 

@@ -10,6 +10,8 @@ Class IsDistrUnFns (A0 A1 B0 B1 B2 C : Type) (X : C -> C -> Prop)
   (h : B2 -> C) (m : B0 -> B1 -> C) : Prop :=
   distr_un_fns (x : A0) (y : A1) : X (h (k x y)) (m (f x) (g y)).
 
+(* TODO I was going through documentation to make it understandable. *)
+
 Section Context.
 
 Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop) (f : A -> B).
@@ -231,7 +233,8 @@ Class IsDistrL (A : Type) (X : A -> A -> Prop) (k m : A -> A -> A) : Prop :=
 
 Section Context.
 
-Context (A : Type) (X : A -> A -> Prop) (k m : A -> A -> A).
+Context (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A) (m : A -> A -> A).
 
 (** Left-distributivity of a binary operation over a binary operation
     is a special case of the left-distributivity
@@ -256,7 +259,8 @@ Class IsDistrR (A : Type) (X : A -> A -> Prop) (k m : A -> A -> A) : Prop :=
 
 Section Context.
 
-Context (A : Type) (X : A -> A -> Prop) (k m : A -> A -> A).
+Context (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A) (m : A -> A -> A).
 
 (** Right-distributivity of a binary operation over a binary operation
     is a special case of the right-distributivity

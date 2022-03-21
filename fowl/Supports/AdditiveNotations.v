@@ -1,5 +1,7 @@
 (** * Additive Notations for Algebraic Operations *)
 
+From Coq Require Import
+  ZArith.ZArith.
 From DEZ.Has Require Import
   Operations Actions.
 
@@ -42,8 +44,31 @@ Delimit Scope operation_scope with op.
 
 #[global] Open Scope operation_scope.
 
-Notation "'0'" := null_op : operation_scope.
 Notation "'-_'" := un_op : operation_scope.
 Notation "'-' x" := (un_op x) : operation_scope.
 Notation "'_+_'" := bin_op : operation_scope.
 Notation "x '+' y" := (bin_op x y) : operation_scope.
+
+Module Reified.
+
+Equations unit_of_Z (n : Z) : option unit :=
+  unit_of_Z Z0 := Some tt;
+  unit_of_Z _ := None.
+
+Equations Z_of_unit (x : unit) : option Z :=
+  Z_of_unit _ := Some Z0.
+
+Module Notations.
+
+#[local] Set Warnings "-numbers".
+
+Context (A : Type) {x : HasNullOp A}.
+
+Number Notation A unit_of_Z Z_of_unit (via unit mapping [
+  [null_op] => tt]) : operation_scope.
+
+End Notations.
+
+End Reified.
+
+Export Reified.Notations.
