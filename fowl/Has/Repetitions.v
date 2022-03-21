@@ -52,12 +52,26 @@ End Context.
 Section Context.
 
 Context (A : Type)
+  {X : HasEquivRel A} {x : HasZero A} {k : HasAdd A}
+  {y : HasOne A} {m : HasMul A} (* `{!IsSemiring X x k y m} *).
+
+#[local] Instance N_has_null_op : HasNullOp A := x.
+#[local] Instance N_has_bin_op : HasBinOp A := k.
+
+Equations of_N (n : N) : A :=
+  of_N n := N_op n y.
+
+End Context.
+
+Section Context.
+
+Context (A : Type)
   {X : HasEquivRel A} {x : HasZero A} {f : HasNeg A} {k : HasAdd A}
   {y : HasOne A} {m : HasMul A} (* `{!IsRing X x f k y m} *).
 
-#[local] Instance has_null_op : HasNullOp A := x.
-#[local] Instance has_un_op : HasUnOp A := f.
-#[local] Instance has_bin_op : HasBinOp A := k.
+#[local] Instance Z_has_null_op : HasNullOp A := x.
+#[local] Instance Z_has_un_op : HasUnOp A := f.
+#[local] Instance Z_has_bin_op : HasBinOp A := k.
 
 Equations of_Z (n : Z) : A :=
   of_Z n := Z_op n y.

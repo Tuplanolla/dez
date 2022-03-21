@@ -10,7 +10,7 @@ Class IsCompatBinFns (A0 A1 A2 B0 B1 C : Type) (X : C -> C -> Prop)
   (n : A0 -> B1 -> C) (p : B0 -> A2 -> C) : Prop :=
   compat_bin_fns (x : A0) (y : A1) (z : A2) : X (n x (m y z)) (p (k x y) z).
 
-(** ** Compatible Left Action with a Binary Operation *)
+(** ** Left Action Compatible with a Binary Operation *)
 
 Class IsCompatActL (A B : Type) (X : B -> B -> Prop)
   (k : A -> A -> A) (al : A -> B -> B) : Prop :=
@@ -34,7 +34,7 @@ Proof. auto. Qed.
 
 End Context.
 
-(** ** Compatible Right Action with a Binary Operation *)
+(** ** Right Action Compatible with a Binary Operation *)
 
 Class IsCompatActR (A B : Type) (X : B -> B -> Prop)
   (k : A -> A -> A) (ar : B -> A -> B) : Prop :=

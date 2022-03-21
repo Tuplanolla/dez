@@ -17,8 +17,7 @@ Context (A0 A1 B0 B1 B2 C : Type) (X : C -> C -> Prop)
   (h : B2 -> C) (m : B0 -> B1 -> C).
 
 (** Antidistributivity of unary functions over binary functions
-    is a special case of the distributivity
-    of unary functions over flipped binary functions. *)
+    is a special case of the distributivity of their flipped versions. *)
 
 #[export] Instance antidistr_un_fns_is_distr_un_fns_flip
   `{!IsAntidistrUnFns X f g k h m} : IsDistrUnFns X g f k h (flip m).
@@ -42,8 +41,7 @@ Context (A B : Type) (X : B -> B -> Prop)
   (f : A -> B) (k : A -> A -> A) (m : B -> B -> B).
 
 (** Antidistributivity of a unary function over a binary operation
-    is a special case of the antidistributivity
-    of unary functions over binary functions. *)
+    is a special case of their antidistributivity as functions. *)
 
 #[export] Instance antidistr_un_fn_is_antidistr_un_fns
   `{!IsAntidistrUnFn X f k m} : IsAntidistrUnFns X f f k f m.
@@ -69,8 +67,7 @@ Context (A : Type) (X : A -> A -> Prop)
   (f : A -> A) (k : A -> A -> A).
 
 (** Antidistributivity of a unary operation over a binary operation
-    is a special case of the antidistributivity
-    of unary functions over binary functions. *)
+    is a special case of their antidistributivity as functions. *)
 
 #[export] Instance antidistr_un_op_is_antidistr_un_fns
   `{!IsAntidistrUnOp X f k} : IsAntidistrUnFns X f f k f k.

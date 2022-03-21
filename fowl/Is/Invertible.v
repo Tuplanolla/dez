@@ -45,7 +45,7 @@ Context (A B : Type) (X : B -> B -> Prop)
   (x : B) (f : A -> A) (s : A -> A -> B).
 
 (** Left-invertibility of a form is a special case
-    of the left-invertibility of a binary function. *)
+    of its left-invertibility as a binary function. *)
 
 #[export] Instance inv_form_l_is_inv_bin_fn_l
   `{!IsInvFormL X x f s} : IsInvBinFnL X x f s.
@@ -69,7 +69,7 @@ Context (A B : Type) (X : B -> B -> Prop)
   (x : B) (f : A -> A) (s : A -> A -> B).
 
 (** Right-invertibility of a form is a special case
-    of the right-invertibility of a binary function. *)
+    of its right-invertibility as a binary function. *)
 
 #[export] Instance inv_form_r_is_inv_bin_fn_r
   `{!IsInvFormR X x f s} : IsInvBinFnR X x f s.
@@ -103,7 +103,7 @@ Context (A : Type) (X : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A).
 
 (** Left-invertibility of a binary operation is a special case
-    of the left-invertibility of a binary function. *)
+    of its left-invertibility as a binary function. *)
 
 #[export] Instance inv_l_is_inv_bin_fn_l
   `{!IsInvL X x f k} : IsInvBinFnL X x f k.
@@ -129,7 +129,7 @@ Context (A : Type) (X : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A).
 
 (** Right-invertibility of a binary operation is a special case
-    of the right-invertibility of a binary function. *)
+    of its right-invertibility as a binary function. *)
 
 #[export] Instance inv_r_is_inv_bin_fn_r
   `{!IsInvR X x f k} : IsInvBinFnR X x f k.

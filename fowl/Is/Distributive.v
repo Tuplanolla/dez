@@ -10,11 +10,10 @@ Class IsDistrUnFns (A0 A1 B0 B1 B2 C : Type) (X : C -> C -> Prop)
   (h : B2 -> C) (m : B0 -> B1 -> C) : Prop :=
   distr_un_fns (x : A0) (y : A1) : X (h (k x y)) (m (f x) (g y)).
 
-(* TODO I was going through documentation to make it understandable. *)
-
 Section Context.
 
-Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop) (f : A -> B).
+Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (f : A -> B).
 
 (** Properness is a special case of distributivity. *)
 
@@ -50,8 +49,7 @@ Context (A B : Type) (X : B -> B -> Prop)
   (f : A -> B) (k : A -> A -> A) (m : B -> B -> B).
 
 (** Distributivity of a unary function over a binary operation
-    is a special case of the distributivity
-    of unary functions over binary functions. *)
+    is a special case of their distributivity as functions. *)
 
 #[export] Instance distr_un_fn_is_distr_un_fns
   `{!IsDistrUnFn X f k m} : IsDistrUnFns X f f k f m.
@@ -77,8 +75,7 @@ Context (A : Type) (X : A -> A -> Prop)
   (f : A -> A) (k : A -> A -> A).
 
 (** Distributivity of a unary operation over a binary operation
-    is a special case of the distributivity
-    of unary functions over binary functions. *)
+    is a special case of their distributivity as functions. *)
 
 #[export] Instance distr_un_op_is_distr_un_fns
   `{!IsDistrUnOp X f k} : IsDistrUnFns X f f k f k.
@@ -104,8 +101,9 @@ Context (A0 A1 A2 B0 B1 B2 C : Type) (X : C -> C -> Prop)
   (k : A0 -> A1 -> B0) (m : A0 -> A2 -> B1) (n : A1 -> A2 -> B2)
   (p : A0 -> B2 -> C) (q : B0 -> B1 -> C).
 
-(** Distributivity of partially-applied binary functions over binary functions
-    is a special case of their left-distributivity. *)
+(** Left-distributivity of binary functions over binary functions
+    is a special case of the distributivity
+    of their partially-applied versions. *)
 
 #[export] Instance distr_bin_fns_l_is_distr_un_fns
   `{!IsDistrBinFnsL X k m n p q} (x : A0) :
@@ -133,8 +131,9 @@ Context (A0 A1 A2 B0 B1 B2 C : Type) (X : C -> C -> Prop)
   (k : A0 -> A2 -> B0) (m : A1 -> A2 -> B1) (n : A0 -> A1 -> B2)
   (p : B2 -> A2 -> C) (q : B0 -> B1 -> C).
 
-(** Distributivity of partially-applied binary functions over binary functions
-    is a special case of their right-distributivity. *)
+(** Right-distributivity of binary functions over binary functions
+    is a special case of the distributivity
+    of their flipped partially-applied versions. *)
 
 #[export] Instance distr_bin_fns_r_is_distr_un_fns
   `{!IsDistrBinFnsR X k m n p q} (z : A2) :
@@ -159,8 +158,8 @@ Context (A0 A1 A2 B0 B1 B2 C : Type) (X : C -> C -> Prop)
   (k : A0 -> A1 -> B0) (m : A0 -> A2 -> B1) (n : A1 -> A2 -> B2)
   (p : A0 -> B2 -> C) (q : B0 -> B1 -> C).
 
-(** Left-distributivity of binary functions is a special case
-    of the right-distributivity of their flipped versions. *)
+(** Left-distributivity of binary functions over binary functions
+    is a special case of the right-distributivity of their flipped versions. *)
 
 #[local] Instance distr_bin_fns_l_is_distr_bin_fns_r_flip
   `{!IsDistrBinFnsL X k m n p q} :
@@ -186,8 +185,7 @@ Context (A B : Type) (X : B -> B -> Prop)
   (al : A -> B -> B) (k : B -> B -> B).
 
 (** Distributivity of a left action over a binary operation
-    is a special case of the left-distributivity
-    of binary functions over binary functions. *)
+    is a special case of their left-distributivity as binary functions. *)
 
 #[export] Instance distr_act_l_is_distr_bin_fns_l
   `{!IsDistrActL X al k} : IsDistrBinFnsL X al al k al k.
@@ -211,8 +209,7 @@ Context (A B : Type) (X : B -> B -> Prop)
   (ar : B -> A -> B) (k : B -> B -> B).
 
 (** Distributivity of a right action over a binary operation
-    is a special case of the right-distributivity
-    of binary functions over binary functions. *)
+    is a special case of their right-distributivity as binary functions. *)
 
 #[export] Instance distr_act_r_is_distr_bin_fns_r
   `{!IsDistrActR X ar k} : IsDistrBinFnsR X ar ar k ar k.
@@ -237,8 +234,7 @@ Context (A : Type) (X : A -> A -> Prop)
   (k : A -> A -> A) (m : A -> A -> A).
 
 (** Left-distributivity of a binary operation over a binary operation
-    is a special case of the left-distributivity
-    of binary functions over binary functions. *)
+    is a special case of their left-distributivity as binary functions. *)
 
 #[export] Instance distr_l_is_distr_bin_fns_l
   `{!IsDistrL X k m} : IsDistrBinFnsL X k k m k m.
@@ -263,8 +259,7 @@ Context (A : Type) (X : A -> A -> Prop)
   (k : A -> A -> A) (m : A -> A -> A).
 
 (** Right-distributivity of a binary operation over a binary operation
-    is a special case of the right-distributivity
-    of binary functions over binary functions. *)
+    is a special case of their right-distributivity as binary functions. *)
 
 #[export] Instance distr_r_is_distr_bin_fns_r
   `{!IsDistrR X k m} : IsDistrBinFnsR X k k m k m.

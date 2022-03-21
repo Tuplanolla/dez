@@ -1,9 +1,13 @@
-(** * Additive and Multiplicative Notations for Algebraic Operations *)
+(** * Additive and Multiplicative Notations for Arithmetic Operations *)
 
 From Coq Require Import
   ZArith.ZArith.
 From DEZ.Has Require Import
   ArithmeticOperations ArithmeticActions Repetitions.
+From DEZ.Is Require Import
+  Involutive.
+From DEZ.Justifies Require Import
+  IntegerPowerTheorems.
 
 Reserved Notation "x '*<' y" (left associativity, at level 40).
 Reserved Notation "x '>*' y" (left associativity, at level 40).
@@ -28,34 +32,41 @@ Notation "x '>*' a" := (s_mul_r x a) : arithmetic_scope.
 
 (** ...and now for the good parts! *)
 
-(** This has only 0 and 1. *)
+Module Unsigned.
 
-(* Module Reified.
+Module Reified.
 
-Equations bool_of_Z (n : Z) : option bool :=
-  bool_of_Z Z0 := Some false;
-  bool_of_Z (Zpos xH) := Some true;
-  bool_of_Z _ := None.
+Record BoxN : Type := boxN {unboxN : N}.
 
-Equations Z_of_bool (x : bool) : option Z :=
-  Z_of_bool true := Some (Zpos xH);
-  Z_of_bool false := Some Z0.
+Equations BoxN_of_Z (n : Z) : option BoxN :=
+  BoxN_of_Z Z0 := Some (boxN N0);
+  BoxN_of_Z (Zpos p) := Some (boxN (Npos p));
+  BoxN_of_Z _ := None.
+
+Equations Z_of_BoxN (x : BoxN) : option Z :=
+  Z_of_BoxN (boxN N0) := Some Z0;
+  Z_of_BoxN (boxN (Npos p)) := Some (Zpos p).
 
 Module Notations.
 
 #[local] Set Warnings "-numbers".
 
-Context (A : Type) {x : HasNullOp A}.
+Context (A : Type)
+  {X : HasEquivRel A} {x : HasZero A} {k : HasAdd A}
+  {y : HasOne A} {m : HasMul A} (* `{!IsRing X x f k y m} *).
 
-Number Notation A bool_of_Z Z_of_bool (via bool mapping [
-  [zero] => false,
-  [one] => true]) : arithmetic_scope.
+Number Notation A BoxN_of_Z Z_of_BoxN (via BoxN mapping [
+  [of_N] => boxN]) : arithmetic_scope.
 
 End Notations.
 
 End Reified.
 
-Export Reified.Notations. *)
+Export Reified.Notations.
+
+End Unsigned.
+
+Module Signed.
 
 Module Reified.
 
@@ -77,3 +88,61 @@ End Notations.
 End Reified.
 
 Export Reified.Notations.
+
+End Signed.
+
+Export Signed.
+
+Ltac unsign :=
+  match goal with
+  | |- context c [of_Z (Zneg ?p)] =>
+    let a := context c [of_Z (Zneg p)] in
+    let b := context c [neg (of_Z (Zpos p))] in
+    change a with b
+  | h : context c [of_Z (Zneg ?p)] |- _ =>
+    let a := context c [of_Z (Zneg p)] in
+    let b := context c [neg (of_Z (Zpos p))] in
+    change a with b in h
+  end.
+
+Ltac sign :=
+  match goal with
+  | |- context c [neg (of_Z Z0)] =>
+    let a := context c [neg (of_Z Z0)] in
+    let b := context c [of_Z Z0] in
+    replace (neg (of_Z Z0)) with (of_Z Z0)
+  | |- context c [neg (of_Z (Zpos ?p))] =>
+    let a := context c [neg (of_Z (Zpos p))] in
+    let b := context c [of_Z (Zneg p)] in
+    change a with b
+  | |- context c [neg (of_Z (Zneg ?p))] =>
+    let a := context c [neg (of_Z (Zneg p))] in
+    let b := context c [of_Z (Zpos p)] in
+    replace (neg (of_Z (Zneg p))) with (of_Z (Zpos p))
+  | h : context c [neg (of_Z Z0)] |- _ =>
+    let a := context c [neg (of_Z Z0)] in
+    let b := context c [of_Z Z0] in
+    replace (neg (of_Z Z0)) with (of_Z Z0) in h
+  | h : context c [neg (of_Z (Zpos ?p))] |- _ =>
+    let a := context c [neg (of_Z (Zpos p))] in
+    let b := context c [of_Z (Zneg p)] in
+    change a with b in h
+  | h : context c [neg (of_Z (Zneg ?p))] |- _ =>
+    let a := context c [neg (of_Z (Zneg p))] in
+    let b := context c [of_Z (Zpos p)] in
+    replace (neg (of_Z (Zneg p))) with (of_Z (Zpos p)) in h
+  end.
+
+#[local] Instance girp : IsGrp Z.eq Z.zero Z.opp Z.add.
+Proof. Admitted.
+
+Lemma ok `{!IsInvol _=_ -_}
+  (a : - -0%arith = - (-0)%arith)
+  (b : - -5%arith = - (-5)%arith) :
+  - -5%arith = - (-5)%arith.
+Proof.
+  unsign. unsign. Fail unsign.
+  sign. sign. sign. sign. sign. sign. sign. sign. Fail sign.
+  2:{ rewrite <- (comm_act_ls_r (X := _=_) (f := neg) (al := Z_op) (bl := Z_op) (IsCommActLsR := z_op_un_op_is_two_l_bin_comm)). unsign. reflexivity. }
+  change (- (-5)) with (- - (5)).
+  unsign.

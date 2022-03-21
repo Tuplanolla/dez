@@ -8,6 +8,8 @@ From DEZ.Is Require Export
 From DEZ.Supports Require Import
   EquivalenceNotations ArithmeticNotations.
 
+Import Signed.
+
 (** ** Noncommutative Ring with an Identity Element *)
 
 Class IsRing (A : Type) (X : A -> A -> Prop)
@@ -91,9 +93,7 @@ Proof with note.
 #[export] Instance ring_is_comm : IsComm X m f.
 Proof. esplit; typeclasses eauto. Qed.
 
-#[local] Notation "'-' '1'" := (- (1)) (format "'-'  '1'").
-
-Lemma ring_comm_invol (z w : A) : (z * w) == - z * - w.
+Lemma ring_comm_invol (z w : A) : - z * - w == z * w.
 Proof with note.
   rewrite (comm_r (- z) w).
   rewrite (comm_l z w).
@@ -102,12 +102,14 @@ Proof with note.
 
 Lemma ring_comm_unl_elem_l (z : A) : (- 1) * z == - z.
 Proof with note.
+  change (- 1) with (- (1)).
   rewrite (comm_l 1 z).
   rewrite (unl_elem_l z).
   reflexivity. Qed.
 
 Lemma ring_comm_unl_elem_r (z : A) : z * (- 1) == - z.
 Proof.
+  change (- 1) with (- (1)).
   rewrite (comm_r z 1).
   rewrite (unl_elem_r z).
   reflexivity. Qed.

@@ -1,4 +1,4 @@
-(* * Commutativity *)
+(** * Commutativity *)
 
 From DEZ Require Export
   Init.
@@ -11,7 +11,8 @@ Class IsCommElemsForm (A B : Type) (X : A -> A -> Prop)
 
 (** ** Commutative Form *)
 
-Class IsCommForm (A B : Type) (X : A -> A -> Prop) (s : B -> B -> A) : Prop :=
+Class IsCommForm (A B : Type) (X : A -> A -> Prop)
+  (s : B -> B -> A) : Prop :=
   comm_form (a b : B) : X (s a b) (s b a).
 
 Section Context.
@@ -41,12 +42,14 @@ Class IsCommElemsBinOp (A : Type) (X : A -> A -> Prop)
 
 (** This has the same shape as [Z.mul_comm]. *)
 
-Class IsCommBinOp (A : Type) (X : A -> A -> Prop) (k : A -> A -> A) : Prop :=
+Class IsCommBinOp (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A) : Prop :=
   comm_bin_op (x y : A) : X (k x y) (k y x).
 
 Section Context.
 
-Context (A : Type) (X : A -> A -> Prop) (k : A -> A -> A).
+Context (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A).
 
 (** Commutative binary operations
     are binary operations with commutative elements. *)
@@ -63,12 +66,14 @@ End Context.
 
 (** ** Commutative Unary Operations *)
 
-Class IsCommUnOps (A : Type) (X : A -> A -> Prop) (f g : A -> A) : Prop :=
+Class IsCommUnOps (A : Type) (X : A -> A -> Prop)
+  (f g : A -> A) : Prop :=
   comm_un_ops (x : A) : X (f (g x)) (g (f x)).
 
 Section Context.
 
-Context (A : Type) (X : A -> A -> Prop) (f g : A -> A).
+Context (A : Type) (X : A -> A -> Prop)
+  (f g : A -> A).
 
 (** Commutative unary operations are commutative elements
     of the endofunction monoid. *)
@@ -88,14 +93,14 @@ Proof.
 
 End Context.
 
-(** ** Left-Commutative Binary Functions over Unary Functions *)
+(** ** Binary Functions Left-Commuting over Unary Functions *)
 
 Class IsCommBinFnsL (A0 A1 B0 B1 C : Type) (X : C -> C -> Prop)
   (k : A0 -> A1 -> B1) (f : A0 -> B0)
   (m : B0 -> A1 -> C) (g : B1 -> C) : Prop :=
   comm_bin_fns_l (x : A0) (y : A1) : X (m (f x) y) (g (k x y)).
 
-(** ** Right-Commutative Binary Functions over Unary Functions *)
+(** ** Binary Functions Right-Commuting over Unary Functions *)
 
 Class IsCommBinFnsR (A0 A1 B0 B1 C : Type) (X : C -> C -> Prop)
   (k : A0 -> A1 -> B0) (f : A1 -> B1)
@@ -105,8 +110,7 @@ Class IsCommBinFnsR (A0 A1 B0 B1 C : Type) (X : C -> C -> Prop)
 Section Context.
 
 Context (A0 A1 B0 B1 C : Type) (X : C -> C -> Prop)
-  (k : A0 -> A1 -> B1) (f : A0 -> B0)
-  (m : B0 -> A1 -> C) (g : B1 -> C).
+  (k : A0 -> A1 -> B1) (f : A0 -> B0) (m : B0 -> A1 -> C) (g : B1 -> C).
 
 (** Left-commutativity of binary functions over unary functions
     is a special case of the right-commutativity of their flipped versions. *)
@@ -121,7 +125,18 @@ Proof. intros x y. unfold flip in *. eauto. Qed.
 
 End Context.
 
-(** ** Left-Commutative Right Actions over a Unary Function *)
+(** TODO These specializations are dubious;
+    what we really need is the following! *)
+
+Class IsCommFollowingRL (A B : Type) (X : B -> B -> Prop)
+  (f : B -> B) (ar : B -> A -> B) : Prop :=
+  comm_following_l (a : B) (x : A) : X (ar (f a) x) (f (ar a x)).
+
+Class IsCommFollowingLR (A B : Type) (X : B -> B -> Prop)
+  (f : B -> B) (al : A -> B -> B) : Prop :=
+  comm_following_r (a : B) (x : A) : X (al x (f a)) (f (al x a)).
+
+(** ** Right Actions Left-Commuting over a Unary Function *)
 
 Class IsCommActRsL (A B C : Type) (X : C -> C -> Prop)
   (ar : B -> A -> B) (f : B -> C) (br : C -> A -> C) : Prop :=
@@ -146,7 +161,7 @@ Proof. auto. Qed.
 
 End Context.
 
-(** ** Right-Commutative Left Actions over a Unary Function *)
+(** ** Left Actions Right-Commuting over a Unary Function *)
 
 Class IsCommActLsR (A B C : Type) (X : C -> C -> Prop)
   (al : A -> B -> B) (f : B -> C) (bl : A -> C -> C) : Prop :=
@@ -171,7 +186,7 @@ Proof. auto. Qed.
 
 End Context.
 
-(** ** Left-Commutative Binary Operation over a Unary Operation *)
+(** ** Binary Operation Left-Commuting over a Unary Operation *)
 
 (** This has the same shape as [Z.mul_opp_l]. *)
 
@@ -214,7 +229,7 @@ Proof.
 
 End Context.
 
-(** ** Right-Commutative Binary Operation over a Unary Operation *)
+(** ** Binary Operation Right-Commuting over a Unary Operation *)
 
 (** This has the same shape as [Z.mul_opp_r]. *)
 
