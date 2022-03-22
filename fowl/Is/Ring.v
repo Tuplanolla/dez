@@ -1,20 +1,108 @@
 (** * Ring Structure *)
 
 From DEZ.Has Require Export
-  EquivalenceRelations ArithmeticOperations.
+  EquivalenceRelations ArithmeticOperations Repetitions.
 From DEZ.Is Require Export
   Group Commutative Monoid Distributive
   Absorbing Semiring Preserving Proper.
 From DEZ.Supports Require Import
   EquivalenceNotations ArithmeticNotations.
 
-Import Signed.
+(** ** Noncommutative Ring without an Identity Element *)
+
+Class IsRng (A : Type) (X : A -> A -> Prop)
+  (x : A) (f : A -> A) (k : A -> A -> A) (m : A -> A -> A) : Prop := {
+  rng_add_is_grp :> IsGrp X x f k;
+  rng_add_is_comm_bin_op :> IsCommBinOp X k;
+  rng_mul_is_semigrp :> IsSemigrp X m;
+  rng_is_distr :> IsDistr X m k;
+}.
+
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop)
+  (x : A) (f : A -> A) (k : A -> A -> A)
+  (m : A -> A -> A) `{!IsRng X x f k m}.
+
+#[local] Instance rng_has_equiv_rel : HasEquivRel A := X.
+#[local] Instance rng_has_zero : HasZero A := x.
+#[local] Instance rng_has_neg : HasNeg A := f.
+#[local] Instance rng_has_add : HasAdd A := k.
+#[local] Instance rng_has_mul : HasMul A := m.
+
+(** TODO Investigate this and how you can [change x with 0] for a full ring. *)
+
+Import Designed.
+
+#[local] Notation "'0'" := zero.
+
+Ltac note := progress (
+  try change X with (equiv_rel (A := A)) in *;
+  try change x with (zero (A := A)) in *;
+  try change f with (neg (A := A)) in *;
+  try change k with (add (A := A)) in *;
+  try change m with (mul (A := A)) in *).
+
+#[local] Instance rng_is_absorb_elem_l : IsAbsorbElemL X x m.
+Proof with note.
+  intros z...
+  apply (cancel_r (0 * z) 0 (0 * z)).
+  rewrite <- (distr_r 0 0 z).
+  rewrite (unl_elem_l 0).
+  rewrite (unl_elem_l (0 * z)).
+  reflexivity. Qed.
+
+#[local] Instance rng_is_absorb_elem_r : IsAbsorbElemR X x m.
+Proof with note.
+  intros z...
+  apply (cancel_r (z * 0) 0 (z * 0)).
+  rewrite <- (distr_l z 0 0).
+  rewrite (unl_elem_r 0).
+  rewrite (unl_elem_l (z * 0)).
+  reflexivity. Qed.
+
+#[export] Instance rng_is_absorb_elem : IsAbsorbElem X x m.
+Proof. esplit; typeclasses eauto. Qed.
+
+#[export] Instance rng_is_semirng : IsSemirng X x k m.
+Proof. esplit; typeclasses eauto. Qed.
+
+#[local] Instance rng_is_comm_l : IsCommL X m f.
+Proof with note.
+  intros z w...
+  apply (cancel_l (z * w) ((- z) * w) (- (z * w))).
+  rewrite <- (distr_r z (- z) w).
+  rewrite (inv_r z).
+  rewrite (absorb_elem_l w).
+  rewrite (inv_r (z * w)).
+  reflexivity. Qed.
+
+#[local] Instance rng_is_comm_r : IsCommR X m f.
+Proof with note.
+  intros z w...
+  apply (cancel_l (z * w) (z * (- w)) (- (z * w))).
+  rewrite <- (distr_l z w (- w)).
+  rewrite (inv_r w).
+  rewrite (absorb_elem_r z).
+  rewrite (inv_r (z * w)).
+  reflexivity. Qed.
+
+#[export] Instance rng_is_comm : IsComm X m f.
+Proof. esplit; typeclasses eauto. Qed.
+
+Lemma rng_comm_invol (z w : A) : (- z) * (- w) == z * w.
+Proof.
+  rewrite (comm_r (- z) w).
+  rewrite (comm_l z w).
+  rewrite (invol (z * w)).
+  reflexivity. Qed.
+
+End Context.
 
 (** ** Noncommutative Ring with an Identity Element *)
 
 Class IsRing (A : Type) (X : A -> A -> Prop)
-  (x : A) (f : A -> A) (k : A -> A -> A)
-  (y : A) (m : A -> A -> A) : Prop := {
+  (x : A) (f : A -> A) (k : A -> A -> A) (y : A) (m : A -> A -> A) : Prop := {
   ring_add_is_grp :> IsGrp X x f k;
   ring_add_is_comm_bin_op :> IsCommBinOp X k;
   ring_mul_is_mon :> IsMon X y m;
@@ -27,12 +115,12 @@ Context (A : Type) (X : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A)
   (y : A) (m : A -> A -> A) `{!IsRing X x f k y m}.
 
-#[local] Instance has_equiv_rel : HasEquivRel A := X.
-#[local] Instance has_zero : HasZero A := x.
-#[local] Instance has_neg : HasNeg A := f.
-#[local] Instance has_add : HasAdd A := k.
-#[local] Instance has_one : HasOne A := y.
-#[local] Instance has_mul : HasMul A := m.
+#[local] Instance ring_has_equiv_rel : HasEquivRel A := X.
+#[local] Instance ring_has_zero : HasZero A := x.
+#[local] Instance ring_has_neg : HasNeg A := f.
+#[local] Instance ring_has_add : HasAdd A := k.
+#[local] Instance ring_has_one : HasOne A := y.
+#[local] Instance ring_has_mul : HasMul A := m.
 
 Ltac note := progress (
   try change X with (equiv_rel (A := A)) in *;
@@ -42,74 +130,22 @@ Ltac note := progress (
   try change y with (one (A := A)) in *;
   try change m with (mul (A := A)) in *).
 
-#[local] Instance ring_is_absorb_elem_l : IsAbsorbElemL X x m.
-Proof with note.
-  intros z...
-  apply (cancel_r (0 * z) 0 (1 * z)).
-  rewrite <- (distr_r 0 1 z).
-  rewrite (unl_elem_l z).
-  rewrite (unl_elem_l z).
-  rewrite (unl_elem_l 1).
-  rewrite (unl_elem_l z).
-  reflexivity. Qed.
-
-#[local] Instance ring_is_absorb_elem_r : IsAbsorbElemR X x m.
-Proof with note.
-  intros z...
-  apply (cancel_r (z * 0) 0 (z * 1)).
-  rewrite <- (distr_l z 0 1).
-  rewrite (unl_elem_r z).
-  rewrite (unl_elem_l z).
-  rewrite (unl_elem_l 1).
-  rewrite (unl_elem_r z).
-  reflexivity. Qed.
-
-#[export] Instance ring_is_absorb_elem : IsAbsorbElem X x m.
+#[export] Instance ring_is_rng : IsRng X x f k m.
 Proof. esplit; typeclasses eauto. Qed.
 
 #[export] Instance ring_is_semiring : IsSemiring X x k y m.
 Proof. esplit; typeclasses eauto. Qed.
 
-#[local] Instance ring_is_comm_l : IsCommL X m f.
-Proof with note.
-  intros z w...
-  apply (cancel_l (z * w) ((- z) * w) (- (z * w))).
-  rewrite <- (distr_r z (- z) w).
-  rewrite (inv_r z).
-  rewrite (absorb_elem_l w).
-  rewrite (inv_r (z * w)).
-  reflexivity. Qed.
-
-#[local] Instance ring_is_comm_r : IsCommR X m f.
-Proof with note.
-  intros z w...
-  apply (cancel_l (z * w) (z * (- w)) (- (z * w))).
-  rewrite <- (distr_l z w (- w)).
-  rewrite (inv_r w).
-  rewrite (absorb_elem_r z).
-  rewrite (inv_r (z * w)).
-  reflexivity. Qed.
-
-#[export] Instance ring_is_comm : IsComm X m f.
-Proof. esplit; typeclasses eauto. Qed.
-
-Lemma ring_comm_invol (z w : A) : - z * - w == z * w.
-Proof with note.
-  rewrite (comm_r (- z) w).
-  rewrite (comm_l z w).
-  rewrite (invol (z * w)).
-  reflexivity. Qed.
-
 Lemma ring_comm_unl_elem_l (z : A) : (- 1) * z == - z.
-Proof with note.
-  change (- 1) with (- (1)).
+Proof.
+  unsign.
   rewrite (comm_l 1 z).
   rewrite (unl_elem_l z).
   reflexivity. Qed.
 
 Lemma ring_comm_unl_elem_r (z : A) : z * (- 1) == - z.
 Proof.
-  change (- 1) with (- (1)).
+  unsign.
   rewrite (comm_r z 1).
   rewrite (unl_elem_r z).
   reflexivity. Qed.

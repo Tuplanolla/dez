@@ -25,10 +25,10 @@ Section Context.
 Context (A : Type) (X : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A) `{!IsGrp X x f k}.
 
-#[local] Instance has_equiv_rel : HasEquivRel A := X.
-#[local] Instance has_null_op : HasNullOp A := x.
-#[local] Instance has_un_op : HasUnOp A := f.
-#[local] Instance has_bin_op : HasBinOp A := k.
+#[local] Instance grp_has_equiv_rel : HasEquivRel A := X.
+#[local] Instance grp_has_null_op : HasNullOp A := x.
+#[local] Instance grp_has_un_op : HasUnOp A := f.
+#[local] Instance grp_has_bin_op : HasBinOp A := k.
 
 Ltac note := progress (
   try change X with (equiv_rel (A := A)) in *;
@@ -119,28 +119,6 @@ Proof with note.
 
 End Context.
 
-(** ** Abelian Group *)
-
-Class IsAbGrp (A : Type) (X : A -> A -> Prop)
-  (x : A) (f : A -> A) (k : A -> A -> A) : Prop := {
-  ab_grp_is_comm_bin_op :> IsCommBinOp X k;
-  ab_grp_is_grp :> IsGrp X x f k;
-}.
-
-Section Context.
-
-Context (A : Type) (X : A -> A -> Prop)
-  (x : A) (f : A -> A) (k : A -> A -> A)
-  `{!IsAbGrp X x f k}.
-
-#[export] Instance ab_grp_is_distr_un_op : IsDistrUnOp X f k.
-Proof.
-  intros y z.
-  rewrite (comm_bin_op y z).
-  apply (antidistr_un_op z y). Qed.
-
-End Context.
-
 (** ** Group Homomorphism *)
 
 Class IsGrpHom (A B : Type)
@@ -160,14 +138,14 @@ Context (A B : Type)
   (Y : B -> B -> Prop) (y : B) (g : B -> B) (m : B -> B -> B)
   (h : A -> B) `{!IsGrp X x f k} `{!IsGrp Y y g m} `{!IsGrpHom h}.
 
-#[local] Instance dom_has_equiv_rel : HasEquivRel A := X.
-#[local] Instance dom_has_null_op : HasNullOp A := x.
-#[local] Instance dom_has_un_op : HasUnOp A := f.
-#[local] Instance dom_has_bin_op : HasBinOp A := k.
-#[local] Instance codom_has_equiv_rel : HasEquivRel B := Y.
-#[local] Instance codom_has_null_op : HasNullOp B := y.
-#[local] Instance codom_has_un_op : HasUnOp B := g.
-#[local] Instance codom_has_bin_op : HasBinOp B := m.
+#[local] Instance grp_hom_dom_has_equiv_rel : HasEquivRel A := X.
+#[local] Instance grp_hom_dom_has_null_op : HasNullOp A := x.
+#[local] Instance grp_hom_dom_has_un_op : HasUnOp A := f.
+#[local] Instance grp_hom_dom_has_bin_op : HasBinOp A := k.
+#[local] Instance grp_hom_codom_has_equiv_rel : HasEquivRel B := Y.
+#[local] Instance grp_hom_codom_has_null_op : HasNullOp B := y.
+#[local] Instance grp_hom_codom_has_un_op : HasUnOp B := g.
+#[local] Instance grp_hom_codom_has_bin_op : HasBinOp B := m.
 
 Ltac note := progress (
   try change X with (equiv_rel (A := A)) in *;

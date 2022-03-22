@@ -142,9 +142,11 @@ digraph Is {
     IsGrpActL [label = "\N X x f k Y al"]
     IsGrpHom [label = "\N h"]
     IsMon [label = "\N X x k"]
+    IsRng [label = "\N X x f k y m", color = red, fillcolor = yellow]
     IsRing [label = "\N X x f k y m"]
     IsRingHom [label = "\N h"]
     IsSemigrp [label = "\N X k"]
+    IsSemirng [label = "\N X x k y m", color = red, fillcolor = yellow]
     IsSemiring [label = "\N X x k y m"]
   }
 

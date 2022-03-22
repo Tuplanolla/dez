@@ -5,7 +5,7 @@ From Coq Require Import
 From DEZ.Has Require Import
   ArithmeticOperations ArithmeticActions Repetitions.
 From DEZ.Is Require Import
-  Involutive.
+  Involutive Absorbing.
 From DEZ.Justifies Require Import
   IntegerPowerTheorems.
 
@@ -32,6 +32,38 @@ Notation "x '>*' a" := (s_mul_r x a) : arithmetic_scope.
 
 (** ...and now for the good parts! *)
 
+Module Designed.
+
+Module Reified.
+
+Record Boxpositive : Type := boxpositive {unboxpositive : positive}.
+
+Equations Boxpositive_of_Z (n : Z) : option Boxpositive :=
+  Boxpositive_of_Z (Zpos p) := Some (boxpositive p);
+  Boxpositive_of_Z _ := None.
+
+Equations Z_of_Boxpositive (n : Boxpositive) : option Z :=
+  Z_of_Boxpositive (boxpositive p) := Some (Zpos p).
+
+Module Notations.
+
+#[local] Set Warnings "-numbers".
+
+Context (A : Type)
+  {X : HasEquivRel A} {x : HasZero A} {k : HasAdd A}
+  {y : HasOne A} {m : HasMul A} (* `{!IsRing X x f k y m} *).
+
+Number Notation A Boxpositive_of_Z Z_of_Boxpositive (via Boxpositive mapping [
+  [of_positive] => boxpositive]) : arithmetic_scope.
+
+End Notations.
+
+End Reified.
+
+Export Reified.Notations.
+
+End Designed.
+
 Module Unsigned.
 
 Module Reified.
@@ -43,7 +75,7 @@ Equations BoxN_of_Z (n : Z) : option BoxN :=
   BoxN_of_Z (Zpos p) := Some (boxN (Npos p));
   BoxN_of_Z _ := None.
 
-Equations Z_of_BoxN (x : BoxN) : option Z :=
+Equations Z_of_BoxN (n : BoxN) : option Z :=
   Z_of_BoxN (boxN N0) := Some Z0;
   Z_of_BoxN (boxN (Npos p)) := Some (Zpos p).
 
@@ -92,57 +124,3 @@ Export Reified.Notations.
 End Signed.
 
 Export Signed.
-
-Ltac unsign :=
-  match goal with
-  | |- context c [of_Z (Zneg ?p)] =>
-    let a := context c [of_Z (Zneg p)] in
-    let b := context c [neg (of_Z (Zpos p))] in
-    change a with b
-  | h : context c [of_Z (Zneg ?p)] |- _ =>
-    let a := context c [of_Z (Zneg p)] in
-    let b := context c [neg (of_Z (Zpos p))] in
-    change a with b in h
-  end.
-
-Ltac sign :=
-  match goal with
-  | |- context c [neg (of_Z Z0)] =>
-    let a := context c [neg (of_Z Z0)] in
-    let b := context c [of_Z Z0] in
-    replace (neg (of_Z Z0)) with (of_Z Z0)
-  | |- context c [neg (of_Z (Zpos ?p))] =>
-    let a := context c [neg (of_Z (Zpos p))] in
-    let b := context c [of_Z (Zneg p)] in
-    change a with b
-  | |- context c [neg (of_Z (Zneg ?p))] =>
-    let a := context c [neg (of_Z (Zneg p))] in
-    let b := context c [of_Z (Zpos p)] in
-    replace (neg (of_Z (Zneg p))) with (of_Z (Zpos p))
-  | h : context c [neg (of_Z Z0)] |- _ =>
-    let a := context c [neg (of_Z Z0)] in
-    let b := context c [of_Z Z0] in
-    replace (neg (of_Z Z0)) with (of_Z Z0) in h
-  | h : context c [neg (of_Z (Zpos ?p))] |- _ =>
-    let a := context c [neg (of_Z (Zpos p))] in
-    let b := context c [of_Z (Zneg p)] in
-    change a with b in h
-  | h : context c [neg (of_Z (Zneg ?p))] |- _ =>
-    let a := context c [neg (of_Z (Zneg p))] in
-    let b := context c [of_Z (Zpos p)] in
-    replace (neg (of_Z (Zneg p))) with (of_Z (Zpos p)) in h
-  end.
-
-#[local] Instance girp : IsGrp Z.eq Z.zero Z.opp Z.add.
-Proof. Admitted.
-
-Lemma ok `{!IsInvol _=_ -_}
-  (a : - -0%arith = - (-0)%arith)
-  (b : - -5%arith = - (-5)%arith) :
-  - -5%arith = - (-5)%arith.
-Proof.
-  unsign. unsign. Fail unsign.
-  sign. sign. sign. sign. sign. sign. sign. sign. Fail sign.
-  2:{ rewrite <- (comm_act_ls_r (X := _=_) (f := neg) (al := Z_op) (bl := Z_op) (IsCommActLsR := z_op_un_op_is_two_l_bin_comm)). unsign. reflexivity. }
-  change (- (-5)) with (- - (5)).
-  unsign.
