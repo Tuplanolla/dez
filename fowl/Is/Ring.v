@@ -30,12 +30,6 @@ Context (A : Type) (X : A -> A -> Prop)
 #[local] Instance rng_has_add : HasAdd A := k.
 #[local] Instance rng_has_mul : HasMul A := m.
 
-(** TODO Investigate this and how you can [change x with 0] for a full ring. *)
-
-Import Designed.
-
-#[local] Notation "'0'" := zero.
-
 Ltac note := progress (
   try change X with (equiv_rel (A := A)) in *;
   try change x with (zero (A := A)) in *;
@@ -138,14 +132,14 @@ Proof. esplit; typeclasses eauto. Qed.
 
 Lemma ring_comm_unl_elem_l (z : A) : (- 1) * z == - z.
 Proof.
-  unsign.
+  Fail unsign. change (- 1) with (- (1)).
   rewrite (comm_l 1 z).
   rewrite (unl_elem_l z).
   reflexivity. Qed.
 
 Lemma ring_comm_unl_elem_r (z : A) : z * (- 1) == - z.
 Proof.
-  unsign.
+  Fail unsign. change (- 1) with (- (1)).
   rewrite (comm_r z 1).
   rewrite (unl_elem_r z).
   reflexivity. Qed.

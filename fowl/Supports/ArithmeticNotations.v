@@ -50,8 +50,7 @@ Module Notations.
 #[local] Set Warnings "-numbers".
 
 Context (A : Type)
-  {X : HasEquivRel A} {x : HasZero A} {k : HasAdd A}
-  {y : HasOne A} {m : HasMul A} (* `{!IsRing X x f k y m} *).
+  {k : HasAdd A} {y : HasOne A}.
 
 Number Notation A Boxpositive_of_Z Z_of_Boxpositive (via Boxpositive mapping [
   [of_positive] => boxpositive]) : arithmetic_scope.
@@ -68,27 +67,25 @@ Module Unsigned.
 
 Module Reified.
 
-Record BoxN : Type := boxN {unboxN : N}.
+Equations N_of_Z (n : Z) : option N :=
+  N_of_Z Z0 := Some N0;
+  N_of_Z (Zpos p) := Some (Npos p);
+  N_of_Z _ := None.
 
-Equations BoxN_of_Z (n : Z) : option BoxN :=
-  BoxN_of_Z Z0 := Some (boxN N0);
-  BoxN_of_Z (Zpos p) := Some (boxN (Npos p));
-  BoxN_of_Z _ := None.
-
-Equations Z_of_BoxN (n : BoxN) : option Z :=
-  Z_of_BoxN (boxN N0) := Some Z0;
-  Z_of_BoxN (boxN (Npos p)) := Some (Zpos p).
+Equations Z_of_N (n : N) : Z :=
+  Z_of_N N0 := Z0;
+  Z_of_N (Npos p) := Zpos p.
 
 Module Notations.
 
 #[local] Set Warnings "-numbers".
 
 Context (A : Type)
-  {X : HasEquivRel A} {x : HasZero A} {k : HasAdd A}
-  {y : HasOne A} {m : HasMul A} (* `{!IsRing X x f k y m} *).
+  {x : HasZero A} {k : HasAdd A} {y : HasOne A}.
 
-Number Notation A BoxN_of_Z Z_of_BoxN (via BoxN mapping [
-  [of_N] => boxN]) : arithmetic_scope.
+Number Notation A N_of_Z Z_of_N (via N mapping [
+  [zero] => N0,
+  [of_positive] => Npos]) : arithmetic_scope.
 
 End Notations.
 
@@ -102,18 +99,32 @@ Module Signed.
 
 Module Reified.
 
-Record BoxZ : Type := boxZ {unboxZ : Z}.
+Equations Z_of_Z (n : Z) : Z :=
+  Z_of_Z n := n.
 
 Module Notations.
 
 #[local] Set Warnings "-numbers".
 
-Context (A : Type)
-  {X : HasEquivRel A} {x : HasZero A} {f : HasNeg A} {k : HasAdd A}
-  {y : HasOne A} {m : HasMul A} (* `{!IsRing X x f k y m} *).
+Section Context.
 
-Number Notation A boxZ unboxZ (via BoxZ mapping [
-  [of_Z] => boxZ]) : arithmetic_scope.
+Context (A : Type)
+  {x : HasZero A} {f : HasNeg A} {k : HasAdd A} {y : HasOne A}.
+
+(** TODO Do it better! *)
+
+Equations of_negative (n : positive) : A :=
+  of_negative n := f (of_positive n).
+
+End Context.
+
+Context (A : Type)
+  {x : HasZero A} {f : HasNeg A} {k : HasAdd A} {y : HasOne A}.
+
+Number Notation A Z_of_Z Z_of_Z (via Z mapping [
+  [zero] => Z0,
+  [of_positive] => Zpos,
+  [of_negative] => Zneg]) : arithmetic_scope.
 
 End Notations.
 
