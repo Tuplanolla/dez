@@ -131,16 +131,16 @@ Proof. esplit; typeclasses eauto. Qed.
 Proof. esplit; typeclasses eauto. Qed.
 
 Lemma ring_comm_unl_elem_l (z : A) : (- 1) * z == - z.
-Proof.
-  Fail unsign. change (- 1) with (- (1)).
-  rewrite (comm_l 1 z).
+Proof with note.
+  unsign...
+  setoid_rewrite (comm_l 1 z).
   rewrite (unl_elem_l z).
   reflexivity. Qed.
 
 Lemma ring_comm_unl_elem_r (z : A) : z * (- 1) == - z.
-Proof.
-  Fail unsign. change (- 1) with (- (1)).
-  rewrite (comm_r z 1).
+Proof with note.
+  unsign...
+  setoid_rewrite (comm_r z 1).
   rewrite (unl_elem_r z).
   reflexivity. Qed.
 

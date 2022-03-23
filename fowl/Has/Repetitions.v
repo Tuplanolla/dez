@@ -118,6 +118,13 @@ Context (A : Type)
 Equations of_Z (n : Z) : A :=
   of_Z n := Z_op n y.
 
+(** Embed a negative integer into a ring.
+    This definition exists just
+    to consistently cover all the constructors of [Z]. *)
+
+Equations of_negative (n : positive) : A :=
+  of_negative n := f (of_positive n).
+
 End Context.
 
 (** The number notations [(- 3)] and [- (3)] corresponding
@@ -134,9 +141,17 @@ Ltac sign_step :=
     let a := context c [neg (of_Z (Zpos p))] in
     let b := context c [of_Z (Zneg p)] in
     change a with b
+  | |- context c [neg (of_positive ?p)] =>
+    let a := context c [neg (of_positive p)] in
+    let b := context c [of_negative p] in
+    change a with b
   | h : context c [neg (of_Z (Zpos ?p))] |- _ =>
     let a := context c [neg (of_Z (Zpos p))] in
     let b := context c [of_Z (Zneg p)] in
+    change a with b in h
+  | h : context c [neg (of_positive ?p)] |- _ =>
+    let a := context c [neg (of_positive p)] in
+    let b := context c [of_negative p] in
     change a with b in h
   end.
 
@@ -152,9 +167,17 @@ Ltac unsign_step :=
     let a := context c [of_Z (Zneg p)] in
     let b := context c [neg (of_Z (Zpos p))] in
     change a with b
+  | |- context c [of_negative ?p] =>
+    let a := context c [of_negative p] in
+    let b := context c [neg (of_positive p)] in
+    change a with b
   | h : context c [of_Z (Zneg ?p)] |- _ =>
     let a := context c [of_Z (Zneg p)] in
     let b := context c [neg (of_Z (Zpos p))] in
+    change a with b in h
+  | h : context c [of_negative ?p] |- _ =>
+    let a := context c [of_negative ?p] in
+    let b := context c [neg (of_positive p)] in
     change a with b in h
   end.
 

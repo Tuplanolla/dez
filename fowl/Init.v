@@ -204,14 +204,14 @@ Variant PropR : Type :=
   | FalseR
   | TrueR.
 
-Definition Prop_of_Z (n : Z) : option PropR :=
+Definition PropR_of_Z (n : Z) : option PropR :=
   match n with
   | Z0 => Some FalseR
   | Zpos xH => Some TrueR
   | _ => None
   end.
 
-Definition Z_of_Prop (A : PropR) : option Z :=
+Definition Z_of_PropR (A : PropR) : option Z :=
   match A with
   | FalseR => Some Z0
   | TrueR => Some (Zpos xH)
@@ -221,7 +221,7 @@ Module Notations.
 
 #[local] Notation Prop' := Prop (only parsing).
 
-Number Notation Prop' Prop_of_Z Z_of_Prop (via PropR mapping [
+Number Notation Prop' PropR_of_Z Z_of_PropR (via PropR mapping [
   True => TrueR,
   False => FalseR]) : type_scope.
 
