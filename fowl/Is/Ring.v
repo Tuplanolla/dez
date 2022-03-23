@@ -8,7 +8,7 @@ From DEZ.Is Require Export
 From DEZ.Supports Require Import
   EquivalenceNotations ArithmeticNotations.
 
-(** ** Noncommutative Ring without an Identity Element *)
+(** ** Noncommutative Nonunital Ring *)
 
 Class IsRng (A : Type) (X : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A) (m : A -> A -> A) : Prop := {
@@ -21,8 +21,8 @@ Class IsRng (A : Type) (X : A -> A -> Prop)
 Section Context.
 
 Context (A : Type) (X : A -> A -> Prop)
-  (x : A) (f : A -> A) (k : A -> A -> A)
-  (m : A -> A -> A) `{!IsRng X x f k m}.
+  (x : A) (f : A -> A) (k : A -> A -> A) (m : A -> A -> A)
+  `{!IsRng X x f k m}.
 
 #[local] Instance rng_has_equiv_rel : HasEquivRel A := X.
 #[local] Instance rng_has_zero : HasZero A := x.
@@ -37,6 +37,8 @@ Ltac note := progress (
   try change k with (add (A := A)) in *;
   try change m with (mul (A := A)) in *).
 
+(** Zero left-absorbs multiplication. *)
+
 #[local] Instance rng_is_absorb_elem_l : IsAbsorbElemL X x m.
 Proof with note.
   intros z...
@@ -45,6 +47,8 @@ Proof with note.
   rewrite (unl_elem_l 0).
   rewrite (unl_elem_l (0 * z)).
   reflexivity. Qed.
+
+(** Zero right-absorbs multiplication. *)
 
 #[local] Instance rng_is_absorb_elem_r : IsAbsorbElemR X x m.
 Proof with note.
@@ -55,11 +59,17 @@ Proof with note.
   rewrite (unl_elem_l (z * 0)).
   reflexivity. Qed.
 
+(** Zero absorbs multiplication. *)
+
 #[export] Instance rng_is_absorb_elem : IsAbsorbElem X x m.
 Proof. esplit; typeclasses eauto. Qed.
 
+(** Removing negation from a nonunital ring yields a nonunital semiring. *)
+
 #[export] Instance rng_is_semirng : IsSemirng X x k m.
 Proof. esplit; typeclasses eauto. Qed.
+
+(** Multiplication left-commutes with negation. *)
 
 #[local] Instance rng_is_comm_l : IsCommL X m f.
 Proof with note.
@@ -71,6 +81,8 @@ Proof with note.
   rewrite (inv_r (z * w)).
   reflexivity. Qed.
 
+(** Multiplication right-commutes with negation. *)
+
 #[local] Instance rng_is_comm_r : IsCommR X m f.
 Proof with note.
   intros z w...
@@ -80,6 +92,8 @@ Proof with note.
   rewrite (absorb_elem_r z).
   rewrite (inv_r (z * w)).
   reflexivity. Qed.
+
+(** Multiplication commutes with negation. *)
 
 #[export] Instance rng_is_comm : IsComm X m f.
 Proof. esplit; typeclasses eauto. Qed.
@@ -93,7 +107,7 @@ Proof.
 
 End Context.
 
-(** ** Noncommutative Ring with an Identity Element *)
+(** ** Noncommutative Unital Ring *)
 
 Class IsRing (A : Type) (X : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A) (y : A) (m : A -> A -> A) : Prop := {
@@ -106,8 +120,8 @@ Class IsRing (A : Type) (X : A -> A -> Prop)
 Section Context.
 
 Context (A : Type) (X : A -> A -> Prop)
-  (x : A) (f : A -> A) (k : A -> A -> A)
-  (y : A) (m : A -> A -> A) `{!IsRing X x f k y m}.
+  (x : A) (f : A -> A) (k : A -> A -> A) (y : A) (m : A -> A -> A)
+  `{!IsRing X x f k y m}.
 
 #[local] Instance ring_has_equiv_rel : HasEquivRel A := X.
 #[local] Instance ring_has_zero : HasZero A := x.
@@ -124,8 +138,12 @@ Ltac note := progress (
   try change y with (one (A := A)) in *;
   try change m with (mul (A := A)) in *).
 
+(** Removing the unit element from a unital ring yields a nonunital ring. *)
+
 #[export] Instance ring_is_rng : IsRng X x f k m.
 Proof. esplit; typeclasses eauto. Qed.
+
+(** Removing negation from a unital ring yields a unital semiring. *)
 
 #[export] Instance ring_is_semiring : IsSemiring X x k y m.
 Proof. esplit; typeclasses eauto. Qed.

@@ -96,7 +96,7 @@ Proof.
     reflexivity. Defined.
 
 Global Instance positive_op_un_op_is_two_l_bin_comm :
-  IsCommActLsR _=_ positive_op -_ positive_op.
+  IsCommActLR _=_ positive_op -_.
 Proof. intros x y. symmetry. apply positive_op_un_op_two_l_bin_comm. Defined.
 
 Theorem n_op_un_op_two_l_bin_comm (n : N) (x : A) :
@@ -111,7 +111,7 @@ Proof.
     etransitivity; [| apply (positive_op_un_op_two_l_bin_comm p x)].
     reflexivity. Defined.
 
-Global Instance n_op_un_op_is_two_l_bin_comm : IsCommActLsR _=_ N_op -_ N_op.
+Global Instance n_op_un_op_is_two_l_bin_comm : IsCommActLR _=_ N_op -_.
 Proof. intros x y. symmetry. apply n_op_un_op_two_l_bin_comm. Defined.
 
 Theorem z_op_un_op_two_l_bin_comm (n : Z) (x : A) :
@@ -129,7 +129,7 @@ Proof.
       apply (positive_op_un_op_two_l_bin_comm p x)].
     reflexivity. Defined.
 
-Global Instance z_op_un_op_is_two_l_bin_comm : IsCommActLsR _=_ Z_op -_ Z_op.
+Global Instance z_op_un_op_is_two_l_bin_comm : IsCommActLR _=_ Z_op -_.
 Proof. intros x y. symmetry. apply z_op_un_op_two_l_bin_comm. Defined.
 
 End Context.

@@ -3,7 +3,7 @@
 From DEZ.Is Require Export
   Monoid Commutative Distributive Absorbing.
 
-(** ** Noncommutative Semiring without an Identity Element *)
+(** ** Noncommutative Nonunital Semiring *)
 
 Class IsSemirng (A : Type) (X : A -> A -> Prop)
   (x : A) (k : A -> A -> A) (m : A -> A -> A) : Prop := {
@@ -14,7 +14,7 @@ Class IsSemirng (A : Type) (X : A -> A -> Prop)
   semirng_is_absorb_elem :> IsAbsorbElem X x m;
 }.
 
-(** ** Noncommutative Semiring with an Identity Element *)
+(** ** Noncommutative Unital Semiring *)
 
 Class IsSemiring (A : Type) (X : A -> A -> Prop)
   (x : A) (k : A -> A -> A) (y : A) (m : A -> A -> A) : Prop := {
@@ -24,3 +24,17 @@ Class IsSemiring (A : Type) (X : A -> A -> Prop)
   semiring_is_distr :> IsDistr X m k;
   semiring_is_absorb_elem :> IsAbsorbElem X x m;
 }.
+
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop)
+  (x : A) (k : A -> A -> A) (y : A) (m : A -> A -> A)
+  `{!IsSemiring X x k y m}.
+
+(** Removing the unit element
+    from a unital semiring yields a nonunital semiring. *)
+
+#[export] Instance semiring_is_semirng : IsSemirng X x k m.
+Proof. esplit; typeclasses eauto. Qed.
+
+End Context.

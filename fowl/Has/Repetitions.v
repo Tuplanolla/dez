@@ -118,9 +118,7 @@ Context (A : Type)
 Equations of_Z (n : Z) : A :=
   of_Z n := Z_op n y.
 
-(** Embed a negative integer into a ring.
-    This definition exists just
-    to consistently cover all the constructors of [Z]. *)
+(** Embed a negative integer into a ring. *)
 
 Equations of_negative (n : positive) : A :=
   of_negative n := f (of_positive n).
@@ -135,7 +133,7 @@ End Context.
 
 (** Convert one occurrence of [- (n)] into [(- n)]. *)
 
-Ltac sign_step :=
+Ltac sign_once :=
   match goal with
   | |- context c [neg (of_Z (Zpos ?p))] =>
     let a := context c [neg (of_Z (Zpos p))] in
@@ -157,11 +155,11 @@ Ltac sign_step :=
 
 (** Convert all occurrences of [- (n)] into [(- n)]. *)
 
-Ltac sign := progress repeat sign_step.
+Ltac sign := repeat sign_once.
 
 (** Convert one occurrence of [(- n)] into [- (n)]. *)
 
-Ltac unsign_step :=
+Ltac unsign_once :=
   match goal with
   | |- context c [of_Z (Zneg ?p)] =>
     let a := context c [of_Z (Zneg p)] in
@@ -183,4 +181,4 @@ Ltac unsign_step :=
 
 (** Convert all occurrences of [(- n)] into [- (n)]. *)
 
-Ltac unsign := progress repeat unsign_step.
+Ltac unsign := repeat unsign_once.

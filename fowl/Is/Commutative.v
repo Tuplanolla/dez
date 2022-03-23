@@ -125,63 +125,52 @@ Proof. intros x y. unfold flip in *. eauto. Qed.
 
 End Context.
 
-(** TODO These specializations are dubious;
-    what we really need is the following! *)
+(** ** Right Action Left-Commuting over a Unary Function *)
 
-Class IsCommFollowingRL (A B : Type) (X : B -> B -> Prop)
-  (f : B -> B) (ar : B -> A -> B) : Prop :=
-  comm_following_l (a : B) (x : A) : X (ar (f a) x) (f (ar a x)).
-
-Class IsCommFollowingLR (A B : Type) (X : B -> B -> Prop)
-  (f : B -> B) (al : A -> B -> B) : Prop :=
-  comm_following_r (a : B) (x : A) : X (al x (f a)) (f (al x a)).
-
-(** ** Right Actions Left-Commuting over a Unary Function *)
-
-Class IsCommActRsL (A B C : Type) (X : C -> C -> Prop)
-  (ar : B -> A -> B) (f : B -> C) (br : C -> A -> C) : Prop :=
-  comm_act_rs_l (a : B) (x : A) : X (br (f a) x) (f (ar a x)).
+Class IsCommActRL (A B : Type) (X : B -> B -> Prop)
+  (ar : B -> A -> B) (f : B -> B) : Prop :=
+  comm_act_r_l (a : B) (x : A) : X (ar (f a) x) (f (ar a x)).
 
 Section Context.
 
-Context (A B C : Type) (X : C -> C -> Prop)
-  (ar : B -> A -> B) (f : B -> C) (br : C -> A -> C).
+Context (A B : Type) (X : B -> B -> Prop)
+  (f : B -> B) (ar : B -> A -> B).
 
-(** Left-commutativity of right actions over a unary function
-    is a special case of their left-commutativity
-    as binary functions over unary functions. *)
+(** Left-commutativity of a right action over a unary function
+    is a special case of its left-commutativity
+    as a binary function over a unary function. *)
 
-#[export] Instance comm_act_rs_l_is_comm_bin_fns_l
-  `{!IsCommActRsL X ar f br} : IsCommBinFnsL X ar f br f.
+#[export] Instance comm_act_r_l_is_comm_bin_fns_l
+  `{!IsCommActRL X ar f} : IsCommBinFnsL X ar f ar f.
 Proof. auto. Qed.
 
-#[local] Instance comm_bin_fns_l_is_comm_act_rs_l
-  `{!IsCommBinFnsL X ar f br f} : IsCommActRsL X ar f br.
+#[local] Instance comm_bin_fns_l_is_comm_act_r_l
+  `{!IsCommBinFnsL X ar f ar f} : IsCommActRL X ar f.
 Proof. auto. Qed.
 
 End Context.
 
-(** ** Left Actions Right-Commuting over a Unary Function *)
+(** ** Left Action Right-Commuting over a Unary Function *)
 
-Class IsCommActLsR (A B C : Type) (X : C -> C -> Prop)
-  (al : A -> B -> B) (f : B -> C) (bl : A -> C -> C) : Prop :=
-  comm_act_ls_r (x : A) (a : B) : X (bl x (f a)) (f (al x a)).
+Class IsCommActLR (A B : Type) (X : B -> B -> Prop)
+  (al : A -> B -> B) (f : B -> B) : Prop :=
+  comm_act_l_r (x : A) (a : B) : X (al x (f a)) (f (al x a)).
 
 Section Context.
 
-Context (A B C : Type) (X : C -> C -> Prop)
-  (al : A -> B -> B) (f : B -> C) (bl : A -> C -> C).
+Context (A B : Type) (X : B -> B -> Prop)
+  (f : B -> B) (al : A -> B -> B).
 
-(** Right-commutativity of left actions over a unary function
-    is a special case of their right-commutativity
-    as binary functions over unary functions. *)
+(** Right-commutativity of a left action over a unary function
+    is a special case of its right-commutativity
+    as a binary function over a unary function. *)
 
-#[export] Instance comm_act_ls_r_is_comm_bin_fns_r
-  `{!IsCommActLsR X al f bl} : IsCommBinFnsR X al f bl f.
+#[export] Instance comm_act_l_r_is_comm_bin_fns_r
+  `{!IsCommActLR X al f} : IsCommBinFnsR X al f al f.
 Proof. auto. Qed.
 
-#[local] Instance comm_bin_fns_r_is_comm_act_ls_r
-  `{!IsCommBinFnsR X al f bl f} : IsCommActLsR X al f bl.
+#[local] Instance comm_bin_fns_r_is_comm_act_l_r
+  `{!IsCommBinFnsR X al f al f} : IsCommActLR X al f.
 Proof. auto. Qed.
 
 End Context.
@@ -200,8 +189,8 @@ Context (A : Type) (X : A -> A -> Prop)
   (k : A -> A -> A) (f : A -> A).
 
 (** Left-commutativity of a binary operation over a unary operation
-    is a special case of their left-commutativity
-    as binary functions over unary functions. *)
+    is a special case of its left-commutativity
+    as a binary function over a unary function. *)
 
 #[export] Instance comm_l_is_comm_bin_fns_l
   `{!IsCommL X k f} : IsCommBinFnsL X k f k f.
@@ -243,8 +232,8 @@ Context (A : Type) (X : A -> A -> Prop)
   (k : A -> A -> A) (f : A -> A).
 
 (** Right-commutativity of a binary operation over a unary operation
-    is a special case of their right-commutativity
-    as binary functions over unary functions. *)
+    is a special case of its right-commutativity
+    as a binary function over a unary function. *)
 
 #[export] Instance comm_r_is_comm_bin_fns_r
   `{!IsCommR X k f} : IsCommBinFnsR X k f k f.
