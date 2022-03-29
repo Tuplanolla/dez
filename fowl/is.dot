@@ -52,8 +52,10 @@ digraph Is {
   subgraph cluster_assoc {
   label = "Associative Fragment"
   IsAssoc [label = "\N X k\nassoc (x y z : A) : X (k x (k y z)) (k (k x y) z)"]
-  IsCompatActL [label = "\N X k al\ncompat_act_l (x y : A) (a : B) : X (al x (al y a)) (al (k x y) a)"]
-  IsCompatActR [label = "\N X k ar\ncompat_act_r (a : B) (x y : A) : X (ar a (k x y)) (ar (ar a x) y)"]
+  IsCompatExtActL [label = "\N X k al\ncompat_ext_act_l (x y : A) (a : B) : X (al x (al y a)) (al (k x y) a)"]
+  IsCompatExtActR [label = "\N X k ar\ncompat_ext_act_r (a : B) (x y : A) : X (ar a (k x y)) (ar (ar a x) y)"]
+  IsCompatIntActL [label = "\N X k al\ncompat_int_act_l (x : A) (a b : B) : X (al x (k a b)) (k (al x a) b)"]
+  IsCompatIntActR [label = "\N X k ar\ncompat_int_act_r (a b : B) (x : A) : X (k a (ar b x)) (ar (k a b) x)"]
   IsCompatActs [label = "\N X al ar\ncompat_acts (x : A) (a : C) (y : B) : X (al x (ar a y)) (ar (al x a) y)"]
   IsCompatBinFns [label = "\N X k m n p\ncompat_bin_fns (x : A0) (y : A1) (z : A2) : X (n x (m y z)) (p (k x y) z)"]
   }
@@ -241,7 +243,7 @@ digraph Is {
     IsGrp -> IsInv
     IsGrp -> IsMon
     // IsGrp -> IsProper
-    IsGrpActL -> IsCompatActL
+    IsGrpActL -> IsCompatExtActL
     IsGrpActL -> IsGrp
     IsGrpActL -> IsUnlElemActL
     // IsGrpActL -> IsProper
@@ -354,9 +356,12 @@ digraph Is {
     IsCommR -> IsCommUnOps [label = "apply"]
     IsCommUnOps -> IsCommElemsBinOp [label = "compose"]
     IsCommUnOps -> IsUnPres
-    IsCompatActL -> IsCompatActR [label = "flip"]
-    IsCompatActL -> IsCompatBinFns
-    IsCompatActR -> IsCompatBinFns
+    IsCompatExtActL -> IsCompatExtActR [label = "flip"]
+    IsCompatExtActL -> IsCompatBinFns
+    IsCompatExtActR -> IsCompatBinFns
+    IsCompatIntActL -> IsCompatIntActR [label = "flip"]
+    IsCompatIntActL -> IsCompatBinFns
+    IsCompatIntActR -> IsCompatBinFns
     IsCompatActs -> IsCompatBinFns
     IsDistrActL -> IsDistrBinFnsL
     IsDistrActR -> IsDistrBinFnsR

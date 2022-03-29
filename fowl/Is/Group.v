@@ -205,7 +205,7 @@ Class IsGrpActL (A B : Type)
   (Y : B -> B -> Prop) (al : A -> B -> B) `{!IsGrp X x f k} : Prop := {
   grp_act_l_is_grp : IsGrp X x f k;
   grp_act_l_is_unl_elem_act_l :> IsUnlElemActL Y x al;
-  grp_act_l_is_compat_act_l :> IsCompatActL Y k al;
+  grp_act_l_is_compat_ext_act_l :> IsCompatExtActL Y k al;
   grp_act_l_is_proper :> IsProper (X ==> Y ==> Y) al;
 }.
 

@@ -137,6 +137,18 @@ Compute @IsCommBinOpL ?[A] ?A ?[B] ?A ?B. (* BR unifies f g *)
 Compute @IsCommBinOpL ?[B] ?B ?B ?B ?[A]. (* BF does not unify *)
 ```
 
+Perhaps the following way is better:
+generate all possible combinations,
+eliminate degenerate ones (such as `HasActL A A`),
+place them in a subtype hierarchy.
+
+```
+From DEZ.Has Require Export
+  Relations Operations Actions.
+
+echo "Eval cbv in fun (X : HasBinRel _) (k : "{"HasActL _ _","HasActR _ _","HasBinOp _"}") (m : "{"HasActL _ _","HasActR _ _","HasBinOp _"}") (n : "{"HasActL _ _","HasActR _ _","HasBinOp _"}") (p : "{"HasActL _ _","HasActR _ _","HasBinOp _"}") => IsCompatBinFns X k m n p."
+```
+
 Explain why this has become a useless detour.
 
 ```
@@ -153,9 +165,9 @@ Ltac subclass := progress (
 
 ## What Next
 
-Finish `Commutative.v` and go through the other framgents
-`Compatible.v Associative.v Distributive.v Antidistributive.v Invertible.v Unital.v Absorbing.v Inflationary.v`
-to see if their specializations are sensible.
+See if specializations
+`Commutative.v Compatible.v Associative.v Distributive.v Antidistributive.v Invertible.v Unital.v Absorbing.v Inflationary.v`
+are sensible.
 
 ### Checklist
 
