@@ -140,13 +140,19 @@ Compute @IsCommBinOpL ?[B] ?B ?B ?B ?[A]. (* BF does not unify *)
 Perhaps the following way is better:
 generate all possible combinations,
 eliminate degenerate ones (such as `HasActL A A`),
-place them in a subtype hierarchy.
+see which parameters have the same type (could be joined) and
+place the cases in a subtype hierarchy.
 
 ```
 From DEZ.Has Require Export
   Relations Operations Actions.
 
+Class HasUnFn A B := un_fn (x : A) : B.
+#[export] Typeclasses Transparent HasUnFn.
+
+echo "Eval cbv in fun (X : HasBinRel _) (k : "{"HasActL _ _","HasActR _ _","HasBinOp _"}") (f : "{"HasUnOp _","HasUnFn _ _"}") (m : "{"HasActL _ _","HasActR _ _","HasBinOp _"}") (g : "{"HasUnOp _","HasUnFn _ _"}") => IsCommBinFnsL X k f m g."
 echo "Eval cbv in fun (X : HasBinRel _) (k : "{"HasActL _ _","HasActR _ _","HasBinOp _"}") (m : "{"HasActL _ _","HasActR _ _","HasBinOp _"}") (n : "{"HasActL _ _","HasActR _ _","HasBinOp _"}") (p : "{"HasActL _ _","HasActR _ _","HasBinOp _"}") => IsCompatBinFns X k m n p."
+echo "Eval cbv in fun (X : HasBinRel _) (f : "{"HasUnOp _","HasUnFn _ _"}") (g : "{"HasUnOp _","HasUnFn _ _"}") (k : "{"HasActL _ _","HasActR _ _","HasBinOp _"}") (h : "{"HasUnOp _","HasUnFn _ _"}") (m : "{"HasActL _ _","HasActR _ _","HasBinOp _"}") => IsDistrUnFns X f g k h m."
 ```
 
 Explain why this has become a useless detour.
