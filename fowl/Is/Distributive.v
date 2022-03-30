@@ -61,54 +61,6 @@ Proof. auto. Qed.
 
 End Context.
 
-(** ** Unary Functions Distributing over a Left Action *)
-
-Class IsDistrUnFnL (A B : Type) (X : B -> B -> Prop)
-  (f : A -> A) (g : B -> B) (al : A -> B -> B) : Prop :=
-  distr_un_fn_l (x : A) (a : B) : X (g (al x a)) (al (f x) (g a)).
-
-Section Context.
-
-Context (A B : Type) (X : B -> B -> Prop)
-  (f : A -> A) (g : B -> B) (al : A -> B -> B).
-
-(** Distributivity of unary functions over a left action
-    is a special case of their distributivity as functions. *)
-
-#[export] Instance distr_un_fn_l_is_distr_un_fns
-  `{!IsDistrUnFnL X f g al} : IsDistrUnFns X f g al g al.
-Proof. auto. Qed.
-
-#[local] Instance distr_un_fns_is_distr_un_fn_l
-  `{!IsDistrUnFns X f g al g al} : IsDistrUnFnL X f g al.
-Proof. auto. Qed.
-
-End Context.
-
-(** ** Unary Functions Distributing over a Right Action *)
-
-Class IsDistrUnFnR (A B : Type) (X : B -> B -> Prop)
-  (f : A -> A) (g : B -> B) (ar : B -> A -> B) : Prop :=
-  distr_un_fn_r (a : B) (x : A) : X (g (ar a x)) (ar (g a) (f x)).
-
-Section Context.
-
-Context (A B : Type) (X : B -> B -> Prop)
-  (f : A -> A) (g : B -> B) (ar : B -> A -> B).
-
-(** Distributivity of unary functions over a right action
-    is a special case of their distributivity as functions. *)
-
-#[export] Instance distr_un_fn_r_is_distr_un_fns
-  `{!IsDistrUnFnR X f g ar} : IsDistrUnFns X g f ar g ar.
-Proof. auto. Qed.
-
-#[local] Instance distr_un_fns_is_distr_un_fn_r
-  `{!IsDistrUnFns X g f ar g ar} : IsDistrUnFnR X f g ar.
-Proof. auto. Qed.
-
-End Context.
-
 (** ** Unary Operation Distributing over a Binary Operation *)
 
 (** This has the same shape as [Z.opp_add_distr]. *)

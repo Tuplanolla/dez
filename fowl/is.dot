@@ -65,8 +65,6 @@ digraph Is {
   IsDistrUnFns [label = "\N X f g k h m\ndistr_un_fns (x : A0) (y : A1) : X (h (k x y)) (m (f x) (g y))"]
   IsDistrUnFn [label = "\N X f k m\ndistr_un_fn (x y : A) : X (f (k x y)) (m (f x) (f y))"]
   IsDistrUnOp [label = "\N X f k\ndistr_un_op (x y : A) : X (f (k x y)) (k (f x) (f y))"]
-  IsDistrUnOpL [label = "\N X f g al\ndistr_un_fn_l (x : A) (a : B) : X (g (al x a)) (al (f x) (g a))"]
-  IsDistrUnOpR [label = "\N X f g ar\ndistr_un_fn_r (a : B) (x : A) : X (g (ar a x)) (ar (g a) (f x))"]
   IsAntidistrUnFns [label = "\N X f g k h m\nantidistr_un_fns (x : A0) (y : A1) : X (h (k x y)) (m (f y) (g x))"]
   IsAntidistrUnFn [label = "\N X f k m\nantidistr_un_fn (x y : A) : X (f (k x y)) (m (f y) (f x))"]
   IsAntidistrUnOp [label = "\N X f k\nantidistr_un_op (x y : A) : X (f (k x y)) (k (f y) (f x))"]
@@ -375,8 +373,6 @@ digraph Is {
     IsDistrUnFn -> IsBinPres
     IsDistrUnFn -> IsDistrUnFns
     IsDistrUnOp -> IsDistrUnFns
-    IsDistrUnOpL -> IsDistrUnFns
-    IsDistrUnOpR -> IsDistrUnFns
     IsFixed -> IsNullPres
     IsGrp -> IsAntidistrUnOp
     IsGrp -> IsCancel
