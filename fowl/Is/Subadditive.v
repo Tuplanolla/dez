@@ -1,10 +1,11 @@
-(** * Subadditivity or Triangle Inequality *)
+(** * Subadditivity *)
 
-From DEZ.Has Require Export
-  OrderRelations Operations Distances.
-From DEZ.Supports Require Import
-  OrderNotations AdditiveNotations.
+From DEZ Require Export
+  Init.
 
-Class IsSubadd (A B : Type)
-  (HR : HasOrdRel A) (Hk : HasBinOp A) (Hd : HasDist A B) : Prop :=
-  subadd (x y z : B) : dist x z <= dist x y + dist y z.
+(** ** Subadditive Binary Relation *)
+(** ** Triangle Inequality *)
+
+Class IsSubadd (A B : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A) (s : B -> B -> A) : Prop :=
+  subadd (a b c : B) : X (s a c) (k (s a b) (s b c)).

@@ -195,6 +195,17 @@ Think again!
     * Check double spacing.
     * Check final line break.
 
+### Next Up
+
+Define this in `ZTheorems`.
+
+```
+Z.abs_triangle ~ IsDistr
+  X = Z.le
+  f = g = h = Z.abs
+  k = m = Z.add
+```
+
 ### Coherence Conditions
 
 When defining operational classes or their instances,
