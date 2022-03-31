@@ -53,13 +53,13 @@ Proof.
   pose proof fun a : x == y => part_ord_is_proper y y id y x (a ^-1) as c.
   intuition. Qed.
 
-(** A partial order is reflexive. *)
+(** Every partial order is reflexive. *)
 
 #[local] Instance part_ord_is_refl
   `{!IsPartOrd X Y} : IsRefl Y.
 Proof. typeclasses eauto. Qed.
 
-(** A partial order is transitive. *)
+(** Every partial order is transitive. *)
 
 #[local] Instance part_ord_is_trans
  `{!IsPartOrd X Y} : IsTrans Y.
@@ -82,13 +82,13 @@ Section Context.
 
 Context (A : Type) (X : A -> A -> Prop).
 
-(** A strict partial order is asymmetric. *)
+(** Every strict partial order is asymmetric. *)
 
 #[local] Instance str_part_ord_is_asym
   `{!IsStrPartOrd X} : IsAsym X.
 Proof. typeclasses eauto. Qed.
 
-(** A strict partial order is a strict preorder. *)
+(** Every strict partial order is a strict preorder. *)
 
 #[export] Instance str_part_ord_is_str_preord
   `{!IsStrPartOrd X} : IsStrPreord X.

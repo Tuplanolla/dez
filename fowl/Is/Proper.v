@@ -18,7 +18,7 @@ Section Context.
 
 Context (A : Type) (X : A -> A -> Prop).
 
-(** Constant functions are proper. *)
+(** Every constant function is proper. *)
 
 #[export] Instance proper_const : IsProper (X ==> X ==> X) const.
 Proof. intros x y a z w b. unfold const. apply a. Qed.

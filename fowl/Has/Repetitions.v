@@ -3,9 +3,7 @@
 From Coq Require Import
   PArith.PArith NArith.NArith ZArith.ZArith.
 From DEZ.Has Require Export
-  EquivalenceRelations Operations ArithmeticOperations.
-(* From DEZ.Is Require Export
-  Semigroup Monoid Group Semiring Ring. *)
+  Operations ArithmeticOperations.
 
 (** The notation [(- 3) * y] corresponding to the expression [Z_op (- 3) y]
     represents repeating the element [y] three times and
@@ -18,7 +16,7 @@ From DEZ.Has Require Export
 Section Context.
 
 Context (A : Type)
-  {X : HasEquivRel A} {k : HasBinOp A} (* `{!IsSemigrp X k} *).
+  {k : HasBinOp A}.
 
 Import Pos.
 
@@ -32,7 +30,7 @@ End Context.
 Section Context.
 
 Context (A : Type)
-  {X : HasEquivRel A} {x : HasNullOp A} {k : HasBinOp A} (* `{!IsMon X x k} *).
+  {x : HasNullOp A} {k : HasBinOp A}.
 
 (** Repeat a monoid element by a natural number. *)
 
@@ -49,8 +47,7 @@ End Context.
 Section Context.
 
 Context (A : Type)
-  {X : HasEquivRel A} {x : HasNullOp A} {f : HasUnOp A} {k : HasBinOp A}
-  (* `{!IsGrp X x f k} *).
+  {x : HasNullOp A} {f : HasUnOp A} {k : HasBinOp A}.
 
 (** Repeat a group element by an integer. *)
 
@@ -72,8 +69,7 @@ End Context.
 Section Context.
 
 Context (A : Type)
-  {X : HasEquivRel A} {x : HasZero A} {k : HasAdd A}
-  {y : HasOne A} {m : HasMul A} (* `{!IsSemiring X x k y m} *).
+  {x : HasZero A} {k : HasAdd A} {y : HasOne A}.
 
 #[local] Instance positive_has_bin_op : HasBinOp A := k.
 
@@ -87,8 +83,7 @@ End Context.
 Section Context.
 
 Context (A : Type)
-  {X : HasEquivRel A} {x : HasZero A} {k : HasAdd A}
-  {y : HasOne A} {m : HasMul A} (* `{!IsSemiring X x k y m} *).
+  {x : HasZero A} {k : HasAdd A} {y : HasOne A}.
 
 #[local] Instance N_has_null_op : HasNullOp A := x.
 #[local] Instance N_has_bin_op : HasBinOp A := k.
@@ -106,8 +101,7 @@ End Context.
 Section Context.
 
 Context (A : Type)
-  {X : HasEquivRel A} {x : HasZero A} {f : HasNeg A} {k : HasAdd A}
-  {y : HasOne A} {m : HasMul A} (* `{!IsRing X x f k y m} *).
+  {x : HasZero A} {f : HasNeg A} {k : HasAdd A} {y : HasOne A}.
 
 #[local] Instance Z_has_null_op : HasNullOp A := x.
 #[local] Instance Z_has_un_op : HasUnOp A := f.
@@ -117,6 +111,11 @@ Context (A : Type)
 
 Equations of_Z (n : Z) : A :=
   of_Z n := Z_op n y.
+
+(** Embed negative one into a ring. *)
+
+Equations negative_one : A :=
+  negative_one := f one.
 
 (** Embed a negative integer into a ring. *)
 

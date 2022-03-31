@@ -39,7 +39,7 @@ Section Context.
 
 Context (A : Type) (X Y : A -> A -> Prop).
 
-(** Connexity implies strict connexity. *)
+(** Every connex relation is strictly connex. *)
 
 #[export] Instance connex_is_str_connex `{!IsConnex Y} : IsStrConnex X Y.
 Proof.

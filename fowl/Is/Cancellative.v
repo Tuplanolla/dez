@@ -12,12 +12,11 @@ Class IsCancelBinFnL (A0 A1 B : Type)
 
 Section Context.
 
-Context (A0 A1 B : Type)
-  (X : A1 -> A1 -> Prop) (Y : B -> B -> Prop)
+Context (A0 A1 B : Type) (X : A1 -> A1 -> Prop) (Y : B -> B -> Prop)
   (k : A0 -> A1 -> B).
 
-(** Left-cancellativity of a binary function
-    is a special case of the injectivity of its partial application. *)
+(** Left-cancellativity of a binary function is a special case
+    of the injectivity of its partially-applied version. *)
 
 #[export] Instance cancel_bin_fn_l_is_inj_un_fn
   `{!IsCancelBinFnL X Y k} (x : A0) : IsInjUnFn X Y (k x).
@@ -38,12 +37,11 @@ Class IsCancelBinFnR (A0 A1 B : Type)
 
 Section Context.
 
-Context (A0 A1 B : Type)
-  (X : A0 -> A0 -> Prop) (Y : B -> B -> Prop)
+Context (A0 A1 B : Type) (X : A0 -> A0 -> Prop) (Y : B -> B -> Prop)
   (k : A0 -> A1 -> B).
 
-(** Right-cancellativity of a binary function
-    is a special case of the injectivity of its flipped partial application. *)
+(** Right-cancellativity of a binary function is a special case
+    of the injectivity of its flipped partially-applied version. *)
 
 #[export] Instance cancel_bin_fn_r_is_inj_un_fn_flip
   `{!IsCancelBinFnR X Y k} (z : A1) : IsInjUnFn X Y (flip k z).
@@ -63,8 +61,8 @@ Section Context.
 Context (A B C : Type) (X : B -> B -> Prop) (Y : C -> C -> Prop)
   (k : A -> B -> C).
 
-(** Left-cancellativity of a binary function
-    is a special case of the right-cancellativity of its flipped version. *)
+(** Left-cancellativity of a binary function is a special case
+    of the right-cancellativity of its flipped version. *)
 
 #[local] Instance cancel_bin_fn_l_is_cancel_bin_fn_r_flip
   `{!IsCancelBinFnL X Y k} : IsCancelBinFnR X Y (flip k).
@@ -89,7 +87,7 @@ Context (A B : Type) (X : B -> B -> Prop)
   (al : A -> B -> B).
 
 (** Left-cancellativity of an action is a special case
-    of the left-cancellativity of a binary function. *)
+    of its left-cancellativity as a binary function. *)
 
 #[export] Instance cancel_act_l_is_cancel_bin_fn_l
   `{!IsCancelActL X al} : IsCancelBinFnL X X al.
@@ -113,7 +111,7 @@ Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (ar : B -> A -> B).
 
 (** Left-cancellativity of a right action is a special case
-    of the left-cancellativity of a binary function. *)
+    of its left-cancellativity as a binary function. *)
 
 #[export] Instance cancel_act_r_l_is_cancel_bin_fn_l
   `{!IsCancelActRL X Y ar} : IsCancelBinFnL X Y ar.
@@ -137,7 +135,7 @@ Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (al : A -> B -> B).
 
 (** Right-cancellativity of a left action is a special case
-    of the right-cancellativity of a binary function. *)
+    of its right-cancellativity as a binary function. *)
 
 #[export] Instance cancel_act_l_r_is_cancel_bin_fn_r
   `{!IsCancelActLR X Y al} : IsCancelBinFnR X Y al.
@@ -162,7 +160,7 @@ Context (A B : Type) (X : B -> B -> Prop)
   (ar : B -> A -> B).
 
 (** Right-cancellativity of an action is a special case
-    of the right-cancellativity of a binary function. *)
+    of its right-cancellativity as a binary function. *)
 
 #[export] Instance cancel_act_r_is_cancel_bin_fn_r
   `{!IsCancelActR X ar} : IsCancelBinFnR X X ar.
@@ -186,7 +184,7 @@ Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (s : B -> B -> A).
 
 (** Left-cancellativity of a form is a special case
-    of the left-cancellativity of a binary function. *)
+    of its left-cancellativity as a binary function. *)
 
 #[export] Instance cancel_form_l_is_cancel_bin_fn_l
   `{!IsCancelFormL X Y s} : IsCancelBinFnL Y X s.
@@ -210,7 +208,7 @@ Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (s : B -> B -> A).
 
 (** Right-cancellativity of a form is a special case
-    of the right-cancellativity of a binary function. *)
+    of its right-cancellativity as a binary function. *)
 
 #[export] Instance cancel_form_r_is_cancel_bin_fn_r
   `{!IsCancelFormR X Y s} : IsCancelBinFnR Y X s.
@@ -234,15 +232,17 @@ Class IsCancelForm (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
 
 (** This has the same shape as [Pos.add_reg_l]. *)
 
-Class IsCancelL (A : Type) (X : A -> A -> Prop) (k : A -> A -> A) : Prop :=
+Class IsCancelL (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A) : Prop :=
   cancel_l (x y z : A) (a : X (k x y) (k x z)) : X y z.
 
 Section Context.
 
-Context (A : Type) (X : A -> A -> Prop) (k : A -> A -> A).
+Context (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A).
 
 (** Left-cancellativity of a binary operation is a special case
-    of the left-cancellativity of a binary function. *)
+    of its left-cancellativity as a binary function. *)
 
 #[export] Instance cancel_l_is_cancel_bin_fn_l
   `{!IsCancelL X k} : IsCancelBinFnL X X k.
@@ -258,15 +258,17 @@ End Context.
 
 (** This has the same shape as [Pos.add_reg_r]. *)
 
-Class IsCancelR (A : Type) (X : A -> A -> Prop) (k : A -> A -> A) : Prop :=
+Class IsCancelR (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A) : Prop :=
   cancel_r (x y z : A) (a : X (k x z) (k y z)) : X x y.
 
 Section Context.
 
-Context (A : Type) (X : A -> A -> Prop) (k : A -> A -> A).
+Context (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A).
 
 (** Right-cancellativity of a binary operation is a special case
-    of the right-cancellativity of a binary function. *)
+    of its right-cancellativity as a binary function. *)
 
 #[export] Instance cancel_r_is_cancel_bin_fn_r
   `{!IsCancelR X k} : IsCancelBinFnR X X k.
@@ -282,7 +284,8 @@ End Context.
 (** ** Injective Binary Operation *)
 (** ** Regular Binary Operation *)
 
-Class IsCancel (A : Type) (X : A -> A -> Prop) (k : A -> A -> A) : Prop := {
+Class IsCancel (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A) : Prop := {
   cancel_is_cancel_l :> IsCancelL X k;
   cancel_is_cancel_r :> IsCancelR X k;
 }.

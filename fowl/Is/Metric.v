@@ -5,7 +5,7 @@ From Coq Require Import
 From DEZ.Has Require Export
   Operations OrderRelations Distances.
 From DEZ.Is Require Export
-  Indiscernible Subadditive
+  Subrelation Subadditive
   TotalOrder Bounded Monoid Commutative Monotonic Inflationary.
 From DEZ.Supports Require Import
   OrderNotations AdditiveNotations.
@@ -18,7 +18,8 @@ Module Real.
 
 Class IsRMetric (A : Type) (X : A -> A -> Prop) (Y : R -> R -> Prop)
   (d : A -> A -> R) : Prop := {
-  is_indisc :> IsIndisc Y X R0 d;
+  is_subrel :> IsSubrel Y X R0 d;
+  is_subrel' :> IsSubrel X Y R0 d;
   is_comm :> IsComm Y d;
   is_subadd :> IsSubadd Rle Rplus d;
 }.

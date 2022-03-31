@@ -10,33 +10,6 @@ Class IsDistrUnFns (A0 A1 B0 B1 B2 C : Type) (X : C -> C -> Prop)
   (h : B2 -> C) (m : B0 -> B1 -> C) : Prop :=
   distr_un_fns (x : A0) (y : A1) : X (h (k x y)) (m (f x) (g y)).
 
-Section Context.
-
-Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
-  (f : A -> B).
-
-(** Properness is a special case of distributivity. *)
-
-#[local] Instance proper_is_distr_un_fns_impl_id
-  `{!IsProper (X ==> Y) f} : IsDistrUnFns impl f f X id Y.
-Proof. auto. Qed.
-
-#[local] Instance distr_un_fns_impl_id_is_proper
-  `{!IsDistrUnFns impl f f X id Y} : IsProper (X ==> Y) f.
-Proof. auto. Qed.
-
-(** Injectivity is a special case of distributivity. *)
-
-#[local] Instance inj_un_fn_is_distr_un_fns_flip_impl_id
-  `{!IsInjUnFn X Y f} : IsDistrUnFns (flip impl) f f X id Y.
-Proof. auto. Qed.
-
-#[local] Instance distr_un_fns_flip_impl_id_is_inj_un_fn
-  `{!IsDistrUnFns (flip impl) f f X id Y} : IsInjUnFn X Y f.
-Proof. auto. Qed.
-
-End Context.
-
 (** ** Unary Function Distributing over Binary Operations *)
 
 Class IsDistrUnFn (A B : Type) (X : B -> B -> Prop)
@@ -225,13 +198,14 @@ End Context.
 
 (** This has the same shape as [Z.mul_add_distr_l]. *)
 
-Class IsDistrL (A : Type) (X : A -> A -> Prop) (k m : A -> A -> A) : Prop :=
+Class IsDistrL (A : Type) (X : A -> A -> Prop)
+  (k m : A -> A -> A) : Prop :=
   distr_l (x y z : A) : X (k x (m y z)) (m (k x y) (k x z)).
 
 Section Context.
 
 Context (A : Type) (X : A -> A -> Prop)
-  (k : A -> A -> A) (m : A -> A -> A).
+  (k m : A -> A -> A).
 
 (** Left-distributivity of a binary operation over a binary operation
     is a special case of their left-distributivity as binary functions. *)
@@ -250,13 +224,14 @@ End Context.
 
 (** This has the same shape as [Z.mul_add_distr_r]. *)
 
-Class IsDistrR (A : Type) (X : A -> A -> Prop) (k m : A -> A -> A) : Prop :=
+Class IsDistrR (A : Type) (X : A -> A -> Prop)
+  (k m : A -> A -> A) : Prop :=
   distr_r (x y z : A) : X (k (m x y) z) (m (k x z) (k y z)).
 
 Section Context.
 
 Context (A : Type) (X : A -> A -> Prop)
-  (k : A -> A -> A) (m : A -> A -> A).
+  (k m : A -> A -> A).
 
 (** Right-distributivity of a binary operation over a binary operation
     is a special case of their right-distributivity as binary functions. *)
@@ -273,14 +248,16 @@ End Context.
 
 (** ** Binary Operation Distributing over a Binary Operation *)
 
-Class IsDistr (A : Type) (X : A -> A -> Prop) (k m : A -> A -> A) : Prop := {
+Class IsDistr (A : Type) (X : A -> A -> Prop)
+  (k m : A -> A -> A) : Prop := {
   distr_is_distr_l :> IsDistrL X k m;
   distr_is_distr_r :> IsDistrR X k m;
 }.
 
 Section Context.
 
-Context (A : Type) (X : A -> A -> Prop) (k : A -> A -> A).
+Context (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A).
 
 (** Identity distributes over everything. *)
 

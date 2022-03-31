@@ -290,9 +290,6 @@ digraph Is {
 
   edge [color = red]
 
-  IsIsoLR -> IsIsoL
-  IsIsoLR -> IsIsoR
-
   // Derivations
 
   edge [style = dashed]
@@ -385,14 +382,12 @@ digraph Is {
     IsIdemUnOp -> IsIdemElemBinOp [label = "compose"]
     IsIdemUnOp -> IsIdemElemUnOp [label = "apply"]
     IsInj -> IsInjUnFn
-    IsInjUnFn -> IsDistrUnFns [label = "flip impl\nid"]
     IsInvBinFnL -> IsInvBinFnR [label = "flip"]
     IsInvFormL -> IsInvBinFnL
     IsInvFormR -> IsInvBinFnR
     IsInvL -> IsInvBinFnL
     IsInvR -> IsInvBinFnR
     IsInvol -> IsInvolElem [label = "apply"]
-    // IsProper -> IsDistrUnFns [label = "impl\nid"]
     IsRng -> IsAbsorbElem
     IsRng -> IsComm
     IsRng -> IsSemirng

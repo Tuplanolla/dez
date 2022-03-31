@@ -11,7 +11,8 @@ Class IsNullPres (A B : Type) (X : B -> B -> Prop)
 
 Section Context.
 
-Context (A : Type) (X : A -> A -> Prop) (x : A) (f : A -> A).
+Context (A : Type) (X : A -> A -> Prop)
+  (x : A) (f : A -> A).
 
 (** Preservation of a nullary operation
     is a special case of the fixed point property. *)
@@ -34,7 +35,8 @@ Class IsUnPres (A B : Type) (X : B -> B -> Prop)
 
 Section Context.
 
-Context (A : Type) (X : A -> A -> Prop) (f g : A -> A).
+Context (A : Type) (X : A -> A -> Prop)
+  (f g : A -> A).
 
 (** Preservation of a unary operation
     is a special case of the commutative property. *)

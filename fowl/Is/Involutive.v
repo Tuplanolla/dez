@@ -11,14 +11,17 @@ Class IsInvolElem (A : Type) (X : A -> A -> Prop)
 
 (** ** Involutive Unary Operation *)
 
-Class IsInvol (A : Type) (X : A -> A -> Prop) (f : A -> A) : Prop :=
+Class IsInvol (A : Type) (X : A -> A -> Prop)
+  (f : A -> A) : Prop :=
   invol (x : A) : X (f (f x)) x.
 
 Section Context.
 
-Context (A : Type) (X : A -> A -> Prop) (f : A -> A).
+Context (A : Type) (X : A -> A -> Prop)
+  (f : A -> A).
 
-(** Every point is an involutive element of an involutive unary operation. *)
+(** Every element is an involutive element
+    with respect to an involutive unary operation. *)
 
 #[export] Instance invol_is_invol_elem
   `{!IsInvol X f} (x : A) : IsInvolElem X x f.

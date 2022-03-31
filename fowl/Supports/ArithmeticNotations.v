@@ -6,8 +6,6 @@ From DEZ.Has Require Import
   ArithmeticOperations ArithmeticActions Repetitions.
 From DEZ.Is Require Import
   Involutive Absorbing.
-From DEZ.Justifies Require Import
-  IntegerPowerTheorems.
 
 Reserved Notation "x '*<' y" (left associativity, at level 40).
 Reserved Notation "x '>*' y" (left associativity, at level 40).
@@ -30,7 +28,7 @@ Notation "a '*<' x" := (s_mul_l a x) : arithmetic_scope.
 Notation "'_>*_'" := s_mul_r : arithmetic_scope.
 Notation "x '>*' a" := (s_mul_r x a) : arithmetic_scope.
 
-(** ...and now for the good parts! *)
+(** TODO ...and now for the good parts! *)
 
 Module Positive.
 
@@ -115,18 +113,21 @@ Module Reified.
 Variant ZR : Type :=
   | Z0R : ZR
   | Z1R : ZR
+  | Zopp1R : ZR
   | ZposR (n : positive) : ZR
   | ZnegR (n : positive) : ZR.
 
 Equations ZR_of_Z (n : Z) : ZR :=
   ZR_of_Z Z0 := Z0R;
   ZR_of_Z (Zpos xH) := Z1R;
+  ZR_of_Z (Zneg xH) := Zopp1R;
   ZR_of_Z (Zpos p) := ZposR p;
   ZR_of_Z (Zneg p) := ZnegR p.
 
 Equations Z_of_ZR (n : ZR) : Z :=
   Z_of_ZR Z0R := Z0;
   Z_of_ZR Z1R := Zpos xH;
+  Z_of_ZR Zopp1R := Zneg xH;
   Z_of_ZR (ZposR p) := Zpos p;
   Z_of_ZR (ZnegR p) := Zneg p.
 
@@ -140,6 +141,7 @@ Context (A : Type)
 Number Notation A ZR_of_Z Z_of_ZR (via ZR mapping [
   [zero] => Z0R,
   [one] => Z1R,
+  [negative_one] => Zopp1R,
   [of_positive] => ZposR,
   [of_negative] => ZnegR]) : arithmetic_scope.
 

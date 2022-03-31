@@ -169,12 +169,6 @@ Ltac subclass := progress (
   try change (bin_op (A := A)) with (mul (A := A)) in *).
 ```
 
-## What Next
-
-See if specializations
-`Commutative.v Compatible.v Associative.v Distributive.v Antidistributive.v Invertible.v Unital.v Absorbing.v Inflationary.v`
-are sensible.
-
 ### Checklist
 
 Think you are done working on a module?

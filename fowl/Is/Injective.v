@@ -12,15 +12,17 @@ Class IsInjUnFn (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
 (** ** Cancellative Unary Operation *)
 (** ** Injective Unary Operation *)
 
-Class IsInj (A : Type) (X : A -> A -> Prop) (f : A -> A) : Prop :=
+Class IsInj (A : Type) (X : A -> A -> Prop)
+  (f : A -> A) : Prop :=
   inj (x y : A) (a : X (f x) (f y)) : X x y.
 
 Section Context.
 
-Context (A : Type) (X : A -> A -> Prop) (f : A -> A).
+Context (A : Type) (X : A -> A -> Prop)
+  (f : A -> A).
 
 (** Injectivity of a unary operation is a special case
-    of the injectivity of a unary function. *)
+    of its injectivity as a unary function. *)
 
 #[export] Instance inj_is_inj_un_fn
   `{!IsInj X f} : IsInjUnFn X X f.

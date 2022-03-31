@@ -5,5 +5,6 @@ From DEZ Require Export
 
 (** ** Fixed Point of a Unary Operation *)
 
-Class IsFixed (A : Type) (X : A -> A -> Prop) (x : A) (f : A -> A) : Prop :=
+Class IsFixed (A : Type) (X : A -> A -> Prop)
+  (x : A) (f : A -> A) : Prop :=
   fixed : X (f x) x.

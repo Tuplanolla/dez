@@ -8,7 +8,8 @@ From DEZ Require Export
 
 (** The dual notion is an deflationary unary operation or a regressive map. *)
 
-Class IsInflUnOp (A : Type) (X : A -> A -> Prop) (f : A -> A) : Prop :=
+Class IsInflUnOp (A : Type) (X : A -> A -> Prop)
+  (f : A -> A) : Prop :=
   infl_un_op (x : A) : X x (f x).
 
 (** ** Inflationary Left Action *)
@@ -82,12 +83,14 @@ End Context.
 
 (** ** Left-Inflationary Binary Operation *)
 
-Class IsInflL (A : Type) (X : A -> A -> Prop) (k : A -> A -> A) : Prop :=
+Class IsInflL (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A) : Prop :=
   infl_l (x y : A) : X y (k x y).
 
 Section Context.
 
-Context (A : Type) (X : A -> A -> Prop) (k : A -> A -> A).
+Context (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A).
 
 (** Left-inflationarity of a binary operation is a special case
     of the inflationarity of its partial application. *)
@@ -104,12 +107,14 @@ End Context.
 
 (** ** Right-Inflationary Binary Operation *)
 
-Class IsInflR (A : Type) (X : A -> A -> Prop) (k : A -> A -> A) : Prop :=
+Class IsInflR (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A) : Prop :=
   infl_r (x y : A) : X x (k x y).
 
 Section Context.
 
-Context (A : Type) (X : A -> A -> Prop) (k : A -> A -> A).
+Context (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A).
 
 (** Right-inflationarity of a binary operation is a special case
     of the inflationarity of its flipped partial application. *)
@@ -129,7 +134,8 @@ End Context.
 
 Section Context.
 
-Context (A : Type) (X : A -> A -> Prop) (k : A -> A -> A).
+Context (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A).
 
 (** Left-inflationarity of a binary operation is a special case
     of the right-inflationarity of its flipped version. *)
@@ -146,7 +152,8 @@ End Context.
 
 (** ** Inflationary Binary Operation *)
 
-Class IsInfl (A : Type) (X : A -> A -> Prop) (k : A -> A -> A) : Prop := {
+Class IsInfl (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A) : Prop := {
   infl_is_infl_l :> IsInflL X k;
   infl_is_infl_r :> IsInflR X k;
 }.
