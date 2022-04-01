@@ -13,18 +13,18 @@ digraph Is {
   IsAntisym [label = "\N Xeq Xle\nantisym (x y : A) (a : Xle x y) (b : Xle y x) : Xeq x y"]
   IsAsym [label = "\N X\nasym (x y : A) (a : X x y) (b : X y x) : 0"]
   IsCohRels [label = "\N Xeq Xle Xlt\ncoh_rels (x y : A) : Xle x y <-> Xeq x y \\/ Xlt x y"]
-  IsComono [label = "\N X Y f\ncomono (x y : A) (a : Y (f x) (f y)) : X x y"]
+  IsComonoUnFn [label = "\N X Y f\ncomono_un_fn (x y : A) (a : Y (f x) (f y)) : X x y"]
   IsConnex [label = "\N X\nconnex (x y : A) : X x y \\/ X y x"]
   IsCotrans [label = "\N X\ncotrans (x y z : A) (a : X x z) : X x y \\/ X y z"]
   IsIrrefl [label = "\N X\nirrefl (x : A) (a : X x x) : 0"]
   IsLowerBnd [label = "\N X x\nlower_bnd (y : A) : X x y"]
-  IsMono [label = "\N X Y f\nmono (x y : A) (a : X x y) : Y (f x) (f y)"]
+  IsMonoUnFn [label = "\N X Y f\nmono_un_fn (x y : A) (a : X x y) : Y (f x) (f y)"]
   IsMonoUnOp [label = "\N X f\nmono_un_op (x y : A) (a : X x y) : X (f x) (f y)"]
   IsMonoBinFnL [label = "\N X Y k\nmono_bin_fn_l (x y : A1) (z : A0) (a : X x y) : Y (k z x) (k z y)"]
   IsMonoBinFnLR [label = "\N X0 X1 Y k\nmono_bin_fn_l_r (x0 y0 : A0) (a0 : X0 x0 y0) (x1 y1 : A1) (a1 : X1 x1 y1) : Y (k x0 x1) (k y0 y1)"]
   IsMonoBinFnR [label = "\N X Y k\nmono_bin_fn_r (x y : A0) (z : A1) (a : X x y) : Y (k x z) (k y z)"]
   IsMonoBinOpL [label = "\N X k\nmono_bin_op_l (x y z : A) (a : X x y) : X (k z x) (k z y)"]
-  IsMonoBinOpLR [label = "\N X k\nmono_bin_op_l_r (x0 y0 : A0) (a0 : X x0 y0) (x1 y1 : A1) (a1 : X x1 y1) : X (k x0 x1) (k y0 y1)"]
+  IsMonoBinOpLR [label = "\N X k\nmono_bin_op_l_r (x0 y0 : A) (a0 : X x0 y0) (x1 y1 : A) (a1 : X x1 y1) : X (k x0 x1) (k y0 y1)"]
   IsMonoBinOpR [label = "\N X k\nmono_bin_op_r (x y z : A) (a : X x y) : X (k x z) (k y z)"]
   IsRefl [label = "\N X\nrefl (x : A) : X x x"]
   IsStrConnex [label = "\N Xeq Xle\nstr_connex (x y : A) : Xle x y \\/ Xeq x y \\/ Xle y x"]
@@ -187,6 +187,9 @@ digraph Is {
   IsIsoL [label = "\N\niso_l (a : A) : g (f a) = a", color = red, fillcolor = yellow]
   IsIsoR [label = "\N\niso_r (b : B) : f (g b) = b", color = red, fillcolor = yellow]
   }
+
+  IsRealMetric [label = "\N X d", color = red, fillcolor = yellow]
+  IsMetric [label = "\N X x k d", color = red, fillcolor = yellow]
 
   subgraph cluster_hott {
   label = "Homotopy Fragment"

@@ -7,57 +7,21 @@ From DEZ.Is Require Export
 From DEZ.Supports Require Import
   EquivalenceNotations OrderNotations AdditiveNotations.
 
-(** ** Monotonic Function *)
-
-Fail Fail Class IsMono (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
-  (f : A -> B) : Prop :=
-  mono (x y : A) (a : X x y) : Y (f x) (f y).
-
-Notation IsMono X Y := (Proper (X ==> Y)) (only parsing).
-Notation mono := proper_prf (only parsing).
-
-(** ** Strictly Monotonic Function *)
+(** ** Monotonic Unary Function *)
 
 (** Strict monotonicity with respect to an order relation is just
-    monotonicity with respect to the corresponding strict order relation. *)
+    monotonicity with respect to the corresponding strict order relation,
+    which is why we do not define it separately. *)
 
-Notation IsStrMono X Y := (Proper (X ==> Y)) (only parsing).
-Notation str_mono := proper_prf (only parsing).
+Fail Fail Class IsMonoUnFn (A B : Type)
+  (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (f : A -> B) : Prop :=
+  mono_un_fn (x y : A) (a : X x y) : Y (f x) (f y).
 
-Section Context.
+Fail Arguments mono_un_fn {_ _ _ _} _ {_} _ _ _.
 
-Context (A B : Type)
-  (Xeq Xle Xlt : A -> A -> Prop) (Yeq Yle Ylt : B -> B -> Prop)
-  (f : A -> B)
-  `{!IsCohRels Xeq Xle Xlt} `{!IsCohRels Yeq Yle Ylt}
-  `{!IsProper (Xeq ==> Yeq) f}.
-
-#[local] Instance str_mono_dom_has_equiv_rel : HasEquivRel A := Xeq.
-#[local] Instance str_mono_dom_has_ord_rel : HasOrdRel A := Xle.
-#[local] Instance str_mono_dom_has_str_ord_rel : HasStrOrdRel A := Xlt.
-#[local] Instance str_mono_codom_has_equiv_rel : HasEquivRel B := Yeq.
-#[local] Instance str_mono_codom_has_ord_rel : HasOrdRel B := Yle.
-#[local] Instance str_mono_codom_has_str_ord_rel : HasStrOrdRel B := Ylt.
-
-Ltac note := progress (
-  try change Xeq with (equiv_rel (A := A)) in *;
-  try change Xle with (ord_rel (A := A)) in *;
-  try change Xlt with (str_ord_rel (A := A)) in *;
-  try change Yeq with (equiv_rel (A := B)) in *;
-  try change Yle with (ord_rel (A := B)) in *;
-  try change Ylt with (str_ord_rel (A := B)) in *).
-
-(** Every discrete strictly monotonic function is monotonic. *)
-
-#[export] Instance str_mono_is_mono
-  `{!IsStrMono Xlt Ylt f} : IsMono Xle Yle f.
-Proof with note.
-  intros x y ale...
-  pose proof coh_rels x y as a.
-  pose proof coh_rels (f x) (f y) as b.
-  intuition. Qed.
-
-End Context.
+Notation IsMonoUnFn X Y := (Proper (X ==> Y)) (only parsing).
+Notation mono_un_fn := proper_prf (only parsing).
 
 (** ** Monotonic Unary Operation *)
 
@@ -65,13 +29,10 @@ Fail Fail Class IsMonoUnOp (A : Type) (X : A -> A -> Prop)
   (f : A -> A) : Prop :=
   mono_un_op (x y : A) (a : X x y) : X (f x) (f y).
 
+Fail Arguments mono_un_op {_ _} _ {_} _ _ _.
+
 Notation IsMonoUnOp X := (Proper (X ==> X)) (only parsing).
 Notation mono_un_op := proper_prf (only parsing).
-
-(** ** Strictly Monotonic Unary Operation *)
-
-Notation IsStrMonoUnOp X := (Proper (X ==> X)) (only parsing).
-Notation str_mono_un_op := proper_prf (only parsing).
 
 (** ** Left-Monotonic Binary Function *)
 
@@ -93,13 +54,10 @@ Fail Fail Class IsMonoBinFnLR (A0 A1 B : Type)
   mono_bin_fn_l_r (x0 y0 : A0) (a0 : X0 x0 y0) (x1 y1 : A1) (a1 : X1 x1 y1) :
   Y (k x0 x1) (k y0 y1).
 
+Fail Arguments mono_bin_fn_l_r {_ _ _ _ _ _} _ {_} _ _ _ _ _ _.
+
 Notation IsMonoBinFnLR X0 X1 Y := (Proper (X0 ==> X1 ==> Y)) (only parsing).
 Notation mono_bin_fn_l_r := proper_prf (only parsing).
-
-(** ** Strictly Monotonic Binary Function *)
-
-Notation IsStrMonoBinFnLR X0 X1 Y := (Proper (X0 ==> X1 ==> Y)) (only parsing).
-Notation str_mono_bin_fn_l_r := proper_prf (only parsing).
 
 Section Context.
 
@@ -166,10 +124,46 @@ Class IsMonoBinOpR (A : Type) (X : A -> A -> Prop)
 
 (** ** Monotonic Binary Operation *)
 
+Fail Fail Class IsMonoBinOpLR (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A) : Prop :=
+  mono_bin_op_l_r (x0 y0 : A) (a0 : X x0 y0) (x1 y1 : A) (a1 : X x1 y1) :
+  X (k x0 x1) (k y0 y1).
+
+Fail Arguments mono_bin_op_l_r {_ _} _ {_} _ _ _ _ _ _.
+
 Notation IsMonoBinOpLR X := (Proper (X ==> X ==> X)) (only parsing).
 Notation mono_bin_op_l_r := proper_prf (only parsing).
 
-(** ** Strictly Monotonic Binary Operation *)
+Section Context.
 
-Notation IsStrMonoBinOpLR X := (Proper (X ==> X ==> X)) (only parsing).
-Notation str_mono_bin_op_l_r := proper_prf (only parsing).
+Context (A B : Type)
+  (Xeq Xle Xlt : A -> A -> Prop) (Yeq Yle Ylt : B -> B -> Prop)
+  (f : A -> B) `{!IsCohRels Xeq Xle Xlt} `{!IsCohRels Yeq Yle Ylt}
+  `{!IsProper (Xeq ==> Yeq) f}.
+
+#[local] Instance mono_un_fn_dom_has_equiv_rel : HasEquivRel A := Xeq.
+#[local] Instance mono_un_fn_dom_has_ord_rel : HasOrdRel A := Xle.
+#[local] Instance mono_un_fn_dom_has_str_ord_rel : HasStrOrdRel A := Xlt.
+#[local] Instance mono_un_fn_codom_has_equiv_rel : HasEquivRel B := Yeq.
+#[local] Instance mono_un_fn_codom_has_ord_rel : HasOrdRel B := Yle.
+#[local] Instance mono_un_fn_codom_has_str_ord_rel : HasStrOrdRel B := Ylt.
+
+Ltac note := progress (
+  try change Xeq with (equiv_rel (A := A)) in *;
+  try change Xle with (ord_rel (A := A)) in *;
+  try change Xlt with (str_ord_rel (A := A)) in *;
+  try change Yeq with (equiv_rel (A := B)) in *;
+  try change Yle with (ord_rel (A := B)) in *;
+  try change Ylt with (str_ord_rel (A := B)) in *).
+
+(** Every strictly monotonic function is monotonic. *)
+
+#[export] Instance mono_un_fn_is_mono_un_fn
+  `{!IsMonoUnFn Xlt Ylt f} : IsMonoUnFn Xle Yle f.
+Proof with note.
+  intros x y ale...
+  pose proof coh_rels x y as a.
+  pose proof coh_rels (f x) (f y) as b.
+  intuition. Qed.
+
+End Context.
