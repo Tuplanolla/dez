@@ -3,28 +3,14 @@
 From Coq Require Import
   Lia Reals.Reals.
 From DEZ.Has Require Export
-  Operations OrderRelations Distances ArithmeticOperations.
+  Operations OrderRelations Forms Distances ArithmeticOperations.
 From DEZ.Is Require Export
-  Subrelation Subadditive
-  TotalOrder Bounded Monoid Commutative Monotonic Inflationary.
+  Equivalence Commutative Toeplitz Nonnegative Subadditive Subrelation
+  TotalOrder Bounded Monoid Monotonic Inflationary.
 From DEZ.Supports Require Import
   EquivalenceNotations OrderNotations AdditiveNotations ArithmeticNotations.
 
 #[local] Notation "'|' y '-' x '|'" := (dist x y) (format "'|' y  '-'  x '|'").
-
-(** TODO Put these in their own modules. *)
-
-(** ** Nonnegative Form *)
-
-Class IsNonnegForm (A B : Type) (X : A -> A -> Prop)
-  (x : A) (s : B -> B -> A) : Prop :=
-  nonneg_form (a b : B) : X x (s a b).
-
-(** ** Zero-Diagonal Form *)
-
-Class IsDiagForm (A B : Type) (X : A -> A -> Prop)
-  (x : A) (s : B -> B -> A) : Prop :=
-  diag_form (a : B) : X (s a a) x.
 
 Module Real.
 
@@ -62,16 +48,25 @@ Module Real.
 #[export] Instance R_has_mul : HasMul R := Rmult.
 #[export] Instance R_has_recip : HasRecip R := Rinv.
 
-(** ** Real Metric Space *)
+(** ** Real Pseudometric Space *)
 
-(** This is the usual definition in the setoid model. *)
+Class IsRealPseudometric (B : Type) (X : B -> B -> Prop)
+  (d : B -> B -> R) : Prop := {
+  real_pseudometric_is_equiv :> IsEquiv X;
+  real_pseudometric_is_comm_form :> IsCommForm _=_ d;
+  real_pseudometric_is_toeplitz_form :> IsToeplitzForm _=_ 0 d;
+  real_pseudometric_is_nonneg_form :> IsNonnegForm _<=_ 0 d;
+  real_pseudometric_is_subadd_form :> IsSubaddForm _<=_ _+_ d;
+}.
+
+(** ** Real Metric Space *)
 
 Class IsRealMetric (B : Type) (X : B -> B -> Prop)
   (d : B -> B -> R) : Prop := {
   real_metric_is_equiv :> IsEquiv X;
-  real_metric_is_iff_rel :> IsIffRel X (fun a b : B => d a b = 0);
   real_metric_is_comm_form :> IsCommForm _=_ d;
-  real_metric_is_subadd :> IsSubadd _<=_ _+_ d;
+  real_metric_is_iff_rel :> IsIffRel X (fun a b : B => d a b = 0);
+  real_metric_is_subadd_form :> IsSubaddForm _<=_ _+_ d;
 }.
 
 Section Context.
@@ -84,12 +79,12 @@ Context (B : Type) (X : B -> B -> Prop)
 Ltac note := progress (
   try change X with (equiv_rel (A := B)) in *).
 
-#[export] Instance real_metric_is_diag_form : IsDiagForm _=_ 0 d.
+#[export] Instance real_metric_is_toeplitz_form : IsToeplitzForm _=_ 0 d.
 Proof with note. intros a... apply real_metric_is_iff_rel. reflexivity. Qed.
 
 #[export] Instance real_metric_is_nonneg_form : IsNonnegForm _<=_ 0 d.
 Proof with note.
-  intros a b... pose proof subadd a b a as s. rewrite diag_form in s.
+  intros a b... pose proof subadd_form a b a as s. rewrite toeplitz_form in s.
   apply (Rmult_le_reg_r 2).
   - apply IZR_lt. lia.
   - rewrite Rmult_0_l.
@@ -101,15 +96,23 @@ Proof with note.
 #[export] Instance real_metric_is_proper : IsProper (X ==> X ==> _=_) d.
 Proof with note.
   intros a0 b0 s0 a1 b1 s1...
-  (** This should be some sort of square made out of triangles. *)
   pose proof (iff_rel_is_subrel (IsIffRel := real_metric_is_iff_rel)) as t.
   hnf in t. pose proof (t _ _ s0) as t0. pose proof (t _ _ s1) as t1.
-  apply (Rplus_eq_reg_r (- d a0 a1)).
-  Fail rewrite Rminus_diag_eq by reflexivity.
-  change (d a0 a1 + - d a0 a1) with (d a0 a1 - d a0 a1).
-  rewrite Rminus_eq_0.
-  (* change (d b0 b1 + - d a0 a1) with (d b0 b1 - d a0 a1). *)
-  pose proof subadd. Abort.
+  apply Rle_le_eq. split.
+  - pose proof subadd_form a0 b0 a1 as u0.
+    pose proof subadd_form b0 b1 a1 as u1.
+    rewrite (comm_form a1 b1) in t1.
+    rewrite t0 in u0. rewrite Rplus_0_l in u0.
+    rewrite t1 in u1. rewrite Rplus_0_r in u1.
+    eapply Rle_trans. apply u0. eapply Rle_trans. apply u1.
+    apply Rle_refl.
+  - pose proof subadd_form b0 a0 b1 as u0.
+    pose proof subadd_form a0 a1 b1 as u1.
+    rewrite (comm_form a0 b0) in t0.
+    rewrite t0 in u0. rewrite Rplus_0_l in u0.
+    rewrite t1 in u1. rewrite Rplus_0_r in u1.
+    eapply Rle_trans. apply u0. eapply Rle_trans. apply u1.
+    apply Rle_refl. Qed.
 
 End Context.
 
@@ -149,7 +152,7 @@ Class IsMetric (A B : Type)
   (HR : HasOrdRel A) (Hx : HasNullOp A) (Hk : HasBinOp A)
   (Hd : HasDist A B) : Prop := {
   is_dist_mon :> IsDistMon _<=_ 0 _+_;
-  is_subadd :> IsSubadd _<=_ _+_ dist;
+  is_subadd_form :> IsSubaddForm _<=_ _+_ dist;
 }.
 
 Section Context.
@@ -162,7 +165,7 @@ Context (A B : Type) (HR : HasOrdRel A) (Hx : HasNullOp A) (Hk : HasBinOp A)
 #[local] Instance is_comm_tor_l : IsCommForm _=_ dist.
 Proof.
   intros x y.
-  pose proof subadd x y x as b.
+  pose proof subadd_form x y x as b.
   pose proof connex (X := _<=_) (dist x y) (dist y x) as [a | a];
   change bin_rel with _<=_ in a. Abort.
 
