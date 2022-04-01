@@ -1,14 +1,14 @@
 (** * Inflationarity *)
 
+(** The dual notion of an inflationarity or a progressive map
+    is a deflationarity or a regressive map,
+    which is why we do not define it separately. *)
+
 From DEZ Require Export
   Init.
 
 (** ** Inflationary Unary Operation *)
 (** ** Progressive Map *)
-
-(** The dual notion of an inflationary unary operation
-    is a deflationary unary operation or a regressive map,
-    which is why we do not define it separately. *)
 
 Class IsInflUnOp (A : Type) (X : A -> A -> Prop)
   (f : A -> A) : Prop :=

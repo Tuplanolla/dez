@@ -1,5 +1,9 @@
 (** * Monotonic *)
 
+(** Strict monotonicity with respect to an order relation is just
+    monotonicity with respect to the corresponding strict order relation,
+    which is why we do not define it separately. *)
+
 From DEZ.Has Require Export
   EquivalenceRelations OrderRelations Operations.
 From DEZ.Is Require Export
@@ -8,10 +12,6 @@ From DEZ.Supports Require Import
   EquivalenceNotations OrderNotations AdditiveNotations.
 
 (** ** Monotonic Unary Function *)
-
-(** Strict monotonicity with respect to an order relation is just
-    monotonicity with respect to the corresponding strict order relation,
-    which is why we do not define it separately. *)
 
 Fail Fail Class IsMonoUnFn (A B : Type)
   (X : A -> A -> Prop) (Y : B -> B -> Prop)
@@ -46,7 +46,7 @@ Class IsMonoBinFnR (A0 A1 B : Type) (X : A0 -> A0 -> Prop) (Y : B -> B -> Prop)
   (k : A0 -> A1 -> B) : Prop :=
   mono_bin_fn_r (x y : A0) (z : A1) (a : X x y) : Y (k x z) (k y z).
 
-(** ** Monotonic Binary Function *)
+(** ** Left-Right-Monotonic Binary Function *)
 
 Fail Fail Class IsMonoBinFnLR (A0 A1 B : Type)
   (X0 : A0 -> A0 -> Prop) (X1 : A1 -> A1 -> Prop) (Y : B -> B -> Prop)
@@ -74,7 +74,7 @@ Ltac note := progress (
   try change X1 with (ord_rel (A := A1)) in *;
   try change Y with (ord_rel (A := B)) in *).
 
-(** Every left- and right-monotonic binary function is monotonic. *)
+(** Every left- and right-monotonic binary function is left-right-monotonic. *)
 
 #[local] Instance mono_bin_fn_is_mono_bin_fn_l_r
   `{!IsMonoBinFnL X1 Y k} `{!IsMonoBinFnR X0 Y k} : IsMonoBinFnLR X0 X1 Y k.
@@ -86,7 +86,7 @@ Proof with note.
 
 (** Every monotonic binary function is left-monotonic. *)
 
-#[export] Instance mono_bin_fn_l_r_is_mono_bin_fn_l
+#[local] Instance mono_bin_fn_l_r_is_mono_bin_fn_l
   `{!IsMonoBinFnLR X0 X1 Y k} : IsMonoBinFnL X1 Y k.
 Proof with note.
   intros x y z a...
@@ -96,7 +96,7 @@ Proof with note.
 
 (** Every monotonic binary function is right-monotonic. *)
 
-#[export] Instance mono_bin_fn_l_r_is_mono_bin_fn_r
+#[local] Instance mono_bin_fn_l_r_is_mono_bin_fn_r
   `{!IsMonoBinFnLR X0 X1 Y k} : IsMonoBinFnR X0 Y k.
 Proof with note.
   intros x y z a...
@@ -114,6 +114,24 @@ Class IsMonoBinOpL (A : Type) (X : A -> A -> Prop)
   (k : A -> A -> A) : Prop :=
   mono_bin_op_l (x y z : A) (a : X x y) : X (k z x) (k z y).
 
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A).
+
+(** Left-monotonicity of a binary operation is a special case
+    of its left-monotonicity as a binary function. *)
+
+#[export] Instance mono_bin_op_l_is_mono_bin_fn_l
+  `{!IsMonoBinOpL X k} : IsMonoBinFnL X X k.
+Proof. auto. Qed.
+
+#[local] Instance mono_bin_fn_l_is_mono_bin_op_l
+  `{!IsMonoBinFnL X X k} : IsMonoBinOpL X k.
+Proof. auto. Qed.
+
+End Context.
+
 (** ** Right-Monotonic Binary Operation *)
 
 (** This has the same shape as [Z.add_le_mono_r]. *)
@@ -122,7 +140,33 @@ Class IsMonoBinOpR (A : Type) (X : A -> A -> Prop)
   (k : A -> A -> A) : Prop :=
   mono_bin_op_r (x y z : A) (a : X x y) : X (k x z) (k y z).
 
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A).
+
+(** Right-monotonicity of a binary operation is a special case
+    of its right-monotonicity as a binary function. *)
+
+#[export] Instance mono_bin_op_r_is_mono_bin_fn_r
+  `{!IsMonoBinOpR X k} : IsMonoBinFnR X X k.
+Proof. auto. Qed.
+
+#[local] Instance mono_bin_fn_r_is_mono_bin_op_r
+  `{!IsMonoBinFnR X X k} : IsMonoBinOpR X k.
+Proof. auto. Qed.
+
+End Context.
+
 (** ** Monotonic Binary Operation *)
+
+Class IsMonoBinOp (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A) : Prop := {
+  mono_bin_op_is_mono_bin_op_l :> IsMonoBinOpL X k;
+  mono_bin_op_is_mono_bin_op_r :> IsMonoBinOpR X k;
+}.
+
+(** ** Left-Right-Monotonic Binary Operation *)
 
 Fail Fail Class IsMonoBinOpLR (A : Type) (X : A -> A -> Prop)
   (k : A -> A -> A) : Prop :=
@@ -133,6 +177,34 @@ Fail Arguments mono_bin_op_l_r {_ _} _ {_} _ _ _ _ _ _.
 
 Notation IsMonoBinOpLR X := (Proper (X ==> X ==> X)) (only parsing).
 Notation mono_bin_op_l_r := proper_prf (only parsing).
+
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop)
+  (k : A -> A -> A) `{!IsPreord X}.
+
+#[local] Instance mono_bin_fn_has_ord_rel : HasOrdRel A := X.
+
+Ltac note := progress (
+  try change X with (ord_rel (A := A)) in *).
+
+(** Monotonicity of a binary operation is equivalent
+    to its left-right-monotonicity. *)
+
+#[local] Instance mono_bin_op_is_mono_bin_op_l_r
+  `{!IsMonoBinOp X k} : IsMonoBinOpLR X k.
+Proof. eapply mono_bin_fn_is_mono_bin_fn_l_r; typeclasses eauto. Qed.
+
+#[local] Instance mono_bin_op_l_r_is_mono_bin_op
+  `{!IsMonoBinOpLR X k} : IsMonoBinOp X k.
+Proof.
+  esplit.
+  - eapply mono_bin_fn_l_is_mono_bin_op_l.
+    eapply mono_bin_fn_l_r_is_mono_bin_fn_l; typeclasses eauto.
+  - eapply mono_bin_fn_r_is_mono_bin_op_r.
+    eapply mono_bin_fn_l_r_is_mono_bin_fn_r; typeclasses eauto. Qed.
+
+End Context.
 
 Section Context.
 

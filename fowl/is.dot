@@ -7,34 +7,35 @@ digraph Is {
 
   // IsProper [label = "\N X\nproper (x : A) : X x x"]
 
-  subgraph cluster_order_theory_classes {
-    label = "Order Theory"
-
-  IsAntisym [label = "\N Xeq Xle\nantisym (x y : A) (a : Xle x y) (b : Xle y x) : Xeq x y"]
-  IsAsym [label = "\N X\nasym (x y : A) (a : X x y) (b : X y x) : 0"]
-  IsCohRels [label = "\N Xeq Xle Xlt\ncoh_rels (x y : A) : Xle x y <-> Xeq x y \\/ Xlt x y"]
-  IsComonoUnFn [label = "\N X Y f\ncomono_un_fn (x y : A) (a : Y (f x) (f y)) : X x y"]
-  IsConnex [label = "\N X\nconnex (x y : A) : X x y \\/ X y x"]
-  IsCotrans [label = "\N X\ncotrans (x y z : A) (a : X x z) : X x y \\/ X y z"]
-  IsIrrefl [label = "\N X\nirrefl (x : A) (a : X x x) : 0"]
-  IsLowerBnd [label = "\N X x\nlower_bnd (y : A) : X x y"]
-  IsMonoUnFn [label = "\N X Y f\nmono_un_fn (x y : A) (a : X x y) : Y (f x) (f y)"]
-  IsMonoUnOp [label = "\N X f\nmono_un_op (x y : A) (a : X x y) : X (f x) (f y)"]
-  IsMonoBinFnL [label = "\N X Y k\nmono_bin_fn_l (x y : A1) (z : A0) (a : X x y) : Y (k z x) (k z y)"]
-  IsMonoBinFnLR [label = "\N X0 X1 Y k\nmono_bin_fn_l_r (x0 y0 : A0) (a0 : X0 x0 y0) (x1 y1 : A1) (a1 : X1 x1 y1) : Y (k x0 x1) (k y0 y1)"]
-  IsMonoBinFnR [label = "\N X Y k\nmono_bin_fn_r (x y : A0) (z : A1) (a : X x y) : Y (k x z) (k y z)"]
-  IsMonoBinOpL [label = "\N X k\nmono_bin_op_l (x y z : A) (a : X x y) : X (k z x) (k z y)"]
-  IsMonoBinOpLR [label = "\N X k\nmono_bin_op_l_r (x0 y0 : A) (a0 : X x0 y0) (x1 y1 : A) (a1 : X x1 y1) : X (k x0 x1) (k y0 y1)"]
-  IsMonoBinOpR [label = "\N X k\nmono_bin_op_r (x y z : A) (a : X x y) : X (k x z) (k y z)"]
-  IsRefl [label = "\N X\nrefl (x : A) : X x x"]
-  IsStrConnex [label = "\N Xeq Xle\nstr_connex (x y : A) : Xle x y \\/ Xeq x y \\/ Xle y x"]
-  IsSubrel [label = "\N Xsub Xsup\nsubrel (x y : A) (a : Xsub x y) : Xsup x y"]
-  IsSym [label = "\N X\nsym (x y : A) (a : X x y) : X y x"]
-  IsTrans [label = "\N X\ntrans (x y z : A) (a : X x y) (b : X y z) : X x z"]
-  IsUpperBnd [label = "\N X x\nupper_bnd (y : A) : X y x"]
+  subgraph order_theory_classes {
+    IsAntisym [label = "\N Xeq Xle\nantisym (x y : A) (a : Xle x y) (b : Xle y x) : Xeq x y"]
+    IsAsym [label = "\N X\nasym (x y : A) (a : X x y) (b : X y x) : 0"]
+    IsCohRels [label = "\N Xeq Xle Xlt\ncoh_rels (x y : A) : Xle x y <-> Xeq x y \\/ Xlt x y"]
+    IsComonoUnFn [label = "\N X Y f\ncomono_un_fn (x y : A) (a : Y (f x) (f y)) : X x y"]
+    IsConnex [label = "\N X\nconnex (x y : A) : X x y \\/ X y x"]
+    IsCotrans [label = "\N X\ncotrans (x y z : A) (a : X x z) : X x y \\/ X y z"]
+    IsIrrefl [label = "\N X\nirrefl (x : A) (a : X x x) : 0"]
+    IsLowerBnd [label = "\N X x\nlower_bnd (y : A) : X x y"]
+    IsMonoBinFnL [label = "\N X Y k\nmono_bin_fn_l (x y : A1) (z : A0) (a : X x y) : Y (k z x) (k z y)"]
+    IsMonoBinFnLR [label = "\N X0 X1 Y k\nmono_bin_fn_l_r (x0 y0 : A0) (a0 : X0 x0 y0) (x1 y1 : A1) (a1 : X1 x1 y1) : Y (k x0 x1) (k y0 y1)"]
+    IsMonoBinFnR [label = "\N X Y k\nmono_bin_fn_r (x y : A0) (z : A1) (a : X x y) : Y (k x z) (k y z)"]
+    IsMonoBinOpL [label = "\N X k\nmono_bin_op_l (x y z : A) (a : X x y) : X (k z x) (k z y)"]
+    IsMonoBinOpLR [label = "\N X k\nmono_bin_op_l_r (x0 y0 : A) (a0 : X x0 y0) (x1 y1 : A) (a1 : X x1 y1) : X (k x0 x1) (k y0 y1)"]
+    IsMonoBinOpR [label = "\N X k\nmono_bin_op_r (x y z : A) (a : X x y) : X (k x z) (k y z)"]
+    IsMonoUnFn [label = "\N X Y f\nmono_un_fn (x y : A) (a : X x y) : Y (f x) (f y)"]
+    IsMonoUnOp [label = "\N X f\nmono_un_op (x y : A) (a : X x y) : X (f x) (f y)"]
+    IsRefl [label = "\N X\nrefl (x : A) : X x x"]
+    IsStrConnex [label = "\N Xeq Xle\nstr_connex (x y : A) : Xle x y \\/ Xeq x y \\/ Xle y x"]
+    IsSubrel [label = "\N Xsub Xsup\nsubrel (x y : A) (a : Xsub x y) : Xsup x y"]
+    IsSym [label = "\N X\nsym (x y : A) (a : X x y) : X y x"]
+    IsTrans [label = "\N X\ntrans (x y z : A) (a : X x y) (b : X y z) : X x z"]
+    IsUpperBnd [label = "\N X x\nupper_bnd (y : A) : X y x"]
 
     IsApart [label = "\N X"]
+    IsBnd [label = "\N X x y"]
     IsEquiv [label = "\N X"]
+    IsIffRel [label = "\N X Y"]
+    IsMonoBinOp [label = "\N X k"]
     IsPartEquiv [label = "\N X"]
     IsPartOrd [label = "\N Xeq Xle"]
     IsPreord [label = "\N X"]
@@ -42,161 +43,155 @@ digraph Is {
     IsStrPreord [label = "\N X"]
     IsStrTotOrd [label = "\N Xeq Xle"]
     IsTotOrd [label = "\N Xeq Xle"]
-    IsBnd [label = "\N X x y"]
-    IsIffRel [label = "\N X Y"]
   }
 
-  subgraph cluster_cancel {
-  label = "Cancellative Fragment"
-  IsCancelBinFnL [label = "\N X Y k\ncancel_bin_fn_l (x : A1) (y z : A0) (a : Y (k x y) (k x z)) : X y z"]
-  IsCancelBinFnR [label = "\N X Y k\ncancel_bin_fn_r (x y : A0) (z : A1) (a : Y (k x z) (k y z)) : X x y"]
-  IsCancelActL [label = "\N X al\ncancel_act_l (x : A) (a b : B) (s : X (al x a) (al x b)) : X a b"]
-  IsCancelActLR [label = "\N X Y al\ncancel_act_l_r (x y : A) (a : B) (s : Y (al x a) (al y a)) : X x y"]
-  IsCancelActR [label = "\N X ar\ncancel_act_r (a b : B) (x : A) (s : X (ar a x) (ar b x)) : X a b"]
-  IsCancelActRL [label = "\N X Y ar\ncancel_act_r_l (a : B) (x y : A) (s : Y (ar a x) (ar a y)) : X x y"]
-  IsCancelFormL [label = "\N X Y s\ncancel_form_l (a b c : B) (t : X (s a b) (s a c)) : Y b c"]
-  IsCancelFormR [label = "\N X Y s\ncancel_form_r (a b c : B) (t : X (s a c) (s b c)) : Y a b"]
-  IsCancelL [label = "\N X k\ncancel_l (x y z : A) (a : X (k x y) (k x z)) : X y z"]
-  IsCancelR [label = "\N X k\ncancel_r (x y z : A) (a : X (k x z) (k y z)) : X x y"]
-  IsInj [label = "\N X f\ninj (x y : A) (a : X (f x) (f y)) : X x y"]
-  IsInjUnFn [label = "\N X Y f\ninj_un_fn (x y : A) (a : Y (f x) (f y)) : X x y"]
+  subgraph cancel_classes {
+    IsCancelActL [label = "\N X al\ncancel_act_l (x : A) (a b : B) (s : X (al x a) (al x b)) : X a b"]
+    IsCancelActLR [label = "\N X Y al\ncancel_act_l_r (x y : A) (a : B) (s : Y (al x a) (al y a)) : X x y"]
+    IsCancelActR [label = "\N X ar\ncancel_act_r (a b : B) (x : A) (s : X (ar a x) (ar b x)) : X a b"]
+    IsCancelActRL [label = "\N X Y ar\ncancel_act_r_l (a : B) (x y : A) (s : Y (ar a x) (ar a y)) : X x y"]
+    IsCancelBinFnL [label = "\N X Y k\ncancel_bin_fn_l (x : A1) (y z : A0) (a : Y (k x y) (k x z)) : X y z"]
+    IsCancelBinFnR [label = "\N X Y k\ncancel_bin_fn_r (x y : A0) (z : A1) (a : Y (k x z) (k y z)) : X x y"]
+    IsCancelFormL [label = "\N X Y s\ncancel_form_l (a b c : B) (t : X (s a b) (s a c)) : Y b c"]
+    IsCancelFormR [label = "\N X Y s\ncancel_form_r (a b c : B) (t : X (s a c) (s b c)) : Y a b"]
+    IsCancelL [label = "\N X k\ncancel_l (x y z : A) (a : X (k x y) (k x z)) : X y z"]
+    IsCancelR [label = "\N X k\ncancel_r (x y z : A) (a : X (k x z) (k y z)) : X x y"]
+    IsInj [label = "\N X f\ninj (x y : A) (a : X (f x) (f y)) : X x y"]
+    IsInjUnFn [label = "\N X Y f\ninj_un_fn (x y : A) (a : Y (f x) (f y)) : X x y"]
+
     IsCancel [label = "\N X k"]
     IsCancelForm [label = "\N X Y s"]
   }
 
-  subgraph cluster_assoc {
-  label = "Associative Fragment"
-  IsAssoc [label = "\N X k\nassoc (x y z : A) : X (k x (k y z)) (k (k x y) z)"]
-  IsCompatExtActL [label = "\N X k al\ncompat_ext_act_l (x y : A) (a : B) : X (al x (al y a)) (al (k x y) a)"]
-  IsCompatExtActR [label = "\N X k ar\ncompat_ext_act_r (a : B) (x y : A) : X (ar a (k x y)) (ar (ar a x) y)"]
-  IsCompatIntActL [label = "\N X k al\ncompat_int_act_l (x : A) (a b : B) : X (al x (k a b)) (k (al x a) b)"]
-  IsCompatIntActR [label = "\N X k ar\ncompat_int_act_r (a b : B) (x : A) : X (k a (ar b x)) (ar (k a b) x)"]
-  IsCompatActs [label = "\N X al ar\ncompat_acts (x : A) (a : C) (y : B) : X (al x (ar a y)) (ar (al x a) y)"]
-  IsCompatBinFns [label = "\N X k m n p\ncompat_bin_fns (x : A0) (y : A1) (z : A2) : X (n x (m y z)) (p (k x y) z)"]
+  subgraph assoc_classes {
+    IsAssoc [label = "\N X k\nassoc (x y z : A) : X (k x (k y z)) (k (k x y) z)"]
+    IsCompatActs [label = "\N X al ar\ncompat_acts (x : A) (a : C) (y : B) : X (al x (ar a y)) (ar (al x a) y)"]
+    IsCompatBinFns [label = "\N X k m n p\ncompat_bin_fns (x : A0) (y : A1) (z : A2) : X (n x (m y z)) (p (k x y) z)"]
+    IsCompatExtActL [label = "\N X k al\ncompat_ext_act_l (x y : A) (a : B) : X (al x (al y a)) (al (k x y) a)"]
+    IsCompatExtActR [label = "\N X k ar\ncompat_ext_act_r (a : B) (x y : A) : X (ar a (k x y)) (ar (ar a x) y)"]
+    IsCompatIntActL [label = "\N X k al\ncompat_int_act_l (x : A) (a b : B) : X (al x (k a b)) (k (al x a) b)"]
+    IsCompatIntActR [label = "\N X k ar\ncompat_int_act_r (a b : B) (x : A) : X (k a (ar b x)) (ar (k a b) x)"]
   }
 
-  subgraph cluster_distr {
-  label = "Distributive Fragment"
-  IsDistrUnFns [label = "\N X f g k h m\ndistr_un_fns (x : A0) (y : A1) : X (h (k x y)) (m (f x) (g y))"]
-  IsDistrUnFn [label = "\N X f k m\ndistr_un_fn (x y : A) : X (f (k x y)) (m (f x) (f y))"]
-  IsDistrUnOp [label = "\N X f k\ndistr_un_op (x y : A) : X (f (k x y)) (k (f x) (f y))"]
-  IsAntidistrUnFns [label = "\N X f g k h m\nantidistr_un_fns (x : A0) (y : A1) : X (h (k x y)) (m (f y) (g x))"]
-  IsAntidistrUnFn [label = "\N X f k m\nantidistr_un_fn (x y : A) : X (f (k x y)) (m (f y) (f x))"]
-  IsAntidistrUnOp [label = "\N X f k\nantidistr_un_op (x y : A) : X (f (k x y)) (k (f y) (f x))"]
-  IsDistrBinFnsL [label = "\N X k m n p q\ndistr_bin_fns_l (x : A0) (y : A1) (z : A2) : X (p x (n y z)) (q (k x y) (m x z))"]
-  IsDistrBinFnsR [label = "\N X k m n p q\ndistr_bin_fns_r (x : A0) (y : A1) (z : A2) : X (p (n x y) z) (q (k x z) (m y z))"]
-  IsDistrActL [label = "\N X al k\ndistr_act_l (x : A) (a b : B) : X (al x (k a b)) (k (al x a) (al x b))"]
-  IsDistrActR [label = "\N X ar k\ndistr_act_r (a b : B) (x : A) : X (ar (k a b) x) (k (ar a x) (ar b x))"]
-  IsDistrL [label = "\N X k m\ndistr_l (x y z : A) : X (k x (m y z)) (m (k x y) (k x z))"]
-  IsDistrR [label = "\N X k m\ndistr_r (x y z : A) : X (k (m x y) z) (m (k x z) (k y z))"]
+  subgraph distr_classes {
+    IsAntidistrUnFn [label = "\N X f k m\nantidistr_un_fn (x y : A) : X (f (k x y)) (m (f y) (f x))"]
+    IsAntidistrUnFns [label = "\N X f g k h m\nantidistr_un_fns (x : A0) (y : A1) : X (h (k x y)) (m (f y) (g x))"]
+    IsAntidistrUnOp [label = "\N X f k\nantidistr_un_op (x y : A) : X (f (k x y)) (k (f y) (f x))"]
+    IsDistrActL [label = "\N X al k\ndistr_act_l (x : A) (a b : B) : X (al x (k a b)) (k (al x a) (al x b))"]
+    IsDistrActR [label = "\N X ar k\ndistr_act_r (a b : B) (x : A) : X (ar (k a b) x) (k (ar a x) (ar b x))"]
+    IsDistrBinFnsL [label = "\N X k m n p q\ndistr_bin_fns_l (x : A0) (y : A1) (z : A2) : X (p x (n y z)) (q (k x y) (m x z))"]
+    IsDistrBinFnsR [label = "\N X k m n p q\ndistr_bin_fns_r (x : A0) (y : A1) (z : A2) : X (p (n x y) z) (q (k x z) (m y z))"]
+    IsDistrL [label = "\N X k m\ndistr_l (x y z : A) : X (k x (m y z)) (m (k x y) (k x z))"]
+    IsDistrR [label = "\N X k m\ndistr_r (x y z : A) : X (k (m x y) z) (m (k x z) (k y z))"]
+    IsDistrUnFn [label = "\N X f k m\ndistr_un_fn (x y : A) : X (f (k x y)) (m (f x) (f y))"]
+    IsDistrUnFns [label = "\N X f g k h m\ndistr_un_fns (x : A0) (y : A1) : X (h (k x y)) (m (f x) (g y))"]
+    IsDistrUnOp [label = "\N X f k\ndistr_un_op (x y : A) : X (f (k x y)) (k (f x) (f y))"]
+
     IsDistr [label = "\N X k m"]
   }
 
-  subgraph cluster_inv {
-  label = "Invertible Fragment"
-  IsInvBinFnL [label = "\N X x f k\ninv_bin_fn_l (y : A) : X (k (f y) y) x"]
-  IsInvBinFnR [label = "\N X x f k\ninv_bin_fn_r (y : A) : X (k y (f y)) x"]
-  IsInvFormL [label = "\N X x f s\ninv_form_l (y : A) : X (s (f y) y) x"]
-  IsInvFormR [label = "\N X x f s\ninv_form_r (y : A) : X (s y (f y)) x"]
-  IsInvL [label = "\N X x f k\ninv_l (y : A) : X (k (f y) y) x"]
-  IsInvR [label = "\N X x f k\ninv_r (y : A) : X (k y (f y)) x"]
+  subgraph inv_classes {
+    IsInvBinFnL [label = "\N X x f k\ninv_bin_fn_l (y : A) : X (k (f y) y) x"]
+    IsInvBinFnR [label = "\N X x f k\ninv_bin_fn_r (y : A) : X (k y (f y)) x"]
+    IsInvFormL [label = "\N X x f s\ninv_form_l (y : A) : X (s (f y) y) x"]
+    IsInvFormR [label = "\N X x f s\ninv_form_r (y : A) : X (s y (f y)) x"]
+    IsInvL [label = "\N X x f k\ninv_l (y : A) : X (k (f y) y) x"]
+    IsInvR [label = "\N X x f k\ninv_r (y : A) : X (k y (f y)) x"]
+
     IsInv [label = "\N X x f k"]
     IsInvForm [label = "\N X x f s"]
   }
 
-  subgraph cluster_unl {
-  label = "Unital Fragment"
-  IsUnlElemActL [label = "\N X x al\nunl_elem_act_l (a : B) : X (al x a) a"]
-  IsUnlElemActR [label = "\N X x ar\nunl_elem_act_r (a : B) : X (ar a x) a"]
-  IsUnlElemL [label = "\N X x k\nunl_elem_l (y : A) : X (k x y) y"]
-  IsUnlElemR [label = "\N X x k\nunl_elem_r (y : A) : X (k y x) y"]
+  subgraph unl_classes {
+    IsUnlElemActL [label = "\N X x al\nunl_elem_act_l (a : B) : X (al x a) a"]
+    IsUnlElemActR [label = "\N X x ar\nunl_elem_act_r (a : B) : X (ar a x) a"]
+    IsUnlElemL [label = "\N X x k\nunl_elem_l (y : A) : X (k x y) y"]
+    IsUnlElemR [label = "\N X x k\nunl_elem_r (y : A) : X (k y x) y"]
+
     IsUnlElem [label = "\N X x k"]
   }
 
-  subgraph cluster_absorb {
-  label = "Absorbing Fragment"
-  IsAbsorbElemActLR [label = "\N X a al\nabsorb_elem_act_l_r (x : A) : X (al x a) a"]
-  IsAbsorbElemActRL [label = "\N X a ar\nabsorb_elem_act_r_l (x : A) : X (ar a x) a"]
-  IsAbsorbElemL [label = "\N X x k\nabsorb_elem_l (y : A) : X (k x y) x"]
-  IsAbsorbElemR [label = "\N X x k\nabsorb_elem_r (y : A) : X (k y x) x"]
-  IsFixed [label = "\N X x f\nfixed : X (f x) x"]
-  IsIdemBinOp [label = "\N X k\nidem_bin_op (x : A) : X (k x x) x"]
-  IsIdemElemBinOp [label = "\N X x k\nidem_elem_bin_op : X (k x x) x"]
-  IsIdemElemUnOp [label = "\N X x f\nidem_elem_un_op : X (f (f x)) (f x)"]
-  IsIdemUnOp [label = "\N X f\nidem_un_op (x : A) : X (f (f x)) (f x)"]
-  IsInvol [label = "\N X f\ninvol (x : A) : X (f (f x)) x"]
-  IsInvolElem [label = "\N X x f\ninvol_elem : X (f (f x)) x"]
+  subgraph absorb_classes {
+    IsAbsorbElemActLR [label = "\N X a al\nabsorb_elem_act_l_r (x : A) : X (al x a) a"]
+    IsAbsorbElemActRL [label = "\N X a ar\nabsorb_elem_act_r_l (x : A) : X (ar a x) a"]
+    IsAbsorbElemL [label = "\N X x k\nabsorb_elem_l (y : A) : X (k x y) x"]
+    IsAbsorbElemR [label = "\N X x k\nabsorb_elem_r (y : A) : X (k y x) x"]
+    IsFixed [label = "\N X x f\nfixed : X (f x) x"]
+    IsIdemBinOp [label = "\N X k\nidem_bin_op (x : A) : X (k x x) x"]
+    IsIdemElemBinOp [label = "\N X x k\nidem_elem_bin_op : X (k x x) x"]
+    IsIdemElemUnOp [label = "\N X x f\nidem_elem_un_op : X (f (f x)) (f x)"]
+    IsIdemUnOp [label = "\N X f\nidem_un_op (x : A) : X (f (f x)) (f x)"]
+    IsInvol [label = "\N X f\ninvol (x : A) : X (f (f x)) x"]
+    IsInvolElem [label = "\N X x f\ninvol_elem : X (f (f x)) x"]
+
     IsAbsorbElem [label = "\N X x k"]
   }
 
-  subgraph cluster_comm {
-  label = "Commutative Fragment"
-  IsComm [label = "\N X k f"]
-  IsCommActLR [label = "\N X al f\ncomm_act_l_r (x : A) (a : B) : X (al x (f a)) (f (al x a))"]
-  IsCommActRL [label = "\N X ar f\ncomm_act_r_l (a : B) (x : A) : X (ar (f a) x) (f (ar a x))"]
-  IsCommBinFnsL [label = "\N X k f m g\ncomm_bin_fns_l (x : A0) (y : A1) : X (m (f x) y) (g (k x y))"]
-  IsCommBinFnsR [label = "\N X k f m g\ncomm_bin_fns_r (x : A0) (y : A1) : X (m x (f y)) (g (k x y))"]
-  IsCommBinOp [label = "\N X k\ncomm_bin_op (x y : A) : X (k x y) (k y x)"]
-  IsCommElemsBinOp [label = "\N X k x y\ncomm_elems_bin_op : X (k x y) (k y x)"]
-  IsCommElemsForm [label = "\N X s a b\ncomm_elems_form (a b : B) : X (s a b) (s b a)"]
-  IsCommForm [label = "\N X s\ncomm_form (a b : B) : X (s a b) (s b a)"]
-  IsCommL [label = "\N X k f\ncomm_l (x y : A) : X (k (f x) y) (f (k x y))"]
-  IsCommR [label = "\N X k f\ncomm_r (x y : A) : X (k x (f y)) (f (k x y))"]
-  IsCommUnOps [label = "\N X f g\ncomm_un_ops (x : A) : X (f (g x)) (g (f x))"]
+  subgraph comm_classes {
+    IsCommActLR [label = "\N X al f\ncomm_act_l_r (x : A) (a : B) : X (al x (f a)) (f (al x a))"]
+    IsCommActRL [label = "\N X ar f\ncomm_act_r_l (a : B) (x : A) : X (ar (f a) x) (f (ar a x))"]
+    IsCommBinFnsL [label = "\N X k f m g\ncomm_bin_fns_l (x : A0) (y : A1) : X (m (f x) y) (g (k x y))"]
+    IsCommBinFnsR [label = "\N X k f m g\ncomm_bin_fns_r (x : A0) (y : A1) : X (m x (f y)) (g (k x y))"]
+    IsCommBinOp [label = "\N X k\ncomm_bin_op (x y : A) : X (k x y) (k y x)"]
+    IsCommElemsBinOp [label = "\N X k x y\ncomm_elems_bin_op : X (k x y) (k y x)"]
+    IsCommElemsForm [label = "\N X s a b\ncomm_elems_form (a b : B) : X (s a b) (s b a)"]
+    IsCommForm [label = "\N X s\ncomm_form (a b : B) : X (s a b) (s b a)"]
+    IsCommL [label = "\N X k f\ncomm_l (x y : A) : X (k (f x) y) (f (k x y))"]
+    IsCommR [label = "\N X k f\ncomm_r (x y : A) : X (k x (f y)) (f (k x y))"]
+    IsCommUnOps [label = "\N X f g\ncomm_un_ops (x : A) : X (f (g x)) (g (f x))"]
+
+    IsComm [label = "\N X k f"]
   }
 
-  subgraph cluster_pres {
-  label = "Preserving Fragment"
-  IsBinPres [label = "\N X k m f\nbin_pres (x y : A) : X (f (k x y)) (m (f x) (f y))"]
-  IsNullPres [label = "\N X x y f\nnull_pres : X (f x) y"]
-  IsUnPres [label = "\N X f g h\nun_pres (x : A) : X (h (f x)) (g (h x))"]
+  subgraph pres_classes {
+    IsBinPres [label = "\N X k m f\nbin_pres (x y : A) : X (f (k x y)) (m (f x) (f y))"]
+    IsNullPres [label = "\N X x y f\nnull_pres : X (f x) y"]
+    IsUnPres [label = "\N X f g h\nun_pres (x : A) : X (h (f x)) (g (h x))"]
   }
 
-  subgraph cluster_abstract_algebra_classes {
-    label = "Abstract Algebra"
-
+  subgraph abstract_algebra_classes {
     IsGrp [label = "\N X x f k"]
     IsGrpActL [label = "\N X x f k Y al"]
     IsGrpHom [label = "\N h"]
     IsMon [label = "\N X x k"]
-    IsRng [label = "\N X x f k m"]
     IsRing [label = "\N X x f k y m"]
     IsRingHom [label = "\N h"]
+    IsRng [label = "\N X x f k m"]
     IsSemigrp [label = "\N X k"]
-    IsSemirng [label = "\N X x k m"]
     IsSemiring [label = "\N X x k y m"]
+    IsSemirng [label = "\N X x k m"]
   }
 
-  subgraph cluster_metric {
-  label = "Metric Fragment"
-  IsInfl [label = "\N X k"]
-  IsInflActL [label = "\N X al\ninfl_act_l (x : A) (a : B) : X a (al x a)"]
-  IsInflActR [label = "\N X ar\ninfl_act_r (a : B) (x : A) : X a (ar a x)"]
-  IsInflL [label = "\N X k\ninfl_l (x y : A) : X y (k x y)"]
-  IsInflR [label = "\N X k\ninfl_r (x y : A) : X x (k x y)"]
-  IsInflUnOp [label = "\N X f\ninfl_un_op (x : A) : X x (f x)"]
-  IsContract [label = "\N X s t f\ncontract (a b : B) : X (t (f a) (f b)) (s a b)"]
-  IsSubadd [label = "\N X k s\nsubadd (a b c : B) : X (s a c) (k (s a b) (s b c))"]
+  subgraph metric_classes {
+    IsContract [label = "\N X s t f\ncontract (a b : B) : X (t (f a) (f b)) (s a b)"]
+    IsInfl [label = "\N X k"]
+    IsInflActL [label = "\N X al\ninfl_act_l (x : A) (a : B) : X a (al x a)"]
+    IsInflActR [label = "\N X ar\ninfl_act_r (a : B) (x : A) : X a (ar a x)"]
+    IsInflL [label = "\N X k\ninfl_l (x y : A) : X y (k x y)"]
+    IsInflR [label = "\N X k\ninfl_r (x y : A) : X x (k x y)"]
+    IsInflUnOp [label = "\N X f\ninfl_un_op (x : A) : X x (f x)"]
+    IsNonnegForm [label = "\N X x s\nnonneg_form (a b : B) : X x (s a b)"]
+    IsSubaddForm [label = "\N X k s\nsubadd_form (a b c : B) : X (s a c) (k (s a b) (s b c))"]
+    IsToeplitzForm [label = "\N X x s\ntoeplitz_form (a : B) : X (s a a) x"]
+
+    IsMetric [label = "\N X x k d", color = red, fillcolor = yellow]
+    IsRealMetric [label = "\N X d"]
+    IsRealPseudometric [label = "\N X d"]
   }
 
-  subgraph cluster_ext {
-  label = "Extensional Fragment"
-  IsFunExt [label = "\N\nfun_ext (A B : Type) (f g : A -> B) (a : forall x : A, f x = g x) : f = g", color = red, fillcolor = yellow]
-  IsFunExtDep [label = "\N\nfun_ext_dep (A : Type) (P : A -> Type) (f g : forall x : A, P x) (a : forall x : A, f x = g x) : f = g", color = red, fillcolor = yellow]
-  IsPropExt [label = "\N\nprop_ext (A B) (a : A <-> B) : A = B", color = red, fillcolor = yellow]
-  IsIsoL [label = "\N\niso_l (a : A) : g (f a) = a", color = red, fillcolor = yellow]
-  IsIsoR [label = "\N\niso_r (b : B) : f (g b) = b", color = red, fillcolor = yellow]
+  subgraph ext_classes {
+    IsFunExt [label = "\N\nfun_ext (A B : Type) (f g : A -> B) (a : forall x : A, f x = g x) : f = g", color = red, fillcolor = yellow]
+    IsFunExtDep [label = "\N\nfun_ext_dep (A : Type) (P : A -> Type) (f g : forall x : A, P x) (a : forall x : A, f x = g x) : f = g", color = red, fillcolor = yellow]
+    IsIsoL [label = "\N\niso_l (a : A) : g (f a) = a", color = red, fillcolor = yellow]
+    IsIsoR [label = "\N\niso_r (b : B) : f (g b) = b", color = red, fillcolor = yellow]
+    IsPropExt [label = "\N\nprop_ext (A B) (a : A <-> B) : A = B", color = red, fillcolor = yellow]
   }
 
-  IsRealMetric [label = "\N X d", color = red, fillcolor = yellow]
-  IsMetric [label = "\N X x k d", color = red, fillcolor = yellow]
-
-  subgraph cluster_hott {
-  label = "Homotopy Fragment"
-  IsContr [label = "\N\ncontr : exists x : A, forall y : A, x = y", color = red, fillcolor = yellow]
-  IsProp [label = "\N\nirrel (x y : A) : x = y", color = red, fillcolor = yellow]
-  IsSet [label = "\N\nuip (x y : A) (a b : x = y) : a = b", color = red, fillcolor = yellow]
-  IsTrunc [label = "\N\ntrunc_zero (A : Type) : IsTrunc O A\ntrunc_succ (n : nat) (A : Type) : IsTrunc (S n) A", color = red, fillcolor = yellow]
+  subgraph hott_classes {
+    IsContr [label = "\N\ncontr : exists x : A, forall y : A, x = y", color = red, fillcolor = yellow]
+    IsProp [label = "\N\nirrel (x y : A) : x = y", color = red, fillcolor = yellow]
+    IsSet [label = "\N\nuip (x y : A) (a b : x = y) : a = b", color = red, fillcolor = yellow]
+    IsTrunc [label = "\N\ntrunc_zero (A : Type) : IsTrunc O A\ntrunc_succ (n : nat) (A : Type) : IsTrunc (S n) A", color = red, fillcolor = yellow]
   }
 
   node [style = dashed]
@@ -214,6 +209,10 @@ digraph Is {
     IsEquiv -> IsRefl
     IsEquiv -> IsSym
     IsEquiv -> IsTrans
+    IsIffRel -> IsSubrel
+    IsIffRel -> IsSubrel
+    IsMonoBinOp -> IsMonoBinOpL
+    IsMonoBinOp -> IsMonoBinOpR
     IsPartEquiv -> IsSym
     IsPartEquiv -> IsTrans
     IsPartOrd -> IsAntisym
@@ -223,21 +222,28 @@ digraph Is {
     IsPreord -> IsRefl
     IsPreord -> IsTrans
     IsStrPartOrd -> IsIrrefl
-    // IsStrTotOrd -> IsProper
     IsStrPartOrd -> IsTrans
     IsStrPreord -> IsIrrefl
     IsStrPreord -> IsTrans
     IsStrTotOrd -> IsConnex
+    // IsStrTotOrd -> IsProper
     IsStrTotOrd -> IsStrPartOrd
     IsTotOrd -> IsConnex
     IsTotOrd -> IsPartOrd
-    IsIffRel -> IsSubrel
-    IsIffRel -> IsSubrel
   }
 
   subgraph metric_geometry_fields {
     IsInfl -> IsInflL
     IsInfl -> IsInflR
+    IsRealMetric -> IsCommForm
+    IsRealMetric -> IsEquiv
+    IsRealMetric -> IsIffRel
+    IsRealMetric -> IsSubaddForm
+    IsRealPseudometric -> IsCommForm
+    IsRealPseudometric -> IsEquiv
+    IsRealPseudometric -> IsNonnegForm
+    IsRealPseudometric -> IsSubaddForm
+    IsRealPseudometric -> IsToeplitzForm
   }
 
   subgraph abstract_algebra_fields {
@@ -268,6 +274,23 @@ digraph Is {
     IsInvForm -> IsInvFormR
     IsMon -> IsSemigrp
     IsMon -> IsUnlElem
+    IsRing -> IsCommBinOp
+    IsRing -> IsDistr
+    IsRing -> IsGrp
+    IsRing -> IsMon
+    IsRingHom -> IsBinPres
+    IsRingHom -> IsBinPres
+    IsRingHom -> IsNullPres
+    IsRingHom -> IsRing
+    IsRingHom -> IsRing
+    // IsRingHom -> IsProper
+    IsRng -> IsCommBinOp
+    IsRng -> IsDistr
+    IsRng -> IsGrp
+    IsRng -> IsSemigrp
+    IsSemigrp -> IsAssoc
+    IsSemigrp -> IsEquiv
+    // IsSemigrp -> IsProper
     IsSemiring -> IsAbsorbElem
     IsSemiring -> IsCommBinOp
     IsSemiring -> IsDistr
@@ -278,40 +301,24 @@ digraph Is {
     IsSemirng -> IsDistr
     IsSemirng -> IsMon
     IsSemirng -> IsSemigrp
-    IsRing -> IsCommBinOp
-    IsRing -> IsDistr
-    IsRing -> IsGrp
-    IsRing -> IsMon
-    IsRng -> IsCommBinOp
-    IsRng -> IsDistr
-    IsRng -> IsGrp
-    IsRng -> IsSemigrp
-    IsRingHom -> IsBinPres
-    IsRingHom -> IsBinPres
-    IsRingHom -> IsNullPres
-    IsRingHom -> IsRing
-    IsRingHom -> IsRing
-    // IsRingHom -> IsProper
-    IsSemigrp -> IsAssoc
-    IsSemigrp -> IsEquiv
-    // IsSemigrp -> IsProper
     IsUnlElem -> IsUnlElemL
     IsUnlElem -> IsUnlElemR
   }
 
-  edge [color = red]
-
   // Derivations
 
   edge [style = dashed]
-
-  edge [color = black]
 
   subgraph order_theory_derivations {
     IsConnex -> IsComm [label = "or"]
     IsConnex -> IsStrConnex
     IsEquiv -> IsPartEquiv
     IsEquiv -> IsPreord
+    IsMonoBinFnLR -> IsMonoBinFnL
+    IsMonoBinFnLR -> IsMonoBinFnR
+    IsMonoBinOpL -> IsMonoBinFnL
+    IsMonoBinOpR -> IsMonoBinFnR
+    IsMonoUnFn -> IsMonoUnOp
     IsPartOrd -> IsRefl
     IsPartOrd -> IsTrans
     IsStrPartOrd -> IsAsym
@@ -323,19 +330,18 @@ digraph Is {
     IsTotOrd -> IsAntisym
     IsTotOrd -> IsRefl
     IsTotOrd -> IsTrans
-    IsMonoBinOpL -> IsMonoBinFnL [label = "TODO These"]
-    IsMonoBinOpR -> IsMonoBinFnR [label = "TODO These"]
-    IsMonoBinFnLR -> IsMonoBinFnL
-    IsMonoBinFnLR -> IsMonoBinFnR
   }
 
   subgraph metric_geometry_derivations {
-    IsInflL -> IsInflR [label = "flip"]
-    IsInflL -> IsInflUnOp [label = "apply"]
-    IsInflR -> IsInflUnOp [label = "flip apply"]
     IsInflActL -> IsInflActR [label = "flip"]
     IsInflActL -> IsInflUnOp [label = "apply"]
     IsInflActR -> IsInflUnOp [label = "flip apply"]
+    IsInflL -> IsInflR [label = "flip"]
+    IsInflL -> IsInflUnOp [label = "apply"]
+    IsInflR -> IsInflUnOp [label = "flip apply"]
+    IsRealMetric -> IsNonnegForm
+    // IsRealMetric -> IsProper
+    IsRealMetric -> IsToeplitzForm
   }
 
   subgraph abstract_algebra_derivations {
@@ -368,13 +374,13 @@ digraph Is {
     IsCommR -> IsCommUnOps [label = "apply"]
     IsCommUnOps -> IsCommElemsBinOp [label = "compose"]
     IsCommUnOps -> IsUnPres
-    IsCompatExtActL -> IsCompatExtActR [label = "flip"]
-    IsCompatExtActL -> IsCompatBinFns
-    IsCompatExtActR -> IsCompatBinFns
-    IsCompatIntActL -> IsCompatIntActR [label = "flip"]
-    IsCompatIntActL -> IsCompatBinFns
-    IsCompatIntActR -> IsCompatBinFns
     IsCompatActs -> IsCompatBinFns
+    IsCompatExtActL -> IsCompatBinFns
+    IsCompatExtActL -> IsCompatExtActR [label = "flip"]
+    IsCompatExtActR -> IsCompatBinFns
+    IsCompatIntActL -> IsCompatBinFns
+    IsCompatIntActL -> IsCompatIntActR [label = "flip"]
+    IsCompatIntActR -> IsCompatBinFns
     IsDistrActL -> IsDistrBinFnsL
     IsDistrActR -> IsDistrBinFnsR
     IsDistrBinFnsL -> IsDistrBinFnsR [label = "flip"]
@@ -403,31 +409,27 @@ digraph Is {
     IsInvL -> IsInvBinFnL
     IsInvR -> IsInvBinFnR
     IsInvol -> IsInvolElem [label = "apply"]
+    IsRing -> IsRng
+    IsRing -> IsSemiring
     IsRng -> IsAbsorbElem
     IsRng -> IsComm
     IsRng -> IsSemirng
-    IsRing -> IsSemiring
-    IsRing -> IsRng
     IsSemiring -> IsSemirng
     IsUnlElemActL -> IsUnlElemActR [label = "flip"]
     IsUnlElemL -> IsUnlElemR [label = "flip"]
   }
 
-  edge [color = red]
-
-  IsContr -> IsProp
-  IsContr -> IsTrunc
-  IsFunExtDep -> IsFunExt
-  IsProp -> IsSet
-  IsProp -> IsTrunc
-  IsSet -> IsTrunc
-  IsTrunc -> IsContr
-  IsTrunc -> IsProp
-  IsTrunc -> IsSet
+  subgraph hott_derivations {
+    IsContr -> IsProp
+    IsContr -> IsTrunc
+    IsFunExtDep -> IsFunExt
+    IsProp -> IsSet
+    IsProp -> IsTrunc
+    IsSet -> IsTrunc
+    IsTrunc -> IsContr
+    IsTrunc -> IsProp
+    IsTrunc -> IsSet
+  }
 
   // Specializations
-
-  edge [color = black]
-
-  edge [color = red]
 }
