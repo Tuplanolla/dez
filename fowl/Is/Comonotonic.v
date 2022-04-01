@@ -1,16 +1,18 @@
-(** * Comonotonicity and Strict Comonotonicity of a Function *)
+(** * Comonotonicity *)
 
-From DEZ.Has Require Export
-  OrderRelations.
-From DEZ.Supports Require Import
-  OrderNotations.
+From DEZ Require Export
+  Init.
 
-Class IsComono (A B : Type)
-  (HRA : HasOrdRel A) (HRB : HasOrdRel B) (f : A -> B) : Prop :=
-  comono (x y : A) (a : f x <= f y) : x <= y.
+(** ** Comonotonic Function *)
 
-(** Strict comonotonicity of an order relation is just
-    comonotonicity of a strict order relation. *)
+Class IsComono (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (f : A -> B) : Prop :=
+  comono (x y : A) (a : Y (f x) (f y)) : X x y.
+
+(** ** Strictly Comonotonic Function *)
+
+(** Strict comonotonicity with respect to an order relation is just
+    comonotonicity with respect to the corresponding strict order relation. *)
 
 Notation IsStrComono := IsComono (only parsing).
-Notation str_comono := (comono : IsStrComono _ _ _) (only parsing).
+Notation str_comono := comono (only parsing).

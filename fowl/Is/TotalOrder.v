@@ -11,38 +11,38 @@ From DEZ.Supports Require Import
 (** ** Order *)
 (** ** Total Order *)
 
-Class IsTotOrd (A : Type) (X Y : A -> A -> Prop) : Prop := {
-  tot_ord_is_connex :> IsConnex Y;
-  tot_ord_is_part_ord :> IsPartOrd X Y;
+Class IsTotOrd (A : Type) (Xeq Xle : A -> A -> Prop) : Prop := {
+  tot_ord_is_connex :> IsConnex Xle;
+  tot_ord_is_part_ord :> IsPartOrd Xeq Xle;
 }.
 
 Section Context.
 
-Context (A : Type) (X Y : A -> A -> Prop).
+Context (A : Type) (Xeq Xle : A -> A -> Prop).
 
-#[local] Instance has_equiv_rel : HasEquivRel A := X.
-#[local] Instance has_ord_rel : HasOrdRel A := Y.
+#[local] Instance has_equiv_rel : HasEquivRel A := Xeq.
+#[local] Instance has_ord_rel : HasOrdRel A := Xle.
 
 Ltac note := progress (
-  try change X with (equiv_rel (A := A)) in *;
-  try change Y with (ord_rel (A := A)) in *).
+  try change Xeq with (equiv_rel (A := A)) in *;
+  try change Xle with (ord_rel (A := A)) in *).
 
 (** Every total order is reflexive. *)
 
 #[local] Instance tot_ord_is_refl
-  `{!IsTotOrd X Y} : IsRefl Y.
+  `{!IsTotOrd Xeq Xle} : IsRefl Xle.
 Proof. typeclasses eauto. Qed.
 
 (** Every total order is antisymmetric. *)
 
 #[local] Instance tot_ord_is_antisym
-  `{!IsTotOrd X Y} : IsAntisym X Y.
+  `{!IsTotOrd Xeq Xle} : IsAntisym Xeq Xle.
 Proof. typeclasses eauto. Qed.
 
 (** Every total order is transitive. *)
 
 #[local] Instance tot_ord_is_trans
-  `{!IsTotOrd X Y} : IsTrans Y.
+  `{!IsTotOrd Xeq Xle} : IsTrans Xle.
 Proof. typeclasses eauto. Qed.
 
 End Context.
@@ -51,32 +51,32 @@ End Context.
 (** ** Strict Order *)
 (** ** Strict Total Order *)
 
-Class IsStrTotOrd (A : Type) (X Y : A -> A -> Prop) : Prop := {
-  str_tot_ord_is_connex :> IsConnex Y;
-  str_tot_ord_is_str_part_ord :> IsStrPartOrd Y;
-  str_tot_ord_is_proper :> IsProper (X ==> X ==> _<->_) Y;
+Class IsStrTotOrd (A : Type) (Xeq Xle : A -> A -> Prop) : Prop := {
+  str_tot_ord_is_connex :> IsConnex Xle;
+  str_tot_ord_is_str_part_ord :> IsStrPartOrd Xle;
+  str_tot_ord_is_proper :> IsProper (Xeq ==> Xeq ==> _<->_) Xle;
 }.
 
 Section Context.
 
-Context (A : Type) (X Y : A -> A -> Prop).
+Context (A : Type) (Xeq Xle : A -> A -> Prop).
 
 (** Every strict total order is irreflexive. *)
 
 #[local] Instance str_tot_ord_is_irrefl
-  `{!IsStrTotOrd X Y} : IsIrrefl Y.
+  `{!IsStrTotOrd Xeq Xle} : IsIrrefl Xle.
 Proof. typeclasses eauto. Qed.
 
 (** Every strict total order is asymmetric. *)
 
 #[local] Instance tot_ord_is_asym
-  `{!IsStrTotOrd X Y} : IsAsym Y.
+  `{!IsStrTotOrd Xeq Xle} : IsAsym Xle.
 Proof. typeclasses eauto. Qed.
 
 (** Every strict total order is transitive. *)
 
 #[local] Instance str_tot_ord_is_trans
-  `{!IsStrTotOrd X Y} : IsTrans Y.
+  `{!IsStrTotOrd Xeq Xle} : IsTrans Xle.
 Proof. typeclasses eauto. Qed.
 
 End Context.

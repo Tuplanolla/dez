@@ -17,34 +17,35 @@ From DEZ.Supports Require Import
 
 Fail Fail Notation IsPartOrd := PartialOrder.
 
-Class IsPartOrd (A : Type) (X Y : A -> A -> Prop) : Prop := {
-  part_ord_is_equiv :> IsEquiv X;
-  part_ord_is_preord :> IsPreord Y;
-  part_ord_is_antisym :> IsAntisym X Y;
-  part_ord_is_proper :> IsProper (X ==> X ==> _<->_) Y;
+Class IsPartOrd (A : Type) (Xeq Xle : A -> A -> Prop) : Prop := {
+  part_ord_is_equiv :> IsEquiv Xeq;
+  part_ord_is_preord :> IsPreord Xle;
+  part_ord_is_antisym :> IsAntisym Xeq Xle;
+  part_ord_is_proper :> IsProper (Xeq ==> Xeq ==> _<->_) Xle;
 }.
 
 Section Context.
 
-Context (A : Type) (X Y : A -> A -> Prop).
+Context (A : Type) (Xeq Xle : A -> A -> Prop).
 
-#[local] Instance has_equiv_rel : HasEquivRel A := X.
-#[local] Instance has_ord_rel : HasOrdRel A := Y.
+#[local] Instance has_equiv_rel : HasEquivRel A := Xeq.
+#[local] Instance has_ord_rel : HasOrdRel A := Xle.
 
 Ltac note := progress (
-  try change X with (equiv_rel (A := A)) in *;
-  try change Y with (ord_rel (A := A)) in *).
+  try change Xeq with (equiv_rel (A := A)) in *;
+  try change Xle with (ord_rel (A := A)) in *).
 
 (** Standard library partial order implies our partial order. *)
 
 #[local] Instance partial_order_is_part_ord
-  `{!Equivalence X} `{!PreOrder Y} `{!PartialOrder X Y} : IsPartOrd X Y.
+  `{!Equivalence Xeq} `{!PreOrder Xle} `{!PartialOrder Xeq Xle} :
+  IsPartOrd Xeq Xle.
 Proof. esplit; typeclasses eauto. Qed.
 
 (** Our partial order implies standard library partial order. *)
 
 #[local] Instance part_ord_partial_order
-  `{!IsPartOrd X Y} : PartialOrder X Y.
+  `{!IsPartOrd Xeq Xle} : PartialOrder Xeq Xle.
 Proof.
   note. intros x y. unfold pointwise_lifting, relation_conjunction.
   unfold predicate_intersection. unfold pointwise_extension. unfold flip.
@@ -56,13 +57,13 @@ Proof.
 (** Every partial order is reflexive. *)
 
 #[local] Instance part_ord_is_refl
-  `{!IsPartOrd X Y} : IsRefl Y.
+  `{!IsPartOrd Xeq Xle} : IsRefl Xle.
 Proof. typeclasses eauto. Qed.
 
 (** Every partial order is transitive. *)
 
 #[local] Instance part_ord_is_trans
- `{!IsPartOrd X Y} : IsTrans Y.
+ `{!IsPartOrd Xeq Xle} : IsTrans Xle.
 Proof. typeclasses eauto. Qed.
 
 End Context.

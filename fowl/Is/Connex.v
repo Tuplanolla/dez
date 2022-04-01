@@ -32,16 +32,16 @@ End Context.
 
 (** This has the same shape as [Z.lt_trichotomy]. *)
 
-Class IsStrConnex (A : Type) (X Y : A -> A -> Prop) : Prop :=
-  str_connex (x y : A) : Y x y \/ X x y \/ Y y x.
+Class IsStrConnex (A : Type) (Xeq Xle : A -> A -> Prop) : Prop :=
+  str_connex (x y : A) : Xle x y \/ Xeq x y \/ Xle y x.
 
 Section Context.
 
-Context (A : Type) (X Y : A -> A -> Prop).
+Context (A : Type) (Xeq Xle : A -> A -> Prop).
 
 (** Every connex relation is strictly connex. *)
 
-#[export] Instance connex_is_str_connex `{!IsConnex Y} : IsStrConnex X Y.
+#[export] Instance connex_is_str_connex `{!IsConnex Xle} : IsStrConnex Xeq Xle.
 Proof.
   intros x y. destruct (connex x y) as [a | b].
   - auto.

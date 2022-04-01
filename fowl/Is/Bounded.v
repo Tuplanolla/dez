@@ -32,3 +32,11 @@ Proof. intros y. unfold flip in *. eauto. Qed.
 Proof. intros y. unfold flip in *. eauto. Qed.
 
 End Context.
+
+(** ** Bounded *)
+
+Class IsBnd (A : Type) (X : A -> A -> Prop)
+  (x y : A) : Prop := {
+  bnd_is_lower_bnd :> IsLowerBnd X x;
+  bnd_is_upper_bnd :> IsUpperBnd X y;
+}.

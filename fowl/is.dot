@@ -10,25 +10,40 @@ digraph Is {
   subgraph cluster_order_theory_classes {
     label = "Order Theory"
 
-  IsAntisym [label = "\N X Y\nantisym (x y : A) (a : Y x y) (b : Y y x) : X x y"]
+  IsAntisym [label = "\N Xeq Xle\nantisym (x y : A) (a : Xle x y) (b : Xle y x) : Xeq x y"]
   IsAsym [label = "\N X\nasym (x y : A) (a : X x y) (b : X y x) : 0"]
+  IsCohRels [label = "\N Xeq Xle Xlt\ncoh_rels (x y : A) : Xle x y <-> Xeq x y \\/ Xlt x y"]
+  IsComono [label = "\N X Y f\ncomono (x y : A) (a : Y (f x) (f y)) : X x y"]
   IsConnex [label = "\N X\nconnex (x y : A) : X x y \\/ X y x"]
   IsCotrans [label = "\N X\ncotrans (x y z : A) (a : X x z) : X x y \\/ X y z"]
   IsIrrefl [label = "\N X\nirrefl (x : A) (a : X x x) : 0"]
+  IsLowerBnd [label = "\N X x\nlower_bnd (y : A) : X x y"]
+  IsMono [label = "\N X Y f\nmono (x y : A) (a : X x y) : Y (f x) (f y)"]
+  IsMonoUnOp [label = "\N X f\nmono_un_op (x y : A) (a : X x y) : X (f x) (f y)"]
+  IsMonoBinFnL [label = "\N X Y k\nmono_bin_fn_l (x y : A1) (z : A0) (a : X x y) : Y (k z x) (k z y)"]
+  IsMonoBinFnLR [label = "\N X0 X1 Y k\nmono_bin_fn_l_r (x0 y0 : A0) (a0 : X0 x0 y0) (x1 y1 : A1) (a1 : X1 x1 y1) : Y (k x0 x1) (k y0 y1)"]
+  IsMonoBinFnR [label = "\N X Y k\nmono_bin_fn_r (x y : A0) (z : A1) (a : X x y) : Y (k x z) (k y z)"]
+  IsMonoBinOpL [label = "\N X k\nmono_bin_op_l (x y z : A) (a : X x y) : X (k z x) (k z y)"]
+  IsMonoBinOpLR [label = "\N X k\nmono_bin_op_l_r (x0 y0 : A0) (a0 : X x0 y0) (x1 y1 : A1) (a1 : X x1 y1) : X (k x0 x1) (k y0 y1)"]
+  IsMonoBinOpR [label = "\N X k\nmono_bin_op_r (x y z : A) (a : X x y) : X (k x z) (k y z)"]
   IsRefl [label = "\N X\nrefl (x : A) : X x x"]
-  IsStrConnex [label = "\N X Y\nstr_connex (x y : A) : Y x y \\/ X x y \\/ Y y x"]
+  IsStrConnex [label = "\N Xeq Xle\nstr_connex (x y : A) : Xle x y \\/ Xeq x y \\/ Xle y x"]
+  IsSubrel [label = "\N Xsub Xsup\nsubrel (x y : A) (a : Xsub x y) : Xsup x y"]
   IsSym [label = "\N X\nsym (x y : A) (a : X x y) : X y x"]
   IsTrans [label = "\N X\ntrans (x y z : A) (a : X x y) (b : X y z) : X x z"]
+  IsUpperBnd [label = "\N X x\nupper_bnd (y : A) : X y x"]
 
     IsApart [label = "\N X"]
     IsEquiv [label = "\N X"]
     IsPartEquiv [label = "\N X"]
-    IsPartOrd [label = "\N X Y"]
+    IsPartOrd [label = "\N Xeq Xle"]
     IsPreord [label = "\N X"]
     IsStrPartOrd [label = "\N X"]
     IsStrPreord [label = "\N X"]
-    IsStrTotOrd [label = "\N X Y"]
-    IsTotOrd [label = "\N X Y"]
+    IsStrTotOrd [label = "\N Xeq Xle"]
+    IsTotOrd [label = "\N Xeq Xle"]
+    IsBnd [label = "\N X x y"]
+    IsIffRel [label = "\N X Y"]
   }
 
   subgraph cluster_cancel {
@@ -152,28 +167,17 @@ digraph Is {
     IsSemiring [label = "\N X x k y m"]
   }
 
-  subgraph cluster_infl {
-  label = "Inflationary Fragment"
+  subgraph cluster_metric {
+  label = "Metric Fragment"
   IsInfl [label = "\N X k"]
   IsInflActL [label = "\N X al\ninfl_act_l (x : A) (a : B) : X a (al x a)"]
   IsInflActR [label = "\N X ar\ninfl_act_r (a : B) (x : A) : X a (ar a x)"]
   IsInflL [label = "\N X k\ninfl_l (x y : A) : X y (k x y)"]
   IsInflR [label = "\N X k\ninfl_r (x y : A) : X x (k x y)"]
   IsInflUnOp [label = "\N X f\ninfl_un_op (x : A) : X x (f x)"]
+  IsContract [label = "\N X s t f\ncontract (a b : B) : X (t (f a) (f b)) (s a b)"]
+  IsSubadd [label = "\N X k s\nsubadd (a b c : B) : X (s a c) (k (s a b) (s b c))"]
   }
-
-  IsContract [label = "\N\ncontract (x y : A) : dist (f x) (f y) <= dist x y", color = red, fillcolor = yellow]
-  IsExpand [label = "\N\nexpand (x y : A) : dist x y <= dist (f x) (f y)", color = red, fillcolor = yellow]
-  IsCohOrdRels [label = "\N\ncoh_ord_rels (x y : A) : x < y <-> x <= y /\\ x <> y", color = red, fillcolor = yellow]
-  IsStrComono [label = "\N\nstr_comono (x y : A) (a : f x < f y) : x < y", color = red, fillcolor = yellow]
-  IsStrMono [label = "\N\nstr_mono (x y : A) (a : x < y) : f x < f y", color = red, fillcolor = yellow]
-  IsComono [label = "\N\ncomono (x y : A) (a : f x <= f y) : x <= y", color = red, fillcolor = yellow]
-  IsMono [label = "\N\nmono (x y : A) (a : x <= y) : f x <= f y", color = red, fillcolor = yellow]
-  IsMonoBinOp [label = "\N\nmono_bin_op (x0 y0 : A) (a0 : x0 <= y0) (x1 y1 : A) (a1 : x1 <= y1) : x0 + x1 <= y0 + y1", color = red, fillcolor = yellow]
-  IsMonoBinOpL [label = "\N\nmono_bin_op_l (x y z : A) (a : x <= y) : z + x <= z + y", color = red, fillcolor = yellow]
-  IsMonoBinOpR [label = "\N\nmono_bin_op_r (x y z : A) (a : x <= y) : x + z <= y + z", color = red, fillcolor = yellow]
-  IsUpperBnd [label = "\N\nupper_bnd (y : A) : y <= x", color = red, fillcolor = yellow]
-  IsLowerBnd [label = "\N\nlower_bnd (y : A) : x <= y", color = red, fillcolor = yellow]
 
   subgraph cluster_ext {
   label = "Extensional Fragment"
@@ -202,6 +206,8 @@ digraph Is {
     IsApart -> IsCotrans
     IsApart -> IsIrrefl
     IsApart -> IsSym
+    IsBnd -> IsLowerBnd
+    IsBnd -> IsUpperBnd
     IsEquiv -> IsRefl
     IsEquiv -> IsSym
     IsEquiv -> IsTrans
@@ -222,6 +228,8 @@ digraph Is {
     IsStrTotOrd -> IsStrPartOrd
     IsTotOrd -> IsConnex
     IsTotOrd -> IsPartOrd
+    IsIffRel -> IsSubrel
+    IsIffRel -> IsSubrel
   }
 
   subgraph metric_geometry_fields {
@@ -312,6 +320,10 @@ digraph Is {
     IsTotOrd -> IsAntisym
     IsTotOrd -> IsRefl
     IsTotOrd -> IsTrans
+    IsMonoBinOpL -> IsMonoBinFnL [label = "TODO These"]
+    IsMonoBinOpR -> IsMonoBinFnR [label = "TODO These"]
+    IsMonoBinFnLR -> IsMonoBinFnL
+    IsMonoBinFnLR -> IsMonoBinFnR
   }
 
   subgraph metric_geometry_derivations {
@@ -403,13 +415,9 @@ digraph Is {
   IsContr -> IsProp
   IsContr -> IsTrunc
   IsFunExtDep -> IsFunExt
-  IsMono -> IsStrMono
-  IsMonoBinOp -> IsMonoBinOpL
-  IsMonoBinOp -> IsMonoBinOpR
   IsProp -> IsSet
   IsProp -> IsTrunc
   IsSet -> IsTrunc
-  IsStrMono -> IsMono
   IsTrunc -> IsContr
   IsTrunc -> IsProp
   IsTrunc -> IsSet

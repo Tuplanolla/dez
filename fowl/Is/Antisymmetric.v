@@ -10,23 +10,23 @@ From DEZ.Is Require Export
 
 Fail Fail Notation IsAntisym := (Antisymmetric _).
 
-Class IsAntisym (A : Type) (X Y : A -> A -> Prop) : Prop :=
-  antisym (x y : A) (a : Y x y) (b : Y y x) : X x y.
+Class IsAntisym (A : Type) (Xeq Xle : A -> A -> Prop) : Prop :=
+  antisym (x y : A) (a : Xle x y) (b : Xle y x) : Xeq x y.
 
 Section Context.
 
-Context (A : Type) (X Y : A -> A -> Prop).
+Context (A : Type) (Xeq Xle : A -> A -> Prop).
 
 (** Our antisymmetry implies standard library antisymmetry. *)
 
 #[local] Instance antisym_antisymmetric
-  `{!IsEquiv X} `{!IsAntisym X Y} : Antisymmetric A X Y.
+  `{!IsEquiv Xeq} `{!IsAntisym Xeq Xle} : Antisymmetric A Xeq Xle.
 Proof. auto. Qed.
 
 (** Standard library antisymmetry implies our antisymmetry. *)
 
 #[local] Instance antisymmetric_is_antisym
-  `{!Equivalence X} `{!Antisymmetric A X Y} : IsAntisym X Y.
+  `{!Equivalence Xeq} `{!Antisymmetric A Xeq Xle} : IsAntisym Xeq Xle.
 Proof. auto. Qed.
 
 End Context.
