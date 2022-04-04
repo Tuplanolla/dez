@@ -242,6 +242,7 @@ digraph Is {
     IsRealPseudometric -> IsCommForm
     IsRealPseudometric -> IsEquiv
     IsRealPseudometric -> IsNonnegForm
+    // IsRealPseudometric -> IsProper
     IsRealPseudometric -> IsSubaddForm
     IsRealPseudometric -> IsToeplitzForm
   }
@@ -341,7 +342,9 @@ digraph Is {
     IsInflR -> IsInflUnOp [label = "flip apply"]
     IsRealMetric -> IsNonnegForm
     // IsRealMetric -> IsProper
+    IsRealMetric -> IsRealPseudometric
     IsRealMetric -> IsToeplitzForm
+    IsRealPseudometric -> IsSubrel
   }
 
   subgraph abstract_algebra_derivations {

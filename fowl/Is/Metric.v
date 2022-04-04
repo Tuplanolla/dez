@@ -7,46 +7,14 @@ From DEZ.Has Require Export
 From DEZ.Is Require Export
   Equivalence Commutative Toeplitz Nonnegative Subadditive Subrelation
   TotalOrder Bounded Monoid Monotonic Inflationary.
+From DEZ.Justifies Require Export
+  RTheorems.
 From DEZ.Supports Require Import
   EquivalenceNotations OrderNotations AdditiveNotations ArithmeticNotations.
 
-#[local] Notation "'|' y '-' x '|'" := (dist x y) (format "'|' y  '-'  x '|'").
-
-Module Real.
-
-(** TODO Put these in some real theorems module. *)
-
 #[local] Open Scope R_scope.
 
-#[local] Notation "'_<=_'" := Rle : R_scope.
-#[local] Notation "x '<=' y" := (Rle x y) : R_scope.
-
-#[local] Notation "'_+_'" := Rplus : R_scope.
-#[local] Notation "x '+' y" := (Rplus x y) : R_scope.
-
-#[local] Notation "'-_'" := Ropp : R_scope.
-#[local] Notation "'-' x" := (Ropp x) : R_scope.
-
-#[local] Notation "'_-_'" := Rminus : R_scope.
-#[local] Notation "y '-' x" := (Rminus y x) : R_scope.
-
-#[local] Notation "'_*_'" := Rmult : R_scope.
-#[local] Notation "x '*' y" := (Rmult x y) : R_scope.
-
-#[local] Notation "'/_'" := Rinv : R_scope.
-#[local] Notation "'/' x" := (Rinv x) : R_scope.
-
-#[local] Notation "'_/_'" := Rdiv : R_scope.
-#[local] Notation "y '/' x" := (Rdiv y x) : R_scope.
-
-#[export] Instance R_has_equiv_rel : HasEquivRel R := _=_.
-#[export] Instance R_has_ord_rel : HasOrdRel R := Rle.
-#[export] Instance R_has_zero : HasZero R := R0.
-#[export] Instance R_has_neg : HasNeg R := Ropp.
-#[export] Instance R_has_add : HasAdd R := Rplus.
-#[export] Instance R_has_one : HasOne R := R1.
-#[export] Instance R_has_mul : HasMul R := Rmult.
-#[export] Instance R_has_recip : HasRecip R := Rinv.
+#[local] Notation "'|' y '-' x '|'" := (dist x y) (format "'|' y  '-'  x '|'").
 
 (** ** Real Pseudometric Space *)
 
@@ -57,9 +25,32 @@ Class IsRealPseudometric (B : Type) (X : B -> B -> Prop)
   real_pseudometric_is_toeplitz_form :> IsToeplitzForm _=_ 0 d;
   real_pseudometric_is_nonneg_form :> IsNonnegForm _<=_ 0 d;
   real_pseudometric_is_subadd_form :> IsSubaddForm _<=_ _+_ d;
+  real_pseudometric_is_proper : IsProper (X ==> X ==> _=_) d;
 }.
 
+Section Context.
+
+Context (B : Type) (X : B -> B -> Prop)
+  (d : B -> B -> R) `{!IsRealPseudometric X d}.
+
+#[local] Instance real_pseudometric_has_equiv_rel : HasEquivRel B := X.
+
+Ltac note := progress (
+  try change X with (equiv_rel (A := B)) in *).
+
+#[export] Instance real_pseudometric_is_subrel :
+  IsSubrel X (fun a b : B => d a b = 0).
+Proof with note.
+  intros x y a...
+  pose proof real_pseudometric_is_proper as b.
+  pose proof b x x (refl _) x y a as c.
+  rewrite <- c. rewrite toeplitz_form. reflexivity. Qed.
+
+End Context.
+
 (** ** Real Metric Space *)
+
+(** TODO The use of subrelations here is somewhat awkward. *)
 
 Class IsRealMetric (B : Type) (X : B -> B -> Prop)
   (d : B -> B -> R) : Prop := {
@@ -87,9 +78,9 @@ Proof with note.
   intros a b... pose proof subadd_form a b a as s. rewrite toeplitz_form in s.
   apply (Rmult_le_reg_r 2).
   - apply IZR_lt. lia.
-  - rewrite Rmult_0_l.
+  - rewrite absorb_elem_l.
     replace 2%Z with (1 + 1)%Z by lia. rewrite plus_IZR.
-    rewrite Rmult_plus_distr_l. rewrite Rmult_1_r.
+    rewrite distr_l. rewrite unl_elem_r.
     replace (d a b) with (d b a) at 2 by apply comm_form.
     apply s. Qed.
 
@@ -102,21 +93,20 @@ Proof with note.
   - pose proof subadd_form a0 b0 a1 as u0.
     pose proof subadd_form b0 b1 a1 as u1.
     rewrite (comm_form a1 b1) in t1.
-    rewrite t0 in u0. rewrite Rplus_0_l in u0.
-    rewrite t1 in u1. rewrite Rplus_0_r in u1.
-    eapply Rle_trans. apply u0. eapply Rle_trans. apply u1.
-    apply Rle_refl.
+    rewrite t0 in u0. rewrite unl_elem_l in u0.
+    rewrite t1 in u1. rewrite unl_elem_r in u1.
+    etransitivity. apply u0. etransitivity. apply u1. reflexivity.
   - pose proof subadd_form b0 a0 b1 as u0.
     pose proof subadd_form a0 a1 b1 as u1.
     rewrite (comm_form a0 b0) in t0.
-    rewrite t0 in u0. rewrite Rplus_0_l in u0.
-    rewrite t1 in u1. rewrite Rplus_0_r in u1.
-    eapply Rle_trans. apply u0. eapply Rle_trans. apply u1.
-    apply Rle_refl. Qed.
+    rewrite t0 in u0. rewrite unl_elem_l in u0.
+    rewrite t1 in u1. rewrite unl_elem_r in u1.
+    etransitivity. apply u0. etransitivity. apply u1. reflexivity. Qed.
+
+#[export] Instance real_metric_is_real_pseudometric : IsRealPseudometric X d.
+Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
-
-End Real.
 
 From DEZ.Supports Require Import
   OrderNotations ArithmeticNotations AdditiveNotations.
@@ -159,8 +149,6 @@ Section Context.
 
 Context (A B : Type) (HR : HasOrdRel A) (Hx : HasNullOp A) (Hk : HasBinOp A)
   (Hd : HasDist A B) `{!IsMetric _<=_ 0 _+_ dist}.
-
-#[local] Notation "'|' y '-' x '|'" := (dist x y) (format "'|' y  '-'  x '|'").
 
 #[local] Instance is_comm_tor_l : IsCommForm _=_ dist.
 Proof.

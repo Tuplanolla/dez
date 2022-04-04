@@ -5,7 +5,7 @@ From DEZ.Has Require Export
 From DEZ.Is Require Export
   Group Semigroup
   Monoid Semiring Ring
-  Equivalence PartialEquivalence Isomorphism.
+  Equivalence PartialEquivalence Isomorphic.
 
 Ltac ecrush :=
   hnf in *; eauto with zarith.
@@ -181,61 +181,3 @@ Proof.
       * cbn. rewrite (Pos.pred_double_succ q). reflexivity.
       * reflexivity.
       * reflexivity. Qed. *)
-
-(** TODO Organize this. *)
-
-Section Context.
-
-Import ZArith.ZArith.
-
-Context (A : Type)
-  {X : HasEquivRel A} {x : HasNullOp A} {f : HasUnOp A} {k : HasBinOp A}
-  `{!IsGrp X x f k}.
-
-(** ** Integer Repetition *)
-
-Equations rep (n : Z) (y : A) : A :=
-  rep Z0 y := 0;
-  rep (Zpos n) y := Pos.iter_op _+_ n y;
-  rep (Zneg n) y := - Pos.iter_op _+_ n y.
-
-#[local] Instance Z_has_equiv_rel : HasEquivRel Z := Z.eq.
-#[local] Instance Z_has_null_op : HasNullOp Z := Z.zero.
-#[local] Instance Z_has_un_op : HasUnOp Z := Z.opp.
-#[local] Instance Z_has_bin_op : HasBinOp Z := Z.add.
-
-#[local] Instance Z_has_act_l : HasActL Z A := rep.
-
-Context `{!IsGrp Z.eq Z.zero Z.opp Z.add}.
-
-Ltac note := progress (
-  (* try change Z.eq with (equiv_rel (A := Z)) in *;
-  try change Z.zero with (null_op (A := Z)) in *;
-  try change Z.opp with (un_op (A := Z)) in *;
-  try change Z.add with (bin_op (A := Z)) in *; *)
-  try change X with (equiv_rel (A := A)) in *;
-  try change x with (null_op (A := A)) in *;
-  try change f with (un_op (A := A)) in *;
-  try change k with (bin_op (A := A)) in *).
-
-(** Repetition by any integer a homomorphism. *)
-
-Require Import Lia.
-
-#[export] Instance rep_is_grp_hom (y : A) :
-  IsGrpHom Z.eq Z.zero Z.opp Z.add X x f k (flip rep y).
-Proof.
-  note. split.
-  - typeclasses eauto.
-  - typeclasses eauto.
-  - intros n p. unfold flip. destruct n as [| q | q].
-    + unfold rep at 2. rewrite Z.add_0_l. rewrite unl_l. reflexivity.
-    + unfold rep at 2. induction q as [| r a] using Pos.peano_ind.
-      * unfold Pos.iter_op. rewrite Z.add_1_l. destruct (Z.succ p) eqn : a.
-        assert (p = (- 1)%Z) by lia. subst p. cbn. rewrite inv_r. reflexivity.
-        cbn. admit. admit.
-      * admit.
-    + admit.
-  - typeclasses eauto. Admitted.
-
-End Context.
