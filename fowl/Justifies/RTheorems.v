@@ -1,4 +1,4 @@
-(** * Properties of Real Numbers *)
+(** * Properties of Synthetic Real Numbers *)
 
 From Coq Require Import
   Lia Reals.Reals.
@@ -35,13 +35,17 @@ Notation "'/' x" := (Rinv x) : R_scope.
 Notation "'_/_'" := Rdiv : R_scope.
 Notation "y '/' x" := (Rdiv y x) : R_scope.
 
+Ltac ecrush :=
+  repeat (try typeclasses eauto; esplit);
+  hnf in *; eauto with real rorders.
+
 (** ** Total Ordering *)
 
 #[export] Instance R_has_equiv_rel : HasEquivRel R := _=_.
 #[export] Instance R_has_ord_rel : HasOrdRel R := Rle.
 
 #[export] Instance Rle_is_refl : IsRefl Rle.
-Proof. exact Rle_refl. Qed.
+Proof. ecrush. Qed.
 
 #[export] Instance Rle_is_trans : IsTrans Rle.
 Proof. exact Rle_trans. Qed.
@@ -50,19 +54,20 @@ Proof. exact Rle_trans. Qed.
 Proof.
   intros x y.
   pose proof Rle_or_lt x y as a.
-  pose proof Rlt_le y x as b. intuition. Qed.
+  pose proof Rlt_le y x as b.
+  intuition. Qed.
 
 #[export] Instance Rle_is_preord : IsPreord Rle.
-Proof. esplit; typeclasses eauto. Qed.
+Proof. ecrush. Qed.
 
 #[export] Instance Rle_is_antisym : IsAntisym _=_ Rle.
 Proof. exact Rle_antisym. Qed.
 
 #[export] Instance Rle_is_part_ord : IsPartOrd _=_ Rle.
-Proof. esplit; typeclasses eauto. Qed.
+Proof. ecrush. Qed.
 
 #[export] Instance Rle_is_tot_ord : IsTotOrd _=_ Rle.
-Proof. esplit; typeclasses eauto. Qed.
+Proof. ecrush. Qed.
 
 (** ** Additive Group *)
 
@@ -75,80 +80,80 @@ Module Additive.
 End Additive.
 
 #[export] Instance R_add_is_assoc : IsAssoc _=_ Rplus.
-Proof. intros x y z. rewrite Rplus_assoc. reflexivity. Qed.
+Proof. ecrush. Qed.
 
 #[export] Instance R_add_is_semigrp : IsSemigrp _=_ Rplus.
-Proof. esplit; typeclasses eauto. Qed.
+Proof. ecrush. Qed.
 
 #[local] Instance R_add_is_unl_elem_l : IsUnlElemL _=_ 0 Rplus.
-Proof. exact Rplus_0_l. Qed.
+Proof. ecrush. Qed.
 
 #[local] Instance R_add_is_unl_elem_r : IsUnlElemR _=_ 0 Rplus.
-Proof. exact Rplus_0_r. Qed.
+Proof. ecrush. Qed.
 
 #[export] Instance R_add_is_unl_elem : IsUnlElem _=_ 0 Rplus.
-Proof. esplit; typeclasses eauto. Qed.
+Proof. ecrush. Qed.
 
 #[export] Instance R_add_is_mon : IsMon _=_ 0 Rplus.
-Proof. esplit; typeclasses eauto. Qed.
+Proof. ecrush. Qed.
 
 #[local] Instance R_add_is_inv_l : IsInvL _=_ 0 Ropp Rplus.
-Proof. exact Rplus_opp_l. Qed.
+Proof. ecrush. Qed.
 
 #[local] Instance R_add_is_inv_r : IsInvR _=_ 0 Ropp Rplus.
-Proof. exact Rplus_opp_r. Qed.
+Proof. ecrush. Qed.
 
 #[export] Instance R_add_is_inv : IsInv _=_ 0 Ropp Rplus.
-Proof. esplit; typeclasses eauto. Qed.
+Proof. ecrush. Qed.
 
 #[export] Instance R_add_is_grp : IsGrp _=_ 0 Ropp Rplus.
-Proof. esplit; typeclasses eauto. Qed.
+Proof. ecrush. Qed.
 
 #[export] Instance R_add_is_comm_bin_op : IsCommBinOp _=_ Rplus.
-Proof. exact Rplus_comm. Qed.
+Proof. ecrush. Qed.
 
 (** ** Multiplicative Group *)
 
 Module Multiplicative.
 
-#[export] Instance R_has_null_op : HasNullOp R := R1.
+#[export] Instance R_has_null_op : HasNullOp R := 1.
 #[export] Instance R_has_un_op : HasUnOp R := Rinv.
 #[export] Instance R_has_bin_op : HasBinOp R := Rmult.
 
 End Multiplicative.
 
 #[export] Instance R_mul_is_assoc : IsAssoc _=_ Rmult.
-Proof. intros x y z. rewrite Rmult_assoc. reflexivity. Qed.
+Proof. ecrush. Qed.
 
 #[export] Instance R_mul_is_semigrp : IsSemigrp _=_ Rmult.
-Proof. esplit; typeclasses eauto. Qed.
+Proof. ecrush. Qed.
 
 #[local] Instance R_mul_is_unl_elem_l : IsUnlElemL _=_ 1 Rmult.
-Proof. exact Rmult_1_l. Qed.
+Proof. ecrush. Qed.
 
 #[local] Instance R_mul_is_unl_elem_r : IsUnlElemR _=_ 1 Rmult.
-Proof. exact Rmult_1_r. Qed.
+Proof. ecrush. Qed.
 
 #[export] Instance R_mul_is_unl_elem : IsUnlElem _=_ 1 Rmult.
-Proof. esplit; typeclasses eauto. Qed.
+Proof. ecrush. Qed.
 
 #[export] Instance R_mul_is_mon : IsMon _=_ 1 Rmult.
-Proof. esplit; typeclasses eauto. Qed.
+Proof. ecrush. Qed.
 
 (* #[local] Instance R_mul_is_inv_l : IsInvL _=_ 1 Rinv Rmult.
-Proof. exact Rinv_l. Qed.
+Proof. ecrush. Qed.
 
 #[local] Instance R_mul_is_inv_r : IsInvR _=_ 1 Rinv Rmult.
-Proof. exact Rinv_r. Qed.
+Proof. ecrush. Qed.
 
 #[export] Instance R_mul_is_inv : IsInv _=_ 1 Rinv Rmult.
-Proof. esplit; typeclasses eauto. Qed.
+Proof. ecrush. Qed.
 
 #[export] Instance R_mul_is_grp : IsGrp _=_ 1 Rinv Rmult.
-Proof. esplit; typeclasses eauto. Qed. *)
+Proof. ecrush. Qed. *)
 
 #[export] Instance R_mul_is_comm_bin_op : IsCommBinOp _=_ Rmult.
-Proof. exact Rmult_comm. Qed.
+Proof. ecrush. Qed.
 
 (** ** Field *)
 
@@ -167,7 +172,7 @@ Proof. exact Rmult_plus_distr_l. Qed.
 Proof. exact Rmult_plus_distr_r. Qed.
 
 #[export] Instance R_is_distr : IsDistr _=_ Rmult Rplus.
-Proof. esplit; try typeclasses eauto. Qed.
+Proof. ecrush. Qed.
 
 #[export] Instance R_is_ring : IsRing _=_ 0 Ropp Rplus 1 Rmult.
-Proof. esplit; try typeclasses eauto. Qed.
+Proof. ecrush. Qed.

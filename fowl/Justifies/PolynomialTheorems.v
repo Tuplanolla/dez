@@ -10,7 +10,7 @@ From DEZ.Has Require Export
   Unsquashing
   OneSortedEnumeration OneSortedCardinality.
 From DEZ.Is Require Export
-  OneSortedFinite Isomorphism
+  OneSortedFinite Isomorphic
   Ring TwoSortedUnitalAssociativeAlgebra.
 From DEZ.Is Require Export
   AbelianGroup Semigroup

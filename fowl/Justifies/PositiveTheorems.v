@@ -1,9 +1,13 @@
+(** * Properties of Binary Positive Numbers *)
+
 From Coq Require Import
   Classes.DecidableClass Classes.Morphisms Lia PArith.PArith.
 From DEZ.Has Require Export
-  One.
+  ArithmeticOperations.
 From DEZ.Is Require Export
-  AbelianGroup Semigroup Monoid.
+  Commutative Group Semigroup Monoid.
+
+#[export] Instance positive_has_one : HasOne positive := xH.
 
 Module Pos.
 
@@ -24,19 +28,19 @@ Corollary pred_N_equation_2 (p : positive) :
   pred_N (xO p) = Npos (pred_double p).
 Proof. reflexivity. Qed.
 
-Corollary pred_N_equation_3 : pred_N xH = 0.
+Corollary pred_N_equation_3 : pred_N xH = N0.
 Proof. reflexivity. Qed.
 
-Hint Rewrite @pred_N_equation_1 @pred_N_equation_2 @pred_N_equation_3 : pred_N.
+#[export] Hint Rewrite @pred_N_equation_1 @pred_N_equation_2 @pred_N_equation_3 : pred_N.
 
-Corollary pos_shiftl_equation_1 (p : positive) : shiftl p 0 = p.
+Corollary pos_shiftl_equation_1 (p : positive) : shiftl p N0 = p.
 Proof. reflexivity. Qed.
 
 Corollary pos_shiftl_equation_2 (p n0 : positive) :
   shiftl p (Npos n0) = iter xO p n0.
 Proof. reflexivity. Qed.
 
-Hint Rewrite @pos_shiftl_equation_1 @pos_shiftl_equation_2 : shiftl.
+#[export] Hint Rewrite @pos_shiftl_equation_1 @pos_shiftl_equation_2 : shiftl.
 
 Corollary iter_equation_1 (A : Type) (f : A -> A) (x : A) (n' : positive) :
   iter f x (xI n') = f (iter f (iter f x n') n').
@@ -50,7 +54,7 @@ Corollary iter_equation_3 (A : Type) (f : A -> A) (x : A) :
   iter f x xH = f x.
 Proof. reflexivity. Qed.
 
-Hint Rewrite @iter_equation_1 @iter_equation_2 @iter_equation_3 : iter.
+#[export] Hint Rewrite @iter_equation_1 @iter_equation_2 @iter_equation_3 : iter.
 
 (** Whether the given number is a power of two or not. *)
 
@@ -61,7 +65,7 @@ Equations bin (n : positive) : bool :=
 
 (** These lemmas are missing from the standard library. *)
 
-Lemma shiftl_0_r (a : positive) : shiftl a 0 = a.
+Lemma shiftl_0_r (a : positive) : shiftl a N0 = a.
 Proof. reflexivity. Qed.
 
 (** These instances are missing from the standard library. *)
@@ -119,13 +123,13 @@ Module Additive.
 
 Global Instance positive_has_bin_op : HasBinOp positive := Pos.add.
 
-Global Instance positive_bin_op_is_assoc : IsAssoc (bin_op (A := positive)).
+Global Instance positive_bin_op_is_assoc : IsAssoc _=_ Pos.add.
 Proof. intros x y z. apply Pos.add_assoc. Defined.
 
-Global Instance positive_bin_op_is_semigrp : IsSemigrp (bin_op (A := positive)).
+Global Instance positive_bin_op_is_semigrp : IsSemigrp _=_ Pos.add.
 Proof. esplit; typeclasses eauto. Defined.
 
-Global Instance positive_bin_op_is_comm : IsComm (bin_op (A := positive)).
+Global Instance positive_bin_op_is_comm_bin_op : IsCommBinOp _=_ Pos.add.
 Proof. intros x y. apply Pos.add_comm. Defined.
 
 End Additive.
@@ -135,29 +139,25 @@ Module Multiplicative.
 Global Instance positive_bin_op_has_bin_op : HasBinOp positive := Pos.mul.
 Global Instance positive_has_null_op : HasNullOp positive := xH.
 
-Global Instance positive_bin_op_is_assoc : IsAssoc (bin_op (A := positive)).
+Global Instance positive_bin_op_is_assoc : IsAssoc _=_ Pos.mul.
 Proof. intros x y z. apply Pos.mul_assoc. Defined.
 
-Global Instance positive_bin_op_is_semigrp : IsSemigrp (bin_op (A := positive)).
+Global Instance positive_bin_op_is_semigrp : IsSemigrp _=_ Pos.mul.
 Proof. esplit; typeclasses eauto. Defined.
 
-Global Instance positive_bin_op_is_comm : IsComm (bin_op (A := positive)).
+Global Instance positive_bin_op_is_bin_op : IsCommBinOp _=_ Pos.mul.
 Proof. intros x y. apply Pos.mul_comm. Defined.
 
-Global Instance positive_bin_op_null_op_is_unl_l : IsUnlL null_op (bin_op (A := positive)).
+Global Instance positive_bin_op_null_op_is_unl_l : IsUnlElemL _=_ xH Pos.mul.
 Proof. intros x. apply Pos.mul_1_l. Defined.
 
-Global Instance positive_bin_op_null_op_is_unl_r : IsUnlR null_op (bin_op (A := positive)).
+Global Instance positive_bin_op_null_op_is_unl_r : IsUnlElemR _=_ xH Pos.mul.
 Proof. intros x. apply Pos.mul_1_r. Defined.
 
-Global Instance positive_bin_op_null_op_is_unl : IsUnlLR null_op (bin_op (A := positive)).
+Global Instance positive_bin_op_null_op_is_unl : IsUnlElem _=_ xH Pos.mul.
 Proof. esplit; typeclasses eauto. Defined.
 
-Global Instance positive_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := positive)).
+Global Instance positive_bin_op_null_op_is_mon : IsMon _=_ xH Pos.mul.
 Proof. esplit; typeclasses eauto. Defined.
 
 End Multiplicative.
-
-(** We need this just for notations. *)
-
-Global Instance positive_has_one : HasOne positive := xH.

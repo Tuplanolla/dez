@@ -1,13 +1,224 @@
 (** * Properties of Binary Natural Numbers *)
 
 From Coq Require Import
-  Classes.DecidableClass Classes.Morphisms Lia NArith.NArith Setoids.Setoid.
+  NArith.NArith.
+From DEZ.Has Require Export
+  EquivalenceRelations Decisions OrderRelations
+  Operations ArithmeticOperations.
 From DEZ.Is Require Export
-  AbelianGroup Semigroup Monoid Semiring.
+  TotalOrder Group Semiring.
+
+From Coq Require Import
+  Classes.DecidableClass Classes.Morphisms Lia NArith.NArith Setoids.Setoid.
 From DEZ.Justifies Require Export
   PositiveTheorems.
 From DEZ.Provides Require Import
   DatatypeTactics RewritingTactics.
+
+#[local] Open Scope N_scope.
+
+(** ** Hints Missing from the Standard Library *)
+
+Create HintDb narith.
+
+Definition Nsucc_eq_compat (n1 n2 : N) (a : n1 = n2) : N.succ n1 = N.succ n2.
+Proof. apply N.succ_inj_wd. apply a. Qed.
+
+#[global]
+Hint Resolve
+  N.succ_pred
+  N.le_refl
+  N.le_trans
+(*   Nsucc_le_compat *)
+  N.le_succ_diag_r
+  N.le_le_succ_r
+  N.eq_le_incl: narith.
+
+#[global]
+Hint Resolve N.le_refl N.add_comm N.add_assoc N.mul_comm N.mul_assoc N.add_0_l
+  N.add_0_r N.mul_1_l
+  N.mul_add_distr_r: narith.
+
+#[global]
+Hint Resolve
+  (** ** Reversible simplification lemmas (no loss of information)      *)
+  (** Should clearly be declared as hints                               *)
+
+  (** Lemmas ending by eq *)
+  Nsucc_eq_compat (* n = m -> N.succ n = N.succ m *)
+
+  (** Lemmas ending by N.gt *)
+(*   Nsucc_gt_compat (* m > n -> N.succ m > N.succ n *) *)
+(*   Ngt_succ (* N.succ n > n *) *)
+(*   Norder.Ngt_pos_0 (* N.pos p > 0 *) *)
+(*   Nplus_gt_compat_l (* n > m -> p+n > p+m *) *)
+(*   Nplus_gt_compat_r (* n > m -> n+p > m+p *) *)
+
+  (** Lemmas ending by N.lt *)
+(*   Pos2N.is_pos (* 0 < N.pos p *) *)
+(*   N.lt_succ_diag_r (* n < N.succ n *) *)
+(*   Nsucc_lt_compat (* n < m -> N.succ n < N.succ m *) *)
+  N.lt_pred_l (* N.pred n < n *)
+(*   Nplus_lt_compat_l (* n < m -> p+n < p+m *) *)
+(*   Nplus_lt_compat_r (* n < m -> n+p < m+p *) *)
+
+  (** Lemmas ending by N.le *)
+(*   Nat2N.is_nonneg (* 0 <= N.of_nat n *) *)
+(*   Pos2N.is_nonneg (* 0 <= N.pos p *) *)
+  N.le_refl (* n <= n *)
+  N.le_succ_diag_r (* n <= N.succ n *)
+(*   Nsucc_le_compat (* m <= n -> N.succ m <= N.succ n *) *)
+  N.le_pred_l (* N.pred n <= n *)
+  N.le_min_l (* N.min n m <= n *)
+  N.le_min_r (* N.min n m <= m *)
+(*   Nplus_le_compat_l (* n <= m -> p+n <= p+m *) *)
+(*   Nplus_le_compat_r (* a <= b -> a+c <= b+c *) *)
+(*   N.abs_nonneg (* 0 <= |x| *) *)
+
+  (** ** Irreversible simplification lemmas *)
+  (** Probably to be declared as hints, when no other simplification is possible *)
+
+  (** Lemmas ending by eq *)
+(*   N_eq_mult (* y = 0 -> y*x = 0 *) *)
+(*   Nplus_eq_compat (* n = m -> p = q -> n+p = m+q *) *)
+
+  (** Lemmas ending by N.ge *)
+(*   Norder.Nmult_ge_compat_r (* a >= b -> c >= 0 -> a*c >= b*c *) *)
+(*   Norder.Nmult_ge_compat_l (* a >= b -> c >= 0 -> c*a >= c*b *) *)
+(*   Norder.Nmult_ge_compat (* : *)
+      a >= c -> b >= d -> c >= 0 -> d >= 0 -> a*b >= c*d *)
+
+  (** Lemmas ending by N.lt *)
+(*   Norder.Nmult_gt_0_compat (* a > 0 -> b > 0 -> a*b > 0 *) *)
+  N.lt_lt_succ_r (* n < m -> n < N.succ m *)
+
+  (** Lemmas ending by N.le *)
+  N.mul_nonneg_nonneg (* 0 <= x -> 0 <= y -> 0 <= x*y *)
+(*   Norder.Nmult_le_compat_r (* a <= b -> 0 <= c -> a*c <= b*c *) *)
+(*   Norder.Nmult_le_compat_l (* a <= b -> 0 <= c -> c*a <= c*b *) *)
+  N.add_nonneg_nonneg (* 0 <= x -> 0 <= y -> 0 <= x+y *)
+  N.le_le_succ_r (* x <= y -> x <= N.succ y *)
+  N.add_le_mono (* n <= m -> p <= q -> n+p <= m+q *)
+
+  : narith.
+
+(** These are not in [Z] either. What is going on? *)
+
+#[local] Hint Resolve N.le_antisymm N.mul_1_r N.mul_0_r N.mul_add_distr_l : narith.
+
+Ltac ecrush :=
+  repeat (try typeclasses eauto; esplit);
+  hnf in *; eauto with narith.
+
+(** ** Decidable Total Ordering *)
+
+#[export] Instance N_has_equiv_rel : HasEquivRel N := _=_.
+#[export] Instance N_has_equiv_dec : HasEquivDec N := N.eq_dec.
+#[export] Instance N_has_ord_rel : HasOrdRel N := N.le.
+
+#[export] Instance N_le_is_refl : IsRefl N.le.
+Proof. ecrush. Qed.
+
+#[export] Instance N_le_is_trans : IsTrans N.le.
+Proof. ecrush. Qed.
+
+#[export] Instance N_le_is_connex : IsConnex N.le.
+Proof.
+  intros x y.
+  pose proof N.le_gt_cases x y as a.
+  pose proof N.lt_le_incl y x as b.
+  intuition. Qed.
+
+#[export] Instance N_le_is_preord : IsPreord N.le.
+Proof. ecrush. Qed.
+
+#[export] Instance N_le_is_antisym : IsAntisym _=_ N.le.
+Proof. ecrush. Qed.
+
+#[export] Instance N_le_is_part_ord : IsPartOrd _=_ N.le.
+Proof. ecrush. Qed.
+
+#[export] Instance N_le_is_tot_ord : IsTotOrd _=_ N.le.
+Proof. ecrush. Qed.
+
+(** ** Additive Group *)
+
+Module Additive.
+
+#[export] Instance N_has_null_op : HasNullOp N := 0.
+#[export] Instance N_has_bin_op : HasBinOp N := N.add.
+
+End Additive.
+
+#[export] Instance N_add_is_assoc : IsAssoc _=_ N.add.
+Proof. ecrush. Qed.
+
+#[export] Instance N_add_is_semigrp : IsSemigrp _=_ N.add.
+Proof. ecrush. Qed.
+
+#[local] Instance N_add_is_unl_elem_l : IsUnlElemL _=_ 0 N.add.
+Proof. ecrush. Qed.
+
+#[local] Instance N_add_is_unl_elem_r : IsUnlElemR _=_ 0 N.add.
+Proof. ecrush. Qed.
+
+#[export] Instance N_add_is_unl_elem : IsUnlElem _=_ 0 N.add.
+Proof. ecrush. Qed.
+
+#[export] Instance N_add_is_mon : IsMon _=_ 0 N.add.
+Proof. ecrush. Qed.
+
+#[export] Instance N_add_is_comm_bin_op : IsCommBinOp _=_ N.add.
+Proof. ecrush. Qed.
+
+(** ** Multiplicative Group *)
+
+Module Multiplicative.
+
+#[export] Instance N_has_null_op : HasNullOp N := 1.
+#[export] Instance N_has_bin_op : HasBinOp N := N.mul.
+
+End Multiplicative.
+
+#[export] Instance N_mul_is_assoc : IsAssoc _=_ N.mul.
+Proof. ecrush. Qed.
+
+#[export] Instance N_mul_is_semigrp : IsSemigrp _=_ N.mul.
+Proof. ecrush. Qed.
+
+#[local] Instance N_mul_is_unl_elem_l : IsUnlElemL _=_ 1 N.mul.
+Proof. ecrush. Qed.
+
+#[local] Instance N_mul_is_unl_elem_r : IsUnlElemR _=_ 1 N.mul.
+Proof. ecrush. Qed.
+
+#[export] Instance N_mul_is_unl_elem : IsUnlElem _=_ 1 N.mul.
+Proof. ecrush. Qed.
+
+#[export] Instance N_mul_is_mon : IsMon _=_ 1 N.mul.
+Proof. ecrush. Qed.
+
+#[export] Instance N_mul_is_comm_bin_op : IsCommBinOp _=_ N.mul.
+Proof. ecrush. Qed.
+
+(** ** Ring *)
+
+#[export] Instance N_has_zero : HasZero N := 0.
+#[export] Instance N_has_add : HasAdd N := N.add.
+#[export] Instance N_has_one : HasOne N := 1.
+#[export] Instance N_has_mul : HasMul N := N.mul.
+
+#[local] Instance N_is_distr_l : IsDistrL _=_ N.mul N.add.
+Proof. ecrush. Qed.
+
+#[local] Instance N_is_distr_r : IsDistrR _=_ N.mul N.add.
+Proof. ecrush. Qed.
+
+#[export] Instance N_is_distr : IsDistr _=_ N.mul N.add.
+Proof. ecrush. Qed.
+
+#[export] Instance N_is_semiring : IsSemiring _=_ 0 N.add 1 N.mul.
+Proof. ecrush. Qed.
 
 Module N.
 
@@ -46,7 +257,7 @@ Proof. reflexivity. Qed.
 Corollary succ_equation_2 (p : positive) : succ (Npos p) = Npos (Pos.succ p).
 Proof. reflexivity. Qed.
 
-Hint Rewrite @succ_equation_1 @succ_equation_2 : succ.
+#[export] Hint Rewrite @succ_equation_1 @succ_equation_2 : succ.
 
 Corollary pred_equation_1 : pred 0 = 0.
 Proof. reflexivity. Qed.
@@ -54,7 +265,7 @@ Proof. reflexivity. Qed.
 Corollary pred_equation_2 (p : positive) : pred (Npos p) = Pos.pred_N p.
 Proof. reflexivity. Qed.
 
-Hint Rewrite @pred_equation_1 @pred_equation_2 : pred.
+#[export] Hint Rewrite @pred_equation_1 @pred_equation_2 : pred.
 
 (** Whether the given number is a power of two or not. *)
 
@@ -69,7 +280,7 @@ Lemma pos_shiftl_succ_r' (a : positive) (b : N) :
 Proof.
   destruct b as [| p].
   - reflexivity.
-  - simp succ. simp shiftl.
+  - simp succ. unfold Pos.shiftl.
     rewrite Pos.iter_succ.
     reflexivity. Qed.
 
@@ -200,7 +411,6 @@ Arguments log2rem !_.
 (** Specification for [pos_log2rem].
     Analogous in structure to [sqrtrem_spec]. *)
 
-#[ugly]
 Lemma pos_log2rem_spec (n : positive) :
   let (l, m) := pos_log2rem n in Npos n = 2 ^ l + m /\ m < 2 ^ l.
 Proof.
@@ -231,7 +441,6 @@ Proof.
 (** Specification for [log2rem].
     Analogous in structure to [sqrtrem_spec]. *)
 
-#[ugly]
 Lemma log2rem_spec (n : N) (l : 0 < n) :
   let (l, m) := log2rem n in n = 2 ^ l + m /\ m < 2 ^ l.
 Proof.
@@ -635,103 +844,3 @@ Proof.
   - destruct x as [p e]. exists ((2 * p + 1) * (1 + p)). lia. Qed.
 
 End N.
-
-(** Additive monoid structure. *)
-
-Module Additive.
-
-Global Instance N_has_bin_op : HasBinOp N := N.add.
-Global Instance N_has_null_op : HasNullOp N := N.zero.
-
-Global Instance N_bin_op_is_mag : IsMag eq (bin_op (A := N)).
-Proof. hnf. typeclasses eauto. Defined.
-
-Global Instance N_bin_op_is_assoc : IsAssoc (bin_op (A := N)).
-Proof. intros x y z. apply N.add_assoc. Defined.
-
-Global Instance N_bin_op_is_semigrp : IsSemigrp (bin_op (A := N)).
-Proof. esplit; typeclasses eauto. Defined.
-
-Global Instance N_bin_op_is_comm : IsComm (bin_op (A := N)).
-Proof. intros x y. apply N.add_comm. Defined.
-
-Global Instance N_bin_op_null_op_is_unl_l : IsUnlL null_op (bin_op (A := N)).
-Proof. intros x. apply N.add_0_l. Defined.
-
-Global Instance N_bin_op_null_op_is_unl_r : IsUnlR null_op (bin_op (A := N)).
-Proof. intros x. apply N.add_0_r. Defined.
-
-Global Instance N_bin_op_null_op_is_unl : IsUnlLR null_op (bin_op (A := N)).
-Proof. esplit; typeclasses eauto. Defined.
-
-Global Instance N_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := N)).
-Proof. esplit; typeclasses eauto. Defined.
-
-End Additive.
-
-(** Multiplicative monoid structure. *)
-
-Module Multiplicative.
-
-Global Instance N_bin_op_has_bin_op : HasBinOp N := N.mul.
-Global Instance N_has_null_op : HasNullOp N := N.one.
-
-Global Instance N_bin_op_is_mag : IsMag eq (bin_op (A := N)).
-Proof. hnf. typeclasses eauto. Defined.
-
-Global Instance N_bin_op_is_assoc : IsAssoc (bin_op (A := N)).
-Proof. intros x y z. apply N.mul_assoc. Defined.
-
-Global Instance N_bin_op_is_semigrp : IsSemigrp (bin_op (A := N)).
-Proof. esplit; typeclasses eauto. Defined.
-
-Global Instance N_bin_op_is_comm : IsComm (bin_op (A := N)).
-Proof. intros x y. apply N.mul_comm. Defined.
-
-Global Instance N_bin_op_null_op_is_unl_l : IsUnlL null_op (bin_op (A := N)).
-Proof. intros x. apply N.mul_1_l. Defined.
-
-Global Instance N_bin_op_null_op_is_unl_r : IsUnlR null_op (bin_op (A := N)).
-Proof. intros x. apply N.mul_1_r. Defined.
-
-Global Instance N_bin_op_null_op_is_unl : IsUnlLR null_op (bin_op (A := N)).
-Proof. esplit; typeclasses eauto. Defined.
-
-Global Instance N_bin_op_null_op_is_mon : IsMon null_op (bin_op (A := N)).
-Proof. esplit; typeclasses eauto. Defined.
-
-End Multiplicative.
-
-(** Semiring structure. *)
-
-Global Instance N_has_add : HasAdd N := N.add.
-Global Instance N_has_zero : HasZero N := N.zero.
-Global Instance N_has_mul : HasMul N := N.mul.
-Global Instance N_has_one : HasOne N := N.one.
-
-Global Instance N_add_is_comm : IsComm add.
-Proof. intros x y. apply N.add_comm. Defined.
-
-Global Instance N_add_mul_is_distr_l : IsDistrL mul add.
-Proof. intros x y z. apply N.mul_add_distr_l. Defined.
-
-Global Instance N_add_mul_is_distr_r : IsDistrR mul add.
-Proof. intros x y z. apply N.mul_add_distr_r. Defined.
-
-Global Instance N_add_mul_is_distr : IsDistrLR mul add.
-Proof. esplit; typeclasses eauto. Defined.
-
-Global Instance N_zero_mul_is_absorb_elem_l : IsAbsorbElemL zero mul.
-Proof. intros x. apply N.mul_0_l. Defined.
-
-Global Instance N_zero_mul_is_absorb_elem_r : IsAbsorbElemR zero mul.
-Proof. intros x. apply N.mul_0_r. Defined.
-
-Global Instance N_zero_mul_is_absorb_elem_l_r : IsAbsorbElemLR zero mul.
-Proof. esplit; typeclasses eauto. Defined.
-
-Global Instance N_zero_add_one_mul_is_semiring : IsSemiring zero add one mul.
-Proof. esplit; typeclasses eauto. Defined.
-
-Global Instance N_mul_is_comm : IsComm mul.
-Proof. intros x y. apply N.mul_comm. Defined.

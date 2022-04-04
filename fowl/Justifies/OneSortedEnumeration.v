@@ -4,7 +4,7 @@ From Coq Require Import
 From DEZ.Has Require Export
   OneSortedCardinality.
 From DEZ.Is Require Export
-  OneSortedFinite Isomorphism.
+  OneSortedFinite Isomorphic.
 
 Local Open Scope N_scope.
 

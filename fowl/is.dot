@@ -7,6 +7,22 @@ digraph Is {
 
   // IsProper [label = "\N X\nproper (x : A) : X x x"]
 
+  subgraph logic_classes {
+    IsIndiscIdForm [label = "\N X Y x s\nindisc_id_form (a b : B) (t : Y a b) : X (s a b) x"]
+    IsIdIndiscForm [label = "\N X Y x s\nid_indisc_form (a b : B) (t : X (s a b) x) : Y a b"]
+    IsRetr [label = "\N f g\nretr (x : A) : g (f x) = x"]
+    IsSect [label = "\N f g\nsect (x : B) : f (g x) = x"]
+    IsFunExt [label = "\N\nfun_ext (A B : Type) (f g : A -> B) (a : forall x : A, f x = g x) : f = g", color = red, fillcolor = yellow]
+    IsFunExtDep [label = "\N\nfun_ext_dep (A : Type) (P : A -> Type) (f g : forall x : A, P x) (a : forall x : A, f x = g x) : f = g", color = red, fillcolor = yellow]
+    IsPropExt [label = "\N\nprop_ext (A B) (a : A <-> B) : A = B", color = red, fillcolor = yellow]
+    IsContr [label = "\N\ncontr : exists x : A, forall y : A, x = y", color = red, fillcolor = yellow]
+    IsProp [label = "\N\nirrel (x y : A) : x = y", color = red, fillcolor = yellow]
+    IsSet [label = "\N\nuip (x y : A) (a b : x = y) : a = b", color = red, fillcolor = yellow]
+    IsTrunc [label = "\N\ntrunc_zero (A : Type) : IsTrunc O A\ntrunc_succ (n : nat) (A : Type) : IsTrunc (S n) A", color = red, fillcolor = yellow]
+
+    IsIso [label = "\N f g"]
+  }
+
   subgraph order_theory_classes {
     IsAntisym [label = "\N Xeq Xle\nantisym (x y : A) (a : Xle x y) (b : Xle y x) : Xeq x y"]
     IsAsym [label = "\N X\nasym (x y : A) (a : X x y) (b : X y x) : 0"]
@@ -34,7 +50,6 @@ digraph Is {
     IsApart [label = "\N X"]
     IsBnd [label = "\N X x y"]
     IsEquiv [label = "\N X"]
-    IsIffRel [label = "\N X Y"]
     IsMonoBinOp [label = "\N X k"]
     IsPartEquiv [label = "\N X"]
     IsPartOrd [label = "\N Xeq Xle"]
@@ -179,26 +194,16 @@ digraph Is {
     IsRealPseudometric [label = "\N X d"]
   }
 
-  subgraph ext_classes {
-    IsFunExt [label = "\N\nfun_ext (A B : Type) (f g : A -> B) (a : forall x : A, f x = g x) : f = g", color = red, fillcolor = yellow]
-    IsFunExtDep [label = "\N\nfun_ext_dep (A : Type) (P : A -> Type) (f g : forall x : A, P x) (a : forall x : A, f x = g x) : f = g", color = red, fillcolor = yellow]
-    IsIsoL [label = "\N\niso_l (a : A) : g (f a) = a", color = red, fillcolor = yellow]
-    IsIsoR [label = "\N\niso_r (b : B) : f (g b) = b", color = red, fillcolor = yellow]
-    IsPropExt [label = "\N\nprop_ext (A B) (a : A <-> B) : A = B", color = red, fillcolor = yellow]
-  }
-
-  subgraph hott_classes {
-    IsContr [label = "\N\ncontr : exists x : A, forall y : A, x = y", color = red, fillcolor = yellow]
-    IsProp [label = "\N\nirrel (x y : A) : x = y", color = red, fillcolor = yellow]
-    IsSet [label = "\N\nuip (x y : A) (a b : x = y) : a = b", color = red, fillcolor = yellow]
-    IsTrunc [label = "\N\ntrunc_zero (A : Type) : IsTrunc O A\ntrunc_succ (n : nat) (A : Type) : IsTrunc (S n) A", color = red, fillcolor = yellow]
-  }
-
   node [style = dashed]
 
   // Fields
 
   edge [style = solid]
+
+  subgraph logic_fields {
+    IsIso -> IsRetr
+    IsIso -> IsSect
+  }
 
   subgraph order_theory_fields {
     IsApart -> IsCotrans
@@ -209,8 +214,6 @@ digraph Is {
     IsEquiv -> IsRefl
     IsEquiv -> IsSym
     IsEquiv -> IsTrans
-    IsIffRel -> IsSubrel
-    IsIffRel -> IsSubrel
     IsMonoBinOp -> IsMonoBinOpL
     IsMonoBinOp -> IsMonoBinOpR
     IsPartEquiv -> IsSym
@@ -237,12 +240,13 @@ digraph Is {
     IsInfl -> IsInflR
     IsRealMetric -> IsCommForm
     IsRealMetric -> IsEquiv
-    IsRealMetric -> IsIffRel
+    IsRealMetric -> IsIdIndiscForm
+    IsRealMetric -> IsIndiscIdForm
     IsRealMetric -> IsSubaddForm
     IsRealPseudometric -> IsCommForm
     IsRealPseudometric -> IsEquiv
+    IsRealPseudometric -> IsIndiscIdForm
     IsRealPseudometric -> IsNonnegForm
-    // IsRealPseudometric -> IsProper
     IsRealPseudometric -> IsSubaddForm
     IsRealPseudometric -> IsToeplitzForm
   }
@@ -310,6 +314,23 @@ digraph Is {
 
   edge [style = dashed]
 
+  subgraph logic_derivations {
+    IsIso -> IsIso [label = "flip"]
+    IsRetr -> IsSect [label = "flip"]
+
+    edge [color = red]
+
+    IsContr -> IsProp
+    IsContr -> IsTrunc
+    IsFunExtDep -> IsFunExt
+    IsProp -> IsSet
+    IsProp -> IsTrunc
+    IsSet -> IsTrunc
+    IsTrunc -> IsContr
+    IsTrunc -> IsProp
+    IsTrunc -> IsSet
+  }
+
   subgraph order_theory_derivations {
     IsConnex -> IsComm [label = "or"]
     IsConnex -> IsStrConnex
@@ -341,10 +362,9 @@ digraph Is {
     IsInflL -> IsInflUnOp [label = "apply"]
     IsInflR -> IsInflUnOp [label = "flip apply"]
     IsRealMetric -> IsNonnegForm
-    // IsRealMetric -> IsProper
     IsRealMetric -> IsRealPseudometric
     IsRealMetric -> IsToeplitzForm
-    IsRealPseudometric -> IsSubrel
+    // IsRealPseudometric -> IsProper
   }
 
   subgraph abstract_algebra_derivations {
@@ -420,18 +440,6 @@ digraph Is {
     IsSemiring -> IsSemirng
     IsUnlElemActL -> IsUnlElemActR [label = "flip"]
     IsUnlElemL -> IsUnlElemR [label = "flip"]
-  }
-
-  subgraph hott_derivations {
-    IsContr -> IsProp
-    IsContr -> IsTrunc
-    IsFunExtDep -> IsFunExt
-    IsProp -> IsSet
-    IsProp -> IsTrunc
-    IsSet -> IsTrunc
-    IsTrunc -> IsContr
-    IsTrunc -> IsProp
-    IsTrunc -> IsSet
   }
 
   // Specializations

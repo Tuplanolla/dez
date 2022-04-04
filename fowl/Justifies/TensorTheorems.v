@@ -4,7 +4,7 @@ From Coq Require Import
 From DEZ.Has Require Export
   OneSortedEnumeration OneSortedCardinality.
 From DEZ.Is Require Export
-  OneSortedFinite Isomorphism TwoSortedBimodule
+  OneSortedFinite Isomorphic TwoSortedBimodule
   Ring TwoSortedUnitalAssociativeAlgebra.
 From DEZ.Justifies Require Export
   OneSortedPositiveOperations OneSortedNaturalOperations

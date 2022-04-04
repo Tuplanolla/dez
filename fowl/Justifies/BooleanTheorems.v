@@ -6,7 +6,7 @@ From DEZ.Has Require Export
   NullaryOperation UnaryOperation BinaryOperation
   OneSortedEnumeration OneSortedCardinality.
 From DEZ.Is Require Export
-  OneSortedFinite Isomorphism Monoid.
+  OneSortedFinite Isomorphic Monoid.
 
 Definition is_left (A B : Prop) (s : sumbool A B) : bool :=
   if s then true else false.

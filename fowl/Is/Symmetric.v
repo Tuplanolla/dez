@@ -19,7 +19,7 @@ Context (A : Type) (X : A -> A -> Prop).
 
 (** Symmetry is a special case of commutativity up to implication. *)
 
-#[export] Instance sym_is_comm_form_impl `{!IsSym X} : IsCommForm impl X.
+#[local] Instance sym_is_comm_form_impl `{!IsSym X} : IsCommForm impl X.
 Proof. auto. Qed.
 
 #[local] Instance comm_form_impl_is_sym `{!IsCommForm impl X} : IsSym X.

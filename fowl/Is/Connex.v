@@ -18,7 +18,7 @@ Context (A : Type) (X : A -> A -> Prop).
 
 (** Connexity is a special case of commutativity up to disjunction. *)
 
-#[export] Instance connex_is_comm_form_or `{!IsConnex X} : IsCommForm _\/_ X.
+#[local] Instance connex_is_comm_form_or `{!IsConnex X} : IsCommForm _\/_ X.
 Proof. auto. Qed.
 
 #[local] Instance comm_form_or_is_connex `{!IsCommForm _\/_ X} : IsConnex X.
