@@ -1,5 +1,5 @@
 From DEZ.Has Require Import
-  Reciprocation.
+  ArithmeticOperations.
 From DEZ.Is Require Import
   Ring.
 From DEZ.Supports Require Import
@@ -9,7 +9,7 @@ Section Context.
 
 (** TODO Use [IsFld] instead. *)
 
-Context (A : Type) `{IsRing A} `(HasRecip A).
+Context (A : Type) `{HasAdd A} `{HasNeg A} `{HasMul A} `{HasRecip A}.
 
 (** Subtraction, difference, minus. *)
 

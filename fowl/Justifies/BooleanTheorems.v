@@ -2,11 +2,9 @@
 From Coq Require Import
   Lists.List Logic.ProofIrrelevance NArith.NArith ZArith.ZArith.
 From DEZ.Has Require Export
-  Zero Negation Addition One Multiplication
-  NullaryOperation UnaryOperation BinaryOperation
-  OneSortedEnumeration OneSortedCardinality.
+  Enumerations Sizes Operations ArithmeticOperations.
 From DEZ.Is Require Export
-  OneSortedFinite Isomorphic Monoid.
+  Finite Isomorphic Monoid.
 
 Definition is_left (A B : Prop) (s : sumbool A B) : bool :=
   if s then true else false.
@@ -19,24 +17,24 @@ Import ListNotations.
 
 Global Instance bool_has_enum : HasEnum bool := [false; true].
 
-Global Instance bool_is_b_fin : IsBFin enum.
+Global Instance bool_is_b_fin : IsBFin (A := bool) _=_.
 Proof.
-  split.
+  exists (enum bool). split.
   - intros [].
     + right. left. reflexivity.
     + left. reflexivity.
-  - apply NoDup_cons.
-    + intros [H | H].
-      * inversion H.
-      * inversion H.
-    + apply NoDup_cons.
+  - apply IsNoDup_cons.
+    + intros H. inversion H as [? ? K | ? ? K].
+      * inversion K.
+      * inversion K.
+    + apply IsNoDup_cons.
       * intros H. inversion H.
-      * apply NoDup_nil. Defined.
+      * apply IsNoDup_nil. Qed.
 
-Global Instance bool_has_card : HasCard bool := 2.
+Global Instance bool_has_size : HasSize bool := 2.
 
 Definition bool_has_iso :
-  (bool -> {n : N | n < card bool}) * ({n : N | n < card bool} -> bool).
+  (bool -> {n : N | n < size bool}) * ({n : N | n < size bool} -> bool).
 Proof.
   split.
   - intros [].
@@ -49,9 +47,9 @@ Proof.
     + apply true. Defined.
 
 Global Instance bool_is_fin :
-  IsFin (card bool) (fst bool_has_iso) (snd bool_has_iso).
+  IsIso _=_ _=_ (fst bool_has_iso) (snd bool_has_iso).
 Proof.
-  split.
+  split; try typeclasses eauto.
   - intros [].
     + cbn. reflexivity.
     + cbn. reflexivity.
@@ -61,68 +59,10 @@ Proof.
       * f_equal. apply proof_irrelevance.
       * (** This mess eventually leads to a contradiction. *)
         pose proof H as F.
-        cbv [card bool_has_card] in F.
+        cbv [size bool_has_size] in F.
         rewrite <- N.succ_pos_pred in F.
         rewrite Pos.pred_N_succ in F.
         rewrite N.two_succ in F.
         rewrite <- N.succ_lt_mono in F.
         rewrite N.lt_1_r in F.
-        inversion F. Defined.
-
-Section Stuff.
-
-(** Let us set up a simple yet nontrivial graded ring,
-    just to see what the dependent indexing gets us. *)
-
-Local Open Scope Z_scope.
-
-Local Instance bool_has_bin_op : HasBinOp bool := orb.
-
-Local Instance bool_has_null_op : HasNullOp bool := false.
-
-Local Instance Z_has_add : HasAdd Z := Z.add.
-
-Local Instance Z_has_zero : HasZero Z := Z.zero.
-
-Local Instance Z_has_neg : HasNeg Z := Z.opp.
-
-Local Instance unit_has_add : HasAdd unit := fun x y : unit => tt.
-
-Local Instance unit_has_zero : HasZero unit := tt.
-
-Local Instance unit_has_neg : HasNeg unit := fun x : unit => tt.
-
-Local Instance unit_Z_has_add (i : bool) :
-  HasAdd (if i then unit else Z).
-Proof. hnf. intros x y. destruct i. all: apply (add x y). Defined.
-
-Local Instance unit_Z_has_zero (i : bool) :
-  HasZero (if i then unit else Z).
-Proof. hnf. destruct i. all: apply zero. Defined.
-
-Local Instance unit_Z_has_neg (i : bool) :
-  HasNeg (if i then unit else Z).
-Proof. hnf. intros x. destruct i. all: apply (neg x). Defined.
-
-Local Instance bool_bin_op_is_assoc : IsAssoc _=_ orb.
-Proof.
-  intros x y z. all: cbn; repeat match goal with
-  | x : bool |- _ => destruct x
-  | x : unit |- _ => destruct x
-  end; try reflexivity. Defined.
-
-Local Instance bool_bin_op_is_unl_l : IsUnlL _=_ null_op (bin_op (A := bool)).
-Proof.
-  intros x. all: cbn; repeat match goal with
-  | x : bool |- _ => destruct x
-  | x : unit |- _ => destruct x
-  end; try reflexivity. Defined.
-
-Local Instance bool_bin_op_is_unl_r : IsUnlR _=_ null_op (bin_op (A := bool)).
-Proof.
-  intros x. all: cbn; repeat match goal with
-  | x : bool |- _ => destruct x
-  | x : unit |- _ => destruct x
-  end; try reflexivity. Defined.
-
-End Stuff.
+        inversion F. Qed.

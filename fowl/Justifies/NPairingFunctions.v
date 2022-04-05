@@ -5,12 +5,14 @@ From Coq Require
 From Coq Require Import
   Lia Lists.List NArith.NArith Bool.Sumbool.
 From DEZ.Has Require Export
-  Unsquashing.
+  Unsquashings.
 From DEZ.Justifies Require Export
   OptionTheorems PositiveTheorems ProductTheorems
   NBinaryOddFactoring NTriangularNumbers.
 
 Import ListNotations N.
+
+#[local] Existing Instance decidable_has_dec.
 
 (** TODO This breaks [lia] for some reason. *)
 

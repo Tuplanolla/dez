@@ -1,7 +1,7 @@
 (** * Notations for Binary Relations *)
 
 From DEZ.Has Require Import
-  BinaryRelation.
+  Relations.
 
 Reserved Notation "x '~' y" (no associativity, at level 70).
 

@@ -44,31 +44,31 @@ Ltac lia := flatten'; forget; unfold ord_rel in *; Lia.lia.
 
 Class HasMiff : Type := miff (a : A) : B.
 
-Typeclasses Transparent HasMiff.
+#[export] Typeclasses Transparent HasMiff.
 
 (** Miffs are true to their name. *)
 
 Notation IsMonoMiff miff := (Proper (le ==> le) miff).
-Notation mono_miff := (proper_prf (R := le ==> le) (m := miff) : IsMonoMiff miff).
+Notation mono_miff := (proper_prf (R := le ==> le) miff : IsMonoMiff miff).
 
-Instance has_ord_rel : HasOrdRel N := le.
-Instance has_str_ord_rel : HasStrOrdRel N := lt.
+#[export] Instance has_ord_rel : HasOrdRel N := le.
+#[export] Instance has_str_ord_rel : HasStrOrdRel N := lt.
 
 (** TODO This might be a better way to specialize. Investigate. *)
 
 Class IsInjMiff (f : HasMiff) : Prop :=
-  is_inj :> IsInj2 _=_ _=_ f.
+  is_inj :> IsInj _=_ f.
 
-Notation inj_miff := (inj2 (f := miff) : IsInjMiff miff).
+Notation inj_miff := (inj (f := miff) : IsInjMiff miff).
 
 Notation IsFixedMiff := (IsFixed _=_ 0).
-Notation fixed_miff := (@fixed _ _ _=_ 0 _ _ : _ 0 = 0).
+Notation fixed_miff := (@fixed _ _=_ 0 _ _ : _ 0 = 0).
 
 Notation IsStrMonoMiff miff := (Proper (lt ==> lt) miff).
-Notation str_mono_miff := (proper_prf (R := lt ==> lt) (m := miff) : IsStrMonoMiff miff).
+Notation str_mono_miff := (proper_prf (R := lt ==> lt) miff : IsStrMonoMiff miff).
 
-Notation IsStrComonoMiff := (IsStrComono lt lt).
-Notation str_comono_miff := (str_comono : IsStrComonoMiff miff).
+Notation IsStrComonoMiff := (IsInj lt).
+Notation str_comono_miff := (inj : IsStrComonoMiff miff).
 
 (** Such a function is said to be inflationary or progressive. *)
 
@@ -274,8 +274,8 @@ End PartRetrFromPartRetr'.
 (** In the whole codomain of the miff,
     the pseudoinverse behaves like a bound. *)
 
-Notation IsSectMiffRoundDown g := (IsIsoL miff g).
-Notation sect_miff_round_down := (iso_l : IsSectMiffRoundDown _).
+Notation IsSectMiffRoundDown g := (IsRetr _=_ miff g).
+Notation sect_miff_round_down := (retr : IsSectMiffRoundDown _).
 
 Section Context.
 

@@ -51,32 +51,32 @@ End Context.
 (** ** Strict Order *)
 (** ** Strict Total Order *)
 
-Class IsStrTotOrd (A : Type) (Xeq Xle : A -> A -> Prop) : Prop := {
-  str_tot_ord_is_connex :> IsConnex Xle;
-  str_tot_ord_is_str_part_ord :> IsStrPartOrd Xle;
-  str_tot_ord_is_proper :> IsProper (Xeq ==> Xeq ==> _<->_) Xle;
+Class IsStrTotOrd (A : Type) (Xeq Xlt : A -> A -> Prop) : Prop := {
+  str_tot_ord_is_str_part_ord :> IsStrPartOrd Xlt;
+  str_tot_ord_is_str_connex :> IsStrConnex Xeq Xlt;
+  str_tot_ord_is_proper :> IsProper (Xeq ==> Xeq ==> _<->_) Xlt;
 }.
 
 Section Context.
 
-Context (A : Type) (Xeq Xle : A -> A -> Prop).
+Context (A : Type) (Xeq Xlt : A -> A -> Prop).
 
 (** Every strict total order is irreflexive. *)
 
 #[local] Instance str_tot_ord_is_irrefl
-  `{!IsStrTotOrd Xeq Xle} : IsIrrefl Xle.
+  `{!IsStrTotOrd Xeq Xlt} : IsIrrefl Xlt.
 Proof. typeclasses eauto. Qed.
 
 (** Every strict total order is asymmetric. *)
 
 #[local] Instance tot_ord_is_asym
-  `{!IsStrTotOrd Xeq Xle} : IsAsym Xle.
+  `{!IsStrTotOrd Xeq Xlt} : IsAsym Xlt.
 Proof. typeclasses eauto. Qed.
 
 (** Every strict total order is transitive. *)
 
 #[local] Instance str_tot_ord_is_trans
-  `{!IsStrTotOrd Xeq Xle} : IsTrans Xle.
+  `{!IsStrTotOrd Xeq Xlt} : IsTrans Xlt.
 Proof. typeclasses eauto. Qed.
 
 End Context.

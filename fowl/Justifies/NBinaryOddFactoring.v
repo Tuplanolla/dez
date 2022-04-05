@@ -3,13 +3,13 @@
 From Coq Require Import
   NArith.NArith.
 From DEZ.Has Require Import
-  Unsquashing.
+  Unsquashings.
 From DEZ.Justifies Require Export
   LogicalTheorems NTheorems PositiveTheorems.
 
 (** TODO We should turn these lemmas into typeclass instances. *)
 
-Import N.
+Import Pos N.
 
 #[local] Open Scope N_scope.
 

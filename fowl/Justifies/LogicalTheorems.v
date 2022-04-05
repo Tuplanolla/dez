@@ -55,19 +55,11 @@ Section Context.
 
 Context `(IsPropExt).
 
-#[local] Instance is_mon : IsMon _=_ 0 _\/_.
-Proof.
-  repeat split; hnf; unfold null_op, bin_op;
-  intros; hnf; intros; apply prop_ext; intuition;
-  repeat match goal with | h : _ = _ |- _ => destruct h; auto end. Qed.
+#[local] Instance is_mon : IsMon _<->_ 0 _\/_.
+Proof. repeat split; hnf; intuition. Qed.
 
-(** TODO This could be nicer. *)
-
-#[local] Instance is_semiring : IsSemiring _=_ 0 _\/_ 1 _/\_.
-Proof.
-  repeat split; hnf; unfold zero, add, one, mul, null_op, bin_op;
-  intros; hnf; intros; apply prop_ext; intuition;
-  repeat match goal with | h : _ = _ |- _ => destruct h; auto end. Qed.
+#[local] Instance is_semiring : IsSemiring _<->_ 0 _\/_ 1 _/\_.
+Proof. repeat split; hnf; intuition. Qed.
 
 End Context.
 

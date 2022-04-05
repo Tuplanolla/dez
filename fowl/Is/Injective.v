@@ -4,6 +4,7 @@ From DEZ Require Export
   Init.
 
 (** ** Injective Unary Function *)
+(** ** Monomorphism *)
 
 Class IsInjUnFn (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (f : A -> B) : Prop :=

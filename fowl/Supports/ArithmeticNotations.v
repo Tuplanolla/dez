@@ -4,8 +4,6 @@ From Coq Require Import
   ZArith.ZArith.
 From DEZ.Has Require Import
   ArithmeticOperations ArithmeticActions Repetitions.
-From DEZ.Is Require Import
-  Involutive Absorbing.
 
 Reserved Notation "x '*<' y" (left associativity, at level 40).
 Reserved Notation "x '>*' y" (left associativity, at level 40).

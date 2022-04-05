@@ -7,8 +7,6 @@ From DEZ.Has Require Export
   Operations ArithmeticOperations Distances.
 From DEZ.Is Require Export
   TotalOrder Group (* Field *) Ring.
-From DEZ.Supports Require Import
-  EquivalenceNotations OrderNotations AdditiveNotations ArithmeticNotations.
 
 #[local] Open Scope R_scope.
 
@@ -43,6 +41,7 @@ Ltac ecrush :=
 
 #[export] Instance R_has_equiv_rel : HasEquivRel R := _=_.
 #[export] Instance R_has_ord_rel : HasOrdRel R := Rle.
+#[export] Instance R_has_str_ord_rel : HasStrOrdRel R := Rlt.
 
 #[export] Instance Rle_is_refl : IsRefl Rle.
 Proof. ecrush. Qed.
@@ -67,6 +66,25 @@ Proof. exact Rle_antisym. Qed.
 Proof. ecrush. Qed.
 
 #[export] Instance Rle_is_tot_ord : IsTotOrd _=_ Rle.
+Proof. ecrush. Qed.
+
+#[export] Instance Rlt_is_trans : IsTrans Rlt.
+Proof. exact Rlt_trans. Qed.
+
+#[export] Instance Rlt_is_irrefl : IsIrrefl Rlt.
+Proof. exact Rlt_irrefl. Qed.
+
+#[export] Instance Rlt_is_str_connex : IsStrConnex _=_ Rlt.
+Proof.
+  intros x y.
+  pose proof Rtotal_order x y as a.
+  pose proof Rgt_lt x y as b.
+  intuition. Qed.
+
+#[export] Instance Rlt_is_part_ord : IsStrPartOrd Rlt.
+Proof. ecrush. Qed.
+
+#[export] Instance Rlt_is_str_tot_ord : IsStrTotOrd _=_ Rlt.
 Proof. ecrush. Qed.
 
 (** ** Additive Group *)

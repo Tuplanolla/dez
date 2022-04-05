@@ -7,7 +7,7 @@ From Coq Require Import
 From stdpp Require Import
   option finite fin_maps gmap gmultiset pmap.
 From DEZ.Has Require Export
-  Unsquashing
+  Unsquashings
   OneSortedEnumeration OneSortedCardinality.
 From DEZ.Is Require Export
   OneSortedFinite Isomorphic

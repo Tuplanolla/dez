@@ -124,7 +124,7 @@ End Context.
 Class IsGrpHom (A B : Type)
   (X : A -> A -> Prop) (x : A) (f : A -> A) (k : A -> A -> A)
   (Y : B -> B -> Prop) (y : B) (g : B -> B) (m : B -> B -> B)
-  (h : A -> B) `{!IsGrp X x f k} `{!IsGrp Y y g m} : Prop := {
+  (h : A -> B) : Prop := {
   grp_hom_dom_is_grp : IsGrp X x f k;
   grp_hom_codom_is_grp : IsGrp Y y g m;
   grp_hom_is_bin_pres :> IsBinPres Y k m h;
@@ -136,7 +136,8 @@ Section Context.
 Context (A B : Type)
   (X : A -> A -> Prop) (x : A) (f : A -> A) (k : A -> A -> A)
   (Y : B -> B -> Prop) (y : B) (g : B -> B) (m : B -> B -> B)
-  (h : A -> B) `{!IsGrp X x f k} `{!IsGrp Y y g m} `{!IsGrpHom h}.
+  (h : A -> B) `{!IsGrp X x f k} `{!IsGrp Y y g m}
+  `{!IsGrpHom X x f k Y y g m h}.
 
 #[local] Instance grp_hom_dom_has_equiv_rel : HasEquivRel A := X.
 #[local] Instance grp_hom_dom_has_null_op : HasNullOp A := x.
@@ -188,7 +189,7 @@ Context (A : Type) (X : A -> A -> Prop)
 
 (** Identity is a group homomorphism. *)
 
-#[export] Instance id_is_grp_hom : IsGrpHom id.
+#[export] Instance id_is_grp_hom : IsGrpHom X x f k X x f k id.
 Proof.
   split.
   - typeclasses eauto.

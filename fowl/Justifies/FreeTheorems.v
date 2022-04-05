@@ -3,7 +3,7 @@
 From Coq Require Import
   Extraction Lia Lists.List ZArith.ZArith.
 From DEZ.Has Require Export
-  Decisions Unsquashing.
+  Decisions Unsquashings.
 From DEZ.Is Require Export
   Group Truncated.
 From DEZ.Justifies Require Export
@@ -49,8 +49,10 @@ Proof.
   (d : forall x : A, HasDec (P x)) (a : list A) : HasDec (Forall P a) :=
   Forall_dec P d a.
 
-#[global] Instance not_has_dec (A : Prop) (d : HasDec A) : HasDec (~ A) :=
-  has_dec Decidable_not.
+#[global] Instance not_has_dec (A : Prop) (d : HasDec A) : HasDec (~ A).
+Proof.
+  apply (@dec_decidable A) in d. apply (@decidable_has_dec (~ A)).
+  apply Decidable_not. Defined.
 
 #[global] Instance Sexists_has_equiv_dec (A : Type) (P : A -> SProp)
   (e : HasEqDec A) : HasEqDec {x : A $ P x}.
@@ -144,6 +146,10 @@ Proof.
     destruct r as [| u] eqn : p. Admitted.
 
 Context (A : Type) {e : HasEqDec A}.
+
+#[local] Open Scope core_scope.
+
+#[local] Existing Instance dec_decidable.
 
 Equations wfb_def (a b : (bool * A)) : bool :=
   wfb_def (i, x) (j, y) := decide (~ (i <> j /\ x = y)).
@@ -355,11 +361,11 @@ Equations eval_Z_add (s : free A) : Z :=
 Proof.
   esplit.
   - apply is_grp.
-  - apply Additive.is_grp.
+  - typeclasses eauto.
   - intros z w. unfold eval_Z_add. admit.
   - intros [z ?] [w ?]. unfold rel. destruct (eq_dec z w).
     + intros _. unfold eval_Z_add, proj1_sig. rewrite e0. reflexivity.
-    + intros a. inversion a. Admitted.
+    + intros a. inversion a. congruence. Admitted.
 
 End Context.
 
@@ -369,11 +375,8 @@ Context (A : Type) (X : A -> A -> Prop)
   (x : A) (f : A -> A) (k : A -> A -> A)
   `{!IsGrp X x f k}.
 
-Equations const_tt (x : A) : unit :=
-  const_tt _ := tt.
-
 #[local] Instance is_grp_hom' :
-  IsGrpHom X x f k eq tt tt1 tt2 const_tt.
+  IsGrpHom X x f k eq tt (const tt) (const2 tt) (const tt).
 Proof.
   esplit.
   - typeclasses eauto.

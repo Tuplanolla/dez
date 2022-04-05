@@ -206,6 +206,8 @@ Z.abs_triangle ~ IsDistr
   k = m = Z.add
 ```
 
+Also remove "every" quantification from documentation.
+
 ### Coherence Conditions
 
 When defining operational classes or their instances,

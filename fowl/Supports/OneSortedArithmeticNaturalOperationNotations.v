@@ -1,5 +1,5 @@
 From DEZ.Has Require Import
-  Addition Zero Multiplication One.
+  ArithmeticOperations.
 From DEZ.Justifies Require Import
   OneSortedNaturalOperations.
 From DEZ.Supports Require Export

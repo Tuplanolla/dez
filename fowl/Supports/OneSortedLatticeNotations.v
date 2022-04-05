@@ -1,5 +1,5 @@
 From DEZ.Has Require Import
-  Addition Zero Multiplication One.
+  ArithmeticOperations.
 
 Declare Scope lat_scope.
 

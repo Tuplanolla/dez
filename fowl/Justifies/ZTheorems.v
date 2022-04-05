@@ -151,7 +151,7 @@ Equations Z_of_double_N (n : N) : Z :=
   Z_of_double_N (Npos (xO q)) := Zpos q;
   Z_of_double_N (Npos xH) := Zneg xH.
 
-#[local] Instance is_retr : IsRetr Z_to_double_N Z_of_double_N.
+#[local] Instance is_retr : IsRetr _=_ Z_to_double_N Z_of_double_N.
 Proof.
   intros x. destruct x as [| p | p].
   - reflexivity.
@@ -161,7 +161,7 @@ Proof.
     + cbn. rewrite (Pos.succ_pred_double q). reflexivity.
     + reflexivity. Qed.
 
-#[local] Instance is_sect : IsSect Z_to_double_N Z_of_double_N.
+#[local] Instance is_sect : IsSect _=_ Z_to_double_N Z_of_double_N.
 Proof.
   intros x. destruct x as [| p].
   - reflexivity.
@@ -170,5 +170,5 @@ Proof.
     + reflexivity.
     + reflexivity. Qed.
 
-#[export] Instance is_iso : IsIso Z_to_double_N Z_of_double_N.
-Proof. esplit; typeclasses eauto. Qed.
+#[export] Instance is_iso : IsIso _=_ _=_ Z_to_double_N Z_of_double_N.
+Proof. ecrush. Qed.

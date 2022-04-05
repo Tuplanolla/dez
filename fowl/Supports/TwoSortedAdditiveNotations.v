@@ -1,6 +1,5 @@
 From DEZ.Has Require Import
-  UnaryOperation
-  Action Torsion.
+  Operations Actions.
 
 (** We do not open [l_mod_scope] or [r_mod_scope],
     because we do not want to favor one over the other.
