@@ -2,8 +2,6 @@
 
 From DEZ Require Export
   Init.
-From DEZ.Is Require Export
-  Equivalence.
 
 (** The definition [IsRetr f g] should be read
     as [g] being a retraction of [f] and
@@ -46,8 +44,6 @@ End Context.
 
 Class IsIso (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (f : A -> B) (g : B -> A) : Prop := {
-  iso_dom_is_equiv : IsEquiv X;
-  iso_codom_is_equiv : IsEquiv Y;
   iso_is_retr :> IsRetr X f g;
   iso_is_sect :> IsSect Y f g;
 }.
@@ -55,29 +51,47 @@ Class IsIso (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
 Section Context.
 
 Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
-  (f : A -> B) (g : B -> A) `{!IsEquiv X} `{!IsEquiv Y}.
+  (f : A -> B) (g : B -> A).
 
 (** A flipped isomorphism is an isomorphism. *)
 
 #[local] Instance flip_iso_is_iso `{!IsIso X Y f g} : IsIso Y X g f.
 Proof.
   split.
-  - typeclasses eauto.
-  - typeclasses eauto.
   - intros x. apply sect.
   - intros x. apply retr. Qed.
 
 End Context.
 
-(** ** Bijective Unary Function *)
-(** ** Isomorphic Mapping *)
+(** ** Automorphism *)
+(** ** Inverse of a Unary Operation *)
 
-Class IsBij (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
-  (f : A -> B) : Prop :=
-  bij_is_iso : exists g : B -> A, IsIso X Y f g.
+Class IsAuto (A : Type) (X : A -> A -> Prop)
+  (f g : A -> A) : Prop := {
+  auto_is_retr :> IsRetr X f g;
+  auto_is_sect :> IsSect X f g;
+}.
 
-(** ** Convertible Types *)
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop)
+  (f g : A -> A).
+
+(** An automorphism is a special case of an isomorphism. *)
+
+#[export] Instance auto_is_iso
+  `{!IsAuto X f g} : IsIso X X f g.
+Proof. esplit; typeclasses eauto. Qed.
+
+#[local] Instance iso_is_auto
+  `{!IsIso X X f g} : IsAuto X f g.
+Proof. esplit; typeclasses eauto. Qed.
+
+End Context.
+
+(** ** Equivalent Types *)
 (** ** Isomorphic Types *)
 
-Class IsConv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop) : Prop :=
-  conv_is_bij : exists (f : A -> B), IsBij X Y f.
+Class IsEquivTypes (A B : Type)
+  (X : A -> A -> Prop) (Y : B -> B -> Prop) : Prop :=
+  equiv_types : exists (f : A -> B) (g : B -> A), IsIso X Y f g.

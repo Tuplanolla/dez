@@ -171,7 +171,7 @@ Class IsRingHom (A B : Type)
   (y : A) (m : A -> A -> A)
   (Y : B -> B -> Prop) (z : B) (g : B -> B) (n : B -> B -> B)
   (w : B) (p : B -> B -> B)
-  (h : A -> B) `{!IsRing X x f k y m} `{!IsRing Y z g n w p} : Prop := {
+  (h : A -> B) : Prop := {
   ring_hom_dom_is_grp : IsRing X x f k y m;
   ring_hom_codom_is_grp : IsRing Y z g n w p;
   ring_hom_add_is_bin_pres :> IsBinPres Y k n h;

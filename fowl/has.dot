@@ -5,8 +5,10 @@ digraph Has {
   node [fontname = monospace, style = filled, fillcolor = cornsilk]
 
   HasDec [label = "\N A\ndec : {A} + {~ A}"]
+  HasEnum [label = "\N A\nenum : list A"]
   HasEqDec [label = "\N A\neq_dec (x y : A) : {x = y} + {x <> y}"]
   HasEquivDec [label = "\N A\nequiv_dec (x y : A) : {x == y} + {~ x == y}"]
+  HasSize [label = "\N A\nsize : N"]
   HasUnsquash [label = "\N A\nunsquash (x : Squash A) : A"]
 
   subgraph cluster_order_theory_classes {

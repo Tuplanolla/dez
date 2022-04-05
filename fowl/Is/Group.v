@@ -203,7 +203,7 @@ End Context.
 
 Class IsGrpActL (A B : Type)
   (X : A -> A -> Prop) (x : A) (f : A -> A) (k : A -> A -> A)
-  (Y : B -> B -> Prop) (al : A -> B -> B) `{!IsGrp X x f k} : Prop := {
+  (Y : B -> B -> Prop) (al : A -> B -> B) : Prop := {
   grp_act_l_is_grp : IsGrp X x f k;
   grp_act_l_is_unl_elem_act_l :> IsUnlElemActL Y x al;
   grp_act_l_is_compat_ext_act_l :> IsCompatExtActL Y k al;
@@ -217,7 +217,7 @@ Context (A : Type) (X : A -> A -> Prop)
 
 (** Identity is a left group action. *)
 
-#[export] Instance id_is_grp_act_l : IsGrpActL X (flip const).
+#[export] Instance id_is_grp_act_l : IsGrpActL X x f k X (flip const).
 Proof.
   split.
   - typeclasses eauto.
@@ -229,7 +229,7 @@ Proof.
 
 (** Addition is a left group action. *)
 
-#[export] Instance bin_op_is_grp_act_l : IsGrpActL X k.
+#[export] Instance bin_op_is_grp_act_l : IsGrpActL X x f k X k.
 Proof.
   split.
   - typeclasses eauto.

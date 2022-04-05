@@ -17,7 +17,7 @@ Import ListNotations.
 
 Global Instance bool_has_enum : HasEnum bool := [false; true].
 
-Global Instance bool_is_b_fin : IsBFin (A := bool) _=_.
+Global Instance bool_is_b_fin : IsFinListing (A := bool) _=_.
 Proof.
   exists (enum bool). split.
   - intros [].
