@@ -9,6 +9,8 @@ From DEZ.Is Require Export
   TotalOrder Bounded Monoid Monotonic Inflationary.
 From DEZ.Justifies Require Export
   RTheorems.
+From DEZ.Provides Require Import
+  TypeclassTactics.
 From DEZ.Supports Require Import
   EquivalenceNotations OrderNotations AdditiveNotations ArithmeticNotations.
 
@@ -36,7 +38,7 @@ Context (B : Type) (X : B -> B -> Prop)
 #[local] Instance real_pseudometric_has_equiv_rel : HasEquivRel B := X.
 
 Ltac note := progress (
-  try change X with (equiv_rel (A := B)) in *).
+  denote X with (equiv_rel (A := B))).
 
 #[export] Instance real_pseudometric_is_proper : IsProper (X ==> X ==> _=_) d.
 Proof with note.
@@ -78,7 +80,7 @@ Context (B : Type) (X : B -> B -> Prop)
 #[local] Instance real_metric_has_equiv_rel : HasEquivRel B := X.
 
 Ltac note := progress (
-  try change X with (equiv_rel (A := B)) in *).
+  denote X with (equiv_rel (A := B))).
 
 #[export] Instance real_metric_is_toeplitz_form : IsToeplitzForm _=_ 0 d.
 Proof with note.

@@ -5,9 +5,11 @@ From Coq Require Import
 From DEZ.Has Require Export
   EquivalenceRelations Decisions Enumerations.
 From DEZ.Is Require Export
-  Isomorphic Extensional.
+  Isomorphic Extensional Truncated.
 From DEZ.Justifies Require Export
   OptionTheorems ProductTheorems NTheorems.
+From DEZ.Provides Require Import
+  TypeclassTactics.
 From DEZ.Supports Require Import
   EquivalenceNotations.
 
@@ -81,15 +83,6 @@ Equations index (a : list A) : list (N * A) :=
 #[export] Instance index_has_enum
   {a : HasEnum A} : HasEnum (N * A) := index (enum A).
 
-(** This is computationally better-behaved. *)
-
-Equations index_fix (n : N) (a : list A) : list (N * A) :=
-  index_fix _ [] := [];
-  index_fix n (x :: b) := (n, x) :: index_fix (N.succ n) b.
-
-#[export] Instance index_fix_has_enum
-  {a : HasEnum A} : HasEnum (N * A) := index_fix 0 (enum A).
-
 Lemma index_length (a : list A) : length (index a) = length a.
 Proof.
   unfold index.
@@ -106,14 +99,34 @@ Proof.
 
 End Context.
 
-Lemma in_combine (A B : Type)
-  (a : list A) (b : list B) (x : A) (y : B) (s : In x a /\ In y b) :
-  In (x, y) (combine a b).
-Proof.
-  induction a as [| z c t].
-  - destruct s as [[] ?].
-  - destruct s as [[u | u] ?].
-    + cbn. Admitted.
+Module Better.
+
+Section Context.
+
+Context (A : Type).
+
+(** This is computationally better-behaved. *)
+
+Fail Fail Equations index_fix (n : N) (a : list A) : list (N * A) :=
+  index_fix _ [] := [];
+  index_fix n (x :: b) := (n, x) :: index_fix (N.succ n) b.
+
+Equations index (a : list A) : list (N * A) :=
+  index := index_fix 0 where
+  index_fix (n : N) (a : list A) : list (N * A) :=
+    index_fix _ [] := [];
+    index_fix n (x :: b) := (n, x) :: index_fix (N.succ n) b.
+
+#[export] Instance index_fix_has_enum
+  {a : HasEnum A} : HasEnum (N * A) := index (enum A).
+
+End Context.
+
+End Better.
+
+Lemma proj1_sig_inj (A : Type) (P : A -> Prop)
+  (a b : {x : A | P x}) (s : proj1_sig a = proj1_sig b) : a = b.
+Proof. Admitted.
 
 Section Context.
 
@@ -121,16 +134,16 @@ Context (A : Type) {X : HasEquivRel A} {d : HasEquivDec A} {a : HasEnum A}
   `{!IsEquiv X} `{!IsListing X a}.
 
 Ltac note := progress (
-  try change X with (equiv_rel (A := A)) in *;
-  try change d with (equiv_dec (A := A)) in *;
-  try change a with (enum A) in *).
+  denote X with (equiv_rel (A := A));
+  denote d with (equiv_dec (A := A));
+  denote a with (enum A)).
 
 #[local] Open Scope sig_scope.
 
-Equations f (s : {p : N | p < N.of_nat (length (enum A))}) : A :=
-  f (p; t) with (enum A; eq_refl) := {
-    | ([]; _) => _
-    | (x :: b; _) => snd (nth (N.to_nat p) (index b) (0, x))
+Equations encode (s : {p : N | p < N.of_nat (length (enum A))}) : A :=
+  encode (p; t) with (enum A; eq_refl) := {
+    | ([]; _) := _
+    | (x :: b; _) := snd (nth (N.to_nat p) (index b) (0, x))
   }.
 Next Obligation.
   intros p t u. cbv beta in t. rewrite u in t.
@@ -142,10 +155,10 @@ Definition is_left (A B : Prop) (x : {A} + {B}) : bool :=
 Equations matching (x : A) (s : N * A) : bool :=
   matching x (_, y) := is_left (d x y).
 
-Equations g (x : A) : {p : N | p < N.of_nat (length (enum A))} :=
-  g x with (find (matching x) (index (enum A)); eq_refl) := {
-    | (Some (p, y); _) => (p; _)
-    | (None; _) => _
+Equations decode (x : A) : {p : N | p < N.of_nat (length (enum A))} :=
+  decode x with (find (matching x) (index (enum A)); eq_refl) := {
+    | (Some (p, y); _) := (p; _)
+    | (None; _) := _
   }.
 Next Obligation with note.
   intros x p y t...
@@ -153,21 +166,34 @@ Next Obligation with note.
 Next Obligation with note.
   intros x t... exfalso.
   pose proof full x as u.
-  (* unfold index in t. unfold matching in t. *)
   apply Exists_exists in u.
   destruct u as [y [v w]].
   apply (In_nth a y x) in v. destruct v as [n [q r]].
   apply (fun z => find_none _ (index (enum A)) z (N.of_nat n, y)) in t.
   cbn in t. unfold is_left in t. destruct (d x y) as [m | m].
-  congruence. apply m, w. rewrite <- r.
-  unfold index. apply in_combine. split. apply in_map. apply in_seq.
-  rewrite PeanoNat.Nat.add_0_l. note. split. lia. apply q.
-  apply nth_In. note. apply q. Qed.
+  congruence. apply m, w...
+  assert (what : (N.of_nat n, y) = nth n (index (enum A)) (N.of_nat 0, x)).
+  { unfold index. rewrite combine_nth.
+    - f_equal.
+      + rewrite map_nth. f_equal. rewrite seq_nth... lia. lia.
+      + rewrite r. reflexivity.
+    - rewrite map_length. rewrite seq_length. reflexivity. }
+  rewrite what.
+  apply nth_In.
+  rewrite index_length... lia. Qed.
 
 #[export] Instance listing_is_size_length :
   IsSize X (N.of_nat (length (enum A))).
-Proof.
-  hnf. exists f, g. split. Abort.
+Proof with note.
+  hnf. exists encode, decode. split.
+  - intros [p t]. apply_funelim (encode (p; t)).
+    clear p t. intros p t e e'. clear e'. exfalso. rewrite e in t. cbn in t. lia.
+    clear p t. intros p t x b e e'. clear e'.
+    apply_funelim (decode (snd (nth (N.to_nat p) (index b) (0, x)))).
+    clear x b e. intros x q y e e'. clear e'.
+    apply proj1_sig_inj. unfold proj1_sig.
+    all: admit.
+  - intros x... apply_funelim (decode x). Abort.
 
 #[export] Instance fin_listing_is_fin_size `{!IsFinListing X} : IsFinSize X.
 Proof.

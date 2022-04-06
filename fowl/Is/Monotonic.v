@@ -8,6 +8,8 @@ From DEZ.Has Require Export
   EquivalenceRelations OrderRelations Operations.
 From DEZ.Is Require Export
   Coherent Proper Preorder.
+From DEZ.Provides Require Import
+  TypeclassTactics.
 From DEZ.Supports Require Import
   EquivalenceNotations OrderNotations AdditiveNotations.
 
@@ -70,9 +72,9 @@ Context (A0 A1 B : Type)
 #[local] Instance mono_bin_fn_codom_has_ord_rel : HasOrdRel B := Y.
 
 Ltac note := progress (
-  try change X0 with (ord_rel (A := A0)) in *;
-  try change X1 with (ord_rel (A := A1)) in *;
-  try change Y with (ord_rel (A := B)) in *).
+  denote X0 with (ord_rel (A := A0));
+  denote X1 with (ord_rel (A := A1));
+  denote Y with (ord_rel (A := B))).
 
 (** A left- and right-monotonic binary function is left-right-monotonic. *)
 
@@ -186,7 +188,7 @@ Context (A : Type) (X : A -> A -> Prop)
 #[local] Instance mono_bin_fn_has_ord_rel : HasOrdRel A := X.
 
 Ltac note := progress (
-  try change X with (ord_rel (A := A)) in *).
+  denote X with (ord_rel (A := A))).
 
 (** Monotonicity of a binary operation is equivalent
     to its left-right-monotonicity. *)
@@ -221,12 +223,12 @@ Context (A B : Type)
 #[local] Instance mono_un_fn_codom_has_str_ord_rel : HasStrOrdRel B := Ylt.
 
 Ltac note := progress (
-  try change Xeq with (equiv_rel (A := A)) in *;
-  try change Xle with (ord_rel (A := A)) in *;
-  try change Xlt with (str_ord_rel (A := A)) in *;
-  try change Yeq with (equiv_rel (A := B)) in *;
-  try change Yle with (ord_rel (A := B)) in *;
-  try change Ylt with (str_ord_rel (A := B)) in *).
+  denote Xeq with (equiv_rel (A := A));
+  denote Xle with (ord_rel (A := A));
+  denote Xlt with (str_ord_rel (A := A));
+  denote Yeq with (equiv_rel (A := B));
+  denote Yle with (ord_rel (A := B));
+  denote Ylt with (str_ord_rel (A := B))).
 
 (** A strictly monotonic function is monotonic. *)
 

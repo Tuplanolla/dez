@@ -4,6 +4,8 @@ From DEZ.Has Require Export
   EquivalenceRelations OrderRelations.
 From DEZ.Is Require Export
   Connex PartialOrder Reflexive Antisymmetric Transitive Proper Irreflexive.
+From DEZ.Provides Require Import
+  TypeclassTactics.
 From DEZ.Supports Require Import
   EquivalenceNotations OrderNotations.
 
@@ -24,8 +26,8 @@ Context (A : Type) (Xeq Xle : A -> A -> Prop).
 #[local] Instance has_ord_rel : HasOrdRel A := Xle.
 
 Ltac note := progress (
-  try change Xeq with (equiv_rel (A := A)) in *;
-  try change Xle with (ord_rel (A := A)) in *).
+  denote Xeq with (equiv_rel (A := A));
+  denote Xle with (ord_rel (A := A))).
 
 (** A total order is reflexive. *)
 

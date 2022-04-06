@@ -6,6 +6,8 @@ From DEZ.Is Require Export
   Monoid Invertible Proper
   Fixed Involutive Injective Cancellative Antidistributive
   Preserving Unital Compatible.
+From DEZ.Provides Require Import
+  TypeclassTactics.
 From DEZ.Supports Require Import
   EquivalenceNotations AdditiveNotations.
 
@@ -31,10 +33,10 @@ Context (A : Type) (X : A -> A -> Prop)
 #[local] Instance grp_has_bin_op : HasBinOp A := k.
 
 Ltac note := progress (
-  try change X with (equiv_rel (A := A)) in *;
-  try change x with (null_op (A := A)) in *;
-  try change f with (un_op (A := A)) in *;
-  try change k with (bin_op (A := A)) in *).
+  denote X with (equiv_rel (A := A));
+  denote x with (null_op (A := A));
+  denote f with (un_op (A := A));
+  denote k with (bin_op (A := A))).
 
 (** Zero is a fixed point of negation. *)
 
@@ -149,14 +151,14 @@ Context (A B : Type)
 #[local] Instance grp_hom_codom_has_bin_op : HasBinOp B := m.
 
 Ltac note := progress (
-  try change X with (equiv_rel (A := A)) in *;
-  try change x with (null_op (A := A)) in *;
-  try change f with (un_op (A := A)) in *;
-  try change k with (bin_op (A := A)) in *;
-  try change Y with (equiv_rel (A := B)) in *;
-  try change y with (null_op (A := B)) in *;
-  try change g with (un_op (A := B)) in *;
-  try change m with (bin_op (A := B)) in *).
+  denote X with (equiv_rel (A := A));
+  denote x with (null_op (A := A));
+  denote f with (un_op (A := A));
+  denote k with (bin_op (A := A));
+  denote Y with (equiv_rel (A := B));
+  denote y with (null_op (A := B));
+  denote g with (un_op (A := B));
+  denote m with (bin_op (A := B))).
 
 (** Homomorphisms preserve zero. *)
 

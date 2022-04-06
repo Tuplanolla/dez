@@ -5,6 +5,8 @@ From DEZ.Has Require Export
 From DEZ.Is Require Export
   Group Commutative Monoid Distributive
   Absorbing Semiring Preserving Proper.
+From DEZ.Provides Require Import
+  TypeclassTactics.
 From DEZ.Supports Require Import
   EquivalenceNotations ArithmeticNotations.
 
@@ -31,11 +33,11 @@ Context (A : Type) (X : A -> A -> Prop)
 #[local] Instance rng_has_mul : HasMul A := m.
 
 Ltac note := progress (
-  try change X with (equiv_rel (A := A)) in *;
-  try change x with (zero (A := A)) in *;
-  try change f with (neg (A := A)) in *;
-  try change k with (add (A := A)) in *;
-  try change m with (mul (A := A)) in *).
+  denote X with (equiv_rel (A := A));
+  denote x with (zero (A := A));
+  denote f with (neg (A := A));
+  denote k with (add (A := A));
+  denote m with (mul (A := A))).
 
 (** Zero left-absorbs multiplication. *)
 
@@ -131,12 +133,12 @@ Context (A : Type) (X : A -> A -> Prop)
 #[local] Instance ring_has_mul : HasMul A := m.
 
 Ltac note := progress (
-  try change X with (equiv_rel (A := A)) in *;
-  try change x with (zero (A := A)) in *;
-  try change f with (neg (A := A)) in *;
-  try change k with (add (A := A)) in *;
-  try change y with (one (A := A)) in *;
-  try change m with (mul (A := A)) in *).
+  denote X with (equiv_rel (A := A));
+  denote x with (zero (A := A));
+  denote f with (neg (A := A));
+  denote k with (add (A := A));
+  denote y with (one (A := A));
+  denote m with (mul (A := A))).
 
 (** Removing the unit element from a unital ring yields a nonunital ring. *)
 
