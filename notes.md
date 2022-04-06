@@ -206,8 +206,6 @@ Z.abs_triangle ~ IsDistr
   k = m = Z.add
 ```
 
-Also remove "every" quantification from documentation.
-
 ### Coherence Conditions
 
 When defining operational classes or their instances,
@@ -303,7 +301,6 @@ We avoid using
 * `O`, because it looks like zero,
 * `o`, because it is used for function composition,
 * `I`, because it looks like one and is used for the interval pretype,
-* `i`, out of sympathy for `I` and the imaginary numbers,
 * `l`, because it looks like one,
 * `U`, because it looks like a type universe,
 * `H`, because it is reserved by Coq for automatic names and
@@ -324,7 +321,7 @@ So, following the tradition,
 * structures of type `A` are named
   `x`, `y`, `z`, `w`, `v`, ...,
 * functions of type `A -> B` are named
-  `f`, `g`, `h`, `j`, `k`, ...,
+  `f`, `g`, `h`, `i`, `j`, ...,
 * operators of type `A -> B -> C` are named
   `k`, `m`, `n`, `p`, `q`, ...,
 * higher structures of type `x : A |- P x` are named
@@ -336,8 +333,10 @@ although the rules should be broken with good reasons.
 Here is how the names are laid out spatially.
 
 ```
-a b c d e f g h j k m n p q r s t u v w x y z
-|->       |->     |->         |->       |->
+24 characters
+a b c d e f g h i j k m n p q r s t u v w x y z
+|->       |->       |->         |->       |->
+18 characters
 A B C D E F G J K L M P S T V W X Y
 |->       |->   |->   |->       |->
 ```

@@ -158,7 +158,7 @@ Context `(IsBase).
 
 Equations stride_def (a : N) : positive :=
   stride_def a with base (succ a) - base a := {
-    | N0 => _;
+    | N0 => _
     | Npos p => p
   }.
 Next Obligation. intros a. apply xH. Qed.
@@ -170,7 +170,7 @@ Section Context.
 
 Equations stride_def' (a : N) : positive :=
   stride_def' a with exist _ (base (succ a) - base a) (eq_refl _) := {
-    | exist _ N0 _ => _;
+    | exist _ N0 _ => _
     | exist _ (Npos p) _ => p
   }.
 Next Obligation.
@@ -605,7 +605,7 @@ Import BaseFromStride.
 
 Equations shell_fix (a b : N) : N * N by wf b lt :=
   shell_fix a b with sumbool_of_bool (b <? Npos (stride a)) => {
-    | left _ => (a, b);
+    | left _ => (a, b)
     | right _ => shell_fix (succ a) (b - Npos (stride a))
   }.
 Next Obligation.
@@ -816,7 +816,7 @@ Import StrideFromBase.
 
 Equations shell_fix (a b : N) : N * N by wf (b - base a) lt :=
   shell_fix a b with sumbool_of_bool (b <? base (succ a)) => {
-    | left _ => (a, b - base a);
+    | left _ => (a, b - base a)
     | right _ => shell_fix (succ a) b
   }.
 Next Obligation.
