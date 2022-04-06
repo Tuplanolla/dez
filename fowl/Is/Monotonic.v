@@ -74,7 +74,7 @@ Ltac note := progress (
   try change X1 with (ord_rel (A := A1)) in *;
   try change Y with (ord_rel (A := B)) in *).
 
-(** Every left- and right-monotonic binary function is left-right-monotonic. *)
+(** A left- and right-monotonic binary function is left-right-monotonic. *)
 
 #[local] Instance mono_bin_fn_is_mono_bin_fn_l_r
   `{!IsMonoBinFnL X1 Y k} `{!IsMonoBinFnR X0 Y k} : IsMonoBinFnLR X0 X1 Y k.
@@ -84,7 +84,7 @@ Proof with note.
   - apply mono_bin_fn_l. apply a1.
   - apply mono_bin_fn_r. apply a0. Qed.
 
-(** Every monotonic binary function is left-monotonic. *)
+(** A monotonic binary function is left-monotonic. *)
 
 #[local] Instance mono_bin_fn_l_r_is_mono_bin_fn_l
   `{!IsMonoBinFnLR X0 X1 Y k} : IsMonoBinFnL X1 Y k.
@@ -94,7 +94,7 @@ Proof with note.
   - reflexivity.
   - apply a. Qed.
 
-(** Every monotonic binary function is right-monotonic. *)
+(** A monotonic binary function is right-monotonic. *)
 
 #[local] Instance mono_bin_fn_l_r_is_mono_bin_fn_r
   `{!IsMonoBinFnLR X0 X1 Y k} : IsMonoBinFnR X0 Y k.
@@ -228,7 +228,7 @@ Ltac note := progress (
   try change Yle with (ord_rel (A := B)) in *;
   try change Ylt with (str_ord_rel (A := B)) in *).
 
-(** Every strictly monotonic function is monotonic. *)
+(** A strictly monotonic function is monotonic. *)
 
 #[export] Instance mono_un_fn_is_mono_un_fn
   `{!IsMonoUnFn Xlt Ylt f} : IsMonoUnFn Xle Yle f.

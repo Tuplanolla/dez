@@ -27,19 +27,19 @@ Ltac note := progress (
   try change Xeq with (equiv_rel (A := A)) in *;
   try change Xle with (ord_rel (A := A)) in *).
 
-(** Every total order is reflexive. *)
+(** A total order is reflexive. *)
 
 #[local] Instance tot_ord_is_refl
   `{!IsTotOrd Xeq Xle} : IsRefl Xle.
 Proof. typeclasses eauto. Qed.
 
-(** Every total order is antisymmetric. *)
+(** A total order is antisymmetric. *)
 
 #[local] Instance tot_ord_is_antisym
   `{!IsTotOrd Xeq Xle} : IsAntisym Xeq Xle.
 Proof. typeclasses eauto. Qed.
 
-(** Every total order is transitive. *)
+(** A total order is transitive. *)
 
 #[local] Instance tot_ord_is_trans
   `{!IsTotOrd Xeq Xle} : IsTrans Xle.
@@ -61,19 +61,19 @@ Section Context.
 
 Context (A : Type) (Xeq Xlt : A -> A -> Prop).
 
-(** Every strict total order is irreflexive. *)
+(** A strict total order is irreflexive. *)
 
 #[local] Instance str_tot_ord_is_irrefl
   `{!IsStrTotOrd Xeq Xlt} : IsIrrefl Xlt.
 Proof. typeclasses eauto. Qed.
 
-(** Every strict total order is asymmetric. *)
+(** A strict total order is asymmetric. *)
 
 #[local] Instance tot_ord_is_asym
   `{!IsStrTotOrd Xeq Xlt} : IsAsym Xlt.
 Proof. typeclasses eauto. Qed.
 
-(** Every strict total order is transitive. *)
+(** A strict total order is transitive. *)
 
 #[local] Instance str_tot_ord_is_trans
   `{!IsStrTotOrd Xeq Xlt} : IsTrans Xlt.

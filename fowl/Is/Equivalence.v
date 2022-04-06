@@ -20,13 +20,13 @@ Section Context.
 
 Context (A : Type) (X : A -> A -> Prop).
 
-(** Every equivalence relation is a preorder. *)
+(** An equivalence relation is a preorder. *)
 
 #[local] Instance equiv_is_preord
   `{!IsEquiv X} : IsPreord X.
 Proof. typeclasses eauto. Qed.
 
-(** Every equivalence relation is a partial equivalence relation. *)
+(** An equivalence relation is a partial equivalence relation. *)
 
 #[local] Instance equiv_is_part_equiv
   `{!IsEquiv X} : IsPartEquiv X.

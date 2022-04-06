@@ -39,7 +39,7 @@ Section Context.
 
 Context (A : Type) (Xeq Xle : A -> A -> Prop).
 
-(** Every connex relation is strictly connex. *)
+(** A connex relation is strictly connex. *)
 
 #[export] Instance connex_is_str_connex `{!IsConnex Xle} : IsStrConnex Xeq Xle.
 Proof.

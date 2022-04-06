@@ -20,8 +20,8 @@ Section Context.
 Context (A : Type) (X : A -> A -> Prop)
   (f : A -> A).
 
-(** Every element is an involutive element
-    with respect to an involutive unary operation. *)
+(** An element of an involutive unary operation
+    is an involutive element of a unary operation. *)
 
 #[export] Instance invol_is_invol_elem
   `{!IsInvol X f} (x : A) : IsInvolElem X x f.

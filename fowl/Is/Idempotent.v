@@ -20,8 +20,8 @@ Section Context.
 Context (A : Type) (X : A -> A -> Prop)
   (f : A -> A).
 
-(** Every element is an idempotent element
-    with respect to an idempotent unary operation. *)
+(** An element of an idempotent unary operation
+    is an idempotent element of a unary operation. *)
 
 #[export] Instance idem_un_op_is_idem_elem_un_op
   `{!IsIdemUnOp X f} (x : A) : IsIdemElemUnOp X x f.
@@ -46,8 +46,8 @@ Section Context.
 Context (A : Type) (X : A -> A -> Prop)
   (k : A -> A -> A).
 
-(** Every element is an idempotent element
-    with respect to an idempotent binary operation. *)
+(** An element of an idempotent binary operation
+    is an idempotent element of a binary operation. *)
 
 #[export] Instance idem_bin_op_is_idem_elem_bin_op
   `{!IsIdemBinOp X k} (x : A) : IsIdemElemBinOp X x k.
@@ -64,8 +64,8 @@ Section Context.
 Context (A : Type) (X : A -> A -> Prop)
   (f : A -> A).
 
-(** Every idempotent unary operation is an idempotent element
-    of the endofunction monoid. *)
+(** An idempotent unary operation
+    is an idempotent element of the endofunction monoid. *)
 
 #[export] Instance idem_un_op_is_idem_elem_bin_op_compose
   `{!IsIdemUnOp X f} : IsIdemElemBinOp (pointwise_relation _ X) f _o_.
