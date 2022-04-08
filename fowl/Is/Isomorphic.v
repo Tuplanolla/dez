@@ -95,3 +95,6 @@ End Context.
 Class IsEquivTypes (A B : Type)
   (X : A -> A -> Prop) (Y : B -> B -> Prop) : Prop :=
   equiv_types : exists (f : A -> B) (g : B -> A), IsIso X Y f g.
+
+Arguments IsEquivTypes _ _ _ _ : clear implicits.
+Arguments equiv_types _ _ _ _ {_}.

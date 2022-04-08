@@ -2,8 +2,10 @@
 
 From Coq Require Import
   Logic.FunctionalExtensionality Logic.PropExtensionality.
-From DEZ Require Export
-  Init.
+From DEZ.Is Require Export
+  Isomorphic.
+
+(** See, this is where setoids are no longer useful. *)
 
 Class IsFunExtGen (X : forall {A : Type}, A -> A -> Prop) : Prop :=
   fun_ext_gen (A B : Type) (f g : A -> B)
@@ -16,6 +18,9 @@ Class IsFunExtDepGen (X : forall {A : Type}, A -> A -> Prop) : Prop :=
 Class IsPropExtGen (X : forall {A : Type}, A -> A -> Prop) : Prop :=
   prop_ext_gen (A B : Prop) (a : A <-> B) : X A B.
 
+Class IsUnivGen (X : forall {A : Type}, A -> A -> Prop) : Prop :=
+  univ_gen (A B : Type) (a : IsEquivTypes A B X X) : A = B.
+
 (** We declare function extensionality as a class in hopes of turning it
     into a theorem once a better metatheory is implemented. *)
 
@@ -23,6 +28,10 @@ Class IsPropExtGen (X : forall {A : Type}, A -> A -> Prop) : Prop :=
 
 Class IsFunExt : Prop :=
   fun_ext (A B : Type) (f g : A -> B) (a : forall x : A, f x = g x) : f = g.
+
+#[local] Lemma equal_f (A B : Type)
+  (f g : A -> B) (a : f = g) (x : A) : f x = g x.
+Proof. rewrite a. reflexivity. Qed.
 
 (** ** Dependent Function Extensionality *)
 
@@ -32,46 +41,48 @@ Class IsFunExtDep : Prop :=
 
 (** ** Propositional Extensionality *)
 
-Class IsPropExt : Prop :=
-  prop_ext (A B : Prop) (a : A <-> B) : A = B.
+Class IsPropExt : Prop := prop_ext (A B : Prop) (a : A <-> B) : A = B.
 
-Lemma prop_equiv_iff (A B : Prop) (a : A = B) : A <-> B.
+#[local] Lemma eq_iff (A B : Prop) (a : A = B) : A <-> B.
 Proof. rewrite a. reflexivity. Qed.
 
-Lemma prop_iff_equiv `(IsPropExt) (A B : Prop) (a : A <-> B) : A = B.
-Proof. apply prop_ext. apply a. Qed.
+(** ** Univalence *)
 
-Section Context.
+Class IsUniv : Prop :=
+  univ (A B : Type) (a : IsEquivTypes A B _=_ _=_) : A = B.
 
-Context `(IsFunExtDep).
+#[local] Lemma idtoeqv (A B : Type) (a : A = B) : IsEquivTypes A B _=_ _=_.
+Proof.
+  induction a. exists id, id. split.
+  - intros x. reflexivity.
+  - intros x. reflexivity. Qed.
 
-#[local] Instance is_fun_ext : IsFunExt.
+Axiom univalence : forall A B : Type,
+  exists ua : IsEquivTypes A B _=_ _=_ -> A = B,
+  IsIso _=_ _=_ idtoeqv ua.
+
+#[export] Instance is_fun_ext `{!IsFunExtDep} : IsFunExt.
 Proof. intros A P f g a. apply fun_ext_dep. apply a. Qed.
-
-End Context.
-
-#[export] Hint Resolve is_fun_ext : typeclass_instances.
 
 Module FromAxioms.
 
-#[local] Instance is_fun_ext_dep : IsFunExtDep.
+#[export] Instance is_fun_ext_dep : IsFunExtDep.
 Proof.
   intros A P f g a.
   apply functional_extensionality_dep.
   intros x.
   apply a. Qed.
 
-#[local] Instance is_prop_ext : IsPropExt.
+#[export] Instance is_prop_ext : IsPropExt.
 Proof.
   intros A B a.
   apply propositional_extensionality.
   apply a. Qed.
 
-#[export] Hint Resolve is_fun_ext_dep is_prop_ext : typeclass_instances.
+#[export] Instance is_univ : IsUniv.
+Proof.
+  intros A B a.
+  apply univalence.
+  apply a. Qed.
 
 End FromAxioms.
-
-(** Analogous in structure to [equal_f]. *)
-
-Lemma iff_f (A B : Prop) (a : A = B) : A <-> B.
-Proof. rewrite a. reflexivity. Qed.

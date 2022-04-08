@@ -112,10 +112,6 @@ Context (A : Type).
 
 (** This is faster to use in computations. *)
 
-Fail Fail Equations index_fix (n : N) (a : list A) : list (N * A) :=
-  index_fix _ [] := [];
-  index_fix n (x :: b) := (n, x) :: index_fix (N.succ n) b.
-
 Equations index (a : list A) : list (N * A) :=
   index := index_fix 0 where
   index_fix (n : N) (a : list A) : list (N * A) :=
@@ -223,9 +219,24 @@ Equations decode_without_inspect (x : A) : {p : N | p < N.of_nat (length (enum A
 #[export] Instance listing_is_size_length :
   IsSize X (N.of_nat (length (enum A))).
 Proof with note.
-  hnf. exists encode, decode. split.
+  hnf. exists encode, decode. split...
   - intros [p t]. unfold encode, decode.
-    unfold enum in *. Fail induction a. Abort.
+    unfold enum in *. Fail induction a. admit.
+  - intros x. apply (decode_elim
+      (fun (x : A) (s : {p : N | p < N.of_nat (length (enum A))}) =>
+      encode s == x)).
+    clear x. intros x p y e _.
+    remember (p; decode_obligations_obligation_1 x e) as G eqn : eg.
+    apply encode_elim. admit. intros q t z b e' _.
+    unfold enum in *. destruct G as [p' t']. depelim eg.
+    assert (i : IsListing _==_ a) by auto.
+    rewrite e' in e, t, i. clear e'.
+    unfold matching. cbn in *.
+    destruct (d x z) as [w | w] eqn : ew. cbn in *. rewrite w.
+    depelim e. rewrite combine_nth. unfold snd.
+    2: rewrite map_length. 2: rewrite seq_length. 2: reflexivity.
+    pose proof full y as fy.
+    apply Exists_nth in fy. destruct fy as [j [def [ly ry]]]. Abort.
 
 #[export] Instance listing_is_size_length :
   IsSize X (N.of_nat (length (enum A))).
