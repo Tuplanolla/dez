@@ -1,7 +1,7 @@
 (** * Isomorphisms *)
 
-From DEZ Require Export
-  Init.
+From DEZ.Is Require Export
+  Reflexive.
 
 (** The definition [IsRetr f g] should be read
     as [g] being a retraction of [f] and
@@ -63,6 +63,21 @@ Proof.
 
 End Context.
 
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop).
+
+(** The identity function is an isomorphism
+    with respect to any reflexive relation. *)
+
+#[export] Instance refl_is_iso_id `{!IsRefl X} : IsIso X X id id.
+Proof.
+  split.
+  - intros x. reflexivity.
+  - intros x. reflexivity. Qed.
+
+End Context.
+
 (** ** Automorphism *)
 (** ** Inverse of a Unary Operation *)
 
@@ -98,3 +113,15 @@ Class IsEquivTypes (A B : Type)
 
 Arguments IsEquivTypes _ _ _ _ : clear implicits.
 Arguments equiv_types _ _ _ _ {_}.
+
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop).
+
+(** A type is equivalent to itself
+    with respect to any reflexive relation. *)
+
+#[export] Instance refl_is_equiv_types `{!IsRefl X} : IsEquivTypes A A X X.
+Proof. exists id, id. typeclasses eauto. Qed.
+
+End Context.
