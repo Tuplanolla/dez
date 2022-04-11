@@ -55,8 +55,18 @@ Class IsListing (A : Type) (X : A -> A -> Prop) (a : list A) : Prop := {
 Class IsFinFull (A : Type) (X : A -> A -> Prop) : Prop :=
   fin_full : exists a : list A, IsFull X a.
 
+#[export] Instance full_is_fin_full (A : Type) (X : A -> A -> Prop)
+  (a : list A) `{!IsFull X a} : IsFinFull X.
+Proof. exists a. auto. Qed.
+
+(** ** Finiteness in Terms of Unique Enumeration *)
+
 Class IsFinListing (A : Type) (X : A -> A -> Prop) : Prop :=
   fin_listing : exists a : list A, IsListing X a.
+
+#[export] Instance listing_is_fin_listing (A : Type) (X : A -> A -> Prop)
+  (a : list A) `{!IsListing X a} : IsFinListing X.
+Proof. exists a. auto. Qed.
 
 (** ** Size of a Type *)
 
@@ -68,62 +78,79 @@ Class IsSize (A : Type) (X : A -> A -> Prop) (n : N) : Prop :=
 Class IsFinSize (A : Type) (X : A -> A -> Prop) : Prop :=
   fin_size : exists n : N, IsSize X n.
 
+#[export] Instance size_is_fin_size (A : Type) (X : A -> A -> Prop)
+  (n : N) `{!IsSize X n} : IsFinSize X.
+Proof. exists n. auto. Qed.
+
 (** TODO Prove the equivalence of these definitions. *)
 
-Section Context.
+(** This version is simpler to use in proofs;
+    the other version is faster to use in computations. *)
 
-Context (A : Type) {X : HasEquivRel A} {d : HasEquivDec A} `{!IsFinListing X}.
-
-End Context.
+Module Ref.
 
 Section Context.
 
 Context (A : Type).
 
-(** This is simpler to use in proofs. *)
+Equations index_from (n : N) (a : list A) : list (N * A) :=
+  index_from n a := combine (map N.of_nat (seq (N.to_nat n) (length a))) a.
 
 Equations index (a : list A) : list (N * A) :=
-  index a := combine (map N.of_nat (seq 0 (length a))) a.
-
-#[export] Instance index_has_enum
-  {a : HasEnum A} : HasEnum (N * A) := index (enum A).
+  index := index_from 0.
 
 Lemma index_length (a : list A) : length (index a) = length a.
 Proof.
-  unfold index.
+  unfold index, index_from.
   rewrite combine_length. rewrite map_length. rewrite seq_length.
   rewrite Min.min_idempotent. reflexivity. Qed.
 
 Lemma index_In (a : list A) (p : N) (x : A) (s : In (p, x) (index a)) :
   p < N.of_nat (length a).
 Proof.
-  unfold index in s. apply in_combine_l in s. apply (in_map N.to_nat) in s.
+  unfold index, index_from in s.
+  apply in_combine_l in s. apply (in_map N.to_nat) in s.
   rewrite map_map in s. rewrite (map_ext _ id) in s.
   - rewrite map_id in s. apply in_seq in s. lia.
   - intros n. rewrite Nat2N.id. reflexivity. Qed.
 
 End Context.
 
-Module Faster.
+End Ref.
 
 Section Context.
 
 Context (A : Type).
 
-(** This is faster to use in computations. *)
+Equations index_from (n : N) (a : list A) : list (N * A) :=
+  index_from _ [] := [];
+  index_from n (x :: b) := (n, x) :: index_from (N.succ n) b.
 
 Equations index (a : list A) : list (N * A) :=
-  index := index_fix 0 where
-  index_fix (n : N) (a : list A) : list (N * A) :=
-  index_fix _ [] := [];
-  index_fix n (x :: b) := (n, x) :: index_fix (N.succ n) b.
-
-#[export] Instance index_fix_has_enum
-  {a : HasEnum A} : HasEnum (N * A) := index (enum A).
+  index := index_from 0.
 
 End Context.
 
-End Faster.
+Section Context.
+
+Context (A : Type).
+
+Lemma index_from_ref (n : N) (a : list A) :
+  index_from n a = Ref.index_from n a.
+Proof.
+  apply Ref.index_from_elim. clear n a. intros n a. apply index_from_elim.
+  - clear n a. intros n. reflexivity.
+  - clear n a. intros n x a s.
+    cbn [length seq map combine].
+    rewrite N2Nat.id. f_equal.
+    rewrite s. rewrite N2Nat.inj_succ. reflexivity. Qed.
+
+Lemma index_ref (a : list A) : index a = Ref.index a.
+Proof. apply Ref.index_elim. apply index_elim. apply index_from_ref. Qed.
+
+End Context.
+
+Import Ref.
 
 Section Context.
 

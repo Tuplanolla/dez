@@ -346,6 +346,9 @@ digraph Is {
   edge [style = dashed]
 
   subgraph finite_derivations {
+    IsFull -> IsFinFull
+    IsListing -> IsFinListing
+    IsSize -> IsFinSize
   }
 
   subgraph logic_derivations {

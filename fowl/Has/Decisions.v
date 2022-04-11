@@ -66,7 +66,7 @@ Section Context.
 
 Import Classes.EquivDec.
 
-Context (A : Type) {X : HasEquivRel A} `{IsEquiv X}.
+Context (A : Type) {X : HasEquivRel A} `{!IsEquiv X}.
 
 (** Our decidable equivalence implies
     standard library decidable equivalence. *)
@@ -86,7 +86,7 @@ Section Context.
 
 Import Classes.SetoidDec.
 
-Context (A : Type) {X : HasEquivRel A} `{IsEquiv X}.
+Context (A : Type) {X : HasEquivRel A} `{!IsEquiv X}.
 
 (** Our decidable equivalence implies
     standard library decidable equivalence. *)
