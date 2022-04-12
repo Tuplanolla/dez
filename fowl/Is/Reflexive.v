@@ -1,5 +1,7 @@
 (** * Reflexivity *)
 
+From Coq Require Import
+  Classes.RelationClasses.
 From DEZ Require Export
   Init.
 
@@ -8,6 +10,7 @@ From DEZ Require Export
 Fail Fail Class IsRefl (A : Type) (X : A -> A -> Prop) : Prop :=
   refl (x : A) : X x x.
 
+Arguments Reflexive {_} _.
 Arguments reflexivity {_ _ _} _.
 
 Notation IsRefl := Reflexive.

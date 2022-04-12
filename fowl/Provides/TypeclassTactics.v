@@ -25,5 +25,21 @@ Ltac note := progress (
     into [@eq (list A) (@enum A (@enum A a)) (@nil A)],
     which would break rewriting. *)
 
+#[deprecated (since="now")]
 Tactic Notation "denote" uconstr(x) "with" uconstr(y) :=
   repeat change y with x in *; try change x with y in *.
+
+(** TODO Document this new form that allows writing the following.
+
+<<
+Ltac notations f := progress (
+  f X (equiv_rel (A := A));
+  f k (bin_op (A := A))).
+>> *)
+
+Ltac disabled x y :=
+  repeat change y with x in *.
+
+Ltac enabled x y :=
+  repeat change y with x in *;
+  try change x with y in *.

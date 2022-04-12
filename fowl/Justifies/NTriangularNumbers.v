@@ -1,7 +1,7 @@
 (** * Triangular Numbers over Binary Natural Numbers *)
 
 From Coq Require Import
-  Lia Lists.List NArith.NArith.
+  Classes.Morphisms Lia Lists.List NArith.NArith.
 From DEZ.Justifies Require Export
   LogicalTheorems NTheorems OptionTheorems ProductTheorems.
 From DEZ.Provides Require Import

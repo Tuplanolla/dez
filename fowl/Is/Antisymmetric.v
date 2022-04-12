@@ -1,5 +1,7 @@
 (** * Antisymmetry *)
 
+From Coq Require Import
+  Classes.RelationClasses.
 From DEZ.Is Require Export
   Equivalence.
 

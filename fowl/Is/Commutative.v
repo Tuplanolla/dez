@@ -1,5 +1,7 @@
 (** * Commutativity *)
 
+From Coq Require Import
+  Classes.Morphisms.
 From DEZ Require Export
   Init.
 

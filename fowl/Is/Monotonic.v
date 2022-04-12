@@ -22,8 +22,8 @@ Fail Fail Class IsMonoUnFn (A B : Type)
 
 Fail Arguments mono_un_fn {_ _ _ _} _ {_} _ _ _.
 
-Notation IsMonoUnFn X Y := (Proper (X ==> Y)) (only parsing).
-Notation mono_un_fn := proper_prf (only parsing).
+Notation IsMonoUnFn X Y := (IsProper (X ==> Y)) (only parsing).
+Notation mono_un_fn := proper (only parsing).
 
 (** ** Monotonic Unary Operation *)
 
@@ -33,8 +33,8 @@ Fail Fail Class IsMonoUnOp (A : Type) (X : A -> A -> Prop)
 
 Fail Arguments mono_un_op {_ _} _ {_} _ _ _.
 
-Notation IsMonoUnOp X := (Proper (X ==> X)) (only parsing).
-Notation mono_un_op := proper_prf (only parsing).
+Notation IsMonoUnOp X := (IsProper (X ==> X)) (only parsing).
+Notation mono_un_op := proper (only parsing).
 
 (** ** Left-Monotonic Binary Function *)
 
@@ -58,8 +58,8 @@ Fail Fail Class IsMonoBinFnLR (A0 A1 B : Type)
 
 Fail Arguments mono_bin_fn_l_r {_ _ _ _ _ _} _ {_} _ _ _ _ _ _.
 
-Notation IsMonoBinFnLR X0 X1 Y := (Proper (X0 ==> X1 ==> Y)) (only parsing).
-Notation mono_bin_fn_l_r := proper_prf (only parsing).
+Notation IsMonoBinFnLR X0 X1 Y := (IsProper (X0 ==> X1 ==> Y)) (only parsing).
+Notation mono_bin_fn_l_r := proper (only parsing).
 
 Section Context.
 
@@ -177,8 +177,8 @@ Fail Fail Class IsMonoBinOpLR (A : Type) (X : A -> A -> Prop)
 
 Fail Arguments mono_bin_op_l_r {_ _} _ {_} _ _ _ _ _ _.
 
-Notation IsMonoBinOpLR X := (Proper (X ==> X ==> X)) (only parsing).
-Notation mono_bin_op_l_r := proper_prf (only parsing).
+Notation IsMonoBinOpLR X := (IsProper (X ==> X ==> X)) (only parsing).
+Notation mono_bin_op_l_r := proper (only parsing).
 
 Section Context.
 

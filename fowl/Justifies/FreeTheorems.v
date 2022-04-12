@@ -1,7 +1,7 @@
 (** * Free Structure *)
 
 From Coq Require Import
-  Extraction Lia Lists.List ZArith.ZArith.
+  Classes.DecidableClass Extraction Lia Lists.List ZArith.ZArith.
 From DEZ.Has Require Export
   Decisions Unsquashings.
 From DEZ.Is Require Export

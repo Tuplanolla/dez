@@ -1,5 +1,7 @@
 (** * Symmetry *)
 
+From Coq Require Import
+  Classes.RelationClasses.
 From DEZ.Is Require Export
   Commutative.
 
@@ -8,6 +10,7 @@ From DEZ.Is Require Export
 Fail Fail Class IsSym (A : Type) (X : A -> A -> Prop) : Prop :=
   sym (x y : A) (a : X x y) : X y x.
 
+Arguments Symmetric {_} _.
 Arguments symmetry {_ _ _} _ _ _.
 
 Notation IsSym := Symmetric.

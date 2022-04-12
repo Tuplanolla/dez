@@ -21,7 +21,8 @@ Arguments dec _ {_}.
     that accepts a disjunctive pattern with two branches. *)
 
 Tactic Notation "decide" constr(A) "as" "[" ident(x) "|" ident(f) "]" :=
-  let a := fresh in _decide_ A a; [rename a into x | rename a into f].
+  let a := fresh in
+  DecidableClass._decide_ A a; [rename a into x | rename a into f].
 
 (** We need some instances to bridge the gap between our definitions,
     standard library definitions and equations plugin definitions.

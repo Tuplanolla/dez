@@ -1,5 +1,7 @@
 (** * Properties of the Unit Type *)
 
+From Coq Require Import
+  Classes.RelationClasses.
 From DEZ.Has Require Export
   EquivalenceRelations OrderRelations Decisions
   Operations ArithmeticOperations.

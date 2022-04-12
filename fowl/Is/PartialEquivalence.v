@@ -1,5 +1,7 @@
 (** * Partial Equivalence *)
 
+From Coq Require Import
+  Classes.RelationClasses.
 From DEZ.Is Require Export
   Symmetric Transitive.
 
@@ -10,6 +12,10 @@ Fail Fail Class IsPartEquiv (A : Type) (X : A -> A -> Prop) : Prop := {
   part_equiv_is_trans :> IsTrans X;
 }.
 
-Notation IsPartEquiv := PER.
-Notation part_equiv_is_sym := PER_Symmetric.
-Notation part_equiv_is_trans := PER_Transitive.
+Arguments RelationClasses.PER {_} _.
+Arguments RelationClasses.PER_Symmetric {_ _ _} _ _ _.
+Arguments RelationClasses.PER_Transitive {_ _ _} _ _ _ _ _.
+
+Notation IsPartEquiv := RelationClasses.PER.
+Notation part_equiv_is_sym := RelationClasses.PER_Symmetric.
+Notation part_equiv_is_trans := RelationClasses.PER_Transitive.

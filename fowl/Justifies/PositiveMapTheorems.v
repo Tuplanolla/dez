@@ -413,7 +413,7 @@ Fixpoint pos_tree_merge (A B C : Type) (f : option A -> option B -> option C)
     (pos_tree_merge f r0 r1)
   end.
 
-#[local, polymorphic] Hint Resolve squash : core.
+#[local] Hint Resolve squash : core.
 
 Definition pos_map (A : Type) : Type :=
   {t : pos_tree A $ Squash (pos_tree_wf t)}.

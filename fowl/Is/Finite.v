@@ -15,6 +15,7 @@ From DEZ.Supports Require Import
 
 Import ListNotations.
 
+#[local] Open Scope relation_scope.
 #[local] Open Scope core_scope.
 #[local] Open Scope sig_scope.
 #[local] Open Scope N_scope.
@@ -162,17 +163,17 @@ Section Context.
 Context (A : Type) {X : HasEquivRel A} {d : HasEquivDec A} {a : HasEnum A}
   `{!IsEquiv X} `{!IsFull X a}.
 
-Ltac note := progress (
-  denote X with (equiv_rel (A := A));
-  denote d with (equiv_dec (A := A));
-  denote a with (enum A)).
+Ltac notations f := progress (
+  f X (equiv_rel (A := A));
+  f d (equiv_dec (A := A));
+  f a (enum A)).
 
 Equations encode (s : {p : N | p < N.of_nat (length (enum A))}) : A :=
   encode (p; t) with inspect (enum A) := {
     | [] eqn : _ => _
     | x :: b eqn : _ => snd (nth (N.to_nat p) (index b) (0, x))
   }.
-Next Obligation with note.
+Next Obligation with notations enabled.
   cbv beta...
   intros p t u. rewrite u in t. unfold length, N.of_nat in t. lia. Qed.
 
@@ -184,11 +185,11 @@ Equations decode (x : A) : {p : N | p < N.of_nat (length (enum A))} :=
     | Some (p, y) eqn : _ => (p; _)
     | None eqn : _ => _
   }.
-Next Obligation with note.
+Next Obligation with notations enabled.
   cbv beta...
   intros x p y t. apply find_some in t. destruct t as [u v].
   apply index_In in u. lia. Qed.
-Next Obligation with note.
+Next Obligation with notations enabled.
   cbv beta...
   intros x t. exfalso.
   pose proof full x as u. apply Exists_exists in u. destruct u as [y [v w]].
@@ -213,16 +214,16 @@ Context (A : Type) (X : A -> A -> Prop)
 #[local] Instance has_equiv_dec : HasEquivDec A := d.
 #[local] Instance has_enum : HasEnum A := a.
 
-Ltac note := progress (
-  denote X with (equiv_rel (A := A));
-  denote d with (equiv_dec (A := A));
-  denote a with (enum A)).
+Ltac notations f := progress (
+  f X (equiv_rel (A := A));
+  f d (equiv_dec (A := A));
+  f a (enum A)).
 
 (** TODO Prove the equivalence of these definitions. *)
 
 #[export] Instance listing_is_size_length
   `{!IsListing X a} : IsSize X (N.of_nat (length a)).
-Proof with note.
+Proof with notations enabled.
   hnf. exists encode, decode. split...
   - intros [p t]. unfold encode, decode.
     unfold enum, has_enum in *. induction a. cbn in *. lia.

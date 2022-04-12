@@ -1,5 +1,5 @@
 From Coq Require Import
-  Lia Lists.List NArith.NArith Bool.Sumbool.
+  Classes.Morphisms Lia Lists.List NArith.NArith Bool.Sumbool.
 From DEZ.Is Require Export
   Fixed Injective Monotonic Comonotonic Isomorphic.
 From DEZ.Justifies Require Export

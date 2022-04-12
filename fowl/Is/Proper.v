@@ -1,5 +1,7 @@
 (** * Properness and Respectfulness *)
 
+From Coq Require Import
+  Classes.Morphisms.
 From DEZ Require Export
   Init.
 
@@ -9,6 +11,7 @@ From DEZ Require Export
 Fail Fail Class IsProper (A : Type) (X : A -> A -> Prop) : Prop :=
   proper (x : A) : X x x.
 
+Arguments Proper {_} _ _.
 Arguments proper_prf {_ _} _ {_}.
 
 Notation IsProper := Proper.

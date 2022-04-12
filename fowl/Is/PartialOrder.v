@@ -1,5 +1,7 @@
 (** * Partial Ordering *)
 
+From Coq Require Import
+  Classes.RelationClasses.
 From DEZ.Has Require Export
   EquivalenceRelations OrderRelations.
 From DEZ.Is Require Export

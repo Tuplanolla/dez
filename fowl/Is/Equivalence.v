@@ -1,5 +1,7 @@
 (** * Equivalence *)
 
+From Coq Require Import
+  Classes.RelationClasses.
 From DEZ.Is Require Export
   Reflexive Symmetric Transitive Preorder PartialEquivalence.
 
@@ -10,6 +12,11 @@ Fail Fail Class IsEquiv (A : Type) (X : A -> A -> Prop) : Prop := {
   equiv_is_sym :> IsSym X;
   equiv_is_trans :> IsTrans X;
 }.
+
+Arguments Equivalence {_} _.
+Arguments Equivalence_Reflexive {_ _ _} _.
+Arguments Equivalence_Symmetric {_ _ _} _ _ _.
+Arguments Equivalence_Transitive {_ _ _} _ _ _ _ _.
 
 Notation IsEquiv := Equivalence.
 Notation equiv_is_refl := Equivalence_Reflexive.
