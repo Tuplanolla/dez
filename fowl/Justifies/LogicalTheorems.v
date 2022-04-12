@@ -5,6 +5,16 @@ From DEZ Require Export
 From DEZ.Is Require Export
   Extensional Semiring.
 
+(** ** Predicates *)
+
+Equations is_left (A B : Prop) (a : {A} + {B}) : bool :=
+  is_left (left _) := true;
+  is_left (right _) := false.
+
+Equations is_right (A B : Prop) (a : {A} + {B}) : bool :=
+  is_right (left _) := false;
+  is_right (right _) := true.
+
 (** ** Equalities *)
 
 (** This is a negative version of [f_equal]. *)
