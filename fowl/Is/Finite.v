@@ -71,7 +71,7 @@ Proof. exists a. auto. Qed.
 (** ** Size of a Type *)
 
 Class IsSize (A : Type) (X : A -> A -> Prop) (n : N) : Prop :=
-  size_is_equiv_types :> IsEquivTypes (A := {p : N | p < n}) _=_ X.
+  size_is_equiv_types :> IsEquivTypes {p : N | p < n} A _=_ X.
 
 (** ** Finiteness in Terms of Counting *)
 
@@ -82,10 +82,8 @@ Class IsFinSize (A : Type) (X : A -> A -> Prop) : Prop :=
   (n : N) `{!IsSize X n} : IsFinSize X.
 Proof. exists n. auto. Qed.
 
-(** TODO Prove the equivalence of these definitions. *)
-
-(** This version is simpler to use in proofs;
-    the other version is faster to use in computations. *)
+(** This reference implementation is simpler to use in proofs;
+    the other implementation is faster to use in computations. *)
 
 Module Ref.
 
@@ -98,21 +96,6 @@ Equations index_from (n : N) (a : list A) : list (N * A) :=
 
 Equations index (a : list A) : list (N * A) :=
   index := index_from 0.
-
-Lemma index_length (a : list A) : length (index a) = length a.
-Proof.
-  unfold index, index_from.
-  rewrite combine_length. rewrite map_length. rewrite seq_length.
-  rewrite Min.min_idempotent. reflexivity. Qed.
-
-Lemma index_In (a : list A) (p : N) (x : A) (s : In (p, x) (index a)) :
-  p < N.of_nat (length a).
-Proof.
-  unfold index, index_from in s.
-  apply in_combine_l in s. apply (in_map N.to_nat) in s.
-  rewrite map_map in s. rewrite (map_ext _ id) in s.
-  - rewrite map_id in s. apply in_seq in s. lia.
-  - intros n. rewrite Nat2N.id. reflexivity. Qed.
 
 End Context.
 
@@ -150,7 +133,26 @@ Proof. apply Ref.index_elim. apply index_elim. apply index_from_ref. Qed.
 
 End Context.
 
-Import Ref.
+Lemma index_length (A : Type)
+  (a : list A) : length (index a) = length a.
+Proof.
+  rewrite index_ref.
+  unfold Ref.index, Ref.index_from.
+  rewrite combine_length. rewrite map_length. rewrite seq_length.
+  rewrite Min.min_idempotent. reflexivity. Qed.
+
+Lemma index_In (A : Type)
+  (a : list A) (p : N) (x : A) (s : In (p, x) (index a)) :
+  p < N.of_nat (length a).
+Proof.
+  rewrite index_ref in s.
+  unfold Ref.index, Ref.index_from in s.
+  apply in_combine_l in s. apply (in_map N.to_nat) in s.
+  rewrite map_map in s. rewrite (map_ext _ id) in s.
+  - rewrite map_id in s. apply in_seq in s. lia.
+  - intros n. rewrite Nat2N.id. reflexivity. Qed.
+
+(** TODO Prove the equivalence of these definitions. *)
 
 Section Context.
 
@@ -199,7 +201,7 @@ Next Obligation with note.
   cbn in t. unfold is_left in t. destruct (d x y) as [m | m].
   congruence. apply m, w...
   assert (what : (N.of_nat n, y) = nth n (index (enum A)) (N.of_nat 0, x)).
-  { unfold index. rewrite combine_nth.
+  { rewrite index_ref. unfold Ref.index. rewrite combine_nth.
     - f_equal.
       + rewrite map_nth. f_equal. rewrite seq_nth... lia. lia.
       + rewrite r. reflexivity.
@@ -231,7 +233,7 @@ Proof with note.
   cbn in t. unfold is_left in t. destruct (d x y) as [m | m].
   congruence. apply m, w...
   assert (what : (N.of_nat n, y) = nth n (index (enum A)) (N.of_nat 0, x)).
-  { unfold index. rewrite combine_nth.
+  { rewrite index_ref. unfold Ref.index. rewrite combine_nth.
     - f_equal.
       + rewrite map_nth. f_equal. rewrite seq_nth... lia. lia.
       + rewrite r. reflexivity.
@@ -258,7 +260,7 @@ Proof with note.
     unfold enum in *. destruct G as [p' t']. depelim eg.
     assert (i : IsListing _==_ a) by auto.
     rewrite e' in e, t, i. clear e'.
-    unfold matching. cbn in *.
+    unfold matching. rewrite index_ref in *. cbn in *.
     destruct (d x z) as [w | w] eqn : ew. cbn in *. rewrite w.
     depelim e. rewrite combine_nth. unfold snd.
     2: rewrite map_length. 2: rewrite seq_length. 2: reflexivity.
@@ -275,7 +277,9 @@ Proof with note.
     decode_fst_without_inspect_clause_1,
     encode_without_inspect_clause_1_encode_without_inspect_fix.
     unfold enum in *. destruct a as [| x c].
-    cbn in t; lia. Abort.
+    cbn in t; lia. repeat rewrite index_ref. cbn.
+    unfold Ref.index, Ref.index_from. cbn in *.
+    rewrite combine_nth. cbn. Abort.
 
 #[export] Instance fin_listing_is_fin_size `{!IsFinListing X} : IsFinSize X.
 Proof.
