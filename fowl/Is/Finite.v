@@ -168,6 +168,11 @@ Ltac notations f := progress (
   f d (equiv_dec (A := A));
   f a (enum A)).
 
+(* forall (x : A) (s : _), encode s = encode_def x (proj1_sig s) *)
+
+Equations encode_def (x : A) (p : N) : A :=
+  encode_def x p := snd (nth (N.to_nat p) (index (enum A)) (0, x)).
+
 Equations encode (s : {p : N | p < N.of_nat (length (enum A))}) : A :=
   encode (p; t) with inspect (enum A) := {
     | [] eqn : _ => _
@@ -180,9 +185,17 @@ Next Obligation with notations enabled.
 Equations matching (x : A) (s : N * A) : bool :=
   matching x (_, y) := is_left (d x y).
 
+(* forall x : A, proj1_sig (decode x) = decode_def x *)
+
+Equations decode_def (x : A) : N :=
+  decode_def x with find (matching x) (index (enum A)) := {
+    | Some (p, _) => p
+    | None => 0
+  }.
+
 Equations decode (x : A) : {p : N | p < N.of_nat (length (enum A))} :=
   decode x with inspect (find (matching x) (index (enum A))) := {
-    | Some (p, y) eqn : _ => (p; _)
+    | Some (p, _) eqn : _ => (p; _)
     | None eqn : _ => _
   }.
 Next Obligation with notations enabled.
@@ -224,25 +237,31 @@ Ltac notations f := progress (
 #[export] Instance listing_is_size_length
   `{!IsListing X a} : IsSize X (N.of_nat (length a)).
 Proof with notations enabled.
-  hnf. exists encode, decode. split...
-  - intros [p t]. unfold encode, decode.
-    unfold enum, has_enum in *. induction a. cbn in *. lia.
-    admit.
-  - intros x. apply (decode_elim
-      (fun (x : A) (s : {p : N | p < N.of_nat (length (enum A))}) =>
-      encode s == x)).
-    clear x. intros x p y e _.
-    remember (p; decode_obligations_obligation_1 x e) as G eqn : eg.
-    apply encode_elim. admit. intros q t z b e' _.
-    unfold enum, has_enum in *. destruct G as [p' t']. depelim eg.
-    assert (i : IsListing _==_ a) by auto.
-    rewrite e' in e, t, i. clear e'.
-    unfold matching. rewrite index_ref in *. cbn in *.
-    destruct (d x z) as [w | w] eqn : ew. cbn in *. rewrite w.
-    depelim e. rewrite combine_nth. unfold snd.
-    2: rewrite map_length. 2: rewrite seq_length. 2: reflexivity.
-    pose proof full y as fy.
-    apply Exists_nth in fy. destruct fy as [j [def [ly ry]]]. Abort.
+  exists encode, decode... split.
+  - intros [p t]. apply encode_elim.
+    + clear p t. intros p t u _. exfalso.
+      rewrite u in t. unfold length, N.of_nat in t. lia.
+    + clear p t. intros p t x b u _. rewrite index_nth. unfold snd.
+      remember (nth (N.to_nat p) b x) as k eqn : ek.
+      revert t u ek.
+      apply decode_elim.
+      * clear k. intros y q z vf _ t vt ve.
+        pose proof vf as u'. apply find_some in u'. destruct u' as [v w].
+        unfold matching in w. unfold has_equiv_dec in w. (* ?? *)
+        destruct (d y z) as [m | m].
+        -- clear w. subst y.
+          apply (In_nth (index (enum A)) _ (N.of_nat 0, x)) in v.
+          destruct v as [n [r k]].
+          rewrite <- (Nat2N.id n) in k. rewrite index_nth in k.
+          rewrite (Nat2N.id n) in k.
+          inversion k as [[i j]]. clear k. subst q z.
+          pose proof vf as vg. rewrite vt in *. clear vt.
+          admit.
+          admit.
+        -- discriminate.
+      * admit.
+      * admit.
+  - admit. Abort.
 
 #[export] Instance fin_listing_is_fin_size
   `{!IsFinListing X} : IsFinSize X.

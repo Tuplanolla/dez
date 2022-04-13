@@ -333,10 +333,12 @@ although the rules should be broken with good reasons.
 Here is how the names are laid out spatially.
 
 ```
-24 characters
+24 characters (11000)
+3 min, 6 max, 5 median runs (5, 5, 6, 5, 3)
 a b c d e f g h i j k m n p q r s t u v w x y z
 |->       |->       |->         |->       |->
-18 characters
+18 characters (10010)
+2 min, 6 max, 3 median runs (5, 3, 3, 5, 2)
 A B C D E F G J K L M P S T V W X Y
 |->       |->   |->   |->       |->
 ```
