@@ -173,6 +173,7 @@ Reserved Notation "'{' x ':' A '&' y '}'" (at level 0, x at level 99).
 Reserved Notation "'{' x '$' y '}'" (at level 0, x at level 99).
 Reserved Notation "'{' x ':' A '$' y '}'" (at level 0, x at level 99).
 
+Reserved Notation "'inspect' x" (no associativity, at level 0).
 Reserved Notation "x 'eqn' ':' a" (no associativity, at level 100).
 
 Reserved Notation "x '==>' y" (right associativity, at level 55).
@@ -631,9 +632,7 @@ Arguments sigT_of_sig {_ _} !_.
     to make pattern matching with the [with] keyword
     of the equations plugin more readable. *)
 
-Equations inspect (A : Type) (x : A) : {y : A | x = y} :=
-  inspect x := (x; eq_refl).
-
+Notation "'inspect' x" := (exist _ x eq_refl) (only parsing) : core_scope.
 Notation "x 'eqn' ':' a" := (exist _ x a) (only parsing) : core_scope.
 
 (** ** Basic Functions and Combinators *)
