@@ -168,10 +168,8 @@ Ltac notations f := progress (
   f d (equiv_dec (A := A));
   f a (enum A)).
 
-(* forall (x : A) (s : _), encode s = encode_def x (proj1_sig s) *)
-
-Equations encode_def (x : A) (p : N) : A :=
-  encode_def x p := snd (nth (N.to_nat p) (index (enum A)) (0, x)).
+Equations encode_nondep (x : A) (p : N) : A :=
+  encode_nondep x p := snd (nth (N.to_nat p) (index (enum A)) (0, x)).
 
 Equations encode (s : {p : N | p < N.of_nat (length (enum A))}) : A :=
   encode (p; t) with inspect (enum A) := {
@@ -183,12 +181,10 @@ Next Obligation with notations enabled.
   intros p t u. rewrite u in t. unfold length, N.of_nat in t. lia. Qed.
 
 Equations matching (x : A) (s : N * A) : bool :=
-  matching x (_, y) := is_left (d x y).
+  matching x (_, y) := is_left (equiv_dec x y).
 
-(* forall x : A, proj1_sig (decode x) = decode_def x *)
-
-Equations decode_def (x : A) : N :=
-  decode_def x with find (matching x) (index (enum A)) := {
+Equations decode_nondep (x : A) : N :=
+  decode_nondep x with find (matching x) (index (enum A)) := {
     | Some (p, _) => p
     | None => 0
   }.
@@ -209,7 +205,7 @@ Next Obligation with notations enabled.
   apply (In_nth (enum A) y x) in v. destruct v as [n [r q]].
   apply (fun p : find (matching x) (index (enum A)) = None =>
   find_none _ _ p (N.of_nat n, y)) in t.
-  - unfold matching in t. destruct (d x y) as [m | m].
+  - unfold matching in t. destruct (equiv_dec x y) as [m | m].
     + discriminate.
     + auto.
   - rewrite <- (Nat2N.id n) in q. rewrite <- q. rewrite <- index_nth.
@@ -231,6 +227,41 @@ Ltac notations f := progress (
   f X (equiv_rel (A := A));
   f d (equiv_dec (A := A));
   f a (enum A)).
+
+Lemma encode_indep (x : A) (s : {p : N | p < N.of_nat (length (enum A))}) :
+  encode s = encode_nondep x (proj1_sig s).
+Proof with notations enabled.
+  destruct s as [p t]... unfold proj1_sig. revert t. apply encode_nondep_elim.
+  clear x p. intros x p t. set (s := (p; t)). change p with (proj1_sig s).
+  clearbody s. clear p t. revert x. apply encode_elim.
+  - clear s. intros p t u u' y. exfalso.
+    rewrite u in t. unfold N.of_nat, length in t. lia.
+  - clear s. intros p t x b u u' y. unfold proj1_sig.
+    rewrite u in t. rewrite u. clear u u'.
+    (** This is impossible. *) Abort.
+
+Lemma decode_indep `{!IsFull X a} (x : A) :
+  proj1_sig (decode x) = decode_nondep x.
+Proof with notations enabled.
+  apply (decode_nondep_elim
+  (P := fun (x : A) (p : N) => proj1_sig (decode x) = p))...
+  - clear x. intros x p y u. revert p y u. apply decode_elim.
+    + clear x. intros x p y u u' q z v. unfold proj1_sig.
+      rewrite u in v. depelim v. reflexivity.
+    + clear x. intros x u u' p y v. exfalso.
+      rewrite u in v. depelim v.
+  - clear x. intros x u. revert u. apply decode_elim.
+    + clear x. intros x p y u u' v. exfalso.
+      rewrite u in v. depelim v.
+    + clear x. intros x u u' v. exfalso.
+      pose proof full x as w. apply Exists_exists in w.
+      destruct w as [y [wI wX]].
+      assert (indexof : forall (A : Type) (l : list A) (x : A), N) by admit.
+      set (n := indexof _ (enum A) y).
+      apply (fun hole =>
+      find_none (matching x) (index (enum A)) hole (n, y)) in v.
+      unfold matching in v. destruct (equiv_dec x y); discriminate || auto.
+      subst n. Admitted.
 
 (** TODO Prove the equivalence of these definitions. *)
 
