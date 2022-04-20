@@ -155,7 +155,9 @@ echo "Eval cbv in fun (X : HasBinRel _) (k : "{"HasActL _ _","HasActR _ _","HasB
 echo "Eval cbv in fun (X : HasBinRel _) (f : "{"HasUnOp _","HasUnFn _ _"}") (g : "{"HasUnOp _","HasUnFn _ _"}") (k : "{"HasActL _ _","HasActR _ _","HasBinOp _"}") (h : "{"HasUnOp _","HasUnFn _ _"}") (m : "{"HasActL _ _","HasActR _ _","HasBinOp _"}") => IsDistrUnFns X f g k h m."
 ```
 
-Explain why this has become a useless detour.
+Explain why this has become a useless detour
+(hint: it is due to the decoupling of the operational classes
+from the delcaration of predicative ones).
 
 ```
 Import ArithmeticOperations.Subclass. (* IsRing *)

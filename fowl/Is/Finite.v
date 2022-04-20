@@ -3,7 +3,7 @@
 From Coq Require Import
   Lia Lists.List Logic.FinFun NArith.NArith.
 From DEZ.Has Require Export
-  EquivalenceRelations Decisions Enumerations.
+  EquivalenceRelations Decisions Enumerations Cardinalities.
 From DEZ.Is Require Export
   Isomorphic Extensional Truncated.
 From DEZ.Justifies Require Export
@@ -78,6 +78,8 @@ Class IsFinSize (A : Type) (X : A -> A -> Prop) : Prop :=
 #[export] Instance size_is_fin_size (A : Type) (X : A -> A -> Prop)
   (n : N) `{!IsSize X n} : IsFinSize X.
 Proof. exists n. auto. Qed.
+
+(** TODO The rest is not in the diagram yet. *)
 
 (** This reference implementation is simpler to use in proofs;
     the other implementation is faster to use in computations. *)
@@ -289,7 +291,7 @@ Proof with notations enabled.
           pose proof vf as vg. rewrite vt in *. clear vt.
           admit.
           admit.
-        -- discriminate.
+        -- admit.
       * admit.
       * admit.
   - admit. Abort.

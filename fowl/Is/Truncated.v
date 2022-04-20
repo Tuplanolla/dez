@@ -569,6 +569,15 @@ Proof.
   - intros x. apply c.
   - apply (@eq_pi_is_prop _). intros x. apply eq_is_contr_is_prop. Qed.
 
+(** TODO This is theorem 4.9.4 from the book. *)
+
+Lemma eq_pi_is_contr' `{IsUniv} (A : Type) (P : A -> Prop)
+  `{forall x : A, @IsContr (P x) eq} : @IsContr (forall x : A, P x) eq.
+Proof.
+  match goal with
+  | h : forall _ : _, IsContr _ |- _ => rename h into c
+  end. Admitted.
+
 (** Families of sets are sets. *)
 
 Lemma eq_pi_is_set `{IsPropExt} `{IsFunExtDep} (A : Type) (P : A -> Prop)

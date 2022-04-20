@@ -169,10 +169,10 @@ End Context.
 (** ** Ring Homomorphism *)
 
 Class IsRingHom (A B : Type)
-  (X : A -> A -> Prop) (x : A) (f : A -> A) (k : A -> A -> A)
-  (y : A) (m : A -> A -> A)
-  (Y : B -> B -> Prop) (z : B) (g : B -> B) (n : B -> B -> B)
-  (w : B) (p : B -> B -> B)
+  (X : A -> A -> Prop)
+  (x : A) (f : A -> A) (k : A -> A -> A) (y : A) (m : A -> A -> A)
+  (Y : B -> B -> Prop)
+  (z : B) (g : B -> B) (n : B -> B -> B) (w : B) (p : B -> B -> B)
   (h : A -> B) : Prop := {
   ring_hom_dom_is_grp : IsRing X x f k y m;
   ring_hom_codom_is_grp : IsRing Y z g n w p;

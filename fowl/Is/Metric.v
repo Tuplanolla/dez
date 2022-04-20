@@ -12,11 +12,12 @@ From DEZ.Justifies Require Export
 From DEZ.Provides Require Import
   TypeclassTactics.
 From DEZ.Supports Require Import
-  EquivalenceNotations OrderNotations AdditiveNotations ArithmeticNotations.
+  EquivalenceNotations DistanceBarNotations OrderNotations AdditiveNotations ArithmeticNotations.
 
 #[local] Open Scope R_scope.
+#[local] Open Scope dist_scope.
 
-#[local] Notation "'|' y '-' x '|'" := (dist x y) (format "'|' y  '-'  x '|'").
+(** TODO The rest is not in the diagram yet. *)
 
 (** ** Real Pseudometric Space *)
 
@@ -36,9 +37,11 @@ Context (B : Type) (X : B -> B -> Prop)
   (d : B -> B -> R) `{!IsRealPseudometric X d}.
 
 #[local] Instance real_pseudometric_has_equiv_rel : HasEquivRel B := X.
+#[local] Instance real_pseudometric_has_dist : HasDist R B := d.
 
 Ltac note := progress (
-  denote X with (equiv_rel (A := B))).
+  denote X with (equiv_rel (A := B));
+  denote d with (dist (A := R) (B := B))).
 
 #[export] Instance real_pseudometric_is_proper : IsProper (X ==> X ==> _=_) d.
 Proof with note.
@@ -78,9 +81,11 @@ Context (B : Type) (X : B -> B -> Prop)
   (d : B -> B -> R) `{!IsRealMetric X d}.
 
 #[local] Instance real_metric_has_equiv_rel : HasEquivRel B := X.
+#[local] Instance real_metric_has_dist : HasDist R B := d.
 
 Ltac note := progress (
-  denote X with (equiv_rel (A := B))).
+  denote X with (equiv_rel (A := B));
+  denote d with (dist (A := R) (B := B))).
 
 #[export] Instance real_metric_is_toeplitz_form : IsToeplitzForm _=_ 0 d.
 Proof with note.

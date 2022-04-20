@@ -37,6 +37,7 @@ From Equations.Prop Require Export
 
 Definition Coq_Version := "8.15.0"%string.
 Definition OCaml_Version := "4.12.0"%string.
+Definition Equations_Version := "1.3"%string.
 
 (** ** Flags, Options and Tables *)
 
