@@ -104,7 +104,7 @@ Section Context.
 
 Context (A : Type).
 
-Equations index_from (n : N) (a : list A) : list (N * A) :=
+Equations index_from (n : N) (a : list A) : list (N * A) by struct a :=
   index_from _ [] := [];
   index_from n (x :: b) := (n, x) :: index_from (N.succ n) b.
 
