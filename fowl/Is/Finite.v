@@ -176,7 +176,7 @@ Equations encode_nondep (x : A) (p : N) : A :=
 Equations encode (s : {p : N | p < N.of_nat (length (enum A))}) : A :=
   encode (p; t) with inspect (enum A) := {
     | [] eqn : _ => _
-    | x :: b eqn : _ => snd (nth (N.to_nat p) (index b) (0, x))
+    | x :: b eqn : _ => snd (nth (N.to_nat p) (index (x :: b)) (0, x))
   }.
 Next Obligation with notations enabled.
   cbv beta...
@@ -216,6 +216,20 @@ Next Obligation with notations enabled.
 
 End Context.
 
+(*
+#[local] Instance nat_has_equiv_rel : HasEquivRel nat := eq.
+#[local] Instance nat_has_equiv_dec : HasEquivDec nat := _.
+#[local] Instance nat_has_enum : HasEnum nat := [0; 1; 2; 3]%nat.
+Compute encode (decode (d := nat_has_equiv_dec) (a := nat_has_enum) 0%nat).
+Compute encode (decode (d := nat_has_equiv_dec) (a := nat_has_enum) 1%nat).
+Compute encode (decode (d := nat_has_equiv_dec) (a := nat_has_enum) 2%nat).
+Compute encode (decode (d := nat_has_equiv_dec) (a := nat_has_enum) 3%nat).
+Compute proj1_sig (decode (d := nat_has_equiv_dec) (a := nat_has_enum) (encode (0; _) : nat)).
+Compute proj1_sig (decode (d := nat_has_equiv_dec) (a := nat_has_enum) (encode (1; _) : nat)).
+Compute proj1_sig (decode (d := nat_has_equiv_dec) (a := nat_has_enum) (encode (2; _) : nat)).
+Compute proj1_sig (decode (d := nat_has_equiv_dec) (a := nat_has_enum) (encode (3; _) : nat)).
+*)
+
 Section Context.
 
 Context (A : Type) (X : A -> A -> Prop)
@@ -240,7 +254,11 @@ Proof with notations enabled.
     rewrite u in t. unfold N.of_nat, length in t. lia.
   - clear s. intros p t x b u u' y. unfold proj1_sig.
     rewrite u in t. rewrite u. clear u u'.
-    (** This is impossible. *) Abort.
+    destruct (N.to_nat p) as [| q] eqn : v.
+    + reflexivity.
+    + f_equal. apply nth_indep. rewrite <- v.
+      enough (p < N.of_nat (length (index (x :: b)))) by lia.
+      rewrite index_length. lia. Qed.
 
 Lemma decode_indep `{!IsFull X a} (x : A) :
   proj1_sig (decode x) = decode_nondep x.
@@ -278,11 +296,11 @@ Proof with notations enabled.
       remember (nth (N.to_nat p) b x) as k eqn : ek.
       revert t u ek.
       apply decode_elim.
-      * clear k. intros y q z vf _ t vt ve.
+      * intros y q z vf _ t vt ve.
         pose proof vf as u'. apply find_some in u'. destruct u' as [v w].
-        unfold matching in w. unfold has_equiv_dec in w. (* ?? *)
+        unfold matching in w. (* ?? *)
         destruct (d y z) as [m | m].
-        -- clear w. subst y.
+        -- clear w. subst k.
           apply (In_nth (index (enum A)) _ (N.of_nat 0, x)) in v.
           destruct v as [n [r k]].
           rewrite <- (Nat2N.id n) in k. rewrite index_nth in k.
