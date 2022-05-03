@@ -20,6 +20,29 @@ Import ListNotations.
 #[local] Open Scope sig_scope.
 #[local] Open Scope N_scope.
 
+(** TODO This does not belong here! *)
+
+Equations comparison_eq_dec (x y : comparison) : {x = y} + {x <> y} :=
+  comparison_eq_dec Eq Eq := left _;
+  comparison_eq_dec Lt Lt := left _;
+  comparison_eq_dec Gt Gt := left _;
+  comparison_eq_dec _ _ := right _.
+Next Obligation. intros x y a. discriminate. Qed.
+Next Obligation. intros x y a. discriminate. Qed.
+Next Obligation. intros x y a. discriminate. Qed.
+Next Obligation. intros x y a. discriminate. Qed.
+Next Obligation. intros x y a. discriminate. Qed.
+Next Obligation. intros x y a. discriminate. Qed.
+
+#[export] Instance comparison_is_has_eq_dec : HasEqDec comparison :=
+  comparison_eq_dec.
+
+#[local] Instance comparison_is_set : IsSet comparison.
+Proof. typeclasses eauto. Qed.
+
+#[export] Instance N_lt_is_prop (n p : N) : IsProp (p < n).
+Proof. intros a b. apply uip. Qed.
+
 (** ** Unsorted Enumeration of a Type *)
 
 (** This is a generalization of [Full]. *)
@@ -170,9 +193,6 @@ Ltac notations f := progress (
   f d (equiv_dec (A := A));
   f a (enum A)).
 
-Equations encode_nondep (x : A) (p : N) : A :=
-  encode_nondep x p := snd (nth (N.to_nat p) (index (enum A)) (0, x)).
-
 Equations encode (s : {p : N | p < N.of_nat (length (enum A))}) : A :=
   encode (p; t) with inspect (enum A) := {
     | [] eqn : _ => _
@@ -183,13 +203,7 @@ Next Obligation with notations enabled.
   intros p t u. rewrite u in t. unfold length, N.of_nat in t. lia. Qed.
 
 Equations matching (x : A) (s : N * A) : bool :=
-  matching x (_, y) := is_left (equiv_dec x y).
-
-Equations decode_nondep (x : A) : N :=
-  decode_nondep x with find (matching x) (index (enum A)) := {
-    | Some (p, _) => p
-    | None => 0
-  }.
+  matching x (_, y) := is_left (dec (x == y)).
 
 Equations decode (x : A) : {p : N | p < N.of_nat (length (enum A))} :=
   decode x with inspect (find (matching x) (index (enum A))) := {
@@ -207,7 +221,7 @@ Next Obligation with notations enabled.
   apply (In_nth (enum A) y x) in v. destruct v as [n [r q]].
   apply (fun p : find (matching x) (index (enum A)) = None =>
   find_none _ _ p (N.of_nat n, y)) in t.
-  - unfold matching in t. destruct (equiv_dec x y) as [m | m].
+  - unfold matching in t. destruct (dec (x == y)) as [m | m].
     + discriminate.
     + auto.
   - rewrite <- (Nat2N.id n) in q. rewrite <- q. rewrite <- index_nth.
@@ -216,19 +230,130 @@ Next Obligation with notations enabled.
 
 End Context.
 
-(*
-#[local] Instance nat_has_equiv_rel : HasEquivRel nat := eq.
-#[local] Instance nat_has_equiv_dec : HasEquivDec nat := _.
-#[local] Instance nat_has_enum : HasEnum nat := [0; 1; 2; 3]%nat.
-Compute encode (decode (d := nat_has_equiv_dec) (a := nat_has_enum) 0%nat).
-Compute encode (decode (d := nat_has_equiv_dec) (a := nat_has_enum) 1%nat).
-Compute encode (decode (d := nat_has_equiv_dec) (a := nat_has_enum) 2%nat).
-Compute encode (decode (d := nat_has_equiv_dec) (a := nat_has_enum) 3%nat).
-Compute proj1_sig (decode (d := nat_has_equiv_dec) (a := nat_has_enum) (encode (0; _) : nat)).
-Compute proj1_sig (decode (d := nat_has_equiv_dec) (a := nat_has_enum) (encode (1; _) : nat)).
-Compute proj1_sig (decode (d := nat_has_equiv_dec) (a := nat_has_enum) (encode (2; _) : nat)).
-Compute proj1_sig (decode (d := nat_has_equiv_dec) (a := nat_has_enum) (encode (3; _) : nat)).
-*)
+#[export] Instance prod_has_equiv_rel (A B : Type)
+  {X : HasEquivRel A} {Y : HasEquivRel B} : HasEquivRel (A * B).
+Proof.
+  intros [x0 y0] [x1 y1].
+  apply (x0 == x1 /\ y0 == y1). Defined.
+
+#[export] Instance prod_is_equiv (A B : Type)
+  {X : HasEquivRel A} {Y : HasEquivRel B} `{!IsEquiv X} `{IsEquiv Y} :
+  IsEquiv (prod_has_equiv_rel (A := A) (B := B)).
+Proof.
+  unfold prod_has_equiv_rel. split.
+  - intros [x y]. split.
+    + reflexivity.
+    + reflexivity.
+  - intros [x0 y0] [x1 y1] [a b]. split.
+    + symmetry. apply a.
+    + symmetry. apply b.
+  - intros [x0 y0] [x1 y1] [x2 y2] [a0 b0] [a1 b1]. split.
+    + transitivity x1.
+      * apply a0.
+      * apply a1.
+    + transitivity y1.
+      * apply b0.
+      * apply b1. Qed.
+
+#[export] Instance option_has_equiv_rel (A : Type) {X : HasEquivRel A} :
+  HasEquivRel (option A).
+Proof.
+  intros [x |] [y |].
+  - apply (x == y).
+  - apply False.
+  - apply False.
+  - apply True. Defined.
+
+#[export] Instance option_is_equiv (A : Type)
+  {X : HasEquivRel A} `{!IsEquiv X} :
+  IsEquiv option_has_equiv_rel.
+Proof.
+  unfold option_has_equiv_rel. split.
+  - intros [x |].
+    + reflexivity.
+    + auto.
+  - intros [x0 |] [x1 |].
+    + intros a. symmetry. apply a.
+    + intros [].
+    + intros [].
+    + intros a. apply a.
+  - intros [x0 |] [x1 |] [x2 |].
+    + intros a0 a1. transitivity x1.
+      * apply a0.
+      * apply a1.
+    + intros a0 [].
+    + intros [] [].
+    + intros [] a1.
+    + intros [] a1.
+    + intros [] [].
+    + intros a0 [].
+    + intros a0 a1. auto. Qed.
+
+#[export] Instance N_has_equiv_rel : HasEquivRel N := eq.
+#[export] Instance N_has_equiv_dec : HasEquivDec N := N.eq_dec.
+
+Section Context.
+
+Context (A : Type) {X : HasEquivRel A} {d : HasEquivDec A} {a : HasEnum A}
+  `{!IsEquiv X} `{!IsFull X a} `{!IsNoDup X a}.
+
+Ltac notations f := progress (
+  f X (equiv_rel (A := A));
+  f d (equiv_dec (A := A));
+  f a (enum A)).
+
+(** TODO These are extra dubious! *)
+
+Lemma find_matching_nth
+  (n : N) (x : A) (s : n < N.of_nat (length (enum A))) (ss : In x (enum A)) :
+  find (matching (nth (N.to_nat n) (enum A) x)) (index (enum A)) = Some (n, x).
+Proof.
+  induction n as [| p t] using N.peano_ind.
+  - destruct (enum A) as [| y b] eqn : u.
+    + cbn in s. lia.
+    + destruct ss.
+      * subst. unfold N.to_nat, nth. cbn.
+        destruct (dec (x == x)); try now (pose proof refl x : x == x; exfalso; auto).
+        cbn. reflexivity.
+      * cbn.
+        destruct (dec (y == y)); try now (pose proof refl y : y == y; exfalso; auto).
+Admitted.
+
+Lemma find_matching_index_from (x : A) (k : N) :
+  exists n : N, n < N.of_nat (length (enum A)) /\
+  find (matching x) (index_from k (enum A)) == Some (k + n, x).
+Proof with notations enabled.
+  idtac... pose proof full x as s'. clear IsFull0 IsNoDup0.
+  revert k s'. induction (enum A) as [| y b s]; intros k s'.
+  - exfalso. rename s' into s. apply Exists_exists in s.
+    destruct s as [y [[] v]].
+  - destruct (dec (x == y)) as [t | t] eqn : ed.
+    + exists 0. split.
+      * simpl. lia.
+      * simp index_from. simpl find. rewrite ed. split.
+        -- rewrite N.add_0_r. reflexivity.
+        -- rewrite t. reflexivity.
+    + inversion s'; subst.
+      * congruence.
+      * specialize (s (N.succ k) H0). destruct s as [n [L R]].
+        exists (N.succ n). split.
+        -- simpl. lia.
+        -- simpl. rewrite ed. simpl. eapply trans.
+          ++ apply R.
+          ++ replace (N.succ k + n) with (k + N.succ n) by lia.
+            reflexivity. Qed.
+
+Lemma find_matching_index (x : A) :
+  exists n : N, n < N.of_nat (length (enum A)) /\
+  find (matching x) (index (enum A)) == Some (n, x).
+Proof with notations enabled. apply find_matching_index_from. Qed.
+
+Lemma find_matching_index' (x : A) :
+  exists n : N, n < N.of_nat (length (enum A)) /\
+  find (matching x) (index (enum A)) = Some (n, x).
+Proof with notations enabled. Admitted.
+
+End Context.
 
 Section Context.
 
@@ -244,45 +369,6 @@ Ltac notations f := progress (
   f d (equiv_dec (A := A));
   f a (enum A)).
 
-Lemma encode_indep (x : A) (s : {p : N | p < N.of_nat (length (enum A))}) :
-  encode s = encode_nondep x (proj1_sig s).
-Proof with notations enabled.
-  destruct s as [p t]... unfold proj1_sig. revert t. apply encode_nondep_elim.
-  clear x p. intros x p t. set (s := (p; t)). change p with (proj1_sig s).
-  clearbody s. clear p t. revert x. apply encode_elim.
-  - clear s. intros p t u u' y. exfalso.
-    rewrite u in t. unfold N.of_nat, length in t. lia.
-  - clear s. intros p t x b u u' y. unfold proj1_sig.
-    rewrite u in t. rewrite u. clear u u'.
-    destruct (N.to_nat p) as [| q] eqn : v.
-    + reflexivity.
-    + f_equal. apply nth_indep. rewrite <- v.
-      enough (p < N.of_nat (length (index (x :: b)))) by lia.
-      rewrite index_length. lia. Qed.
-
-Lemma decode_indep `{!IsFull X a} (x : A) :
-  proj1_sig (decode x) = decode_nondep x.
-Proof with notations enabled.
-  apply (decode_nondep_elim
-  (P := fun (x : A) (p : N) => proj1_sig (decode x) = p))...
-  - clear x. intros x p y u. revert p y u. apply decode_elim.
-    + clear x. intros x p y u u' q z v. unfold proj1_sig.
-      rewrite u in v. depelim v. reflexivity.
-    + clear x. intros x u u' p y v. exfalso.
-      rewrite u in v. depelim v.
-  - clear x. intros x u. revert u. apply decode_elim.
-    + clear x. intros x p y u u' v. exfalso.
-      rewrite u in v. depelim v.
-    + clear x. intros x u u' v. exfalso.
-      pose proof full x as w. apply Exists_exists in w.
-      destruct w as [y [wI wX]].
-      assert (indexof : forall (A : Type) (l : list A) (x : A), N) by admit.
-      set (n := indexof _ (enum A) y).
-      apply (fun hole =>
-      find_none (matching x) (index (enum A)) hole (n, y)) in v.
-      unfold matching in v. destruct (equiv_dec x y); discriminate || auto.
-      subst n. Admitted.
-
 (** TODO Prove the equivalence of these definitions. *)
 
 #[export] Instance listing_is_size_length
@@ -292,38 +378,56 @@ Proof with notations enabled.
   - intros [p t]. apply encode_elim.
     + clear p t. intros p t u _. exfalso.
       rewrite u in t. unfold length, N.of_nat in t. lia.
-    + clear p t. intros p t x b u _. rewrite index_nth. unfold snd.
-      remember (nth (N.to_nat p) b x) as k eqn : ek.
-      revert t u ek.
-      apply decode_elim.
-      * intros y q z vf _ t vt ve.
-        pose proof vf as u'. apply find_some in u'. destruct u' as [v w].
-        unfold matching in w. (* ?? *)
-        destruct (d y z) as [m | m].
-        -- clear w. subst k.
-          apply (In_nth (index (enum A)) _ (N.of_nat 0, x)) in v.
-          destruct v as [n [r k]].
-          rewrite <- (Nat2N.id n) in k. rewrite index_nth in k.
-          rewrite (Nat2N.id n) in k.
-          inversion k as [[i j]]. clear k. subst q z.
-          pose proof vf as vg. rewrite vt in *. clear vt.
-          admit.
-          admit.
-        -- admit.
-      * admit.
-      * admit.
-  - admit. Abort.
+    + clear p t. intros p t x b u _. rewrite index_nth.
+      * unfold snd.
+        remember (nth (N.to_nat p) (x :: b) x) as k eqn : ek.
+        revert t u ek.
+        apply decode_elim.
+        --- intros y q z vf _ t vt ve.
+            pose proof vf as u'.
+            subst y. rewrite <- vt in u'.
+            rewrite find_matching_nth in u'.
+            inversion u'; subst.
+            f_equal. clear u'. apply irrel.
+            lia.
+            rewrite vt. apply in_eq.
+        --- clear k. intros y q _ t vt ve. exfalso.
+            subst y. rewrite <- vt in q.
+            rewrite find_matching_nth in q.
+            inversion q.
+            lia.
+            rewrite vt. apply in_eq.
+      * rewrite u in t. lia.
+  - intros x. apply decode_elim.
+    + clear x. intros x n y s _.
+      remember (n; decode_obligations_obligation_1 x s) as t eqn : et.
+      revert et.
+      apply encode_elim.
+      * clear t. intros p t u _ _. exfalso. rewrite u in t. cbn in t. lia.
+      * clear t. intros p t z c u _ et. inversion et; subst p.
+        rewrite index_nth.
+        --- unfold snd. clear et.
+            destruct (find_matching_index' x) as [r [L R]].
+            rewrite R in s. inversion s; subst. admit.
+        --- rewrite <- u. lia.
+    + clear x. intros x s _. exfalso.
+      destruct (find_matching_index' x) as [r [L R]].
+      rewrite R in s. inversion s. Admitted.
+
+End Context.
+
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop)
+  (d : forall x y : A, {X x y} + {~ X x y}) `{!IsEquiv X}.
+
+#[local] Instance has_equiv_rel' : HasEquivRel A := X.
+#[local] Instance has_equiv_dec' : HasEquivDec A := d.
 
 #[export] Instance fin_listing_is_fin_size
   `{!IsFinListing X} : IsFinSize X.
 Proof.
-  exists (N.of_nat (length a)).
-  hnf. induction a as [| x c t].
-  - pose proof IsNoDup_nil X as e. exfalso. eapply Exists_nil. eapply full.
-  - epose proof IsNoDup_cons x as e.
-    epose proof fun y => proj1 (Exists_cons _ x _) (full y) as b'.
-    assert (y := x).
-    specialize (b' y). destruct b' as [u | u].
-    eexists. hnf. Abort.
+  destruct fin_listing as [a ?]. exists (N.of_nat (length a)).
+  apply listing_is_size_length; eauto || typeclasses eauto. Qed.
 
 End Context.
