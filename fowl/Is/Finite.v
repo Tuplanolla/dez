@@ -353,6 +353,21 @@ Lemma find_matching_index' (x : A) :
   find (matching x) (index (enum A)) = Some (n, x).
 Proof with notations enabled. Admitted.
 
+Lemma need_this (n : N) (x y : A)
+  (s : n < N.of_nat (length (enum A)))
+  (t : nth (N.to_nat n) (enum A) y == x) :
+  find (matching x) (index (enum A)) = Some (n, x).
+Proof. Admitted.
+
+Lemma need_this_too (n : N) (x y : A)
+  (s : find (matching x) (index (enum A)) = Some (n, x)) :
+  nth (N.to_nat n) (enum A) y == x.
+Proof. Admitted.
+
+Lemma need_this_as_well (n : N) (x y : A)
+  (s : find (matching x) (index (enum A)) = None) : 0.
+Proof. Admitted.
+
 End Context.
 
 Section Context.
@@ -386,17 +401,17 @@ Proof with notations enabled.
         --- intros y q z vf _ t vt ve.
             pose proof vf as u'.
             subst y. rewrite <- vt in u'.
-            rewrite find_matching_nth in u'.
+            rewrite (need_this p _ x) in u'.
             inversion u'; subst.
             f_equal. clear u'. apply irrel.
             lia.
-            rewrite vt. apply in_eq.
+            reflexivity.
         --- clear k. intros y q _ t vt ve. exfalso.
             subst y. rewrite <- vt in q.
-            rewrite find_matching_nth in q.
+            rewrite (need_this p _ x) in q.
             inversion q.
             lia.
-            rewrite vt. apply in_eq.
+            reflexivity.
       * rewrite u in t. lia.
   - intros x. apply decode_elim.
     + clear x. intros x n y s _.
@@ -407,12 +422,27 @@ Proof with notations enabled.
       * clear t. intros p t z c u _ et. inversion et; subst p.
         rewrite index_nth.
         --- unfold snd. clear et.
-            destruct (find_matching_index' x) as [r [L R]].
-            rewrite R in s. inversion s; subst. admit.
+            rewrite <- u.
+            apply need_this_too. rewrite s.
+            f_equal. f_equal. admit.
         --- rewrite <- u. lia.
     + clear x. intros x s _. exfalso.
-      destruct (find_matching_index' x) as [r [L R]].
-      rewrite R in s. inversion s. Admitted.
+      apply (need_this_as_well 0 _ x) in s. apply s. Admitted.
+
+#[local] Instance size_length_is_listing
+  `{!IsSize X (N.of_nat (length a))} : IsListing X a.
+Proof with notations enabled.
+  split...
+  - intros x. induction (enum A) as [| y b s].
+    + exfalso. pose proof size_is_equiv_types as t.
+      pose proof equiv_types _ _ _ _ (IsEquivTypes := t) as u.
+      destruct u as [f [g v]].
+      pose proof g x as w.
+      destruct w as [y W].
+      simpl in W. lia.
+    + apply Exists_cons. destruct (dec (x == y)) as [t | t].
+      * left. auto.
+      * right. apply s. Admitted.
 
 End Context.
 
@@ -429,5 +459,19 @@ Context (A : Type) (X : A -> A -> Prop)
 Proof.
   destruct fin_listing as [a ?]. exists (N.of_nat (length a)).
   apply listing_is_size_length; eauto || typeclasses eauto. Qed.
+
+Equations N_seq (n : N) : list {p : N | p < n} :=
+  N_seq n := map (fun p : nat => (N.of_nat p; _)) (seq 0 (N.to_nat n)).
+Next Obligation. intros n p. cbv beta. Admitted.
+
+#[local] Instance fin_size_is_fin_listing
+  `{!IsFinSize X} : IsFinListing X.
+Proof.
+  destruct fin_size as [n s]. pose proof s as t.
+  destruct t as [f [g ?]]. exists (map f (N_seq n)).
+  apply size_length_is_listing; try eauto || typeclasses eauto.
+  rewrite map_length. unfold N_seq.
+  rewrite map_length. rewrite seq_length. rewrite N2Nat.id.
+  typeclasses eauto. Qed.
 
 End Context.
