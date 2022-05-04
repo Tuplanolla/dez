@@ -202,6 +202,16 @@ Next Obligation with notations enabled.
   cbv beta...
   intros p t u. rewrite u in t. unfold length, N.of_nat in t. lia. Qed.
 
+Equations nfind_from (n : nat) (x : A) (a : list A) : option nat :=
+  nfind_from _ _ [] := None;
+  nfind_from n x (y :: b) with dec (x == y) := {
+    | left _ := Some n
+    | right _ := nfind_from (S n) x b
+  }.
+
+Equations nfind (x : A) (a : list A) : option nat :=
+  nfind := nfind_from 0.
+
 Equations matching (x : A) (s : N * A) : bool :=
   matching x (_, y) := is_left (dec (x == y)).
 
@@ -304,21 +314,6 @@ Ltac notations f := progress (
 
 (** TODO These are extra dubious! *)
 
-Lemma find_matching_nth
-  (n : N) (x : A) (s : n < N.of_nat (length (enum A))) (ss : In x (enum A)) :
-  find (matching (nth (N.to_nat n) (enum A) x)) (index (enum A)) = Some (n, x).
-Proof.
-  induction n as [| p t] using N.peano_ind.
-  - destruct (enum A) as [| y b] eqn : u.
-    + cbn in s. lia.
-    + destruct ss.
-      * subst. unfold N.to_nat, nth. cbn.
-        destruct (dec (x == x)); try now (pose proof refl x : x == x; exfalso; auto).
-        cbn. reflexivity.
-      * cbn.
-        destruct (dec (y == y)); try now (pose proof refl y : y == y; exfalso; auto).
-Admitted.
-
 Lemma find_matching_index_from (x : A) (k : N) :
   exists n : N, n < N.of_nat (length (enum A)) /\
   find (matching x) (index_from k (enum A)) == Some (k + n, x).
@@ -348,19 +343,36 @@ Lemma find_matching_index (x : A) :
   find (matching x) (index (enum A)) == Some (n, x).
 Proof with notations enabled. apply find_matching_index_from. Qed.
 
-Lemma find_matching_index' (x : A) :
-  exists n : N, n < N.of_nat (length (enum A)) /\
-  find (matching x) (index (enum A)) = Some (n, x).
-Proof with notations enabled. Admitted.
+Lemma find_matching_index_from' (x y : A) (k n : N)
+  (sn : n < N.of_nat (length (enum A)))
+  (sx : nth (N.to_nat n) (enum A) y == x) :
+  find (matching x) (index_from k (enum A)) == Some (k + n, x).
+Proof with notations enabled.
+  idtac... pose proof full x as sf. clear IsFull0 IsNoDup0.
+  revert k sn sx sf. induction (enum A) as [| z b s]; intros k sn sx sf.
+  - exfalso. apply Exists_exists in sf.
+    destruct sf as [z [[] v]].
+  - destruct (dec (x == z)) as [t | t] eqn : ed.
+    + simpl. rewrite ed. simpl. Admitted.
+
+Lemma find_matching_index' (x y : A) (n : N)
+  (sn : n < N.of_nat (length (enum A)))
+  (sx : nth (N.to_nat n) (enum A) y == x) :
+  find (matching x) (index (enum A)) == Some (n, x).
+Proof with notations enabled.
+  rewrite <- (N.add_0_l n). eapply find_matching_index_from'; eauto. Qed.
 
 Lemma need_this (n : N) (x y : A)
   (s : n < N.of_nat (length (enum A)))
   (t : nth (N.to_nat n) (enum A) y == x) :
-  find (matching x) (index (enum A)) = Some (n, x).
-Proof. Admitted.
+  find (matching x) (index (enum A)) == Some (n, x).
+Proof.
+  pose proof find_matching_index x as u.
+  destruct u as [p [v w]].
+  rewrite w. Admitted.
 
 Lemma need_this_too (n : N) (x y : A)
-  (s : find (matching x) (index (enum A)) = Some (n, x)) :
+  (s : find (matching x) (index (enum A)) == Some (n, x)) :
   nth (N.to_nat n) (enum A) y == x.
 Proof. Admitted.
 
@@ -399,18 +411,27 @@ Proof with notations enabled.
         revert t u ek.
         apply decode_elim.
         --- intros y q z vf _ t vt ve.
-            pose proof vf as u'.
-            subst y. rewrite <- vt in u'.
-            rewrite (need_this p _ x) in u'.
-            inversion u'; subst.
-            f_equal. clear u'. apply irrel.
-            lia.
+            assert (vf' : find (matching y) (index (enum A)) == Some (q, z)).
+            { rewrite vf. reflexivity. }
+            subst y. rewrite <- vt in vf'.
+            rewrite (find_matching_index' _ x p) in vf'.
+            inversion vf' as [m w].
+            assert (m' : q = p) by (symmetry; apply m).
+            match goal with
+            | |- (?p; ?a) = (?q; ?b) =>
+              apply (eq_exist_curried
+              (P := fun p => p < N.of_nat (length (enum A)))
+              (u1 := p) (v1 := q) (u2 := a) (v2 := b) m')
+            end. apply irrel.
+            apply t.
             reflexivity.
-        --- clear k. intros y q _ t vt ve. exfalso.
-            subst y. rewrite <- vt in q.
-            rewrite (need_this p _ x) in q.
-            inversion q.
-            lia.
+        --- clear k. intros y vf _ t vt ve. exfalso.
+            assert (vf' : find (matching y) (index (enum A)) == None).
+            { rewrite vf. reflexivity. }
+            subst y. rewrite <- vt in vf'.
+            rewrite (find_matching_index' _ x p) in vf'.
+            inversion vf'.
+            apply t.
             reflexivity.
       * rewrite u in t. lia.
   - intros x. apply decode_elim.
@@ -423,11 +444,10 @@ Proof with notations enabled.
         rewrite index_nth.
         --- unfold snd. clear et.
             rewrite <- u.
-            apply need_this_too. rewrite s.
-            f_equal. f_equal. admit.
+            admit.
         --- rewrite <- u. lia.
     + clear x. intros x s _. exfalso.
-      apply (need_this_as_well 0 _ x) in s. apply s. Admitted.
+      admit. Admitted.
 
 #[local] Instance size_length_is_listing
   `{!IsSize X (N.of_nat (length a))} : IsListing X a.
