@@ -183,6 +183,77 @@ Proof.
       * lia.
   - rewrite map_length. rewrite seq_length. reflexivity. Qed.
 
+Module Ref'.
+
+Section Context.
+
+Context (A : Type).
+
+Equations N_length (a : list A) : N :=
+  N_length a := N.of_nat (length a).
+
+Equations Nth (n : N) (a : list A) (x : A) : A :=
+  Nth n := nth (N.to_nat n).
+
+Equations N_seq (n p : N) : list N :=
+  N_seq n p := map N.of_nat (seq (N.to_nat n) (N.to_nat p)).
+
+End Context.
+
+End Ref'.
+
+Section Context.
+
+Context (A : Type).
+
+Equations N_length (a : list A) : N by struct a :=
+  N_length [] := 0;
+  N_length (x :: b) := N.succ (N_length b).
+
+Equations Nth (n : N) (a : list A) (x : A) : A by struct a :=
+  Nth _ [] x := x;
+  Nth N0 (y :: _) _ := y;
+  Nth n (y :: b) x := Nth (N.pred n) b x.
+
+Equations N_seq (n p : N) : list N by wf p N.lt :=
+  N_seq n N0 := [];
+  N_seq n p := n :: N_seq (N.succ n) (N.pred p).
+Next Obligation. intros n p r q. lia. Qed.
+
+End Context.
+
+Lemma N_length_ref (A : Type) (a : list A) :
+  N_length a = Ref'.N_length a.
+Proof.
+  apply Ref'.N_length_elim. clear a. intros a. apply N_length_elim.
+  - clear a. reflexivity.
+  - clear a. intros x b s.
+    simpl length. rewrite Nat2N.inj_succ. f_equal. apply s. Qed.
+
+Lemma Nth_ref (A : Type) (n : N) (a : list A) (x : A) :
+  Nth n a x = Ref'.Nth n a x.
+Proof.
+  apply Ref'.Nth_elim. clear n. intros n. apply Nth_elim.
+  - clear x n. intros n x. destruct n as [| p _] using N.peano_ind.
+    + reflexivity.
+    + rewrite N2Nat.inj_succ. reflexivity.
+  - clear x n. intros y n x. reflexivity.
+  - clear x n. intros p y b x s.
+    rewrite N2Nat.inj_pred in s. destruct (N.to_nat (N.pos p)) as [| q] eqn : t.
+    + lia.
+    + apply s. Qed.
+
+Lemma N_seq_ref (A : Type) (n p : N) :
+  N_seq n p = Ref'.N_seq n p.
+Proof.
+  apply Ref'.N_seq_elim. clear n p. intros n p.
+  revert n. induction p as [| q s] using N.peano_ind; intros n.
+  - reflexivity.
+  - rewrite N2Nat.inj_succ. simpl seq. simpl map.
+    pose proof s (N.succ n) as s'. rewrite N2Nat.inj_succ in s'.
+    rewrite N2Nat.id. rewrite <- N.succ_pos_spec. simp N_seq.
+    rewrite N.succ_pos_spec. rewrite N.pred_succ. f_equal. apply s'. Qed.
+
 Section Context.
 
 Context (A : Type) {X : HasEquivRel A} {d : HasEquivDec A}
@@ -200,6 +271,26 @@ Equations IsIn (x : A) (a : list A) : Prop :=
   IsIn _ [] := False;
   IsIn x (y :: b) := x == y \/ IsIn x b.
 
+Lemma Exists_IsIn (P : A -> Prop) (a : list A) (s : Exists P a) :
+  exists x : A, IsIn x a /\ P x.
+Proof.
+  induction s as [x b s | x b _ [y [i s]]].
+  - exists x. split.
+    + left. reflexivity.
+    + apply s.
+  - exists y. split.
+    + right. apply i.
+    + apply s. Qed.
+
+Lemma Proper_IsIn (x y : A) (a : list A)
+  (s : x == y) (t : IsIn x a) : IsIn y a.
+Proof.
+  induction a as [| z b u].
+  - contradiction.
+  - destruct t as [v | v].
+    + left. rewrite <- s, <- v. reflexivity.
+    + right. apply u. apply v. Qed.
+
 Equations nfind_from (n : nat) (x : A) (a : list A) : option nat :=
   nfind_from _ _ [] := None;
   nfind_from n x (y :: b) with dec (x == y) := {
@@ -209,33 +300,6 @@ Equations nfind_from (n : nat) (x : A) (a : list A) : option nat :=
 
 Equations nfind (x : A) (a : list A) : option nat :=
   nfind := nfind_from 0.
-
-(*
-Module Ref.
-
-Equations Nlength (a : list A) : N :=
-  Nlength a := N.of_nat (length a).
-
-End Ref.
-*)
-
-Equations Nlength (a : list A) : N :=
-  Nlength [] := 0;
-  Nlength (x :: b) := N.succ (Nlength b).
-
-(*
-Module Ref.
-
-Equations Nth (n : N) (a : list A) (x : A) : A :=
-  Nth n := nth (N.to_nat n).
-
-End Ref.
-*)
-
-Equations Nth (n : N) (a : list A) (x : A) : A :=
-  Nth _ [] x := x;
-  Nth N0 (y :: _) _ := y;
-  Nth n (y :: b) x := Nth (N.pred n) b x.
 
 Lemma Nth_succ (n : N) (y : A) (b : list A) (x : A) :
   Nth (N.succ n) (y :: b) x = Nth n b x.
@@ -313,7 +377,8 @@ Proof.
       * lia. Qed.
 
 Lemma Nfind_from_some (n p : N) (x y : A) (a : list A)
-  (e : Nfind_from n x a = Some (n + p)) : IsIn x a /\ Nth p a y == x.
+  (e : Nfind_from n x a = Some (n + p)) :
+  IsIn x a /\ p < N_length a /\ Nth p a y == x.
 Proof.
   revert n p e. induction a as [| z b c]; intros n p e.
   - discriminate.
@@ -321,7 +386,9 @@ Proof.
     + destruct (dec (x == z)) as [ex | fx] eqn : ed.
       * split.
         -- left. apply ex.
-        -- symmetry. apply ex.
+        -- split.
+           ++ simpl N_length. lia.
+           ++ symmetry. apply ex.
       * exfalso.
         simp Nfind_from in e. rewrite ed in e. simpl in e.
         apply Nfind_from_lt in e.
@@ -332,23 +399,25 @@ Proof.
         injection e. lia.
       * simp Nfind_from in e. rewrite ed in e. simpl in e.
         pose proof c (N.succ n) q as cq.
-        rewrite <- N.add_succ_comm in e. apply cq in e. destruct e as [i ex].
+        rewrite <- N.add_succ_comm in e. apply cq in e. destruct e as [i [iq ex]].
         split.
         -- right. apply i.
-        -- rewrite Nth_succ. apply ex. Qed.
+        -- split.
+           ++ simp N_length. lia.
+           ++ rewrite Nth_succ. apply ex. Qed.
 
 Lemma Nfind_from_none (n : N) (x : A) (a : list A)
-  (e : Nfind_from n x a = None) (i : IsIn x a) : 0.
+  (e : Nfind_from n x a = None) : ~ IsIn x a.
 Proof. Admitted.
 
 Equations Nfind (x : A) (a : list A) : option N :=
   Nfind := Nfind_from 0.
 
 Lemma Nfind_some (x y : A) (a : list A) (n : N) (s : Nfind x a = Some n) :
-  IsIn x a /\ n < Nlength a /\ Nth n a y == x.
+  IsIn x a /\ n < N_length a /\ Nth n a y == x.
 Proof. eapply Nfind_from_some. rewrite N.add_0_l. apply s. Qed.
 
-Lemma Nfind_none (x y : A) (a : list A)
+Lemma Nfind_none (x : A) (a : list A)
   (s : Nfind x a = None) (i : IsIn x a) : 0.
 Proof. eapply Nfind_from_none. apply s. apply i. Qed.
 
@@ -380,21 +449,21 @@ Equations decode (x : A) : {p : N | p < N.of_nat (length (enum A))} :=
   }.
 Next Obligation with notations enabled.
   cbv beta...
-  intros x p s. apply Nfind_some in s. destruct t as [u v].
-  apply index_In in u. lia. Qed.
+  intros x p s. apply (Nfind_some x x (enum A)) in s.
+  destruct s as [i [ip ex]]. rewrite N_length_ref in ip. apply ip. Qed.
 Next Obligation with notations enabled.
   cbv beta...
   intros x t. exfalso.
-  pose proof full x as u. apply Exists_exists in u. destruct u as [y [v w]].
-  apply (In_nth (enum A) y x) in v. destruct v as [n [r q]].
-  apply (fun p : find (matching x) (index (enum A)) = None =>
-  find_none _ _ p (N.of_nat n, y)) in t.
-  - unfold matching in t. destruct (dec (x == y)) as [m | m].
-    + discriminate.
-    + auto.
-  - rewrite <- (Nat2N.id n) in q. rewrite <- q. rewrite <- index_nth.
-    + apply nth_In. rewrite index_length. lia.
-    + lia. Qed.
+  apply (Nfind_none x a).
+  - apply t.
+  - pose proof full x as u. apply Exists_exists in u. destruct u as [y [v w]].
+    idtac...
+    clear IsEquiv0 IsFull0 t.
+    induction (enum A) as [| z b u].
+    + contradiction.
+    + destruct v as [v0 | v1].
+      * left. rewrite v0. apply w.
+      * right. apply u. apply v1. Qed.
 
 End Context.
 
@@ -462,86 +531,6 @@ Proof.
 
 Section Context.
 
-Context (A : Type) {X : HasEquivRel A} {d : HasEquivDec A} {a : HasEnum A}
-  `{!IsEquiv X} `{!IsFull X a} `{!IsNoDup X a}.
-
-Ltac notations f := progress (
-  f X (equiv_rel (A := A));
-  f d (equiv_dec (A := A));
-  f a (enum A)).
-
-(** TODO These are extra dubious! *)
-
-Lemma find_matching_index_from (x : A) (k : N) :
-  exists n : N, n < N.of_nat (length (enum A)) /\
-  find (matching x) (index_from k (enum A)) == Some (k + n, x).
-Proof with notations enabled.
-  idtac... pose proof full x as s'. clear IsFull0 IsNoDup0.
-  revert k s'. induction (enum A) as [| y b s]; intros k s'.
-  - exfalso. rename s' into s. apply Exists_exists in s.
-    destruct s as [y [[] v]].
-  - destruct (dec (x == y)) as [t | t] eqn : ed.
-    + exists 0. split.
-      * simpl. lia.
-      * simp index_from. simpl find. rewrite ed. split.
-        -- rewrite N.add_0_r. reflexivity.
-        -- rewrite t. reflexivity.
-    + inversion s'; subst.
-      * congruence.
-      * specialize (s (N.succ k) H0). destruct s as [n [L R]].
-        exists (N.succ n). split.
-        -- simpl. lia.
-        -- simpl. rewrite ed. simpl. eapply trans.
-          ++ apply R.
-          ++ replace (N.succ k + n) with (k + N.succ n) by lia.
-            reflexivity. Qed.
-
-Lemma find_matching_index (x : A) :
-  exists n : N, n < N.of_nat (length (enum A)) /\
-  find (matching x) (index (enum A)) == Some (n, x).
-Proof with notations enabled. apply find_matching_index_from. Qed.
-
-Lemma find_matching_index_from' (x y : A) (k n : N)
-  (sn : n < N.of_nat (length (enum A)))
-  (sx : nth (N.to_nat n) (enum A) y == x) :
-  find (matching x) (index_from k (enum A)) == Some (k + n, x).
-Proof with notations enabled.
-  idtac... pose proof full x as sf. clear IsFull0 IsNoDup0.
-  revert k sn sx sf. induction (enum A) as [| z b s]; intros k sn sx sf.
-  - exfalso. apply Exists_exists in sf.
-    destruct sf as [z [[] v]].
-  - destruct (dec (x == z)) as [t | t] eqn : ed.
-    + simpl. rewrite ed. simpl. Admitted.
-
-Lemma find_matching_index' (x y : A) (n : N)
-  (sn : n < N.of_nat (length (enum A)))
-  (sx : nth (N.to_nat n) (enum A) y == x) :
-  find (matching x) (index (enum A)) == Some (n, x).
-Proof with notations enabled.
-  rewrite <- (N.add_0_l n). eapply find_matching_index_from'; eauto. Qed.
-
-Lemma need_this (n : N) (x y : A)
-  (s : n < N.of_nat (length (enum A)))
-  (t : nth (N.to_nat n) (enum A) y == x) :
-  find (matching x) (index (enum A)) == Some (n, x).
-Proof.
-  pose proof find_matching_index x as u.
-  destruct u as [p [v w]].
-  rewrite w. Admitted.
-
-Lemma need_this_too (n : N) (x y : A)
-  (s : find (matching x) (index (enum A)) == Some (n, x)) :
-  nth (N.to_nat n) (enum A) y == x.
-Proof. Admitted.
-
-Lemma need_this_as_well (n : N) (x y : A)
-  (s : find (matching x) (index (enum A)) = None) : 0.
-Proof. Admitted.
-
-End Context.
-
-Section Context.
-
 Context (A : Type) (X : A -> A -> Prop)
   (d : forall x y : A, {X x y} + {~ X x y}) (a : list A) `{!IsEquiv X}.
 
@@ -568,44 +557,47 @@ Proof with notations enabled.
         remember (nth (N.to_nat p) (x :: b) x) as k eqn : ek.
         revert t u ek.
         apply decode_elim.
-        --- intros y q z vf _ t vt ve.
-            assert (vf' : find (matching y) (index (enum A)) == Some (q, z)).
-            { rewrite vf. reflexivity. }
-            subst y. rewrite <- vt in vf'.
-            rewrite (find_matching_index' _ x p) in vf'.
-            inversion vf' as [m w].
-            assert (m' : q = p) by (symmetry; apply m).
-            match goal with
-            | |- (?p; ?a) = (?q; ?b) =>
-              apply (eq_exist_curried
-              (P := fun p => p < N.of_nat (length (enum A)))
-              (u1 := p) (v1 := q) (u2 := a) (v2 := b) m')
-            end. apply irrel.
-            apply t.
-            reflexivity.
-        --- clear k. intros y vf _ t vt ve. exfalso.
-            assert (vf' : find (matching y) (index (enum A)) == None).
-            { rewrite vf. reflexivity. }
-            subst y. rewrite <- vt in vf'.
-            rewrite (find_matching_index' _ x p) in vf'.
-            inversion vf'.
-            apply t.
-            reflexivity.
+        -- clear k. intros y q vf _ t vt ve.
+           pose proof vf as vf'.
+           apply (Nfind_some y x (enum A)) in vf'.
+           subst y. destruct vf' as [? [? v]].
+           rewrite Nth_ref in v. simp Nth in v. rewrite <- vt in v.
+           (** Need to know indices match due to no duplicates. *)
+           assert (m' : q = p) by admit.
+           match goal with
+           | |- (?p; ?a) = (?q; ?b) =>
+             apply (eq_exist_curried
+             (P := fun p => p < N.of_nat (length (enum A)))
+             (u1 := p) (v1 := q) (u2 := a) (v2 := b) m')
+           end. apply irrel.
+        -- clear k. intros y vf _ t vt ve. exfalso.
+           apply Nfind_none in vf.
+           ++ contradiction.
+           ++ pose proof full y as fz. apply Exists_IsIn in fz.
+              destruct fz as [z [i e]].
+              pose proof Proper_IsIn z y (enum A) as w. apply w.
+              symmetry. apply e. apply i.
       * rewrite u in t. lia.
   - intros x. apply decode_elim.
-    + clear x. intros x n y s _.
+    + clear x. intros x n s _.
       remember (n; decode_obligations_obligation_1 x s) as t eqn : et.
       revert et.
       apply encode_elim.
       * clear t. intros p t u _ _. exfalso. rewrite u in t. cbn in t. lia.
       * clear t. intros p t z c u _ et. inversion et; subst p.
         rewrite index_nth.
-        --- unfold snd. clear et.
-            rewrite <- u.
-            admit.
-        --- rewrite <- u. lia.
+        -- unfold snd. clear et.
+           rewrite <- u.
+           apply (Nfind_some x z) in s.
+           destruct s as [ix [i e]].
+           rewrite Nth_ref in e. apply e.
+        -- rewrite <- u. lia.
     + clear x. intros x s _. exfalso.
-      admit. Admitted.
+      apply Nfind_none in s. contradiction.
+      pose proof full x as fz. apply Exists_IsIn in fz.
+      destruct fz as [z [i e]].
+      pose proof Proper_IsIn z x (enum A) as w. apply w.
+      symmetry. apply e. apply i. Admitted.
 
 #[local] Instance size_length_is_listing
   `{!IsSize X (N.of_nat (length a))} : IsListing X a.
@@ -638,17 +630,17 @@ Proof.
   destruct fin_listing as [a ?]. exists (N.of_nat (length a)).
   apply listing_is_size_length; eauto || typeclasses eauto. Qed.
 
-Equations N_seq (n : N) : list {p : N | p < n} :=
-  N_seq n := map (fun p : nat => (N.of_nat p; _)) (seq 0 (N.to_nat n)).
+Equations N_seq_sig (n : N) : list {p : N | p < n} :=
+  N_seq_sig n := map (fun p : N => (p; _)) (N_seq 0 n).
 Next Obligation. intros n p. cbv beta. Admitted.
 
 #[local] Instance fin_size_is_fin_listing
   `{!IsFinSize X} : IsFinListing X.
 Proof.
   destruct fin_size as [n s]. pose proof s as t.
-  destruct t as [f [g ?]]. exists (map f (N_seq n)).
+  destruct t as [f [g ?]]. exists (map f (N_seq_sig n)).
   apply size_length_is_listing; try eauto || typeclasses eauto.
-  rewrite map_length. unfold N_seq.
+  rewrite map_length. unfold N_seq_sig.
   rewrite map_length. rewrite seq_length. rewrite N2Nat.id.
   typeclasses eauto. Qed.
 
