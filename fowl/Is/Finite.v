@@ -15,6 +15,16 @@ From DEZ.Supports Require Import
 
 Import ListNotations.
 
+Lemma map_bimap_combine (A B C D : Type)
+  (f : A -> C) (g : B -> D) (a : list A) (b : list B) :
+  map (prod_bimap f g) (combine a b) = combine (map f a) (map g b).
+Proof.
+  revert b. induction a as [| x c s]; intros [| y d].
+  - reflexivity.
+  - reflexivity.
+  - reflexivity.
+  - simpl. f_equal. apply s. Qed.
+
 #[local] Open Scope relation_scope.
 #[local] Open Scope core_scope.
 #[local] Open Scope sig_scope.
@@ -43,9 +53,52 @@ Proof. typeclasses eauto. Qed.
 #[export] Instance N_lt_is_prop (n p : N) : IsProp (p < n).
 Proof. intros a b. apply uip. Qed.
 
-Module Ref'.
+Section Context.
+
+Context (A : Type).
+
+Equations nindex_from (n : nat) (a : list A) : list (nat * A) by struct a :=
+  nindex_from _ [] := [];
+  nindex_from n (x :: b) := (n, x) :: nindex_from (S n) b.
+
+Equations nindex (a : list A) : list (nat * A) :=
+  nindex := nindex_from O.
+
+Context {X : HasEquivRel A} {d : HasEquivDec A}.
+
+Equations nfind_from (n : nat) (x : A) (a : list A) : option nat :=
+  nfind_from _ _ [] := None;
+  nfind_from n x (y :: b) with dec (x == y) := {
+    | left _ := Some n
+    | right _ := nfind_from (S n) x b
+  }.
+
+Equations nfind (x : A) (a : list A) : option nat :=
+  nfind := nfind_from O.
+
+End Context.
+
+(** This reference implementation is simpler to use in proofs;
+    the other implementation is faster to use in computations. *)
+
+Module Ref.
 
 Section Context.
+
+Context (A : Type).
+
+Equations nindex_from (n : nat) (a : list A) : list (nat * A) :=
+  nindex_from n a := combine (seq n (length a)) a.
+
+Equations nindex (a : list A) : list (nat * A) :=
+  nindex := nindex_from O.
+
+End Context.
+
+Section Context.
+
+Equations N_seq (n p : N) : list N :=
+  N_seq n p := map N.of_nat (seq (N.to_nat n) (N.to_nat p)).
 
 Context (A : Type).
 
@@ -55,12 +108,23 @@ Equations N_length (a : list A) : N :=
 Equations Nth (n : N) (a : list A) (x : A) : A :=
   Nth n := nth (N.to_nat n).
 
-Equations N_seq (n p : N) : list N :=
-  N_seq n p := map N.of_nat (seq (N.to_nat n) (N.to_nat p)).
+Equations Nindex_from (n : N) (a : list A) : list (N * A) :=
+  Nindex_from n a := map (prod_bimap N.of_nat id) (nindex_from (N.to_nat n) a).
+
+Equations Nindex (a : list A) : list (N * A) :=
+  Nindex a := map (prod_bimap N.of_nat id) (nindex a).
+
+Context {X : HasEquivRel A} {d : HasEquivDec A}.
+
+Equations Nfind_from (n : N) (x : A) (a : list A) : option N :=
+  Nfind_from n x a := option_map N.of_nat (nfind_from (N.to_nat n) x a).
+
+Equations Nfind (x : A) (a : list A) : option N :=
+  Nfind x a := option_map N.of_nat (nfind x a).
 
 End Context.
 
-End Ref'.
+End Ref.
 
 Section Context.
 
@@ -80,20 +144,50 @@ Equations Nth (n : N) (a : list A) (x : A) : A by struct a :=
   Nth N0 (y :: _) _ := y;
   Nth n (y :: b) x := Nth (N.pred n) b x.
 
+Equations Nindex_from (n : N) (a : list A) : list (N * A) by struct a :=
+  Nindex_from _ [] := [];
+  Nindex_from n (x :: b) := (n, x) :: Nindex_from (N.succ n) b.
+
+Equations Nindex (a : list A) : list (N * A) :=
+  Nindex := Nindex_from 0.
+
+Context {X : HasEquivRel A} {d : HasEquivDec A}.
+
+Equations Nfind_from (n : N) (x : A) (a : list A) : option N :=
+  Nfind_from _ _ [] := None;
+  Nfind_from n x (y :: b) with dec (x == y) := {
+    | left _ := Some n
+    | right _ := Nfind_from (N.succ n) x b
+  }.
+
+Equations Nfind (x : A) (a : list A) : option N :=
+  Nfind := Nfind_from 0.
+
 End Context.
 
-Lemma N_length_ref (A : Type) (a : list A) :
-  N_length a = Ref'.N_length a.
+Lemma nindex_from_ref (A : Type) (n : nat) (a : list A) :
+  nindex_from n a = Ref.nindex_from n a.
 Proof.
-  apply Ref'.N_length_elim. clear a. intros a. apply N_length_elim.
+  apply Ref.nindex_from_elim. clear n a. intros n a. apply nindex_from_elim.
+  - clear n a. intros n. reflexivity.
+  - clear n a. intros n x a s.
+    simpl. f_equal. apply s. Qed.
+
+Lemma nindex_ref (A : Type) (a : list A) : nindex a = Ref.nindex a.
+Proof. apply Ref.nindex_elim. apply nindex_elim. apply nindex_from_ref. Qed.
+
+Lemma N_length_ref (A : Type) (a : list A) :
+  N_length a = Ref.N_length a.
+Proof.
+  apply Ref.N_length_elim. clear a. intros a. apply N_length_elim.
   - clear a. reflexivity.
   - clear a. intros x b s.
     simpl length. rewrite Nat2N.inj_succ. f_equal. apply s. Qed.
 
 Lemma Nth_ref (A : Type) (n : N) (a : list A) (x : A) :
-  Nth n a x = Ref'.Nth n a x.
+  Nth n a x = Ref.Nth n a x.
 Proof.
-  apply Ref'.Nth_elim. clear n. intros n. apply Nth_elim.
+  apply Ref.Nth_elim. clear n. intros n. apply Nth_elim.
   - clear x n. intros n x. destruct n as [| p _] using N.peano_ind.
     + reflexivity.
     + rewrite N2Nat.inj_succ. reflexivity.
@@ -104,15 +198,52 @@ Proof.
     + apply s. Qed.
 
 Lemma N_seq_ref (n p : N) :
-  N_seq n p = Ref'.N_seq n p.
+  N_seq n p = Ref.N_seq n p.
 Proof.
-  apply Ref'.N_seq_elim. clear n p. intros n p.
+  apply Ref.N_seq_elim. clear n p. intros n p.
   revert n. induction p as [| q s] using N.peano_ind; intros n.
   - reflexivity.
   - rewrite N2Nat.inj_succ. simpl seq. simpl map.
     pose proof s (N.succ n) as s'. rewrite N2Nat.inj_succ in s'.
     rewrite N2Nat.id. rewrite <- N.succ_pos_spec. simp N_seq.
     rewrite N.succ_pos_spec. rewrite N.pred_succ. f_equal. apply s'. Qed.
+
+Lemma Nindex_from_ref (A : Type) (n : N) (a : list A) :
+  Nindex_from n a = Ref.Nindex_from n a.
+Proof.
+  apply Ref.Nindex_from_elim. clear n a. intros n a. apply Nindex_from_elim.
+  - clear n a. intros n. reflexivity.
+  - clear n a. intros n x a s.
+    simpl. rewrite N2Nat.id. f_equal.
+    rewrite N2Nat.inj_succ in s. apply s. Qed.
+
+Lemma Nindex_ref (A : Type) (a : list A) : Nindex a = Ref.Nindex a.
+Proof. apply Ref.Nindex_elim. apply Nindex_elim. apply Nindex_from_ref. Qed.
+
+Section Context.
+
+Context (A : Type) {X : HasEquivRel A} {d : HasEquivDec A}.
+
+Lemma Nfind_from_ref (n : N) (x : A) (a : list A) :
+  Nfind_from n x a = Ref.Nfind_from n x a.
+Proof.
+  apply Ref.Nfind_from_elim. clear n x a. intros n x a.
+  revert n x. induction a as [| y b s]; intros n x.
+  - reflexivity.
+  - destruct (dec (x == y)) as [ex | fx] eqn : ed.
+    + simp Nfind_from nfind_from. rewrite ed. simpl.
+      rewrite N2Nat.id. reflexivity.
+    + simp Nfind_from nfind_from. rewrite ed. simpl.
+      pose proof s (N.succ n) x as s'. rewrite N2Nat.inj_succ in s'.
+      apply s'. Qed.
+
+Lemma Nfind_ref (x : A) (a : list A) :
+  Nfind x a = Ref.Nfind x a.
+Proof.
+  apply Nfind_elim. apply Ref.Nfind_elim. clear x a. intros x a.
+  apply nfind_elim. apply Nfind_from_ref. Qed.
+
+End Context.
 
 Section Context.
 
@@ -146,6 +277,16 @@ Proof.
     + right. apply i.
     + apply s. Qed.
 
+Lemma IsIn_Exists (P : A -> Prop) `{!IsProper (X ==> _<->_) P}
+  (a : list A) (s : exists x : A, IsIn x a /\ P x) :
+  Exists P a.
+Proof.
+  destruct s as [x [i t]]. induction a as [| y b u].
+  - contradiction.
+  - induction i as [v | v].
+    + apply Exists_cons. left. rewrite <- v. apply t.
+    + apply Exists_cons. right. apply u. apply v. Qed.
+
 Lemma Proper_IsIn (x y : A) (a : list A)
   (s : x == y) (t : IsIn x a) : IsIn y a.
 Proof.
@@ -164,29 +305,12 @@ Proof.
   - destruct a as [| z b]. simpl in t; lia.
     simpl. right. apply s. simpl in t; lia. Qed.
 
-Equations nfind_from (n : nat) (x : A) (a : list A) : option nat :=
-  nfind_from _ _ [] := None;
-  nfind_from n x (y :: b) with dec (x == y) := {
-    | left _ := Some n
-    | right _ := nfind_from (S n) x b
-  }.
-
-Equations nfind (x : A) (a : list A) : option nat :=
-  nfind := nfind_from 0.
-
 Lemma Nth_succ (n : N) (y : A) (b : list A) (x : A) :
   Nth (N.succ n) (y :: b) x = Nth n b x.
 Proof.
   destruct n as [| p].
   - simp Nth. simpl N.pred. reflexivity.
   - simp Nth. simpl N.pred. rewrite Pos.pred_N_succ. reflexivity. Qed.
-
-Equations Nfind_from (n : N) (x : A) (a : list A) : option N :=
-  Nfind_from _ _ [] := None;
-  Nfind_from n x (y :: b) with dec (x == y) := {
-    | left _ := Some n
-    | right _ := Nfind_from (N.succ n) x b
-  }.
 
 Lemma Nfind_from_succ (n p : N) (x : A) (a : list A)
   (e : Nfind_from n x a = Some p) : Nfind_from (N.succ n) x a = Some (N.succ p).
@@ -295,9 +419,6 @@ Proof.
       * simp Nfind_from in e. rewrite ed in e. simpl in e.
         revert t. eapply c. apply e. Qed.
 
-Equations Nfind (x : A) (a : list A) : option N :=
-  Nfind := Nfind_from 0.
-
 Lemma Nfind_some (x y : A) (a : list A) (n : N) (s : Nfind x a = Some n) :
   IsIn x a /\ n < N_length a /\ Nth n a y == x.
 Proof. eapply Nfind_from_some. rewrite N.add_0_l. apply s. Qed.
@@ -369,84 +490,35 @@ Proof. exists n. auto. Qed.
 
 (** TODO The rest is not in the diagram yet. *)
 
-(** This reference implementation is simpler to use in proofs;
-    the other implementation is faster to use in computations. *)
-
-Module Ref.
-
-Section Context.
-
-Context (A : Type).
-
-Equations index_from (n : N) (a : list A) : list (N * A) :=
-  index_from n a := combine (map N.of_nat (seq (N.to_nat n) (length a))) a.
-
-Equations index (a : list A) : list (N * A) :=
-  index := index_from 0.
-
-End Context.
-
-End Ref.
-
-Section Context.
-
-Context (A : Type).
-
-Equations index_from (n : N) (a : list A) : list (N * A) by struct a :=
-  index_from _ [] := [];
-  index_from n (x :: b) := (n, x) :: index_from (N.succ n) b.
-
-Equations index (a : list A) : list (N * A) :=
-  index := index_from 0.
-
-End Context.
-
-Section Context.
-
-Context (A : Type).
-
-Lemma index_from_ref (n : N) (a : list A) :
-  index_from n a = Ref.index_from n a.
-Proof.
-  apply Ref.index_from_elim. clear n a. intros n a. apply index_from_elim.
-  - clear n a. intros n. reflexivity.
-  - clear n a. intros n x a s.
-    cbn [length seq map combine].
-    rewrite N2Nat.id. f_equal.
-    rewrite s. rewrite N2Nat.inj_succ. reflexivity. Qed.
-
-Lemma index_ref (a : list A) : index a = Ref.index a.
-Proof. apply Ref.index_elim. apply index_elim. apply index_from_ref. Qed.
-
-End Context.
-
-Lemma index_In (A : Type)
-  (n : N) (x : A) (a : list A) (s : In (n, x) (index a)) :
+Lemma Nindex_In (A : Type)
+  (n : N) (x : A) (a : list A) (s : In (n, x) (Nindex a)) :
   n < N.of_nat (length a).
 Proof.
-  rewrite index_ref in s. unfold Ref.index, Ref.index_from in s.
+  rewrite Nindex_ref in s. unfold Ref.Nindex, Ref.nindex, Ref.nindex_from in s.
+  rewrite map_bimap_combine in s.
   apply in_combine_l in s. apply (in_map N.to_nat) in s.
   rewrite map_map in s. rewrite (map_ext _ id) in s.
   - rewrite map_id in s. apply in_seq in s. lia.
   - intros p. rewrite Nat2N.id. reflexivity. Qed.
 
-Lemma index_length (A : Type) (a : list A) : length (index a) = length a.
+Lemma Nindex_length (A : Type) (a : list A) : length (Nindex a) = length a.
 Proof.
-  rewrite index_ref. unfold Ref.index, Ref.index_from.
-  rewrite combine_length. rewrite map_length. rewrite seq_length.
+  rewrite Nindex_ref. unfold Ref.Nindex. unfold Ref.nindex, Ref.nindex_from.
+  rewrite map_length. rewrite combine_length. rewrite seq_length.
   rewrite Min.min_idempotent. reflexivity. Qed.
 
-Lemma index_nth (A : Type)
+Lemma Nindex_nth (A : Type)
   (n : N) (x : A) (a : list A) (s : n < N.of_nat (length a)) :
-  nth (N.to_nat n) (index a) (N.of_nat 0, x) = (n, nth (N.to_nat n) a x).
+  nth (N.to_nat n) (Nindex a) (N.of_nat 0, x) = (n, nth (N.to_nat n) a x).
 Proof.
-  rewrite index_ref. unfold Ref.index.
-  rewrite combine_nth.
+  rewrite Nindex_ref. unfold Ref.Nindex. unfold Ref.nindex, Ref.nindex_from.
+  rewrite map_bimap_combine. rewrite combine_nth.
   - f_equal.
     + rewrite map_nth. rewrite seq_nth.
       * lia.
       * lia.
-  - rewrite map_length. rewrite seq_length. reflexivity. Qed.
+    + rewrite map_id. reflexivity.
+  - rewrite map_length. rewrite seq_length. rewrite map_id. reflexivity. Qed.
 
 Section Context.
 
@@ -461,7 +533,7 @@ Ltac notations f := progress (
 Equations encode (s : {p : N | p < N.of_nat (length (enum A))}) : A :=
   encode (p; t) with inspect (enum A) := {
     | [] eqn : _ => _
-    | x :: b eqn : _ => snd (nth (N.to_nat p) (index (x :: b)) (0, x))
+    | x :: b eqn : _ => snd (nth (N.to_nat p) (Nindex (x :: b)) (0, x))
   }.
 Next Obligation with notations enabled.
   cbv beta...
@@ -594,7 +666,7 @@ Proof with notations enabled.
   - intros [p t]. apply encode_elim.
     + clear p t. intros p t u _. exfalso.
       rewrite u in t. unfold length, N.of_nat in t. lia.
-    + clear p t. intros p t x b u _. rewrite index_nth.
+    + clear p t. intros p t x b u _. rewrite Nindex_nth.
       * unfold snd.
         remember (nth (N.to_nat p) (x :: b) x) as k eqn : ek.
         revert t u ek.
@@ -604,10 +676,9 @@ Proof with notations enabled.
            apply (Nfind_some y x (enum A)) in vf'.
            subst y. destruct vf' as [h0 [h1 v]].
            rewrite Nth_ref in v. simp Nth in v. rewrite <- vt in v.
-           (** Need to know indices match due to no duplicates. *)
            assert (m' : q = p).
            { apply nth_inversion in v. lia. rewrite N_length_ref in h1.
-             unfold Ref'.N_length in h1. lia. lia. }
+             unfold Ref.N_length in h1. lia. lia. }
            match goal with
            | |- (?p; ?a) = (?q; ?b) =>
              apply (eq_exist_curried
@@ -629,7 +700,7 @@ Proof with notations enabled.
       apply encode_elim.
       * clear t. intros p t u _ _. exfalso. rewrite u in t. cbn in t. lia.
       * clear t. intros p t z c u _ et. inversion et; subst p.
-        rewrite index_nth.
+        rewrite Nindex_nth.
         -- unfold snd. clear et.
            rewrite <- u.
            apply (Nfind_some x z) in s.
@@ -647,19 +718,26 @@ Proof with notations enabled.
   `{!IsSize X (N.of_nat (length a))} : IsListing X a.
 Proof with notations enabled.
   split...
-  - intros x. induction (enum A) as [| y b s].
-    + exfalso. pose proof size_is_equiv_types as t.
-      pose proof equiv_types _ _ _ _ (IsEquivTypes := t) as u.
-      destruct u as [f [g v]].
-      pose proof g x as w.
-      destruct w as [z W].
-      simpl in W. lia.
-    + apply Exists_cons. destruct (dec (x == y)) as [j | j].
-      * left. auto.
-      * right. pose proof size_is_equiv_types as t.
-        pose proof equiv_types _ _ _ _ (IsEquivTypes := t) as u.
-        destruct u as [f [g v]].
-        apply s. hnf. Admitted.
+  - intros x.
+    apply IsIn_Exists.
+    exists x. split; try reflexivity.
+    pose proof size_is_equiv_types as t.
+    pose proof equiv_types _ _ _ _ (IsEquivTypes := t) as u.
+    destruct u as [f [g [r s]]].
+    pose proof s x as fgx.
+    destruct (g x) as [n i] eqn : gx.
+    set (js := Nfind x (enum A)).
+    set (ks := Nfind n (N_seq 0 (N_length (enum A)))).
+    set (z := Nth n (enum A) x).
+    set (w := Nth n (N_seq 0 (N_length (enum A))) 5).
+    epose proof Nfind_some x x (enum A) as what.
+    admit.
+  - induction (enum A) as [| y b s].
+    + apply IsNoDup_nil.
+    + apply IsNoDup_cons.
+      * admit.
+      * apply s.
+Admitted.
 
 End Context.
 
@@ -688,7 +766,7 @@ Proof.
   destruct t as [f [g ?]]. exists (map f (N_seq_sig n)).
   apply size_length_is_listing; try eauto || typeclasses eauto.
   rewrite map_length. unfold N_seq_sig.
-  rewrite map_length. rewrite N_seq_ref. unfold Ref'.N_seq.
+  rewrite map_length. rewrite N_seq_ref. unfold Ref.N_seq.
   rewrite map_length. rewrite seq_length. rewrite N2Nat.id.
   typeclasses eauto. Qed.
 
