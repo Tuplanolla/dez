@@ -74,20 +74,6 @@ Context (A : Type).
 
 End Context.
 
-Section Context.
-
-Context (A : Type) {X : HasEquivRel A} {d : HasEquivDec A}
-  `{!IsEquiv X}.
-Context (B : Type) {Y : HasEquivRel B} {e : HasEquivDec B}
-  `{!IsEquiv Y}.
-
-Lemma map_ext_setoid
-  (f g : A -> B) (s : forall x : A, f x == g x) (a : list A) :
-  map f a == map g a.
-Proof. Admitted.
-
-End Context.
-
 #[local] Open Scope relation_scope.
 #[local] Open Scope core_scope.
 #[local] Open Scope sig_scope.
@@ -493,11 +479,11 @@ Proof.
            ++ rewrite Nth_succ. apply ex. Qed.
 
 Lemma Nfind_from_none (n : N) (x : A) (a : list A)
-  (e : Nfind_from n x a = None) : ~ IsIn x a.
+  (e : Nfind_from n x a = None) (s : IsIn x a) : 0.
 Proof.
-  revert n e. induction a as [| z b c]; intros n e.
-  - intros s. contradiction.
-  - intros s. simpl in s. destruct s as [t | t].
+  revert n e s. induction a as [| z b c]; intros n e s.
+  - contradiction.
+  - simpl in s. destruct s as [t | t].
     + destruct (dec (x == z)) as [ex | fx] eqn : ed.
       * exfalso. simp Nfind_from in e. rewrite ed in e. simpl in e.
         discriminate.
@@ -515,6 +501,39 @@ Proof. eapply Nfind_from_some. rewrite N.add_0_l. apply s. Qed.
 Lemma Nfind_none (x : A) (a : list A)
   (s : Nfind x a = None) (i : IsIn x a) : 0.
 Proof. eapply Nfind_from_none. apply s. apply i. Qed.
+
+Lemma Nfind_from_some' (n : N) (x y : A) (a : list A) (s : IsIn x a) :
+  exists p : N,
+  Nfind_from n x a = Some (n + p) /\ p < N_length a /\ Nth p a y == x.
+Proof.
+  revert n s. induction a as [| z b c]; intros n s.
+  - contradiction.
+  - simpl in s.
+    destruct (dec (x == z)) as [ex | fx] eqn : ed.
+    + exists 0. repeat split.
+      * simp Nfind_from. rewrite ed. simpl.
+        rewrite N.add_0_r. reflexivity.
+      * simp N_length. lia.
+      * symmetry. apply ex.
+    + destruct s as [t | t].
+      * contradiction.
+      * simp Nfind_from. rewrite ed. cbn -[Nth].
+        pose proof c n t as c'. destruct c' as [p [c0 [c1 c2]]].
+        exists (N.succ p). repeat split.
+        -- rewrite N.add_succ_r. apply Nfind_from_succ. apply c0.
+        -- lia.
+        -- rewrite Nth_ref. unfold Ref.Nth. rewrite N2Nat.inj_succ.
+           simpl. rewrite Nth_ref in c2. apply c2. Qed.
+
+Lemma Nfind_some' (x y : A) (a : list A) (s : IsIn x a) :
+  exists n : N,
+  Nfind x a = Some n /\ n < N_length a /\ Nth n a y == x.
+Proof. eapply Nfind_from_some'. apply s. Qed.
+
+Lemma Nfind_Nth (n : N) (a : list A) (x : A) (s : n < N_length a) :
+  exists p : N,
+  Nfind (Nth n a x) a = Some p /\ p <= n /\ Nth p a x == Nth n a x.
+Proof. Admitted.
 
 End Context.
 
@@ -827,13 +846,23 @@ Proof with notations enabled.
   split...
   - intros x.
     apply IsIn_Exists.
-    exists x. split; try reflexivity.
     pose proof size_is_equiv_types as t.
     pose proof equiv_types _ _ _ _ (IsEquivTypes := t) as u.
     destruct u as [f [g [r s]]].
+    pose proof r as r'; pose proof s as s'.
     hnf in r, s.
     pose proof s x as fgx.
     destruct (g x) as [n i] eqn : gx.
+    set (js := Nfind x (enum A)).
+    pose proof Nfind_Nth n (enum A) x as nuh.
+    rewrite N_length_ref in nuh. unfold Ref.N_length in nuh.
+    specialize (nuh ltac:(lia)). destruct nuh as [p nuhh].
+    pose proof nth_IsIn (n := N.to_nat n) (enum A) x ltac:(lia) as th.
+    rewrite <- Ref.Nth_equation_1 in th. rewrite <- Nth_ref in th.
+    set (z := Nth n (enum A) x).
+    change (Nth n (enum A) x) with z in th, nuhh.
+    exists z. split. apply th.
+    (*
     set (js := Nfind x (enum A)).
     set (ks := Nfind n (N_seq 0 (N_length (enum A)))).
     set (z := Nth n (enum A) x).
@@ -853,6 +882,8 @@ Proof with notations enabled.
     exists (Nth n (enum A) x).
     split. rewrite Nth_ref. unfold Ref.Nth. rewrite gx. admit.
     rewrite Nth_ref. unfold Ref.Nth. apply nth_In. lia.
+    *)
+    admit.
   - induction (enum A) as [| y b s].
     + apply IsNoDup_nil.
     + apply IsNoDup_cons.
