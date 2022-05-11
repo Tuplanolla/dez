@@ -15,6 +15,9 @@ From DEZ.Supports Require Import
 
 Import ListNotations.
 
+Notation "'_::_'" := cons : list_scope.
+Notation "x '::' a" := (cons x a) : list_scope.
+
 Lemma map_bimap_combine (A B C D : Type)
   (f : A -> C) (g : B -> D) (a : list A) (b : list B) :
   map (prod_bimap f g) (combine a b) = combine (map f a) (map g b).
@@ -71,6 +74,46 @@ Context (A : Type).
 #[export] Instance list_has_equiv_dec
   {X : HasEquivRel A} {d : HasEquivDec A} : HasEquivDec (list A) :=
   Forall2_dec d.
+
+#[export] Instance list_is_equiv
+  {X : HasEquivRel A} {d : HasEquivDec A} `{!IsEquiv X} : IsEquiv (Forall2 X).
+Proof.
+  split.
+  - intros x. induction x as [| y b s].
+    + apply Forall2_nil.
+    + apply Forall2_cons.
+      * reflexivity.
+      * apply s.
+  - intros x. induction x as [| z b t]; intros [| w c] s.
+    + apply Forall2_nil.
+    + inversion s.
+    + inversion s.
+    + inversion_clear s as [| ? ? ? ? u v]. apply Forall2_cons.
+      * symmetry. apply u.
+      * apply t. apply v.
+  - intros x. induction x as [| z b t]; intros [| w c] [| ww cc] s tt.
+    + apply Forall2_nil.
+    + inversion tt.
+    + inversion s || inversion tt.
+    + inversion s.
+    + inversion s.
+    + inversion s || inversion tt.
+    + inversion tt.
+    + inversion_clear s as [| ? ? ? ? u v].
+      inversion_clear tt as [| ? ? ? ? uu vv]. apply Forall2_cons.
+      * etransitivity.
+        -- apply u.
+        -- apply uu.
+      * eapply t.
+        -- apply v.
+        -- apply vv. Qed.
+
+#[export] Instance cons_Proper {X : HasEquivRel A} :
+  IsProper (X ==> Forall2 X ==> Forall2 X) _::_.
+Proof.
+  intros x y s a b t. apply Forall2_cons.
+  - apply s.
+  - apply t. Qed.
 
 End Context.
 
@@ -604,12 +647,16 @@ Proof. Admitted.
 
 End Context.
 
+Lemma map_compose (A B C : Type) (f : A -> B) (g : B -> C) (a : list A) :
+  map g (map f a) = map (g o f) a.
+Proof. apply map_map. Qed.
+
 Section Context.
 
-Context (A : Type) {X : HasEquivRel A} {d : HasEquivDec A}
-  `{!IsEquiv X}.
-Context (B : Type) {Y : HasEquivRel B} {e : HasEquivDec B}
-  `{!IsEquiv Y}.
+Context (A B : Type)
+  {X : HasEquivRel A} {d : HasEquivDec A}
+  {Y : HasEquivRel B} {e : HasEquivDec B}
+  `{!IsEquiv X} `{!IsEquiv Y}.
 
 Lemma IsIn_map (f : A -> B) `{!IsProper (X ==> Y) f} (a : list A) (x : A)
   (s : IsIn x a) : IsIn (f x) (map f a).
@@ -619,6 +666,32 @@ Proof.
   - simpl in s. destruct s as [ex | fx].
     + left. rewrite ex. reflexivity.
     + right. apply t. apply fx. Qed.
+
+Lemma map_ext_equiv
+  (f g : A -> B) (s : forall x : A, f x == g x) (a : list A) :
+  map f a == map g a.
+Proof.
+  induction a as [| x b t].
+  - reflexivity.
+  - simpl map. rewrite s. rewrite t. reflexivity. Qed.
+
+Lemma map_ext_in_equiv
+  (f g : A -> B) (a : list A)
+  (s : forall (x : A) (t : IsIn x a), f x == g x) :
+  map f a == map g a.
+Proof.
+  induction a as [| x b t].
+  - reflexivity.
+  - simpl map. rewrite s. rewrite t. reflexivity. Admitted.
+
+Lemma map_in_ext_equiv
+  (f g : A -> B) (a : list A) (s : map f a == map g a) (x : A) (t : In x a) :
+  f x == g x.
+Proof.
+  induction a as [| y b u].
+  - contradiction.
+  - simpl map in s. destruct t as [v | v].
+    + apply u. Admitted.
 
 End Context.
 
@@ -908,54 +981,72 @@ Proof with notations enabled.
       symmetry. apply e. apply i. Qed.
 
 #[local] Instance size_length_is_listing
-  `{!IsSize X (N.of_nat (length a))} : IsListing X a.
+  `{!IsSize X (N_length a)} : IsListing X a.
 Proof with notations enabled.
   split...
   - intros x.
     apply IsIn_Exists.
     pose proof size_is_equiv_types as t.
     pose proof equiv_types _ _ _ _ (IsEquivTypes := t) as u.
-    destruct u as [f [g [r s]]].
-    pose proof r as r'; pose proof s as s'.
-    hnf in r, s.
-    pose proof s x as fgx.
-    destruct (g x) as [n i] eqn : gx.
-    set (js := Nfind_error x (enum A)).
-    pose proof Nfind_error_Nth n (enum A) x as nuh.
-    rewrite N_length_ref in nuh. unfold Ref.N_length in nuh.
-    specialize (nuh ltac:(lia)). destruct nuh as [p nuhh].
-    pose proof nth_IsIn (n := N.to_nat n) (enum A) x ltac:(lia) as th.
-    rewrite <- Ref.Nth_equation_1 in th. rewrite <- Nth_ref in th.
-    set (z := Nth n (enum A) x).
-    change (Nth n (enum A) x) with z in th, nuhh.
-    exists z. split. apply th.
-    (*
-    set (js := Nfind_error x (enum A)).
-    set (ks := Nfind_error n (N_seq 0 (N_length (enum A)))).
-    set (z := Nth n (enum A) x).
-    set (w := Nth n (N_seq 0 (N_length (enum A))) 5).
-    epose proof Nfind_error_some x x (enum A) as what.
-    epose proof Nfind_error_some (g x) (g x) (map g (enum A)) as why.
+    destruct u as [f [g [r s]]]. hnf in r, s. clear IsSize0 t.
+
+    exists x. split; try reflexivity.
+
+    remember (N_length (enum A)) as n eqn : t.
+    assert (t' : n <= N_length (enum A)) by lia.
+    clear t.
+    generalize dependent g.
+    generalize dependent f.
+    induction n as [| q i] using N.peano_ind; intros.
+    destruct (g x) as [oh fuck]. lia.
+    eset (f' (a : {p : N | p < q}) := match a with
+    | (p; i) => f (p; _)
+    end : A).
+    eset (g' (y : A) := match g y with
+    | (p; i) => (p; _)
+    end : {p : N | p < q}).
+    apply (i ltac:(lia) f' g'). Unshelve. all: cbv beta.
+    intros [p l]. unfold f', g'. simpl. rewrite r. f_equal. apply irrel.
+    intros y. unfold f', g'. destruct (g y) as [p j] eqn : egg.
+    match goal with
+    | |- f (p; ?hole) == y => rewrite (irrel hole j)
+    end. rewrite <- egg. rewrite s. reflexivity.
+    lia.
+    clearbody f'. admit.
+
+    (* set (f' := sig_curry f). cbv beta in f'.
+    set (g' := proj1_sig o g).
+    assert (g'wd : forall x : A, g' x < N.of_nat (length (enum A))).
+    { intros y. unfold g'. unfold compose. destruct (g y) as [gy i].
+      simpl. apply i. }
+    assert (r' : forall (p : N) (i : p < N.of_nat (length (enum A))),
+    g' (f' p i) = p).
+    { intros p i. unfold f', g'. unfold compose.
+      rewrite r. reflexivity. } *)
+
+    pose proof s x as sx.
+    pose proof r (g x) as rx.
+    destruct (g x) as [n i] eqn : tx.
+
+    (** To go from [IsIn x (enum A)] to [In (g x) (map g (enum A))]. *)
     change x with (id x).
-    epose proof Proper_IsIn ((f o g) x) (id x) _ (s _) as ff. apply ff. clear ff.
+    epose proof Proper_IsIn ((f o g) x) (id x) _ (s _) as P. apply P. clear P.
     rewrite <- (map_id (enum A)).
     change (fun x : A => x) with (@id A).
-    rewrite (map_ext_setoid id (f o g)).
+    rewrite (map_ext_equiv id (f o g)).
     2:{ intros ?. symmetry. apply s. }
-    unfold "_o_".
-    rewrite <- (map_map g f).
+    rewrite <- (map_compose g f).
+    unfold compose.
     eapply IsIn_map.
-    apply in_map_iff.
-    exists (Nth n (enum A) x).
-    split. rewrite Nth_ref. unfold Ref.Nth. rewrite gx. admit.
-    rewrite Nth_ref. unfold Ref.Nth. apply nth_In. lia.
-    *)
+    enough (talk : In (g x) (map g (enum A))) by apply talk.
+
     admit.
-  - induction (enum A) as [| y b s].
-    + apply IsNoDup_nil.
-    + apply IsNoDup_cons.
-      * intros t. admit.
-      * apply s. admit.
+  - pose proof size_is_equiv_types as t.
+    pose proof equiv_types _ _ _ _ (IsEquivTypes := t) as u.
+    destruct u as [f [g [r s]]].
+    hnf in r, s.
+
+    admit.
 Admitted.
 
 End Context.
