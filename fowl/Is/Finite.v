@@ -985,11 +985,11 @@ Proof with notations enabled.
 Proof with notations enabled.
   split...
   - intros x.
-    apply IsIn_Exists.
     pose proof size_is_equiv_types as t.
     pose proof equiv_types _ _ _ _ (IsEquivTypes := t) as u.
     destruct u as [f [g [r s]]]. hnf in r, s. clear IsSize0 t.
 
+    apply IsIn_Exists.
     exists x. split; try reflexivity.
 
     remember (N_length (enum A)) as n eqn : t.
@@ -1012,7 +1012,7 @@ Proof with notations enabled.
     | |- f (p; ?hole) == y => rewrite (irrel hole j)
     end. rewrite <- egg. rewrite s. reflexivity.
     lia.
-    clearbody f'. admit.
+    clearbody f'.
 
     (* set (f' := sig_curry f). cbv beta in f'.
     set (g' := proj1_sig o g).
@@ -1024,11 +1024,8 @@ Proof with notations enabled.
     { intros p i. unfold f', g'. unfold compose.
       rewrite r. reflexivity. } *)
 
-    pose proof s x as sx.
-    pose proof r (g x) as rx.
-    destruct (g x) as [n i] eqn : tx.
-
     (** To go from [IsIn x (enum A)] to [In (g x) (map g (enum A))]. *)
+    (*
     change x with (id x).
     epose proof Proper_IsIn ((f o g) x) (id x) _ (s _) as P. apply P. clear P.
     rewrite <- (map_id (enum A)).
@@ -1039,6 +1036,7 @@ Proof with notations enabled.
     unfold compose.
     eapply IsIn_map.
     enough (talk : In (g x) (map g (enum A))) by apply talk.
+    *)
 
     admit.
   - pose proof size_is_equiv_types as t.
@@ -1048,6 +1046,24 @@ Proof with notations enabled.
 
     admit.
 Admitted.
+
+End Context.
+
+Section Context.
+
+Context (A : Type) (P : A -> Prop).
+
+Equations list_proj1_sig (a : list {x : A | P x}) : list A by struct a :=
+  list_proj1_sig [] := [];
+  list_proj1_sig ((x; _) :: b) := x :: list_proj1_sig b.
+
+Lemma list_proj2_sig (a : list {x : A | P x}) : Forall P (list_proj1_sig a).
+Proof.
+  induction a as [| [x a] b s].
+  - apply Forall_nil.
+  - simp list_proj1_sig. apply Forall_cons.
+    + apply a.
+    + apply s. Qed.
 
 End Context.
 
@@ -1065,18 +1081,38 @@ Proof.
   destruct fin_listing as [a ?]. exists (N.of_nat (length a)).
   apply listing_is_size_length; eauto || typeclasses eauto. Qed.
 
-Equations N_seq_sig (n : N) : list {p : N | p < n} :=
-  N_seq_sig n := map (fun p : N => (p; _)) (N_seq 0 n).
-Next Obligation. intros n p. cbv beta. Admitted.
+Equations N_seq_sig (n p : N) : list {q : N | q < n + p} :=
+  N_seq_sig n p with inspect (N_seq n p) := {
+    | a eqn : _ => _
+  }.
+Next Obligation.
+  intros n p a s.
+  revert n a s; induction p as [| q t] using N.peano_rect; intros n a s.
+  - apply nil.
+  - rewrite N_seq_ref in s. unfold Ref.N_seq in s.
+    rewrite N2Nat.inj_succ in s. rewrite <- cons_seq in s.
+    rewrite map_cons in s. destruct a as [| x b].
+    + discriminate.
+    + inversion s as [[sx sb]]. clear s. apply cons.
+      * exists x. lia.
+      * rewrite N.add_succ_r. rewrite <- N.add_succ_l.
+        pose proof t (N.succ n) b as t'. apply t'.
+        rewrite N_seq_ref. unfold Ref.N_seq.
+        rewrite N2Nat.inj_succ. apply sb. Defined.
+
+Lemma N_seq_sig_proj1_sig (n p : N) : map proj1_sig (N_seq_sig n p) = N_seq n p.
+Proof. Admitted.
 
 #[local] Instance fin_size_is_fin_listing
   `{!IsFinSize X} : IsFinListing X.
 Proof.
   destruct fin_size as [n s]. pose proof s as t.
-  destruct t as [f [g ?]]. exists (map f (N_seq_sig n)).
+  destruct t as [f [g ?]]. exists (map f (N_seq_sig 0 n)).
   apply size_length_is_listing; try eauto || typeclasses eauto.
-  rewrite map_length. unfold N_seq_sig.
-  rewrite map_length. rewrite N_seq_ref. unfold Ref.N_seq.
+  rewrite N_length_ref. unfold Ref.N_length.
+  rewrite map_length. rewrite <- (map_length proj1_sig (N_seq_sig 0 n)).
+  rewrite N_seq_sig_proj1_sig.
+  rewrite N_seq_ref. unfold Ref.N_seq.
   rewrite map_length. rewrite seq_length. rewrite N2Nat.id.
   typeclasses eauto. Qed.
 
