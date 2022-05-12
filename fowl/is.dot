@@ -12,7 +12,7 @@ digraph Is {
     IsFinListing [label = "\N X\nfin_list : exists a : list A, IsListing X a"]
     IsFinSize [label = "\N X\nfin_size : exists n : N, IsSize X n"]
     IsFull [label = "\N X a\nfull (x : A) : Exists (X x) a"]
-    IsNoDup [label = "\N X a\nIsNoDup_nil : IsNoDup X []\nIsNoDup_cons (x : A) (a : list A) (s : ~ Exists (X x) a) (t : IsNoDup X a) : IsNoDup X (x :: a)"]
+    IsNoDup [label = "\N X a\nIsNoDup_nil : IsNoDup []\nIsNoDup_cons (x : A) (a : list A) (f : ~ IsIn x a) (s : IsNoDup a) : IsNoDup (x :: a)"]
 
     IsListing [label = "\N X a"]
     IsSize [label = "\N X n"]
@@ -346,9 +346,11 @@ digraph Is {
   edge [style = dashed]
 
   subgraph finite_derivations {
+    IsIso -> IsEquivTypes
     IsFull -> IsFinFull
     IsListing -> IsFinListing
     IsSize -> IsFinSize
+    IsListing -> IsSize
   }
 
   subgraph logic_derivations {
@@ -479,5 +481,7 @@ digraph Is {
     IsUnlElemL -> IsUnlElemR [label = "flip"]
   }
 
-  // Specializations
+  // Occurrences
+
+  edge [style = dotted]
 }

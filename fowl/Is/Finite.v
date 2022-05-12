@@ -706,12 +706,20 @@ Class IsFull (A : Type) (X : A -> A -> Prop) (a : list A) : Prop :=
 
 (** This is a generalization of [NoDup]. *)
 
-Inductive IsNoDup (A : Type) (X : A -> A -> Prop) : list A -> Prop :=
-  | IsNoDup_nil : IsNoDup X []
-  | IsNoDup_cons (x : A) (a : list A) (s : ~ IsIn (X := X) x a)
-    (t : IsNoDup X a) : IsNoDup X (x :: a).
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop).
+
+#[local] Instance has_equiv_rel : HasEquivRel A := X.
+
+Inductive IsNoDup : list A -> Prop :=
+  | IsNoDup_nil : IsNoDup []
+  | IsNoDup_cons (x : A) (a : list A) (f : ~ IsIn x a)
+    (s : IsNoDup a) : IsNoDup (x :: a).
 
 Existing Class IsNoDup.
+
+End Context.
 
 (** ** Unsorted Unique Enumeration of a Type *)
 
@@ -754,7 +762,68 @@ Class IsFinSize (A : Type) (X : A -> A -> Prop) : Prop :=
   (n : N) `{!IsSize X n} : IsFinSize X.
 Proof. exists n. auto. Qed.
 
-(** TODO The rest is not in the diagram yet. *)
+(** Then in Bishop-style... *)
+
+Equations Fin_of_nat (n : nat) (s : {p : nat | (p < n)%nat}) :
+  Fin.t n by struct n :=
+  Fin_of_nat (n := O) (p; i) := _;
+  Fin_of_nat (n := S _) (O; i) := Fin.F1;
+  Fin_of_nat (n := S q) (S p; i) := Fin.FS (Fin_of_nat (n := q) (p; _)).
+Next Obligation. cbv beta. intros _ p i. lia. Defined.
+Next Obligation. cbv beta. intros _ q p i. lia. Defined.
+
+(** ** Size of a Type *)
+
+Class IsBishopSize (A : Type) (X : A -> A -> Prop) (n : N) : Prop :=
+  bishop_size_is_equiv_types :> IsEquivTypes (Fin.t (N.to_nat n)) A _=_ X.
+
+(** ** Finiteness in Terms of Counting *)
+
+Class IsBishopFinSize (A : Type) (X : A -> A -> Prop) : Prop :=
+  bishop_fin_size : exists n : N, IsBishopSize X n.
+
+#[export] Instance bishop_size_is_bishop_fin_size (A : Type) (X : A -> A -> Prop)
+  (n : N) `{!IsBishopSize X n} : IsBishopFinSize X.
+Proof. exists n. auto. Qed.
+
+(** ** Lemmas *)
+
+Lemma sig_N_of_nat (n : nat) (a : {p : nat | p < n}%nat) : {p : N | p < N.of_nat n}.
+Proof. destruct a as [p i]. exists (N.of_nat p). lia. Defined.
+
+Lemma sig_N_to_nat (n : nat) (a : {p : N | p < N.of_nat n}) : {p : nat | p < n}%nat.
+Proof. destruct a as [p i]. exists (N.to_nat p). lia. Defined.
+
+Lemma sig_N_of_nat' (n : N) (a : {p : nat | p < N.to_nat n}%nat) : {p : N | p < n}.
+Proof. destruct a as [p i]. exists (N.of_nat p). lia. Defined.
+
+Lemma sig_N_to_nat' (n : N) (a : {p : N | p < n}) : {p : nat | p < N.to_nat n}%nat.
+Proof. destruct a as [p i]. exists (N.to_nat p). lia. Defined.
+
+Lemma bishop_or_not (A : Type) (X : A -> A -> Prop) (n : N) :
+  IsBishopSize X n <-> IsSize X n.
+Proof.
+  eassert (obvious : forall x, Fin.to_nat (Fin_of_nat x) = x) by admit.
+  eassert (obvious' : forall x, Fin_of_nat (Fin.to_nat x) = x) by admit.
+  eassert (evident : forall n x, sig_N_of_nat' n (sig_N_to_nat' n x) = x) by admit.
+  eassert (evident' : forall n x, sig_N_to_nat' n (sig_N_of_nat' n x) = x) by admit.
+  split.
+  - intros [f [g [r s]]]. hnf.
+    exists (f o Fin_of_nat o sig_N_to_nat' _).
+    exists (sig_N_of_nat' _ o Fin.to_nat o g).
+    split.
+    + intros [p i]. unfold compose. rewrite retr.
+      rewrite obvious. rewrite evident. reflexivity.
+    + intros x. unfold compose.
+      rewrite evident'. rewrite obvious'. apply sect.
+  - intros [f [g [r s]]]. hnf.
+    exists (f o sig_N_of_nat' _ o Fin.to_nat).
+    exists (Fin_of_nat o sig_N_to_nat' _ o g).
+    split.
+    + intros x. unfold compose. rewrite retr.
+      rewrite evident'. rewrite obvious'. reflexivity.
+    + intros x. unfold compose.
+      rewrite obvious. rewrite evident. apply sect. Admitted.
 
 Lemma Nindex_In (A : Type)
   (n : N) (x : A) (a : list A) (s : In (n, x) (Nindex a)) :
@@ -914,7 +983,7 @@ Section Context.
 Context (A : Type) (X : A -> A -> Prop)
   (d : forall x y : A, {X x y} + {~ X x y}) (a : list A) `{!IsEquiv X}.
 
-#[local] Instance has_equiv_rel : HasEquivRel A := X.
+#[local] Instance has_equiv_rel' : HasEquivRel A := X.
 #[local] Instance has_equiv_dec : HasEquivDec A := d.
 #[local] Instance has_enum : HasEnum A := a.
 
@@ -926,8 +995,9 @@ Ltac notations f := progress (
 (** TODO Prove the equivalence of these definitions. *)
 
 #[export] Instance listing_is_size_length
-  `{!IsListing X a} : IsSize X (N.of_nat (length a)).
+  `{!IsListing X a} : IsSize X (N_length a).
 Proof with notations enabled.
+  rewrite N_length_ref. unfold Ref.N_length.
   exists encode, decode... split.
   - intros [p t]. apply encode_elim.
     + clear p t. intros p t u _. exfalso.
@@ -979,6 +1049,24 @@ Proof with notations enabled.
       destruct fz as [z [i e]].
       pose proof Proper_IsIn z x (enum A) as w. apply w.
       symmetry. apply e. apply i. Qed.
+
+#[export] Instance listing_is_size_length'
+  `{!IsListing X a} : IsBishopSize X (N_length a).
+Proof. apply bishop_or_not. apply listing_is_size_length. Qed.
+
+#[local] Instance size_length_is_listing'
+  `{!IsBishopSize X (N_length a)} : IsListing X a.
+Proof.
+  split...
+  - intros x.
+    pose proof bishop_size_is_equiv_types as t.
+    pose proof equiv_types _ _ _ _ (IsEquivTypes := t) as u.
+    destruct u as [f [g [r s]]]. hnf in r, s. clear IsBishopSize0 t.
+
+    apply IsIn_Exists.
+    exists x. split; try reflexivity.
+
+Admitted.
 
 #[local] Instance size_length_is_listing
   `{!IsSize X (N_length a)} : IsListing X a.
@@ -1072,13 +1160,13 @@ Section Context.
 Context (A : Type) (X : A -> A -> Prop)
   (d : forall x y : A, {X x y} + {~ X x y}) `{!IsEquiv X}.
 
-#[local] Instance has_equiv_rel' : HasEquivRel A := X.
+#[local] Instance has_equiv_rel'' : HasEquivRel A := X.
 #[local] Instance has_equiv_dec' : HasEquivDec A := d.
 
 #[export] Instance fin_listing_is_fin_size
   `{!IsFinListing X} : IsFinSize X.
 Proof.
-  destruct fin_listing as [a ?]. exists (N.of_nat (length a)).
+  destruct fin_listing as [a ?]. exists (N_length a).
   apply listing_is_size_length; eauto || typeclasses eauto. Qed.
 
 Equations N_seq_sig (n p : N) : list {q : N | q < n + p} :=
