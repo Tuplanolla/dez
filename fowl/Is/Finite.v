@@ -645,6 +645,46 @@ Lemma Nfind_error_Nth (n : N) (a : list A) (x : A) (s : n < N_length a) :
   Nfind_error (Nth n a x) a = Some p /\ p <= n /\ Nth p a x == Nth n a x.
 Proof. Admitted.
 
+Lemma Nfind_from_succ (x : A) (a : list A) (n p : N) (s : IsIn x a) :
+  Nfind_from (N.succ n) x a p = N.succ (Nfind_from (N.succ n) x a p).
+Proof. Admitted.
+
+Lemma Nfind_from_le (x : A) (a : list A) (n p q : N) (s : IsIn x a)
+  (t : Nfind_from n x a p = q) : n <= q /\ q < n + N_length a.
+Proof. Admitted.
+
+Lemma Nfind_from_nope (x : A) (a : list A) (n p q : N) (s : ~ IsIn x a)
+  (t : Nfind_from n x a p = q) : q = p.
+Proof. Admitted.
+
+Lemma Nth_Nfind_from (x y : A) (a : list A) (n p : N) (s : IsIn x a) :
+  Nth (Nfind_from n x a p - n) a y == x.
+Proof.
+  revert s. apply Nfind_from_elim.
+  - clear x a n p. intros n x p s. contradiction.
+  - clear x a n p. intros n x z t b p t' s. rewrite N.sub_diag. symmetry. apply t.
+  - clear x a n p. intros n x z t b p f t' s.
+    simpl in s. destruct s as [s' | s'].
+    + contradiction.
+    + assert (u : n < Nfind_from (N.succ n) x b p).
+      { pose proof Nfind_from_le x b (N.succ n) p s' (refl _). lia. }
+      pose proof N.lt_exists_pred n (Nfind_from (N.succ n) x b p) u as v.
+      destruct v as [q [e i]].
+      rewrite e. rewrite N.sub_succ_l by lia. rewrite Nth_succ.
+      specialize (f s').
+      rewrite Nfind_from_succ in f by assumption.
+      rewrite N.sub_succ in f.
+      rewrite e in f.
+      rewrite <- f.
+      (** Nonsense! *)
+Admitted.
+
+Lemma Nth_Nfind (x y : A) (a : list A) (p : N) (s : IsIn x a) :
+  Nth (Nfind x a p) a y == x.
+Proof.
+  apply Nfind_elim. rewrite <- (N.sub_0_r (Nfind_from _ _ _ _)).
+  apply Nth_Nfind_from. apply s. Qed.
+ 
 End Context.
 
 Lemma map_compose (A B C : Type) (f : A -> B) (g : B -> C) (a : list A) :
@@ -762,7 +802,7 @@ Class IsFinSize (A : Type) (X : A -> A -> Prop) : Prop :=
   (n : N) `{!IsSize X n} : IsFinSize X.
 Proof. exists n. auto. Qed.
 
-(** Then in Bishop-style... *)
+(** Then in Bishop-style, which is missing from the diagram... *)
 
 Equations Fin_of_nat (n : nat) (s : {p : nat | (p < n)%nat}) :
   Fin.t n by struct n :=
@@ -788,6 +828,12 @@ Proof. exists n. auto. Qed.
 
 (** ** Lemmas *)
 
+#[export] Instance nat_has_equiv_rel : HasEquivRel nat := eq.
+
+#[export] Instance sig_has_equiv_rel (A : Type) (P : A -> Prop)
+  {X : HasEquivRel A} : HasEquivRel {x : A | P x} :=
+  fun x y : {x : A | P x} => proj1_sig x == proj1_sig y.
+
 Lemma sig_N_of_nat (n : nat) (a : {p : nat | p < n}%nat) : {p : N | p < N.of_nat n}.
 Proof. destruct a as [p i]. exists (N.of_nat p). lia. Defined.
 
@@ -800,13 +846,21 @@ Proof. destruct a as [p i]. exists (N.of_nat p). lia. Defined.
 Lemma sig_N_to_nat' (n : N) (a : {p : N | p < n}) : {p : nat | p < N.to_nat n}%nat.
 Proof. destruct a as [p i]. exists (N.to_nat p). lia. Defined.
 
+Lemma obvious (n : nat) x : Fin.to_nat (m := n) (Fin_of_nat x) = x.
+Proof. Admitted.
+
+Lemma obvious' (n : nat) x : Fin_of_nat (n := n) (Fin.to_nat x) = x.
+Proof. Admitted.
+
+Lemma evident n x : sig_N_of_nat' n (sig_N_to_nat' n x) = x.
+Proof. Admitted.
+
+Lemma evident' n x : sig_N_to_nat' n (sig_N_of_nat' n x) = x.
+Proof. Admitted.
+
 Lemma bishop_or_not (A : Type) (X : A -> A -> Prop) (n : N) :
   IsBishopSize X n <-> IsSize X n.
 Proof.
-  eassert (obvious : forall x, Fin.to_nat (Fin_of_nat x) = x) by admit.
-  eassert (obvious' : forall x, Fin_of_nat (Fin.to_nat x) = x) by admit.
-  eassert (evident : forall n x, sig_N_of_nat' n (sig_N_to_nat' n x) = x) by admit.
-  eassert (evident' : forall n x, sig_N_to_nat' n (sig_N_of_nat' n x) = x) by admit.
   split.
   - intros [f [g [r s]]]. hnf.
     exists (f o Fin_of_nat o sig_N_to_nat' _).
@@ -978,6 +1032,15 @@ Proof.
 #[export] Instance N_has_equiv_rel : HasEquivRel N := eq.
 #[export] Instance N_has_equiv_dec : HasEquivDec N := N.eq_dec.
 
+Equations map_with_sig (A B : Type) (P : A -> Prop)
+  (f : forall x : A, P x -> B) (a : list A) (s : Forall P a) :
+  list B by struct a :=
+  map_with_sig f (a := []) s := [];
+  map_with_sig f (a := x :: b) s :=
+  f x (Forall_inv s) :: map_with_sig f (a := b) (Forall_inv_tail s).
+
+Arguments map_with_sig {_ _ _} _ _ _.
+
 Section Context.
 
 Context (A : Type) (X : A -> A -> Prop)
@@ -1068,6 +1131,42 @@ Proof.
 
 Admitted.
 
+Equations N_seq_sig' (n p : N) : list {q : N | q < n + p} :=
+  N_seq_sig' n p with inspect (N_seq n p) := {
+    | a eqn : _ => _
+  }.
+Next Obligation.
+  intros n p b s.
+  revert n b s; induction p as [| q t] using N.peano_rect; intros n b s.
+  - apply nil.
+  - rewrite N_seq_ref in s. unfold Ref.N_seq in s.
+    rewrite N2Nat.inj_succ in s. rewrite <- cons_seq in s.
+    rewrite map_cons in s. destruct b as [| x b].
+    + discriminate.
+    + inversion s as [[sx sb]]. clear s. apply cons.
+      * exists x. lia.
+      * rewrite N.add_succ_r. rewrite <- N.add_succ_l.
+        pose proof t (N.succ n) b as t'. apply t'.
+        rewrite N_seq_ref. unfold Ref.N_seq.
+        rewrite N2Nat.inj_succ. apply sb. Defined.
+
+Equations N_seq_sig (n p : N) : list {q : N | q < n + p} :=
+  N_seq_sig n p := map_with_sig (P := fun q : N => q < n + p) _ (N_seq n p) _.
+Next Obligation. cbv beta. intros n p q i. exists q. lia. Defined.
+Next Obligation. cbv beta. intros n p.
+  revert n; induction p as [| q s] using N.peano_rect; intros n.
+  simp N_seq. apply Forall_nil.
+  rewrite N_seq_ref. unfold Ref.N_seq. rewrite N2Nat.inj_succ. rewrite <- cons_seq.
+  rewrite map_cons.
+  rewrite <- N2Nat.inj_succ.
+  change (map N.of_nat (seq (N.to_nat (N.succ n)) (N.to_nat q))) with (Ref.N_seq (N.succ n) q).
+  rewrite <- N_seq_ref.
+  apply Forall_cons. lia.
+  replace (n + N.succ q) with (N.succ n + q) by lia.
+  apply s. Defined.
+
+From Coq Require Import Logic.FinFun Sorting.Permutation.
+
 #[local] Instance size_length_is_listing
   `{!IsSize X (N_length a)} : IsListing X a.
 Proof with notations enabled.
@@ -1076,9 +1175,6 @@ Proof with notations enabled.
     pose proof size_is_equiv_types as t.
     pose proof equiv_types _ _ _ _ (IsEquivTypes := t) as u.
     destruct u as [f [g [r s]]]. hnf in r, s. clear IsSize0 t.
-
-    apply IsIn_Exists.
-    exists x. split; try reflexivity.
 
     remember (N_length (enum A)) as n eqn : t.
     assert (t' : n <= N_length (enum A)) by lia.
@@ -1137,6 +1233,9 @@ Admitted.
 
 End Context.
 
+Lemma N_seq_sig_proj1_sig (n p : N) : map proj1_sig (N_seq_sig n p) = N_seq n p.
+Proof. Admitted.
+
 Section Context.
 
 Context (A : Type) (P : A -> Prop).
@@ -1168,28 +1267,6 @@ Context (A : Type) (X : A -> A -> Prop)
 Proof.
   destruct fin_listing as [a ?]. exists (N_length a).
   apply listing_is_size_length; eauto || typeclasses eauto. Qed.
-
-Equations N_seq_sig (n p : N) : list {q : N | q < n + p} :=
-  N_seq_sig n p with inspect (N_seq n p) := {
-    | a eqn : _ => _
-  }.
-Next Obligation.
-  intros n p a s.
-  revert n a s; induction p as [| q t] using N.peano_rect; intros n a s.
-  - apply nil.
-  - rewrite N_seq_ref in s. unfold Ref.N_seq in s.
-    rewrite N2Nat.inj_succ in s. rewrite <- cons_seq in s.
-    rewrite map_cons in s. destruct a as [| x b].
-    + discriminate.
-    + inversion s as [[sx sb]]. clear s. apply cons.
-      * exists x. lia.
-      * rewrite N.add_succ_r. rewrite <- N.add_succ_l.
-        pose proof t (N.succ n) b as t'. apply t'.
-        rewrite N_seq_ref. unfold Ref.N_seq.
-        rewrite N2Nat.inj_succ. apply sb. Defined.
-
-Lemma N_seq_sig_proj1_sig (n p : N) : map proj1_sig (N_seq_sig n p) = N_seq n p.
-Proof. Admitted.
 
 #[local] Instance fin_size_is_fin_listing
   `{!IsFinSize X} : IsFinListing X.
