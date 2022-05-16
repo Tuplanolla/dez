@@ -1,7 +1,8 @@
 (** * Finiteness *)
 
 From Coq Require Import
-  Lia Lists.List Logic.FinFun NArith.NArith.
+  Lia Lists.List Logic.FinFun NArith.NArith
+  Arith.Compare_dec Arith.EqNat Logic.Decidable Lists.ListDec.
 From DEZ.Has Require Export
   EquivalenceRelations Decisions Enumerations Cardinalities.
 From DEZ.Is Require Export
@@ -425,6 +426,23 @@ Equations IsIn (x : A) (a : list A) : Prop :=
   IsIn _ [] := False;
   IsIn x (y :: b) := x == y \/ IsIn x b.
 
+Equations IsIn_dec (x : A) (a : list A) :
+  {IsIn x a} + {~ IsIn x a} by struct a :=
+  IsIn_dec x [] := right _;
+  IsIn_dec x (y :: b) with dec (x == y) := {
+    | left _ => left _
+    | right _ => _ (IsIn_dec x b)
+  }.
+Next Obligation.
+  intros _ x y fs b [t | ft].
+  - left. right. apply t.
+  - right. intros [u | u].
+    + contradiction.
+    + contradiction. Defined.
+
+#[export] Instance IsIn_has_dec (x : A) (a : list A) :
+  HasDec (IsIn x a) := IsIn_dec x a.
+
 Lemma Exists_IsIn (P : A -> Prop) (a : list A) (s : Exists P a) :
   exists x : A, IsIn x a /\ P x.
 Proof.
@@ -684,9 +702,10 @@ Lemma Nth_Nfind (x y : A) (a : list A) (p : N) (s : IsIn x a) :
 Proof.
   apply Nfind_elim. rewrite <- (N.sub_0_r (Nfind_from _ _ _ _)).
   apply Nth_Nfind_from. apply s. Qed.
- 
-End Context.
 
+End Context.
+Compute (IsIn_dec 42 [5;7;42;13]).
+Compute (IsIn_dec 42 [5;7;13]).
 Lemma map_compose (A B C : Type) (f : A -> B) (g : B -> C) (a : list A) :
   map g (map f a) = map (g o f) a.
 Proof. apply map_map. Qed.
@@ -787,6 +806,95 @@ Class IsFinListing (A : Type) (X : A -> A -> Prop) : Prop :=
 #[export] Instance listing_is_fin_listing (A : Type) (X : A -> A -> Prop)
   (a : list A) `{!IsListing X a} : IsFinListing X.
 Proof. exists a. auto. Qed.
+
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop)
+  (d : forall x y : A, {X x y} + {~ X x y}).
+
+#[local] Instance has_equiv_rel'1 : HasEquivRel A := X.
+#[local] Instance has_equiv_dec'1 : HasEquivDec A := d.
+
+Equations nodup (a : list A) : list A by struct a :=
+  nodup [] := [];
+  nodup (x :: b) with dec (IsIn x b) := {
+    | left _ => nodup b
+    | right _ => x :: nodup b
+  }.
+
+End Context.
+
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop)
+  (d : forall x y : A, {X x y} + {~ X x y}) (a : list A)
+  `{!IsEquiv X}.
+
+Ltac notations f := progress (
+  f X (equiv_rel (A := A));
+  f d (equiv_dec (A := A));
+  f a (enum A)).
+
+#[local] Instance has_equiv_rel'0 : HasEquivRel A := X.
+#[local] Instance has_equiv_dec'0 : HasEquivDec A := d.
+#[local] Instance has_enum'0 : HasEnum A := a.
+
+(** Finiteness does not require uniqueness. *)
+
+#[local] Instance full_is_nodup_listing
+  `{!IsFull X a} : IsListing X (nodup d a).
+Proof with notations enabled.
+  split...
+  - revert IsFull0. apply nodup_elim.
+    + auto.
+    + clear a. intros x b s t ss v. apply t. intros y. pose proof v y as v'.
+      apply Exists_cons in v'. destruct v' as [w | w]; auto.
+      pose proof Proper_IsIn _ _ b (w ^-1) s. apply IsIn_Exists.
+      exists y. split; easy.
+    + clear a. intros x b fs t ss v. intros y. apply Exists_cons_tl.
+      apply t. pose proof v y as v'.
+      apply Exists_cons in v'. destruct v' as [w | w]; auto.
+Admitted.
+
+#[local] Instance nodup_listing_is_full
+  `{!IsListing X (nodup d a)} : IsFull X a.
+Proof. Admitted.
+
+End Context.
+
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop)
+  (d : forall x y : A, {X x y} + {~ X x y}) `{!IsEquiv X}.
+
+Ltac notations f := progress (
+  f X (equiv_rel (A := A));
+  f d (equiv_dec (A := A))).
+
+#[local] Instance has_equiv_rel'2 : HasEquivRel A := X.
+#[local] Instance has_equiv_dec'2 : HasEquivDec A := d.
+
+(** Finiteness does not require uniqueness. *)
+
+#[export] Instance fin_listing_is_fin_full
+  `{!IsFinListing X} : IsFinFull X.
+Proof with notations enabled.
+  destruct fin_listing as [a s]... exists a. intros x. apply full. Qed.
+
+Lemma uniquify :
+  forall l : list A, exists l' : list A, IsNoDup X l' /\ forall a, IsIn a l -> IsIn a l'.
+Proof. Admitted.
+
+#[local] Instance fin_full_is_fin_listing
+  `{!IsFinFull X} : IsFinListing X.
+Proof with notations enabled.
+  destruct fin_full as [a s]... exists a. split.
+  - intros x. apply full.
+  - destruct (uniquify a) as [c [? ?]]... induction a as [| x b t].
+    + apply IsNoDup_nil.
+    + Admitted.
+
+End Context.
 
 (** ** Size of a Type *)
 
@@ -1218,6 +1326,22 @@ Proof with notations enabled.
     destruct i as [p_ q_ r s]. hnf in p_, q_, r, s.
     clear IsSize0 t.
 
+    apply IsIn_Exists. exists x. split; try reflexivity.
+
+    change x with (id x).
+    pose proof Proper_IsIn ((f o g) x) (id x) (enum A) (s _) as P.
+    apply P. clear P.
+    rewrite <- (map_id (enum A)).
+    change (fun x : A => x) with (@id A).
+    rewrite (map_ext_equiv id (f o g)).
+    2:{ intros ?. symmetry. apply s. }
+    rewrite <- (map_compose g f).
+    unfold compose.
+    eapply IsIn_map.
+    enough (talk : In ((proj1_sig o g) x) (map (proj1_sig o g) (enum A))) by admit.
+    apply (count_occ_In N.eq_dec (map (proj1_sig o g) (enum A)) ((proj1_sig o g) x)).
+
+    (*
     remember (N_length (enum A)) as n eqn : t.
     assert (t' : n <= N_length (enum A)) by lia.
     clear t.
@@ -1241,6 +1365,7 @@ Proof with notations enabled.
     shelve. shelve.
     lia.
     clearbody f'.
+    *)
 
     (* set (f' := sig_curry f). cbv beta in f'.
     set (g' := proj1_sig o g).
@@ -1269,8 +1394,15 @@ Proof with notations enabled.
     admit.
   - pose proof size_is_equiv_types as t.
     pose proof equiv_types _ _ _ _ (IsEquivTypes := t) as u.
-    destruct u as [f [g [r s]]].
-    hnf in r, s.
+    destruct u as [f [g i]].
+    pose proof iso_is_bij_un_fn (IsIso0 := i) as t'.
+    pose proof iso_is_bij_un_fn (IsIso0 := flip_iso_is_iso (IsIso0 := i)) as t''.
+    destruct t' as [i' s']. hnf in i', s'.
+    destruct t'' as [i'' s'']. hnf in i'', s''.
+    destruct i as [p_ q_ r s]. hnf in p_, q_, r, s.
+    clear IsSize0 t.
+
+    Fail apply NoDup_count_occ'.
 
     admit.
 Admitted.
