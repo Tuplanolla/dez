@@ -5,7 +5,7 @@ From Coq Require Import
 From DEZ.Has Require Export
   EquivalenceRelations Decisions Enumerations Cardinalities.
 From DEZ.Is Require Export
-  Isomorphic Extensional Truncated.
+  Isomorphic Extensional Truncated Bijective.
 From DEZ.Justifies Require Export
   OptionTheorems ProductTheorems LogicalTheorems NTheorems.
 From DEZ.Provides Require Import
@@ -846,6 +846,8 @@ Proof. destruct a as [p i]. exists (N.of_nat p). lia. Defined.
 Lemma sig_N_to_nat' (n : N) (a : {p : N | p < n}) : {p : nat | p < N.to_nat n}%nat.
 Proof. destruct a as [p i]. exists (N.to_nat p). lia. Defined.
 
+(** These are not actually true due to [lt] not being a mere proposition. *)
+
 Lemma obvious (n : nat) x : Fin.to_nat (m := n) (Fin_of_nat x) = x.
 Proof. Admitted.
 
@@ -866,6 +868,8 @@ Proof.
     exists (f o Fin_of_nat o sig_N_to_nat' _).
     exists (sig_N_of_nat' _ o Fin.to_nat o g).
     split.
+    + typeclasses eauto.
+    + typeclasses eauto.
     + intros [p i]. unfold compose. rewrite retr.
       rewrite obvious. rewrite evident. reflexivity.
     + intros x. unfold compose.
@@ -874,6 +878,8 @@ Proof.
     exists (f o sig_N_of_nat' _ o Fin.to_nat).
     exists (Fin_of_nat o sig_N_to_nat' _ o g).
     split.
+    + typeclasses eauto.
+    + typeclasses eauto.
     + intros x. unfold compose. rewrite retr.
       rewrite evident'. rewrite obvious'. reflexivity.
     + intros x. unfold compose.
@@ -1062,6 +1068,28 @@ Ltac notations f := progress (
 Proof with notations enabled.
   rewrite N_length_ref. unfold Ref.N_length.
   exists encode, decode... split.
+  - typeclasses eauto.
+  - intros x y. apply decode_elim.
+    + clear x. intros x p s _ t.
+      revert s t. apply decode_elim.
+      * clear y. intros y q t _ u s.
+        clear IsListing0.
+        induction (enum A) as [| z b i].
+        -- discriminate.
+        -- unfold Nfind_error in t, u.
+           pose proof t as t'. pose proof u as u'.
+           rewrite Nfind_error_from_equation_2 in t'.
+           rewrite Nfind_error_from_equation_2 in u'.
+           destruct (dec (x == z)) as [ex | fx] eqn : ed,
+           (dec (y == z)) as [ey | fy] eqn : ed';
+           simpl in t', u'.
+           inversion t'; subst. inversion u'; subst. f_equal. apply irrel.
+           pose proof trans _ _ _ (s ^-1) ex. contradiction.
+           pose proof trans _ _ _ s ey. contradiction.
+           (** It is one of those "ind. hyp. suck." situations again. *)
+           admit.
+      * admit.
+    + admit.
   - intros [p t]. apply encode_elim.
     + clear p t. intros p t u _. exfalso.
       rewrite u in t. unfold length, N.of_nat in t. lia.
@@ -1111,7 +1139,7 @@ Proof with notations enabled.
       pose proof full x as fz. apply Exists_IsIn in fz.
       destruct fz as [z [i e]].
       pose proof Proper_IsIn z x (enum A) as w. apply w.
-      symmetry. apply e. apply i. Qed.
+      symmetry. apply e. apply i. Admitted.
 
 #[export] Instance listing_is_size_length'
   `{!IsListing X a} : IsBishopSize X (N_length a).
@@ -1124,10 +1152,18 @@ Proof.
   - intros x.
     pose proof bishop_size_is_equiv_types as t.
     pose proof equiv_types _ _ _ _ (IsEquivTypes := t) as u.
-    destruct u as [f [g [r s]]]. hnf in r, s. clear IsBishopSize0 t.
+    destruct u as [f [g i]].
+    pose proof iso_is_bij_un_fn (IsIso0 := i) as t'.
+    pose proof iso_is_bij_un_fn (IsIso0 := flip_iso_is_iso (IsIso0 := i)) as t''.
+    destruct t' as [i' s']. hnf in i', s'.
+    destruct t'' as [i'' s'']. hnf in i'', s''.
+    destruct i as [p_ q_ r s]. hnf in p_, q_, r, s.
+    clear IsBishopSize0 t.
 
     apply IsIn_Exists.
     exists x. split; try reflexivity.
+    remember (N.to_nat (N_length a)) as n eqn : t.
+    set (z := g x).
 
 Admitted.
 
@@ -1174,7 +1210,13 @@ Proof with notations enabled.
   - intros x.
     pose proof size_is_equiv_types as t.
     pose proof equiv_types _ _ _ _ (IsEquivTypes := t) as u.
-    destruct u as [f [g [r s]]]. hnf in r, s. clear IsSize0 t.
+    destruct u as [f [g i]].
+    pose proof iso_is_bij_un_fn (IsIso0 := i) as t'.
+    pose proof iso_is_bij_un_fn (IsIso0 := flip_iso_is_iso (IsIso0 := i)) as t''.
+    destruct t' as [i' s']. hnf in i', s'.
+    destruct t'' as [i'' s'']. hnf in i'', s''.
+    destruct i as [p_ q_ r s]. hnf in p_, q_, r, s.
+    clear IsSize0 t.
 
     remember (N_length (enum A)) as n eqn : t.
     assert (t' : n <= N_length (enum A)) by lia.
@@ -1189,12 +1231,14 @@ Proof with notations enabled.
     eset (g' (y : A) := match g y with
     | (p; i) => (p; _)
     end : {p : N | p < q}).
-    apply (i ltac:(lia) f' g'). Unshelve. all: cbv beta.
+    apply (fun a b c => i ltac:(lia) f' a b c g'). Unshelve. all: cbv beta.
+    shelve. shelve. shelve. shelve.
     intros [p l]. unfold f', g'. simpl. rewrite r. f_equal. apply irrel.
     intros y. unfold f', g'. destruct (g y) as [p j] eqn : egg.
     match goal with
     | |- f (p; ?hole) == y => rewrite (irrel hole j)
     end. rewrite <- egg. rewrite s. reflexivity.
+    shelve. shelve.
     lia.
     clearbody f'.
 

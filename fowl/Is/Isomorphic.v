@@ -1,7 +1,7 @@
 (** * Isomorphisms *)
 
 From DEZ.Is Require Export
-  Reflexive.
+  Proper Reflexive.
 
 (** The definition [IsRetr f g] should be read
     as [g] being a retraction of [f] and
@@ -44,6 +44,8 @@ End Context.
 
 Class IsIso (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (f : A -> B) (g : B -> A) : Prop := {
+  iso_sect_is_proper :> IsProper (X ==> Y) f;
+  iso_retr_is_proper :> IsProper (Y ==> X) g;
   iso_is_retr :> IsRetr X f g;
   iso_is_sect :> IsSect Y f g;
 }.
@@ -58,6 +60,8 @@ Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
 #[local] Instance flip_iso_is_iso `{!IsIso X Y f g} : IsIso Y X g f.
 Proof.
   split.
+  - typeclasses eauto.
+  - typeclasses eauto.
   - intros x. apply sect.
   - intros x. apply retr. Qed.
 
@@ -73,6 +77,8 @@ Context (A : Type) (X : A -> A -> Prop).
 #[export] Instance refl_is_iso_id `{!IsRefl X} : IsIso X X id id.
 Proof.
   split.
+  - typeclasses eauto.
+  - typeclasses eauto.
   - intros x. reflexivity.
   - intros x. reflexivity. Qed.
 
@@ -83,6 +89,8 @@ End Context.
 
 Class IsAuto (A : Type) (X : A -> A -> Prop)
   (f g : A -> A) : Prop := {
+  auto_sect_is_proper :> IsProper (X ==> X) f;
+  auto_retr_is_proper :> IsProper (X ==> X) g;
   auto_is_retr :> IsRetr X f g;
   auto_is_sect :> IsSect X f g;
 }.
