@@ -159,15 +159,15 @@ Equations nindex (a : list A) : list (nat * A) :=
 
 Context {X : HasEquivRel A} {d : HasEquivDec A}.
 
-Equations nfind_error_from (n : nat) (x : A) (a : list A) : option nat :=
-  nfind_error_from _ _ [] := None;
-  nfind_error_from n x (y :: b) with dec (x == y) := {
+Equations nfind_from_error (n : nat) (x : A) (a : list A) : option nat :=
+  nfind_from_error _ _ [] := None;
+  nfind_from_error n x (y :: b) with dec (x == y) := {
     | left _ := Some n
-    | right _ := nfind_error_from (S n) x b
+    | right _ := nfind_from_error (S n) x b
   }.
 
 Equations nfind_error (x : A) (a : list A) : option nat :=
-  nfind_error := nfind_error_from O.
+  nfind_error := nfind_from_error O.
 
 Equations nfind_from (n : nat) (x : A) (a : list A) (p : nat) : nat :=
   nfind_from _ _ [] p := p;
@@ -241,8 +241,8 @@ Equations Nindex (a : list A) : list (N * A) :=
 
 Context {X : HasEquivRel A} {d : HasEquivDec A}.
 
-Equations Nfind_error_from (n : N) (x : A) (a : list A) : option N :=
-  Nfind_error_from n x a := option_map N.of_nat (nfind_error_from (N.to_nat n) x a).
+Equations Nfind_from_error (n : N) (x : A) (a : list A) : option N :=
+  Nfind_from_error n x a := option_map N.of_nat (nfind_from_error (N.to_nat n) x a).
 
 Equations Nfind_error (x : A) (a : list A) : option N :=
   Nfind_error x a := option_map N.of_nat (nfind_error x a).
@@ -284,15 +284,15 @@ Equations Nindex (a : list A) : list (N * A) :=
 
 Context {X : HasEquivRel A} {d : HasEquivDec A}.
 
-Equations Nfind_error_from (n : N) (x : A) (a : list A) : option N :=
-  Nfind_error_from _ _ [] := None;
-  Nfind_error_from n x (y :: b) with dec (x == y) := {
+Equations Nfind_from_error (n : N) (x : A) (a : list A) : option N :=
+  Nfind_from_error _ _ [] := None;
+  Nfind_from_error n x (y :: b) with dec (x == y) := {
     | left _ := Some n
-    | right _ := Nfind_error_from (N.succ n) x b
+    | right _ := Nfind_from_error (N.succ n) x b
   }.
 
 Equations Nfind_error (x : A) (a : list A) : option N :=
-  Nfind_error := Nfind_error_from 0.
+  Nfind_error := Nfind_from_error 0.
 
 Equations Nfind_from (n : N) (x : A) (a : list A) (p : N) : N :=
   Nfind_from _ _ [] p := p;
@@ -365,16 +365,16 @@ Section Context.
 
 Context (A : Type) {X : HasEquivRel A} {d : HasEquivDec A}.
 
-Lemma Nfind_error_from_ref (n : N) (x : A) (a : list A) :
-  Nfind_error_from n x a = Ref.Nfind_error_from n x a.
+Lemma Nfind_from_error_ref (n : N) (x : A) (a : list A) :
+  Nfind_from_error n x a = Ref.Nfind_from_error n x a.
 Proof.
-  apply Ref.Nfind_error_from_elim. clear n x a. intros n x a.
+  apply Ref.Nfind_from_error_elim. clear n x a. intros n x a.
   revert n x. induction a as [| y b s]; intros n x.
   - reflexivity.
   - destruct (dec (x == y)) as [ex | fx] eqn : ed.
-    + simp Nfind_error_from nfind_error_from. rewrite ed. simpl.
+    + simp Nfind_from_error nfind_from_error. rewrite ed. simpl.
       rewrite N2Nat.id. reflexivity.
-    + simp Nfind_error_from nfind_error_from. rewrite ed. simpl.
+    + simp Nfind_from_error nfind_from_error. rewrite ed. simpl.
       pose proof s (N.succ n) x as s'. rewrite N2Nat.inj_succ in s'.
       apply s'. Qed.
 
@@ -382,7 +382,7 @@ Lemma Nfind_error_ref (x : A) (a : list A) :
   Nfind_error x a = Ref.Nfind_error x a.
 Proof.
   apply Nfind_error_elim. apply Ref.Nfind_error_elim. clear x a. intros x a.
-  apply nfind_error_elim. apply Nfind_error_from_ref. Qed.
+  apply nfind_error_elim. apply Nfind_from_error_ref. Qed.
 
 Lemma Nfind_from_ref (n : N) (x : A) (a : list A) (p : N) :
   Nfind_from n x a p = Ref.Nfind_from n x a p.
@@ -515,69 +515,69 @@ Proof.
   - simp Nth. simpl N.pred. reflexivity.
   - simp Nth. simpl N.pred. rewrite Pos.pred_N_succ. reflexivity. Qed.
 
-Lemma Nfind_error_from_succ (n p : N) (x : A) (a : list A)
-  (e : Nfind_error_from n x a = Some p) : Nfind_error_from (N.succ n) x a = Some (N.succ p).
+Lemma Nfind_from_error_succ (n p : N) (x : A) (a : list A)
+  (e : Nfind_from_error n x a = Some p) : Nfind_from_error (N.succ n) x a = Some (N.succ p).
 Proof.
-  revert e. apply Nfind_error_from_elim.
+  revert e. apply Nfind_from_error_elim.
   - clear n x a. intros n x e.
     discriminate.
   - clear n x a. intros n x y ex b ed e.
-    simp Nfind_error_from. rewrite ed. simpl.
+    simp Nfind_from_error. rewrite ed. simpl.
     inversion_clear e. reflexivity.
   - clear n x a. intros n x y ex b es ed e.
-    simp Nfind_error_from. rewrite ed. simpl.
+    simp Nfind_from_error. rewrite ed. simpl.
     apply es. apply e. Qed.
 
-Lemma Nfind_error_from_succ' (n p : N) (x : A) (a : list A)
-  (e : Nfind_error_from (N.succ n) x a = Some (N.succ p)) : Nfind_error_from n x a = Some p.
+Lemma Nfind_from_error_succ' (n p : N) (x : A) (a : list A)
+  (e : Nfind_from_error (N.succ n) x a = Some (N.succ p)) : Nfind_from_error n x a = Some p.
 Proof.
-  revert e. apply (Nfind_error_from_elim
+  revert e. apply (Nfind_from_error_elim
   (fun (n : N) (x : A) (a : list A) (s : option N) =>
-  Nfind_error_from (N.succ n) x a = Some (N.succ p) -> s = Some p)).
+  Nfind_from_error (N.succ n) x a = Some (N.succ p) -> s = Some p)).
   - clear n x a. intros n x e.
     discriminate.
   - clear n x a. intros n x y ex b ed e.
-    simp Nfind_error_from in e. rewrite ed in e. simpl in e.
+    simp Nfind_from_error in e. rewrite ed in e. simpl in e.
     f_equal. apply N.succ_inj. inversion_clear e. reflexivity.
   - clear n x a. intros n x y ex b es ed e.
-    simp Nfind_error_from in e. rewrite ed in e. simpl in e.
+    simp Nfind_from_error in e. rewrite ed in e. simpl in e.
     apply es. apply e. Qed.
 
-Lemma Nfind_error_from_succ_iff (n p : N) (x : A) (a : list A) :
-  Nfind_error_from n x a = Some p <-> Nfind_error_from (N.succ n) x a = Some (N.succ p).
+Lemma Nfind_from_error_succ_iff (n p : N) (x : A) (a : list A) :
+  Nfind_from_error n x a = Some p <-> Nfind_from_error (N.succ n) x a = Some (N.succ p).
 Proof.
   split.
-  - apply Nfind_error_from_succ.
-  - apply Nfind_error_from_succ'. Qed.
+  - apply Nfind_from_error_succ.
+  - apply Nfind_from_error_succ'. Qed.
 
-Lemma Nfind_error_from_succ_zero (n : N) (x : A) (a : list A)
-  (e : Nfind_error_from (N.succ n) x a = Some 0) : 0.
+Lemma Nfind_from_error_succ_zero (n : N) (x : A) (a : list A)
+  (e : Nfind_from_error (N.succ n) x a = Some 0) : 0.
 Proof.
-  revert e. apply (Nfind_error_from_elim
+  revert e. apply (Nfind_from_error_elim
   (fun (n : N) (x : A) (a : list A) (s : option N) =>
-  Nfind_error_from (N.succ n) x a = Some 0 -> 0)).
+  Nfind_from_error (N.succ n) x a = Some 0 -> 0)).
   - clear n x a. intros n x e.
     discriminate.
   - clear n x a. intros n x y ex b ed e.
-    simp Nfind_error_from in e. rewrite ed in e. simpl in e.
+    simp Nfind_from_error in e. rewrite ed in e. simpl in e.
     injection e. lia.
   - clear n x a. intros n x y ex b f ed e.
-    simp Nfind_error_from in e. rewrite ed in e. simpl in e.
+    simp Nfind_from_error in e. rewrite ed in e. simpl in e.
     apply f. apply e. Qed.
 
-Lemma Nfind_error_from_lt (n p : N) (x : A) (a : list A)
-  (i : p < n) (e : Nfind_error_from n x a = Some p) : 0.
+Lemma Nfind_from_error_lt (n p : N) (x : A) (a : list A)
+  (i : p < n) (e : Nfind_from_error n x a = Some p) : 0.
 Proof.
   revert p i e. induction n as [| q f] using N.peano_ind; intros p i e.
   - lia.
   - destruct p as [| r _] using N.peano_ind.
-    + apply Nfind_error_from_succ_zero in e. contradiction.
-    + apply Nfind_error_from_succ' in e. apply f in e.
+    + apply Nfind_from_error_succ_zero in e. contradiction.
+    + apply Nfind_from_error_succ' in e. apply f in e.
       * contradiction.
       * lia. Qed.
 
-Lemma Nfind_error_from_some (n p : N) (x y : A) (a : list A)
-  (e : Nfind_error_from n x a = Some (n + p)) :
+Lemma Nfind_from_error_some (n p : N) (x y : A) (a : list A)
+  (e : Nfind_from_error n x a = Some (n + p)) :
   IsIn x a /\ p < N_length a /\ Nth p a y == x.
 Proof.
   revert n p e. induction a as [| z b c]; intros n p e.
@@ -590,14 +590,14 @@ Proof.
            ++ simpl N_length. lia.
            ++ symmetry. apply ex.
       * exfalso.
-        simp Nfind_error_from in e. rewrite ed in e. simpl in e.
-        apply Nfind_error_from_lt in e.
+        simp Nfind_from_error in e. rewrite ed in e. simpl in e.
+        apply Nfind_from_error_lt in e.
         -- contradiction.
         -- lia.
     + destruct (dec (x == z)) as [ex | fx] eqn : ed.
-      * exfalso. simp Nfind_error_from in e. rewrite ed in e. simpl in e.
+      * exfalso. simp Nfind_from_error in e. rewrite ed in e. simpl in e.
         injection e. lia.
-      * simp Nfind_error_from in e. rewrite ed in e. simpl in e.
+      * simp Nfind_from_error in e. rewrite ed in e. simpl in e.
         pose proof c (N.succ n) q as cq.
         rewrite <- N.add_succ_comm in e. apply cq in e. destruct e as [i [iq ex]].
         split.
@@ -606,49 +606,49 @@ Proof.
            ++ simp N_length. lia.
            ++ rewrite Nth_succ. apply ex. Qed.
 
-Lemma Nfind_error_from_none (n : N) (x : A) (a : list A)
-  (e : Nfind_error_from n x a = None) (s : IsIn x a) : 0.
+Lemma Nfind_from_error_none (n : N) (x : A) (a : list A)
+  (e : Nfind_from_error n x a = None) (s : IsIn x a) : 0.
 Proof.
   revert n e s. induction a as [| z b c]; intros n e s.
   - contradiction.
   - simpl in s. destruct s as [t | t].
     + destruct (dec (x == z)) as [ex | fx] eqn : ed.
-      * exfalso. simp Nfind_error_from in e. rewrite ed in e. simpl in e.
+      * exfalso. simp Nfind_from_error in e. rewrite ed in e. simpl in e.
         discriminate.
       * contradiction.
     + destruct (dec (x == z)) as [ex | fx] eqn : ed.
-      * simp Nfind_error_from in e. rewrite ed in e. simpl in e.
+      * simp Nfind_from_error in e. rewrite ed in e. simpl in e.
         discriminate.
-      * simp Nfind_error_from in e. rewrite ed in e. simpl in e.
+      * simp Nfind_from_error in e. rewrite ed in e. simpl in e.
         revert t. eapply c. apply e. Qed.
 
 Lemma Nfind_error_some (x y : A) (a : list A) (n : N) (s : Nfind_error x a = Some n) :
   IsIn x a /\ n < N_length a /\ Nth n a y == x.
-Proof. eapply Nfind_error_from_some. rewrite N.add_0_l. apply s. Qed.
+Proof. eapply Nfind_from_error_some. rewrite N.add_0_l. apply s. Qed.
 
 Lemma Nfind_error_none (x : A) (a : list A)
   (s : Nfind_error x a = None) (i : IsIn x a) : 0.
-Proof. eapply Nfind_error_from_none. apply s. apply i. Qed.
+Proof. eapply Nfind_from_error_none. apply s. apply i. Qed.
 
-Lemma Nfind_error_from_some' (n : N) (x y : A) (a : list A) (s : IsIn x a) :
+Lemma Nfind_from_error_some' (n : N) (x y : A) (a : list A) (s : IsIn x a) :
   exists p : N,
-  Nfind_error_from n x a = Some (n + p) /\ p < N_length a /\ Nth p a y == x.
+  Nfind_from_error n x a = Some (n + p) /\ p < N_length a /\ Nth p a y == x.
 Proof.
   revert n s. induction a as [| z b c]; intros n s.
   - contradiction.
   - simpl in s.
     destruct (dec (x == z)) as [ex | fx] eqn : ed.
     + exists 0. repeat split.
-      * simp Nfind_error_from. rewrite ed. simpl.
+      * simp Nfind_from_error. rewrite ed. simpl.
         rewrite N.add_0_r. reflexivity.
       * simp N_length. lia.
       * symmetry. apply ex.
     + destruct s as [t | t].
       * contradiction.
-      * simp Nfind_error_from. rewrite ed. cbn -[Nth].
+      * simp Nfind_from_error. rewrite ed. cbn -[Nth].
         pose proof c n t as c'. destruct c' as [p [c0 [c1 c2]]].
         exists (N.succ p). repeat split.
-        -- rewrite N.add_succ_r. apply Nfind_error_from_succ. apply c0.
+        -- rewrite N.add_succ_r. apply Nfind_from_error_succ. apply c0.
         -- lia.
         -- rewrite Nth_ref. unfold Ref.Nth. rewrite N2Nat.inj_succ.
            simpl. rewrite Nth_ref in c2. apply c2. Qed.
@@ -656,7 +656,28 @@ Proof.
 Lemma Nfind_error_some' (x y : A) (a : list A) (s : IsIn x a) :
   exists n : N,
   Nfind_error x a = Some n /\ n < N_length a /\ Nth n a y == x.
-Proof. eapply Nfind_error_from_some'. apply s. Qed.
+Proof. eapply Nfind_from_error_some'. apply s. Qed.
+
+Lemma Nfind_from_error_Proper (n : N) (x y : A) (a : list A) (s : x == y) :
+  Nfind_from_error n x a = Nfind_from_error n y a.
+Proof.
+  revert n; induction a as [| z b t]; intros n.
+  - reflexivity.
+  - simp Nfind_from_error.
+    destruct (dec (x == z)) as [ex | fx] eqn : dx,
+    (dec (y == z)) as [ey | fy] eqn : dy.
+    + reflexivity.
+    + exfalso. apply fy. etransitivity.
+      * symmetry. apply s.
+      * apply ex.
+    + exfalso. apply fx. etransitivity.
+      * apply s.
+      * apply ey.
+    + apply t. Qed.
+
+Lemma Nfind_error_Proper (x y : A) (a : list A) (s : x == y) :
+  Nfind_error x a = Nfind_error y a.
+Proof. apply Nfind_from_error_Proper. apply s. Qed.
 
 Lemma Nfind_error_Nth (n : N) (a : list A) (x : A) (s : n < N_length a) :
   exists p : N,
@@ -780,6 +801,14 @@ Existing Class IsNoDup.
 
 End Context.
 
+Lemma IsNoDup_inversion (A : Type) (X : A -> A -> Prop) (x : A) (a : list A)
+  `{!IsNoDup X (x :: a)} : IsNoDup X a.
+Proof.
+  match goal with
+  | x : IsNoDup _ _ |- _ => revert x
+  end.
+  intros IND. inversion_clear IND as [| ? ? FII IND']. apply IND'. Qed.
+
 (** ** Unsorted Unique Enumeration of a Type *)
 
 (** This is a generalization of [Listing]. *)
@@ -822,6 +851,9 @@ Equations nodup (a : list A) : list A by struct a :=
     | right _ => x :: nodup b
   }.
 
+#[local] Instance nodup_spec (a : list A) : IsNoDup X (nodup a).
+Proof. Admitted.
+
 End Context.
 
 Section Context.
@@ -858,7 +890,21 @@ Admitted.
 
 #[local] Instance nodup_listing_is_full
   `{!IsListing X (nodup d a)} : IsFull X a.
-Proof. Admitted.
+Proof with notations enabled.
+  intros x... pose proof full x as E.
+  match goal with
+  | IL : IsListing _ _ |- _ => clear IL
+  end.
+  revert E. apply nodup_elim.
+  - intros E. apply E.
+  - intros y b II E eII E'.
+    apply Exists_cons. destruct (dec (x == y)) as [ex | Fx] eqn : eex.
+    + left. apply ex.
+    + right. apply E. apply E'.
+  - intros y b FII E eII E'.
+    apply Exists_cons in E'; rename E' into eE. destruct eE as [e | E'].
+    + apply Exists_cons_hd. apply e.
+    + apply Exists_cons_tl. apply E. apply E'. Qed.
 
 End Context.
 
@@ -1045,7 +1091,7 @@ Next Obligation with notations enabled.
 Equations decode (x : A) : {p : N | p < N.of_nat (length (enum A))} :=
   decode x with inspect (Nfind_error x (enum A)) := {
     | Some p eqn : _ => (p; _)
-    | None eqn : _ => _
+    | None eqn : _ => (0; _)
   }.
 Next Obligation with notations enabled.
   cbv beta...
@@ -1181,23 +1227,22 @@ Proof with notations enabled.
     + clear x. intros x p s _ t.
       revert s t. apply decode_elim.
       * clear y. intros y q t _ u s.
-        clear IsListing0.
-        induction (enum A) as [| z b i].
-        -- discriminate.
-        -- unfold Nfind_error in t, u.
-           pose proof t as t'. pose proof u as u'.
-           rewrite Nfind_error_from_equation_2 in t'.
-           rewrite Nfind_error_from_equation_2 in u'.
-           destruct (dec (x == z)) as [ex | fx] eqn : ed,
-           (dec (y == z)) as [ey | fy] eqn : ed';
-           simpl in t', u'.
-           inversion t'; subst. inversion u'; subst. f_equal. apply irrel.
-           pose proof trans _ _ _ (s ^-1) ex. contradiction.
-           pose proof trans _ _ _ s ey. contradiction.
-           (** It is one of those "ind. hyp. suck." situations again. *)
-           admit.
-      * admit.
-    + admit.
+        pose proof u as u'.
+        rewrite (Nfind_error_Proper _ _ _ s) in u'.
+        rewrite t in u'. inversion u' as [u''].
+        apply (eq_exist_curried (u'' ^-1)). apply irrel.
+      * clear y. intros y t _ u s.
+        pose proof u as u'.
+        rewrite (Nfind_error_Proper _ _ _ s) in u'.
+        rewrite t in u'. inversion u'.
+    + clear x. intros x s _ t.
+      revert s t. apply decode_elim.
+      * clear y. intros y q t _ u s.
+        pose proof u as u'.
+        rewrite (Nfind_error_Proper _ _ _ s) in u'.
+        rewrite t in u'. inversion u'.
+      * clear y. intros y t _ u s.
+        apply (eq_exist_curried id%type). apply irrel.
   - intros [p t]. apply encode_elim.
     + clear p t. intros p t u _. exfalso.
       rewrite u in t. unfold length, N.of_nat in t. lia.
@@ -1247,7 +1292,7 @@ Proof with notations enabled.
       pose proof full x as fz. apply Exists_IsIn in fz.
       destruct fz as [z [i e]].
       pose proof Proper_IsIn z x (enum A) as w. apply w.
-      symmetry. apply e. apply i. Admitted.
+      symmetry. apply e. apply i. Qed.
 
 #[export] Instance listing_is_size_length'
   `{!IsListing X a} : IsBishopSize X (N_length a).
