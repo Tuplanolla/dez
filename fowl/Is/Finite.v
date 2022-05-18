@@ -361,6 +361,13 @@ Proof.
 Lemma Nindex_ref (A : Type) (a : list A) : Nindex a = Ref.Nindex a.
 Proof. apply Ref.Nindex_elim. apply Nindex_elim. apply Nindex_from_ref. Qed.
 
+Lemma N_seq_succ (n p : N) :
+  N_seq n (N.succ p) = n :: N_seq (N.succ n) p.
+Proof.
+  do 2 rewrite N_seq_ref. unfold Ref.N_seq. rewrite N2Nat.inj_succ.
+  rewrite <- cons_seq. simpl map. rewrite N2Nat.id. rewrite <- N2Nat.inj_succ.
+  reflexivity. Qed.
+
 Section Context.
 
 Context (A : Type) {X : HasEquivRel A} {d : HasEquivDec A}.
@@ -1003,7 +1010,11 @@ Proof. destruct a as [p i]. exists (N.to_nat p). lia. Defined.
 (** These are not actually true due to [lt] not being a mere proposition. *)
 
 Lemma obvious (n : nat) x : Fin.to_nat (m := n) (Fin_of_nat x) = x.
-Proof. Admitted.
+Proof.
+  destruct x as [p i]. hnf. cbn. revert p i; induction n as [| q r]; intros p i.
+  - lia.
+  - destruct p as [| s].
+Admitted.
 
 Lemma obvious' (n : nat) x : Fin_of_nat (n := n) (Fin.to_nat x) = x.
 Proof. Admitted.
@@ -1298,27 +1309,48 @@ Proof with notations enabled.
   `{!IsListing X a} : IsBishopSize X (N_length a).
 Proof. apply bishop_or_not. apply listing_is_size_length. Qed.
 
-#[local] Instance size_length_is_listing'
-  `{!IsBishopSize X (N_length a)} : IsListing X a.
+Equations tabulate (n : nat) (f : Fin.t n -> A) : list A by struct n :=
+  tabulate (n := O) f := [];
+  tabulate (n := S p) f := f Fin.F1 :: tabulate (n := p) (f o Fin.FS).
+
+Lemma at_tabulate (k : nat) (x : A) (f : Fin.t k -> A)
+  (ns : exists n : Fin.t k, f n == x) : IsIn x (tabulate f).
 Proof.
-  split...
-  - intros x.
-    pose proof bishop_size_is_equiv_types as t.
-    pose proof equiv_types _ _ _ _ (IsEquivTypes := t) as u.
-    destruct u as [f [g i]].
-    pose proof iso_is_bij_un_fn (IsIso0 := i) as t'.
-    pose proof iso_is_bij_un_fn (IsIso0 := flip_iso_is_iso (IsIso0 := i)) as t''.
-    destruct t' as [i' s']. hnf in i', s'.
-    destruct t'' as [i'' s'']. hnf in i'', s''.
-    destruct i as [p_ q_ r s]. hnf in p_, q_, r, s.
-    clear IsBishopSize0 t.
+  destruct ns as [n s].
+  induction n as [| p q r].
+  - Fail rewrite <- s. epose proof Proper_IsIn _ _ _ s as e. apply e. left. reflexivity.
+  - right. apply r. rewrite <- s. reflexivity. Qed.
 
-    apply IsIn_Exists.
-    exists x. split; try reflexivity.
-    remember (N.to_nat (N_length a)) as n eqn : t.
-    set (z := g x).
+Lemma in_index (k : nat) (x : A) (f : Fin.t k -> A)
+  (s : IsIn x (tabulate f)) : exists n : Fin.t k, f n == x.
+Proof.
+  induction k as [| k' eh].
+  - contradiction.
+  - simpl in s. destruct s as [s | s].
+    + exists Fin.F1. rewrite s. reflexivity.
+    + pose proof eh (f o Fin.FS) s as w. destruct w as [n e].
+      exists (Fin.FS n). rewrite <- e. reflexivity. Qed.
 
-Admitted.
+#[local] Instance size_length_is_listing'
+  `{!IsBishopFinSize X} : IsFinListing X.
+Proof.
+  destruct bishop_fin_size as [p s].
+  destruct s as [f [g i]].
+  exists (tabulate f).
+  split.
+  - intros x. apply IsIn_Exists. exists x. split.
+    + apply at_tabulate. exists (g x). rewrite sect. reflexivity.
+    + reflexivity.
+  - pose proof inj_un_fn (X := _=_) (Y := X) (f := f) as j.
+    clear i g. induction p as [| q r] using N.peano_ind.
+    + apply IsNoDup_nil.
+    + remember (N.to_nat (N.succ q)) as n eqn : rm.
+      rewrite N2Nat.inj_succ in rm. subst n.
+      simp tabulate. apply IsNoDup_cons.
+      * intros w. apply in_index in w. destruct w as [x e].
+        unfold compose in e. apply j in e. inversion e.
+      * apply (r (f o Fin.FS)). intros x y b. apply j in b.
+        apply Fin.FS_inj in b. apply b. Qed.
 
 Equations N_seq_sig' (n p : N) : list {q : N | q < n + p} :=
   N_seq_sig' n p with inspect (N_seq n p) := {
@@ -1354,103 +1386,33 @@ Next Obligation. cbv beta. intros n p.
   replace (n + N.succ q) with (N.succ n + q) by lia.
   apply s. Defined.
 
-From Coq Require Import Logic.FinFun Sorting.Permutation.
-
 #[local] Instance size_length_is_listing
-  `{!IsSize X (N_length a)} : IsListing X a.
-Proof with notations enabled.
-  split...
-  - intros x.
-    pose proof size_is_equiv_types as t.
-    pose proof equiv_types _ _ _ _ (IsEquivTypes := t) as u.
-    destruct u as [f [g i]].
-    pose proof iso_is_bij_un_fn (IsIso0 := i) as t'.
-    pose proof iso_is_bij_un_fn (IsIso0 := flip_iso_is_iso (IsIso0 := i)) as t''.
-    destruct t' as [i' s']. hnf in i', s'.
-    destruct t'' as [i'' s'']. hnf in i'', s''.
-    destruct i as [p_ q_ r s]. hnf in p_, q_, r, s.
-    clear IsSize0 t.
+  `{!IsFinSize X} : IsFinListing X.
+Proof.
+  destruct fin_size as [p s].
+  destruct s as [f [g i]].
+  exists (map f (N_seq_sig 0 p)).
+  split.
+  - intros x. apply IsIn_Exists. exists x. split.
+    + pose proof (sect (f := f) (g := g) x) as r.
+      epose proof Proper_IsIn _ _ _ r as rw. apply rw. clear rw.
+      eapply IsIn_map.
+      enough (In ((N.to_nat o proj1_sig o g) x) (seq O (N.to_nat p))) by admit.
+      apply in_seq. split. lia. rewrite PeanoNat.Nat.add_0_l. unfold compose.
+      destruct (g x) as [n gg]. unfold proj1_sig. lia.
+    + reflexivity.
+  - pose proof inj_un_fn (X := _=_) (Y := X) (f := f) as j.
+    clear i g. induction p as [| q r] using N.peano_ind.
+    + apply IsNoDup_nil.
+    + remember (N.to_nat (N.succ q)) as n eqn : rm.
+      rewrite N2Nat.inj_succ in rm. subst n.
+      simp N_seq_sig. pose proof N_seq_succ 0 (N.succ q). Admitted.
 
-    apply IsIn_Exists. exists x. split; try reflexivity.
-
-    change x with (id x).
-    pose proof Proper_IsIn ((f o g) x) (id x) (enum A) (s _) as P.
-    apply P. clear P.
-    rewrite <- (map_id (enum A)).
-    change (fun x : A => x) with (@id A).
-    rewrite (map_ext_equiv id (f o g)).
-    2:{ intros ?. symmetry. apply s. }
-    rewrite <- (map_compose g f).
-    unfold compose.
-    eapply IsIn_map.
-    enough (talk : In ((proj1_sig o g) x) (map (proj1_sig o g) (enum A))) by admit.
-    apply (count_occ_In N.eq_dec (map (proj1_sig o g) (enum A)) ((proj1_sig o g) x)).
-
-    (*
-    remember (N_length (enum A)) as n eqn : t.
-    assert (t' : n <= N_length (enum A)) by lia.
-    clear t.
-    generalize dependent g.
-    generalize dependent f.
-    induction n as [| q i] using N.peano_ind; intros.
-    destruct (g x) as [oh fuck]. lia.
-    eset (f' (a : {p : N | p < q}) := match a with
-    | (p; i) => f (p; _)
-    end : A).
-    eset (g' (y : A) := match g y with
-    | (p; i) => (p; _)
-    end : {p : N | p < q}).
-    apply (fun a b c => i ltac:(lia) f' a b c g'). Unshelve. all: cbv beta.
-    shelve. shelve. shelve. shelve.
-    intros [p l]. unfold f', g'. simpl. rewrite r. f_equal. apply irrel.
-    intros y. unfold f', g'. destruct (g y) as [p j] eqn : egg.
-    match goal with
-    | |- f (p; ?hole) == y => rewrite (irrel hole j)
-    end. rewrite <- egg. rewrite s. reflexivity.
-    shelve. shelve.
-    lia.
-    clearbody f'.
-    *)
-
-    (* set (f' := sig_curry f). cbv beta in f'.
-    set (g' := proj1_sig o g).
-    assert (g'wd : forall x : A, g' x < N.of_nat (length (enum A))).
-    { intros y. unfold g'. unfold compose. destruct (g y) as [gy i].
-      simpl. apply i. }
-    assert (r' : forall (p : N) (i : p < N.of_nat (length (enum A))),
-    g' (f' p i) = p).
-    { intros p i. unfold f', g'. unfold compose.
-      rewrite r. reflexivity. } *)
-
-    (** To go from [IsIn x (enum A)] to [In (g x) (map g (enum A))]. *)
-    (*
-    change x with (id x).
-    epose proof Proper_IsIn ((f o g) x) (id x) _ (s _) as P. apply P. clear P.
-    rewrite <- (map_id (enum A)).
-    change (fun x : A => x) with (@id A).
-    rewrite (map_ext_equiv id (f o g)).
-    2:{ intros ?. symmetry. apply s. }
-    rewrite <- (map_compose g f).
-    unfold compose.
-    eapply IsIn_map.
-    enough (talk : In (g x) (map g (enum A))) by apply talk.
-    *)
-
-    admit.
-  - pose proof size_is_equiv_types as t.
-    pose proof equiv_types _ _ _ _ (IsEquivTypes := t) as u.
-    destruct u as [f [g i]].
-    pose proof iso_is_bij_un_fn (IsIso0 := i) as t'.
-    pose proof iso_is_bij_un_fn (IsIso0 := flip_iso_is_iso (IsIso0 := i)) as t''.
-    destruct t' as [i' s']. hnf in i', s'.
-    destruct t'' as [i'' s'']. hnf in i'', s''.
-    destruct i as [p_ q_ r s]. hnf in p_, q_, r, s.
-    clear IsSize0 t.
-
-    Fail apply NoDup_count_occ'.
-
-    admit.
-Admitted.
+#[export] Instance fin_listing_is_fin_size
+  `{!IsFinListing X} : IsFinSize X.
+Proof.
+  destruct fin_listing as [a ?]. exists (N_length a).
+  apply listing_is_size_length; eauto || typeclasses eauto. Qed.
 
 End Context.
 
@@ -1472,34 +1434,5 @@ Proof.
   - simp list_proj1_sig. apply Forall_cons.
     + apply a.
     + apply s. Qed.
-
-End Context.
-
-Section Context.
-
-Context (A : Type) (X : A -> A -> Prop)
-  (d : forall x y : A, {X x y} + {~ X x y}) `{!IsEquiv X}.
-
-#[local] Instance has_equiv_rel'' : HasEquivRel A := X.
-#[local] Instance has_equiv_dec' : HasEquivDec A := d.
-
-#[export] Instance fin_listing_is_fin_size
-  `{!IsFinListing X} : IsFinSize X.
-Proof.
-  destruct fin_listing as [a ?]. exists (N_length a).
-  apply listing_is_size_length; eauto || typeclasses eauto. Qed.
-
-#[local] Instance fin_size_is_fin_listing
-  `{!IsFinSize X} : IsFinListing X.
-Proof.
-  destruct fin_size as [n s]. pose proof s as t.
-  destruct t as [f [g ?]]. exists (map f (N_seq_sig 0 n)).
-  apply size_length_is_listing; try eauto || typeclasses eauto.
-  rewrite N_length_ref. unfold Ref.N_length.
-  rewrite map_length. rewrite <- (map_length proj1_sig (N_seq_sig 0 n)).
-  rewrite N_seq_sig_proj1_sig.
-  rewrite N_seq_ref. unfold Ref.N_seq.
-  rewrite map_length. rewrite seq_length. rewrite N2Nat.id.
-  typeclasses eauto. Qed.
 
 End Context.
