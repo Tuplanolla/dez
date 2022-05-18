@@ -14,6 +14,12 @@ From DEZ.Provides Require Import
 From DEZ.Supports Require Import
   EquivalenceNotations.
 
+#[export] Instance le_is_prop (x y : nat) : IsProp (x <= y).
+Proof. intros a b. apply Peano_dec.le_unique. Qed.
+
+#[export] Instance lt_is_prop (x y : nat) : IsProp (x < y).
+Proof. intros a b. apply Peano_dec.le_unique. Qed.
+
 Import ListNotations.
 
 Notation "'_::_'" := cons : list_scope.
@@ -1226,8 +1232,6 @@ Ltac notations f := progress (
   f d (equiv_dec (A := A));
   f a (enum A)).
 
-(** TODO Prove the equivalence of these definitions. *)
-
 #[export] Instance listing_is_size_length
   `{!IsListing X a} : IsSize X (N_length a).
 Proof with notations enabled.
@@ -1407,6 +1411,13 @@ Proof.
     + remember (N.to_nat (N.succ q)) as n eqn : rm.
       rewrite N2Nat.inj_succ in rm. subst n.
       simp N_seq_sig. pose proof N_seq_succ 0 (N.succ q). Admitted.
+
+End Context.
+
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop)
+  (d : forall x y : A, {X x y} + {~ X x y}) `{!IsEquiv X}.
 
 #[export] Instance fin_listing_is_fin_size
   `{!IsFinListing X} : IsFinSize X.
