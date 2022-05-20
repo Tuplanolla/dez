@@ -84,7 +84,9 @@ Definition Equations_Version := "1.3"%string.
     The default tactic is
     [program_simplify;
     try typeclasses eauto 10 with program;
-    try program_solve_wf]. *)
+    try program_solve_wf]
+    of which we keep the predictable parts of [program_simplify] and
+    the entirety [program_solve_wf]. *)
 
 #[global] Obligation Tactic := cbv beta; try program_solve_wf.
 
@@ -1057,7 +1059,8 @@ Proof. destruct a as [x a]. reflexivity. Qed.
 
 (** ** Opacity and Transparency *)
 
-(** Flip these switches and push those carts to make unification smart. *)
+(** Flip these switches and push those carts
+    to make unification smart. *)
 
 #[export] Typeclasses Opaque iff all Logic.subrelation unique uniqueness.
 

@@ -3,9 +3,9 @@
 From DEZ.Is Require Export
   Proper Reflexive.
 
-(** The definition [IsRetr f g] should be read
+(** The term [IsRetr f g] should be read
     as [g] being a retraction of [f] and
-    the definition [IsSect f g] should be read
+    the term [IsSect f g] should be read
     as [g] being a section of [f]. *)
 
 (** ** Left Inverse of a Unary Function *)
@@ -29,12 +29,14 @@ Context (A B : Type) (X : A -> A -> Prop)
 
 (** A retraction is a flipped section. *)
 
-#[export] Instance flip_retr_is_sect `{!IsRetr X f g} : IsSect X g f.
+#[export] Instance flip_retr_is_sect
+  `{!IsRetr X f g} : IsSect X g f.
 Proof. auto. Qed.
 
 (** A section is a flipped retraction. *)
 
-#[local] Instance flip_sect_is_retr `{!IsSect X g f} : IsRetr X f g.
+#[local] Instance flip_sect_is_retr
+  `{!IsSect X g f} : IsRetr X f g.
 Proof. auto. Qed.
 
 End Context.
@@ -57,7 +59,8 @@ Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
 
 (** A flipped isomorphism is an isomorphism. *)
 
-#[local] Instance flip_iso_is_iso `{!IsIso X Y f g} : IsIso Y X g f.
+#[local] Instance flip_iso_is_iso
+  `{!IsIso X Y f g} : IsIso Y X g f.
 Proof.
   split.
   - typeclasses eauto.
@@ -74,7 +77,8 @@ Context (A : Type) (X : A -> A -> Prop).
 (** The identity function is an isomorphism
     with respect to any reflexive relation. *)
 
-#[export] Instance refl_is_iso_id `{!IsRefl X} : IsIso X X id id.
+#[export] Instance refl_is_iso_id
+  `{!IsRefl X} : IsIso X X id id | 100.
 Proof.
   split.
   - typeclasses eauto.
@@ -129,7 +133,8 @@ Context (A : Type) (X : A -> A -> Prop).
 (** A type is equivalent to itself
     with respect to any reflexive relation. *)
 
-#[export] Instance refl_is_equiv_types `{!IsRefl X} : IsEquivTypes A A X X.
+#[export] Instance refl_is_equiv_types
+  `{!IsRefl X} : IsEquivTypes A A X X | 100.
 Proof. exists id, id. typeclasses eauto. Qed.
 
 End Context.
