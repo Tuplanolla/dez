@@ -971,13 +971,35 @@ Proof. exists n. auto. Qed.
 
 (** Then in Bishop-style, which is missing from the diagram... *)
 
-Equations Fin_of_nat (n : nat) (s : {p : nat | (p < n)%nat}) :
+Module Ref'.
+
+Equations Fin_of_nat (n : nat) (a : {p : nat | (p < n)%nat}) : Fin.t n :=
+  Fin_of_nat a := Fin.of_nat_lt (proj2_sig a).
+
+End Ref'.
+
+Equations Fin_of_nat (n : nat) (a : {p : nat | (p < n)%nat}) :
   Fin.t n by struct n :=
-  Fin_of_nat (n := O) (p; i) := _;
-  Fin_of_nat (n := S _) (O; i) := Fin.F1;
+  Fin_of_nat (n := O) (_; _) := _;
+  Fin_of_nat (n := _) (O; _) := Fin.F1;
   Fin_of_nat (n := S q) (S p; i) := Fin.FS (Fin_of_nat (n := q) (p; _)).
-Next Obligation. cbv beta. intros _ p i. lia. Defined.
-Next Obligation. cbv beta. intros _ q p i. lia. Defined.
+Next Obligation. intros _ p i. lia. Defined.
+Next Obligation. intros _ q p i. lia. Defined.
+
+#[local] Open Scope nat_scope.
+
+Lemma Fin_of_nat_ref (n : nat) (a : {p : nat | p < n}) :
+  Fin_of_nat a = Ref'.Fin_of_nat a.
+Proof.
+  apply Ref'.Fin_of_nat_elim. clear n a. intros n [p i].
+  apply (Fin_of_nat_elim (fun (n : nat) (a : {p : nat | p < n}) (q : Fin.t n) =>
+  q = Fin.of_nat_lt (proj2_sig a))).
+  - clear n p i. intros n i. exfalso. lia.
+  - clear n p i. intros n i. reflexivity.
+  - clear n p i. intros n p i e.
+    rewrite e. erewrite Fin.of_nat_ext. reflexivity. Qed.
+
+#[local] Open Scope N_scope.
 
 (** ** Size of a Type *)
 
@@ -1002,34 +1024,51 @@ Proof. exists n. auto. Qed.
   fun x y : {x : A | P x} => proj1_sig x == proj1_sig y.
 
 Lemma sig_N_of_nat (n : nat) (a : {p : nat | p < n}%nat) : {p : N | p < N.of_nat n}.
-Proof. destruct a as [p i]. exists (N.of_nat p). lia. Defined.
+Proof. destruct a as [p i]. exists (N.of_nat p). abstract lia. Defined.
 
 Lemma sig_N_to_nat (n : nat) (a : {p : N | p < N.of_nat n}) : {p : nat | p < n}%nat.
-Proof. destruct a as [p i]. exists (N.to_nat p). lia. Defined.
+Proof. destruct a as [p i]. exists (N.to_nat p). abstract lia. Defined.
 
 Lemma sig_N_of_nat' (n : N) (a : {p : nat | p < N.to_nat n}%nat) : {p : N | p < n}.
-Proof. destruct a as [p i]. exists (N.of_nat p). lia. Defined.
+Proof. destruct a as [p i]. exists (N.of_nat p). abstract lia. Defined.
 
 Lemma sig_N_to_nat' (n : N) (a : {p : N | p < n}) : {p : nat | p < N.to_nat n}%nat.
-Proof. destruct a as [p i]. exists (N.to_nat p). lia. Defined.
+Proof. destruct a as [p i]. exists (N.to_nat p). abstract lia. Defined.
 
-(** These are not actually true due to [lt] not being a mere proposition. *)
-
-Lemma obvious (n : nat) x : Fin.to_nat (m := n) (Fin_of_nat x) = x.
+#[export] Instance sig_is_prop (A : Type) (P : A -> Prop)
+  `{!IsProp A} `{!forall x : A, IsProp (P x)} : IsProp {x : A | P x}.
 Proof.
-  destruct x as [p i]. hnf. cbn. revert p i; induction n as [| q r]; intros p i.
-  - lia.
-  - destruct p as [| s].
-Admitted.
+  intros [x a] [y b]. apply eq_sig_hprop.
+  - intros z c d. apply irrel.
+  - apply irrel. Qed.
 
-Lemma obvious' (n : nat) x : Fin_of_nat (n := n) (Fin.to_nat x) = x.
-Proof. Admitted.
+Lemma eq_sig_hprop' (A : Type) (P : A -> Prop) `{!forall x : A, IsProp (P x)}
+  (u v : {a : A | P a}) (s : proj1_sig u = proj1_sig v) : u = v.
+Proof. apply eq_sig_hprop. intros x p q. apply irrel. apply s. Qed.
 
-Lemma evident n x : sig_N_of_nat' n (sig_N_to_nat' n x) = x.
-Proof. Admitted.
+Lemma obvious (n : nat) (a : {p : nat | (p < n)%nat}) :
+  Fin.to_nat (m := n) (Fin_of_nat a) = a.
+Proof.
+  rewrite Fin_of_nat_ref. unfold Ref'.Fin_of_nat.
+  destruct a as [p i]. apply Fin.to_nat_of_nat. Qed.
 
-Lemma evident' n x : sig_N_to_nat' n (sig_N_of_nat' n x) = x.
-Proof. Admitted.
+Lemma obvious' (n : nat) (p : Fin.t n) :
+  Fin_of_nat (n := n) (Fin.to_nat p) = p.
+Proof.
+  rewrite Fin_of_nat_ref. unfold Ref'.Fin_of_nat.
+  apply Fin.of_nat_to_nat_inv. Qed.
+
+Lemma evident (n : N) (a : {p : N | p < n}) :
+  sig_N_of_nat' n (sig_N_to_nat' n a) = a.
+Proof.
+  destruct a as [p i]. unfold sig_N_to_nat', sig_N_of_nat'.
+  apply eq_sig_hprop'. simpl proj1_sig. rewrite N2Nat.id. reflexivity. Qed.
+
+Lemma evident' (n : N) (a : {p : nat | (p < N.to_nat n)%nat}) :
+  sig_N_to_nat' n (sig_N_of_nat' n a) = a.
+Proof.
+  destruct a as [p i]. unfold sig_N_to_nat', sig_N_of_nat'.
+  apply eq_sig_hprop'. simpl proj1_sig. rewrite Nat2N.id. reflexivity. Qed.
 
 Lemma bishop_or_not (A : Type) (X : A -> A -> Prop) (n : N) :
   IsBishopSize X n <-> IsSize X n.
@@ -1054,7 +1093,7 @@ Proof.
     + intros x. unfold compose. rewrite retr.
       rewrite evident'. rewrite obvious'. reflexivity.
     + intros x. unfold compose.
-      rewrite obvious. rewrite evident. apply sect. Admitted.
+      rewrite obvious. rewrite evident. apply sect. Qed.
 
 Lemma Nindex_In (A : Type)
   (n : N) (x : A) (a : list A) (s : In (n, x) (Nindex a)) :
@@ -1335,7 +1374,7 @@ Proof.
     + pose proof eh (f o Fin.FS) s as w. destruct w as [n e].
       exists (Fin.FS n). rewrite <- e. reflexivity. Qed.
 
-#[local] Instance size_length_is_listing'
+#[local] Instance bishop_fin_size_is_fin_listing
   `{!IsBishopFinSize X} : IsFinListing X.
 Proof.
   destruct bishop_fin_size as [p s].
@@ -1390,27 +1429,14 @@ Next Obligation. cbv beta. intros n p.
   replace (n + N.succ q) with (N.succ n + q) by lia.
   apply s. Defined.
 
-#[local] Instance size_length_is_listing
+#[local] Instance fin_size_is_fin_listing
   `{!IsFinSize X} : IsFinListing X.
 Proof.
   destruct fin_size as [p s].
-  destruct s as [f [g i]].
-  exists (map f (N_seq_sig 0 p)).
-  split.
-  - intros x. apply IsIn_Exists. exists x. split.
-    + pose proof (sect (f := f) (g := g) x) as r.
-      epose proof Proper_IsIn _ _ _ r as rw. apply rw. clear rw.
-      eapply IsIn_map.
-      enough (In ((N.to_nat o proj1_sig o g) x) (seq O (N.to_nat p))) by admit.
-      apply in_seq. split. lia. rewrite PeanoNat.Nat.add_0_l. unfold compose.
-      destruct (g x) as [n gg]. unfold proj1_sig. lia.
-    + reflexivity.
-  - pose proof inj_un_fn (X := _=_) (Y := X) (f := f) as j.
-    clear i g. induction p as [| q r] using N.peano_ind.
-    + apply IsNoDup_nil.
-    + remember (N.to_nat (N.succ q)) as n eqn : rm.
-      rewrite N2Nat.inj_succ in rm. subst n.
-      simp N_seq_sig. pose proof N_seq_succ 0 (N.succ q). Admitted.
+  apply bishop_or_not in s.
+  apply bishop_fin_size_is_fin_listing. Qed.
+  (* destruct s as [f [g i]].
+  exists (map f (N_seq_sig 0 p)). *)
 
 End Context.
 

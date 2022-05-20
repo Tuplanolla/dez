@@ -86,7 +86,7 @@ Definition Equations_Version := "1.3"%string.
     try typeclasses eauto 10 with program;
     try program_solve_wf]. *)
 
-#[global] Obligation Tactic := try program_solve_wf.
+#[global] Obligation Tactic := cbv beta; try program_solve_wf.
 
 (** We do not use implicit generalization,
     because the consequences of accidental misuse
