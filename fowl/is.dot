@@ -18,23 +18,29 @@ digraph Is {
     IsSize [label = "\N X n"]
   }
 
+  subgraph irrel_classes {
+    IsContr [label = "\N A\ncontr : exists x : A, forall y : A, x = y"]
+    IsProp [label = "\N A\nirrel (x y : A) : x = y"]
+    IsSet [label = "\N A\nuip (x y : A) (a b : x = y) : a = b"]
+    IsHLevel [label = "\N n A\ncontr_is_h_level_O `{!IsContr A} : IsHLevel O A\nh_level_S_is_h_level_eq `{!IsHLevel (S n) A} (x y : A) : IsHLevel n (x = y)"]
+
+    IsProofIrrel [label = "\N"]
+    IsStreicher [label = "\N"]
+  }
+
   subgraph logic_classes {
     IsInj [label = "\N X f\ninj (x y : A) (a : X (f x) (f y)) : X x y"]
     IsInjUnFn [label = "\N X Y f\ninj_un_fn (x y : A) (a : Y (f x) (f y)) : X x y"]
     IsSurj [label = "\N X f\ninj (x y : A) (a : X (f x) (f y)) : X x y"]
     IsSurjUnFn [label = "\N X Y f\ninj_un_fn (x y : A) (a : Y (f x) (f y)) : X x y"]
-    IsContr [label = "\N\ncontr : exists x : A, forall y : A, x = y", color = red, fillcolor = yellow]
     IsEquivTypes [label = "\N A B X Y\nequiv_types : exists (f : A -> B) (g : B -> A), IsIso X Y f g"]
     IsFunExt [label = "\N\nfun_ext (A B : Type) (f g : A -> B) (a : forall x : A, f x = g x) : f = g", color = red, fillcolor = yellow]
     IsFunExtDep [label = "\N\nfun_ext_dep (A : Type) (P : A -> Type) (f g : forall x : A, P x) (a : forall x : A, f x = g x) : f = g", color = red, fillcolor = yellow]
     IsIdIndiscForm [label = "\N X Y x s\nid_indisc_form (a b : B) (t : X (s a b) x) : Y a b"]
     IsIndiscIdForm [label = "\N X Y x s\nindisc_id_form (a b : B) (t : Y a b) : X (s a b) x"]
-    IsProp [label = "\N\nirrel (x y : A) : x = y", color = red, fillcolor = yellow]
     IsPropExt [label = "\N\nprop_ext (A B) (a : A <-> B) : A = B", color = red, fillcolor = yellow]
     IsRetr [label = "\N X f g\nretr (x : A) : X (g (f x)) x"]
     IsSect [label = "\N X f g\nsect (x : B) : X (f (g x)) x"]
-    IsSet [label = "\N\nuip (x y : A) (a b : x = y) : a = b", color = red, fillcolor = yellow]
-    IsTrunc [label = "\N\ntrunc_zero (A : Type) : IsTrunc O A\ntrunc_succ (n : nat) (A : Type) : IsTrunc (S n) A", color = red, fillcolor = yellow]
 
     IsAuto [label = "\N X f g"]
     IsBij [label = "\N X f"]
@@ -361,14 +367,14 @@ digraph Is {
     edge [color = red]
 
     IsContr -> IsProp
-    IsContr -> IsTrunc
+    IsContr -> IsHLevel
     IsFunExtDep -> IsFunExt
     IsProp -> IsSet
-    IsProp -> IsTrunc
-    IsSet -> IsTrunc
-    IsTrunc -> IsContr
-    IsTrunc -> IsProp
-    IsTrunc -> IsSet
+    IsProp -> IsHLevel
+    IsSet -> IsHLevel
+    IsHLevel -> IsContr
+    IsHLevel -> IsProp
+    IsHLevel -> IsSet
   }
 
   subgraph order_theory_derivations {

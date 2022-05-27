@@ -139,7 +139,7 @@ Proof.
 
 Lemma eq_h_level_is_h_level `{IsPropExt} `{IsFunExtDep}
   (A : Type) (P : A -> Prop) (n : nat)
-  `{!forall x : A, IsHLevel (P x) n} : IsHLevel (forall x : A, P x) n.
+  `{!forall x : A, IsHLevel n (P x)} : IsHLevel n (forall x : A, P x).
 Proof.
   match goal with
   | h : forall _ : _, IsHLevel _ _ |- _ => rename h into a

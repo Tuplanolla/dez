@@ -56,9 +56,9 @@ Class IsStreicher : Prop :=
 (** For the sake of convenience, we count up from [0],
     even though homotopy levels conventionally start from [-2]. *)
 
-Equations IsHLevel (A : Type) (n : nat) : Prop by struct n :=
-  IsHLevel A O := IsContr A;
-  IsHLevel A (S n) := forall x y : A, IsHLevel (x = y) n.
+Equations IsHLevel (n : nat) (A : Type) : Prop by struct n :=
+  IsHLevel O A := IsContr A;
+  IsHLevel (S n) A := forall x y : A, IsHLevel n (x = y).
 
 Existing Class IsHLevel.
 
@@ -69,27 +69,27 @@ Section Context.
 Context (A : Type).
 
 #[local] Instance contr_is_h_level_O
-  `{!IsContr A} : IsHLevel A O.
+  `{!IsContr A} : IsHLevel O A.
 Proof. eauto. Qed.
 
 #[local] Instance h_level_O_is_contr
-  `{!IsHLevel A O} : IsContr A.
+  `{!IsHLevel O A} : IsContr A.
 Proof. eauto. Qed.
 
 Lemma contr_iff_h_level_O :
-  IsContr A <-> IsHLevel A O.
+  IsContr A <-> IsHLevel O A.
 Proof. esplit; typeclasses eauto. Qed.
 
 #[local] Instance h_level_S_is_h_level_eq (n : nat)
-  `{!IsHLevel A (S n)} (x y : A) : IsHLevel (x = y) n.
+  `{!IsHLevel (S n) A} (x y : A) : IsHLevel n (x = y).
 Proof. eauto. Qed.
 
 #[local] Instance h_level_eq_is_h_level_S (n : nat)
-  `{!forall x y : A, IsHLevel (x = y) n} : IsHLevel A (S n).
+  `{!forall x y : A, IsHLevel n (x = y)} : IsHLevel (S n) A.
 Proof. eauto. Qed.
 
 Lemma h_level_S_iff_h_level_eq (n : nat) :
-  IsHLevel A (S n) <-> forall x y : A, IsHLevel (x = y) n.
+  IsHLevel (S n) A <-> forall x y : A, IsHLevel n (x = y).
 Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
@@ -101,7 +101,7 @@ Section Context.
 Context (A : Type).
 
 #[local] Instance h_level_is_h_level_S (n : nat)
-  `{!IsHLevel A n} : IsHLevel A (S n).
+  `{!IsHLevel n A} : IsHLevel (S n) A.
 Proof.
   match goal with
   | x : IsHLevel _ _ |- _ => rename x into IHL
@@ -113,7 +113,7 @@ Proof.
   - intros x y. apply IHL'. apply @h_level_S_is_h_level_eq. apply IHL. Qed.
 
 #[local] Instance h_level_is_h_level_add (n p : nat)
-  `{!IsHLevel A n} : IsHLevel A (p + n).
+  `{!IsHLevel n A} : IsHLevel (p + n) A.
 Proof.
   match goal with
   | x : IsHLevel _ _ |- _ => rename x into IHL
@@ -124,7 +124,7 @@ Proof.
     apply @h_level_is_h_level_S. apply IHL'. apply IHL. Qed.
 
 #[local] Instance h_level_sub_is_h_level (n p : nat)
-  `{!IsHLevel A (n - p)} : IsHLevel A n.
+  `{!IsHLevel (n - p) A} : IsHLevel n A.
 Proof.
   match goal with
   | x : IsHLevel _ _ |- _ => rename x into IHL
@@ -145,15 +145,15 @@ Section Context.
 Context (A : Type).
 
 #[local] Instance contr_is_h_level_0
-  `{!IsContr A} : IsHLevel A 0.
+  `{!IsContr A} : IsHLevel 0 A.
 Proof. apply contr_is_h_level_O. Qed.
 
 #[local] Instance h_level_0_is_contr
-  `{!IsHLevel A 0} : IsContr A.
+  `{!IsHLevel 0 A} : IsContr A.
 Proof. apply h_level_O_is_contr. Qed.
 
 Lemma contr_iff_h_level_0 :
-  IsContr A <-> IsHLevel A 0.
+  IsContr A <-> IsHLevel 0 A.
 Proof. apply contr_iff_h_level_O. Qed.
 
 End Context.
@@ -165,14 +165,14 @@ Section Context.
 Context (A : Type).
 
 #[local] Instance prop_is_h_level_1
-  `{!IsProp A} : IsHLevel A 1.
+  `{!IsProp A} : IsHLevel 1 A.
 Proof.
   apply @h_level_eq_is_h_level_S.
   intros x y. apply @contr_is_h_level_0. exists (irrel x y o irrel x x ^-1).
   intros a. rewrite a. apply eq_trans_sym_inv_l. Qed.
 
 #[local] Instance h_level_1_is_prop
-  `{!IsHLevel A 1} : IsProp A.
+  `{!IsHLevel 1 A} : IsProp A.
 Proof.
   match goal with
   | x : IsHLevel _ _ |- _ => rename x into IHL
@@ -182,7 +182,7 @@ Proof.
   apply IC. Qed.
 
 Lemma prop_iff_h_level_1 :
-  IsProp A <-> IsHLevel A 1.
+  IsProp A <-> IsHLevel 1 A.
 Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
@@ -194,14 +194,14 @@ Section Context.
 Context (A : Type).
 
 #[local] Instance set_is_h_level_2
-  `{!IsSet A} : IsHLevel A 2.
+  `{!IsSet A} : IsHLevel 2 A.
 Proof.
   apply @h_level_eq_is_h_level_S.
   intros x y. apply @prop_is_h_level_1.
   intros a b. apply uip. Qed.
 
 #[local] Instance h_level_2_is_set
-  `{!IsHLevel A 2} : IsSet A.
+  `{!IsHLevel 2 A} : IsSet A.
 Proof.
   match goal with
   | x : IsHLevel _ _ |- _ => rename x into IHL
@@ -211,7 +211,7 @@ Proof.
   apply IP. Qed.
 
 Lemma set_iff_h_level_2 :
-  IsSet A <-> IsHLevel A 2.
+  IsSet A <-> IsHLevel 2 A.
 Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
