@@ -62,11 +62,11 @@ Equations IsHLevel (n : nat) (A : Type) : Prop by struct n :=
 
 Existing Class IsHLevel.
 
-(** Homotopy levels are inductive. *)
-
 Section Context.
 
 Context (A : Type).
+
+(** Homotopy levels are inductive. *)
 
 #[local] Instance contr_is_h_level_O
   `{!IsContr A} : IsHLevel O A.
@@ -94,11 +94,11 @@ Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
 
-(** Homotopy levels are cumulative. *)
-
 Section Context.
 
 Context (A : Type).
+
+(** Homotopy levels are cumulative. *)
 
 #[local] Instance h_level_is_h_level_S (n : nat)
   `{!IsHLevel n A} : IsHLevel (S n) A.
@@ -138,11 +138,11 @@ Proof.
 
 End Context.
 
-(** Homotopy level [0] corresponds to contractibility. *)
-
 Section Context.
 
 Context (A : Type).
+
+(** Homotopy level [0] corresponds to contractibility. *)
 
 #[local] Instance contr_is_h_level_0
   `{!IsContr A} : IsHLevel 0 A.
@@ -158,11 +158,11 @@ Proof. apply contr_iff_h_level_O. Qed.
 
 End Context.
 
-(** Homotopy level [1] corresponds to contractibility-if-inhabited. *)
-
 Section Context.
 
 Context (A : Type).
+
+(** Homotopy level [1] corresponds to contractibility-if-inhabited. *)
 
 #[local] Instance prop_is_h_level_1
   `{!IsProp A} : IsHLevel 1 A.
@@ -187,11 +187,11 @@ Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
 
-(** Homotopy level [2] corresponds to discreteness. *)
-
 Section Context.
 
 Context (A : Type).
+
+(** Homotopy level [2] corresponds to discreteness. *)
 
 #[local] Instance set_is_h_level_2
   `{!IsSet A} : IsHLevel 2 A.
@@ -231,11 +231,6 @@ Create HintDb h_elim.
   h_level_O_is_contr h_level_S_is_h_level_eq h_level_sub_is_h_level
   h_level_0_is_contr h_level_1_is_prop h_level_2_is_set : h_elim.
 
-(** We now have enough machinery to automatically prove basic results. *)
-
-(** Proof irrelevance is equivalent
-    to contractibility of identity proofs. *)
-
 Section Context.
 
 Context (A : Type).
@@ -252,15 +247,6 @@ Lemma prop_iff_contr_eq :
   IsProp A <-> forall x y : A, IsContr (x = y).
 Proof. esplit; typeclasses eauto. Qed.
 
-End Context.
-
-(** Uniqueness of identity proofs is equivalent
-    to proof irrelevance of identity proofs. *)
-
-Section Context.
-
-Context (A : Type).
-
 #[local] Instance set_is_prop_eq
   `{!IsSet A} (x y : A) : IsProp (x = y).
 Proof. eauto with h_intro h_elim. Qed.
@@ -273,39 +259,27 @@ Lemma set_iff_prop_eq :
   IsSet A <-> forall x y : A, IsProp (x = y).
 Proof. esplit; typeclasses eauto. Qed.
 
-End Context.
-
-(** Contractibility implies proof irrelevance. *)
-
-Section Context.
-
-Context (A : Type).
+(** Contractible types are propositions. *)
 
 #[local] Instance contr_is_prop
   `{!IsContr A} : IsProp A.
 Proof. eauto with h_intro h_elim. Qed.
 
-End Context.
-
-(** Proof irrelevance implies uniqueness of identity proofs. *)
-
-Section Context.
-
-Context (A : Type).
+(** Propositions are sets. *)
 
 #[local] Instance prop_is_set
   `{!IsProp A} : IsSet A.
 Proof. eauto with h_intro h_elim. Qed.
 
-End Context.
-
 (** Inhabited propositions are contractible. *)
 
-#[local] Instance inhabited_prop_is_contr (A : Type) (x : A)
+#[local] Instance inhabited_prop_is_contr (x : A)
   `{!IsProp A} : IsContr A.
 Proof. exists x. apply irrel. Qed.
 
-(** Reflections of propositions have unique identity proofs. *)
+(** Reflections of propositions are sets. *)
 
 #[local] Instance bool_is_set : IsSet bool.
 Proof. intros x y a b. apply eqdec_uip. apply bool_EqDec. Qed.
+
+End Context.

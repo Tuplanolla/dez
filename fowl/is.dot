@@ -22,19 +22,19 @@ digraph Is {
     IsContr [label = "\N A\ncontr : exists x : A, forall y : A, x = y"]
     IsProp [label = "\N A\nirrel (x y : A) : x = y"]
     IsSet [label = "\N A\nuip (x y : A) (a b : x = y) : a = b"]
-    IsHLevel [label = "\N n A\ncontr_is_h_level_O `{!IsContr A} : IsHLevel O A\nh_level_S_is_h_level_eq `{!IsHLevel (S n) A} (x y : A) : IsHLevel n (x = y)"]
+    IsHLevel [label = "\N n A\ncontr_iff_h_level_O : IsContr A <-> IsHLevel O A\nh_level_S_iff_h_level_eq : IsHLevel (S n) A <-> forall x y : A, IsHLevel n (x = y)"]
 
     IsProofIrrel [label = "\N"]
     IsStreicher [label = "\N"]
   }
 
   subgraph ext_classes {
-    IsFunExt [label = "\N\nfun_ext (A B : Type) (f g : A -> B) (a : forall x : A, f x = g x) : f = g", color = red, fillcolor = yellow]
-    IsFunExtDep [label = "\N\nfun_ext_dep (A : Type) (P : A -> Type) (f g : forall x : A, P x) (a : forall x : A, f x = g x) : f = g", color = red, fillcolor = yellow]
-    IsPropExt [label = "\N\nprop_ext (A B) (a : A <-> B) : A = B", color = red, fillcolor = yellow]
-    IsPropExtType [label = "\N\nprop_ext (A B) (a : A <-> B) : A = B", color = red, fillcolor = yellow]
-    IsPredExt
-    IsUniv
+    IsFunExt [label = "\N\nfun_ext (A B : Type) (f g : A -> B) (a : forall x : A, f x = g x) : f = g"]
+    IsFunExtDep [label = "\N\nfun_ext_dep (A : Type) (P : A -> Type) (f g : forall x : A, P x) (a : forall x : A, f x = g x) : f = g"]
+    IsPredExt [label = "\N\npred_ext (A : Type) (P Q : A -> Prop) (a : forall x : A, P x <-> Q x) : P = Q"]
+    IsPropExt [label = "\N\nprop_ext (A B : Prop) (a : A <-> B) : A = B"]
+    IsPropExtType [label = "\N\nprop_ext_type (A B : Type) `{!IsProp A} `{!IsProp B} (a : (A -> B) * (B -> A)) : A = B"]
+    IsUniv [label = "\N\nua (A B : Type) (a : IsEquivTypes A B _=_ _=_) : A = B"]
   }
 
   subgraph iso_classes {
@@ -246,6 +246,11 @@ digraph Is {
     IsIso -> IsSect
   }
 
+  subgraph irrel_fields {
+    IsProofIrrel -> IsProp
+    IsStreicher -> IsSet
+  }
+
   subgraph logic_fields {
     IsBij -> IsInj
     IsBij -> IsSurj
@@ -377,11 +382,9 @@ digraph Is {
     IsHLevel -> IsContr
     IsHLevel -> IsProp
     IsHLevel -> IsSet
-    IsProofIrrel -> IsProp
     IsProp -> IsHLevel
     IsProp -> IsSet
     IsSet -> IsHLevel
-    IsStreicher -> IsSet
   }
 
   subgraph ext_derivations {

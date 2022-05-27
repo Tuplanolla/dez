@@ -85,11 +85,11 @@ Axiom univalence : forall A B : Type,
 
 Lemma prop_fun_ext_dep `{IsPropExt} `{IsFunExtDep}
   (A : Type) (P : A -> Type) (f g : forall x : A, P x) :
-  (f = g) = (forall x : A, f x = g x).
+  (forall x : A, f x = g x) = (f = g).
 Proof.
   apply prop_ext. split.
-  - intros a x. apply equal_f_dep. apply a.
-  - intros a. apply fun_ext_dep. intros x. apply a. Qed.
+  - intros a. apply fun_ext_dep. intros x. apply a.
+  - intros a x. apply equal_f_dep. apply a. Qed.
 
 (** Families of propositions are propositions. *)
 
@@ -113,14 +113,69 @@ Proof.
   - intros x. apply c.
   - apply (@eq_pi_is_prop _). intros x. apply contr_is_prop. Qed.
 
-(** TODO This is theorem 4.9.4 from the book. *)
+Module HomotopyTypicalDigression.
+
+#[local] Notation "A '~=' B" := (IsEquivTypes A B _=_ _=_)
+  (no associativity, at level 70).
+
+(** This is definition 4.2.4 from the book. *)
+
+Definition fib (A B : Type) (X : B -> B -> Prop)
+  (f : A -> B) (y : B) : Type :=
+  {x : A | X (f x) y}.
+
+(** This is lemma 4.8.1 from the book. *)
+
+#[local] Open Scope sig_scope.
+
+Lemma classifier `{IsUniv} (A : Type) (P : A -> Prop) (x : A) :
+  IsEquivTypes (fib _=_ (proj1_sig (P := P)) x) (P x) _=_ _=_.
+Proof.
+  eset (f (s : {a : {x : A | P x} | proj1_sig a = x}) := _ : P x).
+  Unshelve. 2:{ destruct s as [[y a] e]. simpl in e. induction e. apply a. }
+  eset (g (a : P x) := _ : {a : {x : A | P x} | proj1_sig a = x}).
+  Unshelve. 2:{ exists (x; a). reflexivity. }
+  exists f, g. split.
+  - typeclasses eauto.
+  - typeclasses eauto.
+  - intros [[y a] e]. simpl in e. unfold f, g. rewrite <- e. reflexivity.
+  - intros a. unfold f, g. reflexivity. Qed.
+
+(** This is lemma 4.9.2 from the book. *)
+
+Lemma easy `{IsUniv} (A B X : Type)
+  `{!IsEquivTypes A B _=_ _=_} : IsEquivTypes (X -> A) (X -> B) _=_ _=_.
+Proof. pose proof ua _ as a. induction a. typeclasses eauto. Qed.
+
+(** This is corollary 4.9.3 from the book. *)
+
+Lemma consequence `{IsUniv} (A : Type) (P : A -> Prop)
+  `{!forall x : A, IsContr (P x)} :
+  exists f : A -> {x : A | P x}, IsIso _=_ _=_ proj1_sig f.
+Proof.
+  epose proof easy (A := {x : A | P x}) (B := A) A as IETsig.
+  epose proof classifier P as IETfib.
+  edestruct IETfib as [f [g II]].
+Admitted.
+
+(** This is theorem 4.9.4 from the book. *)
 
 Lemma eq_pi_is_contr' `{IsUniv} (A : Type) (P : A -> Prop)
   `{!forall x : A, IsContr (P x)} : IsContr (forall x : A, P x).
 Proof.
   match goal with
   | h : forall _ : _, IsContr _ |- _ => rename h into c
-  end. Admitted.
+  end.
+Admitted.
+
+(** This is theorem 4.9.5 from the book. *)
+
+Lemma fun_now `{IsUniv} : IsFunExtDep.
+Proof.
+  intros A P f g a. epose proof eq_pi_is_contr'.
+  epose proof ua as u. Admitted.
+
+End HomotopyTypicalDigression.
 
 (** Families of sets are sets. *)
 
@@ -131,7 +186,7 @@ Proof.
   | h : forall _ : _, IsSet _ |- _ => rename h into s
   end.
   intros f g.
-  pose proof prop_fun_ext_dep f g as t. rewrite t. clear t.
+  pose proof prop_fun_ext_dep f g as t. rewrite <- t. clear t.
   apply (@eq_pi_is_prop _).
   intros x. apply @set_is_prop_eq. apply s. Qed.
 
@@ -148,7 +203,7 @@ Proof.
   - apply @contr_is_h_level_0. apply (@eq_pi_is_contr _).
     intros x. apply @h_level_0_is_contr. apply a.
   - intros f g.
-    pose proof prop_fun_ext_dep f g as t. rewrite t. clear t.
+    pose proof prop_fun_ext_dep f g as t. rewrite <- t. clear t.
     apply b. intros x. apply h_level_S_is_h_level_eq. apply a. Qed.
 
 Module FromAxioms.
