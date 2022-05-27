@@ -738,8 +738,7 @@ Proof.
   apply Nth_Nfind_from. apply s. Qed.
 
 End Context.
-Compute (IsIn_dec 42 [5;7;42;13]).
-Compute (IsIn_dec 42 [5;7;13]).
+
 Lemma map_compose (A B C : Type) (f : A -> B) (g : B -> C) (a : list A) :
   map g (map f a) = map (g o f) a.
 Proof. apply map_map. Qed.
