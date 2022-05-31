@@ -15,6 +15,19 @@ Class IsRetr (A B : Type) (X : A -> A -> Prop)
   (f : A -> B) (g : B -> A) : Prop :=
   retr (x : A) : X (g (f x)) x.
 
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop).
+
+(** The identity function is a retraction of itself
+    with respect to any reflexive relation. *)
+
+#[export] Instance refl_is_retr_id
+  `{!IsRefl X} : IsRetr X id id | 100.
+Proof. intros x. reflexivity. Qed.
+
+End Context.
+
 (** ** Right Inverse of a Unary Function *)
 (** ** Section of a Morphism *)
 
@@ -24,12 +37,25 @@ Class IsSect (A B : Type) (X : B -> B -> Prop)
 
 Section Context.
 
+Context (A : Type) (X : A -> A -> Prop).
+
+(** The identity function is a section of itself
+    with respect to any reflexive relation. *)
+
+#[export] Instance refl_is_sect_id
+  `{!IsRefl X} : IsSect X id id | 100.
+Proof. intros x. reflexivity. Qed.
+
+End Context.
+
+Section Context.
+
 Context (A B : Type) (X : A -> A -> Prop)
   (f : A -> B) (g : B -> A).
 
 (** A retraction is a flipped section. *)
 
-#[export] Instance flip_retr_is_sect
+#[local] Instance flip_retr_is_sect
   `{!IsRetr X f g} : IsSect X g f.
 Proof. auto. Qed.
 
@@ -116,15 +142,42 @@ Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
 
+(** ** Equivalence *)
+(** ** Function with an Inverse *)
+
+(** TODO Add missing properness. *)
+
+Class IsEquivFn (A B : Type)
+  (X : A -> A -> Prop) (Y : B -> B -> Prop) (f : A -> B) : Prop := {
+  equiv_fn_retr : exists g : B -> A, IsRetr X f g;
+  equiv_fn_sect : exists h : B -> A, IsSect Y f h;
+}.
+
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop).
+
+(** The identity function is an equivalence
+    with respect to any reflexive relation. *)
+
+#[export] Instance refl_is_equiv_fn_id
+  `{!IsRefl X} : IsEquivFn X X id | 100.
+Proof.
+  split.
+  - exists id. typeclasses eauto.
+  - exists id. typeclasses eauto. Qed.
+
+End Context.
+
 (** ** Equivalent Types *)
 (** ** Isomorphic Types *)
 
 Class IsEquivTypes (A B : Type)
   (X : A -> A -> Prop) (Y : B -> B -> Prop) : Prop :=
-  equiv_types : exists (f : A -> B) (g : B -> A), IsIso X Y f g.
+  equiv_types_equiv_fn : exists f : A -> B, IsEquivFn X Y f.
 
 Arguments IsEquivTypes _ _ _ _ : clear implicits.
-Arguments equiv_types _ _ _ _ {_}.
+Arguments equiv_types_equiv_fn _ _ _ _ {_}.
 
 Section Context.
 
@@ -135,6 +188,6 @@ Context (A : Type) (X : A -> A -> Prop).
 
 #[export] Instance refl_is_equiv_types
   `{!IsRefl X} : IsEquivTypes A A X X | 100.
-Proof. exists id, id. typeclasses eauto. Qed.
+Proof. exists id. typeclasses eauto. Qed.
 
 End Context.
