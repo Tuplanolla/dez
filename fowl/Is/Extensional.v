@@ -15,15 +15,120 @@ Definition transport (A : Type) (P : A -> Type)
   (x y : A) (e : x = y) (a : P x) : P y.
 Proof. induction e. apply a. Defined.
 
+Reserved Notation "x '_*'" (left associativity, at level 20).
 Reserved Notation "x '~=' y" (no associativity, at level 70).
+
+#[local] Notation "'_*_'" := (transport _) (only parsing).
+#[local] Notation "e '_*'" := (transport _ e) (only parsing).
 
 Module End.
 
 #[local] Notation "'_~=_'" := (fun A B : Type => IsEquivTypes A B _=_ _=_).
 #[local] Notation "A '~=' B" := (IsEquivTypes A B _=_ _=_).
 
+Definition applicate (A B : Type) `{!A ~= B} (x : A) : inhabited B.
+Proof.
+  pose proof equiv_types_bi_inv A B _=_ _=_ as a.
+  destruct a as [f IBI]. apply inhabits. apply f. apply x. Defined.
+
+Arguments applicate {_ _} _ _.
+
+(** We define these instances as explicitly as possible,
+    because they are used in the univalence axiom. *)
+
+Section Context.
+
+Context (A : Type).
+
+#[export] Instance is_proper_eq_id :
+  IsProper (A := A -> A) (_=_ ==> _=_) id.
+Proof. intros x y a. apply a. Defined.
+
+Arguments is_proper_eq_id [_ _] _.
+
+#[export] Instance is_retr_eq_id :
+  IsRetr (A := A) _=_ id id.
+Proof. intros x. apply id%type. Defined.
+
+#[export] Instance is_sect_eq_id :
+  IsSect (A := A) _=_ id id.
+Proof. intros x. apply id%type. Defined.
+
+#[export] Instance is_iso_l_eq_id :
+  IsIsoL (A := A) (B := A) _=_ _=_ id id.
+Proof.
+  split.
+  - apply is_proper_eq_id.
+  - apply is_retr_eq_id. Defined.
+
+#[export] Instance is_iso_r_eq_id :
+  IsIsoR (A := A) (B := A) _=_ _=_ id id.
+Proof.
+  split.
+  - apply is_proper_eq_id.
+  - apply is_sect_eq_id. Defined.
+
+#[export] Instance is_bi_inv_eq_id :
+  IsBiInv (A := A) (B := A) _=_ _=_ id.
+Proof.
+  split.
+  - exists id. apply is_iso_l_eq_id.
+  - exists id. apply is_iso_r_eq_id. Defined.
+
+End Context.
+
+Section Context.
+
+Context (A B : Type) (e : A = B).
+
+#[export] Instance is_proper_eq_transport_id :
+  IsProper (A := A -> B) (_=_ ==> _=_) (transport id e).
+Proof. intros x y a. induction a. apply id%type. Defined.
+
+Arguments is_proper_eq_transport_id [_ _] _.
+
+#[export] Instance is_proper_eq_transport_id_sym :
+  IsProper (A := B -> A) (_=_ ==> _=_) (transport id (e ^-1)).
+Proof. intros x y a. induction a. apply id%type. Defined.
+
+Arguments is_proper_eq_transport_id_sym [_ _] _.
+
+#[export] Instance is_retr_eq_transport_id :
+  IsRetr _=_ (transport id e) (transport id (e ^-1)).
+Proof. intros x. destruct e. apply id%type. Defined.
+
+#[export] Instance is_sect_eq_transport_id :
+  IsSect _=_ (transport id e) (transport id (e ^-1)).
+Proof. intros x. destruct e. apply id%type. Defined.
+
+#[export] Instance is_iso_l_eq_transport_id :
+  IsIsoL _=_ _=_ (transport id e) (transport id (e ^-1)).
+Proof.
+  split.
+  - apply is_proper_eq_transport_id.
+  - apply is_retr_eq_transport_id. Defined.
+
+#[export] Instance is_iso_r_eq_transport_id :
+  IsIsoR _=_ _=_ (transport id e) (transport id (e ^-1)).
+Proof.
+  split.
+  - apply is_proper_eq_transport_id_sym.
+  - apply is_sect_eq_transport_id. Defined.
+
+#[export] Instance is_bi_inv_eq_transport_id :
+  IsBiInv _=_ _=_ (transport id e).
+Proof.
+  split.
+  - exists (transport id (e ^-1)). apply is_iso_l_eq_transport_id.
+  - exists (transport id (e ^-1)). apply is_iso_r_eq_transport_id. Defined.
+
+#[export] Instance idtoeqv : A ~= B.
+Proof. exists (transport id e). apply is_bi_inv_eq_transport_id. Defined.
+
+End Context.
+
 #[export] Instance is_refl_equiv_types_eq : IsRefl _~=_.
-Proof. intros A. exists id. typeclasses eauto. Qed.
+Proof. intros A. exists id. apply is_bi_inv_eq_id. Defined.
 
 #[export] Instance is_sym_equiv_types_eq : IsSym _~=_.
 Proof.
@@ -35,7 +140,7 @@ Proof.
   - exists f. split.
     + typeclasses eauto.
     + intros x. unfold compose.
-    rewrite sect. rewrite retr. reflexivity. Qed.
+    rewrite sect. rewrite retr. reflexivity. Defined.
 
 #[export] Instance is_trans_equiv_types_eq : IsTrans _~=_.
 Proof.
@@ -48,7 +153,7 @@ Proof.
   - exists (h0 o h1). split.
     + typeclasses eauto.
     + intros y. unfold compose.
-    rewrite sect. rewrite sect. reflexivity. Qed.
+    rewrite sect. rewrite sect. reflexivity. Defined.
 
 Lemma transport_equiv (A : Type) (P : A -> Type)
   (x y : A) (e : x = y) : P x ~= P y.
@@ -56,14 +161,11 @@ Proof.
   exists (transport P e). split.
   (* - intros a b f. apply f_equal. apply f. *)
   - exists (transport P (e ^-1)). split.
-    + typeclasses eauto. 
+    + typeclasses eauto.
     + intros a. apply rew_opp_l.
   - exists (transport P (e ^-1)). split.
-    + typeclasses eauto. 
+    + typeclasses eauto.
     + intros a. apply rew_opp_r. Defined.
-
-#[export] Instance idtoeqv (A B : Type) (a : A = B) : A ~= B.
-Proof. apply (transport (_~=_ A) a). apply is_refl_equiv_types_eq. Defined.
 
 End End.
 
@@ -310,9 +412,11 @@ Proof. exists End.idtoeqv. apply univalence. Defined.
 
 Lemma ua (A B : Type) `{!A ~= B} : A = B.
 Proof.
-  pose proof univalence A B as IEF.
-  destruct IEF as [[g IR] [h IS]].
-  apply g. typeclasses eauto. Defined.
+  pose proof equiv_types_bi_inv A B _=_ _=_ as IET.
+  pose proof univalence A B as IBI.
+  pose proof l_inv_iso_l as ILI.
+  pose proof ex_proj1 ILI as e.
+  apply e. apply IET. Defined.
 
 Arguments ua {_ _} _.
 
@@ -398,20 +502,58 @@ Lemma classifier' (A : Type) (P : A -> Prop) (x : A) :
   IsEquivTypes' (fib _=_ (proj1_sig (P := P)) x) (P x) _=_ _=_.
 Proof. exists cf, (cg P x). eapply (Build_IsCohIso). Abort.
 
-Lemma ua_comp (A B : Type) `{e : A ~= B} :
-  End.idtoeqv (ua e) = e.
+Import End.
+
+#[local] Open Scope ex_scope.
+
+Lemma ua_elim (A B : Type) (e : A = B) :
+  idtoeqv e = (transport id e; is_bi_inv_eq_transport_id e).
+Proof. reflexivity. Defined.
+
+Lemma ua_comp (A B : Type) `{e : !A ~= B} (x : A) :
+  applicate (idtoeqv (ua e)) x = applicate e x.
 Proof.
-  pose proof univalence A B as IEF.
-  destruct IEF as [[r IR] [s IS]].
-  destruct e as [f [g IHA]].
+  unfold ua, idtoeqv, applicate.
+  unfold equiv_types_bi_inv.
+  destruct (univalence A B) as [[g IIL] [h IIR]] eqn : u.
+  destruct e as [f IBI] eqn : v. cbv.
+  destruct (g e) as [].
+Admitted.
+
+Lemma ua_comp' (A B : Type) `{e : !A ~= B} :
+  idtoeqv (ua e) = e.
+Proof.
+  unfold ua, End.idtoeqv.
+  destruct (univalence A B) as [[g IIL] [h IIR]].
 Admitted.
 
 Lemma ua_uniq (A B : Type) (e : A = B) :
-  ua (End.idtoeqv e) = e.
+  ua (idtoeqv e) = e.
 Proof. Admitted.
 
-Lemma ua_univ (A B : Type) `{c : A ~= B} (e : A = B) :
-  c = End.idtoeqv e.
+Lemma ua_refl (A : Type) :
+  ua (refl (Reflexive := is_refl_equiv_types_eq) A) =
+  @eq_refl Type A.
+Proof. Admitted.
+
+(*
+Lemma eq_trans (A : Type) (x y z : A) (e : x = y) (f : y = z) : x = z.
+Proof. induction e using eq_rect. induction f using eq_rect. apply eq_refl. Defined.
+*)
+
+Lemma ua_trans (A B C : Type) (e : A ~= B) (f : B ~= C) :
+  ua (trans (Transitive := @is_trans_equiv_types_eq) A B C e f) =
+  @eq_trans Type A B C (ua e) (ua f).
+Proof.
+  set (p := ua e). set (q := ua f).
+  set (r := (eq_trans p q)%type).
+  rewrite <- (ua_uniq r).
+  unfold p, q in r.
+Admitted.
+
+Lemma ua_sym (A B : Type) (e : A ~= B) :
+  ua (sym (Symmetric := @is_sym_equiv_types_eq) A B e) =
+  @eq_sym Type A B (ua e).
 Proof. Admitted.
 
 (** This is lemma 4.9.2 from the book. *)
@@ -471,12 +613,7 @@ Proof.
   epose proof ret (B := forall x : A, P x) (A := fib _=_ alpha id) as IC.
   apply IC. Unshelve. hnf.
   - eset (phi (f : forall x : A, P x) := _ : fib _=_ alpha id%core).
-    Unshelve. 2: { exists (fun x => (x; f x)). admit. }
     eset (psi (gp : fib _=_ alpha id%core) := _ : forall x : A, P x).
-    Unshelve. 2: { destruct gp as [g p]. intros x.
-      pose (proj2_sig (g x)) as j. cbv beta in j.
-      assert (j' : P (alpha g x)) by admit.
-      pose proof equal_f p x as h. rewrite h in j'. apply j'. }
     exists phi, psi. unfold phi, psi. clear phi psi.
     intros h. admit.
   - hnf. pose proof how as z. destruct z as [f II'].

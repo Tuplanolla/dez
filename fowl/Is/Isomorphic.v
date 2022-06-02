@@ -182,8 +182,8 @@ Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
 
-Class IsCohIso (A B : Type)
-  (X : A -> A -> Prop) (Y : B -> B -> Prop) (f : A -> B) (g : B -> A)
+Class IsCohIso (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (f : A -> B) (g : B -> A)
   (Z : forall y : B, Y (f (g y)) y -> Y (f (g y)) y -> Prop) : Prop := {
   coh_iso_is_iso :> IsIso X Y f g;
   (* coh_iso_coh (x : A) :
@@ -198,27 +198,33 @@ Class IsQInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (f : A -> B) : Prop :=
   q_inv_iso : exists g : B -> A, IsIso X Y f g.
 
+Class IsLInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (f : A -> B) : Prop :=
+  l_inv_iso_l : exists g : B -> A, IsIsoL X Y f g.
+
+Class IsRInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (f : A -> B) : Prop :=
+  r_inv_iso_r : exists g : B -> A, IsIsoR X Y f g.
+
 (** ** Bi-Invertible Map *)
 
-Class IsBiInv (A B : Type)
-  (X : A -> A -> Prop) (Y : B -> B -> Prop) (f : A -> B) : Prop := {
-  bi_inv_iso_l : exists g : B -> A, IsIsoL X Y f g;
-  bi_inv_iso_r : exists h : B -> A, IsIsoR X Y f h;
+Class IsBiInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (f : A -> B) : Prop := {
+  bi_inv_is_l_inv :> IsLInv X Y f;
+  bi_inv_is_r_inv :> IsRInv X Y f;
 }.
 
 (** ** Half-Adjoint Equivalence *)
 
-Class IsHAE (A B : Type)
-  (X : A -> A -> Prop) (Y : B -> B -> Prop) (f : A -> B) : Prop :=
+Class IsHAE (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (f : A -> B) : Prop :=
   h_a_e : exists g : B -> A, IsCohIso X Y f g (fun _ : B => _=_).
 
 (** ** Contractible Map *)
 
 Class IsContrMap (A B : Type)
-  (X : A -> A -> Prop) (Y : B -> B -> Prop) (f : A -> B) : Prop := {
-  contr_map_is_proper :> IsProper (X ==> Y) f;
-  contr_map_is_contr_fn :> IsContrFn Y f;
-}.
+  (f : A -> B) : Prop :=
+  contr_map_is_contr_fn :> IsContrFn f.
 
 Section Context.
 
@@ -261,12 +267,10 @@ Proof. exists id. exists is_iso_eq_id. intros x. reflexivity. Qed.
 (** The identity function is a contractible map. *)
 
 #[export] Instance is_contr_map_inv_eq_id :
-  IsContrMap (A := A) (B := A) _=_ _=_ id.
+  IsContrMap (A := A) (B := A) id.
 Proof.
-  split.
-  - typeclasses eauto.
-  - intros y. unfold id, fib, IsContr. exists (exist (flip _=_ y) y id%type).
-    intros [x a]. rewrite a. reflexivity. Qed.
+  intros y. unfold id, fib, IsContr. exists (exist (flip _=_ y) y id%type).
+  intros [x a]. destruct a. reflexivity. Qed.
 
 End Context.
 
