@@ -66,11 +66,35 @@ Proof. intros x y. apply comm_elems_bin_op. Qed.
 
 End Context.
 
+(** ** Coherent Unary Functions *)
+
+Class IsCommUnFns (A B0 B1 C : Type) (X : C -> C -> Prop)
+  (f : A -> B0) (g : A -> B1) (h : B1 -> C) (i : B0 -> C) : Prop :=
+  comm_un_fns (x : A) : X (h (g x)) (i (f x)).
+
 (** ** Commutative Unary Operations *)
 
 Class IsCommUnOps (A : Type) (X : A -> A -> Prop)
   (f g : A -> A) : Prop :=
   comm_un_ops (x : A) : X (f (g x)) (g (f x)).
+
+Section Context.
+
+Context (A : Type) (X : A -> A -> Prop)
+  (f g : A -> A).
+
+(** Commutativity of unary operations
+    is a special case of their commutativity as unary functions. *)
+
+#[export] Instance comm_un_ops_is_comm_un_fns
+  `{!IsCommUnOps X f g} : IsCommUnFns X f g f g.
+Proof. auto. Qed.
+
+#[local] Instance comm_un_fns_is_comm_un_ops
+  `{!IsCommUnFns X f g f g} : IsCommUnOps X f g.
+Proof. auto. Qed.
+
+End Context.
 
 Section Context.
 

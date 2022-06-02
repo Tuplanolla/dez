@@ -26,4 +26,6 @@ Context (A : Type) (X : A -> A -> Prop).
 #[export] Instance proper_const : IsProper (X ==> X ==> X) const.
 Proof. intros x y a z w b. unfold const. apply a. Qed.
 
+Arguments proper_const [_ _] _ [_ _] _.
+
 End Context.

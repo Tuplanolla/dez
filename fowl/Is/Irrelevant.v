@@ -5,15 +5,9 @@ From Coq Require Import
 From DEZ.Has Require Export
   Decisions.
 From DEZ.Is Require Export
-  Reflexive Symmetric Transitive Equivalence.
+  Contractible Reflexive Symmetric Transitive Equivalence.
 From DEZ.Supports Require Import
   EquivalenceNotations.
-
-(** ** Contractible Type *)
-(** ** Singleton *)
-
-Class IsContr (A : Type) : Prop :=
-  contr : exists x : A, forall y : A, x = y.
 
 (** ** Contractible-If-Inhabited Type *)
 (** ** Mere Proposition *)

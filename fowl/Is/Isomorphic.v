@@ -1,15 +1,10 @@
-(** * Isomorphisms *)
+(** * Isomorphisms and Equivalences *)
 
 From DEZ.Is Require Export
-  Proper Reflexive.
+  Commutative Contractible Proper Reflexive.
 
-(** The term [IsRetr f g] should be read
-    as [g] being a retraction of [f] and
-    the term [IsSect f g] should be read
-    as [g] being a section of [f]. *)
-
-(** ** Left Inverse of a Unary Function *)
-(** ** Retraction of a Morphism *)
+(** ** Retraction *)
+(** ** Unary Function with a Left Inverse *)
 
 Class IsRetr (A B : Type) (X : A -> A -> Prop)
   (f : A -> B) (g : B -> A) : Prop :=
@@ -28,12 +23,12 @@ Proof. intros x. reflexivity. Qed.
 
 End Context.
 
-(** ** Right Inverse of a Unary Function *)
-(** ** Section of a Morphism *)
+(** ** Section *)
+(** ** Unary Function with a Right Inverse *)
 
 Class IsSect (A B : Type) (X : B -> B -> Prop)
   (f : A -> B) (g : B -> A) : Prop :=
-  sect (x : B) : X (f (g x)) x.
+  sect (y : B) : X (f (g y)) y.
 
 Section Context.
 
@@ -47,6 +42,11 @@ Context (A : Type) (X : A -> A -> Prop).
 Proof. intros x. reflexivity. Qed.
 
 End Context.
+
+(** The term [IsRetr f g] should be read
+    as [g] being a retraction of [f] and
+    the term [IsSect f g] should be read
+    as [g] being a section of [f]. *)
 
 Section Context.
 
@@ -67,15 +67,24 @@ Proof. auto. Qed.
 
 End Context.
 
-(** ** Inverse of a Unary Function *)
+Class IsIsoL (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (f : A -> B) (g : B -> A) : Prop := {
+  iso_l_is_proper :> IsProper (X ==> Y) f;
+  iso_l_is_retr :> IsRetr X f g;
+}.
+
+Class IsIsoR (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (f : A -> B) (g : B -> A) : Prop := {
+  iso_r_is_proper :> IsProper (Y ==> X) g;
+  iso_r_is_sect :> IsSect Y f g;
+}.
+
 (** ** Isomorphism *)
 
 Class IsIso (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (f : A -> B) (g : B -> A) : Prop := {
-  iso_sect_is_proper :> IsProper (X ==> Y) f;
-  iso_retr_is_proper :> IsProper (Y ==> X) g;
-  iso_is_retr :> IsRetr X f g;
-  iso_is_sect :> IsSect Y f g;
+  iso_is_iso_l :> IsIsoL X Y f g;
+  iso_is_iso_r :> IsIsoR X Y f g;
 }.
 
 Section Context.
@@ -89,10 +98,12 @@ Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   `{!IsIso X Y f g} : IsIso Y X g f.
 Proof.
   split.
-  - typeclasses eauto.
-  - typeclasses eauto.
-  - intros x. apply sect.
-  - intros x. apply retr. Qed.
+  - split.
+    + typeclasses eauto.
+    + intros x. apply sect.
+  - split.
+    + typeclasses eauto.
+    + intros x. apply retr. Qed.
 
 End Context.
 
@@ -107,22 +118,22 @@ Context (A : Type) (X : A -> A -> Prop).
   `{!IsRefl X} : IsIso X X id id | 100.
 Proof.
   split.
-  - typeclasses eauto.
-  - typeclasses eauto.
-  - intros x. reflexivity.
-  - intros x. reflexivity. Qed.
+  - split.
+    + typeclasses eauto.
+    + intros x. reflexivity.
+  - split.
+    + typeclasses eauto.
+    + intros x. reflexivity. Qed.
 
 End Context.
 
 (** ** Automorphism *)
-(** ** Inverse of a Unary Operation *)
+(** ** Unary Operation with a Two-Sided Inverse *)
 
 Class IsAuto (A : Type) (X : A -> A -> Prop)
   (f g : A -> A) : Prop := {
-  auto_sect_is_proper :> IsProper (X ==> X) f;
-  auto_retr_is_proper :> IsProper (X ==> X) g;
-  auto_is_retr :> IsRetr X f g;
-  auto_is_sect :> IsSect X f g;
+  auto_is_iso_l :> IsIsoL X X f g;
+  auto_is_iso_r :> IsIsoR X X f g;
 }.
 
 Section Context.
@@ -142,15 +153,42 @@ Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
 
-(** ** Equivalence *)
-(** ** Function with an Inverse *)
+Class IsCohIso (A B : Type)
+  (X : A -> A -> Prop) (Y : B -> B -> Prop) (f : A -> B) (g : B -> A)
+  (Z : forall y : B, Y (f (g y)) y -> Y (f (g y)) y -> Prop) : Prop := {
+  coh_iso_is_iso :> IsIso X Y f g;
+  (* coh_iso_coh : forall x : A,
+    f_equal f (retr x) = sect (f x); *)
+  coh_iso_coh : forall x : A,
+    Z _ (iso_l_is_proper (f := f) _ _ (retr x)) (sect (f x));
+}.
 
-(** TODO Add missing properness. *)
+(** ** Quasi-Inverse *)
 
-Class IsEquivFn (A B : Type)
+Class IsQInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (f : A -> B) : Prop :=
+  q_inv_iso : exists g : B -> A, IsIso X Y f g.
+
+(** ** Half-Adjoint Equivalence *)
+
+Class IsHAE (A B : Type)
+  (X : A -> A -> Prop) (Y : B -> B -> Prop) (f : A -> B) : Prop :=
+  h_a_e : exists g : B -> A, IsCohIso X Y f g (fun _ : B => _=_).
+
+(** ** Bi-Invertible Map *)
+
+Class IsBiInv (A B : Type)
   (X : A -> A -> Prop) (Y : B -> B -> Prop) (f : A -> B) : Prop := {
-  equiv_fn_retr : exists g : B -> A, IsRetr X f g;
-  equiv_fn_sect : exists h : B -> A, IsSect Y f h;
+  bi_inv_iso_l : exists g : B -> A, IsIsoL X Y f g;
+  bi_inv_iso_r : exists h : B -> A, IsIsoR X Y f h;
+}.
+
+(** ** Contractible Map *)
+
+Class IsContrMap (A B : Type)
+  (X : A -> A -> Prop) (Y : B -> B -> Prop) (f : A -> B) : Prop := {
+  contr_map_is_proper :> IsProper (X ==> Y) f;
+  contr_map_is_contr_fn :> IsContrFn Y f;
 }.
 
 Section Context.
@@ -160,8 +198,8 @@ Context (A : Type) (X : A -> A -> Prop).
 (** The identity function is an equivalence
     with respect to any reflexive relation. *)
 
-#[export] Instance refl_is_equiv_fn_id
-  `{!IsRefl X} : IsEquivFn X X id | 100.
+#[export] Instance refl_is_bi_inv_id
+  `{!IsRefl X} : IsBiInv X X id | 100.
 Proof.
   split.
   - exists id. typeclasses eauto.
@@ -170,14 +208,20 @@ Proof.
 End Context.
 
 (** ** Equivalent Types *)
-(** ** Isomorphic Types *)
+
+Class IsEquivTypes' (A B : Type)
+  (X : A -> A -> Prop) (Y : B -> B -> Prop) : Prop :=
+  equiv_types_h_a_e : exists f : A -> B, IsHAE X Y f.
+
+Arguments IsEquivTypes' _ _ _ _ : clear implicits.
+Arguments equiv_types_h_a_e _ _ _ _ {_}.
 
 Class IsEquivTypes (A B : Type)
   (X : A -> A -> Prop) (Y : B -> B -> Prop) : Prop :=
-  equiv_types_equiv_fn : exists f : A -> B, IsEquivFn X Y f.
+  equiv_types_bi_inv : exists f : A -> B, IsBiInv X Y f.
 
 Arguments IsEquivTypes _ _ _ _ : clear implicits.
-Arguments equiv_types_equiv_fn _ _ _ _ {_}.
+Arguments equiv_types_bi_inv _ _ _ _ {_}.
 
 Section Context.
 

@@ -137,6 +137,10 @@ Add Search Blacklist "FunctionalInduction_".
     While doing so is not strictly necessary,
     this list also serves as a quick reference. *)
 
+Reserved Notation "'fun' x .. y , z"
+  (at level 200, x binder, y binder, right associativity,
+  format "'[  ' '[  ' 'fun'  x  ..  y ']' ','  '/' z ']'").
+
 Reserved Notation "x '->' y"
   (right associativity, at level 99, y at level 200).
 Reserved Notation "x '<-' y"
@@ -188,6 +192,17 @@ Reserved Notation "x '<-->' y" (no associativity, at level 45).
 
 Reserved Notation "x '==' y" (no associativity, at level 70).
 Reserved Notation "x '===' y" (no associativity, at level 70).
+
+(** ** Function Definitions *)
+
+Module FunNotations.
+
+(** This allows using [,] instead of [=>] in anonymous functions,
+    so that the notation is consistent with [forall]. *)
+
+Notation "'fun' x .. y , z" := (fun x => .. (fun y => z) ..).
+
+End FunNotations.
 
 (** ** Number Definitions *)
 
