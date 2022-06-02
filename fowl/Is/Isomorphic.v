@@ -18,7 +18,7 @@ Context (A : Type) (X : A -> A -> Prop).
     with respect to any reflexive relation. *)
 
 #[export] Instance refl_is_retr_id
-  `{!IsRefl X} : IsRetr X id id | 100.
+  `{!IsRefl X} : IsRetr X id id.
 Proof. intros x. reflexivity. Qed.
 
 End Context.
@@ -38,7 +38,7 @@ Context (A : Type) (X : A -> A -> Prop).
     with respect to any reflexive relation. *)
 
 #[export] Instance refl_is_sect_id
-  `{!IsRefl X} : IsSect X id id | 100.
+  `{!IsRefl X} : IsSect X id id.
 Proof. intros x. reflexivity. Qed.
 
 End Context.
@@ -55,13 +55,13 @@ Context (A B : Type) (X : A -> A -> Prop)
 
 (** A retraction is a flipped section. *)
 
-#[local] Instance flip_retr_is_sect
+#[local] Instance retr_is_sect_flip
   `{!IsRetr X f g} : IsSect X g f.
 Proof. auto. Qed.
 
 (** A section is a flipped retraction. *)
 
-#[local] Instance flip_sect_is_retr
+#[local] Instance sect_is_retr_flip
   `{!IsSect X g f} : IsRetr X f g.
 Proof. auto. Qed.
 
@@ -78,6 +78,21 @@ Class IsIsoR (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   iso_r_is_proper :> IsProper (Y ==> X) g;
   iso_r_is_sect :> IsSect Y f g;
 }.
+
+Section Context.
+
+Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (f : A -> B) (g : B -> A).
+
+#[local] Instance iso_l_is_iso_r_flip
+  `{!IsIsoL X Y f g} : IsIsoR Y X g f.
+Proof. esplit; eauto using retr_is_sect_flip with typeclass_instances. Qed.
+
+#[local] Instance iso_r_is_iso_l_flip
+  `{!IsIsoR Y X g f} : IsIsoL X Y f g.
+Proof. esplit; eauto using sect_is_retr_flip with typeclass_instances. Qed.
+
+End Context.
 
 (** ** Isomorphism *)
 
@@ -114,8 +129,22 @@ Context (A : Type) (X : A -> A -> Prop).
 (** The identity function is an isomorphism
     with respect to any reflexive relation. *)
 
+#[export] Instance refl_is_iso_l_id
+  `{!IsRefl X} : IsIsoL X X id id.
+Proof.
+  split.
+  - typeclasses eauto.
+  - intros x. reflexivity. Qed.
+
+#[export] Instance refl_is_iso_r_id
+  `{!IsRefl X} : IsIsoR X X id id.
+Proof.
+  split.
+  - typeclasses eauto.
+  - intros x. reflexivity. Qed.
+
 #[export] Instance refl_is_iso_id
-  `{!IsRefl X} : IsIso X X id id | 100.
+  `{!IsRefl X} : IsIso X X id id.
 Proof.
   split.
   - split.
@@ -157,9 +186,9 @@ Class IsCohIso (A B : Type)
   (X : A -> A -> Prop) (Y : B -> B -> Prop) (f : A -> B) (g : B -> A)
   (Z : forall y : B, Y (f (g y)) y -> Y (f (g y)) y -> Prop) : Prop := {
   coh_iso_is_iso :> IsIso X Y f g;
-  (* coh_iso_coh : forall x : A,
+  (* coh_iso_coh (x : A) :
     f_equal f (retr x) = sect (f x); *)
-  coh_iso_coh : forall x : A,
+  coh_iso_coh (x : A) :
     Z _ (iso_l_is_proper (f := f) _ _ (retr x)) (sect (f x));
 }.
 
@@ -169,12 +198,6 @@ Class IsQInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (f : A -> B) : Prop :=
   q_inv_iso : exists g : B -> A, IsIso X Y f g.
 
-(** ** Half-Adjoint Equivalence *)
-
-Class IsHAE (A B : Type)
-  (X : A -> A -> Prop) (Y : B -> B -> Prop) (f : A -> B) : Prop :=
-  h_a_e : exists g : B -> A, IsCohIso X Y f g (fun _ : B => _=_).
-
 (** ** Bi-Invertible Map *)
 
 Class IsBiInv (A B : Type)
@@ -182,6 +205,12 @@ Class IsBiInv (A B : Type)
   bi_inv_iso_l : exists g : B -> A, IsIsoL X Y f g;
   bi_inv_iso_r : exists h : B -> A, IsIsoR X Y f h;
 }.
+
+(** ** Half-Adjoint Equivalence *)
+
+Class IsHAE (A B : Type)
+  (X : A -> A -> Prop) (Y : B -> B -> Prop) (f : A -> B) : Prop :=
+  h_a_e : exists g : B -> A, IsCohIso X Y f g (fun _ : B => _=_).
 
 (** ** Contractible Map *)
 
@@ -195,26 +224,53 @@ Section Context.
 
 Context (A : Type) (X : A -> A -> Prop).
 
-(** The identity function is an equivalence
+(** The identity function is a quasi-inverse
+    with respect to any reflexive relation. *)
+
+#[export] Instance refl_is_q_inv_id
+  `{!IsRefl X} : IsQInv X X id.
+Proof. exists id. typeclasses eauto. Qed.
+
+(** The identity function is a bi-invertible map
     with respect to any reflexive relation. *)
 
 #[export] Instance refl_is_bi_inv_id
-  `{!IsRefl X} : IsBiInv X X id | 100.
+  `{!IsRefl X} : IsBiInv X X id.
 Proof.
   split.
   - exists id. typeclasses eauto.
   - exists id. typeclasses eauto. Qed.
 
+#[local] Instance is_iso_eq_id :
+  IsIso (A := A) (B := A) _=_ _=_ id id.
+Proof.
+  split.
+  - split.
+    + intros x y a. apply a.
+    + intros x. apply id%type.
+  - split.
+    + intros x y a. apply a.
+    + intros x. apply id%type. Defined.
+
+(** The identity function is a half-adjoint equivalence. *)
+
+#[export] Instance is_h_a_e_eq_id :
+  IsHAE (A := A) (B := A) _=_ _=_ id.
+Proof. exists id. exists is_iso_eq_id. intros x. reflexivity. Qed.
+
+(** The identity function is a contractible map. *)
+
+#[export] Instance is_contr_map_inv_eq_id :
+  IsContrMap (A := A) (B := A) _=_ _=_ id.
+Proof.
+  split.
+  - typeclasses eauto.
+  - intros y. unfold id, fib, IsContr. exists (exist (flip _=_ y) y id%type).
+    intros [x a]. rewrite a. reflexivity. Qed.
+
 End Context.
 
 (** ** Equivalent Types *)
-
-Class IsEquivTypes' (A B : Type)
-  (X : A -> A -> Prop) (Y : B -> B -> Prop) : Prop :=
-  equiv_types_h_a_e : exists f : A -> B, IsHAE X Y f.
-
-Arguments IsEquivTypes' _ _ _ _ : clear implicits.
-Arguments equiv_types_h_a_e _ _ _ _ {_}.
 
 Class IsEquivTypes (A B : Type)
   (X : A -> A -> Prop) (Y : B -> B -> Prop) : Prop :=
@@ -231,7 +287,16 @@ Context (A : Type) (X : A -> A -> Prop).
     with respect to any reflexive relation. *)
 
 #[export] Instance refl_is_equiv_types
-  `{!IsRefl X} : IsEquivTypes A A X X | 100.
+  `{!IsRefl X} : IsEquivTypes A A X X.
 Proof. exists id. typeclasses eauto. Qed.
 
 End Context.
+
+(** TODO Bad idea. *)
+
+Class IsEquivTypes' (A B : Type)
+  (X : A -> A -> Prop) (Y : B -> B -> Prop) : Prop :=
+  equiv_types_h_a_e : exists f : A -> B, IsHAE X Y f.
+
+Arguments IsEquivTypes' _ _ _ _ : clear implicits.
+Arguments equiv_types_h_a_e _ _ _ _ {_}.

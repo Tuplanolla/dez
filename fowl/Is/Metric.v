@@ -3,8 +3,9 @@
 From Coq Require Import
   Lia Reals.Reals.
 From DEZ.Has Require Export
-  Operations OrderRelations Forms Distances ArithmeticOperations.
+  Operations OrderRelations Decisions Forms Distances ArithmeticOperations.
 From DEZ.Is Require Export
+  Irrelevant
   Equivalence Commutative Toeplitz Nonnegative Subadditive Indiscernible
   TotalOrder Bounded Monoid Monotonic Inflationary.
 From DEZ.Justifies Require Export
@@ -120,6 +121,8 @@ Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
 
+Module Arbitrary.
+
 #[export] Instance R_has_dist : HasDist R R := R_dist.
 
 #[export] Instance R_dist_is_comm_form : IsCommForm _=_ R_dist.
@@ -137,17 +140,53 @@ Proof. intros x y. apply R_dist_refl. Qed.
 #[export] Instance R_dist_is_real_metric : IsRealMetric _=_ R_dist.
 Proof. esplit; typeclasses eauto. Qed.
 
-Equations Rlt_eps (e : posreal) (x y : R) : Prop :=
-  Rlt_eps e x y := Rlt x (e + y).
+End Arbitrary.
+
+Equations nonnegreal_dist (x y : R) : nonnegreal :=
+  nonnegreal_dist x y := mknonnegreal (R_dist x y) _.
+Next Obligation. intros x y. apply Rge_le. apply R_dist_pos. Qed.
+
+#[export] Instance R_has_dist : HasDist nonnegreal R := nonnegreal_dist.
+
+#[export] Instance R_has_eq_dec : HasEqDec R := Req_EM_T.
+
+#[export] Instance R_is_set : IsSet R.
+Proof. typeclasses eauto. Qed.
+
+#[export] Instance R_nonneg_dist_is_comm_form :
+  IsCommForm (A := R) _=_ nonnegreal_dist.
+Proof. intros x y. Admitted.
+
+#[export] Instance R_nonneg_dist_is_subadd_form :
+  IsSubaddForm (A := R) _<=_ _+_ nonnegreal_dist.
+Proof. intros x y z. Admitted.
+
+#[export] Instance R_nonneg_dist_is_indisc_id_form :
+  IsIndiscIdForm (A := R) _=_ _=_ 0 nonnegreal_dist.
+Proof. intros x y. Admitted.
+
+#[export] Instance R_nonneg_dist_is_id_indisc_form :
+  IsIdIndiscForm (A := R) _=_ _=_ 0 nonnegreal_dist.
+Proof. intros x y. Admitted.
+
+#[export] Instance R_nonneg_dist_is_real_metric :
+  IsRealMetric (B := R) _=_ nonnegreal_dist.
+Proof. esplit; try typeclasses eauto. Qed.
+
+Equations Rlt_eps (eps : posreal) (x y : nonnegreal) : Prop :=
+  Rlt_eps e x y := x < e + y.
 
 #[local] Instance Rlt_eps_wf (e : posreal) : WellFounded (Rlt_eps e).
-Proof. Admitted.
+Proof.
+  intros x. constructor. intros y. unfold Rlt_eps at 1.
+  (** Now use a limit process of the form [1 / 2 ^ n] to access [x]. *)
+Admitted.
 
 Section Context.
 
 Context (e : posreal).
 
-Equations approach (x y : R) : R by wf (R_dist x y) (Rlt_eps e) :=
+Equations approach (x y : R) : R by wf (nonnegreal_dist x y) (Rlt_eps e) :=
   approach x y with Rlt_le_dec (R_dist x y) e := {
     | left _ => y
     | right _ => approach x ((x + y) / 2)

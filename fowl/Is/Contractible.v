@@ -17,7 +17,7 @@ Definition fib (A B : Type) (X : B -> B -> Prop)
 
 (** ** Contractible Unary Function *)
 
-Equations IsContrFn (A B : Type) (X : B -> B -> Prop) (f : A -> B) : Prop :=
-  IsContrFn X f := forall y : B, IsContr (fib X f y).
+Equations IsContrFn (A B : Type) (f : A -> B) : Prop :=
+  IsContrFn f := forall y : B, IsContr (fib _=_ f y).
 
 Existing Class IsContrFn.

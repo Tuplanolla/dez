@@ -719,7 +719,7 @@ Proof. reflexivity. Qed.
 Arguments impl _ _ /.
 
 Fail Fail Equations const (A B : Type) (a : A) (b : B) : A :=
-  const a b := a.
+  const a _ := a.
 
 Corollary const_equation_1 (A B : Type) (a : A) (b : B) : const a b = a.
 Proof. reflexivity. Qed.
