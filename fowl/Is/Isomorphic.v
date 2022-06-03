@@ -2,6 +2,8 @@
 
 From DEZ.Is Require Export
   Commutative Contractible Proper Reflexive.
+From DEZ.Is Require Export
+  Equivalence.
 
 (** ** Retraction *)
 (** ** Unary Function with a Left Inverse *)
@@ -101,13 +103,15 @@ End Context.
 
 Class IsIsoL (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (f : A -> B) (g : B -> A) : Prop := {
-  iso_l_is_proper :> IsProper (X ==> Y) f;
+  iso_l_is_proper_f :> IsProper (X ==> Y) f;
+  iso_l_is_proper_g :> IsProper (Y ==> X) g;
   iso_l_is_retr :> IsRetr X f g;
 }.
 
 Class IsIsoR (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (f : A -> B) (g : B -> A) : Prop := {
-  iso_r_is_proper :> IsProper (Y ==> X) g;
+  iso_r_is_proper_f :> IsProper (X ==> Y) f;
+  iso_r_is_proper_g :> IsProper (Y ==> X) g;
   iso_r_is_sect :> IsSect Y f g;
 }.
 
@@ -147,8 +151,10 @@ Proof.
   split.
   - split.
     + typeclasses eauto.
+    + typeclasses eauto.
     + intros x. apply sect.
   - split.
+    + typeclasses eauto.
     + typeclasses eauto.
     + intros x. apply retr. Qed.
 
@@ -166,12 +172,14 @@ Context (A : Type) (X : A -> A -> Prop).
 Proof.
   split.
   - typeclasses eauto.
+  - typeclasses eauto.
   - intros x. reflexivity. Qed.
 
 #[export] Instance refl_is_iso_r_id
   `{!IsRefl X} : IsIsoR X X id id.
 Proof.
   split.
+  - typeclasses eauto.
   - typeclasses eauto.
   - intros x. reflexivity. Qed.
 
@@ -181,8 +189,10 @@ Proof.
   split.
   - split.
     + typeclasses eauto.
+    + typeclasses eauto.
     + intros x. reflexivity.
   - split.
+    + typeclasses eauto.
     + typeclasses eauto.
     + intros x. reflexivity. Qed.
 
@@ -221,7 +231,7 @@ Class IsCohIso (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (* coh_iso_coh (x : A) :
     f_equal f (retr x) = sect (f x); *)
   coh_iso_coh (x : A) :
-    Z _ (iso_l_is_proper (f := f) _ _ (retr x)) (sect (f x));
+    Z _ (iso_l_is_proper_f (f := f) _ _ (retr x)) (sect (f x));
 }.
 
 (** ** Quasi-Inverse *)
@@ -245,6 +255,38 @@ Class IsBiInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   bi_inv_is_l_inv :> IsLInv X Y f;
   bi_inv_is_r_inv :> IsRInv X Y f;
 }.
+
+Section Context.
+
+Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (f : A -> B).
+
+(** A quasi-inverse is a bi-invertible map. *)
+
+#[export] Instance q_inv_is_bi_inv
+  `{!IsQInv X Y f} : IsBiInv X Y f.
+Proof.
+  split.
+  - destruct q_inv_iso as [g II]. exists g. typeclasses eauto.
+  - destruct q_inv_iso as [g II]. exists g. typeclasses eauto. Qed.
+
+(** A bi-invertible map is a quasi-inverse. *)
+
+#[local] Instance bi_inv_is_q_inv
+  `{!IsEquiv X} `{!IsEquiv Y} `{!IsBiInv X Y f} : IsQInv X Y f.
+Proof.
+  destruct l_inv_iso_l as [g IIL]. destruct r_inv_iso_r as [h IIR].
+  exists (g o f o h). split.
+  - split.
+    + typeclasses eauto.
+    + typeclasses eauto.
+    + intros x. unfold compose. rewrite sect. rewrite retr. reflexivity.
+  - split.
+    + typeclasses eauto.
+    + typeclasses eauto.
+    + intros x. unfold compose. rewrite retr. rewrite sect. reflexivity. Qed.
+
+End Context.
 
 (** ** Half-Adjoint Equivalence *)
 
@@ -285,8 +327,10 @@ Proof.
   split.
   - split.
     + intros x y a. apply a.
+    + intros x y a. apply a.
     + intros x. apply id%type.
   - split.
+    + intros x y a. apply a.
     + intros x y a. apply a.
     + intros x. apply id%type. Defined.
 
