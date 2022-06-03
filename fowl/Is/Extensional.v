@@ -6,10 +6,21 @@ From Coq Require Import
 From DEZ.Is Require Export
   Irrelevant Isomorphic.
 
-(** TODO Clean up this mess. *)
-
 (** We declare various axiom schemes as classes
     in hopes of one day turning them into theorems. *)
+
+(** TODO Clean up this mess. *)
+
+Theorem ac : forall {A B : Type} (R : A -> B -> Prop),
+  (forall x : A, {y : B | R x y}) -> {f : A -> B | forall x : A, R x (f x)}.
+Proof.
+  intros A B R g. exists (fun x : A => proj1_sig (g x)).
+  intros x. set (p := g x). induction p as [y p]. cbn. apply p. Defined.
+
+Theorem dpb : forall {A B : Type} (R : A -> B -> Prop),
+  {f : A -> B | forall x : A, R x (f x)} -> forall x : A, {y : B | R x y}.
+Proof.
+  intros A B R p x. induction p as [f g]. exists (f x). apply (g x). Defined.
 
 Definition transport (A : Type) (P : A -> Type)
   (x y : A) (e : x = y) (a : P x) : P y.
@@ -20,8 +31,6 @@ Reserved Notation "x '~=' y" (no associativity, at level 70).
 
 #[local] Notation "'_*_'" := (transport _) (only parsing).
 #[local] Notation "e '_*'" := (transport _ e) (only parsing).
-
-Module End.
 
 #[local] Notation "'_~=_'" := (fun A B : Type => IsEquivTypes A B _=_ _=_).
 #[local] Notation "A '~=' B" := (IsEquivTypes A B _=_ _=_).
@@ -167,164 +176,6 @@ Proof.
     + typeclasses eauto.
     + intros a. apply rew_opp_r. Defined.
 
-End End.
-
-Module Begin.
-
-#[local] Notation "'_~=_'" := (fun A B : Type => IsEquivTypes' A B _=_ _=_).
-#[local] Notation "A '~=' B" := (IsEquivTypes' A B _=_ _=_).
-
-#[local] Lemma IP (A : Type) : IsProper (A := A -> A) (_=_ ==> _=_) id.
-Proof. intros x y e. apply e. Defined.
-
-(** TODO Investigate this implicit argument expansion. *)
-
-Arguments IP {_} [_ _] _.
-
-#[local] Lemma IR (A : Type) : IsRetr (A := A) _=_ id id.
-Proof. intros x. apply eq_refl. Defined.
-
-#[local] Lemma IS (A : Type) : IsSect (A := A) _=_ id id.
-Proof. intros x. apply eq_refl. Defined.
-
-#[export] Instance is_half_adjoint_id (A : Type) :
-  IsCohIso (A := A) (B := A) _=_ _=_ id id (fun _ : A => _=_).
-Proof.
-  apply (Build_IsCohIso (fun _ : A => _=_) (Build_IsIso
-  (Build_IsIsoL _=_ id id (@IP A) IR)
-  (Build_IsIsoR _=_ id id (@IP A) IS))).
-  intros x. apply eq_refl. Defined.
-
-#[export] Instance is_refl_equiv_types_eq : IsRefl _~=_.
-Proof. intros A. exists id, id. apply is_half_adjoint_id. Defined.
-
-#[export] Instance is_sym_equiv_types_eq : IsSym _~=_.
-Proof.
-Admitted.
-
-#[export] Instance is_trans_equiv_types_eq : IsTrans _~=_.
-Proof.
-Admitted.
-
-Section Context.
-
-Context (A : Type).
-
-#[export] Instance is_retr_id :
-  IsRetr (A := A) (B := A) _=_ id id.
-Proof. intros x. apply eq_refl. Defined.
-
-#[export] Instance is_sect_id :
-  IsSect (A := A) (B := A) _=_ id id.
-Proof. intros x. apply eq_refl. Defined.
-
-#[export] Instance is_bi_inv_id :
-  IsBiInv (A := A) (B := A) _=_ _=_ id.
-Proof.
-  split.
-  - exists id. split; typeclasses eauto.
-  - exists id. split; typeclasses eauto. Defined.
-
-(* #[export] Instance is_equiv_types_eq : A ~= A.
-Proof. exists id. apply is_bi_inv_id. Defined. *)
-
-#[export] Instance is_equiv_types_eq : A ~= A.
-Proof. exists id, id. apply is_half_adjoint_id. Defined.
-
-End Context.
-
-(** Equal types are equivalent. *)
-
-#[export] Instance properer (A B : Type) (e : A = B) :
-  IsProper (_=_ ==> _=_) (transport id e).
-Proof.
-  intros x y a.
-  apply (transport (fun z : A => transport id e x = transport id e z) a).
-  apply eq_refl. Defined.
-
-Arguments properer {_ _} _ [_ _] _.
-
-#[local] Open Scope type_scope.
-
-(** These definitions are from the HoTT library,
-    just to see if they work in this setting. *)
-
-Definition concat_pV {A : Type}
-  {x y : A} (p : x = y) : p ^-1 o p = id :=
-  match p with id => id end.
-
-Definition concat_Vp {A : Type}
-  {x y : A} (p : x = y) : p o p ^-1 = id :=
-  match p with id => id end.
-
-Definition transport_pp {A : Type} (P : A -> Type)
-  {x y z : A} (p : x = y) (q : y = z) (u : P x) :
-  transport _ (q o p) u = transport _ q (transport _ p u) :=
-  match q with
-  | id =>
-      match p with
-      | id => id
-      end
-  end.
-
-Definition transport_pV {A : Type} (P : A -> Type)
-  {x y : A} (p : x = y) (z : P y) :
-  transport _ p (transport _ (p ^-1) z) = z :=
-  f_equal (fun r : y = y => transport P r z) (concat_Vp p) o
-  (transport_pp P (p ^-1) p z) ^-1.
-
-Definition transport_Vp {A : Type} (P : A -> Type)
-  {x y : A} (p : x = y) (z : P x) : transport _ (p ^-1) (transport _ p z) = z
-  := f_equal (fun r : _ = _ => transport P r z) (concat_pV p) o
-  (transport_pp P p (p ^-1) z) ^-1.
-
-Definition transport2 {A : Type} (P : A -> Type)
-  {x y : A} {p q : x = y} (r : p = q) (z : P x) :
-  transport _ p z = transport _ q z :=
-  f_equal (fun s : x = y => transport _ s z) r.
-
-#[export] Instance idpather (A B : Type) (e : A = B) :
-  IsCohIso _=_ _=_
-  (transport id%core e) (transport id%core (e ^-1))
-  (fun _ : _ => _=_).
-Proof.
-  (*
-  apply (Build_IsCohIso (X := _=_) (Y := _=_)
-  (transport id%core e) (transport id%core (e ^-1))
-  (fun _ : _ => _=_)
-  (properer e) (properer (e ^-1))
-  (transport_Vp id%core e) (transport_pV id%core e)).
-  intros x.
-  unfold properer.
-  epose proof (
-  match e in _ = _ return
-  transport2 id%core (concat_Vp e) (transport id%core e x) o
-  transport_pp id%core (e ^-1) e (transport id%core e x) ^-1 =
-  f_equal (transport id%core e)
-  (transport2 id%core (concat_pV e) x o
-  transport_pp id%core e (e ^-1) x ^-1) with
-  | id => id
-  end).
-  *)
-Admitted.
-
-#[export] Instance idpathy (A B : Type) (e : A = B) :
-  IsHAE _=_ _=_ (transport (fun C : Type => C) e).
-Proof. exists (transport (fun C : Type => C) (e ^-1)). apply idpather. Defined.
-
-Lemma transport_equiv (A : Type) (P : A -> Type)
-  (x y : A) (e : x = y) : P x ~= P y.
-Proof.
-  exists (transport P e), (transport P (e ^-1)). Admitted.
-
-#[export] Instance idtoeqv (A B : Type) (a : A = B) : A ~= B.
-Proof. apply (transport (_~=_ A) a). apply is_equiv_types_eq. Defined.
-
-End Begin.
-
-#[local] Notation "'_~=_'" := (fun A B : Type => IsEquivTypes A B _=_ _=_).
-#[local] Notation "A '~=' B" := (IsEquivTypes A B _=_ _=_).
-
 (** ** Proposition Extensionality *)
 
 Class IsPropExt : Prop :=
@@ -400,15 +251,12 @@ Class IsUniv : Prop :=
 (** ** Univalence Axiom *)
 
 Axiom univalence : forall A B : Type,
-  IsBiInv _=_ _=_ (End.idtoeqv (A := A) (B := B)).
-
-Axiom univalence' : forall A B : Type,
-  IsHAE _=_ _=_ (Begin.idtoeqv (A := A) (B := B)).
+  IsBiInv _=_ _=_ (idtoeqv (A := A) (B := B)).
 
 (** This is axiom 2.10.3 and its corollaries from the book. *)
 
 Corollary ua_equiv (A B : Type) : (A = B) ~= (A ~= B).
-Proof. exists End.idtoeqv. apply univalence. Defined.
+Proof. exists idtoeqv. apply univalence. Defined.
 
 Lemma ua (A B : Type) `{!A ~= B} : A = B.
 Proof.
@@ -458,18 +306,19 @@ Module HomotopyTypicalDigression.
 #[local] Open Scope ex_scope.
 #[local] Open Scope sig_scope.
 
-Class IsRetrType (A B : Type) (X : A -> A -> Prop) : Prop :=
-  retr_type : exists (f : A -> B) (g : B -> A), IsRetr X f g.
-
-Arguments IsRetrType _ _ _ : clear implicits.
-
 (** This is lemma 3.11.7 from the book. *)
 
-Lemma ret (A B : Type) `{!IsRetrType B A _=_}
+Lemma ret (A B : Type) `{!IsRetrType A B _=_}
   `{!IsContr A} : IsContr B.
 Proof.
   destruct IsRetrType0 as [f [g IR]]. destruct contr as [x h].
-  exists (g x). intros y. rewrite <- (retr (f := f) y). f_equal. apply h. Qed.
+  exists (f x). intros y. rewrite <- (sect (f := f) y). f_equal. apply h. Qed.
+
+(** This is lemma 3.11.8 from the book. *)
+
+Lemma sig_contr (A : Type) (a : A) : IsContr {x : A | a = x}.
+Proof.
+  exists (a; id%type). intros [x e]. destruct e. apply id%type. Defined.
 
 (** This was definition 4.2.4 from the book. *)
 
@@ -498,16 +347,8 @@ Lemma classifier (A : Type) (P : A -> Prop) (x : A) :
   IsEquivTypes (fib _=_ (proj1_sig (P := P)) x) (P x) _=_ _=_.
 Proof. exists cf. split; exists (cg P x); apply classes. Qed.
 
-Lemma classifier' (A : Type) (P : A -> Prop) (x : A) :
-  IsEquivTypes' (fib _=_ (proj1_sig (P := P)) x) (P x) _=_ _=_.
-Proof. exists cf, (cg P x). eapply (Build_IsCohIso). Abort.
-
-Import End.
-
-#[local] Open Scope ex_scope.
-
 Lemma ua_elim (A B : Type) (e : A = B) :
-  idtoeqv e = (transport id e; is_bi_inv_eq_transport_id e).
+  idtoeqv e = (transport id e; is_bi_inv_eq_transport_id e)%ex.
 Proof. reflexivity. Defined.
 
 Lemma ua_comp (A B : Type) `{e : !A ~= B} (x : A) :
@@ -523,7 +364,7 @@ Admitted.
 Lemma ua_comp' (A B : Type) `{e : !A ~= B} :
   idtoeqv (ua e) = e.
 Proof.
-  unfold ua, End.idtoeqv.
+  unfold ua, idtoeqv.
   destruct (univalence A B) as [[g IIL] [h IIR]].
 Admitted.
 
@@ -558,12 +399,11 @@ Proof. Admitted.
 
 (** This is lemma 4.9.2 from the book. *)
 
-Lemma easy `{IsUniv} (A B X : Type)
+Lemma easy (A B X : Type)
   `{!A ~= B} : (X -> A) ~= (X -> B).
-(** The form of this proof matters a lot. *)
 Proof.
   epose proof ua _ as e.
-  apply End.idtoeqv.
+  apply idtoeqv.
   induction e.
   reflexivity. Defined.
 
@@ -581,9 +421,15 @@ Lemma what' (A : Type) (P : A -> Prop)
   `{!forall x : A, IsContr (P x)} : IsSect _=_ proj1_sig inj1_sig.
 Proof. intros x. unfold proj1_sig, inj1_sig. reflexivity. Qed.
 
+(** This is part of corollary 4.9.3 from the book. *)
+
+Lemma alpha (A : Type) (P : A -> Prop)
+  `{!forall x : A, IsContr (P x)} (f : A -> {x : A | P x}) (x : A) : A.
+Proof. apply (proj1_sig (f x)). Defined.
+
 (** This is corollary 4.9.3 from the book. *)
 
-Lemma how (A : Type) (P : A -> Prop)
+Lemma before_why (A : Type) (P : A -> Prop)
   `{!forall x : A, IsContr (P x)} :
   IsBiInv _=_ _=_ (proj1_sig (P := P)).
 Proof. split; exists inj1_sig; split;
@@ -592,40 +438,74 @@ Proof. split; exists inj1_sig; split;
 Lemma why (A : Type) (P : A -> Prop)
   `{!forall x : A, IsContr (P x)} :
   {x : A | P x} ~= A.
-Proof. exists proj1_sig. apply how. Qed.
+Proof. exists proj1_sig. apply before_why. Qed.
+
+Lemma why_squared (A : Type) (P : A -> Prop)
+  `{!forall x : A, IsContr (P x)} :
+  (A -> {x : A | P x}) ~= (A -> A).
+Proof. apply easy. apply why. Qed.
+
+(** These are parts of theorem 4.9.4 from the book. *)
+
+Lemma happly (A B : Type) (f g : A -> B) (e : f = g) (x : A) : f x = g x.
+Proof. apply (transport (fun h : A -> B => f x = h x) e). apply id%type. Defined.
+
+Lemma phi (A : Type) (P : A -> Prop)
+  `{!forall x : A, IsContr (P x)} :
+  (forall x : A, P x) -> (fib _=_ alpha id%core).
+Proof. intros f. hnf. exists inj1_sig. apply id%type. Defined.
+
+Lemma psi (A : Type) (P : A -> Prop)
+  `{!forall x : A, IsContr (P x)} :
+  (fib _=_ alpha id%core) -> (forall x : A, P x).
+Proof.
+  intros gp x.
+  apply (transport P (happly (proj2_sig gp) x)
+  (proj2_sig (proj1_sig gp x))). Defined.
+
+Lemma eq_pi_is_what (A : Type) (P : A -> Prop)
+  `{!forall x : A, IsContr (P x)} :
+  IsRetrType (fib _=_ alpha id%core) (forall x : A, P x) _=_.
+Proof.
+  match goal with
+  | x : forall _ : _, IsContr _ |- _ => rename x into c
+  end.
+  exists psi, phi. intros f. unfold phi. unfold psi. cbn.
+  change f with (fun x : A => f x).
+  pose proof fun x : A => ex_proj2 (contr (IsContr := c x)) (f x) as u.
+  (** This should work, but does not. *)
+Admitted.
 
 (** This is theorem 4.9.4 from the book. *)
 
-Lemma eq_pi_is_contr' `{IsUniv} (A : Type) (P : A -> Prop)
+Lemma eq_pi_is_contr' (A : Type) (P : A -> Prop)
   `{!forall x : A, IsContr (P x)} : IsContr (forall x : A, P x).
 Proof.
   match goal with
   | h : forall _ : _, IsContr _ |- _ => rename h into c
   end.
-  (** This requires things to be more transparent than is reasonable. *)
-  pose proof what as a'.
-  pose proof what' as a''.
-  pose how as a; cbv beta in a.
-  pose why as b; cbv beta in b.
-  pose (easy (A := {x : A | P x}) (B := A) A) as IETsig.
-  unfold easy in IETsig. subst a.
-  destruct IETsig as [alpha [beta II]] eqn : e. subst IETsig.
-  epose proof ret (B := forall x : A, P x) (A := fib _=_ alpha id) as IC.
-  apply IC. Unshelve. hnf.
-  - eset (phi (f : forall x : A, P x) := _ : fib _=_ alpha id%core).
-    eset (psi (gp : fib _=_ alpha id%core) := _ : forall x : A, P x).
-    exists phi, psi. unfold phi, psi. clear phi psi.
-    intros h. admit.
-  - hnf. pose proof how as z. destruct z as [f II'].
-    admit.
+  pose proof eq_pi_is_what as w.
+  pose proof @ret (fib _=_ alpha id%core) (forall x : A, P x) w as r.
+  apply r. unfold fib.
+  Fail apply (sig_contr inj1_sig).
+  (** This should work, but does not. *)
 Admitted.
 
 (** This is theorem 4.9.5 from the book. *)
 
-Lemma fun_now `{IsUniv} : IsFunExtDep.
+Lemma fun_now : IsFunExt.
 Proof.
-  intros A P f g a. epose proof eq_pi_is_contr'.
-  epose proof ua as u. Admitted.
+  intros A P f g e.
+  enough (want : IsBiInv _=_ _=_ (@happly _ _ f g)).
+  epose proof eq_pi_is_contr' as c.
+Admitted.
+
+(** This should follow, but does not. *)
+
+Lemma more_fun_now : IsFunExtDep.
+Proof.
+  intros A P f g e.
+Admitted.
 
 End HomotopyTypicalDigression.
 
@@ -658,10 +538,19 @@ Proof.
     pose proof prop_fun_ext_dep f g as t. rewrite <- t. clear t.
     apply b. intros x. apply h_level_S_is_h_level_eq. apply a. Qed.
 
-Module FromAxioms.
+(** Univalence implies type extensionality. *)
 
-#[export] Instance is_proof_irrel : IsProofIrrel.
-Proof. intros A B. apply proof_irrelevance. Qed.
+#[export] Instance univ_is_type_ext `{IsUniv} : IsTypeExt.
+Proof.
+  intros A B f g r s. apply ua. exists f. split.
+  - exists g. split.
+    + typeclasses eauto.
+    + intros x. apply r.
+  - exists g. split.
+    + typeclasses eauto.
+    + intros y. apply s. Qed.
+
+Module FromAxioms.
 
 #[export] Instance is_prop_ext : IsPropExt.
 Proof. intros A B. apply propositional_extensionality. Qed.
@@ -681,6 +570,9 @@ Proof. intros A B. apply functional_extensionality. Qed.
 
 #[export] Instance is_fun_ext_dep : IsFunExtDep.
 Proof. intros A P. apply functional_extensionality_dep. Qed.
+
+#[export] Instance is_type_ext : IsTypeExt.
+Proof. intros A B. apply type_extensionality. Qed.
 
 #[export] Instance is_univ : IsUniv.
 Proof. intros A B. apply univalence. Qed.

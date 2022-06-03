@@ -1,13 +1,13 @@
 (** * Irrelevance and Homotopy Levels *)
 
 From Coq Require Import
-  micromega.Lia.
+  Logic.Eqdep Logic.ProofIrrelevance micromega.Lia.
 From DEZ.Has Require Export
   Decisions.
 From DEZ.Is Require Export
-  Contractible Reflexive Symmetric Transitive Equivalence.
-From DEZ.Supports Require Import
-  EquivalenceNotations.
+  Contractible Reflexive Symmetric Transitive.
+
+#[local] Open Scope type_scope.
 
 (** ** Contractible-If-Inhabited Type *)
 (** ** Mere Proposition *)
@@ -277,3 +277,13 @@ Proof. exists x. apply irrel. Qed.
 Proof. intros x y a b. apply eqdec_uip. apply bool_EqDec. Qed.
 
 End Context.
+
+Module FromAxioms.
+
+#[export] Instance is_proof_irrel : IsProofIrrel.
+Proof. intros A B. apply proof_irrelevance. Qed.
+
+#[export] Instance is_streicher : IsStreicher.
+Proof. intros A. hnf. apply EqdepTheory.UIP. Qed.
+
+End FromAxioms.

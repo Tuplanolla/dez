@@ -43,10 +43,42 @@ Proof. intros x. reflexivity. Qed.
 
 End Context.
 
-(** The term [IsRetr f g] should be read
-    as [g] being a retraction of [f] and
-    the term [IsSect f g] should be read
-    as [g] being a section of [f]. *)
+(** ** Retraction Map *)
+
+Class IsRetrFn (A B : Type) (X : B -> B -> Prop) (f : A -> B) : Prop :=
+  retr_fn_sect : exists g : B -> A, IsSect X f g.
+
+(** ** Section Map *)
+
+Class IsSectFn (A B : Type) (X : A -> A -> Prop) (f : A -> B) : Prop :=
+  sect_fn_retr : exists g : B -> A, IsRetr X f g.
+
+(** ** Retract *)
+
+Class IsRetrType (A B : Type) (X : B -> B -> Prop) : Prop :=
+  retr_type_retr_fn : exists f : A -> B, IsRetrFn X f.
+
+Arguments IsRetrType _ _ _ : clear implicits.
+
+(** ** Section *)
+
+Class IsSectType (A B : Type) (X : A -> A -> Prop) : Prop :=
+  sect_type_sect_fn : exists f : A -> B, IsSectFn X f.
+
+Arguments IsSectType _ _ _ : clear implicits.
+
+(** The term [IsRetr X f g] should be read
+    as [g] being a retraction of [f] up to [X] and
+    the term [IsSect X f g] should be read
+    as [g] being a section of [f] up to [X].
+    The term [IsRetrFn X f] should be read
+    as [f] being a retraction up to [X] and
+    the term [IsSectFn X f] should be read
+    as [f] being a section up to [X].
+    The term [IsRetrType A B X] should be read
+    as [B] being a retract of [A] up to [X] and
+    the term [IsSectType A B X] should be read
+    as [B] being a section of [A] up to [X]. *)
 
 Section Context.
 
@@ -295,12 +327,3 @@ Context (A : Type) (X : A -> A -> Prop).
 Proof. exists id. typeclasses eauto. Qed.
 
 End Context.
-
-(** TODO Bad idea. *)
-
-Class IsEquivTypes' (A B : Type)
-  (X : A -> A -> Prop) (Y : B -> B -> Prop) : Prop :=
-  equiv_types_h_a_e : exists f : A -> B, IsHAE X Y f.
-
-Arguments IsEquivTypes' _ _ _ _ : clear implicits.
-Arguments equiv_types_h_a_e _ _ _ _ {_}.

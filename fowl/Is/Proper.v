@@ -5,6 +5,15 @@ From Coq Require Import
 From DEZ Require Export
   Init.
 
+(** ** Arity *)
+(** ** Number of Parameters *)
+
+Fail Fail Class IsParams (A : Type) (x : A) (n : nat) : Prop.
+
+Arguments Params {_} _ _.
+
+Notation IsParams := Params.
+
 (** ** Proper Relation *)
 (** ** Respectful Morphism *)
 
