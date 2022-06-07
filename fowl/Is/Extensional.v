@@ -443,11 +443,11 @@ Defined.
 (** This was definition 4.2.4 from the book. *)
 
 Definition cf (A : Type) (P : A -> Prop) (x : A)
-  (s : {a : {x : A | P x} | proj1_sig a = x}) : P x.
+  (s : {a : {x : A | P x} | x = proj1_sig a}) : P x.
 Proof. destruct s as [[y a] e]. simpl in e. induction e. apply a. Defined.
 
 Definition cg (A : Type) (P : A -> Prop) (x : A)
-  (a : P x) : {a : {x : A | P x} | proj1_sig a = x}.
+  (a : P x) : {a : {x : A | P x} | x = proj1_sig a}.
 Proof. exists (x; a). reflexivity. Defined.
 
 Lemma classes (A : Type) (P : A -> Prop) (x : A) :
@@ -457,7 +457,7 @@ Proof.
   - split.
     + typeclasses eauto.
     + typeclasses eauto.
-    + intros [[y a] e]. simpl in e. unfold cf, cg. rewrite <- e. reflexivity.
+    + intros [[y a] e]. simpl in e. unfold cf, cg. rewrite e. reflexivity.
   - split.
     + typeclasses eauto.
     + typeclasses eauto.
@@ -628,7 +628,7 @@ Lemma psi (A : Type) (P : A -> Prop)
   (fib _=_ alpha id%core) -> (forall x : A, P x).
 Proof.
   intros gp x.
-  apply (transport P (happly (proj2_sig gp) x)
+  apply (transport P (happly (proj2_sig gp ^-1) x)
   (proj2_sig (proj1_sig gp x))).
 Defined.
 
@@ -642,6 +642,96 @@ Proof.
   exists psi, phi. intros f. unfold phi. unfold psi. cbn. reflexivity.
 Defined.
 
+Lemma rew_id_l (A : Type) (x y : A) (e : x = y) :
+  (e o id = e)%type.
+Proof. destruct e. apply id%type. Defined.
+
+Lemma rew_id_r (A : Type) (x y : A) (e : x = y) :
+  (id o e = e)%type.
+Proof. destruct e. apply id%type. Defined.
+
+Theorem go_there (A B : Type) (f : A -> B) (y : B) (s t : fib _=_ f y) :
+  (s = t) -> {g : proj1_sig s = proj1_sig t |
+  proj2_sig t o f_equal f g = proj2_sig s}%type.
+Proof.
+  intros e. destruct s as [x p], t as [x' p']. cbn. cbv in e.
+  inversion_sigma e as [e' e'']. destruct e'. cbv in e''. subst p'.
+  exists id%type. unfold f_equal. apply rew_id_l.
+Defined.
+
+Theorem come_here (A B : Type) (f : A -> B) (y : B) (s t : fib _=_ f y) :
+  {g : proj1_sig s = proj1_sig t |
+  proj2_sig t o f_equal f g = proj2_sig s}%type -> (s = t).
+Proof.
+  intros [e e']. destruct s as [x p], t as [x' p']. cbn in *.
+  subst x'. f_equal. subst p. unfold f_equal. apply rew_id_l.
+Defined.
+
+(** This is lemma 4.2.5 from the book. *)
+
+Theorem fine (A B : Type) (f : A -> B) (y : B) (s t : fib _=_ f y) :
+  (s = t) ~= {g : proj1_sig s = proj1_sig t |
+  proj2_sig t o f_equal f g = proj2_sig s}%type.
+Proof.
+  exists (go_there (s := s) (t := t)). split.
+  - exists (come_here s t). repeat (split; try typeclasses eauto).
+    intros e.
+    destruct s as [x p], t as [x' p'].
+    unfold go_there, come_here. admit.
+  - exists (come_here s t). repeat (split; try typeclasses eauto).
+    intros [e e'].
+    destruct s as [x p], t as [x' p']. cbn in e, e'.
+    unfold go_there, come_here. admit.
+Admitted.
+
+(** This is theorem 4.2.6 from the book. *)
+
+Theorem curses (A B : Type) (f : A -> B) (y : B)
+  `{!IsHAE _=_ _=_ f} : IsContr (fib _=_ f y).
+Proof.
+  match goal with
+  | x : IsHAE _ _ _ |- _ => rename x into IHAE
+  end.
+  destruct IHAE as [g [[[] []] c]].
+  hnf. unfold fib.
+  set (x := g y).
+  set (e := sect (f := f) (g := g) _ : f x = y).
+  exists (x; e). intros [x' e']. apply come_here.
+  pose proof retr (f := f) as r.
+  pose proof sect (f := f) as s.
+  pose proof (e' ^-1 o e)%type as t.
+  pose proof is_proper_eq_1 g t as p.
+  do 2 rewrite r in p. exists p. cbn. destruct p. unfold f_equal.
+  unfold Isomorphic.iso_l_is_proper_f in c.
+  subst e. cbn. pose proof c (g y) as c'.
+Admitted.
+
+(** This is an approximation of theorem 4.2.6 from the book. *)
+
+Theorem curses' (A B : Type) (f : A -> B) (y : B)
+  `{!IsSet B}
+  `{!IsBiInv _=_ _=_ f} : IsContr (fib _=_ f y).
+Proof.
+  match goal with
+  | x : IsBiInv _ _ _ |- _ => rename x into IBI
+  end.
+  destruct IBI as [[g IIL] [h IIR]].
+  hnf. unfold fib.
+  set (x := g y).
+  assert (e : f x = y).
+  { pose proof retr (f := f) as r.
+    pose proof sect (f := f) as s.
+    subst x.
+    rewrite <- s. f_equal. rewrite <- r. f_equal. rewrite s.
+    reflexivity. }
+  exists (x; e). intros [x' e']. subst x.
+  pose proof retr (f := f) as r.
+  pose proof sect (f := f) as s.
+  pose proof (e' ^-1 o e)%type as t.
+  pose proof is_proper_eq_1 g t as p.
+  do 2 rewrite r in p. subst x'. f_equal. apply uip.
+Defined.
+
 (** This is theorem 4.9.4 from the book. *)
 
 Lemma eq_pi_is_contr' (A : Type) (P : A -> Prop)
@@ -652,10 +742,8 @@ Proof.
   end.
   pose proof eq_pi_is_what as w.
   pose proof @ret (fib _=_ alpha id%core) (forall x : A, P x) w as r.
-  apply r. unfold fib.
-  set (F := A -> {x : A | P x}).
-  pose proof ua why_squared as t.
-  epose proof (sig_contr (A := A -> {x : A | P x}) _).
+  apply r.
+  apply curses.
   (** This requires more lemmas. *)
 Admitted.
 

@@ -288,17 +288,19 @@ Proof.
 
 End Context.
 
+(** ** Contractible Map *)
+
+Class IsContrMap (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (f : A -> B) : Prop := {
+  contr_map_is_proper :> IsProper (X ==> Y) f;
+  contr_map_is_contr_fn :> IsContrFn' X Y f;
+}.
+
 (** ** Half-Adjoint Equivalence *)
 
 Class IsHAE (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (f : A -> B) : Prop :=
   h_a_e : exists g : B -> A, IsCohIso X Y f g (fun _ : B => _=_).
-
-(** ** Contractible Map *)
-
-Class IsContrMap (A B : Type)
-  (f : A -> B) : Prop :=
-  contr_map_is_contr_fn :> IsContrFn f.
 
 Section Context.
 
@@ -321,6 +323,16 @@ Proof.
   - exists id. typeclasses eauto.
   - exists id. typeclasses eauto. Qed.
 
+(** The identity function is a contractible map
+    with respect to any reflexive relation. *)
+
+#[export] Instance refl_is_contr_map_inv_id
+  `{!IsRefl X} : IsContrMap X X id.
+Proof.
+  split.
+  - typeclasses eauto.
+  - intros y. exists (y; refl y)%sig. intros [x a]. apply a. Qed.
+
 #[local] Instance is_iso_eq_id :
   IsIso (A := A) (B := A) _=_ _=_ id id.
 Proof.
@@ -339,14 +351,6 @@ Proof.
 #[export] Instance is_h_a_e_eq_id :
   IsHAE (A := A) (B := A) _=_ _=_ id.
 Proof. exists id. exists is_iso_eq_id. intros x. reflexivity. Qed.
-
-(** The identity function is a contractible map. *)
-
-#[export] Instance is_contr_map_inv_eq_id :
-  IsContrMap (A := A) (B := A) id.
-Proof.
-  intros y. unfold id, fib, IsContr. exists (exist (flip _=_ y) y id%type).
-  intros [x a]. destruct a. reflexivity. Qed.
 
 End Context.
 
