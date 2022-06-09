@@ -54,8 +54,56 @@ Proof.
   induction e. apply a.
 Defined.
 
+Definition transport_dep
+  (A : Type) (P : A -> Type) (Q : forall x : A, P x -> Type)
+  {x y : A} (e : x = y) (p : P x) (q : Q x p) :
+  Q y (transport P e p).
+Proof.
+  destruct e. apply q.
+Defined.
+
 #[local] Notation "'_*_'" := (transport _) (only parsing).
 #[local] Notation "e '_*'" := (transport _ e) (only parsing).
+
+Lemma ap (A B : Type) (f : A -> B) (x y : A) (e : x = y) : f x = f y.
+Proof.
+  apply (transport (fun y : A => f x = f y) e). apply id%type.
+Defined.
+
+Lemma apd (A : Type) (P : A -> Type)
+  (f : forall x : A, P x) (x y : A) (e : x = y) :
+  e _* (f x) = f y.
+Proof.
+  destruct e. apply id%type.
+Defined.
+
+Section Context.
+
+Context (A B C : Type)
+  (f : A -> B) (g : B -> C) (x y z : A) (e : x = y) (d : y = z).
+
+#[local] Open Scope type_scope.
+
+(** This is lemma 2.2.1 from the book. *)
+
+Lemma ap_refl : ap (y := x) f id = id.
+Proof. apply id%type. Defined.
+
+(** This is lemma 2.2.2 from the book. *)
+
+Lemma ap_id : ap id%core e = e.
+Proof. destruct e. apply id%type. Defined.
+
+Lemma ap_ap : ap g (ap f e) = ap (g o f)%core e.
+Proof. destruct e. apply id%type. Defined.
+
+Lemma ap_sym : ap f (e ^-1) = ap f e ^-1.
+Proof. destruct e. apply id%type. Defined.
+
+Lemma ap_trans : ap f (d o e) = ap f d o ap f e.
+Proof. destruct d. destruct e. apply id%type. Defined.
+
+End Context.
 
 Lemma happly_nondep (A B : Type) (f g : A -> B) (e : f = g) (x : A) : f x = g x.
 Proof.
@@ -75,9 +123,28 @@ Defined.
 
 Definition transport_trans (A : Type) (P : A -> Type)
   (x y z : A) (e : x = y) (f : y = z) (a : P x) :
-  f _* (e _* a) = (f o e)%type _* a.
+  (* f _* (e _* a) = (f o e)%type _* a *)
+  transport P f (transport P e a) = transport P (f o e)%type a.
 Proof.
   destruct e, f. apply id%type.
+Defined.
+
+(** This is lemma 2.3.10 from the book. *)
+
+Definition transport_ap (A B : Type) (P : B -> Type)
+  (f : A -> B) (x y : A) (e : x = y) (a : P (f x)) :
+  transport P (ap f e) a = transport (P o f) e a.
+Proof.
+  destruct e. apply id%type.
+Defined.
+
+(** This is lemma 2.3.11 from the book. *)
+
+Definition transport_f (A : Type) (P Q : A -> Type)
+  (f : forall x : A, P x -> Q x) (x y : A) (e : x = y) (a : P x) :
+  transport Q e (f x a) = f y (transport P e a).
+Proof.
+  destruct e. apply id%type.
 Defined.
 
 (** This is part of theorem 2.15.7 from the book. *)
@@ -272,6 +339,24 @@ Proof.
       apply (si o pf)%type.
 Defined.
 
+(** This is lemma 2.4.12 from the book. *)
+
+#[export] Instance is_equiv_equiv_types_eq : IsEquiv _~=_.
+Proof. esplit; typeclasses eauto. Qed.
+
+Lemma idtoeqv_refl (A : Type) :
+  idtoeqv id%type = refl (Reflexive := is_refl_equiv_types_eq) A.
+Proof. reflexivity. Defined.
+
+Lemma idtoeqv_sym (A B : Type) (e : A = B) :
+  idtoeqv (e ^-1) = sym (Symmetric := @is_sym_equiv_types_eq) A B (idtoeqv e).
+Proof. destruct e. reflexivity. Defined.
+
+Lemma idtoeqv_trans (A B C : Type) (e : A = B) (f : B = C) :
+  idtoeqv (f o e)%type =
+  trans (Transitive := @is_trans_equiv_types_eq) A B C (idtoeqv e) (idtoeqv f).
+Proof. destruct e. destruct f. reflexivity. Defined.
+
 (** One of these ways is probably better. *)
 
 Definition is_equiv_transport (A : Type) (P : A -> Type)
@@ -290,6 +375,125 @@ Proof.
     + typeclasses eauto.
     + typeclasses eauto.
     + intros a. apply rew_opp_r.
+Defined.
+
+(** This is equation 2.6.1 from the book. *)
+
+Lemma prod_go (A B : Type)
+  (a b : A * B) (e : a = b) : (fst a = fst b) * (snd a = snd b).
+Proof.
+  destruct a as [x y], b as [x' y'].
+  pose proof ap fst e as f. apply (_,_).
+  - apply f.
+  - pose proof ap snd e as g. apply g.
+Defined.
+
+(** This is equation 2.6.3 from the book. *)
+
+Lemma prod_come (A B : Type)
+  (a b : A * B) (c : (fst a = fst b) * (snd a = snd b)) : a = b.
+Proof.
+  destruct c as [f g].
+  destruct a as [x y], b as [x' y'].
+  pose proof transport (fun x' : A => (x, y) = (x', y')) f as a. apply a.
+  pose proof transport (fun y' : B => (x, y) = (x, y')) g as b. apply b.
+  apply id%type.
+Defined.
+
+(** This is theorem 2.6.2 from the book. *)
+
+#[export] Instance prod_is_bi_inv (A B : Type) (a b : A * B) :
+  IsBiInv _=_ _=_ (prod_go (a := a) (b := b)).
+Proof.
+  split.
+  - exists (prod_come a b). split.
+    + apply is_proper_eq_1.
+    + apply is_proper_eq_1.
+    + intros e. destruct e. destruct a as [x y]. reflexivity.
+  - exists (prod_come a b). split.
+    + apply is_proper_eq_1.
+    + apply is_proper_eq_1.
+    + destruct a as [x y], b as [x' y']. intros [e f]. cbv in e, f.
+      destruct e. destruct f. reflexivity.
+Defined.
+
+#[export] Instance prod_is_equiv_types (A B : Type) (a b : A * B) :
+  (a = b) ~= (fst a = fst b) * (snd a = snd b).
+Proof. exists prod_go. typeclasses eauto. Defined.
+
+Equations prod_family (A : Type) (P Q : A -> Type) (x : A) : Type :=
+  prod_family P Q x := P x * Q x.
+
+(** This is theorem 2.6.4 from the book. *)
+
+Lemma transport_prod (A : Type) (P Q : A -> Type)
+  (x y : A) (e : x = y) (a : P x * Q x) :
+  transport (prod_family P Q) e a =
+  (transport P e (fst a), transport Q e (snd a)).
+Proof.
+  destruct e. destruct a as [p q]. apply id%type.
+Defined.
+
+#[local] Open Scope sig_scope.
+
+Lemma sig_go (A : Type) (P : A -> Prop)
+  (a b : {x : A | P x}) (e : a = b) :
+  {f : proj1_sig a = proj1_sig b | transport P f (proj2_sig a) = proj2_sig b}.
+Proof.
+  destruct a as [x p], b as [x' p'].
+  pose (ap proj1_sig e) as f. cbn in *.
+  pose proof apd (P := P o proj1_sig) proj2_sig e as g. cbn in *.
+  exists f. rewrite <- transport_ap in g. apply g.
+Defined.
+
+Lemma sig_come (A : Type) (P : A -> Prop)
+  (a b : {x : A | P x}) (c : {f : proj1_sig a = proj1_sig b |
+  transport P f (proj2_sig a) = proj2_sig b}) : a = b.
+Proof.
+  destruct c as [f g].
+  destruct a as [x p], b as [x' p'].
+  cbn in *. destruct f. destruct g. apply id%type.
+Defined.
+
+(** This is theorem 2.7.2 from the book. *)
+
+#[export] Instance sig_is_bi_inv (A : Type) (P : A -> Prop)
+  (a b : {x : A | P x}) :
+  IsBiInv _=_ _=_ (sig_go (a := a) (b := b)).
+Proof.
+  split.
+  - exists (sig_come a b). split.
+    + apply is_proper_eq_1.
+    + apply is_proper_eq_1.
+    + intros e. destruct e. destruct a as [x y]. reflexivity.
+  - exists (sig_come a b). split.
+    + apply is_proper_eq_1.
+    + apply is_proper_eq_1.
+    + destruct a as [x y], b as [x' y']. intros [e f]. cbv in e, f.
+      destruct e. destruct f. reflexivity.
+Defined.
+
+#[export] Instance sig_is_equiv_types (A : Type) (P : A -> Prop)
+  (a b : {x : A | P x}) :
+  (a = b) ~= {f : proj1_sig a = proj1_sig b |
+  transport P f (proj2_sig a) = proj2_sig b}.
+Proof. exists sig_go. typeclasses eauto. Defined.
+
+Equations sig_family (A : Type) (P : A -> Prop) (Q : {x : A | P x} -> Prop)
+  (x : A) : Type :=
+  sig_family Q x := {a : P x | Q (x; a)}.
+
+Arguments sig_family {_} _ _ _.
+
+(** This is theorem 2.7.4 from the book. *)
+
+Lemma transport_sig (A : Type) (P : A -> Prop) (Q : {x : A | P x} -> Prop)
+  (x y : A) (e : x = y) (a : {a : P x | Q (x; a)}) :
+  transport (sig_family P Q) e a =
+  (transport P e (proj1_sig a);
+  transport_dep (sig_curry Q) e (proj1_sig a) (proj2_sig a)).
+Proof.
+  destruct e. destruct a as [p q]. apply id%type.
 Defined.
 
 (** ** Proposition Extensionality *)
@@ -401,42 +605,6 @@ Defined.
 
 Arguments ua {_ _} _.
 
-(** Proposition extensionality
-    makes function extensionality an equality. *)
-
-Lemma prop_fun_ext_dep `{IsPropExt} `{IsFunExtDep}
-  (A : Type) (P : A -> Type) (f g : forall x : A, P x) :
-  (forall x : A, f x = g x) = (f = g).
-Proof.
-  apply prop_ext. split.
-  - intros a. apply fun_ext_dep. intros x. apply a.
-  - intros a x. apply equal_f_dep. apply a.
-Qed.
-
-(** Families of propositions are propositions. *)
-
-Lemma eq_pi_is_prop `{IsFunExtDep} (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsProp (P x)} : IsProp (forall x : A, P x).
-Proof.
-  match goal with
-  | h : forall _ : _, IsProp _ |- _ => rename h into p
-  end.
-  intros g h. apply fun_ext_dep. intros x. apply p.
-Qed.
-
-(** Families of contractible types are contractible. *)
-
-Lemma eq_pi_is_contr `{IsFunExtDep} (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x) _=_} : IsContr (forall x : A, P x) _=_.
-Proof.
-  match goal with
-  | h : forall _ : _, IsContr _ _=_ |- _ => rename h into c
-  end.
-  apply @inhabited_prop_is_contr.
-  - intros x. apply c.
-  - apply (@eq_pi_is_prop _). intros x. apply contr_is_prop.
-Qed.
-
 Module HomotopyTypicalDigression.
 
 #[local] Open Scope ex_scope.
@@ -524,66 +692,22 @@ Lemma ua_refl (A : Type) :
   ua (refl (Reflexive := is_refl_equiv_types_eq) A) =
   @eq_refl Type A.
 Proof.
-  unfold ua.
-  unfold equiv_types_bi_inv, l_inv_iso_l.
-  unfold bi_inv_is_l_inv.
-  destruct (univalence A A) as [[f IIL] [g IIR]].
-  unfold ex_proj1.
-  pose proof retr (f := idtoeqv) (g := f) id%type as r.
-  apply r.
+  rewrite <- ua_uniq. rewrite idtoeqv_refl. reflexivity.
 Defined.
-
-(** These would probably go with some effort. *)
 
 Lemma ua_sym (A B : Type) (e : A ~= B) :
   ua (sym (Symmetric := @is_sym_equiv_types_eq) A B e) =
   @eq_sym Type A B (ua e).
 Proof.
-  unfold ua.
-  unfold equiv_types_bi_inv, l_inv_iso_l.
-  unfold bi_inv_is_l_inv.
-  destruct (univalence A B) as [[fAB IILAB] [gAB IIRAB]],
-  (univalence B A) as [[fBA IILBA] [gBA IIRBA]].
-  unfold ex_proj1.
-  pose proof retr (f := idtoeqv) (g := fBA) as r.
-  pose proof sect (f := idtoeqv) (g := gAB) as s'.
-  pose proof sect (f := idtoeqv) (g := gBA) as s.
-  pose proof retr (f := idtoeqv) (g := fAB) as r'.
-  rewrite <- r.
-  f_equal.
-  rewrite <- s at 1.
-  f_equal.
-Admitted.
-
-(*
-Lemma eq_trans (A : Type) (x y z : A) (e : x = y) (f : y = z) : x = z.
-Proof. induction e using eq_rect. induction f using eq_rect. apply eq_refl. Defined.
-*)
+  rewrite <- ua_uniq. rewrite idtoeqv_sym. rewrite ua_comp. reflexivity.
+Defined.
 
 Lemma ua_trans (A B C : Type) (e : A ~= B) (f : B ~= C) :
   ua (trans (Transitive := @is_trans_equiv_types_eq) A B C e f) =
   @eq_trans Type A B C (ua e) (ua f).
 Proof.
-  rewrite <- (ua_comp e) at 1.
-  rewrite <- (ua_comp f) at 1.
-  replace (@RelationClasses.transitivity Type
-        (fun A B : Type => IsEquivTypes A B (@eq A) (@eq B))
-        (@is_trans_equiv_types_eq) A B C (@idtoeqv A B (@ua A B e))
-        (@idtoeqv B C (@ua B C f)))
-  with (idtoeqv (ua f o ua e)%type).
-  2:{ pose proof transport_trans id (ua e) (ua f) as t.
-    pose proof functional_extensionality _ _ t as t'; cbv beta in t'.
-    unfold idtoeqv.
-    admit. } rewrite ua_uniq. reflexivity.
-Restart.
-  unfold ua.
-  unfold equiv_types_bi_inv, l_inv_iso_l.
-  unfold bi_inv_is_l_inv.
-  destruct (univalence A B) as [[fAB IILAB] [gAB IIRAB]],
-  (univalence B C) as [[fBC IILBC] [gBC IIRBC]],
-  (univalence A C) as [[fAC IILAC] [gAC IIRAC]].
-  unfold ex_proj1.
-Admitted.
+  rewrite <- ua_uniq. rewrite idtoeqv_trans. do 2 rewrite ua_comp. reflexivity.
+Defined.
 
 (** This is lemma 4.9.2 from the book. *)
 
@@ -670,37 +794,42 @@ Proof. destruct e. apply id%type. Defined.
 
 Theorem go_there (A B : Type) (f : A -> B) (y : B) (s t : fib _=_ f y) :
   (s = t) -> {g : proj1_sig s = proj1_sig t |
-  f_equal f g o proj2_sig s = proj2_sig t}%type.
+  ap f g o proj2_sig s = proj2_sig t}%type.
 Proof.
   intros e. destruct s as [x p], t as [x' p']. cbn. cbv in e.
   inversion_sigma e as [e' e'']. destruct e'. cbv in e''. subst p'.
-  exists id%type. unfold f_equal. apply rew_id_l.
+  exists id%type. rewrite ap_refl. apply rew_id_l.
 Defined.
 
 Theorem come_here (A B : Type) (f : A -> B) (y : B) (s t : fib _=_ f y) :
   {g : proj1_sig s = proj1_sig t |
-  f_equal f g o proj2_sig s = proj2_sig t}%type -> (s = t).
+  ap f g o proj2_sig s = proj2_sig t}%type -> (s = t).
 Proof.
   intros [e e']. destruct s as [x p], t as [x' p']. cbn in *.
-  subst x'. f_equal. subst p'. unfold f_equal. apply rew_id_l.
+  subst x'. apply ap. subst p'. rewrite ap_refl. apply rew_id_l.
 Defined.
 
 (** This is lemma 4.2.5 from the book. *)
 
 Theorem fine (A B : Type) (f : A -> B) (y : B) (s t : fib _=_ f y) :
   (s = t) ~= {g : proj1_sig s = proj1_sig t |
-  f_equal f g o proj2_sig s = proj2_sig t}%type.
+  ap f g o proj2_sig s = proj2_sig t}%type.
 Proof.
   exists (go_there (s := s) (t := t)). split.
   - exists (come_here s t). repeat (split; try typeclasses eauto).
     intros e.
     destruct s as [x p], t as [x' p'].
-    inversion_sigma e as [e' e'']. subst x' p'. cbn.
-    rewrite rew_id_r. admit.
+    inversion_sigma e as [e' e''].
+    change (rew [fun x : A => y = f x] e' in p)
+    with (transport (fun x : A => y = f x) e' p) in e''.
+    subst x' p'. cbn -[ap transport]. unfold eq_ind.
+    change (rew dependent [fun y0 _ => p = y0] rew_id_l p in rew_id_l p)
+    with (transport (_=_ p) (rew_id_l p) (rew_id_l p)).
+    admit.
   - exists (come_here s t). repeat (split; try typeclasses eauto).
     intros [e e'].
-    destruct s as [x p], t as [x' p']. cbn in e, e'. subst x' p'.
-    unfold f_equal. admit.
+    destruct s as [x p], t as [x' p']. cbn in e, e'.
+    subst x' p'. cbn -[ap transport].
 Admitted.
 
 (** This is theorem 4.2.6 from the book. *)
@@ -792,6 +921,42 @@ Qed.
 
 End HomotopyTypicalDigression.
 
+(** Proposition extensionality
+    makes function extensionality an equality. *)
+
+Lemma prop_fun_ext_dep `{IsPropExt} `{IsFunExtDep}
+  (A : Type) (P : A -> Type) (f g : forall x : A, P x) :
+  (forall x : A, f x = g x) = (f = g).
+Proof.
+  apply prop_ext. split.
+  - intros a. apply fun_ext_dep. intros x. apply a.
+  - intros a x. apply equal_f_dep. apply a.
+Qed.
+
+(** Families of propositions are propositions. *)
+
+Lemma eq_pi_is_prop `{IsFunExtDep} (A : Type) (P : A -> Prop)
+  `{!forall x : A, IsProp (P x)} : IsProp (forall x : A, P x).
+Proof.
+  match goal with
+  | h : forall _ : _, IsProp _ |- _ => rename h into p
+  end.
+  intros g h. apply fun_ext_dep. intros x. apply p.
+Qed.
+
+(** Families of contractible types are contractible. *)
+
+Lemma eq_pi_is_contr `{IsFunExtDep} (A : Type) (P : A -> Prop)
+  `{!forall x : A, IsContr (P x) _=_} : IsContr (forall x : A, P x) _=_.
+Proof.
+  match goal with
+  | h : forall _ : _, IsContr _ _=_ |- _ => rename h into c
+  end.
+  apply @inhabited_prop_is_contr.
+  - intros x. apply c.
+  - apply (@eq_pi_is_prop _). intros x. apply contr_is_prop.
+Qed.
+
 (** Families of sets are sets. *)
 
 Lemma eq_pi_is_set `{IsPropExt} `{IsFunExtDep} (A : Type) (P : A -> Prop)
@@ -838,18 +1003,26 @@ Proof.
     + intros y. apply s.
 Qed.
 
+(** Univalence implies proposition extensionality for types. *)
+
+#[export] Instance univ_is_prop_ext_type `{IsUniv} : IsPropExtType.
+Proof.
+  intros A B IPA IPB [f g]. pose proof univ_is_bi_inv A B as s.
+  destruct s as [ua [IPidtoeqv IPua]]. apply ua. exists f. split.
+  - exists g. split; try typeclasses eauto. intros x. apply irrel.
+  - exists g. split; try typeclasses eauto. intros x. apply irrel.
+Qed.
+
+(** We cannot prove that [IsPropExt] and [IsPropExtType] are related,
+    because [Prop] and [Type] are stratified. *)
+
 Module FromAxioms.
 
 #[export] Instance is_prop_ext : IsPropExt.
 Proof. intros A B. apply propositional_extensionality. Qed.
 
 #[export] Instance is_prop_ext_type : IsPropExtType.
-Proof.
-  intros A B IPA IPB [f g]. pose proof univalence A B as s.
-  destruct s as [ua [IPidtoeqv IPua]]. apply ua. exists f. split.
-  - exists g. split; try typeclasses eauto. intros x. apply irrel.
-  - exists g. split; try typeclasses eauto. intros x. apply irrel.
-Qed.
+Proof. intros A B. apply propositional_extensionality_type. Qed.
 
 #[export] Instance is_pred_ext : IsPredExt.
 Proof. intros A P Q. apply predicate_extensionality. Qed.

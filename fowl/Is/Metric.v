@@ -186,7 +186,18 @@ Equations Rlt_eps (x y : nonnegreal) : Prop :=
 #[export] Instance Rlt_eps_wf : WellFounded Rlt_eps.
 Proof.
   intros x. constructor. intros y. unfold Rlt_eps at 1.
+  assert (a : exists n : nat, e < 1 / 2 ^ n).
+  { admit. }
   (** Now use a limit process of the form [1 / 2 ^ n] to access [x]. *)
+  intros i. destruct a as [n j].
+  pose proof Rplus_lt_compat_r x _ _ j as k.
+  pose proof Rlt_trans _ _ _ i k as m.
+  clear i j k. revert x y m. induction n as [| p]; intros x y m.
+  - rewrite pow_O in m.
+    rewrite (Fdiv_def Rfield) in m.
+    rewrite Rmult_1_l in m.
+    rewrite Rinv_1 in m.
+    constructor. intros z i. unfold Rlt_eps in i.
 Admitted.
 
 End Context.
