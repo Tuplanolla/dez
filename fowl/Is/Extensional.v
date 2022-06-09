@@ -427,10 +427,10 @@ Qed.
 (** Families of contractible types are contractible. *)
 
 Lemma eq_pi_is_contr `{IsFunExtDep} (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x)} : IsContr (forall x : A, P x).
+  `{!forall x : A, IsContr (P x) _=_} : IsContr (forall x : A, P x) _=_.
 Proof.
   match goal with
-  | h : forall _ : _, IsContr _ |- _ => rename h into c
+  | h : forall _ : _, IsContr _ _=_ |- _ => rename h into c
   end.
   apply @inhabited_prop_is_contr.
   - intros x. apply c.
@@ -445,7 +445,7 @@ Module HomotopyTypicalDigression.
 (** This is lemma 3.11.7 from the book. *)
 
 Lemma ret (A B : Type) `{!IsRetrType A B _=_}
-  `{!IsContr A} : IsContr B.
+  `{!IsContr A _=_} : IsContr B _=_.
 Proof.
   destruct IsRetrType0 as [f [g IR]]. destruct contr as [x h].
   exists (f x). intros y. rewrite <- (sect (f := f) y). f_equal. apply h.
@@ -453,7 +453,7 @@ Qed.
 
 (** This is lemma 3.11.8 from the book. *)
 
-Lemma sig_contr (A : Type) (a : A) : IsContr {x : A | a = x}.
+Lemma sig_contr (A : Type) (a : A) : IsContr {x : A | a = x} _=_.
 Proof.
   exists (a; id%type). intros [x e]. destruct e. apply id%type.
 Defined.
@@ -595,54 +595,54 @@ Proof.
 Defined.
 
 Definition inj1_sig (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x)} (x : A) : {x : A | P x} :=
+  `{!forall x : A, IsContr (P x) _=_} (x : A) : {x : A | P x} :=
   (x; ex_proj1 contr).
 
 Lemma what (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x)} : IsRetr _=_ proj1_sig inj1_sig.
+  `{!forall x : A, IsContr (P x) _=_} : IsRetr _=_ proj1_sig inj1_sig.
 Proof.
   intros [x a]. unfold proj1_sig, inj1_sig. f_equal.
   pose proof ex_proj2 contr a as b. apply b.
 Qed.
 
 Lemma what' (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x)} : IsSect _=_ proj1_sig inj1_sig.
+  `{!forall x : A, IsContr (P x) _=_} : IsSect _=_ proj1_sig inj1_sig.
 Proof. intros x. unfold proj1_sig, inj1_sig. reflexivity. Qed.
 
 (** This is part of corollary 4.9.3 from the book. *)
 
 Lemma alpha (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x)} (f : A -> {x : A | P x}) (x : A) : A.
+  `{!forall x : A, IsContr (P x) _=_} (f : A -> {x : A | P x}) (x : A) : A.
 Proof. apply (proj1_sig (f x)). Defined.
 
 (** This is corollary 4.9.3 from the book. *)
 
 Lemma before_why (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x)} :
+  `{!forall x : A, IsContr (P x) _=_} :
   IsBiInv _=_ _=_ (proj1_sig (P := P)).
 Proof. split; exists inj1_sig; split;
   try typeclasses eauto; apply what || apply what'.
 Qed.
 
 Lemma why (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x)} :
+  `{!forall x : A, IsContr (P x) _=_} :
   {x : A | P x} ~= A.
 Proof. exists proj1_sig. apply before_why. Qed.
 
 Lemma why_squared (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x)} :
+  `{!forall x : A, IsContr (P x) _=_} :
   (A -> {x : A | P x}) ~= (A -> A).
 Proof. apply easy. apply why. Qed.
 
 (** These are parts of theorem 4.9.4 from the book. *)
 
 Lemma phi (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x)} :
+  `{!forall x : A, IsContr (P x) _=_} :
   (forall x : A, P x) -> (fib _=_ alpha id%core).
 Proof. intros f. hnf. exists (fun x : A => (x; f x)). apply id%type. Defined.
 
 Lemma psi (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x)} :
+  `{!forall x : A, IsContr (P x) _=_} :
   (fib _=_ alpha id%core) -> (forall x : A, P x).
 Proof.
   intros gp x.
@@ -651,11 +651,11 @@ Proof.
 Defined.
 
 Lemma eq_pi_is_what (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x)} :
+  `{!forall x : A, IsContr (P x) _=_} :
   IsRetrType (fib _=_ alpha id%core) (forall x : A, P x) _=_.
 Proof.
   match goal with
-  | x : forall _ : _, IsContr _ |- _ => rename x into c
+  | x : forall _ : _, IsContr _ _=_ |- _ => rename x into c
   end.
   exists psi, phi. intros f. unfold phi. unfold psi. cbn. reflexivity.
 Defined.
@@ -706,7 +706,7 @@ Admitted.
 (** This is theorem 4.2.6 from the book. *)
 
 Theorem curses (A B : Type) (f : A -> B) (y : B)
-  `{!IsHAE _=_ _=_ f} : IsContr (fib _=_ f y).
+  `{!IsHAE _=_ _=_ f} : IsContr (fib _=_ f y) _=_.
 Proof.
   match goal with
   | x : IsHAE _ _ _ |- _ => rename x into IHAE
@@ -728,7 +728,7 @@ Admitted.
 
 Theorem curses' (A B : Type) (f : A -> B) (y : B)
   `{!IsSet B}
-  `{!IsBiInv _=_ _=_ f} : IsContr (fib _=_ f y).
+  `{!IsBiInv _=_ _=_ f} : IsContr (fib _=_ f y) _=_.
 Proof.
   match goal with
   | x : IsBiInv _ _ _ |- _ => rename x into IBI
@@ -753,10 +753,10 @@ Defined.
 (** This is theorem 4.9.4 from the book. *)
 
 Lemma eq_pi_is_contr' (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x)} : IsContr (forall x : A, P x).
+  `{!forall x : A, IsContr (P x) _=_} : IsContr (forall x : A, P x) _=_.
 Proof.
   match goal with
-  | h : forall _ : _, IsContr _ |- _ => rename h into c
+  | h : forall _ : _, IsContr _ _=_ |- _ => rename h into c
   end.
   pose proof eq_pi_is_what as w.
   pose proof @ret (fib _=_ alpha id%core) (forall x : A, P x) w as r.

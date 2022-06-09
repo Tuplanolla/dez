@@ -57,3 +57,5 @@ Proof. eauto. Qed.
 Lemma contr_fn_iff_contr_fib : 
   IsContrFn X Y f <-> forall y : B, IsContr (fib Y f y) (proj1_sig_relation X).
 Proof. esplit; typeclasses eauto. Qed.
+
+End Context.
