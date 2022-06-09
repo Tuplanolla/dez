@@ -173,14 +173,20 @@ Proof. intros x y. Admitted.
   IsRealMetric (B := R) _=_ nonnegreal_dist.
 Proof. esplit; try typeclasses eauto. Qed.
 
-Equations Rlt_eps (eps : posreal) (x y : nonnegreal) : Prop :=
-  Rlt_eps e x y := x < e + y.
+Section Context.
 
-#[local] Instance Rlt_eps_wf (e : posreal) : WellFounded (Rlt_eps e).
+Context (e : posreal).
+
+Equations Rlt_eps (x y : nonnegreal) : Prop :=
+  Rlt_eps x y := x < e + y.
+
+#[export] Instance Rlt_eps_wf : WellFounded Rlt_eps.
 Proof.
   intros x. constructor. intros y. unfold Rlt_eps at 1.
   (** Now use a limit process of the form [1 / 2 ^ n] to access [x]. *)
 Admitted.
+
+End Context.
 
 Section Context.
 
@@ -193,6 +199,7 @@ Equations approach (x y : R) : R by wf (nonnegreal_dist x y) (Rlt_eps e) :=
   }.
 Next Obligation.
   intros x y i rec.
+  unfold nonnegreal_dist. unfold Rlt_eps. cbn.
   unfold R_dist.
   rewrite (Fdiv_def Rfield).
   rewrite distr_r.
@@ -204,7 +211,6 @@ Next Obligation.
   rewrite Rplus_opp_r.
   rewrite Rplus_0_r.
   rewrite (Fdiv_def Rfield).
-  unfold Rlt_eps.
   repeat match goal with
   | |- context c [?x + - ?y] => change (x + - y) with (x - y)
   (* | |- context c [?x * / ?y] => change (x * / y) with (x / y) *)
@@ -218,13 +224,29 @@ Next Obligation.
   rewrite Rabs_Rinv.
   2: { intros a. apply eq_IZR in a. lia. }
   rewrite <- abs_IZR. unfold Z.abs.
-  Admitted.
-
-Equations approach' (x y : R) : posreal :=
-  approach' x y := mkposreal (approach x y) _.
-Next Obligation. intros x y. Admitted.
+  pose proof cond_pos e as p.
+  destruct (Rle_lt_or_eq_dec 0 (R_dist x y)) as [f | f].
+  - apply Rge_le. apply R_dist_pos.
+  - transitivity (R_dist x y).
+    + rewrite Rmult_comm.
+      rewrite <- (Fdiv_def Rfield).
+      apply Rlt_eps2_eps.
+      apply Rlt_gt.
+      apply f.
+    + rewrite <- (Rplus_0_l (R_dist x y)) at 1.
+      apply Rplus_lt_compat_r.
+      apply p.
+  - rewrite <- f. rewrite Rmult_0_r. rewrite Rplus_0_r. apply p.
+Qed.
 
 End Context.
+
+(** Extraction is broken,
+    so we need this to inspect [RbaseSymbolsImpl.coq_R]. *)
+
+Equations slurp (x : R) : posreal :=
+  slurp x := mkposreal x _.
+Next Obligation. Admitted.
 
 From Coq Require Import
   extraction.ExtrOcamlBasic extraction.Extraction
@@ -259,7 +281,7 @@ Extract Constant Rplus => "Float.add".
 Extract Constant Rminus => "Float.sub".
 Extract Constant Rdiv => "Float.div".
 
-Extraction "/tmp/metric.ml" approach'.
+Extraction "/tmp/metric.ml" approach slurp.
 
 (** TODO The rest! *)
 

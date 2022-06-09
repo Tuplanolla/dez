@@ -51,7 +51,7 @@ Class IsStreicher : Prop :=
     even though homotopy levels conventionally start from [-2]. *)
 
 Equations IsHLevel (n : nat) (A : Type) : Prop by struct n :=
-  IsHLevel O A := IsContr A;
+  IsHLevel O A := IsContr A _=_;
   IsHLevel (S n) A := forall x y : A, IsHLevel n (x = y).
 
 Existing Class IsHLevel.
@@ -63,15 +63,15 @@ Context (A : Type).
 (** Homotopy levels are inductive. *)
 
 #[local] Instance contr_is_h_level_O
-  `{!IsContr A} : IsHLevel O A.
+  `{!IsContr A _=_} : IsHLevel O A.
 Proof. eauto. Qed.
 
 #[local] Instance h_level_O_is_contr
-  `{!IsHLevel O A} : IsContr A.
+  `{!IsHLevel O A} : IsContr A _=_.
 Proof. eauto. Qed.
 
 Lemma contr_iff_h_level_O :
-  IsContr A <-> IsHLevel O A.
+  IsContr A _=_ <-> IsHLevel O A.
 Proof. esplit; typeclasses eauto. Qed.
 
 #[local] Instance h_level_S_is_h_level_eq (n : nat)
@@ -139,15 +139,15 @@ Context (A : Type).
 (** Homotopy level [0] corresponds to contractibility. *)
 
 #[local] Instance contr_is_h_level_0
-  `{!IsContr A} : IsHLevel 0 A.
+  `{!IsContr A _=_} : IsHLevel 0 A.
 Proof. apply contr_is_h_level_O. Qed.
 
 #[local] Instance h_level_0_is_contr
-  `{!IsHLevel 0 A} : IsContr A.
+  `{!IsHLevel 0 A} : IsContr A _=_.
 Proof. apply h_level_O_is_contr. Qed.
 
 Lemma contr_iff_h_level_0 :
-  IsContr A <-> IsHLevel 0 A.
+  IsContr A _=_ <-> IsHLevel 0 A.
 Proof. apply contr_iff_h_level_O. Qed.
 
 End Context.
@@ -171,7 +171,7 @@ Proof.
   match goal with
   | x : IsHLevel _ _ |- _ => rename x into IHL
   end.
-  intros x y. assert (IC : IsContr (x = y)).
+  intros x y. assert (IC : IsContr (x = y) _=_).
   { apply @h_level_0_is_contr. apply @h_level_S_is_h_level_eq. apply IHL. }
   apply IC. Qed.
 
@@ -230,15 +230,15 @@ Section Context.
 Context (A : Type).
 
 #[local] Instance prop_is_contr_eq
-  `{!IsProp A} (x y : A) : IsContr (x = y).
+  `{!IsProp A} (x y : A) : IsContr (x = y) _=_.
 Proof. eauto with h_intro h_elim. Qed.
 
 #[local] Instance contr_eq_is_prop
-  `{!forall x y : A, IsContr (x = y)} : IsProp A.
+  `{!forall x y : A, IsContr (x = y) _=_} : IsProp A.
 Proof. eauto with h_intro h_elim. Qed.
 
 Lemma prop_iff_contr_eq :
-  IsProp A <-> forall x y : A, IsContr (x = y).
+  IsProp A <-> forall x y : A, IsContr (x = y) _=_.
 Proof. esplit; typeclasses eauto. Qed.
 
 #[local] Instance set_is_prop_eq
@@ -256,7 +256,7 @@ Proof. esplit; typeclasses eauto. Qed.
 (** Contractible types are propositions. *)
 
 #[local] Instance contr_is_prop
-  `{!IsContr A} : IsProp A.
+  `{!IsContr A _=_} : IsProp A.
 Proof. eauto with h_intro h_elim. Qed.
 
 (** Propositions are sets. *)
@@ -268,7 +268,7 @@ Proof. eauto with h_intro h_elim. Qed.
 (** Inhabited propositions are contractible. *)
 
 #[local] Instance inhabited_prop_is_contr (x : A)
-  `{!IsProp A} : IsContr A.
+  `{!IsProp A} : IsContr A _=_.
 Proof. exists x. apply irrel. Qed.
 
 (** Reflections of propositions are sets. *)

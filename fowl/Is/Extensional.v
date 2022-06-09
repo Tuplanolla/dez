@@ -9,17 +9,19 @@ From DEZ.Is Require Export
 (** We declare various axiom schemes as classes
     in hopes of one day turning them into theorems. *)
 
-Theorem ac : forall {A B : Type} (R : A -> B -> Prop),
-  (forall x : A, {y : B | R x y}) -> {f : A -> B | forall x : A, R x (f x)}.
+Theorem ac (A B : Type) (R : A -> B -> Prop)
+  (g : forall x : A, {y : B | R x y}) :
+  {f : A -> B | forall x : A, R x (f x)}.
 Proof.
-  intros A B R g. exists (fun x : A => proj1_sig (g x)).
+  exists (fun x : A => proj1_sig (g x)).
   intros x. set (p := g x). induction p as [y p]. cbn. apply p.
 Defined.
 
-Theorem dpb : forall {A B : Type} (R : A -> B -> Prop),
-  {f : A -> B | forall x : A, R x (f x)} -> forall x : A, {y : B | R x y}.
+Theorem dpb (A B : Type) (R : A -> B -> Prop)
+  (s : {f : A -> B | forall x : A, R x (f x)}) (x : A) :
+  {y : B | R x y}.
 Proof.
-  intros A B R p x. induction p as [f g]. exists (f x). apply (g x).
+  induction s as [f g]. exists (f x). apply (g x).
 Defined.
 
 (** This is lemma 2.15.6 from the book. *)
@@ -306,6 +308,12 @@ Class IsPropExtType : Prop :=
   prop_ext_type (A B : Type) `{!IsProp A} `{!IsProp B}
   (a : (A -> B) * (B -> A)) : A = B.
 
+(** ** Proposition Extensionality Axiom for Types *)
+
+Axiom propositional_extensionality_type :
+  forall (A B : Type) (p : forall x y : A, x = y) (q : forall x y : B, x = y)
+  (a : (A -> B) * (B -> A)), A = B.
+
 Lemma eq_iff_type (A B : Type) `{!IsProp A} `{!IsProp B}
   (a : A = B) : (A -> B) * (B -> A).
 Proof. induction a. split; apply id. Defined.
@@ -318,8 +326,8 @@ Class IsPredExt : Prop :=
 (** ** Predicate Extensionality Axiom *)
 
 Axiom predicate_extensionality :
-  forall (A : Type) (P Q : A -> Prop) (a : forall x : A, P x <-> Q x),
-  P = Q.
+  forall (A : Type) (P Q : A -> Prop)
+  (a : forall x : A, P x <-> Q x), P = Q.
 
 (** ** Function Extensionality *)
 
@@ -347,8 +355,7 @@ Proof. intros A B f g a. apply fun_ext_dep. intros x. apply a. Qed.
 
 Class IsTypeExt : Prop :=
   type_ext (A B : Type) (f : A -> B) (g : B -> A)
-  (r : forall x : A, g (f x) = x) (s : forall y : B, f (g y) = y) :
-  A = B.
+  `{!IsRetr _=_ f g} `{!IsSect _=_ f g} : A = B.
 
 (** ** Type Extensionality Axiom *)
 
@@ -360,7 +367,7 @@ Axiom type_extensionality : forall (A B : Type)
 (** ** Univalence *)
 
 Class IsUniv : Prop :=
-  uam (A B : Type) `{!A ~= B} : A = B.
+  univ_is_bi_inv (A B : Type) :> IsBiInv _=_ _=_ (idtoeqv (A := A) (B := B)).
 
 (** ** Univalence Axiom *)
 
@@ -369,8 +376,19 @@ Axiom univalence : forall A B : Type,
 
 (** This is axiom 2.10.3 and its corollaries from the book. *)
 
-Corollary ua_equiv (A B : Type) : (A = B) ~= (A ~= B).
-Proof. exists idtoeqv. apply univalence. Defined.
+Corollary ua_equiv `{IsUniv} (A B : Type) : (A = B) ~= (A ~= B).
+Proof. exists idtoeqv. typeclasses eauto. Defined.
+
+(*
+Lemma ua `{IsUniv} (A B : Type) `{!A ~= B} : A = B.
+Proof.
+  pose proof equiv_types_bi_inv A B _=_ _=_ as IET.
+  pose proof univ_is_bi_inv A B as IBI.
+  pose proof l_inv_iso_l as ILI.
+  pose proof ex_proj1 ILI as e.
+  apply e. apply IET.
+Defined.
+*)
 
 Lemma ua (A B : Type) `{!A ~= B} : A = B.
 Proof.
@@ -383,8 +401,8 @@ Defined.
 
 Arguments ua {_ _} _.
 
-(** Propositional extensionality
-    makes functional extensionality an equality. *)
+(** Proposition extensionality
+    makes function extensionality an equality. *)
 
 Lemma prop_fun_ext_dep `{IsPropExt} `{IsFunExtDep}
   (A : Type) (P : A -> Type) (f g : forall x : A, P x) :
@@ -642,17 +660,17 @@ Proof.
   exists psi, phi. intros f. unfold phi. unfold psi. cbn. reflexivity.
 Defined.
 
-Lemma rew_id_l (A : Type) (x y : A) (e : x = y) :
+Lemma rew_id_r (A : Type) (x y : A) (e : x = y) :
   (e o id = e)%type.
 Proof. destruct e. apply id%type. Defined.
 
-Lemma rew_id_r (A : Type) (x y : A) (e : x = y) :
+Lemma rew_id_l (A : Type) (x y : A) (e : x = y) :
   (id o e = e)%type.
 Proof. destruct e. apply id%type. Defined.
 
 Theorem go_there (A B : Type) (f : A -> B) (y : B) (s t : fib _=_ f y) :
   (s = t) -> {g : proj1_sig s = proj1_sig t |
-  proj2_sig t o f_equal f g = proj2_sig s}%type.
+  f_equal f g o proj2_sig s = proj2_sig t}%type.
 Proof.
   intros e. destruct s as [x p], t as [x' p']. cbn. cbv in e.
   inversion_sigma e as [e' e'']. destruct e'. cbv in e''. subst p'.
@@ -661,27 +679,28 @@ Defined.
 
 Theorem come_here (A B : Type) (f : A -> B) (y : B) (s t : fib _=_ f y) :
   {g : proj1_sig s = proj1_sig t |
-  proj2_sig t o f_equal f g = proj2_sig s}%type -> (s = t).
+  f_equal f g o proj2_sig s = proj2_sig t}%type -> (s = t).
 Proof.
   intros [e e']. destruct s as [x p], t as [x' p']. cbn in *.
-  subst x'. f_equal. subst p. unfold f_equal. apply rew_id_l.
+  subst x'. f_equal. subst p'. unfold f_equal. apply rew_id_l.
 Defined.
 
 (** This is lemma 4.2.5 from the book. *)
 
 Theorem fine (A B : Type) (f : A -> B) (y : B) (s t : fib _=_ f y) :
   (s = t) ~= {g : proj1_sig s = proj1_sig t |
-  proj2_sig t o f_equal f g = proj2_sig s}%type.
+  f_equal f g o proj2_sig s = proj2_sig t}%type.
 Proof.
   exists (go_there (s := s) (t := t)). split.
   - exists (come_here s t). repeat (split; try typeclasses eauto).
     intros e.
     destruct s as [x p], t as [x' p'].
-    unfold go_there, come_here. admit.
+    inversion_sigma e as [e' e'']. subst x' p'. cbn.
+    rewrite rew_id_r. admit.
   - exists (come_here s t). repeat (split; try typeclasses eauto).
     intros [e e'].
-    destruct s as [x p], t as [x' p']. cbn in e, e'.
-    unfold go_there, come_here. admit.
+    destruct s as [x p], t as [x' p']. cbn in e, e'. subst x' p'.
+    unfold f_equal. admit.
 Admitted.
 
 (** This is theorem 4.2.6 from the book. *)
@@ -696,14 +715,13 @@ Proof.
   hnf. unfold fib.
   set (x := g y).
   set (e := sect (f := f) (g := g) _ : f x = y).
-  exists (x; e). intros [x' e']. apply come_here.
+  exists (x; e ^-1). intros [x' e']. apply come_here.
   pose proof retr (f := f) as r.
   pose proof sect (f := f) as s.
-  pose proof (e' ^-1 o e)%type as t.
+  pose proof (e' o e)%type as t.
   pose proof is_proper_eq_1 g t as p.
-  do 2 rewrite r in p. exists p. cbn. destruct p. unfold f_equal.
-  unfold Isomorphic.iso_l_is_proper_f in c.
-  subst e. cbn. pose proof c (g y) as c'.
+  do 2 rewrite r in p. subst x' e. clear t.
+  exists id%type. cbn. pose proof c x as c'. subst x.
 Admitted.
 
 (** This is an approximation of theorem 4.2.6 from the book. *)
@@ -724,10 +742,10 @@ Proof.
     subst x.
     rewrite <- s. f_equal. rewrite <- r. f_equal. rewrite s.
     reflexivity. }
-  exists (x; e). intros [x' e']. subst x.
+  exists (x; e ^-1). intros [x' e']. subst x.
   pose proof retr (f := f) as r.
   pose proof sect (f := f) as s.
-  pose proof (e' ^-1 o e)%type as t.
+  pose proof (e' o e)%type as t.
   pose proof is_proper_eq_1 g t as p.
   do 2 rewrite r in p. subst x'. f_equal. apply uip.
 Defined.

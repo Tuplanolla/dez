@@ -18,8 +18,12 @@ digraph Is {
     IsSize [label = "\N X n"]
   }
 
+  subgraph contr_classes {
+    IsContr [label = "\N A X\ncontr : exists x : A, forall y : A, X x y"]
+    IsContrFn [label = "\N X Y f\ncontr_fn_iff_contr_fib : IsContrFn X Y f <-> forall y : B, IsContr (fib Y f y) (proj1_sig_relation X)"]
+  }
+
   subgraph irrel_classes {
-    IsContr [label = "\N A\ncontr : exists x : A, forall y : A, x = y"]
     IsProp [label = "\N A\nirrel (x y : A) : x = y"]
     IsSet [label = "\N A\nuip (x y : A) (a b : x = y) : a = b"]
     IsHLevel [label = "\N n A\ncontr_iff_h_level_O : IsContr A <-> IsHLevel O A\nh_level_S_iff_h_level_eq : IsHLevel (S n) A <-> forall x y : A, IsHLevel n (x = y)"]
@@ -34,16 +38,31 @@ digraph Is {
     IsPredExt [label = "\N\npred_ext (A : Type) (P Q : A -> Prop) (a : forall x : A, P x <-> Q x) : P = Q"]
     IsPropExt [label = "\N\nprop_ext (A B : Prop) (a : A <-> B) : A = B"]
     IsPropExtType [label = "\N\nprop_ext_type (A B : Type) `{!IsProp A} `{!IsProp B} (a : (A -> B) * (B -> A)) : A = B"]
-    IsUniv [label = "\N\nua (A B : Type) (a : IsEquivTypes A B _=_ _=_) : A = B"]
+    IsTypeExt [label = "\N\ntype_ext (A B : Type) (f : A -> B) (g : B -> A) (r : forall x : A, g (f x) = x) (s : forall y : B, f (g y) = y) : A = B."]
+
+    IsUniv [label = "\N"]
   }
 
   subgraph iso_classes {
     IsRetr [label = "\N X f g\nretr (x : A) : X (g (f x)) x"]
     IsSect [label = "\N X f g\nsect (x : B) : X (f (g x)) x"]
-    IsEquivTypes [label = "\N A B X Y\nequiv_types : exists (f : A -> B) (g : B -> A), IsIso X Y f g"]
+    IsEquivTypes [label = "\N A B X Y\nequiv_types_bi_inv : exists f : A -> B, IsBiInv X Y f"]
 
     IsAuto [label = "\N X f g"]
+    IsRetrFn [label = "\N Y f", color = red, fillcolor = yellow]
+    IsSectFn [label = "\N X f", color = red, fillcolor = yellow]
+    IsRetrType [label = "\N A B Y", color = red, fillcolor = yellow]
+    IsSectType [label = "\N A B X", color = red, fillcolor = yellow]
     IsIso [label = "\N X Y f g"]
+    IsIsoL [label = "\N X Y f g", color = red, fillcolor = yellow]
+    IsIsoR [label = "\N X Y f g", color = red, fillcolor = yellow]
+    IsCohIso [label = "\N X Y f g Z", color = red, fillcolor = yellow]
+    IsQInv [label = "\N X Y f", color = red, fillcolor = yellow]
+    IsLInv [label = "\N X Y f", color = red, fillcolor = yellow]
+    IsRInv [label = "\N X Y f", color = red, fillcolor = yellow]
+    IsBiInv [label = "\N X Y f", color = red, fillcolor = yellow]
+    IsContrMap [label = "\N X Y f", color = red, fillcolor = yellow]
+    IsHAE [label = "\N X Y f", color = red, fillcolor = yellow]
   }
 
   subgraph logic_classes {
@@ -240,10 +259,25 @@ digraph Is {
   }
 
   subgraph iso_fields {
+    IsUniv -> IsBiInv
     IsAuto -> IsRetr
     IsAuto -> IsSect
-    IsIso -> IsRetr
-    IsIso -> IsSect
+    IsIsoL -> IsRetr
+    IsIsoR -> IsSect
+    IsIso -> IsIsoL
+    IsIso -> IsIsoR
+    IsEquivTypes -> IsBiInv
+    IsContrMap -> IsContrFn
+    IsBiInv -> IsLInv
+    IsBiInv -> IsRInv
+    IsHAE -> IsCohIso
+    IsQInv -> IsIso
+    IsCohIso -> IsIso
+    // IsCohIso -> IsCoh
+    IsRetrType -> IsRetrFn
+    IsRetrFn -> IsSect
+    IsSectType -> IsSectFn
+    IsSectFn -> IsRetr
   }
 
   subgraph irrel_fields {
@@ -389,11 +423,11 @@ digraph Is {
 
   subgraph ext_derivations {
     IsFunExtDep -> IsFunExt
+    IsUniv -> IsTypeExt
   }
 
   subgraph iso_derivations {
     IsAuto -> IsIso
-    IsIso -> IsEquivTypes
     IsIso -> IsIso [label = "flip"]
     IsRetr -> IsSect [label = "flip"]
   }

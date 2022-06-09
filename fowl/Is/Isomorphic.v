@@ -47,8 +47,8 @@ End Context.
 
 (** ** Retraction Map *)
 
-Class IsRetrFn (A B : Type) (X : B -> B -> Prop) (f : A -> B) : Prop :=
-  retr_fn_sect : exists g : B -> A, IsSect X f g.
+Class IsRetrFn (A B : Type) (Y : B -> B -> Prop) (f : A -> B) : Prop :=
+  retr_fn_sect : exists g : B -> A, IsSect Y f g.
 
 (** ** Section Map *)
 
@@ -57,12 +57,12 @@ Class IsSectFn (A B : Type) (X : A -> A -> Prop) (f : A -> B) : Prop :=
 
 (** ** Retract *)
 
-Class IsRetrType (A B : Type) (X : B -> B -> Prop) : Prop :=
-  retr_type_retr_fn : exists f : A -> B, IsRetrFn X f.
+Class IsRetrType (A B : Type) (Y : B -> B -> Prop) : Prop :=
+  retr_type_retr_fn : exists f : A -> B, IsRetrFn Y f.
 
 Arguments IsRetrType _ _ _ : clear implicits.
 
-(** ** Section *)
+(** ** Sect *)
 
 Class IsSectType (A B : Type) (X : A -> A -> Prop) : Prop :=
   sect_type_sect_fn : exists f : A -> B, IsSectFn X f.
@@ -73,12 +73,12 @@ Arguments IsSectType _ _ _ : clear implicits.
     as [g] being a retraction of [f] up to [X] and
     the term [IsSect X f g] should be read
     as [g] being a section of [f] up to [X].
-    The term [IsRetrFn X f] should be read
-    as [f] being a retraction up to [X] and
+    The term [IsRetrFn Y f] should be read
+    as [f] being a retraction up to [Y] and
     the term [IsSectFn X f] should be read
     as [f] being a section up to [X].
-    The term [IsRetrType A B X] should be read
-    as [B] being a retract of [A] up to [X] and
+    The term [IsRetrType A B Y] should be read
+    as [B] being a retract of [A] up to [Y] and
     the term [IsSectType A B X] should be read
     as [B] being a section of [A] up to [X]. *)
 
@@ -293,7 +293,7 @@ End Context.
 Class IsContrMap (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (f : A -> B) : Prop := {
   contr_map_is_proper :> IsProper (X ==> Y) f;
-  contr_map_is_contr_fn :> IsContrFn' X Y f;
+  contr_map_is_contr_fn :> IsContrFn X Y f;
 }.
 
 (** ** Half-Adjoint Equivalence *)
