@@ -54,7 +54,8 @@ Proof.
   intros x y.
   pose proof Rle_or_lt x y as a.
   pose proof Rlt_le y x as b.
-  intuition. Qed.
+  intuition.
+Qed.
 
 #[export] Instance Rle_is_preord : IsPreord Rle.
 Proof. ecrush. Qed.
@@ -79,7 +80,8 @@ Proof.
   intros x y.
   pose proof Rtotal_order x y as a.
   pose proof Rgt_lt x y as b.
-  intuition. Qed.
+  intuition.
+Qed.
 
 #[export] Instance Rlt_is_part_ord : IsStrPartOrd Rlt.
 Proof. ecrush. Qed.

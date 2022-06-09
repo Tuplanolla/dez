@@ -88,7 +88,8 @@ Proof.
   destruct (lt_trichotomy x y) as [la | [ea | la']].
   - lia.
   - subst y. lia.
-  - pose proof str_mono_miff y x ltac:(lia) as lb'. lia. Qed.
+  - pose proof str_mono_miff y x ltac:(lia) as lb'. lia.
+Qed.
 
 (** Strict monotonicity implies monotonicity. *)
 
@@ -99,7 +100,8 @@ Proof.
   pose proof str_mono_miff x y as lb.
   destruct (eqb_spec x y) as [ea | fa].
   - pose proof f_equal miff ea as eb. lia.
-  - lia. Qed.
+  - lia.
+Qed.
 
 (** Strict monotonicity implies injectivity. *)
 
@@ -110,7 +112,8 @@ Proof.
   destruct (lt_trichotomy x y) as [la | [ea | la']].
   - pose proof str_mono_miff x y ltac:(lia) as lb. lia.
   - lia.
-  - pose proof str_mono_miff y x ltac:(lia) as lb'. lia. Qed.
+  - pose proof str_mono_miff y x ltac:(lia) as lb'. lia.
+Qed.
 
 (** Monotonicity and injectivity together imply strict monotonicity. *)
 
@@ -122,7 +125,8 @@ Proof.
   intros x y la.
   destruct (eqb_spec (miff x) (miff y)) as [ea | fa].
   - pose proof inj_miff x y ltac:(lia) as eb. lia.
-  - pose proof mono_miff x y ltac:(lia) as lb. lia. Qed.
+  - pose proof mono_miff x y ltac:(lia) as lb. lia.
+Qed.
 
 (** Strict monotonicity and fixed point at zero together
     imply that the function is expansive. *)
@@ -133,7 +137,8 @@ Proof.
   intros a.
   induction a as [| p lp] using peano_ind.
   - rewrite fixed_miff. reflexivity.
-  - pose proof str_mono_miff p (succ p) ltac:(lia) as lb. lia. Qed.
+  - pose proof str_mono_miff p (succ p) ltac:(lia) as lb. lia.
+Qed.
 
 Class IsMiff `(HasMiff) : Prop := {
   miff_is_mono_miff :> IsMonoMiff miff;
@@ -213,7 +218,8 @@ Proof.
   - unfold option_bind, option_map.
     apply part_sect_miff_error.
   - unfold option_bind, option_map.
-    reflexivity. Qed.
+    reflexivity.
+Qed.
 
 #[export] Hint Resolve is_part_sect_miff_error' : typeclass_instances.
 
@@ -227,7 +233,8 @@ Proof.
   intros a.
   pose proof part_sect_miff_error' (Some a) as e.
   unfold option_bind, option_map in e.
-  apply e. Qed.
+  apply e.
+Qed.
 
 #[export] Hint Resolve is_part_sect_miff_error : typeclass_instances.
 
@@ -245,7 +252,8 @@ Proof.
     setoid_rewrite <- e in e'.
     injection e'. clear e'. intros e'. apply e'.
   - unfold option_map in e'.
-    inversion e'. Qed.
+    inversion e'.
+Qed.
 
 #[export] Hint Resolve is_part_retr_miff_error' : typeclass_instances.
 
@@ -262,7 +270,8 @@ Proof.
     setoid_rewrite e'. rewrite e.
     unfold option_map.
     reflexivity.
-  - inversion e. Qed.
+  - inversion e.
+Qed.
 
 #[export] Hint Resolve is_part_retr_miff_error : typeclass_instances.
 
@@ -370,7 +379,8 @@ Proof.
     assert (l : miff (unmiff_round_down x) < miff (succ (unmiff_round_down y)))
     by lia.
     apply str_comono_miff in l.
-    lia. Qed.
+    lia.
+Qed.
 
 #[global] Instance is_surj_unmiff_round_down :
   IsSurjUnmiffRoundDown unmiff_round_down.
@@ -379,7 +389,8 @@ Proof.
   exists (miff a).
   pose proof sect_miff_round_down as e.
   rewrite e.
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 #[global] Instance is_contract_unmiff_round_down :
   IsContractUnmiffRoundDown unmiff_round_down.
@@ -388,7 +399,8 @@ Proof.
   pose proof inflate_miff a as l.
   apply mono_unmiff_round_down in l.
   rewrite sect_miff_round_down in l.
-  apply l. Qed.
+  apply l.
+Qed.
 
 Lemma unmiff_round_down_elim (a : A) (b : B)
   (ll : miff a <= b < miff (succ a)) : unmiff_round_down b = a.
@@ -405,7 +417,8 @@ Proof.
     clear fb lb.
     pose proof mono_unmiff_round_down (miff a) b ltac:(lia) as lb0.
     rewrite sect_miff_round_down in lb0.
-    lia. Qed.
+    lia.
+Qed.
 
 End Context.
 
@@ -438,7 +451,8 @@ Proof.
     assert (l : miff (pred (unmiff_round_up x)) < miff (unmiff_round_up y))
     by lia.
     apply str_comono_miff in l.
-    lia. Qed.
+    lia.
+Qed.
 
 #[global] Instance is_surj_unmiff_round_up :
   IsSurjUnmiffRoundDown unmiff_round_up.
@@ -447,7 +461,8 @@ Proof.
   unfold unmiff_round_down.
   exists (miff a).
   rewrite sect_miff_round_up.
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 #[global] Instance is_contract_unmiff_round_up :
   IsContractUnmiffRoundDown unmiff_round_up.
@@ -457,7 +472,8 @@ Proof.
   pose proof inflate_miff a as l.
   apply (@mono_unmiff_round_down unmiff_round_up _) in l.
   setoid_rewrite sect_miff_round_up in l.
-  apply l. Qed.
+  apply l.
+Qed.
 
 Lemma unmiff_round_up_elim (a : A) (b : B)
   (ll : miff (pred a) < b <= miff a) : unmiff_round_up b = a.
@@ -475,7 +491,8 @@ Proof.
     clear fb lb.
     pose proof (@mono_unmiff_round_down unmiff_round_up _) b (miff a) ltac:(lia) as lb0.
     setoid_rewrite sect_miff_round_up in lb0.
-    lia. Qed.
+    lia.
+Qed.
 
 End Context.
 
@@ -538,7 +555,8 @@ Next Obligation.
   intros b.
   apply squash.
   rewrite (sect_miff_round_down (unmiff_round_down b)).
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 Lemma quotient (x y : B) (r : R x y) : pr x = pr y.
 Proof.
@@ -549,7 +567,8 @@ Proof.
   destruct r as [a [lx ly]].
   rewrite (unmiff_round_down_elim _ a x),
   (unmiff_round_down_elim _ a y) by assumption.
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 Equations miff_round_dep (a : A) : B_R :=
   miff_round_dep a := pr (miff a).

@@ -45,7 +45,8 @@ Proof with note.
   hnf...
   rewrite <- (unl_elem_r (- x)).
   rewrite (inv_l x).
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 (** Negation is an involution. *)
 
@@ -57,7 +58,8 @@ Proof with note.
   rewrite (assoc (- (- y)) (- y) y).
   rewrite (inv_l (- y)).
   rewrite (unl_elem_l y).
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 (** Negation is injective. *)
 
@@ -70,7 +72,8 @@ Proof with note.
   rewrite <- (assoc y (- z) z).
   rewrite (inv_l z).
   rewrite (unl_elem_r y).
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 (** Addition is left-cancellative. *)
 
@@ -84,7 +87,8 @@ Proof with note.
   rewrite (assoc (- y) y w).
   rewrite (inv_l y).
   rewrite (unl_elem_l w).
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 (** Addition is right-cancellative. *)
 
@@ -98,7 +102,8 @@ Proof with note.
   rewrite <- (assoc z w (- w)).
   rewrite (inv_r w).
   rewrite (unl_elem_r z).
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 (** Addition is cancellative. *)
 
@@ -117,7 +122,8 @@ Proof with note.
   rewrite (inv_r z).
   rewrite (unl_elem_r y).
   rewrite (inv_r y).
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 End Context.
 
@@ -169,7 +175,8 @@ Proof with note.
   rewrite <- (bin_pres 0 0).
   rewrite (unl_elem_l 0).
   rewrite (unl_elem_r (h 0)).
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 (** Homomorphisms preserve negation. *)
 
@@ -180,7 +187,8 @@ Proof with note.
   rewrite <- (bin_pres z (- z)).
   rewrite (inv_r z).
   rewrite (inv_r (h z)).
-  apply null_pres. Qed.
+  apply null_pres.
+Qed.
 
 End Context.
 
@@ -197,7 +205,8 @@ Proof.
   - typeclasses eauto.
   - typeclasses eauto.
   - enough (IsDistrUnOp X id k) by assumption. typeclasses eauto.
-  - typeclasses eauto. Qed.
+  - typeclasses eauto.
+Qed.
 
 End Context.
 
@@ -227,7 +236,8 @@ Proof.
     intros y. unfold flip, const. reflexivity.
   - enough (IsAssoc X (flip const)) by assumption.
     intros y z w. unfold flip, const. reflexivity.
-  - typeclasses eauto. Qed.
+  - typeclasses eauto.
+Qed.
 
 (** Addition is a left group action. *)
 
@@ -237,6 +247,7 @@ Proof.
   - typeclasses eauto.
   - enough (IsUnlElemL X x k) by assumption. typeclasses eauto.
   - enough (IsAssoc X k) by assumption. typeclasses eauto.
-  - typeclasses eauto. Qed.
+  - typeclasses eauto.
+Qed.
 
 End Context.

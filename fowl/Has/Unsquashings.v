@@ -22,7 +22,8 @@ Lemma iff_notT_not_inhabited (A : Type) : - A <-> ~ inhabited A.
 Proof.
   split.
   - intros f xs. induction xs as [x]. contradiction.
-  - intros f x. apply inhabits in x. contradiction. Qed.
+  - intros f x. apply inhabits in x. contradiction.
+Qed.
 
 (** Unconstrucible types can be unsquashed. *)
 
@@ -31,7 +32,8 @@ Proof.
 Proof.
   intros xs.
   enough sEmpty by contradiction. induction xs as [x].
-  contradiction. Defined.
+  contradiction.
+Defined.
 
 (** Contradictory propositions can be unsquashed. *)
 
@@ -62,7 +64,8 @@ Proof. apply notT_has_unsquash. apply not_False. Defined.
 Proof.
   intros fs x.
   apply unsquash. induction fs as [f]. apply squash.
-  auto. Defined.
+  auto.
+Defined.
 
 (** Functions with unsquashable codomains can be unsquashed. *)
 
@@ -84,4 +87,5 @@ Proof.
   - auto.
   - apply notT_has_unsquash.
     + auto.
-    + auto. Defined.
+    + auto.
+Defined.

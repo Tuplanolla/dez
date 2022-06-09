@@ -70,7 +70,8 @@ Proof with notations enabled.
     + apply u0.
     + etransitivity.
       * apply u1.
-      * reflexivity. Qed.
+      * reflexivity.
+Qed.
 
 End Context.
 
@@ -100,7 +101,8 @@ Ltac notations f := progress (
 #[export] Instance real_metric_is_toeplitz_form :
   IsToeplitzForm _=_ 0 d.
 Proof with notations enabled.
-  intros a... apply indisc_id_form. reflexivity. Qed.
+  intros a... apply indisc_id_form. reflexivity.
+Qed.
 
 #[export] Instance real_metric_is_nonneg_form :
   IsNonnegForm _<=_ 0 d.
@@ -113,7 +115,8 @@ Proof with notations enabled.
     replace 2%Z with (1 + 1)%Z by lia. rewrite plus_IZR.
     rewrite distr_l. rewrite unl_elem_r.
     rewrite (comm_form b a) in s.
-    apply s. Qed.
+    apply s.
+Qed.
 
 #[export] Instance real_metric_is_real_pseudometric :
   IsRealPseudometric X d.

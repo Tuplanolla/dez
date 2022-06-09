@@ -61,7 +61,8 @@ Proof. intros a. unfold flip. apply infl_act_r. Qed.
 Proof.
   intros x a.
   change (ar x a) with (flip ar a x).
-  apply infl_un_op. Qed.
+  apply infl_un_op.
+Qed.
 
 End Context.
 
@@ -130,7 +131,8 @@ Proof. intros x. unfold flip. apply infl_r. Qed.
 Proof.
   intros x y.
   change (k x y) with (flip k y x).
-  apply infl_un_op. Qed.
+  apply infl_un_op.
+Qed.
 
 End Context.
 

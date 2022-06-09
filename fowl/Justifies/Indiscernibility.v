@@ -21,4 +21,5 @@ Theorem iff_eq_indisc (A : Type) (x y : A) :
 Proof.
   split.
   - intros a P. auto using eq_indisc.
-  - intros a. auto using indisc_eq. Qed.
+  - intros a. auto using indisc_eq.
+Qed.

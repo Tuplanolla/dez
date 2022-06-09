@@ -45,6 +45,7 @@ Context (A : Type) (Xeq Xle : A -> A -> Prop).
 Proof.
   intros x y. destruct (connex x y) as [a | b].
   - auto.
-  - auto. Qed.
+  - auto.
+Qed.
 
 End Context.

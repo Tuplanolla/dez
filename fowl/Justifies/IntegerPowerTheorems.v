@@ -60,7 +60,8 @@ Proof.
     rewrite (iter_op_xO xH x).
     rewrite (iter_op_xH (x + x)).
     try rewrite (iter_op_xH x).
-    reflexivity. Defined.
+    reflexivity.
+Defined.
 
 Lemma iter_op_comm (n : positive) (x : A) :
   x + Pos.iter_op _+_ n x = Pos.iter_op _+_ n x + x.
@@ -71,7 +72,8 @@ Proof.
   - rewrite (iter_op_succ p x).
     rewrite IH at 1.
     rewrite (assoc x (Pos.iter_op bin_op p x) x).
-    reflexivity. Defined.
+    reflexivity.
+Defined.
 
 End Context.
 
@@ -93,7 +95,8 @@ Proof.
     rewrite (antidistr_un_op x (Pos.iter_op bin_op p x)).
     rewrite IH.
     rewrite (iter_op_comm p (- x)).
-    reflexivity. Defined.
+    reflexivity.
+Defined.
 
 Global Instance positive_op_un_op_is_two_l_bin_comm :
   IsCommActLR _=_ positive_op -_.
@@ -109,7 +112,8 @@ Proof.
   - cbv [N_op].
     (* Here [rewrite] does not work for some reason. *)
     etransitivity; [| apply (positive_op_un_op_two_l_bin_comm p x)].
-    reflexivity. Defined.
+    reflexivity.
+Defined.
 
 Global Instance n_op_un_op_is_two_l_bin_comm : IsCommActLR _=_ N_op -_.
 Proof. intros x y. symmetry. apply n_op_un_op_two_l_bin_comm. Defined.
@@ -127,7 +131,8 @@ Proof.
   - cbv [Z_op].
     etransitivity; [| apply (f_equal un_op);
       apply (positive_op_un_op_two_l_bin_comm p x)].
-    reflexivity. Defined.
+    reflexivity.
+Defined.
 
 Global Instance z_op_un_op_is_two_l_bin_comm : IsCommActLR _=_ Z_op -_.
 Proof. intros x y. symmetry. apply z_op_un_op_two_l_bin_comm. Defined.

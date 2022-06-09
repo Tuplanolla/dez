@@ -29,7 +29,8 @@ Proof.
       * inversion K.
     + apply IsNoDup_cons.
       * intros H. inversion H.
-      * apply IsNoDup_nil. Qed.
+      * apply IsNoDup_nil.
+Qed.
 
 Global Instance bool_has_size : HasSize bool := 2.
 
@@ -44,7 +45,8 @@ Proof.
   - intros [[| p] H].
     (** We thus decree that [false] is less than [true]. *)
     + apply false.
-    + apply true. Defined.
+    + apply true.
+Defined.
 
 Global Instance bool_is_fin :
   IsIso _=_ _=_ (fst bool_has_iso) (snd bool_has_iso).
@@ -65,4 +67,5 @@ Proof.
         rewrite N.two_succ in F.
         rewrite <- N.succ_lt_mono in F.
         rewrite N.lt_1_r in F.
-        inversion F. Qed.
+        inversion F.
+Qed.

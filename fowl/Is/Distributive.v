@@ -121,7 +121,8 @@ Proof.
   change (k x z) with (flip k z x).
   change (m y z) with (flip m z y).
   change (p (n x y) z) with (flip p z (n x y)).
-  apply distr_un_fns. Qed.
+  apply distr_un_fns.
+Qed.
 
 End Context.
 

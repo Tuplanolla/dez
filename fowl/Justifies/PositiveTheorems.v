@@ -103,7 +103,8 @@ Global Instance le_sqrt_wd : Proper (le ==> le) sqrt.
 Proof.
   intros n p l. unfold sqrt. destruct
   (sqrtrem_spec n) as [s x | s x r],
-  (sqrtrem_spec p) as [s' x' | s' x' r']; cbn; nia. Qed.
+  (sqrtrem_spec p) as [s' x' | s' x' r']; cbn; nia.
+Qed.
 
 (** Whether the given number is even or not. *)
 

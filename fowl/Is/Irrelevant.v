@@ -104,7 +104,8 @@ Proof.
   - apply @h_level_O_is_contr in IHL. destruct IHL as [x a].
     apply @h_level_eq_is_h_level_S. intros y z. exists (a z o a y ^-1).
     intros b. rewrite b. apply eq_trans_sym_inv_l.
-  - intros x y. apply IHL'. apply @h_level_S_is_h_level_eq. apply IHL. Qed.
+  - intros x y. apply IHL'. apply @h_level_S_is_h_level_eq. apply IHL.
+Qed.
 
 #[local] Instance h_level_is_h_level_add (n p : nat)
   `{!IsHLevel n A} : IsHLevel (p + n) A.
@@ -115,7 +116,8 @@ Proof.
   revert n IHL. induction p as [| q IHL']; intros n IHL.
   - change (0 + n)%nat with n. apply IHL.
   - change (S q + n)%nat with (S (q + n))%nat.
-    apply @h_level_is_h_level_S. apply IHL'. apply IHL. Qed.
+    apply @h_level_is_h_level_S. apply IHL'. apply IHL.
+Qed.
 
 #[local] Instance h_level_sub_is_h_level (n p : nat)
   `{!IsHLevel (n - p) A} : IsHLevel n A.
@@ -128,7 +130,8 @@ Proof.
   - destruct n as [| r].
     + replace (0 - S q)%nat with 0%nat in IHL by lia. apply IHL.
     + replace (S r - S q)%nat with (r - q)%nat in IHL by lia.
-      apply @h_level_is_h_level_S. apply IHL'. apply IHL. Qed.
+      apply @h_level_is_h_level_S. apply IHL'. apply IHL.
+Qed.
 
 End Context.
 
@@ -163,7 +166,8 @@ Context (A : Type).
 Proof.
   apply @h_level_eq_is_h_level_S.
   intros x y. apply @contr_is_h_level_0. exists (irrel x y o irrel x x ^-1).
-  intros a. rewrite a. apply eq_trans_sym_inv_l. Qed.
+  intros a. rewrite a. apply eq_trans_sym_inv_l.
+Qed.
 
 #[local] Instance h_level_1_is_prop
   `{!IsHLevel 1 A} : IsProp A.
@@ -173,7 +177,8 @@ Proof.
   end.
   intros x y. assert (IC : IsContr (x = y) _=_).
   { apply @h_level_0_is_contr. apply @h_level_S_is_h_level_eq. apply IHL. }
-  apply IC. Qed.
+  apply IC.
+Qed.
 
 Lemma prop_iff_h_level_1 :
   IsProp A <-> IsHLevel 1 A.
@@ -192,7 +197,8 @@ Context (A : Type).
 Proof.
   apply @h_level_eq_is_h_level_S.
   intros x y. apply @prop_is_h_level_1.
-  intros a b. apply uip. Qed.
+  intros a b. apply uip.
+Qed.
 
 #[local] Instance h_level_2_is_set
   `{!IsHLevel 2 A} : IsSet A.
@@ -202,7 +208,8 @@ Proof.
   end.
   intros x y. assert (IP : IsProp (x = y)).
   { apply @h_level_1_is_prop. apply @h_level_S_is_h_level_eq. apply IHL. }
-  apply IP. Qed.
+  apply IP.
+Qed.
 
 Lemma set_iff_h_level_2 :
   IsSet A <-> IsHLevel 2 A.

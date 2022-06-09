@@ -48,7 +48,8 @@ Proof with note.
   rewrite <- (distr_r 0 0 z).
   rewrite (unl_elem_l 0).
   rewrite (unl_elem_l (0 * z)).
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 (** Zero right-absorbs multiplication. *)
 
@@ -59,7 +60,8 @@ Proof with note.
   rewrite <- (distr_l z 0 0).
   rewrite (unl_elem_r 0).
   rewrite (unl_elem_l (z * 0)).
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 (** Zero absorbs multiplication. *)
 
@@ -81,7 +83,8 @@ Proof with note.
   rewrite (inv_r z).
   rewrite (absorb_elem_l w).
   rewrite (inv_r (z * w)).
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 (** Multiplication right-commutes with negation. *)
 
@@ -93,7 +96,8 @@ Proof with note.
   rewrite (inv_r w).
   rewrite (absorb_elem_r z).
   rewrite (inv_r (z * w)).
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 (** Multiplication commutes with negation. *)
 
@@ -105,7 +109,8 @@ Proof.
   rewrite (comm_r (- z) w).
   rewrite (comm_l z w).
   rewrite (invol (z * w)).
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 End Context.
 
@@ -155,14 +160,16 @@ Proof with note.
   unsign...
   setoid_rewrite (comm_l 1 z).
   rewrite (unl_elem_l z).
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 Lemma ring_comm_unl_elem_r (z : A) : z * (- 1) == - z.
 Proof with note.
   unsign...
   setoid_rewrite (comm_r z 1).
   rewrite (unl_elem_r z).
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 End Context.
 

@@ -79,6 +79,7 @@ Proof.
   intros x.
   change (f (f x)) with ((f o f) x).
   pose proof idem_elem_bin_op x as a.
-  apply a. Qed.
+  apply a.
+Qed.
 
 End Context.

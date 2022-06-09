@@ -34,6 +34,7 @@ Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
 Proof.
   split.
   - intros x y a. rewrite <- (sect x), <- (sect y). rewrite a. reflexivity.
-  - intros y. exists (g y). rewrite sect. reflexivity. Qed.
+  - intros y. exists (g y). rewrite sect. reflexivity.
+Qed.
 
 End Context.

@@ -82,14 +82,16 @@ Lemma pos_tree_wf_l (A : Type) (x : option A)
 Proof.
   destruct x, l, r; constructor ||
   cbv [pos_tree_wf pos_tree_wf'] in w; apply andb_prop in w; destruct w;
-  tauto. Qed.
+  tauto.
+Qed.
 
 Lemma pos_tree_wf_r (A : Type) (x : option A)
   (l r : pos_tree A) (w : pos_tree_wf (pos_branch x l r)) : pos_tree_wf r.
 Proof.
   destruct x, l, r; constructor ||
   cbv [pos_tree_wf pos_tree_wf'] in w; apply andb_prop in w; destruct w;
-  tauto. Qed.
+  tauto.
+Qed.
 
 #[local] Hint Resolve pos_tree_wf_l pos_tree_wf_r : core.
 
@@ -142,7 +144,8 @@ Proof.
   induction n.
   - cbn; destruct n; auto.
   - cbn; destruct n; rewrite Bool.andb_true_r; apply IHn.
-  - reflexivity. Qed.
+  - reflexivity.
+Qed.
 
 Fixpoint pos_tree_partial_alter' (A : Type) (f : option A -> option A)
   (n : positive) (t : pos_tree A) {struct t} : pos_tree A :=
@@ -339,7 +342,8 @@ Next Obligation.
   apply Lt.lt_n_S. apply Plus.plus_lt_compat_l.
   apply Pos2Nat.inj_lt.
   (** Decision on positive numbers. *)
-  lia. Qed.
+  lia.
+Qed.
 (** Repeat with [xI] in place of [xO].
     The measure has [xI] to cancel both cases,
     since [xO n <= xI n] and [xI n <= xI n]. *)
@@ -347,7 +351,8 @@ Next Obligation.
   intros. subst. cbv [pos_max]; cbn.
   apply Lt.lt_n_S. apply Plus.plus_lt_compat_l.
   apply Pos2Nat.inj_lt.
-  lia. Qed.
+  lia.
+Qed.
 
 (** If this function is given a list that is not sorted,
     its behavior will not be undefined!
@@ -422,7 +427,8 @@ Global Instance Ssig_has_equiv_dec (A : Type) (P : A -> SProp) `(EqDec A) :
   EqDec (Ssig P).
 Proof. cbv [EqDec] in *. intros [] []. pose proof H Spr1 Spr0. destruct H0.
   left. apply Spr1_inj. auto.
-  right. intros ?. inversion H0. contradiction. Defined.
+  right. intros ?. inversion H0. contradiction.
+Defined.
 
 Global Instance pos_map_has_equiv_dec (A : Type) `(EqDec A) : EqDec (pos_map A).
 Proof. typeclasses eauto. Defined.
@@ -461,14 +467,16 @@ Lemma option_map_Some (A B : Type) (f : A -> B) (x : option A) (b : B)
 Proof.
   cbv [option_map] in e. destruct x as [a |].
   - inversion e as [e']. exists a. auto.
-  - inversion e. Qed.
+  - inversion e.
+Qed.
 
 Lemma option_map_None (A B : Type) (f : A -> B) (x : option A)
   (e : option_map f x = None) : x = None.
 Proof.
   cbv [option_map] in e. destruct x as [a |].
   - congruence.
-  - reflexivity. Qed.
+  - reflexivity.
+Qed.
 
 Program Definition pos_map_map (A B : Type)
   (f : A -> B) (m : pos_map A) : pos_map B :=
@@ -486,7 +494,8 @@ Next Obligation. intros A B f [t w]. apply squash. cbn.
     apply pos_tree_wf_branch; auto.
     cbn [option_map].
     cbn; auto with bool.
-    cbn; auto with bool. Qed.
+    cbn; auto with bool.
+Qed.
 
 Arguments pos_map_map _ _ _ !_.
 
@@ -681,7 +690,8 @@ Definition cut_map (A : Type) (P : A -> Prop) : Type :=
 Lemma Unnamed_goal (A : Type) (P : A -> Prop) (x y : cut_map P) :
   x = y <-> Spr1 x = Spr1 y.
 Proof. destruct x, y; cbn. split. intros. inversion H. auto.
-  intros w. apply Spr1_inj. cbn. auto. Qed.
+  intros w. apply Spr1_inj. cbn. auto.
+Qed.
 
 (** We can now represent polynomials with [cut_map (eq 0)]. *)
 
@@ -696,7 +706,8 @@ Definition dec_map (A : Type) (p : A -> bool) : Type :=
 Lemma Unnamed_goal' (A : Type) (p : A -> bool) (x y : dec_map p) :
   x = y <-> Spr1 x = Spr1 y.
 Proof. destruct x, y; cbn. split. intros. inversion H. auto.
-  intros w. apply Spr1_inj. cbn. auto. Qed.
+  intros w. apply Spr1_inj. cbn. auto.
+Qed.
 
 (** We can now represent polynomials over discrete rings
     with [dec_map (eqb 0)] or [dec_map (is_left o dec o eq 0)]. *)

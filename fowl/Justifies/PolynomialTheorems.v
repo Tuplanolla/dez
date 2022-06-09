@@ -35,7 +35,8 @@ Proof.
   intros x y.
   decide (x = y) as [e | f].
   - left. apply e.
-  - right. apply f. Qed.
+  - right. apply f.
+Qed.
 
 #[local] Arguments decide : simpl never.
 
@@ -76,7 +77,8 @@ Context `{FinMap K M}.
 Lemma map_imap_empty {A B : Type} (f : K -> A -> B) :
   map_imap (MA := M A) (MB := M B) f empty = empty.
 Proof with auto.
-  cbv [map_imap]. rewrite map_fold_empty... Qed.
+  cbv [map_imap]. rewrite map_fold_empty...
+Qed.
 
 Lemma map_imap_singleton {A B : Type} (f : K -> A -> B) (k : K) (a : A) :
   map_imap (MA := M A) (MB := M B) f (singletonM k a) = singletonM k (f k a).
@@ -84,7 +86,8 @@ Proof with auto.
   cbv [map_imap]. do 2 rewrite <- insert_empty. rewrite map_fold_insert_L.
   - rewrite map_fold_empty...
   - intros. rewrite insert_commute...
-  - rewrite lookup_empty... Qed.
+  - rewrite lookup_empty...
+Qed.
 
 End Context.
 
@@ -102,7 +105,8 @@ Proof.
       * apply Some. apply 7.
       * apply PLeaf.
       * apply PLeaf.
-    + apply PLeaf. Defined.
+    + apply PLeaf.
+Defined.
 
 Example peemap : Pmap nat.
 Proof. apply (PMap peemap_raw I). Defined.
@@ -266,7 +270,8 @@ Proof.
   intros [x Wp] i. intros Hyp.
   pose proof unsquash Wp as Wp'.
   pose proof map_Forall_lookup_1 poly_value_wf x i 0 Wp' Hyp as Wc.
-  apply Wc. reflexivity. Defined.
+  apply Wc. reflexivity.
+Defined.
 
 Ltac stabilize :=
   repeat match goal with
@@ -314,7 +319,8 @@ Next Obligation.
   - apply (poly_lookup_wf y i hy).
   - decide (a + b <> 0) as [fab | fab]; stabilize.
     + inversion hxy as [hab]. apply fab. apply hab.
-    + inversion hxy. Defined.
+    + inversion hxy.
+Defined.
 
 (** Zero polynomial.
 
@@ -326,7 +332,8 @@ Next Obligation.
   apply squash.
   intros i a Hyp. intros Ha. subst a.
   apply lookup_empty_Some in Hyp.
-  destruct Hyp. Defined.
+  destruct Hyp.
+Defined.
 
 (** Negation of polynomials.
 
@@ -342,7 +349,8 @@ Next Obligation with conversions.
   pose proof fmap_Some_1 _ _ _ Hyp as Hyp'.
   destruct Hyp' as [a [hx hy]].
   rewrite <- (fixed (x := 0) (f := -_)) in hy. apply inj in hy. subst a.
-  apply (poly_lookup_wf x i hx). Defined.
+  apply (poly_lookup_wf x i hx).
+Defined.
 
 (** Multiplication of polynomials.
 
@@ -362,7 +370,8 @@ Next Obligation.
   intros i a Hyp. intros Ha. subst a.
   apply map_filter_lookup_Some in Hyp.
   destruct Hyp as [Hyp Wc].
-  apply Wc. reflexivity. Defined.
+  apply Wc. reflexivity.
+Defined.
 
 Program Definition poly_mul' (x y : poly) : poly :=
   Sexists (Squash o poly_wf) (filter (prod_uncurry poly_value_wf)
@@ -387,7 +396,8 @@ Next Obligation.
     + intros Hi. subst i.
       rewrite lookup_singleton in Hyp. inversion Hyp as [H10].
       apply F10. apply H10.
-  - rewrite lookup_empty in Hyp. inversion Hyp. Defined.
+  - rewrite lookup_empty in Hyp. inversion Hyp.
+Defined.
 
 (** We could use the zero-product property to speed up computations here,
     but not fully, because our ring may not be a domain. *)
@@ -407,7 +417,8 @@ Next Obligation with conversions.
   intros i b Hyp. intros Hb. subst b.
   apply map_filter_lookup_Some in Hyp.
   destruct Hyp as [Hyp Wc].
-  apply Wc. reflexivity. Defined.
+  apply Wc. reflexivity.
+Defined.
 
 (** Right scalar multiplication of polynomials.
 
@@ -424,7 +435,8 @@ Next Obligation with conversions.
   intros i b Hyp. intros Hb. subst b.
   apply map_filter_lookup_Some in Hyp.
   destruct Hyp as [Hyp Wc].
-  apply Wc. reflexivity. Defined.
+  apply Wc. reflexivity.
+Defined.
 
 End Context.
 
@@ -554,7 +566,8 @@ Proof with conversions.
     rewrite Ha. setoid_rewrite assoc...
     rewrite Fab. setoid_rewrite unl_l.
     rewrite Hc. setoid_rewrite <- assoc...
-    rewrite Fbc. setoid_rewrite unl_r. reflexivity. Defined.
+    rewrite Fbc. setoid_rewrite unl_r. reflexivity.
+Defined.
 
 Global Instance poly_bin_op_is_semigrp : IsSemigrp poly_add.
 Proof. esplit; typeclasses eauto. Defined.
@@ -578,7 +591,8 @@ Proof with conversions.
   - f_equal. setoid_rewrite comm at 1... reflexivity.
   - exfalso. apply Fab. setoid_rewrite comm... apply Fba.
   - exfalso. apply Fba. setoid_rewrite comm... apply Fab.
-  - reflexivity. Defined.
+  - reflexivity.
+Defined.
 
 Global Instance poly_bin_op_is_comm_semigrp : IsCommSemigrp poly_add.
 Proof. esplit; typeclasses eauto. Defined.
@@ -805,7 +819,8 @@ Lemma poly_eval_zero : forall x : A,
 Proof with conversions.
   intros x. etransitivity. cbv [zero]. reflexivity.
   cbv [poly_has_zero poly_zero poly_eval]. cbn.
-  rewrite map_imap_empty. reflexivity. Defined.
+  rewrite map_imap_empty. reflexivity.
+Defined.
 
 Lemma poly_eval_neg : forall (p : poly) (x : A),
   poly_eval (- p) x = - poly_eval p x.
@@ -831,6 +846,7 @@ Proof with conversions.
       setoid_rewrite <- assoc... reflexivity.
     + rewrite lookup_empty. reflexivity.
   - apply dec_stable in F10. rewrite F10.
-    rewrite map_imap_empty. reflexivity. Defined.
+    rewrite map_imap_empty. reflexivity.
+Defined.
 
 End Context.

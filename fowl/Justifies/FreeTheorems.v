@@ -25,7 +25,8 @@ Proof.
   - left. congruence.
   - right. congruence.
   - right. congruence.
-  - right. congruence. Defined.
+  - right. congruence.
+Defined.
 
 #[global] Instance and_has_dec (A B : Prop)
   (d : HasDec A) (e : HasDec B) : HasDec (A /\ B).
@@ -34,7 +35,8 @@ Proof.
   - left. intuition.
   - right. intuition.
   - right. intuition.
-  - right. intuition. Defined.
+  - right. intuition.
+Defined.
 
 #[global] Instance or_has_dec (A B : Prop)
   (d : HasDec A) (e : HasDec B) : HasDec (A \/ B).
@@ -43,7 +45,8 @@ Proof.
   - left. intuition.
   - left. intuition.
   - left. intuition.
-  - right. intuition. Defined.
+  - right. intuition.
+Defined.
 
 #[global] Instance Forall_has_dec (A : Type) (P : A -> Prop)
   (d : forall x : A, HasDec (P x)) (a : list A) : HasDec (Forall P a) :=
@@ -52,14 +55,16 @@ Proof.
 #[global] Instance not_has_dec (A : Prop) (d : HasDec A) : HasDec (~ A).
 Proof.
   apply (@dec_decidable A) in d. apply (@decidable_has_dec (~ A)).
-  apply Decidable_not. Defined.
+  apply Decidable_not.
+Defined.
 
 #[global] Instance Sexists_has_equiv_dec (A : Type) (P : A -> SProp)
   (e : HasEqDec A) : HasEqDec {x : A $ P x}.
 Proof.
   intros [x a] [y b]. destruct (e x y) as [s | s].
   - left. apply Spr1_inj. unfold Spr1. apply s.
-  - right. intros t. inversion t as [s']. congruence. Defined.
+  - right. intros t. inversion t as [s']. congruence.
+Defined.
 (* fun x y : {x : A $ P x} => eq_dec (Spr1 x) (Spr1 y). *)
 
 Import ListNotations.
@@ -70,13 +75,15 @@ Lemma rev_nil (A : Type) (a : list A)
   (s : rev a = []) : a = [].
 Proof.
   apply (f_equal rev) in s. rewrite rev_involutive in s.
-  unfold rev in s. apply s. Qed.
+  unfold rev in s. apply s.
+Qed.
 
 Lemma rev_cons (A : Type) (x : A) (a b : list A)
   (s : rev a = x :: b) : a = rev b ++ [x].
 Proof.
   apply (f_equal rev) in s. rewrite rev_involutive in s.
-  change (rev (x :: b)) with (rev b ++ [x]) in s. apply s. Qed.
+  change (rev (x :: b)) with (rev b ++ [x]) in s. apply s.
+Qed.
 
 Lemma combine_snoc (A B : Type)
   (x : A) (a : list A) (y : B) (b : list B) (s : length a = length b) :
@@ -88,7 +95,8 @@ Proof.
   - inversion s.
   - inversion s.
   - inversion s as [s']. pose proof fun y : B => t y _ s' as t'.
-    cbn [combine app]. f_equal. apply t'. Qed.
+    cbn [combine app]. f_equal. apply t'.
+Qed.
 
 Lemma combine_rev (A B : Type)
   (a : list A) (b : list B) (s : length a = length b) :
@@ -102,7 +110,8 @@ Proof.
   - inversion s as [s']. pose proof t _ s' as t'.
     cbn [combine rev]. rewrite combine_snoc.
     + f_equal. apply t'.
-    + repeat rewrite rev_length. apply s'. Qed.
+    + repeat rewrite rev_length. apply s'.
+Qed.
 
 (** We should use finger trees for this.
     It is possible to achieve constant time cons, snoc,
@@ -126,7 +135,8 @@ Proof.
   - lia.
   - rewrite firstn_cons. reflexivity.
   - lia.
-  - rewrite firstn_cons. apply t. lia. Qed.
+  - rewrite firstn_cons. apply t. lia.
+Qed.
 
 Lemma nth_skipn (A : Type) (n p : nat) (a : list A) (d : A) (s : p < n) :
   nth n (skipn p a) d = nth (n - p) a d.
@@ -160,7 +170,8 @@ Proof. intros [i x]. apply Decidable_complete. intuition. Qed.
 #[local] Instance wfb_def_is_sym : IsSym wfb_def.
 Proof.
   intros [i x] [j y] w. apply Decidable_sound in w.
-  apply Decidable_complete. intuition. Qed.
+  apply Decidable_complete. intuition.
+Qed.
 
 Equations wfb (s : list (bool * A)) : bool :=
   wfb s := decide (Forall (prod_uncurry wfb_def) (combine s (skipn 1 s))).
@@ -194,7 +205,8 @@ Proof.
     epose proof nth_error_nth _ _ d a1 as d1.
     assert (t0 : nth_error s n <> None) by congruence.
     assert (t1 : nth_error s (S n) <> None) by congruence.
-    apply nth_error_Some in t0, t1. eauto. Qed.
+    apply nth_error_Some in t0, t1. eauto.
+Qed.
 
 Lemma wf_iff_wfb (s : list (bool * A)) : wf s <-> wfb s.
 Proof.
@@ -260,7 +272,8 @@ Next Obligation.
         replace (S (length u) - (S (length u) - 1)) with (S O) in ws by lia.
         replace (S (length u) - 1) with (length u) in ws by lia.
         rewrite skipn_map in ws. cbn [skipn] in ws.
-        cbn [map prod_bimap] in ws. apply ws. Qed.
+        cbn [map prod_bimap] in ws. apply ws.
+Qed.
 
 Equations bin_fix (s t : list (bool * A)) :
   list (bool * A) * list (bool * A) by struct t :=
@@ -382,7 +395,8 @@ Proof.
   - typeclasses eauto.
   - typeclasses eauto.
   - intros ? ?. reflexivity.
-  - intros ? ? _. reflexivity. Qed.
+  - intros ? ? _. reflexivity.
+Qed.
 
 End Context.
 

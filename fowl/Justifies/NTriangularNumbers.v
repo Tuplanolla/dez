@@ -36,7 +36,8 @@ Proof.
   simp untri_rem.
   arithmetize. destruct_sqrtrem s t est es e0st l1st.
   arithmetize. destruct_div_eucl q r eqr eq e0qr l1qr.
-  arithmetize. auto. Qed.
+  arithmetize. auto.
+Qed.
 
 (** A weak inverse of the generating function, rounding down.
     Sequence A003056. *)
@@ -62,7 +63,8 @@ Proof.
   destruct n as [| p].
   - auto.
   - simp untri_up. rewrite pos_pred_spec.
-    arithmetize. rewrite untri_eqn. auto. Qed.
+    arithmetize. rewrite untri_eqn. auto.
+Qed.
 
 (** A partial inverse of the generating function. *)
 
@@ -76,7 +78,8 @@ Lemma untri_error_eqn (n : N) : untri_error n =
 Proof.
   simp untri_error.
   arithmetize. destruct_sqrtrem s t est es e0st l1st.
-  arithmetize. auto. Qed.
+  arithmetize. auto.
+Qed.
 
 (** TODO These should emerge from the more general inversion stuff. *)
 
@@ -91,7 +94,8 @@ Next Obligation.
   intros a n f x e.
   destruct n as [| p].
   - subst x. inversion e.
-  - lia. Qed.
+  - lia.
+Qed.
 
 Program Fixpoint untri_down' (n : N) {measure (to_nat n)} : N :=
   match untri_error n with
@@ -102,7 +106,8 @@ Next Obligation.
   intros n f x e.
   destruct n as [| p].
   - subst x. inversion e.
-  - lia. Qed.
+  - lia.
+Qed.
 
 (** This is obvious. *)
 
@@ -111,7 +116,8 @@ Proof.
   do 2 rewrite tri_eqn. destruct (Even_mul_consecutive (1 + n)) as [p ep].
   rewrite ep. rewrite div_Even.
   destruct (Even_mul_consecutive n) as [q eq].
-  rewrite eq. rewrite div_Even. lia. Qed.
+  rewrite eq. rewrite div_Even. lia.
+Qed.
 
 (** This is strange. *)
 
@@ -125,7 +131,8 @@ Proof.
   - rewrite es. rewrite div_Even.
     destruct (sqrt_spec' r) as [l0 l1]; arithmetize. nia.
   - rewrite es. rewrite div_Odd.
-    destruct (sqrt_spec' r) as [l0 l1]; arithmetize. nia. Qed.
+    destruct (sqrt_spec' r) as [l0 l1]; arithmetize. nia.
+Qed.
 
 (** This is also strange. *)
 
@@ -133,7 +140,8 @@ Lemma tri_why (a b : N) (l : b <= a) : untri (b + tri a) = a.
 Proof.
   assert (x : exists c : N, a = c + b).
   { exists (a - b). lia. }
-  destruct x as [c e]. rewrite e. apply tri_what. Qed.
+  destruct x as [c e]. rewrite e. apply tri_what.
+Qed.
 
 (** The function [tri] is injective. *)
 
@@ -142,7 +150,8 @@ Proof.
   do 2 rewrite tri_eqn in e.
   destruct (Even_mul_consecutive n) as [q eq],
   (Even_mul_consecutive p) as [r er]; arithmetize.
-  rewrite eq, er in e. do 2 rewrite div_Even in e. nia. Qed.
+  rewrite eq, er in e. do 2 rewrite div_Even in e. nia.
+Qed.
 
 (** The function [tri] is not surjective. *)
 
@@ -152,7 +161,8 @@ Proof.
   destruct p as [| q _] using peano_ind; arithmetize.
   - lia.
   - destruct (Even_mul_consecutive (1 + q)) as [r er]; arithmetize.
-    rewrite er. rewrite div_Even. nia. Qed.
+    rewrite er. rewrite div_Even. nia.
+Qed.
 
 (** The function [tri] is monotonic. *)
 
@@ -161,7 +171,8 @@ Proof.
   do 2 rewrite tri_eqn.
   apply div_le_mono; [lia |].
   apply mul_le_mono; [lia |].
-  apply add_le_mono; [lia |]. lia. Qed.
+  apply add_le_mono; [lia |]. lia.
+Qed.
 
 (** The function [tri] is strictly monotonic. *)
 
@@ -173,7 +184,8 @@ Proof.
   - apply tri_inj in e.
     subst p.
     lia.
-  - lia. Qed.
+  - lia.
+Qed.
 
 Local Lemma tri_le_expand_le (n p : N) (l : n <= p) :
   dist n p <= dist (tri n) (tri p).
@@ -188,7 +200,8 @@ Proof.
   (Even_mul_consecutive p) as [r er].
   rewrite eq, er. do 2 rewrite div_Even.
   intros l'.
-  nia. Qed.
+  nia.
+Qed.
 
 (** The function [tri] is expansive. *)
 
@@ -199,7 +212,8 @@ Proof.
     lia.
   - rewrite (dist_comm n p), (dist_comm (tri n) (tri p)).
     apply tri_le_expand_le.
-    lia. Qed.
+    lia.
+Qed.
 
 (** The function [tri] is expansive around zero. *)
 
@@ -209,7 +223,8 @@ Proof.
   cbv [dist] in l.
   change (tri 0) with 0 in l.
   do 2 rewrite max_0_r in l. do 2 rewrite min_0_r in l.
-  lia. Qed.
+  lia.
+Qed.
 
 (** The function [untri] is monotonic. *)
 
@@ -220,7 +235,8 @@ Proof.
   apply sub_le_mono_r.
   apply sqrt_le_mono.
   apply add_le_mono; [lia |].
-  apply mul_le_mono; [lia |]. lia. Qed.
+  apply mul_le_mono; [lia |]. lia.
+Qed.
 
 (** The function [untri] is contractive. *)
 
@@ -240,7 +256,8 @@ Proof.
   - rewrite eq. rewrite div_Even.
     destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l1; nia.
   - rewrite eq. rewrite div_Odd.
-    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l1; nia. Qed.
+    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l1; nia.
+Qed.
 
 (** The function [untri] is an inverse of [tri]. *)
 
@@ -253,7 +270,8 @@ Proof.
   replace (1 + 4 * (n * (1 + n))) with ((1 + 2 * n) * (1 + 2 * n)) by lia.
   rewrite sqrt_square.
   replace (1 + 2 * n - 1) with (2 * n) by lia.
-  rewrite div_Even. auto. Qed.
+  rewrite div_Even. auto.
+Qed.
 
 (** The function [untri_up] is an inverse of [tri]. *)
 
@@ -270,7 +288,8 @@ Proof.
     + rewrite er. rewrite div_Even.
       destruct (sqrt_spec' q) as [l0 l1]; arithmetize. nia.
     + rewrite er. rewrite div_Odd.
-      destruct (sqrt_spec' q) as [l0 l1]; arithmetize. nia. Qed.
+      destruct (sqrt_spec' q) as [l0 l1]; arithmetize. nia.
+Qed.
 
 (** The function [tri] provides a lower bound for inverses of [untri]. *)
 
@@ -286,7 +305,8 @@ Proof.
   - rewrite eq. rewrite div_Odd.
     destruct (Even_mul_consecutive q) as [r er].
     rewrite er. rewrite div_Even.
-    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l1; nia. Qed.
+    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l1; nia.
+Qed.
 
 (** The function [tri] provides an upper bound for inverses of [untri]. *)
 
@@ -304,7 +324,8 @@ Proof.
     + rewrite eq. rewrite div_Odd.
       destruct (Even_mul_consecutive (1 + q)) as [r er]; arithmetize.
       rewrite er. rewrite div_Even.
-      destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l0; nia. Qed.
+      destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l0; nia.
+Qed.
 
 (** The function [tri] provides bounds
     for inverses of [untri] and [untri_up]. *)
@@ -375,7 +396,8 @@ Proof.
       * rewrite et2. rewrite div_Odd.
         destruct (Even_or_Odd t2) as [[t3 et3] | [t3 et3]]; arithmetize.
         -- rewrite et3. rewrite div_Even. subst t0 t1 t2. nia.
-        -- rewrite et3. rewrite div_Odd. subst t0 t1 t2. nia. Qed.
+        -- rewrite et3. rewrite div_Odd. subst t0 t1 t2. nia.
+Qed.
 
 (** The function [untri_rem] truly produces a remainder. *)
 
@@ -391,7 +413,8 @@ Proof.
   - rewrite eq. rewrite div_Odd.
     destruct (Even_mul_consecutive q) as [r er].
     rewrite er. rewrite div_Even.
-    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l0; nia. Qed.
+    destruct (sqrt_spec' p) as [l0 l1]; arithmetize. clear l0; nia.
+Qed.
 
 (** The function [untri_rem] is an inverse of [tri]. *)
 
@@ -405,7 +428,8 @@ Proof.
   rewrite untri_rem_tri_untri.
   cbv [prod_uncurry compose flip fst snd].
   pose proof tri_untri n as l.
-  lia. Qed.
+  lia.
+Qed.
 
 (** The function [untri_error] can be defined in terms of [untri_rem]. *)
 
@@ -431,7 +455,8 @@ Proof.
   + auto.
   + exfalso. clear l; nia.
   + exfalso. clear l; nia.
-  + auto. Qed.
+  + auto.
+Qed.
 
 (** The function [untri_error] is a lifted inverse of [tri]. *)
 
@@ -451,7 +476,8 @@ Proof.
     rewrite <- e1. clear e1.
     pose proof sub_add _ _ (tri_untri n) as e2. lia.
   - cbv [option_map] in e.
-    inversion e. Qed.
+    inversion e.
+Qed.
 
 (** An inverse of the generating function,
     with a remainder as an exact quotient. *)
@@ -463,7 +489,8 @@ Next Obligation.
   intros n. cbv beta. apply squash. rewrite untri_rem_tri_untri.
   rewrite tri_succ.
   pose proof tri_untri_untri_rem n as e.
-  lia. Qed.
+  lia.
+Qed.
 
 Global Instance tri_wd : Proper (Logic.eq ==> Logic.eq) tri.
 Proof. intros n p e. auto using f_equal. Qed.

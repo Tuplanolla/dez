@@ -80,4 +80,5 @@ Global Program Instance Decidable_option (A : Type)
 Next Obligation.
   intros A ? x y. destruct x, y; split; cbn; auto; try congruence.
   intros. f_equal. decide (a = a0); auto. inversion H0.
-  intros. decide (a = a0); auto. inversion H0. intuition. Qed.
+  intros. decide (a = a0); auto. inversion H0. intuition.
+Qed.

@@ -115,7 +115,8 @@ Proof.
   change (f (g x)) with ((f o g) x).
   change (g (f x)) with ((g o f) x).
   pose proof comm_elems_bin_op x as a.
-  apply a. Qed.
+  apply a.
+Qed.
 
 End Context.
 
@@ -240,7 +241,8 @@ Proof.
   intros x y.
   change (k x y) with (flip k y x).
   change (k (f x) y) with (flip k y (f x)).
-  apply comm_un_ops. Qed.
+  apply comm_un_ops.
+Qed.
 
 End Context.
 

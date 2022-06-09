@@ -45,7 +45,8 @@ Proof. hnf. unfold flip. apply absorb_elem_act_r_l. Qed.
 Proof.
   intros x.
   change (ar a x) with (flip ar x a).
-  apply fixed. Qed.
+  apply fixed.
+Qed.
 
 End Context.
 

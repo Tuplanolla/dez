@@ -113,12 +113,14 @@ Proof.
       clear l f.
       apply li in lf.
       clear li.
-      lia. Qed.
+      lia.
+Qed.
 
 #[local] Instance is_fixed_base : IsFixedBase base.
 Proof.
   hnf. unfold base, has_base. simp base_fix.
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 #[local] Instance is_base : IsBase base.
 Proof. esplit; typeclasses eauto. Qed.
@@ -136,7 +138,8 @@ Proof.
   - unfold succ. simp base_fix. cbv zeta. unfold pred.
     rewrite Pos.pred_N_succ.
     simp base_fix. cbv zeta. unfold pred.
-    reflexivity. Qed.
+    reflexivity.
+Qed.
 
 #[local] Instance is_partition : IsPartition partition.
 Proof. esplit; typeclasses eauto. Qed.
@@ -176,7 +179,8 @@ Equations stride_def' (a : N) : positive :=
 Next Obligation.
   intros a e.
   pose proof str_mono_base a (succ a) as l.
-  lia. Qed.
+  lia.
+Qed.
 
 Import ssreflect.
 
@@ -192,7 +196,8 @@ Proof.
     pose proof str_mono_base a (succ a) as l.
     lia.
   - intros p e.
-    reflexivity. Qed.
+    reflexivity.
+Qed.
 
 End Context.
 
@@ -209,7 +214,8 @@ Proof.
   unfold stride, has_stride. simp stride_def. unfold stride_def_clause_1.
   destruct (base (succ a) - base a) as [| n] eqn : e.
   + pose proof str_mono_base a (succ a) as l. lia.
-  + lia. Qed.
+  + lia.
+Qed.
 
 #[local] Instance is_partition : IsPartition partition.
 Proof. esplit; typeclasses eauto. Qed.
@@ -372,7 +378,8 @@ Proof.
       * subst a' b'.
         destruct (shell p) as [a'' b''].
         unfold fst, snd in *.
-        lia. Qed.
+        lia.
+Qed.
 
 #[global] Instance is_lex_ord_shell_dep `(IsLexEnumShellDep) :
   IsLexOrdShellDep stride shell_dep.
@@ -406,7 +413,8 @@ Proof.
       * subst a' b'.
         destruct (shell_dep p) as [[a'' b''] l''].
         unfold fst, snd, Spr1 in *.
-        lia. Qed.
+        lia.
+Qed.
 
 (** The taco placement function has the same basic properties
     as the shell placement function,
@@ -498,7 +506,8 @@ Proof.
   rewrite Ssig_uncurry_proj in e.
   rewrite prod_uncurry_dep_proj in e.
   rewrite prod_uncurry_proj.
-  auto. Qed.
+  auto.
+Qed.
 
 #[local] Instance is_sect_taco `(!IsSectTacoDep stride taco_dep untaco_dep) :
   IsSectTaco taco untaco.
@@ -508,14 +517,16 @@ Proof.
   rewrite Ssig_uncurry_proj in e.
   rewrite prod_uncurry_dep_proj in e.
   rewrite prod_uncurry_proj.
-  auto. Qed.
+  auto.
+Qed.
 
 #[local] Instance is_lex_enum_shell `(!IsLexEnumShellDep stride shell_dep) :
   IsLexEnumShell shell.
 Proof.
   esplit.
   - exact lex_enum_zero_shell_dep.
-  - exact lex_enum_succ_shell_dep. Qed.
+  - exact lex_enum_succ_shell_dep.
+Qed.
 
 End Context.
 
@@ -538,7 +549,8 @@ Proof.
   rewrite prod_uncurry_proj in e.
   rewrite Ssig_uncurry_proj.
   rewrite prod_uncurry_dep_proj.
-  auto. Qed.
+  auto.
+Qed.
 
 (** Note that this instance is just the principle of explosion in disguise. *)
 
@@ -551,7 +563,8 @@ Proof.
   unfold unshell_dep, has_unshell_dep.
   apply Spr1_inj.
   unfold Spr1.
-  apply e. Qed.
+  apply e.
+Qed.
 
 #[local] Instance is_sect_taco_dep `(!IsSectTaco taco untaco) :
   IsSectTacoDep stride taco_dep untaco_dep.
@@ -561,7 +574,8 @@ Proof.
   rewrite prod_uncurry_proj in e.
   rewrite Ssig_uncurry_proj.
   rewrite prod_uncurry_dep_proj.
-  auto. Qed.
+  auto.
+Qed.
 
 #[local] Instance is_retr_taco_dep `(!IsRetrTaco taco untaco) :
   IsRetrTacoDep stride taco_dep untaco_dep.
@@ -574,14 +588,16 @@ Proof.
   unfold untaco_dep, has_untaco_dep.
   apply Spr1_inj.
   unfold Spr1.
-  apply e. Qed.
+  apply e.
+Qed.
 
 #[local] Instance is_lex_enum_shell_dep `(!IsLexEnumShell shell) :
   IsLexEnumShellDep stride shell_dep.
 Proof.
   esplit.
   - exact lex_enum_zero_shell.
-  - exact lex_enum_succ_shell. Qed.
+  - exact lex_enum_succ_shell.
+Qed.
 
 End Context.
 
@@ -611,7 +627,8 @@ Equations shell_fix (a b : N) : N * N by wf b lt :=
 Next Obligation.
   intros a b l _.
   apply ltb_ge in l.
-  lia. Qed.
+  lia.
+Qed.
 
 Lemma shell_fix_invariant (a b a' b' : N) (e : shell_fix a b = (a', b')) :
   b' + base a' = b + base a.
@@ -645,7 +662,8 @@ Proof.
     unfold fst.
     reflexivity.
   - clear a b. intros a b _ l _.
-    lia. Qed.
+    lia.
+Qed.
 
 Lemma shell_fix_snd (a b : N) : snd (shell_fix a b) <= b.
 Proof.
@@ -654,7 +672,8 @@ Proof.
     unfold snd.
     reflexivity.
   - clear a b. intros a b _ l _.
-    lia. Qed.
+    lia.
+Qed.
 
 Lemma shell_fix_case_1 (a b : N) (l : b < Npos (stride a)) :
   shell_fix a b = (a, b).
@@ -662,7 +681,8 @@ Proof.
   simp shell_fix. unfold shell_fix_unfold_clause_1.
   apply ltb_lt in l. rewrite l.
   unfold sumbool_of_bool.
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 Lemma shell_fix_case_2 (a b : N) (l : Npos (stride a) <= b) :
   shell_fix a b = shell_fix (succ a) (b - Npos (stride a)).
@@ -670,14 +690,16 @@ Proof.
   rewrite shell_fix_equation_1. unfold shell_fix_unfold_clause_1.
   apply ltb_ge in l. rewrite l.
   unfold sumbool_of_bool.
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 Lemma shell_fix_case_2' (a b : N) :
   shell_fix a (b + Npos (stride a)) = shell_fix (succ a) b.
 Proof.
   rewrite shell_fix_case_2 by lia.
   rewrite add_sub.
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 Lemma shell_fix_0_l' (a b : N) : shell_fix 0 (b + base a) = shell_fix a b.
 Proof.
@@ -692,14 +714,16 @@ Proof.
     apply ltb_ge in l. rewrite l.
     unfold sumbool_of_bool.
     rewrite add_sub.
-    reflexivity. Qed.
+    reflexivity.
+Qed.
 
 Lemma shell_fix_0_l (a b : N) (l : base a <= b) :
   shell_fix 0 b = shell_fix a (b - base a).
 Proof.
   rewrite <- (shell_fix_0_l' a).
   rewrite sub_add by lia.
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 Lemma shell_fix_0_r (a : N) : shell_fix a 0 = (a, 0).
 Proof.
@@ -707,7 +731,8 @@ Proof.
   assert (l : 0 < Npos (stride a)) by lia.
   apply ltb_lt in l. rewrite l.
   unfold sumbool_of_bool.
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 Equations shell_dep_def (n : N) :
   {x : N * N $ Squash (snd x < Npos (stride (fst x)))} :=
@@ -723,7 +748,8 @@ Next Obligation.
     lia.
   - clear n.
     intros a b _ l _.
-    auto. Qed.
+    auto.
+Qed.
 
 #[local] Instance has_shell_dep : HasShellDep stride := shell_dep_def.
 
@@ -823,7 +849,8 @@ Next Obligation.
   intros a b l _.
   apply ltb_ge in l.
   pose proof str_mono_base a (succ a) as l'.
-  lia. Qed.
+  lia.
+Qed.
 
 Hint Unfold shell_fix_unfold_clause_1 : shell_fix.
 
@@ -842,7 +869,8 @@ Next Obligation.
     apply ltb_lt in l.
     lia.
   - intros a b _ l _.
-    auto. Qed.
+    auto.
+Qed.
 
 #[local] Instance has_shell_dep : HasShellDep stride := shell_dep_def.
 
@@ -959,7 +987,8 @@ Proof.
   clear loop_t.
   (** Contract [s]. *)
   rewrite eab in loop_s.
-  simp Ssig_uncurry in loop_s. Qed.
+  simp Ssig_uncurry in loop_s.
+Qed.
 
 #[local] Instance is_retr_pair : IsRetrPair pairing.
 Proof.
@@ -982,7 +1011,8 @@ Proof.
   clear loop_s.
   (** Contract [t]. *)
   rewrite eab' in loop_t.
-  simp Ssig_uncurry in loop_t. Qed.
+  simp Ssig_uncurry in loop_t.
+Qed.
 
 #[local] Instance is_pairing : IsPairing pairing.
 Proof. esplit; typeclasses eauto. Qed.
@@ -1028,7 +1058,8 @@ Proof.
   unfold stride, has_stride, stride_def, base, has_base, base_def.
   rewrite <- add_1_l.
   rewrite tri_succ. rewrite succ_pos_spec.
-  lia. Qed.
+  lia.
+Qed.
 
 (*
 Scheme Equality for prod.
@@ -1060,7 +1091,8 @@ Next Obligation.
   rewrite untri_rem_tri_untri.
   simp fst snd.
   pose proof tri_untri_untri_rem n as l.
-  lia. Qed.
+  lia.
+Qed.
 
 #[local] Instance has_shell_dep : HasShellDep stride := shell_dep_def.
 
@@ -1087,7 +1119,8 @@ Proof.
   rewrite untri_rem_tri_untri.
   cbv [fst snd].
   pose proof tri_untri n as l.
-  lia. Qed.
+  lia.
+Qed.
 
 #[local] Instance is_retr_shell_dep :
   IsRetrShellDep stride shell_dep unshell_dep.
@@ -1106,7 +1139,8 @@ Proof.
   assert (l' : b <= a) by lia.
   pose proof tri_why a b l' as e.
   rewrite e.
-  f_equal. lia. Qed.
+  f_equal. lia.
+Qed.
 
 Equations taco_def (x y : N) : N * N :=
   taco_def x y := (y + x, y).
@@ -1123,7 +1157,8 @@ Next Obligation.
   rewrite succ_pos_spec.
   unfold taco, has_taco, taco_def.
   simp fst snd.
-  lia. Qed.
+  lia.
+Qed.
 
 #[local] Instance has_taco_dep : HasTacoDep stride := taco_dep_def.
 
@@ -1151,7 +1186,8 @@ Proof.
   unfold untaco, has_untaco, untaco_def.
   cbv [fst snd].
   f_equal.
-  lia. Qed.
+  lia.
+Qed.
 
 #[local] Instance is_retr_taco_dep : IsRetrTacoDep stride taco_dep untaco_dep.
 Proof.
@@ -1168,7 +1204,8 @@ Proof.
   eapply unsquash in l.
   simp stride in l.
   rewrite succ_pos_spec in l.
-  lia. Qed.
+  lia.
+Qed.
 
 #[local] Instance is_lex_enum_shell_dep :
   IsLexEnumShellDep stride shell_dep.
@@ -1249,7 +1286,8 @@ Proof.
   rewrite <- sqrtrem_sqrt. cbv [fst snd].
   destruct_sqrtrem s t est es e0st l1st.
   clear est es.
-  destruct (leb_spec s t) as [lst | lst]; lia. Qed.
+  destruct (leb_spec s t) as [lst | lst]; lia.
+Qed.
 
 Theorem pair_unpair' (p q : N) :
   pair_shell (unpair p q) = unpair_shell p q.
@@ -1258,7 +1296,8 @@ Proof.
   rewrite <- sqrtrem_sqrt. cbv [fst snd].
   destruct_sqrtrem s t est es e0st l1st.
   clear est es.
-  destruct (leb_spec p q) as [lpq | lpq]; nia. Qed.
+  destruct (leb_spec p q) as [lpq | lpq]; nia.
+Qed.
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof.
@@ -1267,7 +1306,8 @@ Proof.
   clear est es.
   destruct (leb_spec s t) as [lst | lst].
   - destruct (leb_spec (s - (t - s)) s) as [lst' | lst']; lia.
-  - destruct (leb_spec s t) as [lst' | lst']; lia. Qed.
+  - destruct (leb_spec s t) as [lst' | lst']; lia.
+Qed.
 
 Theorem pair_unpair (p q : N) : pair (unpair p q) = (p, q).
 Proof.
@@ -1282,7 +1322,8 @@ Proof.
   - destruct (leb_spec p q) as [lpq | lpq].
     + assert (f : s <> p) by nia. exfalso.
       assert (l : q < s) by nia. nia.
-    + assert (e : s = p) by nia. subst s. f_equal; nia. Qed.
+    + assert (e : s = p) by nia. subst s. f_equal; nia.
+Qed.
 
 End RosenbergStrong.
 
@@ -1317,7 +1358,8 @@ Proof.
   rewrite <- sqrtrem_sqrt. cbv [fst snd].
   destruct_sqrtrem s t est es e0st l1st.
   clear est es.
-  destruct (leb_spec s t) as [lst | lst]; lia. Qed.
+  destruct (leb_spec s t) as [lst | lst]; lia.
+Qed.
 
 Theorem pair_taco (p q : N) :
   pair_shell (unpair p q) = unpair_shell p q.
@@ -1326,7 +1368,8 @@ Proof.
   rewrite <- sqrtrem_sqrt. cbv [fst snd].
   destruct_sqrtrem s t est es e0st l1st.
   clear est es.
-  destruct (leb_spec p q) as [lpq | lpq]; nia. Qed.
+  destruct (leb_spec p q) as [lpq | lpq]; nia.
+Qed.
 
 Theorem unpair_pair (n : N) : prod_uncurry unpair (pair n) = n.
 Proof.
@@ -1335,7 +1378,8 @@ Proof.
   clear est es.
   destruct (leb_spec s t) as [lst | lst].
   - destruct (leb_spec (t - s) s) as [lst' | lst']; lia.
-  - destruct (leb_spec s t) as [lst' | lst']; lia. Qed.
+  - destruct (leb_spec s t) as [lst' | lst']; lia.
+Qed.
 
 Theorem pair_unpair (p q : N) : pair (unpair p q) = (p, q).
 Proof.
@@ -1350,7 +1394,8 @@ Proof.
   - destruct (leb_spec p q) as [lpq | lpq].
     + assert (f : s <> p) by nia. exfalso.
       assert (l : q < s) by nia. nia.
-    + assert (e : s = p) by nia. subst s. f_equal; nia. Qed.
+    + assert (e : s = p) by nia. subst s. f_equal; nia.
+Qed.
 
 End Szudzik.
 
@@ -1368,7 +1413,8 @@ Proof.
     change (fst (succ b, c)) with (succ (fst (b, c))).
     replace (1 + succ (fst (b, c))) with (succ (1 + fst (b, c))) by lia.
     rewrite <- ei. reflexivity.
-  - reflexivity. Qed.
+  - reflexivity.
+Qed.
 
 Lemma part_factor (n : N) (f : n <> 0) :
   exists p q : N, n = (1 + 2 * q) * 2 ^ p.
@@ -1387,7 +1433,8 @@ Proof.
       destruct (pos_binoddfactor q) as [b c]. simp fst snd in *.
       rewrite pow_succ_r by lia.
       rewrite mul_assoc. lia.
-    + reflexivity. Qed.
+    + reflexivity.
+Qed.
 
 Lemma part_factor_again (p q : N) :
   exists n : N, n = (1 + 2 * q) * 2 ^ p.
@@ -1409,7 +1456,8 @@ Proof.
     destruct (pos_binoddfactor q) as [b c]. simp fst snd in *.
     rewrite pow_succ_r by lia.
     rewrite mul_assoc. lia.
-  + reflexivity. Qed.
+  + reflexivity.
+Qed.
 
 Lemma binfactor_odd (n : N) : binfactor (1 + 2 * n) = 0.
 Proof.
@@ -1418,7 +1466,8 @@ Proof.
   - induction p as [q ei | q ei |].
     + reflexivity.
     + reflexivity.
-    + reflexivity. Qed.
+    + reflexivity.
+Qed.
 
 Lemma binfactor_even (n : N) (f : n <> 0) :
   binfactor (2 * n) = 1 + binfactor n.
@@ -1426,7 +1475,8 @@ Proof.
   destruct n as [| p].
   - arithmetize. cbn. lia.
   - simp binfactor binoddfactor.
-    rewrite (pos_binfactor_even p). Qed.
+    rewrite (pos_binfactor_even p).
+Qed.
 
 Lemma binfactor_pow_2 (n p : N) (f : p <> 0) :
   binfactor (2 ^ n * p) = n + binfactor p.
@@ -1461,7 +1511,8 @@ Proof.
     + arithmetize.
       destruct p. lia.
       rewrite binfactor_even.
-      lia. lia. Qed.
+      lia. lia.
+Qed.
 
 Lemma binfactor_trivial (p q : N) :
   binfactor ((1 + 2 * q) * 2 ^ p) = p.
@@ -1493,7 +1544,8 @@ Proof.
     + arithmetize.
       rewrite binfactor_even.
       rewrite binfactor_odd.
-      lia. lia. Qed.
+      lia. lia.
+Qed.
 
 Lemma pos_binfactor_trivial (p q : N) :
   pos_binfactor (succ_pos ((1 + 2 * q) * 2 ^ p - 1)) = p.
@@ -1506,7 +1558,8 @@ Proof.
     induction s.
     reflexivity.
     cbn. rewrite Pos.pred_double_spec. rewrite Pos.succ_pred; lia.
-    reflexivity. Qed.
+    reflexivity.
+Qed.
 
 Lemma oddfactor_odd (n : N) : oddfactor (1 + 2 * n) = 1 + 2 * n.
 Proof.
@@ -1515,14 +1568,16 @@ Proof.
   - induction p as [q ei | q ei |].
     + reflexivity.
     + reflexivity.
-    + reflexivity. Qed.
+    + reflexivity.
+Qed.
 
 Lemma oddfactor_even (n : N) :
   oddfactor (2 * n) = oddfactor n.
 Proof.
   destruct n as [| p].
   - arithmetize. cbn. lia.
-  - reflexivity. Qed.
+  - reflexivity.
+Qed.
 
 Lemma oddfactor_pow_2 (n p : N) (f : p <> 0) :
   oddfactor (2 ^ n * p) = oddfactor p.
@@ -1555,7 +1610,8 @@ Proof.
       lia.
     + arithmetize.
       rewrite oddfactor_even.
-      lia. Qed.
+      lia.
+Qed.
 
 Lemma oddfactor_trivial (p q : N) :
   oddfactor ((1 + 2 * q) * 2 ^ p) = 1 + 2 * q.
@@ -1585,7 +1641,8 @@ Proof.
     + arithmetize.
       rewrite oddfactor_even.
       rewrite oddfactor_odd.
-      lia. Qed.
+      lia.
+Qed.
 
 Lemma pos_oddfactor_trivial (p q : N) :
   Npos (pos_oddfactor (succ_pos ((1 + 2 * q) * 2 ^ p - 1))) = 1 + 2 * q.
@@ -1598,14 +1655,16 @@ Proof.
     induction s.
     reflexivity.
     cbn. rewrite Pos.pred_double_spec. rewrite Pos.succ_pred; lia.
-    reflexivity. Qed.
+    reflexivity.
+Qed.
 
 Local Lemma logging (n : positive) : pos_log2 n = log2 (Npos n).
 Proof.
   induction n; cbn.
   rewrite IHn; destruct n; reflexivity.
   rewrite IHn; destruct n; reflexivity.
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 Definition pair_shell (n : N) : N :=
   pos_log2 (succ_pos n).
@@ -1616,7 +1675,8 @@ Lemma pair_shell_eqn (n : N) : pair_shell n =
   log2 (1 + n).
 Proof.
   cbv [pair_shell]. rewrite logging.
-  rewrite succ_pos_spec. rewrite add_1_l. reflexivity. Qed.
+  rewrite succ_pos_spec. rewrite add_1_l. reflexivity.
+Qed.
 
 Definition unpair_shell (p q : N) : N := p + pos_log2 (succ_pos (shiftl q 1)).
 
@@ -1667,7 +1727,8 @@ Proof.
   destruct (eqb_spec n 0) as [e | f].
   - subst n. reflexivity.
   - pose proof (part_urgh (succ_pos n)) as e.
-    rewrite <- e. rewrite succ_pos_spec. lia. Qed.
+    rewrite <- e. rewrite succ_pos_spec. lia.
+Qed.
 
 Theorem pair_unpair (p q : N) : pair (unpair p q) = (p, q).
 Proof.
@@ -1676,7 +1737,8 @@ Proof.
   - rewrite pos_binfactor_trivial. reflexivity.
   - rewrite pos_oddfactor_trivial.
     replace (1 + 2 * q - 1) with (2 * q) by lia.
-    rewrite div_Even. reflexivity. Qed.
+    rewrite div_Even. reflexivity.
+Qed.
 
 End Hausdorff.
 *)

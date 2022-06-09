@@ -52,7 +52,8 @@ Proof. intros x y. unfold flip. apply cancel_bin_fn_r. Qed.
 Proof.
   intros x y z.
   change (k x z) with (flip k z x). change (k y z) with (flip k z y).
-  apply inj_un_fn. Qed.
+  apply inj_un_fn.
+Qed.
 
 End Context.
 

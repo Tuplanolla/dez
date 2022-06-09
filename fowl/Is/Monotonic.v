@@ -84,7 +84,8 @@ Proof with note.
   intros x0 y0 a0 x1 y1 a1...
   transitivity (k x0 y1).
   - apply mono_bin_fn_l. apply a1.
-  - apply mono_bin_fn_r. apply a0. Qed.
+  - apply mono_bin_fn_r. apply a0.
+Qed.
 
 (** A monotonic binary function is left-monotonic. *)
 
@@ -94,7 +95,8 @@ Proof with note.
   intros x y z a...
   pose proof mono_bin_fn_l_r k as b. apply b.
   - reflexivity.
-  - apply a. Qed.
+  - apply a.
+Qed.
 
 (** A monotonic binary function is right-monotonic. *)
 
@@ -104,7 +106,8 @@ Proof with note.
   intros x y z a...
   pose proof mono_bin_fn_l_r k as b. apply b.
   - apply a.
-  - reflexivity. Qed.
+  - reflexivity.
+Qed.
 
 End Context.
 
@@ -204,7 +207,8 @@ Proof.
   - eapply mono_bin_fn_l_is_mono_bin_op_l.
     eapply mono_bin_fn_l_r_is_mono_bin_fn_l; typeclasses eauto.
   - eapply mono_bin_fn_r_is_mono_bin_op_r.
-    eapply mono_bin_fn_l_r_is_mono_bin_fn_r; typeclasses eauto. Qed.
+    eapply mono_bin_fn_l_r_is_mono_bin_fn_r; typeclasses eauto.
+Qed.
 
 End Context.
 
@@ -238,6 +242,7 @@ Proof with note.
   intros x y ale...
   pose proof coh_rels x y as a.
   pose proof coh_rels (f x) (f y) as b.
-  intuition. Qed.
+  intuition.
+Qed.
 
 End Context.

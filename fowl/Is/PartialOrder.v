@@ -56,7 +56,8 @@ Proof.
   pose proof antisym x y as a.
   pose proof fun a : x == y => part_ord_is_proper x x id x y a as b.
   pose proof fun a : x == y => part_ord_is_proper y y id y x (a ^-1) as c.
-  intuition. Qed.
+  intuition.
+Qed.
 
 (** A partial order is reflexive. *)
 

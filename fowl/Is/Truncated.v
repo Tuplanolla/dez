@@ -118,7 +118,8 @@ Proof.
   revert A X a. induction n as [| p b]; intros A X a.
   - hnf in a. eauto.
   - intros x y. hnf in a.
-    pose proof (a x y) as d. eauto. Qed.
+    pose proof (a x y) as d. eauto.
+Qed.
 
 #[local] Instance eq_is_h_level_is_h_level_eq (n : nat)
   `{@IsHLevel A (@X) n} : IsHLevelEq A n.
@@ -129,7 +130,8 @@ Proof.
   revert A X a. induction n as [| p b]; intros A X a.
   - hnf in a. eauto.
   - intros x y. hnf in a.
-    pose proof (a x y) as d. eauto. Qed.
+    pose proof (a x y) as d. eauto.
+Qed.
 
 End Context.
 
@@ -149,7 +151,8 @@ CoFixpoint Gprod (A B : Glob) : Glob.
 Proof.
   exists (obj A * obj B). intros [a0 b0] [a1 b1]. apply Gprod.
   - apply (hom A a0 a1).
-  - apply (hom B b0 b1). Defined.
+  - apply (hom B b0 b1).
+Defined.
 
 #[local] Notation "A '*' B" := (Gprod A B)
   (at level 40, left associativity) : glob_scope.
@@ -169,7 +172,8 @@ CoFixpoint Gtrans (A B C : Glob) (F : Glom A B) (G : Glom B C) : Glom A C.
 Proof.
   exists (slap G o slap F)%core. intros x y. eapply Gtrans.
   - eapply resp.
-  - eapply resp. Defined.
+  - eapply resp.
+Defined.
 
 CoFixpoint Gspan (A B C : Glob) (F : Glom A B) (G : Glom A C) :
   Glom A (Gprod B C).
@@ -177,7 +181,8 @@ Proof.
   set (f (a : obj A) := (slap F a, slap G a)). exists f.
   intros x y. apply Gspan.
   - apply resp.
-  - apply resp. Defined.
+  - apply resp.
+Defined.
 
 CoFixpoint eq_Glob (A : Type) : Glob.
 Proof.
@@ -186,13 +191,15 @@ Proof.
   apply (@Build_Glob (a = b)). intros s t.
   apply (eq_Glob (s = t)). Restart.
   apply (@Build_Glob A). intros x y.
-  apply (eq_Glob (x = y)). Defined.
+  apply (eq_Glob (x = y)).
+Defined.
 
 CoFixpoint nat_Glob : Glob.
 Proof.
   apply (@Build_Glob nat). intros x y.
   apply (@Build_Glob (x = y)). intros a b. pose proof uip_eq x y a b as u.
-  apply (@Build_Glob False). intros [] []. Defined.
+  apply (@Build_Glob False). intros [] [].
+Defined.
 
 Equations IsHLevelNat (X : Glob) (n : nat) : Prop by struct n :=
   IsHLevelNat X O := exists x : obj X, forall y : obj X,
@@ -216,7 +223,8 @@ Proof.
   - hnf in a. hnf. destruct a as [x f].
     exists x. intros y. apply inhabits. cbv in *. apply f.
   - intros x y. hnf in a.
-    pose proof a x y as d. cbn in *. eauto. Qed.
+    pose proof a x y as d. cbn in *. eauto.
+Qed.
 
 #[local] Instance eq_is_h_level_nat_is_h_level_eq (n : nat)
   `{@IsHLevelNat (eq_Glob A) n} : IsHLevelEq A n.
@@ -228,14 +236,16 @@ Proof.
   - hnf in a. hnf. destruct a as [x f]. cbv in *.
     exists x. apply f.
   - intros x y. hnf in a.
-    pose proof a x y as d. cbn in *. apply b. eauto. Qed.
+    pose proof a x y as d. cbn in *. apply b. eauto.
+Qed.
 
 End Context.
 
 CoFixpoint Slob (A : Type) (X : forall {A : Type}, A -> A -> Prop) : Glob.
 Proof.
   apply (@Build_Glob A). intros x y.
-  apply (Slob (X A x y) X). Defined.
+  apply (Slob (X A x y) X).
+Defined.
 
 Section Context.
 
@@ -251,7 +261,8 @@ Proof.
   - hnf in a. hnf. destruct a as [x f].
     exists x. intros y. apply inhabits. cbv in *. apply f.
   - intros x y. hnf in a.
-    pose proof a x y as d. cbn in *. eauto. Qed.
+    pose proof a x y as d. cbn in *. eauto.
+Qed.
 
 #[local] Instance is_h_level_nat_is_h_level (n : nat)
   `{@IsHLevelNat (Slob A (@X)) n} : IsHLevel A (@X) n.
@@ -263,7 +274,8 @@ Proof.
   - hnf in a. hnf. destruct a as [x f]. cbv in *.
     exists x. apply f.
   - intros x y. hnf in a.
-    pose proof a x y as d. cbn in *. eauto. Qed.
+    pose proof a x y as d. cbn in *. eauto.
+Qed.
 
 End Context.
 
@@ -279,7 +291,8 @@ Proof.
   match goal with
   | h : IsHLevel _ _ _ |- _ => rename h into a
   end.
-  hnf in a. eauto. Qed.
+  hnf in a. eauto.
+Qed.
 
 (** Biconditionality of [h_level_zero]. *)
 
@@ -288,7 +301,8 @@ Lemma iff_is_h_level_is_contr :
 Proof.
   esplit.
   - typeclasses eauto.
-  - cbv. eauto. Qed.
+  - cbv. eauto.
+Qed.
 
 End Context.
 
@@ -304,7 +318,8 @@ Proof.
   match goal with
   | h : IsHLevel _ _ _ |- _ => rename h into a
   end.
-  hnf in a. eauto. Qed.
+  hnf in a. eauto.
+Qed.
 
 (** Biconditionality of [h_level_succ]. *)
 
@@ -313,7 +328,8 @@ Lemma iff_is_h_level_succ_is_h_level (n : nat) :
 Proof.
   esplit.
   - typeclasses eauto.
-  - cbv. eauto. Qed.
+  - cbv. eauto.
+Qed.
 
 End Context.
 
@@ -334,7 +350,8 @@ Proof.
     apply iff_is_h_level_succ_is_h_level.
     intros y z. exists (f z o f y ^-1).
     intros b. rewrite b. rewrite eq_trans_sym_inv_l. reflexivity.
-  - intros x y. apply c. apply (@is_h_level_succ_is_h_level). apply a. Qed.
+  - intros x y. apply c. apply (@is_h_level_succ_is_h_level). apply a.
+Qed.
 
 #[local] Instance eq_is_h_level_is_h_level_add (p n : nat)
   `{IsHLevel A (@eq) n} : IsHLevel A (@eq) (p + n).
@@ -345,7 +362,8 @@ Proof.
   revert n a. induction p as [| q c]; intros n a.
   - eauto.
   - replace (S q + n)%nat with (S (q + n))%nat by reflexivity.
-    apply eq_is_h_level_is_h_level_succ. eauto. Qed.
+    apply eq_is_h_level_is_h_level_succ. eauto.
+Qed.
 
 End Context.
 
@@ -381,7 +399,8 @@ Proof.
   apply iff_is_h_level_succ_is_h_level.
   intros x y. apply iff_is_h_level_is_contr.
   exists (irrel x y o irrel x x ^-1).
-  intros a. rewrite a. rewrite eq_trans_sym_inv_l. reflexivity. Qed.
+  intros a. rewrite a. rewrite eq_trans_sym_inv_l. reflexivity.
+Qed.
 
 #[local] Instance eq_is_h_level_is_prop
   `{IsHLevel A (@eq) 1} : @IsProp A eq.
@@ -392,7 +411,8 @@ Proof.
   intros x y.
   assert (b : @IsContr (x = y) eq).
   { hnf in a. apply is_h_level_is_contr. eauto. }
-  apply b. Qed.
+  apply b.
+Qed.
 
 Lemma iff_eq_is_h_level_is_prop :
   IsHLevel A (@eq) 1 <-> @IsProp A eq.
@@ -413,7 +433,8 @@ Let Y (x y : A) (a b : x = y) := a = b.
 Proof.
   apply iff_is_h_level_succ_is_h_level.
   intros x y. apply iff_eq_is_h_level_is_prop.
-  intros a b. apply (@uip A eq (@Y)). eauto. Qed.
+  intros a b. apply (@uip A eq (@Y)). eauto.
+Qed.
 
 #[local] Instance eq_is_h_level_is_set
   `{IsHLevel A (@eq) 2} : @IsSet A eq (@Y).
@@ -424,7 +445,8 @@ Proof.
   intros x y.
   assert (b : @IsProp (x = y) eq).
   { hnf in a. apply eq_is_h_level_is_prop. }
-  apply b. Qed.
+  apply b.
+Qed.
 
 Lemma iff_eq_is_h_level_is_set :
   IsHLevel A (@eq) 2 <-> @IsSet A eq (@Y).
@@ -534,7 +556,8 @@ Lemma prop_fun_ext_dep `{IsPropExt} `{IsFunExtDep}
 Proof.
   apply prop_ext. split.
   - intros a x. apply equal_f_dep. apply a.
-  - intros a. apply fun_ext_dep. apply a. Qed.
+  - intros a. apply fun_ext_dep. apply a.
+Qed.
 
 (** Decidable propositions have unique identity proofs. *)
 
@@ -555,7 +578,8 @@ Proof.
   match goal with
   | h : forall _ : _, IsProp _ |- _ => rename h into p
   end.
-  intros g h. apply fun_ext_dep. intros x. apply p. Qed.
+  intros g h. apply fun_ext_dep. intros x. apply p.
+Qed.
 
 (** Families of contractible types are contractible. *)
 
@@ -567,7 +591,8 @@ Proof.
   end.
   apply (@eq_is_prop_is_contr).
   - intros x. apply c.
-  - apply (@eq_pi_is_prop _). intros x. apply eq_is_contr_is_prop. Qed.
+  - apply (@eq_pi_is_prop _). intros x. apply eq_is_contr_is_prop.
+Qed.
 
 (** TODO This is theorem 4.9.4 from the book. *)
 
@@ -590,7 +615,8 @@ Proof.
   intros f g.
   pose proof prop_fun_ext_dep f g as t. rewrite t. clear t.
   apply (@eq_pi_is_prop _).
-  intros x. apply @eq_is_set_is_prop_eq. apply s. Qed.
+  intros x. apply @eq_is_set_is_prop_eq. apply s.
+Qed.
 
 (** Fibrations are at the same homotopy level as their fibers. *)
 
@@ -607,7 +633,8 @@ Proof.
     intros x. apply is_h_level_is_contr. apply a.
   - intros f g.
     pose proof prop_fun_ext_dep f g as t. rewrite t. clear t.
-    apply b. intros x. apply is_h_level_succ_is_h_level. apply a. Qed.
+    apply b. intros x. apply is_h_level_succ_is_h_level. apply a.
+Qed.
 
 Module FromAxioms.
 

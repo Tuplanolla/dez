@@ -33,7 +33,8 @@ Proof.
   - reflexivity.
   - reflexivity.
   - reflexivity.
-  - simpl. f_equal. apply s. Qed.
+  - simpl. f_equal. apply s.
+Qed.
 
 Lemma Forall2_dec (A B : Type) (P : A -> B -> Prop)
   (d : forall (x : A) (y : B), {P x y} + {~ P x y})
@@ -68,7 +69,8 @@ Proof.
       * apply t'.
     + right. intros cd. inversion_clear cd. contradiction.
     + right. intros cd. inversion_clear cd. contradiction.
-    + right. intros cd. inversion_clear cd. contradiction. Defined.
+    + right. intros cd. inversion_clear cd. contradiction.
+Defined.
 
 Section Context.
 
@@ -113,14 +115,16 @@ Proof.
         -- apply uu.
       * eapply t.
         -- apply v.
-        -- apply vv. Qed.
+        -- apply vv.
+Qed.
 
 #[export] Instance cons_Proper {X : HasEquivRel A} :
   IsProper (X ==> Forall2 X ==> Forall2 X) _::_.
 Proof.
   intros x y s a b t. apply Forall2_cons.
   - apply s.
-  - apply t. Qed.
+  - apply t.
+Qed.
 
 End Context.
 
@@ -318,7 +322,8 @@ Proof.
   apply Ref.nindex_from_elim. clear n a. intros n a. apply nindex_from_elim.
   - clear n a. intros n. reflexivity.
   - clear n a. intros n x a s.
-    simpl. f_equal. apply s. Qed.
+    simpl. f_equal. apply s.
+Qed.
 
 Lemma nindex_ref (A : Type) (a : list A) : nindex a = Ref.nindex a.
 Proof. apply Ref.nindex_elim. apply nindex_elim. apply nindex_from_ref. Qed.
@@ -329,7 +334,8 @@ Proof.
   apply Ref.N_length_elim. clear a. intros a. apply N_length_elim.
   - clear a. reflexivity.
   - clear a. intros x b s.
-    simpl length. rewrite Nat2N.inj_succ. f_equal. apply s. Qed.
+    simpl length. rewrite Nat2N.inj_succ. f_equal. apply s.
+Qed.
 
 Lemma Nth_ref (A : Type) (n : N) (a : list A) (x : A) :
   Nth n a x = Ref.Nth n a x.
@@ -342,7 +348,8 @@ Proof.
   - clear x n. intros p y b x s.
     rewrite N2Nat.inj_pred in s. destruct (N.to_nat (N.pos p)) as [| q] eqn : t.
     + lia.
-    + apply s. Qed.
+    + apply s.
+Qed.
 
 Lemma N_seq_ref (n p : N) :
   N_seq n p = Ref.N_seq n p.
@@ -353,7 +360,8 @@ Proof.
   - rewrite N2Nat.inj_succ. simpl seq. simpl map.
     pose proof s (N.succ n) as s'. rewrite N2Nat.inj_succ in s'.
     rewrite N2Nat.id. rewrite <- N.succ_pos_spec. simp N_seq.
-    rewrite N.succ_pos_spec. rewrite N.pred_succ. f_equal. apply s'. Qed.
+    rewrite N.succ_pos_spec. rewrite N.pred_succ. f_equal. apply s'.
+Qed.
 
 Lemma Nindex_from_ref (A : Type) (n : N) (a : list A) :
   Nindex_from n a = Ref.Nindex_from n a.
@@ -362,7 +370,8 @@ Proof.
   - clear n a. intros n. reflexivity.
   - clear n a. intros n x a s.
     simpl. rewrite N2Nat.id. f_equal.
-    rewrite N2Nat.inj_succ in s. apply s. Qed.
+    rewrite N2Nat.inj_succ in s. apply s.
+Qed.
 
 Lemma Nindex_ref (A : Type) (a : list A) : Nindex a = Ref.Nindex a.
 Proof. apply Ref.Nindex_elim. apply Nindex_elim. apply Nindex_from_ref. Qed.
@@ -372,7 +381,8 @@ Lemma N_seq_succ (n p : N) :
 Proof.
   do 2 rewrite N_seq_ref. unfold Ref.N_seq. rewrite N2Nat.inj_succ.
   rewrite <- cons_seq. simpl map. rewrite N2Nat.id. rewrite <- N2Nat.inj_succ.
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 Section Context.
 
@@ -389,13 +399,15 @@ Proof.
       rewrite N2Nat.id. reflexivity.
     + simp Nfind_from_error nfind_from_error. rewrite ed. simpl.
       pose proof s (N.succ n) x as s'. rewrite N2Nat.inj_succ in s'.
-      apply s'. Qed.
+      apply s'.
+Qed.
 
 Lemma Nfind_error_ref (x : A) (a : list A) :
   Nfind_error x a = Ref.Nfind_error x a.
 Proof.
   apply Nfind_error_elim. apply Ref.Nfind_error_elim. clear x a. intros x a.
-  apply nfind_error_elim. apply Nfind_from_error_ref. Qed.
+  apply nfind_error_elim. apply Nfind_from_error_ref.
+Qed.
 
 Lemma Nfind_from_ref (n : N) (x : A) (a : list A) (p : N) :
   Nfind_from n x a p = Ref.Nfind_from n x a p.
@@ -408,13 +420,15 @@ Proof.
       rewrite N2Nat.id. reflexivity.
     + simp Nfind_from nfind_from. rewrite ed. simpl.
       pose proof s (N.succ n) x as s'. rewrite N2Nat.inj_succ in s'.
-      apply s'. Qed.
+      apply s'.
+Qed.
 
 Lemma Nfind_ref (x : A) (a : list A) (p : N) :
   Nfind x a p = Ref.Nfind x a p.
 Proof.
   apply Nfind_elim. apply Ref.Nfind_elim. clear x a p. intros x a p.
-  apply nfind_elim. apply Nfind_from_ref. Qed.
+  apply nfind_elim. apply Nfind_from_ref.
+Qed.
 
 End Context.
 
@@ -451,7 +465,8 @@ Next Obligation.
   - left. right. apply t.
   - right. intros [u | u].
     + contradiction.
-    + contradiction. Defined.
+    + contradiction.
+Defined.
 
 #[export] Instance IsIn_has_dec (x : A) (a : list A) :
   HasDec (IsIn x a) := IsIn_dec x a.
@@ -465,7 +480,8 @@ Proof.
     + apply s.
   - exists y. split.
     + right. apply i.
-    + apply s. Qed.
+    + apply s.
+Qed.
 
 Lemma IsIn_Exists (P : A -> Prop) `{!IsProper (X ==> _<->_) P}
   (a : list A) (s : exists x : A, IsIn x a /\ P x) :
@@ -475,7 +491,8 @@ Proof.
   - contradiction.
   - induction i as [v | v].
     + apply Exists_cons. left. rewrite <- v. apply t.
-    + apply Exists_cons. right. apply u. apply v. Qed.
+    + apply Exists_cons. right. apply u. apply v.
+Qed.
 
 Lemma Proper_IsIn (x y : A) (a : list A)
   (s : x == y) (t : IsIn x a) : IsIn y a.
@@ -484,14 +501,16 @@ Proof.
   - contradiction.
   - destruct t as [v | v].
     + left. rewrite <- s, <- v. reflexivity.
-    + right. apply u. apply v. Qed.
+    + right. apply u. apply v.
+Qed.
 
 #[export] Instance IsIn_is_proper (a : list A) :
   IsProper (X ==> _<->_) (fun x : A => IsIn x a).
 Proof.
   intros x y s. split.
   - intros t. eapply Proper_IsIn. apply s. apply t.
-  - intros t. eapply Proper_IsIn. symmetry. apply s. apply t. Qed.
+  - intros t. eapply Proper_IsIn. symmetry. apply s. apply t.
+Qed.
 
 #[export] Instance IsIn_is_proper' (x : A) :
   IsProper (Forall2 X ==> _<->_) (IsIn x).
@@ -510,7 +529,8 @@ Proof.
       * left. etransitivity.
         -- apply w.
         -- symmetry. apply s.
-      * right. auto. Qed.
+      * right. auto.
+Qed.
 
 Lemma nth_IsIn (n : nat) (a : list A) (y : A) :
   (n < length a)%nat -> IsIn (nth n a y) a.
@@ -519,14 +539,16 @@ Proof.
   - destruct a as [| z b]. simpl in t; lia.
     simpl. left. reflexivity.
   - destruct a as [| z b]. simpl in t; lia.
-    simpl. right. apply s. simpl in t; lia. Qed.
+    simpl. right. apply s. simpl in t; lia.
+Qed.
 
 Lemma Nth_succ (n : N) (y : A) (b : list A) (x : A) :
   Nth (N.succ n) (y :: b) x = Nth n b x.
 Proof.
   destruct n as [| p].
   - simp Nth. simpl N.pred. reflexivity.
-  - simp Nth. simpl N.pred. rewrite Pos.pred_N_succ. reflexivity. Qed.
+  - simp Nth. simpl N.pred. rewrite Pos.pred_N_succ. reflexivity.
+Qed.
 
 Lemma Nfind_from_error_succ (n p : N) (x : A) (a : list A)
   (e : Nfind_from_error n x a = Some p) : Nfind_from_error (N.succ n) x a = Some (N.succ p).
@@ -539,7 +561,8 @@ Proof.
     inversion_clear e. reflexivity.
   - clear n x a. intros n x y ex b es ed e.
     simp Nfind_from_error. rewrite ed. simpl.
-    apply es. apply e. Qed.
+    apply es. apply e.
+Qed.
 
 Lemma Nfind_from_error_succ' (n p : N) (x : A) (a : list A)
   (e : Nfind_from_error (N.succ n) x a = Some (N.succ p)) : Nfind_from_error n x a = Some p.
@@ -554,14 +577,16 @@ Proof.
     f_equal. apply N.succ_inj. inversion_clear e. reflexivity.
   - clear n x a. intros n x y ex b es ed e.
     simp Nfind_from_error in e. rewrite ed in e. simpl in e.
-    apply es. apply e. Qed.
+    apply es. apply e.
+Qed.
 
 Lemma Nfind_from_error_succ_iff (n p : N) (x : A) (a : list A) :
   Nfind_from_error n x a = Some p <-> Nfind_from_error (N.succ n) x a = Some (N.succ p).
 Proof.
   split.
   - apply Nfind_from_error_succ.
-  - apply Nfind_from_error_succ'. Qed.
+  - apply Nfind_from_error_succ'.
+Qed.
 
 Lemma Nfind_from_error_succ_zero (n : N) (x : A) (a : list A)
   (e : Nfind_from_error (N.succ n) x a = Some 0) : 0.
@@ -576,7 +601,8 @@ Proof.
     injection e. lia.
   - clear n x a. intros n x y ex b f ed e.
     simp Nfind_from_error in e. rewrite ed in e. simpl in e.
-    apply f. apply e. Qed.
+    apply f. apply e.
+Qed.
 
 Lemma Nfind_from_error_lt (n p : N) (x : A) (a : list A)
   (i : p < n) (e : Nfind_from_error n x a = Some p) : 0.
@@ -587,7 +613,8 @@ Proof.
     + apply Nfind_from_error_succ_zero in e. contradiction.
     + apply Nfind_from_error_succ' in e. apply f in e.
       * contradiction.
-      * lia. Qed.
+      * lia.
+Qed.
 
 Lemma Nfind_from_error_some (n p : N) (x y : A) (a : list A)
   (e : Nfind_from_error n x a = Some (n + p)) :
@@ -617,7 +644,8 @@ Proof.
         -- right. apply i.
         -- split.
            ++ simp N_length. lia.
-           ++ rewrite Nth_succ. apply ex. Qed.
+           ++ rewrite Nth_succ. apply ex.
+Qed.
 
 Lemma Nfind_from_error_none (n : N) (x : A) (a : list A)
   (e : Nfind_from_error n x a = None) (s : IsIn x a) : 0.
@@ -633,7 +661,8 @@ Proof.
       * simp Nfind_from_error in e. rewrite ed in e. simpl in e.
         discriminate.
       * simp Nfind_from_error in e. rewrite ed in e. simpl in e.
-        revert t. eapply c. apply e. Qed.
+        revert t. eapply c. apply e.
+Qed.
 
 Lemma Nfind_error_some (x y : A) (a : list A) (n : N) (s : Nfind_error x a = Some n) :
   IsIn x a /\ n < N_length a /\ Nth n a y == x.
@@ -664,7 +693,8 @@ Proof.
         -- rewrite N.add_succ_r. apply Nfind_from_error_succ. apply c0.
         -- lia.
         -- rewrite Nth_ref. unfold Ref.Nth. rewrite N2Nat.inj_succ.
-           simpl. rewrite Nth_ref in c2. apply c2. Qed.
+           simpl. rewrite Nth_ref in c2. apply c2.
+Qed.
 
 Lemma Nfind_error_some' (x y : A) (a : list A) (s : IsIn x a) :
   exists n : N,
@@ -686,7 +716,8 @@ Proof.
     + exfalso. apply fx. etransitivity.
       * apply s.
       * apply ey.
-    + apply t. Qed.
+    + apply t.
+Qed.
 
 Lemma Nfind_error_Proper (x y : A) (a : list A) (s : x == y) :
   Nfind_error x a = Nfind_error y a.
@@ -735,7 +766,8 @@ Lemma Nth_Nfind (x y : A) (a : list A) (p : N) (s : IsIn x a) :
   Nth (Nfind x a p) a y == x.
 Proof.
   apply Nfind_elim. rewrite <- (N.sub_0_r (Nfind_from _ _ _ _)).
-  apply Nth_Nfind_from. apply s. Qed.
+  apply Nth_Nfind_from. apply s.
+Qed.
 
 End Context.
 
@@ -757,7 +789,8 @@ Proof.
   - contradiction.
   - simpl in s. destruct s as [ex | fx].
     + left. rewrite ex. reflexivity.
-    + right. apply t. apply fx. Qed.
+    + right. apply t. apply fx.
+Qed.
 
 Lemma map_ext_equiv
   (f g : A -> B) (s : forall x : A, f x == g x) (a : list A) :
@@ -765,7 +798,8 @@ Lemma map_ext_equiv
 Proof.
   induction a as [| x b t].
   - reflexivity.
-  - simpl map. rewrite s. rewrite t. reflexivity. Qed.
+  - simpl map. rewrite s. rewrite t. reflexivity.
+Qed.
 
 Lemma map_ext_in_equiv
   (f g : A -> B) (a : list A)
@@ -819,7 +853,8 @@ Proof.
   match goal with
   | x : IsNoDup _ _ |- _ => revert x
   end.
-  intros IND. inversion_clear IND as [| ? ? FII IND']. apply IND'. Qed.
+  intros IND. inversion_clear IND as [| ? ? FII IND']. apply IND'.
+Qed.
 
 (** ** Unsorted Unique Enumeration of a Type *)
 
@@ -916,7 +951,8 @@ Proof with notations enabled.
   - intros y b FII E eII E'.
     apply Exists_cons in E'; rename E' into eE. destruct eE as [e | E'].
     + apply Exists_cons_hd. apply e.
-    + apply Exists_cons_tl. apply E. apply E'. Qed.
+    + apply Exists_cons_tl. apply E. apply E'.
+Qed.
 
 End Context.
 
@@ -937,7 +973,8 @@ Ltac notations f := progress (
 #[export] Instance fin_listing_is_fin_full
   `{!IsFinListing X} : IsFinFull X.
 Proof with notations enabled.
-  destruct fin_listing as [a s]... exists a. intros x. apply full. Qed.
+  destruct fin_listing as [a s]... exists a. intros x. apply full.
+Qed.
 
 Lemma uniquify :
   forall l : list A, exists l' : list A, IsNoDup X l' /\ forall a, IsIn a l -> IsIn a l'.
@@ -996,7 +1033,8 @@ Proof.
   - clear n p i. intros n i. exfalso. lia.
   - clear n p i. intros n i. reflexivity.
   - clear n p i. intros n p i e.
-    rewrite e. erewrite Fin.of_nat_ext. reflexivity. Qed.
+    rewrite e. erewrite Fin.of_nat_ext. reflexivity.
+Qed.
 
 #[local] Open Scope N_scope.
 
@@ -1039,7 +1077,8 @@ Proof. destruct a as [p i]. exists (N.to_nat p). abstract lia. Defined.
 Proof.
   intros [x a] [y b]. apply eq_sig_hprop.
   - intros z c d. apply irrel.
-  - apply irrel. Qed.
+  - apply irrel.
+Qed.
 
 Lemma eq_sig_hprop' (A : Type) (P : A -> Prop) `{!forall x : A, IsProp (P x)}
   (u v : {a : A | P a}) (s : proj1_sig u = proj1_sig v) : u = v.
@@ -1049,25 +1088,29 @@ Lemma obvious (n : nat) (a : {p : nat | (p < n)%nat}) :
   Fin.to_nat (m := n) (Fin_of_nat a) = a.
 Proof.
   rewrite Fin_of_nat_ref. unfold Ref'.Fin_of_nat.
-  destruct a as [p i]. apply Fin.to_nat_of_nat. Qed.
+  destruct a as [p i]. apply Fin.to_nat_of_nat.
+Qed.
 
 Lemma obvious' (n : nat) (p : Fin.t n) :
   Fin_of_nat (n := n) (Fin.to_nat p) = p.
 Proof.
   rewrite Fin_of_nat_ref. unfold Ref'.Fin_of_nat.
-  apply Fin.of_nat_to_nat_inv. Qed.
+  apply Fin.of_nat_to_nat_inv.
+Qed.
 
 Lemma evident (n : N) (a : {p : N | p < n}) :
   sig_N_of_nat' n (sig_N_to_nat' n a) = a.
 Proof.
   destruct a as [p i]. unfold sig_N_to_nat', sig_N_of_nat'.
-  apply eq_sig_hprop'. simpl proj1_sig. rewrite N2Nat.id. reflexivity. Qed.
+  apply eq_sig_hprop'. simpl proj1_sig. rewrite N2Nat.id. reflexivity.
+Qed.
 
 Lemma evident' (n : N) (a : {p : nat | (p < N.to_nat n)%nat}) :
   sig_N_to_nat' n (sig_N_of_nat' n a) = a.
 Proof.
   destruct a as [p i]. unfold sig_N_to_nat', sig_N_of_nat'.
-  apply eq_sig_hprop'. simpl proj1_sig. rewrite Nat2N.id. reflexivity. Qed.
+  apply eq_sig_hprop'. simpl proj1_sig. rewrite Nat2N.id. reflexivity.
+Qed.
 
 Lemma bishop_or_not (A : Type) (X : A -> A -> Prop) (n : N) :
   IsBishopSize X n <-> IsSize X n.
@@ -1092,7 +1135,8 @@ Proof.
     + intros x. unfold compose. rewrite retr.
       rewrite evident'. rewrite obvious'. reflexivity.
     + intros x. unfold compose.
-      rewrite obvious. rewrite evident. apply sect. Qed.
+      rewrite obvious. rewrite evident. apply sect.
+Qed.
 
 Lemma Nindex_In (A : Type)
   (n : N) (x : A) (a : list A) (s : In (n, x) (Nindex a)) :
@@ -1103,13 +1147,15 @@ Proof.
   apply in_combine_l in s. apply (in_map N.to_nat) in s.
   rewrite map_map in s. rewrite (map_ext _ id) in s.
   - rewrite map_id in s. apply in_seq in s. lia.
-  - intros p. rewrite Nat2N.id. reflexivity. Qed.
+  - intros p. rewrite Nat2N.id. reflexivity.
+Qed.
 
 Lemma Nindex_length (A : Type) (a : list A) : length (Nindex a) = length a.
 Proof.
   rewrite Nindex_ref. unfold Ref.Nindex. unfold Ref.nindex, Ref.nindex_from.
   rewrite map_length. rewrite combine_length. rewrite seq_length.
-  rewrite Min.min_idempotent. reflexivity. Qed.
+  rewrite Min.min_idempotent. reflexivity.
+Qed.
 
 Lemma Nindex_nth (A : Type)
   (n : N) (x : A) (a : list A) (s : n < N.of_nat (length a)) :
@@ -1122,7 +1168,8 @@ Proof.
       * lia.
       * lia.
     + rewrite map_id. reflexivity.
-  - rewrite map_length. rewrite seq_length. rewrite map_id. reflexivity. Qed.
+  - rewrite map_length. rewrite seq_length. rewrite map_id. reflexivity.
+Qed.
 
 Section Context.
 
@@ -1141,7 +1188,8 @@ Equations encode (s : {p : N | p < N.of_nat (length (enum A))}) : A :=
   }.
 Next Obligation with notations enabled.
   cbv beta...
-  intros p t u. rewrite u in t. unfold length, N.of_nat in t. lia. Qed.
+  intros p t u. rewrite u in t. unfold length, N.of_nat in t. lia.
+Qed.
 
 Equations decode (x : A) : {p : N | p < N.of_nat (length (enum A))} :=
   decode x with inspect (Nfind_error x (enum A)) := {
@@ -1151,7 +1199,8 @@ Equations decode (x : A) : {p : N | p < N.of_nat (length (enum A))} :=
 Next Obligation with notations enabled.
   cbv beta...
   intros x p s. apply (Nfind_error_some x x (enum A)) in s.
-  destruct s as [i [ip ex]]. rewrite N_length_ref in ip. apply ip. Qed.
+  destruct s as [i [ip ex]]. rewrite N_length_ref in ip. apply ip.
+Qed.
 Next Obligation with notations enabled.
   cbv beta...
   intros x t. exfalso.
@@ -1164,7 +1213,8 @@ Next Obligation with notations enabled.
     + contradiction.
     + destruct v as [v0 | v1].
       * left. rewrite v0. apply w.
-      * right. apply u. apply v1. Qed.
+      * right. apply u. apply v1.
+Qed.
 
 Lemma nth_inversion `{!IsNoDup X a} (n p : nat) (x : A)
   (inl : (n < length (enum A))%nat) (ipl : (p < length (enum A))%nat)
@@ -1181,7 +1231,8 @@ Proof with notations enabled.
     + simpl in s. exfalso. apply f. eapply Proper_IsIn.
       apply s. apply nth_IsIn. simpl in inl; lia.
     + f_equal. simpl in s. apply u. apply s.
-      simpl in inl; lia. simpl in ipl; lia. Qed.
+      simpl in inl; lia. simpl in ipl; lia.
+Qed.
 
 End Context.
 
@@ -1189,7 +1240,8 @@ End Context.
   {X : HasEquivRel A} {Y : HasEquivRel B} : HasEquivRel (A * B).
 Proof.
   intros [x0 y0] [x1 y1].
-  apply (x0 == x1 /\ y0 == y1). Defined.
+  apply (x0 == x1 /\ y0 == y1).
+Defined.
 
 #[export] Instance prod_is_equiv (A B : Type)
   {X : HasEquivRel A} {Y : HasEquivRel B} `{!IsEquiv X} `{IsEquiv Y} :
@@ -1208,7 +1260,8 @@ Proof.
       * apply a1.
     + transitivity y1.
       * apply b0.
-      * apply b1. Qed.
+      * apply b1.
+Qed.
 
 #[export] Instance option_has_equiv_rel (A : Type) {X : HasEquivRel A} :
   HasEquivRel (option A).
@@ -1217,7 +1270,8 @@ Proof.
   - apply (x == y).
   - apply False.
   - apply False.
-  - apply True. Defined.
+  - apply True.
+Defined.
 
 #[export] Instance option_is_equiv (A : Type)
   {X : HasEquivRel A} `{!IsEquiv X} :
@@ -1242,7 +1296,8 @@ Proof.
     + intros [] a1.
     + intros [] [].
     + intros a0 [].
-    + intros a0 a1. auto. Qed.
+    + intros a0 a1. auto.
+Qed.
 
 #[export] Instance N_has_equiv_rel : HasEquivRel N := eq.
 #[export] Instance N_has_equiv_dec : HasEquivDec N := N.eq_dec.
@@ -1345,7 +1400,8 @@ Proof with notations enabled.
       pose proof full x as fz. apply Exists_IsIn in fz.
       destruct fz as [z [i e]].
       pose proof Proper_IsIn z x (enum A) as w. apply w.
-      symmetry. apply e. apply i. Qed.
+      symmetry. apply e. apply i.
+Qed.
 
 #[export] Instance listing_is_size_length'
   `{!IsListing X a} : IsBishopSize X (N_length a).
@@ -1361,7 +1417,8 @@ Proof.
   destruct ns as [n s].
   induction n as [| p q r].
   - Fail rewrite <- s. epose proof Proper_IsIn _ _ _ s as e. apply e. left. reflexivity.
-  - right. apply r. rewrite <- s. reflexivity. Qed.
+  - right. apply r. rewrite <- s. reflexivity.
+Qed.
 
 Lemma in_index (k : nat) (x : A) (f : Fin.t k -> A)
   (s : IsIn x (tabulate f)) : exists n : Fin.t k, f n == x.
@@ -1371,7 +1428,8 @@ Proof.
   - simpl in s. destruct s as [s | s].
     + exists Fin.F1. rewrite s. reflexivity.
     + pose proof eh (f o Fin.FS) s as w. destruct w as [n e].
-      exists (Fin.FS n). rewrite <- e. reflexivity. Qed.
+      exists (Fin.FS n). rewrite <- e. reflexivity.
+Qed.
 
 #[local] Instance bishop_fin_size_is_fin_listing
   `{!IsBishopFinSize X} : IsFinListing X.
@@ -1392,7 +1450,8 @@ Proof.
       * intros w. apply in_index in w. destruct w as [x e].
         unfold compose in e. apply j in e. inversion e.
       * apply (r (f o Fin.FS)). intros x y b. apply j in b.
-        apply Fin.FS_inj in b. apply b. Qed.
+        apply Fin.FS_inj in b. apply b.
+Qed.
 
 Equations N_seq_sig' (n p : N) : list {q : N | q < n + p} :=
   N_seq_sig' n p with inspect (N_seq n p) := {
@@ -1411,7 +1470,8 @@ Next Obligation.
       * rewrite N.add_succ_r. rewrite <- N.add_succ_l.
         pose proof t (N.succ n) b as t'. apply t'.
         rewrite N_seq_ref. unfold Ref.N_seq.
-        rewrite N2Nat.inj_succ. apply sb. Defined.
+        rewrite N2Nat.inj_succ. apply sb.
+Defined.
 
 Equations N_seq_sig (n p : N) : list {q : N | q < n + p} :=
   N_seq_sig n p := map_with_sig (P := fun q : N => q < n + p) _ (N_seq n p) _.
@@ -1426,14 +1486,16 @@ Next Obligation. cbv beta. intros n p.
   rewrite <- N_seq_ref.
   apply Forall_cons. lia.
   replace (n + N.succ q) with (N.succ n + q) by lia.
-  apply s. Defined.
+  apply s.
+Defined.
 
 #[local] Instance fin_size_is_fin_listing
   `{!IsFinSize X} : IsFinListing X.
 Proof.
   destruct fin_size as [p s].
   apply bishop_or_not in s.
-  apply bishop_fin_size_is_fin_listing. Qed.
+  apply bishop_fin_size_is_fin_listing.
+Qed.
   (* destruct s as [f [g i]].
   exists (map f (N_seq_sig 0 p)). *)
 
@@ -1448,7 +1510,8 @@ Context (A : Type) (X : A -> A -> Prop)
   `{!IsFinListing X} : IsFinSize X.
 Proof.
   destruct fin_listing as [a ?]. exists (N_length a).
-  apply listing_is_size_length; eauto || typeclasses eauto. Qed.
+  apply listing_is_size_length; eauto || typeclasses eauto.
+Qed.
 
 End Context.
 
@@ -1469,6 +1532,7 @@ Proof.
   - apply Forall_nil.
   - simp list_proj1_sig. apply Forall_cons.
     + apply a.
-    + apply s. Qed.
+    + apply s.
+Qed.
 
 End Context.

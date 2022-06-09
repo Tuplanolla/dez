@@ -42,7 +42,8 @@ Context (A : Prop).
 Proof.
   destruct d as [x | f].
   - exists true. intuition.
-  - exists false. intuition. Defined.
+  - exists false. intuition.
+Defined.
 
 (** Standard library decidability implies our decidability. *)
 
@@ -50,7 +51,8 @@ Proof.
 Proof.
   destruct d as [[] a].
   - left. intuition.
-  - right. intuition. Defined.
+  - right. intuition.
+Defined.
 
 End Context.
 

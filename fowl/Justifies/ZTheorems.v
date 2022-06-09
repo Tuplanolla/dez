@@ -31,7 +31,8 @@ Proof.
   intros x y.
   pose proof Z.le_gt_cases x y as a.
   pose proof Z.lt_le_incl y x as b.
-  intuition. Qed.
+  intuition.
+Qed.
 
 #[export] Instance Z_le_is_preord : IsPreord Z.le.
 Proof. ecrush. Qed.
@@ -159,7 +160,8 @@ Proof.
   - destruct p as [q | q |].
     + reflexivity.
     + cbn. rewrite (Pos.succ_pred_double q). reflexivity.
-    + reflexivity. Qed.
+    + reflexivity.
+Qed.
 
 #[local] Instance is_sect : IsSect _=_ Z_to_double_N Z_of_double_N.
 Proof.
@@ -168,7 +170,8 @@ Proof.
   - destruct p as [q | q |].
     + cbn. rewrite (Pos.pred_double_succ q). reflexivity.
     + reflexivity.
-    + reflexivity. Qed.
+    + reflexivity.
+Qed.
 
 #[export] Instance is_iso : IsIso _=_ _=_ Z_to_double_N Z_of_double_N.
 Proof. ecrush. Qed.

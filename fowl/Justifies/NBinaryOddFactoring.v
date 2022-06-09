@@ -43,7 +43,8 @@ Next Obligation.
   - simp pos_binoddfactor.
     destruct (pos_binoddfactor p) as [b c].
     apply ep.
-  - reflexivity. Qed.
+  - reflexivity.
+Qed.
 
 (** This function is a dependent version of [pos_binoddprod]. *)
 
@@ -80,7 +81,8 @@ Lemma pair_pos_binoddfactor (n : positive) :
 Proof.
   simp pos_binfactor. simp pos_oddfactor.
   destruct (pos_binoddfactor n) as [b c].
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 (** The binary factor of a power of two is
     the binary logarithm of the number. *)
@@ -98,7 +100,8 @@ Proof.
     simp fst in ep.
     rewrite ep.
     reflexivity.
-  - reflexivity. Qed.
+  - reflexivity.
+Qed.
 
 (** The odd factor of an odd number is the number itself. *)
 
@@ -108,7 +111,8 @@ Proof.
   destruct n as [p | p |].
   - reflexivity.
   - inversion e.
-  - reflexivity. Qed.
+  - reflexivity.
+Qed.
 
 (** The binary factor of an odd number is zero. *)
 
@@ -118,7 +122,8 @@ Proof.
   destruct n as [p | p |].
   - reflexivity.
   - inversion e.
-  - reflexivity. Qed.
+  - reflexivity.
+Qed.
 
 (** The odd factor of a power of two is one. *)
 
@@ -133,7 +138,8 @@ Proof.
     simp pos_oddfactor in ep.
     destruct (pos_binoddfactor p) as [b c].
     simp snd in ep.
-  - reflexivity. Qed.
+  - reflexivity.
+Qed.
 
 (** The function [pos_binoddprod] is an inverse of [pos_binoddfactor]. *)
 
@@ -155,7 +161,8 @@ Proof.
     reflexivity.
   - simp pos_binoddfactor in e.
     injection e. clear e. intros ec eb. subst b c.
-    reflexivity. Qed.
+    reflexivity.
+Qed.
 
 (** The function [pos_binoddfactor] is not an inverse of [pos_binoddprod]. *)
 
@@ -188,7 +195,8 @@ Proof.
       rewrite Pos.iter_succ. rewrite Pos.mul_xO_r.
       simp pos_binoddfactor.
       rewrite eq by assumption.
-      reflexivity. Qed.
+      reflexivity.
+Qed.
 
 (** The function [pos_binoddprod_dep] is an inverse
     of [pos_binoddfactor_dep]. *)
@@ -199,7 +207,8 @@ Lemma pos_binoddprod_dep_pos_binoddfactor_dep (n : positive) :
 Proof.
   pose proof pos_binoddprod_pos_binoddfactor n as e.
   rewrite prod_uncurry_proj in e. rewrite Ssig_uncurry_proj.
-  rewrite prod_uncurry_dep_proj. simp pos_binoddprod_dep. Qed.
+  rewrite prod_uncurry_dep_proj. simp pos_binoddprod_dep.
+Qed.
 
 (** The function [pos_binoddfactor_dep] is an inverse
     of [pos_binoddprod_dep]. *)
@@ -211,7 +220,8 @@ Proof.
   pose proof pos_binoddfactor_pos_binoddprod b c as f.
   simp pos_binoddprod_dep. simp pos_binoddfactor_dep.
   apply Spr1_inj. simp Spr1.
-  apply unsquash in e. apply f. apply e. Qed.
+  apply unsquash in e. apply f. apply e.
+Qed.
 
 (** Split the given natural number into a binary factor and an odd factor,
     except for the degenerate case at zero.
@@ -239,7 +249,8 @@ Proof.
   - reflexivity.
   - simp binoddprod. simp pos_binoddprod.
     rewrite <- shiftl_1_l.
-    reflexivity. Qed.
+    reflexivity.
+Qed.
 
 (** Find the binary factor of the given positive number.
     except for the degenerate case at zero.
@@ -270,7 +281,8 @@ Proof.
     rewrite prod_uncurry_proj. simp fst snd. simp binoddprod.
     rewrite prod_uncurry_proj in e. simp fst snd in e.
     rewrite e.
-    reflexivity. Qed.
+    reflexivity.
+Qed.
 
 (** The function [binoddfactor] is not an inverse of [binoddprod]. *)
 
@@ -284,7 +296,8 @@ Proof.
   simp binoddprod in e. simp binoddfactor in e.
   destruct (pos_binoddfactor (pos_binoddprod b c)) as [b' c'].
   injection e. clear e. intros ec eb. subst b c.
-  reflexivity. Qed.
+  reflexivity.
+Qed.
 
 (** The function [binoddfactor] is an inverse of [binoddprod],
     when the second factor is odd. *)
@@ -307,4 +320,5 @@ Proof.
     simp binoddfactor.
     change (q * 2 ^ p)%positive with (pos_binoddprod (Npos p) q).
     rewrite pos_binoddfactor_pos_binoddprod by assumption.
-    reflexivity. Qed.
+    reflexivity.
+Qed.

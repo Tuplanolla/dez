@@ -156,7 +156,8 @@ Proof.
   - split.
     + typeclasses eauto.
     + typeclasses eauto.
-    + intros x. apply retr. Qed.
+    + intros x. apply retr.
+Qed.
 
 End Context.
 
@@ -173,7 +174,8 @@ Proof.
   split.
   - typeclasses eauto.
   - typeclasses eauto.
-  - intros x. reflexivity. Qed.
+  - intros x. reflexivity.
+Qed.
 
 #[export] Instance refl_is_iso_r_id
   `{!IsRefl X} : IsIsoR X X id id.
@@ -181,7 +183,8 @@ Proof.
   split.
   - typeclasses eauto.
   - typeclasses eauto.
-  - intros x. reflexivity. Qed.
+  - intros x. reflexivity.
+Qed.
 
 #[export] Instance refl_is_iso_id
   `{!IsRefl X} : IsIso X X id id.
@@ -194,7 +197,8 @@ Proof.
   - split.
     + typeclasses eauto.
     + typeclasses eauto.
-    + intros x. reflexivity. Qed.
+    + intros x. reflexivity.
+Qed.
 
 End Context.
 
@@ -268,7 +272,8 @@ Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
 Proof.
   split.
   - destruct q_inv_iso as [g II]. exists g. typeclasses eauto.
-  - destruct q_inv_iso as [g II]. exists g. typeclasses eauto. Qed.
+  - destruct q_inv_iso as [g II]. exists g. typeclasses eauto.
+Qed.
 
 (** A bi-invertible map is a quasi-inverse. *)
 
@@ -284,7 +289,8 @@ Proof.
   - split.
     + typeclasses eauto.
     + typeclasses eauto.
-    + intros x. unfold compose. rewrite retr. rewrite sect. reflexivity. Qed.
+    + intros x. unfold compose. rewrite retr. rewrite sect. reflexivity.
+Qed.
 
 End Context.
 
@@ -321,7 +327,8 @@ Proof. exists id. typeclasses eauto. Qed.
 Proof.
   split.
   - exists id. typeclasses eauto.
-  - exists id. typeclasses eauto. Qed.
+  - exists id. typeclasses eauto.
+Qed.
 
 (** The identity function is a contractible map
     with respect to any reflexive relation. *)
@@ -331,7 +338,8 @@ Proof.
 Proof.
   split.
   - typeclasses eauto.
-  - intros y. exists (y; refl y)%sig. intros [x a]. apply a. Qed.
+  - intros y. exists (y; refl y)%sig. intros [x a]. apply a.
+Qed.
 
 #[local] Instance is_iso_eq_id :
   IsIso (A := A) (B := A) _=_ _=_ id id.
@@ -344,7 +352,8 @@ Proof.
   - split.
     + intros x y a. apply a.
     + intros x y a. apply a.
-    + intros x. apply id%type. Defined.
+    + intros x. apply id%type.
+Defined.
 
 (** The identity function is a half-adjoint equivalence. *)
 
