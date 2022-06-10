@@ -21,7 +21,7 @@ Context (A : Type) (X : A -> A -> Prop).
 
 #[export] Instance refl_is_retr_id
   `{!IsRefl X} : IsRetr X id id.
-Proof. intros x. reflexivity. Qed.
+Proof. intros x. reflexivity. Defined.
 
 End Context.
 
@@ -41,7 +41,7 @@ Context (A : Type) (X : A -> A -> Prop).
 
 #[export] Instance refl_is_sect_id
   `{!IsRefl X} : IsSect X id id.
-Proof. intros x. reflexivity. Qed.
+Proof. intros x. reflexivity. Defined.
 
 End Context.
 
@@ -228,16 +228,6 @@ Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
 
-Class IsCohIso (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
-  (f : A -> B) (g : B -> A)
-  (Z : forall y : B, Y (f (g y)) y -> Y (f (g y)) y -> Prop) : Prop := {
-  coh_iso_is_iso :> IsIso X Y f g;
-  (* coh_iso_coh (x : A) :
-    f_equal f (retr x) = sect (f x); *)
-  coh_iso_coh (x : A) :
-    Z _ (iso_l_is_proper_f (f := f) _ _ (retr x)) (sect (f x));
-}.
-
 (** ** Quasi-Inverse *)
 
 Class IsQInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
@@ -302,11 +292,23 @@ Class IsContrMap (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   contr_map_is_contr_fn :> IsContrFn X Y f;
 }.
 
+Class IsCohIso (A B : Type)
+  (f : A -> B) (g : B -> A) : Prop := {
+  coh_iso_is_iso :> IsIso _=_ _=_ f g;
+  coh_iso_coh (x : A) : @f_equal A B f (g (f x)) x (retr x) = sect (f x);
+  (** This would make an adjoint equivalence! *)
+  (*
+  coh_iso_is_iso :> IsIso X Y f g;
+  coh_iso_coh (x : A) : iso_l_is_proper_f (f := f) _ _ (retr x) = sect (f x);
+  coh_iso_coh' (y : B) : iso_r_is_proper_g (g := g) _ _ (sect y) = retr (g y);
+  *)
+}.
+
 (** ** Half-Adjoint Equivalence *)
 
-Class IsHAE (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+Class IsHAE (A B : Type)
   (f : A -> B) : Prop :=
-  h_a_e : exists g : B -> A, IsCohIso X Y f g (fun _ : B => _=_).
+  h_a_e : exists g : B -> A, IsCohIso f g.
 
 Section Context.
 
@@ -358,8 +360,14 @@ Defined.
 (** The identity function is a half-adjoint equivalence. *)
 
 #[export] Instance is_h_a_e_eq_id :
-  IsHAE (A := A) (B := A) _=_ _=_ id.
+  IsHAE (A := A) (B := A) id.
 Proof. exists id. exists is_iso_eq_id. intros x. reflexivity. Qed.
+  (*
+  exists id. pose is_iso_eq_id as II. exists II.
+  subst II.
+  unfold iso_l_is_proper_f. unfold iso_is_iso_l. unfold is_iso_eq_id.
+  intros x. reflexivity.
+  *)
 
 End Context.
 

@@ -48,6 +48,8 @@ Defined.
 Reserved Notation "x '_*'" (left associativity, at level 20).
 Reserved Notation "x '~=' y" (no associativity, at level 70).
 
+(** This is lemma 2.3.1 from the book. *)
+
 Definition transport (A : Type) (P : A -> Type)
   (x y : A) (e : x = y) (a : P x) : P y.
 Proof.
@@ -65,10 +67,14 @@ Defined.
 #[local] Notation "'_*_'" := (transport _) (only parsing).
 #[local] Notation "e '_*'" := (transport _ e) (only parsing).
 
+(** This is lemma 2.2.1 from the book. *)
+
 Lemma ap (A B : Type) (f : A -> B) (x y : A) (e : x = y) : f x = f y.
 Proof.
   apply (transport (fun y : A => f x = f y) e). apply id%type.
 Defined.
+
+(** This is lemma 2.3.4 from the book. *)
 
 Lemma apd (A : Type) (P : A -> Type)
   (f : forall x : A, P x) (x y : A) (e : x = y) :
@@ -118,6 +124,10 @@ Defined.
 
 #[local] Notation "'_~=_'" := (fun A B : Type => IsEquivTypes A B _=_ _=_).
 #[local] Notation "A '~=' B" := (IsEquivTypes A B _=_ _=_).
+
+Definition transport_refl (A : Type) (P : A -> Type) (x : A) (a : P x) :
+  transport P id%type a = a.
+Proof. apply id%type. Defined.
 
 (** This is lemma 2.3.9 from the book. *)
 
@@ -344,6 +354,17 @@ Defined.
 #[export] Instance is_equiv_equiv_types_eq : IsEquiv _~=_.
 Proof. esplit; typeclasses eauto. Qed.
 
+From Coq Require Import RelationClasses.
+
+(** TODO This does not work; investigate. *)
+
+Add Parametric Relation (A B : Type) :
+  Type (fun A B : Type => IsEquivTypes A B _=_ _=_)
+  reflexivity proved by @is_refl_equiv_types_eq
+  symmetry proved by @is_sym_equiv_types_eq
+  transitivity proved by @is_trans_equiv_types_eq
+  as equiv_types_relation.
+
 Lemma idtoeqv_refl (A : Type) :
   idtoeqv id%type = refl (Reflexive := is_refl_equiv_types_eq) A.
 Proof. reflexivity. Defined.
@@ -370,11 +391,21 @@ Proof.
   - exists (transport P (e ^-1)). split.
     + typeclasses eauto.
     + typeclasses eauto.
-    + intros a. apply rew_opp_l.
+    + intros a.
+      pose proof transport_trans P e (e ^-1) a as f.
+      pose proof eq_trans_sym_inv_r e as g.
+      apply (transport (fun b : P _ => b = a) (f ^-1)).
+      apply (transport (fun b : _ = _ => transport P b a = a) (g ^-1)).
+      apply transport_refl.
   - exists (transport P (e ^-1)). split.
     + typeclasses eauto.
     + typeclasses eauto.
-    + intros a. apply rew_opp_r.
+    + intros a.
+      pose proof transport_trans P (e ^-1) e a as f.
+      pose proof eq_trans_sym_inv_l e as g.
+      apply (transport (fun b : P _ => b = a) (f ^-1)).
+      apply (transport (fun b : _ = _ => transport P b a = a) (g ^-1)).
+      apply transport_refl.
 Defined.
 
 (** This is equation 2.6.1 from the book. *)
@@ -650,11 +681,15 @@ Proof.
     + intros a. unfold cf, cg. reflexivity.
 Qed.
 
+Lemma classify (A : Type) (P : A -> Prop) (x : A) :
+  IsBiInv _=_ _=_ (cf (P := P) (x := x)).
+Proof. split; exists (cg P x); apply classes. Defined.
+
 (** This is lemma 4.8.1 from the book. *)
 
 Lemma classifier (A : Type) (P : A -> Prop) (x : A) :
-  IsEquivTypes (fib _=_ (proj1_sig (P := P)) x) (P x) _=_ _=_.
-Proof. exists cf. split; exists (cg P x); apply classes. Qed.
+  fib _=_ (proj1_sig (P := P)) x ~= P x.
+Proof. exists cf. apply classify. Defined.
 
 Lemma ua_elim (A B : Type) (e : A = B) :
   idtoeqv e = (transport id e; is_bi_inv_eq_transport_id e)%ex.
@@ -709,13 +744,32 @@ Proof.
   rewrite <- ua_uniq. rewrite idtoeqv_trans. do 2 rewrite ua_comp. reflexivity.
 Defined.
 
+Lemma easy `{IsFunExtDep} (A B X : Type) (f : A -> B)
+  (e : @IsBiInv A B _=_ _=_ f) : @IsBiInv (X -> A) (X -> B) _=_ _=_ (_o_ f).
+Proof.
+  destruct e as [[g ?] [h ?]].
+  split.
+  - exists (_o_ g). split; try typeclasses eauto.
+    intros i. apply fun_ext_dep.
+    intros x. unfold compose. rewrite retr. reflexivity.
+  - exists (_o_ h). split; try typeclasses eauto.
+    intros i. apply fun_ext_dep.
+    intros x. unfold compose. rewrite sect. reflexivity.
+Defined.
+
+(** This is corollary 5.8.5 from the book. *)
+
+Lemma equiv_ind (D : forall A B : Type, A ~= B -> Prop)
+  (d : forall A : Type, D A A (@refl Type _~=_ is_refl_equiv_types_eq A)) :
+  forall (A B : Type) (e : A ~= B), D A B e.
+Proof. intros A B e. rewrite <- (ua_comp e). destruct (ua e). apply d. Defined.
+
 (** This is lemma 4.9.2 from the book. *)
 
-Lemma easy (A B X : Type) (e : A ~= B) : (X -> A) ~= (X -> B).
+Lemma also_easy (A B X : Type) (e : A ~= B) : (X -> A) ~= (X -> B).
 Proof.
   destruct (ua e).
-  apply idtoeqv.
-  reflexivity.
+  apply is_refl_equiv_types_eq.
 Defined.
 
 Definition inj1_sig (A : Type) (P : A -> Prop)
@@ -739,12 +793,17 @@ Lemma alpha (A : Type) (P : A -> Prop)
   `{!forall x : A, IsContr (P x) _=_} (f : A -> {x : A | P x}) (x : A) : A.
 Proof. apply (proj1_sig (f x)). Defined.
 
+Lemma coalpha (A : Type) (P : A -> Prop)
+  `{!forall x : A, IsContr (P x) _=_} (f : A -> A) (x : A) : {x : A | P x}.
+Proof. apply (inj1_sig (f x)). Defined.
+
 (** This is corollary 4.9.3 from the book. *)
 
 Lemma before_why (A : Type) (P : A -> Prop)
   `{!forall x : A, IsContr (P x) _=_} :
   IsBiInv _=_ _=_ (proj1_sig (P := P)).
-Proof. split; exists inj1_sig; split;
+Proof.
+  split; exists inj1_sig; split;
   try typeclasses eauto; apply what || apply what'.
 Qed.
 
@@ -756,7 +815,16 @@ Proof. exists proj1_sig. apply before_why. Qed.
 Lemma why_squared (A : Type) (P : A -> Prop)
   `{!forall x : A, IsContr (P x) _=_} :
   (A -> {x : A | P x}) ~= (A -> A).
-Proof. apply easy. apply why. Qed.
+Proof. apply also_easy. apply why. Qed.
+
+Lemma after_why_squared (A : Type) (P : A -> Prop)
+  `{!forall x : A, IsContr (P x) _=_} :
+  IsBiInv _=_ _=_ alpha.
+Proof.
+  split.
+  - exists coalpha. split; try typeclasses eauto.
+    intros f. unfold alpha, coalpha.
+Abort.
 
 (** These are parts of theorem 4.9.4 from the book. *)
 
@@ -784,30 +852,9 @@ Proof.
   exists psi, phi. intros f. unfold phi. unfold psi. cbn. reflexivity.
 Defined.
 
-Lemma rew_id_r (A : Type) (x y : A) (e : x = y) :
-  (e o id = e)%type.
-Proof. destruct e. apply id%type. Defined.
-
-Lemma rew_id_l (A : Type) (x y : A) (e : x = y) :
-  (id o e = e)%type.
-Proof. destruct e. apply id%type. Defined.
-
-Theorem go_there (A B : Type) (f : A -> B) (y : B) (s t : fib _=_ f y) :
-  (s = t) -> {g : proj1_sig s = proj1_sig t |
-  ap f g o proj2_sig s = proj2_sig t}%type.
-Proof.
-  intros e. destruct s as [x p], t as [x' p']. cbn. cbv in e.
-  inversion_sigma e as [e' e'']. destruct e'. cbv in e''. subst p'.
-  exists id%type. rewrite ap_refl. apply rew_id_l.
-Defined.
-
-Theorem come_here (A B : Type) (f : A -> B) (y : B) (s t : fib _=_ f y) :
-  {g : proj1_sig s = proj1_sig t |
-  ap f g o proj2_sig s = proj2_sig t}%type -> (s = t).
-Proof.
-  intros [e e']. destruct s as [x p], t as [x' p']. cbn in *.
-  subst x'. apply ap. subst p'. rewrite ap_refl. apply rew_id_l.
-Defined.
+Lemma help (A B : Type) (f : A -> B) (x y : A) (e : x = y) :
+  (transport (fun y : A => f x = f y) e id = ap f e o id)%type.
+Proof. destruct e. reflexivity. Defined.
 
 (** This is lemma 4.2.5 from the book. *)
 
@@ -815,43 +862,53 @@ Theorem fine (A B : Type) (f : A -> B) (y : B) (s t : fib _=_ f y) :
   (s = t) ~= {g : proj1_sig s = proj1_sig t |
   ap f g o proj2_sig s = proj2_sig t}%type.
 Proof.
-  exists (go_there (s := s) (t := t)). split.
-  - exists (come_here s t). repeat (split; try typeclasses eauto).
-    intros e.
-    destruct s as [x p], t as [x' p'].
-    inversion_sigma e as [e' e''].
-    change (rew [fun x : A => y = f x] e' in p)
-    with (transport (fun x : A => y = f x) e' p) in e''.
-    subst x' p'. cbn -[ap transport]. unfold eq_ind.
-    change (rew dependent [fun y0 _ => p = y0] rew_id_l p in rew_id_l p)
-    with (transport (_=_ p) (rew_id_l p) (rew_id_l p)).
-    admit.
-  - exists (come_here s t). repeat (split; try typeclasses eauto).
-    intros [e e'].
-    destruct s as [x p], t as [x' p']. cbn in e, e'.
-    subst x' p'. cbn -[ap transport].
-Admitted.
+  eapply is_trans_equiv_types_eq; try apply (sig_is_equiv_types s t).
+  destruct s as [x p], t as [x' p']. cbn. subst y.
+  hnf. pose (fun a : {g : x = x' | transport (fun y : A => f x = f y) g id%type = p'} =>
+  (proj1_sig a; transport (fun p : _ => p = p') (help f (proj1_sig a)) (proj2_sig a)) :
+  {g : x = x' | (ap f g o id)%type = p'}) as e.
+  pose (fun a : {g : x = x' | (ap f g o id)%type = p'} =>
+  (proj1_sig a; transport (fun p : _ => p = p') (help f (proj1_sig a) ^-1) (proj2_sig a)) :
+  {g : x = x' | transport (fun y : A => f x = f y) g id%type = p'}) as e'.
+  exists e. subst e. repeat (split; try typeclasses eauto).
+  exists e'. subst e'. repeat (split; try typeclasses eauto).
+  intros [e e']. cbn. apply ap.
+  rewrite transport_trans. rewrite eq_trans_sym_inv_r.
+  cbn. reflexivity.
+  exists e'. subst e'. repeat (split; try typeclasses eauto).
+  intros [e e']. cbn. apply ap.
+  rewrite transport_trans. rewrite eq_trans_sym_inv_l.
+  cbn. reflexivity.
+Defined.
 
 (** This is theorem 4.2.6 from the book. *)
 
 Theorem curses (A B : Type) (f : A -> B) (y : B)
-  `{!IsHAE _=_ _=_ f} : IsContr (fib _=_ f y) _=_.
+  `{!IsHAE f} : IsContr (fib _=_ f y) _=_.
 Proof.
   match goal with
-  | x : IsHAE _ _ _ |- _ => rename x into IHAE
+  | x : IsHAE _ |- _ => rename x into IHAE
   end.
-  destruct IHAE as [g [[[] []] c]].
-  hnf. unfold fib.
-  set (x := g y).
-  set (e := sect (f := f) (g := g) _ : f x = y).
-  exists (x; e ^-1). intros [x' e']. apply come_here.
-  pose proof retr (f := f) as r.
-  pose proof sect (f := f) as s.
-  pose proof (e' o e)%type as t.
-  pose proof is_proper_eq_1 g t as p.
-  do 2 rewrite r in p. subst x' e. clear t.
-  exists id%type. cbn. pose proof c x as c'. subst x.
-Admitted.
+  destruct IHAE as [g [II c]].
+  unfold iso_l_is_proper_f in c. unfold iso_is_iso_l in c.
+  destruct II as [[] []].
+  hnf.
+  set (s := (g y; sect (f := f) (g := g) y ^-1) : fib _=_ f y); cbn in s.
+  exists s. intros t.
+  pose proof fine s t as IET.
+  apply is_sym_equiv_types_eq in IET.
+  apply (ex_proj1 IET).
+  subst s; destruct t as [x p].
+  pose (retr (f := f)) as r.
+  pose (sect (f := f)) as s.
+  set (gamma := (r x o ap g p)%type).
+  exists gamma. unfold proj2_sig. subst gamma. subst r.
+  assert (c' : forall x : A, ap f (retr x) = sect (f x)).
+  { intros x'. change @ap with @f_equal. apply (c x'). }
+  rewrite ap_trans.
+  rewrite p. rewrite ap_refl. rewrite eq_trans_refl_l.
+  rewrite c'. rewrite eq_trans_sym_inv_l. reflexivity.
+Defined.
 
 (** This is an approximation of theorem 4.2.6 from the book. *)
 
@@ -887,10 +944,14 @@ Proof.
   match goal with
   | h : forall _ : _, IsContr _ _=_ |- _ => rename h into c
   end.
-  pose proof eq_pi_is_what as w.
-  pose proof @ret (fib _=_ alpha id%core) (forall x : A, P x) w as r.
+  pose proof eq_pi_is_what as q.
+  pose proof @ret (fib _=_ alpha id%core) (forall x : A, P x) q as r.
   apply r.
   apply curses.
+  hnf.
+  pose proof why_squared as w.
+  pose proof (ua_comp w) as u.
+  destruct (ua w).
   (** This requires more lemmas. *)
 Admitted.
 
