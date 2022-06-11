@@ -1116,26 +1116,36 @@ Lemma bishop_or_not (A : Type) (X : A -> A -> Prop) (n : N) :
   IsBishopSize X n <-> IsSize X n.
 Proof.
   split.
-  - intros [f [g [r s]]]. hnf.
+  - intros [f [[g r] [h s]]]. hnf.
     exists (f o Fin_of_nat o sig_N_to_nat' _).
-    exists (sig_N_of_nat' _ o Fin.to_nat o g).
     split.
-    + typeclasses eauto.
-    + typeclasses eauto.
-    + intros [p i]. unfold compose. rewrite retr.
-      rewrite obvious. rewrite evident. reflexivity.
-    + intros x. unfold compose.
-      rewrite evident'. rewrite obvious'. apply sect.
-  - intros [f [g [r s]]]. hnf.
+    + exists (sig_N_of_nat' _ o Fin.to_nat o g).
+      split.
+      * typeclasses eauto.
+      * typeclasses eauto.
+      * intros [p i]. unfold compose. rewrite retr.
+        rewrite obvious. rewrite evident. reflexivity.
+    + exists (sig_N_of_nat' _ o Fin.to_nat o h).
+      split.
+      * typeclasses eauto.
+      * typeclasses eauto.
+      * intros x. unfold compose.
+        rewrite evident'. rewrite obvious'. apply sect.
+  - intros [f [[g r] [h s]]]. hnf.
     exists (f o sig_N_of_nat' _ o Fin.to_nat).
-    exists (Fin_of_nat o sig_N_to_nat' _ o g).
     split.
-    + typeclasses eauto.
-    + typeclasses eauto.
-    + intros x. unfold compose. rewrite retr.
-      rewrite evident'. rewrite obvious'. reflexivity.
-    + intros x. unfold compose.
-      rewrite obvious. rewrite evident. apply sect.
+    + exists (Fin_of_nat o sig_N_to_nat' _ o g).
+      split.
+      * typeclasses eauto.
+      * typeclasses eauto.
+      * intros x. unfold compose. rewrite retr.
+        rewrite evident'. rewrite obvious'. reflexivity.
+    + exists (Fin_of_nat o sig_N_to_nat' _ o h).
+      split.
+      * typeclasses eauto.
+      * typeclasses eauto.
+      * intros x. unfold compose.
+        rewrite obvious. rewrite evident. apply sect.
 Qed.
 
 Lemma Nindex_In (A : Type)
@@ -1325,12 +1335,9 @@ Ltac notations f := progress (
   f d (equiv_dec (A := A));
   f a (enum A)).
 
-#[export] Instance listing_is_size_length
-  `{!IsListing X a} : IsSize X (N_length a).
-Proof with notations enabled.
-  rewrite N_length_ref. unfold Ref.N_length.
-  exists encode, decode... split.
-  - typeclasses eauto.
+#[local] Instance is_proper_decode
+  `{!IsListing X a} : IsProper (_==_ ==> _=_) (@decode A X d a _ _).
+Proof.
   - intros x y. apply decode_elim.
     + clear x. intros x p s _ t.
       revert s t. apply decode_elim.
@@ -1351,6 +1358,15 @@ Proof with notations enabled.
         rewrite t in u'. inversion u'.
       * clear y. intros y t _ u s.
         apply (eq_exist_curried id%type). apply irrel.
+Qed.
+
+#[export] Instance listing_is_size_length
+  `{!IsListing X a} : IsSize X (N_length a).
+Proof with notations enabled.
+  rewrite N_length_ref. unfold Ref.N_length.
+  exists encode; split; exists decode; split...
+  - typeclasses eauto.
+  - typeclasses eauto.
   - intros [p t]. apply encode_elim.
     + clear p t. intros p t u _. exfalso.
       rewrite u in t. unfold length, N.of_nat in t. lia.
@@ -1381,6 +1397,8 @@ Proof with notations enabled.
               pose proof Proper_IsIn z y (enum A) as w. apply w.
               symmetry. apply e. apply i.
       * rewrite u in t. lia.
+  - typeclasses eauto.
+  - typeclasses eauto.
   - intros x. apply decode_elim.
     + clear x. intros x n s _.
       remember (n; decode_obligations_obligation_1 x s) as t eqn : et.
@@ -1433,16 +1451,16 @@ Qed.
 
 #[local] Instance bishop_fin_size_is_fin_listing
   `{!IsBishopFinSize X} : IsFinListing X.
-Proof.
+Proof with notations enabled.
   destruct bishop_fin_size as [p s].
-  destruct s as [f [g i]].
+  destruct s as [f [[g R] [i S]]].
   exists (tabulate f).
-  split.
+  split...
   - intros x. apply IsIn_Exists. exists x. split.
-    + apply at_tabulate. exists (g x). rewrite sect. reflexivity.
+    + apply at_tabulate. exists (i x). rewrite sect. reflexivity.
     + reflexivity.
   - pose proof inj_un_fn (X := _=_) (Y := X) (f := f) as j.
-    clear i g. induction p as [| q r] using N.peano_ind.
+    clear i g R S. induction p as [| q r] using N.peano_ind.
     + apply IsNoDup_nil.
     + remember (N.to_nat (N.succ q)) as n eqn : rm.
       rewrite N2Nat.inj_succ in rm. subst n.

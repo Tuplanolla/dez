@@ -33,8 +33,16 @@ Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   `{!IsIso X Y f g} : IsBijUnFn X Y f.
 Proof.
   split.
-  - intros x y a. rewrite <- (sect x), <- (sect y). rewrite a. reflexivity.
+  - intros x y a. rewrite <- (retr x), <- (retr y). rewrite a. reflexivity.
   - intros y. exists (g y). rewrite sect. reflexivity.
+Qed.
+
+(** A left isomorphism is injective. *)
+
+#[export] Instance iso_l_is_inj_un_fn
+  `{!IsIsoL X Y f g} : IsInjUnFn X Y f.
+Proof.
+  intros x y a. rewrite <- (retr x), <- (retr y). rewrite a. reflexivity.
 Qed.
 
 End Context.

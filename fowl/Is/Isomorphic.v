@@ -19,7 +19,7 @@ Context (A : Type) (X : A -> A -> Prop).
 (** The identity function is a retraction of itself
     with respect to any reflexive relation. *)
 
-#[export] Instance refl_is_retr_id
+#[local] Instance refl_is_retr_id
   `{!IsRefl X} : IsRetr X id id.
 Proof. intros x. reflexivity. Qed.
 
@@ -39,7 +39,7 @@ Context (A : Type) (X : A -> A -> Prop).
 (** The identity function is a section of itself
     with respect to any reflexive relation. *)
 
-#[export] Instance refl_is_sect_id
+#[local] Instance refl_is_sect_id
   `{!IsRefl X} : IsSect X id id.
 Proof. intros x. reflexivity. Qed.
 
@@ -168,7 +168,7 @@ Context (A : Type) (X : A -> A -> Prop).
 (** The identity function is an isomorphism
     with respect to any reflexive relation. *)
 
-#[export] Instance refl_is_iso_l_id
+#[local] Instance refl_is_iso_l_id
   `{!IsRefl X} : IsIsoL X X id id.
 Proof.
   split.
@@ -177,7 +177,7 @@ Proof.
   - intros x. reflexivity.
 Qed.
 
-#[export] Instance refl_is_iso_r_id
+#[local] Instance refl_is_iso_r_id
   `{!IsRefl X} : IsIsoR X X id id.
 Proof.
   split.
@@ -186,7 +186,7 @@ Proof.
   - intros x. reflexivity.
 Qed.
 
-#[export] Instance refl_is_iso_id
+#[local] Instance refl_is_iso_id
   `{!IsRefl X} : IsIso X X id id.
 Proof.
   split.
@@ -310,19 +310,21 @@ Class IsHAE (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
 
 Section Context.
 
+#[local] Existing Instance refl_is_iso_id.
+
 Context (A : Type) (X : A -> A -> Prop).
 
 (** The identity function is a quasi-inverse
     with respect to any reflexive relation. *)
 
-#[export] Instance refl_is_q_inv_id
+#[local] Instance refl_is_q_inv_id
   `{!IsRefl X} : IsQInv X X id.
 Proof. exists id. typeclasses eauto. Qed.
 
 (** The identity function is a bi-invertible map
     with respect to any reflexive relation. *)
 
-#[export] Instance refl_is_bi_inv_id
+#[local] Instance refl_is_bi_inv_id
   `{!IsRefl X} : IsBiInv X X id.
 Proof.
   split.
@@ -333,7 +335,7 @@ Qed.
 (** The identity function is a contractible map
     with respect to any reflexive relation. *)
 
-#[export] Instance refl_is_contr_map_inv_id
+#[local] Instance refl_is_contr_map_inv_id
   `{!IsRefl X} : IsContrMap X X id.
 Proof.
   split.
@@ -357,7 +359,7 @@ Defined.
 
 (** The identity function is a half-adjoint equivalence. *)
 
-#[export] Instance is_h_a_e_eq_id :
+#[local] Instance is_h_a_e_eq_id :
   IsHAE (A := A) (B := A) _=_ _=_ id.
 Proof. exists id. exists is_iso_eq_id. intros x. reflexivity. Qed.
 
@@ -374,12 +376,14 @@ Arguments equiv_types_bi_inv _ _ _ _ {_}.
 
 Section Context.
 
+#[local] Existing Instance refl_is_bi_inv_id.
+
 Context (A : Type) (X : A -> A -> Prop).
 
 (** A type is equivalent to itself
     with respect to any reflexive relation. *)
 
-#[export] Instance refl_is_equiv_types
+#[local] Instance refl_is_equiv_types
   `{!IsRefl X} : IsEquivTypes A A X X.
 Proof. exists id. typeclasses eauto. Qed.
 
