@@ -382,17 +382,63 @@ Class IsEquivTypes (A B : Type)
 Arguments IsEquivTypes _ _ _ _ : clear implicits.
 Arguments equiv_types_bi_inv _ _ _ _ {_}.
 
+(** An equivalence of types is an equivalence relation. *)
+
 Section Context.
 
-#[local] Existing Instance refl_is_bi_inv_id.
+Context (A B C : Type)
+  (X : A -> A -> Prop) (Y : B -> B -> Prop) (Z : C -> C -> Prop)
+  `{!IsEquiv X} `{!IsEquiv Y} `{!IsEquiv Z}.
 
-Context (A : Type) (X : A -> A -> Prop).
+#[local] Instance refl_is_equiv_types :
+  IsEquivTypes A A X X.
+Proof.
+  exists id. split.
+  - exists id. split.
+    + typeclasses eauto.
+    + typeclasses eauto.
+    + intros x. reflexivity.
+  - exists id. split.
+    + typeclasses eauto.
+    + typeclasses eauto.
+    + intros x. reflexivity.
+Qed.
 
-(** A type is equivalent to itself
-    with respect to any reflexive relation. *)
+#[local] Instance sym_is_equiv_types
+  `{!IsEquivTypes A B X Y} : IsEquivTypes B A Y X.
+Proof.
+  pose proof _ : IsEquivTypes A B X Y as e.
+  destruct e as [f [[g IIL] [h IIR]]].
+  exists (g o f o h). split.
+  - exists f. split.
+    + typeclasses eauto.
+    + typeclasses eauto.
+    + intros y. unfold compose.
+      rewrite retr. rewrite sect. reflexivity.
+  - exists f. split.
+    + typeclasses eauto.
+    + typeclasses eauto.
+    + intros x. unfold compose.
+      rewrite sect. rewrite retr. reflexivity.
+Qed.
 
-#[local] Instance refl_is_equiv_types
-  `{!IsRefl X} : IsEquivTypes A A X X.
-Proof. exists id. typeclasses eauto. Qed.
+#[local] Instance trans_is_equiv_types
+  `{!IsEquivTypes A B X Y} `{!IsEquivTypes B C Y Z} : IsEquivTypes A C X Z.
+Proof.
+  pose proof _ : IsEquivTypes A B X Y as IETAB.
+  pose proof _ : IsEquivTypes B C Y Z as IETBC.
+  destruct IETAB as [f [[g IILf] [h IIRf]]], IETBC as [i [[j IILi] [k IIRi]]].
+  exists (i o f). split.
+  - exists (g o j). split.
+    + typeclasses eauto.
+    + typeclasses eauto.
+    + intros y. unfold compose.
+      rewrite retr. rewrite retr. reflexivity.
+  - exists (h o k). split.
+    + typeclasses eauto.
+    + typeclasses eauto.
+    + intros y. unfold compose.
+      rewrite sect. rewrite sect. reflexivity.
+Qed.
 
 End Context.

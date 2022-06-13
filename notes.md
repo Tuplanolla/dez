@@ -208,6 +208,19 @@ Z.abs_triangle ~ IsDistr
   k = m = Z.add
 ```
 
+### Parametric Relations
+
+This is not possible without an auxiliary definition.
+
+```
+Add Parametric Relation (A B : Type) :
+  Type (fun A B : Type => IsEquivTypes A B _=_ _=_)
+  reflexivity proved by @is_refl_equiv_types_eq
+  symmetry proved by @is_sym_equiv_types_eq
+  transitivity proved by @is_trans_equiv_types_eq
+  as equiv_types_relation.
+```
+
 ### Coherence Conditions
 
 When defining operational classes or their instances,
