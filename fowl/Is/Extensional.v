@@ -1043,6 +1043,38 @@ Proof.
   apply curses. apply unhae.
 Defined.
 
+(** This is definition 4.7.5 from the book. *)
+
+Definition total (A : Type) (P Q : A -> Prop)
+  (f : forall x : A, P x -> Q x) (a : {x : A | P x}) : {x : A | Q x}.
+Proof. apply (proj1_sig a; f (proj1_sig a) (proj2_sig a))%sig. Defined.
+
+Definition total_ex (A : Type) (P Q : A -> Prop)
+  (f : forall x : A, P x -> Q x) (a : exists x : A, P x) : exists x : A, Q x.
+Proof. destruct a as [x p]. exists x. apply f. apply p. Defined.
+
+(** This is theorem 4.7.6 from the book. *)
+
+Lemma fiberwise (A : Type) (P Q : A -> Prop)
+  (f : forall x : A, P x -> Q x) (x : A) (q : Q x) :
+  fib _=_ (total f) (x; q) ~= fib _=_ (f x) q.
+Proof.
+Admitted.
+
+(** This is theorem 4.7.7 from the book. *)
+
+Lemma fiberwise_transform (A : Type) (P Q : A -> Prop)
+  (f : forall x : A, P x -> Q x) (x : A) :
+  IsBiInv _=_ _=_ (f x) -> IsBiInv _=_ _=_ (total f).
+Proof.
+Admitted.
+
+Lemma fiberwise_transform_dual (A : Type) (P Q : A -> Prop)
+  (f : forall x : A, P x -> Q x) (x : A) :
+  IsBiInv _=_ _=_ (total f) -> IsBiInv _=_ _=_ (f x).
+Proof.
+Admitted.
+
 (** This is theorem 4.9.4 from the book. *)
 
 Lemma eq_pi_contr (A : Type) (P : A -> Prop)
@@ -1059,14 +1091,6 @@ Proof.
   apply after_why_squared.
 Defined.
 
-Definition sig_map_r (A : Type) (P Q : A -> Prop)
-  (f : forall x : A, P x -> Q x) (a : {x : A | P x}) : {x : A | Q x}.
-Proof. destruct a as [x p]. exists x. apply f. apply p. Defined.
-
-Definition ex_map_r (A : Type) (P Q : A -> Prop)
-  (f : forall x : A, P x -> Q x) (a : exists x : A, P x) : exists x : A, Q x.
-Proof. destruct a as [x p]. exists x. apply f. apply p. Defined.
-
 (** This is theorem 4.9.5 from the book. *)
 
 Lemma conclusion (A : Type) (P : A -> Type) (f g : forall x : A, P x) :
@@ -1079,14 +1103,14 @@ Proof.
   end :
   exists h : forall x : A, P x, forall x : A, f x = h x)) by admit. *)
   enough (by_theorem_4_7_7 :
-  IsBiInv _=_ _=_ (ex_map_r (happly f))).
-  (** Total space does this and that. *)
-  { epose proof @curses' _ _ as b.
-    admit. }
+  IsBiInv _=_ _=_ (total (happly f))).
+  { epose proof @fiberwise_transform_dual _ _ _ (happly f) as t.
+    eapply t. apply by_theorem_4_7_7. }
   enough (by_theorem_3_11_8 :
   IsContr (exists h : (forall x : A, P x), forall x : A, f x = h x) _=_).
   (** Equivalence preserves contractibility. *)
-  { epose proof @ret _ _ as r. unfold IsRetrType in r.
+  { epose proof @curses' _ _ as b.
+    epose proof @ret _ _ as r. unfold IsRetrType in r.
     admit. }
   enough (by_theorem_2_15_7 :
   IsContr (forall x : A, exists a : P x, f x = a) _=_).
