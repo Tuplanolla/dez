@@ -34,15 +34,13 @@ Proof.
   destruct y as [a s]. apply s.
 Defined.
 
-Unset Universe Checking.
-Theorem ac_eq_ex (A : Type) (P : A -> Type) (R : forall x : A, P x -> Prop)
+Theorem ac_eq_ex (A : Type) (P : A -> Prop) (R : forall x : A, P x -> Prop)
   (f : forall x : A, exists a : P x, R x a) :
   exists g : forall x : A, P x, forall x : A, R x (g x).
 Proof.
   exists (fun x : A => ex_proj1 (f x)). intros x. set (f x) as y.
   destruct y as [a s]. apply s.
 Defined.
-Set Universe Checking.
 
 (** This is part of theorem 2.15.7 from the book. *)
 
