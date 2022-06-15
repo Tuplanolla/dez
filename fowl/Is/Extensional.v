@@ -34,6 +34,16 @@ Proof.
   destruct y as [a s]. apply s.
 Defined.
 
+Unset Universe Checking.
+Theorem ac_eq_ex (A : Type) (P : A -> Type) (R : forall x : A, P x -> Prop)
+  (f : forall x : A, exists a : P x, R x a) :
+  exists g : forall x : A, P x, forall x : A, R x (g x).
+Proof.
+  exists (fun x : A => ex_proj1 (f x)). intros x. set (f x) as y.
+  destruct y as [a s]. apply s.
+Defined.
+Set Universe Checking.
+
 (** This is part of theorem 2.15.7 from the book. *)
 
 Theorem dbp_eq (A : Type) (P : A -> Type) (R : forall x : A, P x -> Prop)
@@ -122,6 +132,8 @@ Proof.
   apply (transport (fun h : forall x : A, P x => f x = h x) e). apply id%type.
 Defined.
 
+Arguments happly {_ _} _ _ _ _.
+
 Class IsEquivTypesEq (A B : Type) : Prop :=
   equiv_types_eq_equiv_types :> IsEquivTypes A B _=_ _=_.
 
@@ -195,6 +207,11 @@ Theorem seriously (A : Type) (P : A -> Type) (R : forall x : A, P x -> Prop) :
   (forall x : A, {a : P x | R x a}) ~=
   {g : forall x : A, P x | forall x : A, R x (g x)}.
 Proof. exists ac_eq. apply this_is_equiv. Defined.
+
+Theorem seriously_ex (A : Type) (P : A -> Type) (R : forall x : A, P x -> Prop) :
+  (forall x : A, exists a : P x, R x a) ~=
+  exists g : forall x : A, P x, forall x : A, R x (g x).
+Proof. Admitted.
 
 (** We define these instances as explicitly as possible,
     because they are used in the univalence axiom. *)
@@ -648,6 +665,11 @@ Proof.
   exists (a; id%type). intros [x e]. destruct e. apply id%type.
 Defined.
 
+Lemma ex_contr (A : Type) (a : A) : IsContr (exists x : A, a = x) _=_.
+Proof.
+  exists (a; id%type)%ex. intros [x e]. destruct e. apply id%type.
+Defined.
+
 (** This was definition 4.2.4 from the book. *)
 
 Definition cf (A : Type) (P : A -> Prop) (x : A)
@@ -764,16 +786,36 @@ Definition inj1_sig (A : Type) (P : A -> Prop)
   `{!forall x : A, IsContr (P x) _=_} (x : A) : {x : A | P x} :=
   (x; ex_proj1 contr).
 
-Lemma what (A : Type) (P : A -> Prop)
+Lemma contr_is_retr_proj1_sig_inj1_sig (A : Type) (P : A -> Prop)
   `{!forall x : A, IsContr (P x) _=_} : IsRetr _=_ proj1_sig inj1_sig.
 Proof.
   intros [x a]. unfold proj1_sig, inj1_sig. f_equal.
   pose proof ex_proj2 contr a as b. apply b.
 Qed.
 
-Lemma what' (A : Type) (P : A -> Prop)
+Lemma contr_is_sect_proj1_sig_inj1_sig (A : Type) (P : A -> Prop)
   `{!forall x : A, IsContr (P x) _=_} : IsSect _=_ proj1_sig inj1_sig.
 Proof. intros x. unfold proj1_sig, inj1_sig. reflexivity. Qed.
+
+Unset Universe Checking.
+#[local] Instance dubious (A B C : Type) (f : A -> B)
+  `{!IsBiInv _=_ _=_ f} : IsBiInv (A := C -> A) (B := C -> B) _=_ _=_ (_o_ f).
+Proof.
+  remember ((f; _ : IsBiInv _=_ _=_ f)%ex : _ ~= _) as e eqn : h; cbn in h.
+  rewrite <- (ua_comp e) in h.
+  destruct (ua e).
+  rewrite ua_elim in h.
+  (** This projection requires [sig] instead of [ex]. *)
+  apply (ap ex_proj1) in h. cbn in h. subst f.
+  split.
+  - exists (_o_ id).
+    split; try apply is_proper_eq_1.
+    intros i. reflexivity.
+  - exists (_o_ id).
+    split; try apply is_proper_eq_1.
+    intros i. reflexivity.
+Defined.
+Set Universe Checking.
 
 (** This is part of corollary 4.9.3 from the book. *)
 
@@ -787,12 +829,14 @@ Proof. apply (inj1_sig (f x)). Defined.
 
 (** This is corollary 4.9.3 from the book. *)
 
-Lemma before_why (A : Type) (P : A -> Prop)
+#[local] Instance before_why (A : Type) (P : A -> Prop)
   `{!forall x : A, IsContr (P x) _=_} :
   IsBiInv _=_ _=_ (proj1_sig (P := P)).
 Proof.
   split; exists inj1_sig; split;
-  try typeclasses eauto; apply what || apply what'.
+  try typeclasses eauto;
+  apply contr_is_retr_proj1_sig_inj1_sig ||
+  apply contr_is_sect_proj1_sig_inj1_sig.
 Defined.
 
 Lemma why (A : Type) (P : A -> Prop)
@@ -813,13 +857,10 @@ Proof.
   | x : forall _ : _, IsContr _ _=_ |- _ => rename x into IC
   end.
   unfold alpha.
-  pose before_why as e.
-  pose ((proj1_sig; e)%ex : _ ~= _) as w; cbn in w.
-  pose (also_easy A w) as w'.
-  pose (ua_comp w') as z.
-  Fail destruct (ua w').
-  unfold IsContr in IC.
-Abort.
+  pose proof dubious A (f := proj1_sig) as d.
+  unfold compose in d.
+  apply d.
+Defined.
 
 (** These are parts of theorem 4.9.4 from the book. *)
 
@@ -833,7 +874,7 @@ Lemma psi (A : Type) (P : A -> Prop)
   (fib _=_ alpha id%core) -> (forall x : A, P x).
 Proof.
   intros gp x.
-  apply (transport P (happly (proj2_sig gp ^-1) x)
+  apply (transport P (happly _ _ (proj2_sig gp ^-1) x)
   (proj2_sig (proj1_sig gp x))).
 Defined.
 
@@ -1006,7 +1047,7 @@ Defined.
 
 (** This is theorem 4.9.4 from the book. *)
 
-Lemma eq_pi_is_contr' (A : Type) (P : A -> Prop)
+Lemma eq_pi_contr (A : Type) (P : A -> Prop)
   `{!forall x : A, IsContr (P x) _=_} : IsContr (forall x : A, P x) _=_.
 Proof.
   match goal with
@@ -1017,20 +1058,45 @@ Proof.
   pose proof @ret (fib _=_ alpha id%core) (forall x : A, P x) q as r.
   apply r.
   apply curses'.
-  clear q r.
-  destruct w as [f IBI] eqn : e.
-  pose proof (ua_comp w) as u.
-  destruct (ua w).
-  (** This requires more lemmas. *)
-Admitted.
+  apply after_why_squared.
+Defined.
+
+Definition sig_map_r (A : Type) (P Q : A -> Prop)
+  (f : forall x : A, P x -> Q x) (a : {x : A | P x}) : {x : A | Q x}.
+Proof. destruct a as [x p]. exists x. apply f. apply p. Defined.
+
+Definition ex_map_r (A : Type) (P Q : A -> Prop)
+  (f : forall x : A, P x -> Q x) (a : exists x : A, P x) : exists x : A, Q x.
+Proof. destruct a as [x p]. exists x. apply f. apply p. Defined.
 
 (** This is theorem 4.9.5 from the book. *)
 
 Lemma conclusion (A : Type) (P : A -> Type) (f g : forall x : A, P x) :
-  IsBiInv _=_ _=_ (happly (f := f) (g := g)).
+  IsBiInv _=_ _=_ (happly f g).
 Proof.
-  epose proof (need_this _) as one.
-  (** This requires more effort. *)
+  (* enough (theorem_4_7_7 :
+  IsBiInv _=_ _=_ (fun a : exists g : forall x : A, P x, f = g =>
+  match a with
+  | (x; e)%ex => (x; happly _ _ e)%ex
+  end :
+  exists h : forall x : A, P x, forall x : A, f x = h x)) by admit. *)
+  enough (by_theorem_4_7_7 :
+  IsBiInv _=_ _=_ (ex_map_r (happly f))).
+  (** Total space does this and that. *)
+  { epose proof @curses' _ _ as b.
+    admit. }
+  enough (by_theorem_3_11_8 :
+  IsContr (exists h : (forall x : A, P x), forall x : A, f x = h x) _=_).
+  (** Equivalence preserves contractibility. *)
+  { epose proof @ret _ _ as r. unfold IsRetrType in r.
+    admit. }
+  enough (by_theorem_2_15_7 :
+  IsContr (forall x : A, exists a : P x, f x = a) _=_).
+  { epose proof @seriously_ex A P (fun (a : A) (b : P a) => f a = b) as s; cbv beta in s.
+    rewrite <- (ua s). assumption. }
+  apply @eq_pi_contr.
+  intros x. apply @ex_contr.
+  (** This would require some effort. *)
 Admitted.
 
 Lemma fun_now : IsFunExt.
