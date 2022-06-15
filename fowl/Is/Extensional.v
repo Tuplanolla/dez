@@ -132,7 +132,7 @@ Defined.
 
 Arguments happly {_ _} _ _ _ _.
 
-Class IsEquivTypesEq (A B : Type) : Prop :=
+Class IsEquivTypesEq (A B : Type) : Type :=
   equiv_types_eq_equiv_types :> IsEquivTypes A B _=_ _=_.
 
 #[local] Notation "'_~=_'" := IsEquivTypesEq.
@@ -320,10 +320,12 @@ Proof. exists (transport id e). apply is_bi_inv_eq_transport_id. Defined.
 
 End Context.
 
-#[export] Instance is_refl_equiv_types_eq : IsRefl _~=_.
+#[export] Instance refl :
+  forall A : Type, A ~= A.
 Proof. intros A. apply is_equiv_types_eq. Defined.
 
-#[export] Instance is_sym_equiv_types_eq : IsSym _~=_.
+#[export] Instance sym :
+  forall A B : Type, A ~= B -> B ~= A.
 Proof.
   intros A B [f [[g IIL] [h IIR]]].
   exists (g o f o h). split.
@@ -345,7 +347,8 @@ Proof.
       apply (r o p)%type.
 Defined.
 
-#[export] Instance is_trans_equiv_types_eq : IsTrans _~=_.
+#[export] Instance trans :
+  forall A B C : Type, A ~= B -> B ~= C -> A ~= C.
 Proof.
   intros A B C [f [[g IILf] [h IIRf]]] [i [[j IILi] [k IIRi]]].
   exists (i o f). split.
@@ -367,10 +370,9 @@ Proof.
       apply (si o pf)%type.
 Defined.
 
-(** This is lemma 2.4.12 from the book. *)
-
-#[export] Instance is_equiv_equiv_types_eq : IsEquiv _~=_.
-Proof. esplit; typeclasses eauto. Qed.
+Arguments refl _ : clear implicits.
+Arguments sym _ _ _ : clear implicits.
+Arguments trans _ _ _ _ _ : clear implicits.
 
 Lemma idtoeqv_refl (A : Type) :
   idtoeqv id%type = refl A.
@@ -607,7 +609,7 @@ Axiom type_extensionality : forall (A B : Type)
 
 (** ** Univalence *)
 
-Class IsUniv : Prop :=
+Class IsUniv : Type :=
   univ_is_bi_inv (A B : Type) :> IsBiInv _=_ _=_ (idtoeqv (A := A) (B := B)).
 
 (** ** Univalence Axiom *)
@@ -636,7 +638,7 @@ Proof.
   pose proof equiv_types_bi_inv A B _=_ _=_ as IET.
   pose proof univalence A B as IBI.
   pose proof l_inv_iso_l as ILI.
-  pose proof ex_proj1 ILI as e.
+  pose proof proj1_sig ILI as e.
   apply e. apply IET.
 Defined.
 
@@ -703,7 +705,7 @@ Lemma classifier (A : Type) (P : A -> Prop) (x : A) :
 Proof. exists cf. apply classify. Defined.
 
 Lemma ua_elim (A B : Type) (e : A = B) :
-  idtoeqv e = (transport id e; is_bi_inv_eq_transport_id e)%ex.
+  idtoeqv e = (transport id e; is_bi_inv_eq_transport_id e)%sigT.
 Proof. reflexivity. Defined.
 
 Lemma ua_comp (A B : Type) (e : A ~= B) :
@@ -758,10 +760,10 @@ Proof.
   destruct e as [[g ?] [h ?]].
   split.
   - exists (_o_ g). split; try typeclasses eauto.
-    intros i. apply fun_ext_dep.
+    intros j. apply fun_ext_dep.
     intros x. unfold compose. rewrite retr. reflexivity.
   - exists (_o_ h). split; try typeclasses eauto.
-    intros i. apply fun_ext_dep.
+    intros j. apply fun_ext_dep.
     intros x. unfold compose. rewrite sect. reflexivity.
 Defined.
 
@@ -777,7 +779,7 @@ Proof. intros A B e. rewrite <- (ua_comp e). destruct (ua e). apply d. Defined.
 Lemma also_easy (A B X : Type) (e : A ~= B) : (X -> A) ~= (X -> B).
 Proof.
   destruct (ua e).
-  apply is_refl_equiv_types_eq.
+  apply refl.
 Defined.
 
 Definition inj1_sig (A : Type) (P : A -> Prop)
@@ -795,16 +797,15 @@ Lemma contr_is_sect_proj1_sig_inj1_sig (A : Type) (P : A -> Prop)
   `{!forall x : A, IsContr (P x) _=_} : IsSect _=_ proj1_sig inj1_sig.
 Proof. intros x. unfold proj1_sig, inj1_sig. reflexivity. Qed.
 
-Unset Universe Checking.
 #[local] Instance dubious (A B C : Type) (f : A -> B)
   `{!IsBiInv _=_ _=_ f} : IsBiInv (A := C -> A) (B := C -> B) _=_ _=_ (_o_ f).
 Proof.
-  remember ((f; _ : IsBiInv _=_ _=_ f)%ex : _ ~= _) as e eqn : h; cbn in h.
+  remember ((f; _ : IsBiInv _=_ _=_ f)%sigT : _ ~= _) as e eqn : h; cbn in h.
   rewrite <- (ua_comp e) in h.
   destruct (ua e).
   rewrite ua_elim in h.
   (** This projection requires [sig] instead of [ex]. *)
-  apply (ap ex_proj1) in h. cbn in h. subst f.
+  apply (ap projT1) in h. cbn in h. subst f.
   split.
   - exists (_o_ id).
     split; try apply is_proper_eq_1.
@@ -813,7 +814,6 @@ Proof.
     split; try apply is_proper_eq_1.
     intros i. reflexivity.
 Defined.
-Set Universe Checking.
 
 (** This is part of corollary 4.9.3 from the book. *)
 
@@ -896,7 +896,7 @@ Theorem fine (A B : Type) (f : A -> B) (y : B) (s t : fib _=_ f y) :
   (s = t) ~= {g : proj1_sig s = proj1_sig t |
   ap f g o proj2_sig s = proj2_sig t}%type.
 Proof.
-  eapply is_trans_equiv_types_eq; try apply (sig_is_equiv_types s t).
+  eapply trans; try apply (sig_is_equiv_types s t).
   destruct s as [x p], t as [x' p']. cbn. subst y.
   hnf. pose (fun a : {g : x = x' | transport (fun y : A => f x = f y) g id%type = p'} =>
   (proj1_sig a; transport (fun p : _ => p = p') (help f (proj1_sig a)) (proj2_sig a)) :
@@ -930,8 +930,8 @@ Proof.
   set (s := (g y; sect (f := f) (g := g) y ^-1) : fib _=_ f y); cbn in s.
   exists s. intros t.
   pose proof fine s t as IET.
-  apply is_sym_equiv_types_eq in IET.
-  apply (ex_proj1 IET).
+  apply sym in IET.
+  apply (projT1 IET).
   subst s; destruct t as [x p].
   pose (retr (f := f)) as r.
   pose (sect (f := f)) as s.

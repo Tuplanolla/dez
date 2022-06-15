@@ -47,25 +47,25 @@ End Context.
 
 (** ** Retraction Map *)
 
-Class IsRetrFn (A B : Type) (Y : B -> B -> Prop) (f : A -> B) : Prop :=
-  retr_fn_sect : exists g : B -> A, IsSect Y f g.
+Class IsRetrFn (A B : Type) (Y : B -> B -> Prop) (f : A -> B) : Type :=
+  retr_fn_sect : {g : B -> A | IsSect Y f g}.
 
 (** ** Section Map *)
 
-Class IsSectFn (A B : Type) (X : A -> A -> Prop) (f : A -> B) : Prop :=
-  sect_fn_retr : exists g : B -> A, IsRetr X f g.
+Class IsSectFn (A B : Type) (X : A -> A -> Prop) (f : A -> B) : Type :=
+  sect_fn_retr : {g : B -> A | IsRetr X f g}.
 
 (** ** Retract *)
 
-Class IsRetrType (A B : Type) (Y : B -> B -> Prop) : Prop :=
-  retr_type_retr_fn : exists f : A -> B, IsRetrFn Y f.
+Class IsRetrType (A B : Type) (Y : B -> B -> Prop) : Type :=
+  retr_type_retr_fn : {f : A -> B & IsRetrFn Y f}.
 
 Arguments IsRetrType _ _ _ : clear implicits.
 
 (** ** Sect *)
 
-Class IsSectType (A B : Type) (X : A -> A -> Prop) : Prop :=
-  sect_type_sect_fn : exists f : A -> B, IsSectFn X f.
+Class IsSectType (A B : Type) (X : A -> A -> Prop) : Type :=
+  sect_type_sect_fn : {f : A -> B & IsSectFn X f}.
 
 Arguments IsSectType _ _ _ : clear implicits.
 
@@ -231,21 +231,21 @@ End Context.
 (** ** Quasi-Inverse *)
 
 Class IsQInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
-  (f : A -> B) : Prop :=
-  q_inv_iso : exists g : B -> A, IsIso X Y f g.
+  (f : A -> B) : Type :=
+  q_inv_iso : {g : B -> A | IsIso X Y f g}.
 
 Class IsLInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
-  (f : A -> B) : Prop :=
-  l_inv_iso_l : exists g : B -> A, IsIsoL X Y f g.
+  (f : A -> B) : Type :=
+  l_inv_iso_l : {g : B -> A | IsIsoL X Y f g}.
 
 Class IsRInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
-  (f : A -> B) : Prop :=
-  r_inv_iso_r : exists g : B -> A, IsIsoR X Y f g.
+  (f : A -> B) : Type :=
+  r_inv_iso_r : {g : B -> A | IsIsoR X Y f g}.
 
 (** ** Bi-Invertible Map *)
 
 Class IsBiInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
-  (f : A -> B) : Prop := {
+  (f : A -> B) : Type := {
   bi_inv_is_l_inv :> IsLInv X Y f;
   bi_inv_is_r_inv :> IsRInv X Y f;
 }.
@@ -376,8 +376,8 @@ End Context.
 (** ** Equivalent Types *)
 
 Class IsEquivTypes (A B : Type)
-  (X : A -> A -> Prop) (Y : B -> B -> Prop) : Prop :=
-  equiv_types_bi_inv : exists f : A -> B, IsBiInv X Y f.
+  (X : A -> A -> Prop) (Y : B -> B -> Prop) : Type :=
+  equiv_types_bi_inv : {f : A -> B & IsBiInv X Y f}.
 
 Arguments IsEquivTypes _ _ _ _ : clear implicits.
 Arguments equiv_types_bi_inv _ _ _ _ {_}.
