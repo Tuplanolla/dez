@@ -287,7 +287,7 @@ End Context.
 (** ** Contractible Map *)
 
 Class IsContrMap (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
-  (f : A -> B) : Prop := {
+  (f : A -> B) : Type := {
   contr_map_is_proper :> IsProper (X ==> Y) f;
   contr_map_is_contr_fn :> IsContrFn X Y f;
 }.
@@ -307,8 +307,8 @@ Class IsCohIso (A B : Type)
 (** ** Half-Adjoint Equivalence *)
 
 Class IsHAE (A B : Type)
-  (f : A -> B) : Prop :=
-  h_a_e : exists g : B -> A, IsCohIso f g.
+  (f : A -> B) : Type :=
+  h_a_e : {g : B -> A | IsCohIso f g}.
 
 Section Context.
 

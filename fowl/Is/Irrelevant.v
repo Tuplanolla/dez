@@ -50,7 +50,7 @@ Class IsStreicher : Prop :=
 (** For the sake of convenience, we count up from [0],
     even though homotopy levels conventionally start from [-2]. *)
 
-Equations IsHLevel (n : nat) (A : Type) : Prop by struct n :=
+Equations IsHLevel (n : nat) (A : Type) : Type by struct n :=
   IsHLevel O A := IsContr A _=_;
   IsHLevel (S n) A := forall x y : A, IsHLevel n (x = y).
 
@@ -70,9 +70,9 @@ Proof. eauto. Qed.
   `{!IsHLevel O A} : IsContr A _=_.
 Proof. eauto. Qed.
 
-Lemma contr_iff_h_level_O :
+(* Lemma contr_iff_h_level_O :
   IsContr A _=_ <-> IsHLevel O A.
-Proof. esplit; typeclasses eauto. Qed.
+Proof. esplit; typeclasses eauto. Qed. *)
 
 #[local] Instance h_level_S_is_h_level_eq (n : nat)
   `{!IsHLevel (S n) A} (x y : A) : IsHLevel n (x = y).
@@ -82,9 +82,9 @@ Proof. eauto. Qed.
   `{!forall x y : A, IsHLevel n (x = y)} : IsHLevel (S n) A.
 Proof. eauto. Qed.
 
-Lemma h_level_S_iff_h_level_eq (n : nat) :
+(* Lemma h_level_S_iff_h_level_eq (n : nat) :
   IsHLevel (S n) A <-> forall x y : A, IsHLevel n (x = y).
-Proof. esplit; typeclasses eauto. Qed.
+Proof. esplit; typeclasses eauto. Qed. *)
 
 End Context.
 
@@ -149,9 +149,9 @@ Proof. apply contr_is_h_level_O. Qed.
   `{!IsHLevel 0 A} : IsContr A _=_.
 Proof. apply h_level_O_is_contr. Qed.
 
-Lemma contr_iff_h_level_0 :
+(* Lemma contr_iff_h_level_0 :
   IsContr A _=_ <-> IsHLevel 0 A.
-Proof. apply contr_iff_h_level_O. Qed.
+Proof. apply contr_iff_h_level_O. Qed. *)
 
 End Context.
 
@@ -180,9 +180,9 @@ Proof.
   apply IC.
 Qed.
 
-Lemma prop_iff_h_level_1 :
+(* Lemma prop_iff_h_level_1 :
   IsProp A <-> IsHLevel 1 A.
-Proof. esplit; typeclasses eauto. Qed.
+Proof. esplit; typeclasses eauto. Qed. *)
 
 End Context.
 
@@ -211,9 +211,9 @@ Proof.
   apply IP.
 Qed.
 
-Lemma set_iff_h_level_2 :
+(* Lemma set_iff_h_level_2 :
   IsSet A <-> IsHLevel 2 A.
-Proof. esplit; typeclasses eauto. Qed.
+Proof. esplit; typeclasses eauto. Qed. *)
 
 End Context.
 
@@ -244,9 +244,9 @@ Proof. eauto with h_intro h_elim. Qed.
   `{!forall x y : A, IsContr (x = y) _=_} : IsProp A.
 Proof. eauto with h_intro h_elim. Qed.
 
-Lemma prop_iff_contr_eq :
+(* Lemma prop_iff_contr_eq :
   IsProp A <-> forall x y : A, IsContr (x = y) _=_.
-Proof. esplit; typeclasses eauto. Qed.
+Proof. esplit; typeclasses eauto. Qed. *)
 
 #[local] Instance set_is_prop_eq
   `{!IsSet A} (x y : A) : IsProp (x = y).
@@ -256,9 +256,9 @@ Proof. eauto with h_intro h_elim. Qed.
   `{!forall x y : A, IsProp (x = y)} : IsSet A.
 Proof. eauto with h_intro h_elim. Qed.
 
-Lemma set_iff_prop_eq :
+(* Lemma set_iff_prop_eq :
   IsSet A <-> forall x y : A, IsProp (x = y).
-Proof. esplit; typeclasses eauto. Qed.
+Proof. esplit; typeclasses eauto. Qed. *)
 
 (** Contractible types are propositions. *)
 

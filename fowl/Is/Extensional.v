@@ -51,6 +51,13 @@ Proof.
   destruct s as [g f]. exists (g x). apply (f x).
 Defined.
 
+Theorem dbp_eq_ex (A : Type) (P : A -> Prop) (R : forall x : A, P x -> Prop)
+  (s : exists g : forall x : A, P x, forall x : A, R x (g x)) (x : A) :
+  exists a : P x, R x a.
+Proof.
+  destruct s as [g f]. exists (g x). apply (f x).
+Defined.
+
 (** TODO Clean up this mess. *)
 
 Reserved Notation "x '_*'" (left associativity, at level 20).
@@ -182,10 +189,29 @@ Proof.
     intros x. destruct (f x) as [a s] eqn : e. cbn. rewrite e. reflexivity.
 Defined.
 
+Theorem do_not_need_this_ex (A : Type) (P : A -> Prop) (R : forall x : A, P x -> Prop) :
+  IsLInv _=_ _=_ (@ac_eq_ex A P R).
+Proof.
+  exists (@dbp_eq_ex A P R). split.
+  - typeclasses eauto.
+  - typeclasses eauto.
+  - intros f. apply functional_extensionality_dep.
+    intros x. destruct (f x) as [a s] eqn : e. cbn. rewrite e. reflexivity.
+Defined.
+
 Theorem need_this (A : Type) (P : A -> Type) (R : forall x : A, P x -> Prop) :
   IsRInv _=_ _=_ (@ac_eq A P R).
 Proof.
   exists (@dbp_eq A P R). split.
+  - typeclasses eauto.
+  - typeclasses eauto.
+  - intros [g f]. reflexivity.
+Defined.
+
+Theorem need_this_ex (A : Type) (P : A -> Prop) (R : forall x : A, P x -> Prop) :
+  IsRInv _=_ _=_ (@ac_eq_ex A P R).
+Proof.
+  exists (@dbp_eq_ex A P R). split.
   - typeclasses eauto.
   - typeclasses eauto.
   - intros [g f]. reflexivity.
@@ -201,15 +227,23 @@ Proof.
   - apply need_this.
 Defined.
 
+Theorem this_is_equiv_ex (A : Type) (P : A -> Prop) (R : forall x : A, P x -> Prop) :
+  IsBiInv _=_ _=_ (@ac_eq_ex A P R).
+Proof.
+  split.
+  - apply do_not_need_this_ex.
+  - apply need_this_ex.
+Defined.
+
 Theorem seriously (A : Type) (P : A -> Type) (R : forall x : A, P x -> Prop) :
   (forall x : A, {a : P x | R x a}) ~=
   {g : forall x : A, P x | forall x : A, R x (g x)}.
 Proof. exists ac_eq. apply this_is_equiv. Defined.
 
-Theorem seriously_ex (A : Type) (P : A -> Type) (R : forall x : A, P x -> Prop) :
+Theorem seriously_ex (A : Type) (P : A -> Prop) (R : forall x : A, P x -> Prop) :
   (forall x : A, exists a : P x, R x a) ~=
   exists g : forall x : A, P x, forall x : A, R x (g x).
-Proof. Admitted.
+Proof. exists ac_eq_ex. apply this_is_equiv_ex. Defined.
 
 (** We define these instances as explicitly as possible,
     because they are used in the univalence axiom. *)
@@ -784,13 +818,13 @@ Defined.
 
 Definition inj1_sig (A : Type) (P : A -> Prop)
   `{!forall x : A, IsContr (P x) _=_} (x : A) : {x : A | P x} :=
-  (x; ex_proj1 contr).
+  (x; proj1_sig contr).
 
 Lemma contr_is_retr_proj1_sig_inj1_sig (A : Type) (P : A -> Prop)
   `{!forall x : A, IsContr (P x) _=_} : IsRetr _=_ proj1_sig inj1_sig.
 Proof.
   intros [x a]. unfold proj1_sig, inj1_sig. f_equal.
-  pose proof ex_proj2 contr a as b. apply b.
+  pose proof proj2_sig contr a as b. apply b.
 Qed.
 
 Lemma contr_is_sect_proj1_sig_inj1_sig (A : Type) (P : A -> Prop)
@@ -1053,13 +1087,98 @@ Definition total_ex (A : Type) (P Q : A -> Prop)
   (f : forall x : A, P x -> Q x) (a : exists x : A, P x) : exists x : A, Q x.
 Proof. destruct a as [x p]. exists x. apply f. apply p. Defined.
 
+Definition fibernator (A : Type) (P Q : A -> Prop)
+  (f : forall x : A, P x -> Q x) (x : A) (q : Q x) :
+  {a : {x : A | P x} | (x; q) = total f a} -> {p : P x | q = f x p}.
+Proof.
+  intros [[y p] e]. cbv in e.
+  (* pose proof ap proj1_sig e as e'.
+  cbv in e'.
+  destruct e'.
+  exists (transport P id%type p).
+  rewrite transport_refl.
+  *)
+  inversion_sigma e as [e0 e1].
+  destruct e0.
+  cbv in e1.
+  exists p. apply e1.
+Defined.
+
+Definition cofibernator (A : Type) (P Q : A -> Prop)
+  (f : forall x : A, P x -> Q x) (x : A) (q : Q x) :
+  {p : P x | q = f x p} -> {a : {x : A | P x} | (x; q) = total f a}.
+Proof.
+  intros [p e]. exists (x; p)%sig. cbv. f_equal. apply e.
+Defined.
+
+Arguments cofibernator {_ _ _} _ {_ _} _.
+
+Lemma fibering (A : Type) (P Q : A -> Prop)
+  (f : forall x : A, P x -> Q x) (x : A) (q : Q x) :
+  IsBiInv _=_ _=_ (fibernator f (x := x) (q := q)).
+Proof.
+  split.
+  - exists (cofibernator f (x := x) (q := q)).
+    split; try apply is_proper_eq_1.
+    intros [[y p] e]. cbv in e. inversion_sigma e as [e0 e1].
+    destruct e0. cbv in e1. subst q. reflexivity.
+  - exists (cofibernator f (x := x) (q := q)).
+    split; try apply is_proper_eq_1.
+    intros [p e]. subst q. reflexivity.
+Defined.
+
 (** This is theorem 4.7.6 from the book. *)
 
 Lemma fiberwise (A : Type) (P Q : A -> Prop)
   (f : forall x : A, P x -> Q x) (x : A) (q : Q x) :
   fib _=_ (total f) (x; q) ~= fib _=_ (f x) q.
 Proof.
-Admitted.
+  exists (fibernator f). apply fibering.
+Defined.
+
+Lemma contrequiv (A B : Type) (f : A -> B)
+  `{!IsContr A _=_} `{!IsContr B _=_} :
+  IsBiInv _=_ _=_ f.
+Proof.
+  destruct (@contr A _=_ _) as [x ex].
+  destruct (@contr B _=_ _) as [y ey].
+  split.
+  - exists (const x).
+    split; try apply is_proper_eq_1.
+    intros z. cbv. apply ex.
+  - exists (const x).
+    split; try apply is_proper_eq_1.
+    intros z. cbv. etransitivity. symmetry. apply ey. apply ey.
+Defined.
+
+(** This is definition 4.7.2 from the book. *)
+
+Class IsRetrThings (X Y A B : Type) (f : X -> Y) (g : A -> B) : Type := {
+  r : X -> A;
+  s : A -> X;
+  r' : Y -> B;
+  s' : B -> Y;
+  R (x : A) : r (s x) = x;
+  R' (y : B) : r' (s' y) = y;
+  L (x : A) : f (s x) = s' (g x);
+  K (z : X) : g (r z) = r' (f z);
+  H (a : A) : g (r (s a)) = r' (s' (g a));
+}.
+
+(** This is theorem 4.7.4 from the book. *)
+
+Lemma equiv_ret (A B C D : Type)
+  (f : A -> B) (g : C -> D) :
+  IsRetrThings f g -> IsBiInv _=_ _=_ f -> IsBiInv _=_ _=_ g.
+Proof.
+  intros [] [[? [_ _ ?]] [? [_ _ ?]]]. hnf in *. split.
+  hnf. exists (r0 o x o s'0).
+  split; try apply is_proper_eq_1. intros z. cbv.
+  rewrite <- L0. rewrite iso_l_is_retr. rewrite R0. reflexivity.
+  hnf. exists (r0 o x0 o s'0).
+  split; try apply is_proper_eq_1. intros z. cbv.
+  rewrite K0. rewrite iso_r_is_sect. rewrite R'0. reflexivity.
+Defined.
 
 (** This is theorem 4.7.7 from the book. *)
 
@@ -1067,12 +1186,18 @@ Lemma fiberwise_transform (A : Type) (P Q : A -> Prop)
   (f : forall x : A, P x -> Q x) (x : A) :
   IsBiInv _=_ _=_ (f x) -> IsBiInv _=_ _=_ (total f).
 Proof.
+  eapply equiv_ret. esplit. Unshelve.
+  8: { intros q. exists x. apply q. }
+  6: { intros p. exists x. apply p. }
 Admitted.
 
 Lemma fiberwise_transform_dual (A : Type) (P Q : A -> Prop)
   (f : forall x : A, P x -> Q x) (x : A) :
   IsBiInv _=_ _=_ (total f) -> IsBiInv _=_ _=_ (f x).
 Proof.
+  eapply equiv_ret. esplit. Unshelve.
+  9: { intros q. exists x. apply q. }
+  7: { intros p. exists x. apply p. }
 Admitted.
 
 (** This is theorem 4.9.4 from the book. *)
@@ -1093,7 +1218,7 @@ Defined.
 
 (** This is theorem 4.9.5 from the book. *)
 
-Lemma conclusion (A : Type) (P : A -> Type) (f g : forall x : A, P x) :
+Lemma conclusion (A : Type) (P : A -> Prop) (f g : forall x : A, P x) :
   IsBiInv _=_ _=_ (happly f g).
 Proof.
   (* enough (theorem_4_7_7 :
@@ -1107,17 +1232,18 @@ Proof.
   { epose proof @fiberwise_transform_dual _ _ _ (happly f) as t.
     eapply t. apply by_theorem_4_7_7. }
   enough (by_theorem_3_11_8 :
-  IsContr (exists h : (forall x : A, P x), forall x : A, f x = h x) _=_).
+  IsContr {h : forall x : A, P x | forall x : A, f x = h x} _=_).
   (** Equivalence preserves contractibility. *)
   { epose proof @curses' _ _ as b.
     epose proof @ret _ _ as r. unfold IsRetrType in r.
+    epose proof @fiberwise_transform _ _ _ (happly f) as t.
     admit. }
   enough (by_theorem_2_15_7 :
-  IsContr (forall x : A, exists a : P x, f x = a) _=_).
-  { epose proof @seriously_ex A P (fun (a : A) (b : P a) => f a = b) as s; cbv beta in s.
+  IsContr (forall x : A, {a : P x | f x = a}) _=_).
+  { epose proof @seriously A P (fun (a : A) (b : P a) => f a = b) as s; cbv beta in s.
     rewrite <- (ua s). assumption. }
   apply @eq_pi_contr.
-  intros x. apply @ex_contr.
+  intros x. apply @sig_contr.
   (** This would require some effort. *)
 Admitted.
 

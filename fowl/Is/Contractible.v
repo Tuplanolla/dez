@@ -20,8 +20,8 @@ Equations Spr1_relation (A : Type) (P : A -> SProp) (X : A -> A -> Prop) :
 (** ** Contractible Type *)
 (** ** Singleton *)
 
-Class IsContr (A : Type) (X : A -> A -> Prop) : Prop :=
-  contr : exists x : A, forall y : A, X x y.
+Class IsContr (A : Type) (X : A -> A -> Prop) : Type :=
+  contr : {x : A | forall y : A, X x y}.
 
 Arguments IsContr _ _ : clear implicits.
 
@@ -34,7 +34,7 @@ Definition fib (A B : Type) (Y : B -> B -> Prop)
 (** ** Contractible Unary Function *)
 
 Equations IsContrFn (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
-  (f : A -> B) : Prop :=
+  (f : A -> B) : Type :=
   IsContrFn X Y f := forall y : B, IsContr (fib Y f y) (proj1_sig_relation X).
 
 Existing Class IsContrFn.
@@ -54,8 +54,8 @@ Proof. eauto. Qed.
   IsContrFn X Y f.
 Proof. eauto. Qed.
 
-Lemma contr_fn_iff_contr_fib : 
+(* Lemma contr_fn_iff_contr_fib : 
   IsContrFn X Y f <-> forall y : B, IsContr (fib Y f y) (proj1_sig_relation X).
-Proof. esplit; typeclasses eauto. Qed.
+Proof. esplit; typeclasses eauto. Qed. *)
 
 End Context.
