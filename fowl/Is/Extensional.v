@@ -1077,6 +1077,20 @@ Proof.
   apply curses. apply unhae.
 Defined.
 
+Theorem cocurses' (A B : Type) (f : A -> B) (y : B)
+  `{!IsContr (fib _=_ f y) _=_} : IsBiInv _=_ _=_ f.
+Proof.
+  match goal with
+  | x : IsContr _ _ |- _ => rename x into IC
+  end.
+  destruct IC as [[x e] g]. cbv in g.
+  split.
+  - hnf. exists (const x).
+    split; try apply is_proper_eq_1.
+    intros z. cbv. epose (g (z; _)). apply (ap proj1_sig e0). Unshelve. cbv.
+Fail Defined.
+Admitted.
+
 (** This is definition 4.7.5 from the book. *)
 
 Definition total (A : Type) (P Q : A -> Prop)
@@ -1087,17 +1101,56 @@ Definition total_ex (A : Type) (P Q : A -> Prop)
   (f : forall x : A, P x -> Q x) (a : exists x : A, P x) : exists x : A, Q x.
 Proof. destruct a as [x p]. exists x. apply f. apply p. Defined.
 
+Lemma contrequiv (A B : Type) (f : A -> B)
+  `{!IsContr A _=_} `{!IsContr B _=_} :
+  IsBiInv _=_ _=_ f.
+Proof.
+  destruct (@contr A _=_ _) as [x ex].
+  destruct (@contr B _=_ _) as [y ey].
+  split.
+  - exists (const x).
+    split; try apply is_proper_eq_1.
+    intros z. cbv. apply ex.
+  - exists (const x).
+    split; try apply is_proper_eq_1.
+    intros z. cbv. etransitivity. symmetry. apply ey. apply ey.
+Defined.
+
+(** This is definition 4.7.2 from the book. *)
+
+Class IsRetrThings (X Y A B : Type) (f : X -> Y) (g : A -> B) : Type := {
+  r : X -> A;
+  s : A -> X;
+  r' : Y -> B;
+  s' : B -> Y;
+  R (x : A) : r (s x) = x;
+  R' (y : B) : r' (s' y) = y;
+  L (x : A) : f (s x) = s' (g x);
+  K (z : X) : g (r z) = r' (f z);
+  (** This is unnecessary for our purposes. *)
+  H (a : A) : g (r (s a)) = r' (s' (g a));
+}.
+
+(** This is theorem 4.7.4 from the book. *)
+
+Lemma equiv_ret (A B C D : Type)
+  (f : A -> B) (g : C -> D) :
+  IsRetrThings f g -> IsBiInv _=_ _=_ f -> IsBiInv _=_ _=_ g.
+Proof.
+  intros [] [[? [_ _ ?]] [? [_ _ ?]]]. hnf in *. split.
+  hnf. exists (r0 o x o s'0).
+  split; try apply is_proper_eq_1. intros z. cbv.
+  rewrite <- L0. rewrite iso_l_is_retr. rewrite R0. reflexivity.
+  hnf. exists (r0 o x0 o s'0).
+  split; try apply is_proper_eq_1. intros z. cbv.
+  rewrite K0. rewrite iso_r_is_sect. rewrite R'0. reflexivity.
+Defined.
+
 Definition fibernator (A : Type) (P Q : A -> Prop)
   (f : forall x : A, P x -> Q x) (x : A) (q : Q x) :
   {a : {x : A | P x} | (x; q) = total f a} -> {p : P x | q = f x p}.
 Proof.
   intros [[y p] e]. cbv in e.
-  (* pose proof ap proj1_sig e as e'.
-  cbv in e'.
-  destruct e'.
-  exists (transport P id%type p).
-  rewrite transport_refl.
-  *)
   inversion_sigma e as [e0 e1].
   destruct e0.
   cbv in e1.
@@ -1136,68 +1189,42 @@ Proof.
   exists (fibernator f). apply fibering.
 Defined.
 
-Lemma contrequiv (A B : Type) (f : A -> B)
-  `{!IsContr A _=_} `{!IsContr B _=_} :
-  IsBiInv _=_ _=_ f.
-Proof.
-  destruct (@contr A _=_ _) as [x ex].
-  destruct (@contr B _=_ _) as [y ey].
-  split.
-  - exists (const x).
-    split; try apply is_proper_eq_1.
-    intros z. cbv. apply ex.
-  - exists (const x).
-    split; try apply is_proper_eq_1.
-    intros z. cbv. etransitivity. symmetry. apply ey. apply ey.
-Defined.
-
-(** This is definition 4.7.2 from the book. *)
-
-Class IsRetrThings (X Y A B : Type) (f : X -> Y) (g : A -> B) : Type := {
-  r : X -> A;
-  s : A -> X;
-  r' : Y -> B;
-  s' : B -> Y;
-  R (x : A) : r (s x) = x;
-  R' (y : B) : r' (s' y) = y;
-  L (x : A) : f (s x) = s' (g x);
-  K (z : X) : g (r z) = r' (f z);
-  H (a : A) : g (r (s a)) = r' (s' (g a));
-}.
-
-(** This is theorem 4.7.4 from the book. *)
-
-Lemma equiv_ret (A B C D : Type)
-  (f : A -> B) (g : C -> D) :
-  IsRetrThings f g -> IsBiInv _=_ _=_ f -> IsBiInv _=_ _=_ g.
-Proof.
-  intros [] [[? [_ _ ?]] [? [_ _ ?]]]. hnf in *. split.
-  hnf. exists (r0 o x o s'0).
-  split; try apply is_proper_eq_1. intros z. cbv.
-  rewrite <- L0. rewrite iso_l_is_retr. rewrite R0. reflexivity.
-  hnf. exists (r0 o x0 o s'0).
-  split; try apply is_proper_eq_1. intros z. cbv.
-  rewrite K0. rewrite iso_r_is_sect. rewrite R'0. reflexivity.
-Defined.
-
 (** This is theorem 4.7.7 from the book. *)
 
 Lemma fiberwise_transform (A : Type) (P Q : A -> Prop)
-  (f : forall x : A, P x -> Q x) (x : A) :
-  IsBiInv _=_ _=_ (f x) -> IsBiInv _=_ _=_ (total f).
+  (f : forall x : A, P x -> Q x) :
+  (forall x : A, IsBiInv _=_ _=_ (f x)) -> IsBiInv _=_ _=_ (total f).
 Proof.
-  eapply equiv_ret. esplit. Unshelve.
-  8: { intros q. exists x. apply q. }
-  6: { intros p. exists x. apply p. }
+  intros e.
+  eapply @curses' in e.
+  epose proof fiberwise f as b.
+  epose proof (ua (b _ _)) as h.
+  rewrite <- h in e.
+  eapply @cocurses'. eapply e.
+  Unshelve. shelve. apply f.
+Restart.
+  intros e.
+  pose proof fun (x : A) (q : Q x) => @curses' _ _ _ q (e x) as t.
+  pose proof fiberwise f as b.
+  pose proof fun (x : A) (q : Q x) => ua (b x q) as h.
+  pose proof fun (x : A) (q : Q x) =>
+  transport (fun hole : _ => IsContr hole _=_) (h x q ^-1) (t x q) as j;
+  cbv beta in j.
+  pose proof fun (x : A) (q : Q x) => @cocurses' _ _ _ _ (j x q) as k.
 Admitted.
 
 Lemma fiberwise_transform_dual (A : Type) (P Q : A -> Prop)
-  (f : forall x : A, P x -> Q x) (x : A) :
-  IsBiInv _=_ _=_ (total f) -> IsBiInv _=_ _=_ (f x).
+  (f : forall x : A, P x -> Q x) :
+  IsBiInv _=_ _=_ (total f) -> forall x : A, IsBiInv _=_ _=_ (f x).
 Proof.
-  eapply equiv_ret. esplit. Unshelve.
-  9: { intros q. exists x. apply q. }
-  7: { intros p. exists x. apply p. }
+  intros e y.
+  eapply @curses' in e.
+  epose proof fiberwise f as b.
+  epose proof (ua (b _ _)) as h.
+  rewrite h in e.
+  eapply @cocurses'. eapply e.
+  Unshelve. apply f.
+Restart.
 Admitted.
 
 (** This is theorem 4.9.4 from the book. *)
@@ -1229,24 +1256,23 @@ Proof.
   exists h : forall x : A, P x, forall x : A, f x = h x)) by admit. *)
   enough (by_theorem_4_7_7 :
   IsBiInv _=_ _=_ (total (happly f))).
-  { epose proof @fiberwise_transform_dual _ _ _ (happly f) as t.
-    eapply t. apply by_theorem_4_7_7. }
+  { epose proof @fiberwise_transform_dual _ _ _ (happly f) _ as t.
+    apply t; apply by_theorem_4_7_7. }
   enough (by_theorem_3_11_8 :
   IsContr {h : forall x : A, P x | forall x : A, f x = h x} _=_).
-  (** Equivalence preserves contractibility. *)
-  { epose proof @curses' _ _ as b.
-    epose proof @ret _ _ as r. unfold IsRetrType in r.
-    epose proof @fiberwise_transform _ _ _ (happly f) as t.
-    admit. }
+  { epose proof @contrequiv _ _ _ as c.
+    eapply c.
+    apply sig_contr.
+    assumption. }
   enough (by_theorem_2_15_7 :
   IsContr (forall x : A, {a : P x | f x = a}) _=_).
   { epose proof @seriously A P (fun (a : A) (b : P a) => f a = b) as s; cbv beta in s.
     rewrite <- (ua s). assumption. }
   apply @eq_pi_contr.
   intros x. apply @sig_contr.
-  (** This would require some effort. *)
-Admitted.
+Defined.
 
+(*
 Lemma fun_now : IsFunExt.
 Proof.
   intros A B f g e.
@@ -1262,6 +1288,7 @@ Proof.
   epose proof (conclusion f g) as two.
   destruct two as [[h IIL] IRI]. auto.
 Qed.
+*)
 
 End HomotopyTypicalDigression.
 
