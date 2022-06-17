@@ -749,7 +749,7 @@ Proof.
   unfold equiv_types_bi_inv, l_inv_iso_l.
   unfold bi_inv_is_l_inv.
   destruct (univalence A B) as [[f IIL] [g IIR]].
-  unfold ex_proj1.
+  unfold proj1_sig.
   pose proof retr (f := idtoeqv) (g := f) (g e) as r.
   pose proof sect (f := idtoeqv) (g := g) e as s.
   pose proof is_proper_eq_1 f s as p.
@@ -765,10 +765,24 @@ Proof.
   unfold equiv_types_bi_inv, l_inv_iso_l.
   unfold bi_inv_is_l_inv.
   destruct (univalence A B) as [[f IIL] [g IIR]].
-  unfold ex_proj1.
+  unfold proj1_sig.
   pose proof retr (f := idtoeqv) (g := f) e as r.
   apply r.
 Defined.
+
+Lemma ua_transport (A B : Type) (e : A ~= B) :
+  transport id (ua e) = projT1 e.
+Proof.
+  pose proof ua_comp e as f.
+  pose proof ua_elim (ua e) as g.
+  pose proof (g o f ^-1)%type as h.
+  pose proof ap projT1 h as i.
+  apply (i ^-1).
+Defined.
+
+Lemma ua_transport' (A B : Type) (f : A -> B) (e : IsBiInv _=_ _=_ f) :
+  transport id (ua (f; e)%sigT) = f.
+Proof. apply ua_transport. Defined.
 
 Lemma ua_refl (A : Type) :
   ua (refl A) = id%type.
@@ -1364,6 +1378,15 @@ Proof.
   - exists g. split; try typeclasses eauto. intros x. apply irrel.
 Qed.
 
+(** Type extensionality implies proposition extensionality for types. *)
+
+#[export] Instance type_ext_is_prop_ext_type `{IsTypeExt} : IsPropExtType.
+Proof.
+  intros A B IPA IPB [f g]. apply (@type_ext _ _ _ f g).
+  - intros x. apply irrel.
+  - intros y. apply irrel.
+Qed.
+
 (** We cannot prove that [IsPropExt] and [IsPropExtType] are related,
     because [Prop] and [Type] are stratified. *)
 
@@ -1391,3 +1414,45 @@ Proof. intros A B. apply type_extensionality. Qed.
 Proof. intros A B. apply univalence. Qed.
 
 End FromAxioms.
+
+(** Univalence breaks extraction. *)
+
+Module ExtractionProblem.
+
+Import Decisions.
+Import HomotopyTypicalDigression.
+
+#[local] Instance is_bi_inv_eq_negb :
+  IsBiInv _=_ _=_ negb.
+Proof.
+  split; exists negb; split; try typeclasses eauto; intros []; reflexivity.
+Defined.
+
+#[local] Instance is_equiv_types_eq_bool :
+  bool ~= bool.
+Proof. exists negb; apply is_bi_inv_eq_negb. Defined.
+
+Definition no : bool := false.
+Definition yes : bool := transport id (ua is_equiv_types_eq_bool) false.
+
+Definition contradiction : bool :=
+  if dec (no = yes) then true else false.
+
+Lemma no_contradiction : ~ contradiction.
+Proof.
+  unfold contradiction.
+  destruct (dec (no = yes)) as [e | _].
+  - unfold no, yes in e.
+    unfold is_equiv_types_eq_bool in e.
+    rewrite ua_transport' in e.
+    unfold negb in e.
+    congruence.
+  - intros e.
+    congruence.
+Defined.
+
+End ExtractionProblem.
+
+From Coq Require Import ExtrOcamlBasic.
+
+(* Extraction ExtractionProblem "/tmp/extraction_problem.ml". *)
