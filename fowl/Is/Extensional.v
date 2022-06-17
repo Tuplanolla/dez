@@ -1122,36 +1122,6 @@ Proof.
     intros z. cbv. etransitivity. symmetry. apply ey. apply ey.
 Defined.
 
-(** This is definition 4.7.2 from the book. *)
-
-Class IsRetrThings (X Y A B : Type) (f : X -> Y) (g : A -> B) : Type := {
-  r : X -> A;
-  s : A -> X;
-  r' : Y -> B;
-  s' : B -> Y;
-  R (x : A) : r (s x) = x;
-  R' (y : B) : r' (s' y) = y;
-  L (x : A) : f (s x) = s' (g x);
-  K (z : X) : g (r z) = r' (f z);
-  (** This is unnecessary for our purposes. *)
-  H (a : A) : g (r (s a)) = r' (s' (g a));
-}.
-
-(** This is theorem 4.7.4 from the book. *)
-
-Lemma equiv_ret (A B C D : Type)
-  (f : A -> B) (g : C -> D) :
-  IsRetrThings f g -> IsBiInv _=_ _=_ f -> IsBiInv _=_ _=_ g.
-Proof.
-  intros [] [[? [_ _ ?]] [? [_ _ ?]]]. hnf in *. split.
-  hnf. exists (r0 o x o s'0).
-  split; try apply is_proper_eq_1. intros z. cbv.
-  rewrite <- L0. rewrite iso_l_is_retr. rewrite R0. reflexivity.
-  hnf. exists (r0 o x0 o s'0).
-  split; try apply is_proper_eq_1. intros z. cbv.
-  rewrite K0. rewrite iso_r_is_sect. rewrite R'0. reflexivity.
-Defined.
-
 Definition fibernator (A : Type) (P Q : A -> Prop)
   (f : forall x : A, P x -> Q x) (x : A) (q : Q x) :
   {a : {x : A | P x} | (x; q) = total f a} -> {p : P x | q = f x p}.
