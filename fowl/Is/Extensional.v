@@ -1077,19 +1077,25 @@ Proof.
   apply curses. apply unhae.
 Defined.
 
-Theorem cocurses' (A B : Type) (f : A -> B) (y : B)
-  `{!IsContr (fib _=_ f y) _=_} : IsBiInv _=_ _=_ f.
+(** This is an approximation of theorem 4.4.3 from the book. *)
+
+Theorem urgh (A B : Type) (f : A -> B)
+  `{!forall y : B, IsContr (fib _=_ f y) _=_} : IsBiInv _=_ _=_ f.
 Proof.
   match goal with
-  | x : IsContr _ _ |- _ => rename x into IC
+  | x : forall _ : _, IsContr _ _ |- _ => rename x into IC
   end.
-  destruct IC as [[x e] g]. cbv in g.
+  set (g y := proj1_sig (proj1_sig (IC y))).
   split.
-  - hnf. exists (const x).
+  - exists g.
     split; try apply is_proper_eq_1.
-    intros z. cbv. epose (g (z; _)). apply (ap proj1_sig e0). Unshelve. cbv.
-Fail Defined.
-Admitted.
+    intros z. cbv. destruct (IC (f z)) as [[w e] e'].
+    unfold fib in e'. pose proof e' (z; id%type) as i. inversion_sigma i; auto.
+  - exists g.
+    split; try apply is_proper_eq_1.
+    intros z. cbv. destruct (IC z) as [[w e] e'].
+    unfold fib in e'. symmetry. auto.
+Defined.
 
 (** This is definition 4.7.5 from the book. *)
 
@@ -1196,36 +1202,28 @@ Lemma fiberwise_transform (A : Type) (P Q : A -> Prop)
   (forall x : A, IsBiInv _=_ _=_ (f x)) -> IsBiInv _=_ _=_ (total f).
 Proof.
   intros e.
-  eapply @curses' in e.
-  epose proof fiberwise f as b.
-  epose proof (ua (b _ _)) as h.
-  rewrite <- h in e.
-  eapply @cocurses'. eapply e.
-  Unshelve. shelve. apply f.
-Restart.
-  intros e.
   pose proof fun (x : A) (q : Q x) => @curses' _ _ _ q (e x) as t.
   pose proof fiberwise f as b.
   pose proof fun (x : A) (q : Q x) => ua (b x q) as h.
   pose proof fun (x : A) (q : Q x) =>
   transport (fun hole : _ => IsContr hole _=_) (h x q ^-1) (t x q) as j;
   cbv beta in j.
-  pose proof fun (x : A) (q : Q x) => @cocurses' _ _ _ _ (j x q) as k.
-Admitted.
+  pose proof @urgh _ _ (total f) as k.
+  apply k. intros [y q]. apply j.
+Defined.
 
 Lemma fiberwise_transform_dual (A : Type) (P Q : A -> Prop)
   (f : forall x : A, P x -> Q x) :
   IsBiInv _=_ _=_ (total f) -> forall x : A, IsBiInv _=_ _=_ (f x).
 Proof.
   intros e y.
+  eapply @urgh. intros q.
   eapply @curses' in e.
   epose proof fiberwise f as b.
   epose proof (ua (b _ _)) as h.
   rewrite h in e.
-  eapply @cocurses'. eapply e.
-  Unshelve. apply f.
-Restart.
-Admitted.
+  eapply e.
+Defined.
 
 (** This is theorem 4.9.4 from the book. *)
 
@@ -1266,13 +1264,26 @@ Proof.
     assumption. }
   enough (by_theorem_2_15_7 :
   IsContr (forall x : A, {a : P x | f x = a}) _=_).
-  { epose proof @seriously A P (fun (a : A) (b : P a) => f a = b) as s; cbv beta in s.
-    rewrite <- (ua s). assumption. }
+  (** This uses function extensionality. *)
+  (* { epose proof @seriously A P (fun (a : A) (b : P a) => f a = b) as s; cbv beta in s.
+    rewrite <- (ua s). assumption. } *)
+  { epose proof @ret _ _ as r.
+    epose proof @need_this _ _ (fun x y => f x = y) as n.
+    destruct n as [k [_ _ s]].
+    eapply r.
+    unfold IsRetrFn.
+    eexists _. eexists _. eapply s.
+    apply @eq_pi_contr.
+    intros x.
+    eapply sig_contr. }
   apply @eq_pi_contr.
   intros x. apply @sig_contr.
 Defined.
 
-(*
+Print Assumptions conclusion.
+
+#[local] Unset Universe Checking.
+
 Lemma fun_now : IsFunExt.
 Proof.
   intros A B f g e.
@@ -1288,7 +1299,6 @@ Proof.
   epose proof (conclusion f g) as two.
   destruct two as [[h IIL] IRI]. auto.
 Qed.
-*)
 
 End HomotopyTypicalDigression.
 
