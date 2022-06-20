@@ -373,6 +373,17 @@ Proof. exists id. exists is_iso_eq_id. intros x. reflexivity. Qed.
 
 End Context.
 
+(** ** One-to-One Correspondence of Types *)
+
+Class IsCorrTypes (A B : Type)
+  (X : A -> A -> Prop) (Y : B -> B -> Prop) : Type :=
+  corr_types : {R : A -> B -> Prop & IsProper (X ==> Y ==> iff) R *
+  (forall x : A, IsContr {y : B | R x y} (proj1_sig_relation Y)) *
+  (forall y : B, IsContr {x : A | R x y} (proj1_sig_relation X))}.
+
+Arguments IsCorrTypes _ _ _ _ : clear implicits.
+Arguments corr_types _ _ _ _ {_}.
+
 (** ** Equivalent Types *)
 
 Class IsEquivTypes (A B : Type)
@@ -381,6 +392,118 @@ Class IsEquivTypes (A B : Type)
 
 Arguments IsEquivTypes _ _ _ _ : clear implicits.
 Arguments equiv_types_bi_inv _ _ _ _ {_}.
+
+(** An equivalence of types is an equivalence relation. *)
+
+Section Context.
+
+Context (A B : Type)
+  (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  `{!IsEquiv X} `{!IsEquiv Y}.
+
+#[local] Instance corr_types_is_equiv_types
+  `{!IsCorrTypes A B X Y} : IsEquivTypes A B X Y.
+Proof.
+  match goal with
+  | x : IsCorrTypes _ _ _ _ |- _ => rename x into ICT
+  end.
+  destruct ICT as [R [[pro f] g]].
+  assert (h : forall (uh oh : _) (eh : X uh oh) (no : _), R uh no -> R oh no).
+  intros. eapply pro; eauto. symmetry. apply eh. reflexivity.
+  assert (h' : forall (uh oh : _) (eh : Y uh oh) (no : _), R no uh -> R no oh).
+  intros. eapply pro; eauto. reflexivity. symmetry. apply eh.
+  exists (fun x : A => proj1_sig (proj1_sig (f x))).
+  split.
+  - exists (fun y : B => proj1_sig (proj1_sig (g y))).
+    split.
+    + intros x y e.
+      destruct (f x) as [[b r] p].
+      destruct (f y) as [[a s] q].
+      unfold proj1_sig.
+      pose proof h y x (sym _ _ e) a s as w.
+      pose proof h x y e b r as u.
+      specialize (p (a; w)%sig).
+      specialize (q (b; u)%sig).
+      cbn in p, q.
+      apply (sym _ _) in q.
+      apply p || apply q.
+    + intros x y e.
+      destruct (g x) as [[b r] p].
+      destruct (g y) as [[a s] q].
+      unfold proj1_sig.
+      pose proof h' y x (sym _ _ e) a s as w.
+      pose proof h' x y e b r as u.
+      specialize (p (a; w)%sig).
+      specialize (q (b; u)%sig).
+      cbn in p, q.
+      apply (sym _ _) in q.
+      apply p || apply q.
+    + intros x.
+      destruct (f x) as [[b r] p].
+      unfold proj1_sig.
+      destruct (g b) as [[a s] q].
+      specialize (q (x; r)%sig).
+      cbn in p, q.
+      apply q.
+  - exists (fun y : B => proj1_sig (proj1_sig (g y))).
+    split.
+    + intros x y e.
+      destruct (f x) as [[b r] p].
+      destruct (f y) as [[a s] q].
+      unfold proj1_sig.
+      pose proof h y x (sym _ _ e) a s as w.
+      pose proof h x y e b r as u.
+      specialize (p (a; w)%sig).
+      specialize (q (b; u)%sig).
+      cbn in p, q.
+      apply (sym _ _) in q.
+      apply p || apply q.
+    + intros x y e.
+      destruct (g x) as [[b r] p].
+      destruct (g y) as [[a s] q].
+      unfold proj1_sig.
+      pose proof h' y x (sym _ _ e) a s as w.
+      pose proof h' x y e b r as u.
+      specialize (p (a; w)%sig).
+      specialize (q (b; u)%sig).
+      cbn in p, q.
+      apply (sym _ _) in q.
+      apply p || apply q.
+    + intros y.
+      destruct (g y) as [[a s] q].
+      unfold proj1_sig.
+      destruct (f a) as [[b r] p].
+      specialize (p (y; s)%sig).
+      cbn in p, q.
+      apply p.
+Defined.
+
+#[local] Instance equiv_types_is_corr_types
+  `{!IsEquivTypes A B X Y} : IsCorrTypes A B X Y.
+Proof.
+  match goal with
+  | x : IsEquivTypes _ _ _ _ |- _ => rename x into IET
+  end.
+  destruct IET as [f [[g [p q r]] [h [_ q' s]]]].
+  set (R (x : A) (y : B) := X (g y) x /\ Y (f x) y).
+  hnf. exists R. split; [split |].
+  - intros x y a x' y' a'. unfold R. split.
+    + intros [b b']; split.
+      * rewrite a in *. rewrite a' in *. apply b.
+      * rewrite a in *. rewrite a' in *. apply b'.
+    + intros [b b']; split.
+      * rewrite a in *. rewrite a' in *. apply b.
+      * rewrite a in *. rewrite a' in *. apply b'.
+  - intros x. hnf. eexists (f x; _)%sig. intros [y r']. cbn.
+    subst R. cbn in r'. destruct r' as [r'0 r'1]. apply r'1.
+  - intros y. hnf. eexists (g (f (h y)); _)%sig. intros [x r']. cbn.
+    subst R. cbn in r'. destruct r' as [r'0 r'1]. rewrite sect. apply r'0.
+Unshelve.
+    cbn. subst R. cbn. split. rewrite retr. reflexivity. reflexivity.
+    cbn. subst R. cbn. split. rewrite sect. reflexivity. rewrite retr. rewrite sect. reflexivity.
+Defined.
+
+End Context.
 
 (** An equivalence of types is an equivalence relation. *)
 
