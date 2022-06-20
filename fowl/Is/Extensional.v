@@ -963,35 +963,6 @@ Proof.
   cbn. reflexivity.
 Defined.
 
-(** This is theorem 4.2.6 from the book. *)
-
-Theorem curses (A B : Type) (f : A -> B) (y : B)
-  `{!IsHAE f} : IsContr (fib _=_ f y) _=_.
-Proof.
-  match goal with
-  | x : IsHAE _ |- _ => rename x into IHAE
-  end.
-  destruct IHAE as [g [II c]].
-  unfold iso_l_is_proper_f in c. unfold iso_is_iso_l in c.
-  destruct II as [[] []].
-  hnf.
-  set (s := (g y; sect (f := f) (g := g) y ^-1) : fib _=_ f y); cbn in s.
-  exists s. intros t.
-  pose proof fine s t as IET.
-  apply sym in IET.
-  apply (projT1 IET).
-  subst s; destruct t as [x p].
-  pose (retr (f := f)) as r.
-  pose (sect (f := f)) as s.
-  set (gamma := (r x o ap g p)%type).
-  exists gamma. unfold proj2_sig. subst gamma. subst r.
-  assert (c' : forall x : A, ap f (retr x) = sect (f x)).
-  { intros x'. change @ap with @f_equal. apply (c x'). }
-  rewrite ap_trans.
-  rewrite p. rewrite ap_refl. rewrite eq_trans_refl_l.
-  rewrite c'. rewrite eq_trans_sym_inv_l. reflexivity.
-Defined.
-
 Lemma move_this (A : Type)
   (x y : A) (p q : x = y) (c : (id = p o (q ^-1))%type) : q = p.
 Proof.
@@ -1080,7 +1051,38 @@ Proof.
   apply bi_inv_is_q_inv.
 Defined.
 
+(** This is theorem 4.2.6 from the book. *)
+
+Theorem curses (A B : Type) (f : A -> B) (y : B)
+  `{!IsHAE f} : IsContr (fib _=_ f y) _=_.
+Proof.
+  match goal with
+  | x : IsHAE _ |- _ => rename x into IHAE
+  end.
+  destruct IHAE as [g [II c]].
+  unfold iso_l_is_proper_f in c. unfold iso_is_iso_l in c.
+  destruct II as [[] []].
+  hnf.
+  set (s := (g y; sect (f := f) (g := g) y ^-1) : fib _=_ f y); cbn in s.
+  exists s. intros t.
+  pose proof fine s t as IET.
+  apply sym in IET.
+  apply (projT1 IET).
+  subst s; destruct t as [x p].
+  pose (retr (f := f)) as r.
+  pose (sect (f := f)) as s.
+  set (gamma := (r x o ap g p)%type).
+  exists gamma. unfold proj2_sig. subst gamma. subst r.
+  assert (c' : forall x : A, ap f (retr x) = sect (f x)).
+  { intros x'. change @ap with @f_equal. apply (c x'). }
+  rewrite ap_trans.
+  rewrite p. rewrite ap_refl. rewrite eq_trans_refl_l.
+  rewrite c'. rewrite eq_trans_sym_inv_l. reflexivity.
+Defined.
+
 (** This is an approximation of theorem 4.2.6 from the book. *)
+
+(** We inline the proof [apply curses, unhae] to get rid of [IsHAE]. *)
 
 Theorem curses' (A B : Type) (f : A -> B) (y : B)
   `{!IsBiInv _=_ _=_ f} : IsContr (fib _=_ f y) _=_.
@@ -1088,7 +1090,57 @@ Proof.
   match goal with
   | x : IsBiInv _ _ _ |- _ => rename x into IBI
   end.
-  apply curses. apply unhae.
+  pose proof bi_inv_is_q_inv : IsQInv _=_ _=_ f as IQI.
+  destruct IQI as [g [IIL IIR]].
+  eset (II := _ : IsIso _=_ _=_ f g). Unshelve. 2:
+  { split.
+    - split.
+      + apply is_proper_eq_1.
+      + apply is_proper_eq_1.
+      + intros x. apply retr.
+    - split.
+      + apply is_proper_eq_1.
+      + apply is_proper_eq_1.
+      + intros x.
+        pose proof fun b : B => sect (f := f) (g := g) (f (g b)) ^-1 as s.
+        pose proof fun b : B => ap f (retr (f := f) (g := g) (g b)) as r.
+        pose proof fun b : B => sect (f := f) (g := g) b as t.
+        pose proof fun b : B => (t b o r b o s b)%type as u.
+        apply u. }
+  assert (c : forall x : A,
+  @f_equal A B f (g (f x)) x
+  (@retr A B _=_ f g
+  (@iso_l_is_retr A B _=_ _=_ f g (@iso_is_iso_l A B _=_ _=_ f g II)) x) =
+  @sect A B _=_ f g
+  (@iso_r_is_sect A B _=_ _=_ f g (@iso_is_iso_r A B _=_ _=_ f g II)) 
+  (f x)).
+  intros x. subst II.
+  unfold retr, sect, iso_l_is_retr, iso_r_is_sect, iso_is_iso_l, iso_is_iso_r.
+  destruct IIL as [p p' r], IIR as [q q' s].
+  change @f_equal with @ap.
+  pose proof commuting (g := f) (fun y : A => s (f y)) (r x) as c.
+  cbv beta in c. apply move_that in c. rewrite c. clear c.
+  f_equal. f_equal.
+  rewrite <- ap_ap. apply (f_equal (ap f)).
+  symmetry. apply (commuting_harder (f := fun y => g (f y)) r).
+
+  destruct II as [[] []].
+  hnf.
+  set (s := (g y; sect (f := f) (g := g) y ^-1) : fib _=_ f y); cbn in s.
+  exists s. intros t.
+  pose proof fine s t as IET.
+  apply sym in IET.
+  apply (projT1 IET).
+  subst s; destruct t as [x p].
+  pose (retr (f := f)) as r.
+  pose (sect (f := f)) as s.
+  set (gamma := (r x o ap g p)%type).
+  exists gamma. unfold proj2_sig. subst gamma. subst r.
+  assert (c' : forall x : A, ap f (retr x) = sect (f x)).
+  { intros x'. change @ap with @f_equal. apply (c x'). }
+  rewrite ap_trans.
+  rewrite p. rewrite ap_refl. rewrite eq_trans_refl_l.
+  rewrite c'. rewrite eq_trans_sym_inv_l. reflexivity.
 Defined.
 
 (** This is an approximation of theorem 4.4.3 from the book. *)
@@ -1455,4 +1507,4 @@ End ExtractionProblem.
 
 From Coq Require Import ExtrOcamlBasic.
 
-(* Extraction ExtractionProblem "/tmp/extraction_problem.ml". *)
+(* Extraction "/tmp/extraction_problem.ml" ExtractionProblem. *)

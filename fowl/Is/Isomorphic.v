@@ -373,13 +373,18 @@ Proof. exists id. exists is_iso_eq_id. intros x. reflexivity. Qed.
 
 End Context.
 
+Class IsCorrRel (A B : Type)
+  (X : A -> A -> Prop) (Y : B -> B -> Prop) (R : A -> B -> Prop) : Type := {
+  corr_rel_is_iso :> IsProper (X ==> Y ==> iff) R;
+  corr_rel_contr_A (x : A) :> IsContr {y : B | R x y} (proj1_sig_relation Y);
+  corr_rel_contr_B (y : B) :> IsContr {x : A | R x y} (proj1_sig_relation X);
+}.
+
 (** ** One-to-One Correspondence of Types *)
 
 Class IsCorrTypes (A B : Type)
   (X : A -> A -> Prop) (Y : B -> B -> Prop) : Type :=
-  corr_types : {R : A -> B -> Prop & IsProper (X ==> Y ==> iff) R *
-  (forall x : A, IsContr {y : B | R x y} (proj1_sig_relation Y)) *
-  (forall y : B, IsContr {x : A | R x y} (proj1_sig_relation X))}.
+  corr_types : {R : A -> B -> Prop & IsCorrRel X Y R}.
 
 Arguments IsCorrTypes _ _ _ _ : clear implicits.
 Arguments corr_types _ _ _ _ {_}.
@@ -407,7 +412,7 @@ Proof.
   match goal with
   | x : IsCorrTypes _ _ _ _ |- _ => rename x into ICT
   end.
-  destruct ICT as [R [[pro f] g]].
+  destruct ICT as [R [pro f g]].
   assert (h : forall (uh oh : _) (eh : X uh oh) (no : _), R uh no -> R oh no).
   intros. eapply pro; eauto. symmetry. apply eh. reflexivity.
   assert (h' : forall (uh oh : _) (eh : Y uh oh) (no : _), R no uh -> R no oh).
@@ -486,7 +491,7 @@ Proof.
   end.
   destruct IET as [f [[g [p q r]] [h [_ q' s]]]].
   set (R (x : A) (y : B) := X (g y) x /\ Y (f x) y).
-  hnf. exists R. split; [split |].
+  hnf. exists R. split.
   - intros x y a x' y' a'. unfold R. split.
     + intros [b b']; split.
       * rewrite a in *. rewrite a' in *. apply b.
