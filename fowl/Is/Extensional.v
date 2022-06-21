@@ -180,7 +180,7 @@ Defined.
 (** This is part of theorem 2.15.7 from the book. *)
 
 Theorem do_not_need_this (A : Type) (P : A -> Type) (R : forall x : A, P x -> Prop) :
-  IsLInv _=_ _=_ (@ac_eq A P R).
+  HasLInv _=_ _=_ (@ac_eq A P R).
 Proof.
   exists (@dbp_eq A P R). split.
   - typeclasses eauto.
@@ -190,7 +190,7 @@ Proof.
 Defined.
 
 Theorem do_not_need_this_ex (A : Type) (P : A -> Prop) (R : forall x : A, P x -> Prop) :
-  IsLInv _=_ _=_ (@ac_eq_ex A P R).
+  HasLInv _=_ _=_ (@ac_eq_ex A P R).
 Proof.
   exists (@dbp_eq_ex A P R). split.
   - typeclasses eauto.
@@ -661,7 +661,7 @@ Lemma ua `{IsUniv} (A B : Type) `{!A ~= B} : A = B.
 Proof.
   pose proof equiv_types_bi_inv A B _=_ _=_ as IET.
   pose proof univ_is_bi_inv A B as IBI.
-  pose proof l_inv_iso_l as ILI.
+  pose proof l_inv as ILI.
   pose proof ex_proj1 ILI as e.
   apply e. apply IET.
 Defined.
@@ -671,7 +671,7 @@ Lemma ua (A B : Type) `{!A ~= B} : A = B.
 Proof.
   pose proof equiv_types_bi_inv A B _=_ _=_ as IET.
   pose proof univalence A B as IBI.
-  pose proof l_inv_iso_l as ILI.
+  pose proof l_inv as ILI.
   pose proof proj1_sig ILI as e.
   apply e. apply IET.
 Defined.
@@ -746,8 +746,8 @@ Lemma ua_comp (A B : Type) (e : A ~= B) :
   idtoeqv (ua e) = e.
 Proof.
   unfold ua.
-  unfold equiv_types_bi_inv, l_inv_iso_l.
-  unfold bi_inv_is_l_inv.
+  unfold equiv_types_bi_inv, l_inv.
+  unfold bi_inv_has_l_inv.
   destruct (univalence A B) as [[f IIL] [g IIR]].
   unfold proj1_sig.
   pose proof retr (f := idtoeqv) (g := f) (g e) as r.
@@ -762,8 +762,8 @@ Lemma ua_uniq (A B : Type) (e : A = B) :
   ua (idtoeqv e) = e.
 Proof.
   unfold ua.
-  unfold equiv_types_bi_inv, l_inv_iso_l.
-  unfold bi_inv_is_l_inv.
+  unfold equiv_types_bi_inv, l_inv.
+  unfold bi_inv_has_l_inv.
   destruct (univalence A B) as [[f IIL] [g IIR]].
   unfold proj1_sig.
   pose proof retr (f := idtoeqv) (g := f) e as r.

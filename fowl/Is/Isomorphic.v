@@ -235,8 +235,25 @@ Class IsQInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   q_inv_iso : {g : B -> A | IsIso X Y f g}.
 
 Class IsLInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (f : A -> B) : Prop :=
+  l_inv_iso_l' : exists g : B -> A, IsIsoL X Y f g.
+
+(** TODO Investigate the effects of this change. *)
+
+Class HasLInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (f : A -> B) : Type :=
-  l_inv_iso_l : {g : B -> A | IsIsoL X Y f g}.
+  l_inv : {g : B -> A | IsIsoL X Y f g}.
+
+Section Context.
+
+Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (f : A -> B).
+
+#[export] Instance l_inv_is_l_inv
+  `{!HasLInv X Y f} : IsLInv X Y f.
+Proof. destruct l_inv as [g IIL]. exists g. typeclasses eauto. Qed.
+
+End Context.
 
 Class IsRInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (f : A -> B) : Type :=
@@ -246,7 +263,7 @@ Class IsRInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
 
 Class IsBiInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (f : A -> B) : Type := {
-  bi_inv_is_l_inv :> IsLInv X Y f;
+  bi_inv_has_l_inv :> HasLInv X Y f;
   bi_inv_is_r_inv :> IsRInv X Y f;
 }.
 
@@ -270,7 +287,7 @@ Qed.
 #[local] Instance bi_inv_is_q_inv
   `{!IsEquiv X} `{!IsEquiv Y} `{!IsBiInv X Y f} : IsQInv X Y f.
 Proof.
-  destruct l_inv_iso_l as [g IIL]. destruct r_inv_iso_r as [h IIR].
+  destruct l_inv as [g IIL]. destruct r_inv_iso_r as [h IIR].
   exists (g o f o h). split.
   - split.
     + typeclasses eauto.
@@ -375,7 +392,7 @@ End Context.
 
 Class IsCorrRel (A B : Type)
   (X : A -> A -> Prop) (Y : B -> B -> Prop) (R : A -> B -> Prop) : Type := {
-  corr_rel_is_iso :> IsProper (X ==> Y ==> iff) R;
+  corr_rel_is_iso :> IsProper (X ==> Y ==> _<->_) R;
   corr_rel_contr_A (x : A) :> IsContr {y : B | R x y} (proj1_sig_relation Y);
   corr_rel_contr_B (y : B) :> IsContr {x : A | R x y} (proj1_sig_relation X);
 }.
@@ -568,5 +585,35 @@ Proof.
     + intros y. unfold compose.
       rewrite sect. rewrite sect. reflexivity.
 Qed.
+
+End Context.
+
+(** TODO See if higher relations win you anything over plain equality. *)
+
+(** ** Equivalent Types up to Equality *)
+
+Class IsEquivTypesEq (X : forall A : Type, A -> A -> Prop) (A B : Type) : Prop :=
+  equiv_types_eq_is_equiv_types :> inhabited (IsEquivTypes A B (X A) (X B)).
+
+(** An equivalence of types is an equivalence relation. *)
+
+Section Context.
+
+Context (X : forall A : Type, A -> A -> Prop)
+  `{!forall A : Type, IsEquiv (X A)}.
+
+Arguments X _ _ _ : clear implicits.
+
+#[local] Instance is_refl_equiv_types_eq :
+  IsRefl (IsEquivTypesEq X).
+Proof. intros A. constructor. apply refl_is_equiv_types. Qed.
+
+#[local] Instance is_sym_equiv_types_eq :
+  IsSym (IsEquivTypesEq X).
+Proof. intros A B [IET]. constructor. apply sym_is_equiv_types. Qed.
+
+#[local] Instance is_trans_equiv_types_eq :
+  IsTrans (IsEquivTypesEq X).
+Proof. intros A B C [IETAB] [IETBC]. constructor. apply trans_is_equiv_types. Qed.
 
 End Context.
