@@ -139,11 +139,11 @@ Defined.
 
 Arguments happly {_ _} _ _ _ _.
 
-Class IsEquivTypesEq (A B : Type) : Type :=
-  equiv_types_eq_equiv_types :> IsEquivTypes A B _=_ _=_.
+Class HasEquivTypesEq (A B : Type) : Type :=
+  equiv_types_eq_is_equiv_types :> HasEquivTypes A B _=_ _=_.
 
-#[local] Notation "'_~=_'" := IsEquivTypesEq.
-#[local] Notation "A '~=' B" := (IsEquivTypesEq A B).
+#[local] Notation "'_~=_'" := HasEquivTypesEq.
+#[local] Notation "A '~=' B" := (HasEquivTypesEq A B).
 
 Definition transport_refl (A : Type) (P : A -> Type) (x : A) (a : P x) :
   transport P id%type a = a.
@@ -200,7 +200,7 @@ Proof.
 Defined.
 
 Theorem need_this (A : Type) (P : A -> Type) (R : forall x : A, P x -> Prop) :
-  IsRInv _=_ _=_ (@ac_eq A P R).
+  HasRInv _=_ _=_ (@ac_eq A P R).
 Proof.
   exists (@dbp_eq A P R). split.
   - typeclasses eauto.
@@ -209,7 +209,7 @@ Proof.
 Defined.
 
 Theorem need_this_ex (A : Type) (P : A -> Prop) (R : forall x : A, P x -> Prop) :
-  IsRInv _=_ _=_ (@ac_eq_ex A P R).
+  HasRInv _=_ _=_ (@ac_eq_ex A P R).
 Proof.
   exists (@dbp_eq_ex A P R). split.
   - typeclasses eauto.
@@ -220,7 +220,7 @@ Defined.
 (** This is theorem 2.15.7 from the book. *)
 
 Theorem this_is_equiv (A : Type) (P : A -> Type) (R : forall x : A, P x -> Prop) :
-  IsBiInv _=_ _=_ (@ac_eq A P R).
+  HasBiInv _=_ _=_ (@ac_eq A P R).
 Proof.
   split.
   - apply do_not_need_this.
@@ -228,7 +228,7 @@ Proof.
 Defined.
 
 Theorem this_is_equiv_ex (A : Type) (P : A -> Prop) (R : forall x : A, P x -> Prop) :
-  IsBiInv _=_ _=_ (@ac_eq_ex A P R).
+  HasBiInv _=_ _=_ (@ac_eq_ex A P R).
 Proof.
   split.
   - apply do_not_need_this_ex.
@@ -296,16 +296,16 @@ Proof.
   - apply is_sect_eq_id.
 Defined.
 
-#[export] Instance is_bi_inv_eq_id :
-  IsBiInv (A := A) (B := A) _=_ _=_ id.
+#[export] Instance has_bi_inv_eq_id :
+  HasBiInv (A := A) (B := A) _=_ _=_ id.
 Proof.
   split.
   - exists id. apply is_iso_l_eq_id.
   - exists id. apply is_iso_r_eq_id.
 Defined.
 
-#[export] Instance is_equiv_types_eq : A ~= A.
-Proof. exists id. apply is_bi_inv_eq_id. Defined.
+#[export] Instance has_equiv_types_eq : A ~= A.
+Proof. exists id. apply has_bi_inv_eq_id. Defined.
 
 End Context.
 
@@ -341,8 +341,8 @@ Proof.
   - apply is_sect_eq_transport_id.
 Defined.
 
-#[export] Instance is_bi_inv_eq_transport_id :
-  IsBiInv _=_ _=_ (transport id e).
+#[export] Instance has_bi_inv_eq_transport_id :
+  HasBiInv _=_ _=_ (transport id e).
 Proof.
   split.
   - exists (transport id (e ^-1)). apply is_iso_l_eq_transport_id.
@@ -350,13 +350,13 @@ Proof.
 Defined.
 
 #[export] Instance idtoeqv : A ~= B.
-Proof. exists (transport id e). apply is_bi_inv_eq_transport_id. Defined.
+Proof. exists (transport id e). apply has_bi_inv_eq_transport_id. Defined.
 
 End Context.
 
 #[export] Instance refl :
   forall A : Type, A ~= A.
-Proof. intros A. apply is_equiv_types_eq. Defined.
+Proof. intros A. apply has_equiv_types_eq. Defined.
 
 #[export] Instance sym :
   forall A B : Type, A ~= B -> B ~= A.
@@ -422,11 +422,11 @@ Proof. destruct e. destruct f. reflexivity. Defined.
 
 (** One of these ways is probably better. *)
 
-Definition is_equiv_transport (A : Type) (P : A -> Type)
+Definition has_equiv_transport (A : Type) (P : A -> Type)
   (x y : A) (e : x = y) : P x ~= P y.
 Proof. destruct e. apply idtoeqv. apply id%type. Defined.
 
-Definition is_equiv_transport' (A : Type) (P : A -> Type)
+Definition has_equiv_transport' (A : Type) (P : A -> Type)
   (x y : A) (e : x = y) : P x ~= P y.
 Proof.
   exists (transport P e). split.
@@ -475,8 +475,8 @@ Defined.
 
 (** This is theorem 2.6.2 from the book. *)
 
-#[export] Instance prod_is_bi_inv (A B : Type) (a b : A * B) :
-  IsBiInv _=_ _=_ (prod_go (a := a) (b := b)).
+#[export] Instance prod_has_bi_inv (A B : Type) (a b : A * B) :
+  HasBiInv _=_ _=_ (prod_go (a := a) (b := b)).
 Proof.
   split.
   - exists (prod_come a b). split.
@@ -490,7 +490,7 @@ Proof.
       destruct e. destruct f. reflexivity.
 Defined.
 
-#[export] Instance prod_is_equiv_types (A B : Type) (a b : A * B) :
+#[export] Instance prod_has_equiv_types (A B : Type) (a b : A * B) :
   (a = b) ~= (fst a = fst b) * (snd a = snd b).
 Proof. exists prod_go. typeclasses eauto. Defined.
 
@@ -530,9 +530,9 @@ Defined.
 
 (** This is theorem 2.7.2 from the book. *)
 
-#[export] Instance sig_is_bi_inv (A : Type) (P : A -> Prop)
+#[export] Instance sig_has_bi_inv (A : Type) (P : A -> Prop)
   (a b : {x : A | P x}) :
-  IsBiInv _=_ _=_ (sig_go (a := a) (b := b)).
+  HasBiInv _=_ _=_ (sig_go (a := a) (b := b)).
 Proof.
   split.
   - exists (sig_come a b). split.
@@ -546,7 +546,7 @@ Proof.
       destruct e. destruct f. reflexivity.
 Defined.
 
-#[export] Instance sig_is_equiv_types (A : Type) (P : A -> Prop)
+#[export] Instance sig_has_equiv_types (A : Type) (P : A -> Prop)
   (a b : {x : A | P x}) :
   (a = b) ~= {f : proj1_sig a = proj1_sig b |
   transport P f (proj2_sig a) = proj2_sig b}.
@@ -644,12 +644,12 @@ Axiom type_extensionality : forall (A B : Type)
 (** ** Univalence *)
 
 Class IsUniv : Type :=
-  univ_is_bi_inv (A B : Type) :> IsBiInv _=_ _=_ (idtoeqv (A := A) (B := B)).
+  univ_has_bi_inv (A B : Type) :> HasBiInv _=_ _=_ (idtoeqv (A := A) (B := B)).
 
 (** ** Univalence Axiom *)
 
 Axiom univalence : forall A B : Type,
-  IsBiInv _=_ _=_ (idtoeqv (A := A) (B := B)).
+  HasBiInv _=_ _=_ (idtoeqv (A := A) (B := B)).
 
 (** This is axiom 2.10.3 and its corollaries from the book. *)
 
@@ -659,8 +659,8 @@ Proof. exists idtoeqv. typeclasses eauto. Defined.
 (*
 Lemma ua `{IsUniv} (A B : Type) `{!A ~= B} : A = B.
 Proof.
-  pose proof equiv_types_bi_inv A B _=_ _=_ as IET.
-  pose proof univ_is_bi_inv A B as IBI.
+  pose proof equiv_types A B _=_ _=_ as IET.
+  pose proof univ_has_bi_inv A B as IBI.
   pose proof l_inv as ILI.
   pose proof ex_proj1 ILI as e.
   apply e. apply IET.
@@ -669,7 +669,7 @@ Defined.
 
 Lemma ua (A B : Type) `{!A ~= B} : A = B.
 Proof.
-  pose proof equiv_types_bi_inv A B _=_ _=_ as IET.
+  pose proof equiv_types A B _=_ _=_ as IET.
   pose proof univalence A B as IBI.
   pose proof l_inv as ILI.
   pose proof proj1_sig ILI as e.
@@ -685,10 +685,10 @@ Module HomotopyTypicalDigression.
 
 (** This is lemma 3.11.7 from the book. *)
 
-Lemma ret (A B : Type) `{!IsRetrType A B _=_}
+Lemma ret (A B : Type) `{!HasRetrType A B _=_}
   `{!IsContr A _=_} : IsContr B _=_.
 Proof.
-  destruct IsRetrType0 as [f [g IR]]. destruct contr as [x h].
+  destruct HasRetrType0 as [f [g IR]]. destruct contr as [x h].
   exists (f x). intros y. rewrite <- (sect (f := f) y). f_equal. apply h.
 Qed.
 
@@ -729,7 +729,7 @@ Proof.
 Qed.
 
 Lemma classify (A : Type) (P : A -> Prop) (x : A) :
-  IsBiInv _=_ _=_ (cf (P := P) (x := x)).
+  HasBiInv _=_ _=_ (cf (P := P) (x := x)).
 Proof. split; exists (cg P x); apply classes. Defined.
 
 (** This is lemma 4.8.1 from the book. *)
@@ -739,14 +739,14 @@ Lemma classifier (A : Type) (P : A -> Prop) (x : A) :
 Proof. exists cf. apply classify. Defined.
 
 Lemma ua_elim (A B : Type) (e : A = B) :
-  idtoeqv e = (transport id e; is_bi_inv_eq_transport_id e)%sigT.
+  idtoeqv e = (transport id e; has_bi_inv_eq_transport_id e)%sigT.
 Proof. reflexivity. Defined.
 
 Lemma ua_comp (A B : Type) (e : A ~= B) :
   idtoeqv (ua e) = e.
 Proof.
   unfold ua.
-  unfold equiv_types_bi_inv, l_inv.
+  unfold equiv_types, l_inv.
   unfold bi_inv_has_l_inv.
   destruct (univalence A B) as [[f IIL] [g IIR]].
   unfold proj1_sig.
@@ -762,7 +762,7 @@ Lemma ua_uniq (A B : Type) (e : A = B) :
   ua (idtoeqv e) = e.
 Proof.
   unfold ua.
-  unfold equiv_types_bi_inv, l_inv.
+  unfold equiv_types, l_inv.
   unfold bi_inv_has_l_inv.
   destruct (univalence A B) as [[f IIL] [g IIR]].
   unfold proj1_sig.
@@ -780,7 +780,7 @@ Proof.
   apply (i ^-1).
 Defined.
 
-Lemma ua_transport' (A B : Type) (f : A -> B) (e : IsBiInv _=_ _=_ f) :
+Lemma ua_transport' (A B : Type) (f : A -> B) (e : HasBiInv _=_ _=_ f) :
   transport id (ua (f; e)%sigT) = f.
 Proof. apply ua_transport. Defined.
 
@@ -803,7 +803,7 @@ Proof.
 Defined.
 
 Lemma easy `{IsFunExtDep} (A B X : Type) (f : A -> B)
-  (e : @IsBiInv A B _=_ _=_ f) : @IsBiInv (X -> A) (X -> B) _=_ _=_ (_o_ f).
+  (e : @HasBiInv A B _=_ _=_ f) : @HasBiInv (X -> A) (X -> B) _=_ _=_ (_o_ f).
 Proof.
   destruct e as [[g ?] [h ?]].
   split.
@@ -846,9 +846,9 @@ Lemma contr_is_sect_proj1_sig_inj1_sig (A : Type) (P : A -> Prop)
 Proof. intros x. unfold proj1_sig, inj1_sig. reflexivity. Qed.
 
 #[local] Instance dubious (A B C : Type) (f : A -> B)
-  `{!IsBiInv _=_ _=_ f} : IsBiInv (A := C -> A) (B := C -> B) _=_ _=_ (_o_ f).
+  `{!HasBiInv _=_ _=_ f} : HasBiInv (A := C -> A) (B := C -> B) _=_ _=_ (_o_ f).
 Proof.
-  remember ((f; _ : IsBiInv _=_ _=_ f)%sigT : _ ~= _) as e eqn : h; cbn in h.
+  remember ((f; _ : HasBiInv _=_ _=_ f)%sigT : _ ~= _) as e eqn : h; cbn in h.
   rewrite <- (ua_comp e) in h.
   destruct (ua e).
   rewrite ua_elim in h.
@@ -877,7 +877,7 @@ Proof. apply (inj1_sig (f x)). Defined.
 
 #[local] Instance before_why (A : Type) (P : A -> Prop)
   `{!forall x : A, IsContr (P x) _=_} :
-  IsBiInv _=_ _=_ (proj1_sig (P := P)).
+  HasBiInv _=_ _=_ (proj1_sig (P := P)).
 Proof.
   split; exists inj1_sig; split;
   try typeclasses eauto;
@@ -897,7 +897,7 @@ Proof. apply also_easy. apply why. Defined.
 
 Lemma after_why_squared (A : Type) (P : A -> Prop)
   `{!forall x : A, IsContr (P x) _=_} :
-  IsBiInv _=_ _=_ alpha.
+  HasBiInv _=_ _=_ alpha.
 Proof.
   match goal with
   | x : forall _ : _, IsContr _ _=_ |- _ => rename x into IC
@@ -926,7 +926,7 @@ Defined.
 
 Lemma eq_pi_is_what (A : Type) (P : A -> Prop)
   `{!forall x : A, IsContr (P x) _=_} :
-  IsRetrType (fib _=_ alpha id%core) (forall x : A, P x) _=_.
+  HasRetrType (fib _=_ alpha id%core) (forall x : A, P x) _=_.
 Proof.
   match goal with
   | x : forall _ : _, IsContr _ _=_ |- _ => rename x into c
@@ -944,7 +944,7 @@ Theorem fine (A B : Type) (f : A -> B) (y : B) (s t : fib _=_ f y) :
   (s = t) ~= {g : proj1_sig s = proj1_sig t |
   ap f g o proj2_sig s = proj2_sig t}%type.
 Proof.
-  eapply trans; try apply (sig_is_equiv_types s t).
+  eapply trans; try apply (sig_has_equiv_types s t).
   destruct s as [x p], t as [x' p']. cbn. subst y.
   hnf. pose (fun a : {g : x = x' | transport (fun y : A => f x = f y) g id%type = p'} =>
   (proj1_sig a; transport (fun p : _ => p = p') (help f (proj1_sig a)) (proj2_sig a)) :
@@ -1042,10 +1042,10 @@ Proof.
 Defined.
 
 Lemma unhae (A B : Type) (f : A -> B)
-  `{!IsBiInv _=_ _=_ f} : IsHAE f.
+  `{!HasBiInv _=_ _=_ f} : IsHAE f.
 Proof.
   match goal with
-  | x : IsBiInv _ _ _ |- _ => rename x into IBI
+  | x : HasBiInv _ _ _ |- _ => rename x into IBI
   end.
   apply @pre_unhae.
   apply bi_inv_is_q_inv.
@@ -1085,10 +1085,10 @@ Defined.
 (** We inline the proof [apply curses, unhae] to get rid of [IsHAE]. *)
 
 Theorem curses' (A B : Type) (f : A -> B) (y : B)
-  `{!IsBiInv _=_ _=_ f} : IsContr (fib _=_ f y) _=_.
+  `{!HasBiInv _=_ _=_ f} : IsContr (fib _=_ f y) _=_.
 Proof.
   match goal with
-  | x : IsBiInv _ _ _ |- _ => rename x into IBI
+  | x : HasBiInv _ _ _ |- _ => rename x into IBI
   end.
   pose proof bi_inv_is_q_inv : IsQInv _=_ _=_ f as IQI.
   destruct IQI as [g [IIL IIR]].
@@ -1146,7 +1146,7 @@ Defined.
 (** This is an approximation of theorem 4.4.3 from the book. *)
 
 Theorem urgh (A B : Type) (f : A -> B)
-  `{!forall y : B, IsContr (fib _=_ f y) _=_} : IsBiInv _=_ _=_ f.
+  `{!forall y : B, IsContr (fib _=_ f y) _=_} : HasBiInv _=_ _=_ f.
 Proof.
   match goal with
   | x : forall _ : _, IsContr _ _ |- _ => rename x into IC
@@ -1175,7 +1175,7 @@ Proof. destruct a as [x p]. exists x. apply f. apply p. Defined.
 
 Lemma contrequiv (A B : Type) (f : A -> B)
   `{!IsContr A _=_} `{!IsContr B _=_} :
-  IsBiInv _=_ _=_ f.
+  HasBiInv _=_ _=_ f.
 Proof.
   destruct (@contr A _=_ _) as [x ex].
   destruct (@contr B _=_ _) as [y ey].
@@ -1210,7 +1210,7 @@ Arguments cofibernator {_ _ _} _ {_ _} _.
 
 Lemma fibering (A : Type) (P Q : A -> Prop)
   (f : forall x : A, P x -> Q x) (x : A) (q : Q x) :
-  IsBiInv _=_ _=_ (fibernator f (x := x) (q := q)).
+  HasBiInv _=_ _=_ (fibernator f (x := x) (q := q)).
 Proof.
   split.
   - exists (cofibernator f (x := x) (q := q)).
@@ -1235,7 +1235,7 @@ Defined.
 
 Lemma fiberwise_transform (A : Type) (P Q : A -> Prop)
   (f : forall x : A, P x -> Q x) :
-  (forall x : A, IsBiInv _=_ _=_ (f x)) -> IsBiInv _=_ _=_ (total f).
+  (forall x : A, HasBiInv _=_ _=_ (f x)) -> HasBiInv _=_ _=_ (total f).
 Proof.
   intros e.
   pose proof fun (x : A) (q : Q x) => @curses' _ _ _ q (e x) as t.
@@ -1250,7 +1250,7 @@ Defined.
 
 Lemma fiberwise_transform_dual (A : Type) (P Q : A -> Prop)
   (f : forall x : A, P x -> Q x) :
-  IsBiInv _=_ _=_ (total f) -> forall x : A, IsBiInv _=_ _=_ (f x).
+  HasBiInv _=_ _=_ (total f) -> forall x : A, HasBiInv _=_ _=_ (f x).
 Proof.
   intros e y.
   eapply @urgh. intros q.
@@ -1280,16 +1280,16 @@ Defined.
 (** This is theorem 4.9.5 from the book. *)
 
 Lemma conclusion (A : Type) (P : A -> Prop) (f g : forall x : A, P x) :
-  IsBiInv _=_ _=_ (happly f g).
+  HasBiInv _=_ _=_ (happly f g).
 Proof.
   (* enough (theorem_4_7_7 :
-  IsBiInv _=_ _=_ (fun a : exists g : forall x : A, P x, f = g =>
+  HasBiInv _=_ _=_ (fun a : exists g : forall x : A, P x, f = g =>
   match a with
   | (x; e)%ex => (x; happly _ _ e)%ex
   end :
   exists h : forall x : A, P x, forall x : A, f x = h x)) by admit. *)
   enough (by_theorem_4_7_7 :
-  IsBiInv _=_ _=_ (total (happly f))).
+  HasBiInv _=_ _=_ (total (happly f))).
   { epose proof @fiberwise_transform_dual _ _ _ (happly f) _ as t.
     apply t; apply by_theorem_4_7_7. }
   enough (by_theorem_3_11_8 :
@@ -1307,7 +1307,7 @@ Proof.
     epose proof @need_this _ _ (fun x y => f x = y) as n.
     destruct n as [k [_ _ s]].
     eapply r.
-    unfold IsRetrFn.
+    unfold HasRetrFn.
     eexists _. eexists _. eapply s.
     apply @eq_pi_contr.
     intros x.
@@ -1424,7 +1424,7 @@ Qed.
 
 #[export] Instance univ_is_prop_ext_type `{IsUniv} : IsPropExtType.
 Proof.
-  intros A B IPA IPB [f g]. pose proof univ_is_bi_inv A B as s.
+  intros A B IPA IPB [f g]. pose proof univ_has_bi_inv A B as s.
   destruct s as [ua [IPidtoeqv IPua]]. apply ua. exists f. split.
   - exists g. split; try typeclasses eauto. intros x. apply irrel.
   - exists g. split; try typeclasses eauto. intros x. apply irrel.
@@ -1474,18 +1474,18 @@ Module ExtractionProblem.
 Import Decisions.
 Import HomotopyTypicalDigression.
 
-#[local] Instance is_bi_inv_eq_negb :
-  IsBiInv _=_ _=_ negb.
+#[local] Instance has_bi_inv_eq_negb :
+  HasBiInv _=_ _=_ negb.
 Proof.
   split; exists negb; split; try typeclasses eauto; intros []; reflexivity.
 Defined.
 
-#[local] Instance is_equiv_types_eq_bool :
+#[local] Instance has_equiv_types_eq_bool :
   bool ~= bool.
-Proof. exists negb; apply is_bi_inv_eq_negb. Defined.
+Proof. exists negb; apply has_bi_inv_eq_negb. Defined.
 
 Definition no : bool := false.
-Definition yes : bool := transport id (ua is_equiv_types_eq_bool) false.
+Definition yes : bool := transport id (ua has_equiv_types_eq_bool) false.
 
 Definition contradiction : bool :=
   if dec (no = yes) then true else false.
@@ -1495,7 +1495,7 @@ Proof.
   unfold contradiction.
   destruct (dec (no = yes)) as [e | _].
   - unfold no, yes in e.
-    unfold is_equiv_types_eq_bool in e.
+    unfold has_equiv_types_eq_bool in e.
     rewrite ua_transport' in e.
     unfold negb in e.
     congruence.

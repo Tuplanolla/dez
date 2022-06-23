@@ -47,25 +47,41 @@ End Context.
 
 (** ** Retraction Map *)
 
-Class IsRetrFn (A B : Type) (Y : B -> B -> Prop) (f : A -> B) : Type :=
-  retr_fn_sect : {g : B -> A | IsSect Y f g}.
+Class HasRetrFn (A B : Type) (Y : B -> B -> Prop) (f : A -> B) : Type :=
+  retr_fn : {g : B -> A | IsSect Y f g}.
+
+Class IsRetrFn (A B : Type) (Y : B -> B -> Prop) (f : A -> B) : Prop :=
+  retr_fn_is_sect : exists g : B -> A, IsSect Y f g.
 
 (** ** Section Map *)
 
-Class IsSectFn (A B : Type) (X : A -> A -> Prop) (f : A -> B) : Type :=
-  sect_fn_retr : {g : B -> A | IsRetr X f g}.
+Class HasSectFn (A B : Type) (X : A -> A -> Prop) (f : A -> B) : Type :=
+  sect_fn : {g : B -> A | IsRetr X f g}.
+
+Class IsSectFn (A B : Type) (X : A -> A -> Prop) (f : A -> B) : Prop :=
+  sect_fn_is_retr : exists g : B -> A, IsRetr X f g.
 
 (** ** Retract *)
 
+Class HasRetrType (A B : Type) (Y : B -> B -> Prop) : Type :=
+  retr_type : {f : A -> B & HasRetrFn Y f}.
+
+Arguments HasRetrType _ _ _ : clear implicits.
+
 Class IsRetrType (A B : Type) (Y : B -> B -> Prop) : Type :=
-  retr_type_retr_fn : {f : A -> B & IsRetrFn Y f}.
+  retr_type_is_retr_fn : exists f : A -> B, IsRetrFn Y f.
 
 Arguments IsRetrType _ _ _ : clear implicits.
 
 (** ** Sect *)
 
+Class HasSectType (A B : Type) (X : A -> A -> Prop) : Type :=
+  sect_type : {f : A -> B & HasSectFn X f}.
+
+Arguments HasSectType _ _ _ : clear implicits.
+
 Class IsSectType (A B : Type) (X : A -> A -> Prop) : Type :=
-  sect_type_sect_fn : {f : A -> B & IsSectFn X f}.
+  sect_type_is_sect_fn : exists f : A -> B, IsSectFn X f.
 
 Arguments IsSectType _ _ _ : clear implicits.
 
@@ -234,15 +250,17 @@ Class IsQInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (f : A -> B) : Type :=
   q_inv_iso : {g : B -> A | IsIso X Y f g}.
 
-Class IsLInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
-  (f : A -> B) : Prop :=
-  l_inv_iso_l' : exists g : B -> A, IsIsoL X Y f g.
-
 (** TODO Investigate the effects of this change. *)
 
 Class HasLInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (f : A -> B) : Type :=
   l_inv : {g : B -> A | IsIsoL X Y f g}.
+
+Class IsLInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (f : A -> B) : Prop :=
+  l_inv_is_iso_l : exists g : B -> A, IsIsoL X Y f g.
+
+(** The witness can be forgotten. *)
 
 Section Context.
 
@@ -255,15 +273,25 @@ Proof. destruct l_inv as [g IIL]. exists g. typeclasses eauto. Qed.
 
 End Context.
 
+Class HasRInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (f : A -> B) : Type :=
+  r_inv : {g : B -> A | IsIsoR X Y f g}.
+
 Class IsRInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (f : A -> B) : Type :=
-  r_inv_iso_r : {g : B -> A | IsIsoR X Y f g}.
+  r_inv_is_iso_r : exists g : B -> A, IsIsoR X Y f g.
 
 (** ** Bi-Invertible Map *)
 
-Class IsBiInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+Class HasBiInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (f : A -> B) : Type := {
   bi_inv_has_l_inv :> HasLInv X Y f;
+  bi_inv_has_r_inv :> HasRInv X Y f;
+}.
+
+Class IsBiInv (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (f : A -> B) : Prop := {
+  bi_inv_is_l_inv :> IsLInv X Y f;
   bi_inv_is_r_inv :> IsRInv X Y f;
 }.
 
@@ -274,8 +302,8 @@ Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
 
 (** A quasi-inverse is a bi-invertible map. *)
 
-#[export] Instance q_inv_is_bi_inv
-  `{!IsQInv X Y f} : IsBiInv X Y f.
+#[export] Instance q_inv_has_bi_inv
+  `{!IsQInv X Y f} : HasBiInv X Y f.
 Proof.
   split.
   - destruct q_inv_iso as [g II]. exists g. typeclasses eauto.
@@ -285,9 +313,9 @@ Qed.
 (** A bi-invertible map is a quasi-inverse. *)
 
 #[local] Instance bi_inv_is_q_inv
-  `{!IsEquiv X} `{!IsEquiv Y} `{!IsBiInv X Y f} : IsQInv X Y f.
+  `{!IsEquiv X} `{!IsEquiv Y} `{!HasBiInv X Y f} : IsQInv X Y f.
 Proof.
-  destruct l_inv as [g IIL]. destruct r_inv_iso_r as [h IIR].
+  destruct l_inv as [g IIL]. destruct r_inv as [h IIR].
   exists (g o f o h). split.
   - split.
     + typeclasses eauto.
@@ -343,8 +371,8 @@ Proof. exists id. typeclasses eauto. Qed.
 (** The identity function is a bi-invertible map
     with respect to any reflexive relation. *)
 
-#[local] Instance refl_is_bi_inv_id
-  `{!IsRefl X} : IsBiInv X X id.
+#[local] Instance refl_has_bi_inv_id
+  `{!IsRefl X} : HasBiInv X X id.
 Proof.
   split.
   - exists id. typeclasses eauto.
@@ -428,16 +456,45 @@ Defined.
 
 (** ** Equivalent Types *)
 
-Class IsEquivTypes (A B : Type)
+Class HasEquivTypes (A B : Type)
   (X : A -> A -> Prop) (Y : B -> B -> Prop) : Type :=
-  equiv_types_bi_inv : {f : A -> B & IsBiInv X Y f}.
+  equiv_types : {f : A -> B & HasBiInv X Y f}.
+
+Arguments HasEquivTypes _ _ _ _ : clear implicits.
+Arguments equiv_types _ _ _ _ {_}.
+
+Class IsEquivTypes (A B : Type)
+  (X : A -> A -> Prop) (Y : B -> B -> Prop) : Prop :=
+  equiv_types_is_bi_inv : exists f : A -> B, IsBiInv X Y f.
 
 Arguments IsEquivTypes _ _ _ _ : clear implicits.
-Arguments equiv_types_bi_inv _ _ _ _ {_}.
+Arguments equiv_types_is_bi_inv _ _ _ _ {_}.
+
+(** The witness can be forgotten. *)
+
+Section Context.
+
+Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop).
+
+#[export] Instance has_bi_inv_is_bi_inv (f : A -> B)
+  `{!HasBiInv X Y f} : IsBiInv X Y f.
+Proof.
+  destruct (_ : HasBiInv X Y f) as [[g IIL] [h IIR]]. split.
+  - exists g. typeclasses eauto.
+  - exists h. typeclasses eauto.
+Qed.
+
+#[export] Instance equiv_types_is_equiv_types
+  `{!HasEquivTypes A B X Y} : IsEquivTypes A B X Y.
+Proof.
+  destruct (equiv_types A B X Y) as [f HBI]. exists f. typeclasses eauto.
+Qed.
+
+End Context.
 
 Equations equiv_fn (A B : Type)
   (X : A -> A -> Prop) (Y : B -> B -> Prop)
-  `{!IsEquivTypes A B X Y} (x : A) : B :=
+  `{!HasEquivTypes A B X Y} (x : A) : B :=
   equiv_fn x := _.
 Next Obligation.
   intros A B X Y [f IBI] x.
@@ -446,7 +503,7 @@ Defined.
 
 Equations equiv_inv_fn (A B : Type)
   (X : A -> A -> Prop) (Y : B -> B -> Prop)
-  `{!IsEquivTypes A B X Y} (y : B) : A :=
+  `{!HasEquivTypes A B X Y} (y : B) : A :=
   equiv_inv_fn x := _.
 Next Obligation.
   intros A B X Y [f [[g IIL] IRI]] y.
@@ -461,8 +518,8 @@ Context (A B : Type)
   (X : A -> A -> Prop) (Y : B -> B -> Prop)
   `{!IsEquiv X} `{!IsEquiv Y}.
 
-#[local] Instance corr_types_is_equiv_types
-  `{!IsCorrTypes A B X Y} : IsEquivTypes A B X Y.
+#[local] Instance corr_types_has_equiv_types
+  `{!IsCorrTypes A B X Y} : HasEquivTypes A B X Y.
 Proof.
   match goal with
   | x : IsCorrTypes _ _ _ _ |- _ => rename x into ICT
@@ -539,10 +596,10 @@ Proof.
 Defined.
 
 #[local] Instance equiv_types_is_corr_types
-  `{!IsEquivTypes A B X Y} : IsCorrTypes A B X Y.
+  `{!HasEquivTypes A B X Y} : IsCorrTypes A B X Y.
 Proof.
   match goal with
-  | x : IsEquivTypes _ _ _ _ |- _ => rename x into IET
+  | x : HasEquivTypes _ _ _ _ |- _ => rename x into IET
   end.
   destruct IET as [f [[g [p q r]] [h [_ q' s]]]].
   set (R (x : A) (y : B) := X (g y) x /\ Y (f x) y).
@@ -573,8 +630,8 @@ Context (A B C : Type)
   (X : A -> A -> Prop) (Y : B -> B -> Prop) (Z : C -> C -> Prop)
   `{!IsEquiv X} `{!IsEquiv Y} `{!IsEquiv Z}.
 
-#[local] Instance refl_is_equiv_types :
-  IsEquivTypes A A X X.
+#[local] Instance refl_has_equiv_types :
+  HasEquivTypes A A X X.
 Proof.
   exists id. split.
   - exists id. split.
@@ -587,10 +644,10 @@ Proof.
     + intros x. reflexivity.
 Qed.
 
-#[local] Instance sym_is_equiv_types
-  `{!IsEquivTypes A B X Y} : IsEquivTypes B A Y X.
+#[local] Instance sym_has_equiv_types
+  `{!HasEquivTypes A B X Y} : HasEquivTypes B A Y X.
 Proof.
-  pose proof _ : IsEquivTypes A B X Y as e.
+  pose proof _ : HasEquivTypes A B X Y as e.
   destruct e as [f [[g IIL] [h IIR]]].
   exists (g o f o h). split.
   - exists f. split.
@@ -605,11 +662,11 @@ Proof.
       rewrite sect. rewrite retr. reflexivity.
 Qed.
 
-#[local] Instance trans_is_equiv_types
-  `{!IsEquivTypes A B X Y} `{!IsEquivTypes B C Y Z} : IsEquivTypes A C X Z.
+#[local] Instance trans_has_equiv_types
+  `{!HasEquivTypes A B X Y} `{!HasEquivTypes B C Y Z} : HasEquivTypes A C X Z.
 Proof.
-  pose proof _ : IsEquivTypes A B X Y as IETAB.
-  pose proof _ : IsEquivTypes B C Y Z as IETBC.
+  pose proof _ : HasEquivTypes A B X Y as IETAB.
+  pose proof _ : HasEquivTypes B C Y Z as IETBC.
   destruct IETAB as [f [[g IILf] [h IIRf]]], IETBC as [i [[j IILi] [k IIRi]]].
   exists (i o f). split.
   - exists (g o j). split.
@@ -626,32 +683,29 @@ Qed.
 
 End Context.
 
-(** TODO See if higher relations win you anything over plain equality. *)
-
 (** ** Equivalent Types up to Equality *)
 
-Class IsEquivTypesEq (X : forall A : Type, A -> A -> Prop) (A B : Type) : Prop :=
-  equiv_types_eq_is_equiv_types :> inhabited (IsEquivTypes A B (X A) (X B)).
+Class HasEquivTypesEq (A B : Type) : Type :=
+  equiv_types_eq_has_equiv_types :> HasEquivTypes A B _=_ _=_.
+
+Class IsEquivTypesEq (A B : Type) : Prop :=
+  equiv_types_eq_is_equiv_types :> IsEquivTypes A B _=_ _=_.
 
 (** An equivalence of types is an equivalence relation. *)
 
-Section Context.
+#[local] Instance is_refl_is_equiv_types_eq :
+  IsRefl IsEquivTypesEq.
+Proof.
+  intros A. apply @equiv_types_is_equiv_types. apply refl_has_equiv_types.
+Qed.
 
-Context (X : forall A : Type, A -> A -> Prop)
-  `{!forall A : Type, IsEquiv (X A)}.
+#[local] Instance is_sym_is_equiv_types_eq :
+  IsSym IsEquivTypesEq.
+Proof.
+  intros A B IET.
+Admitted.
 
-Arguments X _ _ _ : clear implicits.
-
-#[local] Instance is_refl_equiv_types_eq :
-  IsRefl (IsEquivTypesEq X).
-Proof. intros A. constructor. apply refl_is_equiv_types. Qed.
-
-#[local] Instance is_sym_equiv_types_eq :
-  IsSym (IsEquivTypesEq X).
-Proof. intros A B [IET]. constructor. apply sym_is_equiv_types. Qed.
-
-#[local] Instance is_trans_equiv_types_eq :
-  IsTrans (IsEquivTypesEq X).
-Proof. intros A B C [IETAB] [IETBC]. constructor. apply trans_is_equiv_types. Qed.
-
-End Context.
+#[local] Instance is_trans_is_equiv_types_eq :
+  IsTrans IsEquivTypesEq.
+Proof.
+Admitted.
