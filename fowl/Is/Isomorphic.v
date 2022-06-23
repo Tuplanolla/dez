@@ -406,6 +406,26 @@ Class IsCorrTypes (A B : Type)
 Arguments IsCorrTypes _ _ _ _ : clear implicits.
 Arguments corr_types _ _ _ _ {_}.
 
+Equations corr_fn (A B : Type)
+  (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  `{!IsCorrTypes A B X Y} (x : A) : B :=
+  corr_fn x := _.
+Next Obligation.
+  intros A B X Y [R [IP f g]] x.
+  destruct (f x) as [[y r] a].
+  apply y.
+Defined.
+
+Equations corr_inv_fn (A B : Type)
+  (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  `{!IsCorrTypes A B X Y} (y : B) : A :=
+  corr_inv_fn x := _.
+Next Obligation.
+  intros A B X Y [R [IP f g]] y.
+  destruct (g y) as [[x r] a].
+  apply x.
+Defined.
+
 (** ** Equivalent Types *)
 
 Class IsEquivTypes (A B : Type)
@@ -414,6 +434,24 @@ Class IsEquivTypes (A B : Type)
 
 Arguments IsEquivTypes _ _ _ _ : clear implicits.
 Arguments equiv_types_bi_inv _ _ _ _ {_}.
+
+Equations equiv_fn (A B : Type)
+  (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  `{!IsEquivTypes A B X Y} (x : A) : B :=
+  equiv_fn x := _.
+Next Obligation.
+  intros A B X Y [f IBI] x.
+  apply (f x).
+Defined.
+
+Equations equiv_inv_fn (A B : Type)
+  (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  `{!IsEquivTypes A B X Y} (y : B) : A :=
+  equiv_inv_fn x := _.
+Next Obligation.
+  intros A B X Y [f [[g IIL] IRI]] y.
+  apply (g y).
+Defined.
 
 (** An equivalence of types is an equivalence relation. *)
 

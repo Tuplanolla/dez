@@ -180,6 +180,10 @@ Reserved Notation "'{' x ':' A '&' y '}'" (at level 0, x at level 99).
 Reserved Notation "'{' x '$' y '}'" (at level 0, x at level 99).
 Reserved Notation "'{' x ':' A '$' y '}'" (at level 0, x at level 99).
 
+Reserved Notation "x '.0'" (left associativity, at level 1).
+Reserved Notation "x '.1'" (left associativity, at level 1).
+Reserved Notation "x '.2'" (left associativity, at level 1).
+
 Reserved Notation "'inspect' x" (no associativity, at level 0).
 Reserved Notation "x 'eqn' ':' a" (no associativity, at level 100).
 
@@ -530,6 +534,12 @@ Proof. reflexivity. Qed.
 Arguments ex_proj1 {_ _} !_.
 Arguments ex_proj2 {_ _} !_.
 
+Notation "'_.0'" := ex_proj1 : ex_scope.
+Notation "x '.0'" := (ex_proj1 x) : ex_scope.
+
+Notation "'_.1'" := ex_proj2 : ex_scope.
+Notation "x '.1'" := (ex_proj2 x) : ex_scope.
+
 Arguments sig {_} _.
 Arguments exist {_} _ _ _.
 
@@ -560,6 +570,12 @@ Proof. reflexivity. Qed.
 Arguments proj1_sig {_ _} !_.
 Arguments proj2_sig {_ _} !_.
 
+Notation "'_.0'" := proj1_sig : sig_scope.
+Notation "x '.0'" := (proj1_sig x) : sig_scope.
+
+Notation "'_.1'" := proj2_sig : sig_scope.
+Notation "x '.1'" := (proj2_sig x) : sig_scope.
+
 Arguments sigT {_} _.
 Arguments existT {_} _ _ _.
 
@@ -589,6 +605,12 @@ Proof. reflexivity. Qed.
 
 Arguments projT1 {_ _} !_.
 Arguments projT2 {_ _} !_.
+
+Notation "'_.0'" := projT1 : sigT_scope.
+Notation "x '.0'" := (projT1 x) : sigT_scope.
+
+Notation "'_.1'" := projT2 : sigT_scope.
+Notation "x '.1'" := (projT2 x) : sigT_scope.
 
 Arguments Ssig {_} _.
 Arguments Sexists {_} _ _ _.
@@ -633,6 +655,12 @@ Export StrictProp.
 
 Arguments Spr1 {_ _} !_.
 Arguments Spr2 {_ _} !_.
+
+Notation "'_.0'" := Spr1 : Ssig_scope.
+Notation "x '.0'" := (Spr1 x) : Ssig_scope.
+
+Notation "'_.1'" := Spr2 : Ssig_scope.
+Notation "x '.1'" := (Spr2 x) : Ssig_scope.
 
 Corollary sig_of_sigT_equation_1 (A : Type) (P : A -> Prop) (x : A) (a : P x) :
   sig_of_sigT (existT P x a) = exist P x a.
