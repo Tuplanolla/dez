@@ -1,4 +1,4 @@
-From DEZ.ShouldOffer Require Export
+From DEZ.Supports Require Export
   OneSortedArithmeticPositiveOperationNotations
   OneSortedArithmeticNaturalOperationNotations
   OneSortedArithmeticIntegerOperationNotations.

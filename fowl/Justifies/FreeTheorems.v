@@ -226,7 +226,6 @@ Equations rel (x y : free) : bool :=
 
 Equations null : free :=
   null := ([]; _).
-Next Obligation. reflexivity. Qed.
 
 Equations un (x : free) : free :=
   un (s; _) := (map (prod_bimap negb id) (rev s); _).

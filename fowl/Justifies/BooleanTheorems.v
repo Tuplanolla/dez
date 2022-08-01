@@ -2,7 +2,7 @@
 From Coq Require Import
   Lists.List Logic.ProofIrrelevance NArith.NArith ZArith.ZArith.
 From DEZ.Has Require Export
-  Enumerations Sizes Operations ArithmeticOperations.
+  Enumerations Cardinalities Operations ArithmeticOperations.
 From DEZ.Is Require Export
   Finite Isomorphic Monoid.
 
@@ -24,7 +24,7 @@ Proof.
     + right. left. reflexivity.
     + left. reflexivity.
   - apply IsNoDup_cons.
-    + intros H. inversion H as [? ? K | ? ? K].
+    + intros H. inversion H as [K | K].
       * inversion K.
       * inversion K.
     + apply IsNoDup_cons.
@@ -32,10 +32,10 @@ Proof.
       * apply IsNoDup_nil.
 Qed.
 
-Global Instance bool_has_size : HasSize bool := 2.
+Global Instance bool_has_fin_card : HasFinCard bool := 2.
 
 Definition bool_has_iso :
-  (bool -> {n : N | n < size bool}) * ({n : N | n < size bool} -> bool).
+  (bool -> {n : N | n < fin_card bool}) * ({n : N | n < fin_card bool} -> bool).
 Proof.
   split.
   - intros [].
@@ -52,16 +52,16 @@ Global Instance bool_is_fin :
   IsIso _=_ _=_ (fst bool_has_iso) (snd bool_has_iso).
 Proof.
   split; try typeclasses eauto.
-  - intros [].
+  - split; try typeclasses eauto. intros [].
     + cbn. reflexivity.
     + cbn. reflexivity.
-  - intros [[| p] H].
+  - split; try typeclasses eauto. intros [[| p] H].
     + cbn. f_equal. apply proof_irrelevance.
     + cbn. destruct p as [| q _] using Pos.peano_ind.
       * f_equal. apply proof_irrelevance.
       * (** This mess eventually leads to a contradiction. *)
         pose proof H as F.
-        cbv [size bool_has_size] in F.
+        cbv [fin_card bool_has_fin_card] in F.
         rewrite <- N.succ_pos_pred in F.
         rewrite Pos.pred_N_succ in F.
         rewrite N.two_succ in F.
