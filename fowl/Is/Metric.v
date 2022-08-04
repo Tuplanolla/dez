@@ -124,6 +124,24 @@ Proof. esplit; typeclasses eauto. Qed.
 
 End Context.
 
+(** ** Cauchy Sequence in a Real Metric Space *)
+
+(** TODO We should probably put a modulus of convergence here. *)
+
+Class IsRealMetricCauchy (B : Type) (X : B -> B -> Prop)
+  (d : B -> B -> R) (f : N -> B) : Prop := {
+  real_metric_cauchy_is_real_metric :> IsRealMetric X d;
+  real_metric_cauchy_bounded :
+    forall e : posreal, exists n : N, forall i j : N,
+    (n <= i)%N -> (n <= j)%N -> d (f i) (f j) < e;
+}.
+
+(** TODO Define limits of real numbers. *)
+(** TODO Define complete real metric spaces
+    as metric spaces whose Cauchy sequences have limits in the space. *)
+(** TODO Specialize strict short maps as short maps over [<]. *)
+(** TODO Prove the Banach fixed-point theorem for strict short maps. *)
+
 Module Arbitrary.
 
 #[export] Instance R_has_dist : HasDist R R := R_dist.

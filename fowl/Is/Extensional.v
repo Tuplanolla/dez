@@ -686,7 +686,7 @@ Module HomotopyTypicalDigression.
 (** This is lemma 3.11.7 from the book. *)
 
 Lemma ret (A B : Type) `{!HasRetrType A B _=_}
-  `{!IsContr A _=_} : IsContr B _=_.
+  `{!HasContr A _=_} : HasContr B _=_.
 Proof.
   destruct HasRetrType0 as [f [g IR]]. destruct contr as [x h].
   exists (f x). intros y. rewrite <- (sect (f := f) y). f_equal. apply h.
@@ -694,12 +694,12 @@ Qed.
 
 (** This is lemma 3.11.8 from the book. *)
 
-Lemma sig_contr (A : Type) (a : A) : IsContr {x : A | a = x} _=_.
+Lemma sig_contr (A : Type) (a : A) : HasContr {x : A | a = x} _=_.
 Proof.
   exists (a; id%type). intros [x e]. destruct e. apply id%type.
 Defined.
 
-Lemma ex_contr (A : Type) (a : A) : IsContr (exists x : A, a = x) _=_.
+Lemma ex_contr (A : Type) (a : A) : HasContr (exists x : A, a = x) _=_.
 Proof.
   exists (a; id%type)%ex. intros [x e]. destruct e. apply id%type.
 Defined.
@@ -831,18 +831,18 @@ Proof.
 Defined.
 
 Definition inj1_sig (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x) _=_} (x : A) : {x : A | P x} :=
+  `{!forall x : A, HasContr (P x) _=_} (x : A) : {x : A | P x} :=
   (x; proj1_sig contr).
 
 Lemma contr_is_retr_proj1_sig_inj1_sig (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x) _=_} : IsRetr _=_ proj1_sig inj1_sig.
+  `{!forall x : A, HasContr (P x) _=_} : IsRetr _=_ proj1_sig inj1_sig.
 Proof.
   intros [x a]. unfold proj1_sig, inj1_sig. f_equal.
   pose proof proj2_sig contr a as b. apply b.
 Qed.
 
 Lemma contr_is_sect_proj1_sig_inj1_sig (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x) _=_} : IsSect _=_ proj1_sig inj1_sig.
+  `{!forall x : A, HasContr (P x) _=_} : IsSect _=_ proj1_sig inj1_sig.
 Proof. intros x. unfold proj1_sig, inj1_sig. reflexivity. Qed.
 
 #[local] Instance dubious (A B C : Type) (f : A -> B)
@@ -866,17 +866,17 @@ Defined.
 (** This is part of corollary 4.9.3 from the book. *)
 
 Lemma alpha (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x) _=_} (f : A -> {x : A | P x}) (x : A) : A.
+  `{!forall x : A, HasContr (P x) _=_} (f : A -> {x : A | P x}) (x : A) : A.
 Proof. apply (proj1_sig (f x)). Defined.
 
 Lemma coalpha (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x) _=_} (f : A -> A) (x : A) : {x : A | P x}.
+  `{!forall x : A, HasContr (P x) _=_} (f : A -> A) (x : A) : {x : A | P x}.
 Proof. apply (inj1_sig (f x)). Defined.
 
 (** This is corollary 4.9.3 from the book. *)
 
 #[local] Instance before_why (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x) _=_} :
+  `{!forall x : A, HasContr (P x) _=_} :
   HasBiInv _=_ _=_ (proj1_sig (P := P)).
 Proof.
   split; exists inj1_sig; split;
@@ -886,21 +886,21 @@ Proof.
 Defined.
 
 Lemma why (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x) _=_} :
+  `{!forall x : A, HasContr (P x) _=_} :
   {x : A | P x} ~= A.
 Proof. exists proj1_sig. apply before_why. Defined.
 
 Lemma why_squared (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x) _=_} :
+  `{!forall x : A, HasContr (P x) _=_} :
   (A -> {x : A | P x}) ~= (A -> A).
 Proof. apply also_easy. apply why. Defined.
 
 Lemma after_why_squared (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x) _=_} :
+  `{!forall x : A, HasContr (P x) _=_} :
   HasBiInv _=_ _=_ alpha.
 Proof.
   match goal with
-  | x : forall _ : _, IsContr _ _=_ |- _ => rename x into IC
+  | x : forall _ : _, HasContr _ _=_ |- _ => rename x into IC
   end.
   unfold alpha.
   pose proof dubious A (f := proj1_sig) as d.
@@ -911,12 +911,12 @@ Defined.
 (** These are parts of theorem 4.9.4 from the book. *)
 
 Lemma phi (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x) _=_} :
+  `{!forall x : A, HasContr (P x) _=_} :
   (forall x : A, P x) -> (fib _=_ alpha id%core).
 Proof. intros f. hnf. exists (fun x : A => (x; f x)). apply id%type. Defined.
 
 Lemma psi (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x) _=_} :
+  `{!forall x : A, HasContr (P x) _=_} :
   (fib _=_ alpha id%core) -> (forall x : A, P x).
 Proof.
   intros gp x.
@@ -925,11 +925,11 @@ Proof.
 Defined.
 
 Lemma eq_pi_is_what (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x) _=_} :
+  `{!forall x : A, HasContr (P x) _=_} :
   HasRetrType (fib _=_ alpha id%core) (forall x : A, P x) _=_.
 Proof.
   match goal with
-  | x : forall _ : _, IsContr _ _=_ |- _ => rename x into c
+  | x : forall _ : _, HasContr _ _=_ |- _ => rename x into c
   end.
   exists psi, phi. intros f. unfold phi. unfold psi. cbn. reflexivity.
 Defined.
@@ -1054,7 +1054,7 @@ Defined.
 (** This is theorem 4.2.6 from the book. *)
 
 Theorem curses (A B : Type) (f : A -> B) (y : B)
-  `{!IsHAE f} : IsContr (fib _=_ f y) _=_.
+  `{!IsHAE f} : HasContr (fib _=_ f y) _=_.
 Proof.
   match goal with
   | x : IsHAE _ |- _ => rename x into IHAE
@@ -1085,7 +1085,7 @@ Defined.
 (** We inline the proof [apply curses, unhae] to get rid of [IsHAE]. *)
 
 Theorem curses' (A B : Type) (f : A -> B) (y : B)
-  `{!HasBiInv _=_ _=_ f} : IsContr (fib _=_ f y) _=_.
+  `{!HasBiInv _=_ _=_ f} : HasContr (fib _=_ f y) _=_.
 Proof.
   match goal with
   | x : HasBiInv _ _ _ |- _ => rename x into IBI
@@ -1146,10 +1146,10 @@ Defined.
 (** This is an approximation of theorem 4.4.3 from the book. *)
 
 Theorem urgh (A B : Type) (f : A -> B)
-  `{!forall y : B, IsContr (fib _=_ f y) _=_} : HasBiInv _=_ _=_ f.
+  `{!forall y : B, HasContr (fib _=_ f y) _=_} : HasBiInv _=_ _=_ f.
 Proof.
   match goal with
-  | x : forall _ : _, IsContr _ _ |- _ => rename x into IC
+  | x : forall _ : _, HasContr _ _ |- _ => rename x into IC
   end.
   set (g y := proj1_sig (proj1_sig (IC y))).
   split.
@@ -1174,7 +1174,7 @@ Definition total_ex (A : Type) (P Q : A -> Prop)
 Proof. destruct a as [x p]. exists x. apply f. apply p. Defined.
 
 Lemma contrequiv (A B : Type) (f : A -> B)
-  `{!IsContr A _=_} `{!IsContr B _=_} :
+  `{!HasContr A _=_} `{!HasContr B _=_} :
   HasBiInv _=_ _=_ f.
 Proof.
   destruct (@contr A _=_ _) as [x ex].
@@ -1242,7 +1242,7 @@ Proof.
   pose proof fiberwise f as b.
   pose proof fun (x : A) (q : Q x) => ua (b x q) as h.
   pose proof fun (x : A) (q : Q x) =>
-  transport (fun hole : _ => IsContr hole _=_) (h x q ^-1) (t x q) as j;
+  transport (fun hole : _ => HasContr hole _=_) (h x q ^-1) (t x q) as j;
   cbv beta in j.
   pose proof @urgh _ _ (total f) as k.
   apply k. intros [y q]. apply j.
@@ -1264,10 +1264,10 @@ Defined.
 (** This is theorem 4.9.4 from the book. *)
 
 Lemma eq_pi_contr (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x) _=_} : IsContr (forall x : A, P x) _=_.
+  `{!forall x : A, HasContr (P x) _=_} : HasContr (forall x : A, P x) _=_.
 Proof.
   match goal with
-  | h : forall _ : _, IsContr _ _=_ |- _ => rename h into c
+  | h : forall _ : _, HasContr _ _=_ |- _ => rename h into c
   end.
   pose proof why_squared as w.
   pose proof eq_pi_is_what as q.
@@ -1293,13 +1293,13 @@ Proof.
   { epose proof @fiberwise_transform_dual _ _ _ (happly f) _ as t.
     apply t; apply by_theorem_4_7_7. }
   enough (by_theorem_3_11_8 :
-  IsContr {h : forall x : A, P x | forall x : A, f x = h x} _=_).
+  HasContr {h : forall x : A, P x | forall x : A, f x = h x} _=_).
   { epose proof @contrequiv _ _ _ as c.
     eapply c.
     apply sig_contr.
     assumption. }
   enough (by_theorem_2_15_7 :
-  IsContr (forall x : A, {a : P x | f x = a}) _=_).
+  HasContr (forall x : A, {a : P x | f x = a}) _=_).
   (** This uses function extensionality. *)
   (* { epose proof @seriously A P (fun (a : A) (b : P a) => f a = b) as s; cbv beta in s.
     rewrite <- (ua s). assumption. } *)
@@ -1363,13 +1363,13 @@ Qed.
 
 (** Families of contractible types are contractible. *)
 
-Lemma eq_pi_is_contr `{IsFunExtDep} (A : Type) (P : A -> Prop)
-  `{!forall x : A, IsContr (P x) _=_} : IsContr (forall x : A, P x) _=_.
+Lemma eq_pi_has_contr `{IsFunExtDep} (A : Type) (P : A -> Prop)
+  `{!forall x : A, HasContr (P x) _=_} : HasContr (forall x : A, P x) _=_.
 Proof.
   match goal with
-  | h : forall _ : _, IsContr _ _=_ |- _ => rename h into c
+  | h : forall _ : _, HasContr _ _=_ |- _ => rename h into c
   end.
-  apply @inhabited_prop_is_contr.
+  apply @inhabited_prop_has_contr.
   - intros x. apply c.
   - apply (@eq_pi_is_prop _). intros x. apply contr_is_prop.
 Qed.
@@ -1390,19 +1390,19 @@ Qed.
 
 (** Fibrations are at the same homotopy level as their fibers. *)
 
-Lemma eq_h_level_is_h_level `{IsPropExt} `{IsFunExtDep}
+Lemma eq_h_level_has_h_level `{IsPropExt} `{IsFunExtDep}
   (A : Type) (P : A -> Prop) (n : nat)
-  `{!forall x : A, IsHLevel n (P x)} : IsHLevel n (forall x : A, P x).
+  `{!forall x : A, HasHLevel n (P x)} : HasHLevel n (forall x : A, P x).
 Proof.
   match goal with
-  | h : forall _ : _, IsHLevel _ _ |- _ => rename h into a
+  | h : forall _ : _, HasHLevel _ _ |- _ => rename h into a
   end.
   revert A P a. induction n as [| p b]; intros A P a.
-  - apply @contr_is_h_level_0. apply (@eq_pi_is_contr _).
-    intros x. apply @h_level_0_is_contr. apply a.
+  - apply @contr_has_h_level_0. apply (@eq_pi_has_contr _).
+    intros x. apply @h_level_0_has_contr. apply a.
   - intros f g.
     pose proof prop_fun_ext_dep f g as t. rewrite <- t. clear t.
-    apply b. intros x. apply h_level_S_is_h_level_eq. apply a.
+    apply b. intros x. apply h_level_S_has_h_level_eq. apply a.
 Qed.
 
 (** Univalence implies type extensionality. *)

@@ -334,7 +334,7 @@ End Context.
 Class IsContrMap (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (f : A -> B) : Type := {
   contr_map_is_proper :> IsProper (X ==> Y) f;
-  contr_map_is_contr_fn :> IsContrFn X Y f;
+  contr_map_is_contr_fn :> HasContrFn X Y f;
 }.
 
 Class IsCohIso (A B : Type)
@@ -421,8 +421,8 @@ End Context.
 Class IsCorrRel (A B : Type)
   (X : A -> A -> Prop) (Y : B -> B -> Prop) (R : A -> B -> Prop) : Type := {
   corr_rel_is_iso :> IsProper (X ==> Y ==> _<->_) R;
-  corr_rel_contr_A (x : A) :> IsContr {y : B | R x y} (proj1_sig_relation Y);
-  corr_rel_contr_B (y : B) :> IsContr {x : A | R x y} (proj1_sig_relation X);
+  corr_rel_contr_A (x : A) :> HasContr {y : B | R x y} (proj1_sig_relation Y);
+  corr_rel_contr_B (y : B) :> HasContr {x : A | R x y} (proj1_sig_relation X);
 }.
 
 (** ** One-to-One Correspondence of Types *)

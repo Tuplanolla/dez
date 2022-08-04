@@ -1,5 +1,7 @@
 (** * Homotopy Levels *)
 
+(** TODO This is outdated; see [Is.Irrelevant]. *)
+
 From Coq Require Import
   Logic.FunctionalExtensionality Logic.PropExtensionality.
 From DEZ.Has Require Export

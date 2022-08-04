@@ -20,10 +20,25 @@ Equations Spr1_relation (A : Type) (P : A -> SProp) (X : A -> A -> Prop) :
 (** ** Contractible Type *)
 (** ** Singleton *)
 
-Class IsContr (A : Type) (X : A -> A -> Prop) : Type :=
+Class HasContr (A : Type) (X : A -> A -> Prop) : Type :=
   contr : {x : A | forall y : A, X x y}.
 
+Arguments HasContr _ _ : clear implicits.
+
+Class IsContr (A : Type) (X : A -> A -> Prop) : Prop :=
+  contr_prop : exists x : A, forall y : A, X x y.
+
 Arguments IsContr _ _ : clear implicits.
+
+Section Context.
+
+Context (A B : Type) (X : A -> A -> Prop).
+
+#[local] Instance contr_is_contr
+  `{!HasContr A X} : IsContr A X.
+Proof. destruct contr; esplit; eauto. Qed.
+
+End Context.
 
 (** ** Fibers of a Unary Function *)
 
@@ -33,11 +48,33 @@ Definition fib (A B : Type) (Y : B -> B -> Prop)
 
 (** ** Contractible Unary Function *)
 
-Equations IsContrFn (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+Equations HasContrFn (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (f : A -> B) : Type :=
+  HasContrFn X Y f := forall y : B, HasContr (fib Y f y) (proj1_sig_relation X).
+
+Existing Class HasContrFn.
+
+Equations IsContrFn (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (f : A -> B) : Prop :=
   IsContrFn X Y f := forall y : B, IsContr (fib Y f y) (proj1_sig_relation X).
 
 Existing Class IsContrFn.
+
+Section Context.
+
+Context (A B : Type) (X : A -> A -> Prop) (Y : B -> B -> Prop)
+  (f : A -> B).
+
+#[local] Instance contr_fn_is_contr_fn
+  `{!HasContrFn X Y f} : IsContrFn X Y f.
+Proof.
+  match goal with
+  | x : HasContrFn _ _ _ |- _ => rename x into HCF
+  end.
+  intros y. destruct (HCF y); esplit; eauto.
+Qed.
+
+End Context.
 
 Section Context.
 
@@ -45,17 +82,13 @@ Context (A B : Type)
   (X : A -> A -> Prop) (Y : B -> B -> Prop)
   (f : A -> B).
 
-#[local] Instance contr_fn_is_contr_fib
-  `{!IsContrFn X Y f} (y : B) : IsContr (fib Y f y) (proj1_sig_relation X).
+#[local] Instance contr_fn_has_contr_fib
+  `{!HasContrFn X Y f} (y : B) : HasContr (fib Y f y) (proj1_sig_relation X).
 Proof. eauto. Qed.
 
-#[local] Instance contr_fib_is_contr_fn
-  `{!forall y : B, IsContr (fib Y f y) (proj1_sig_relation X)} :
-  IsContrFn X Y f.
+#[local] Instance contr_fib_has_contr_fn
+  `{!forall y : B, HasContr (fib Y f y) (proj1_sig_relation X)} :
+  HasContrFn X Y f.
 Proof. eauto. Qed.
-
-(* Lemma contr_fn_iff_contr_fib : 
-  IsContrFn X Y f <-> forall y : B, IsContr (fib Y f y) (proj1_sig_relation X).
-Proof. esplit; typeclasses eauto. Qed. *)
 
 End Context.
