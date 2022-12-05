@@ -110,6 +110,9 @@ Qed.
 #[local] Instance Q2eq_is_equiv : IsEquiv Q2eq.
 Proof. split; typeclasses eauto. Qed.
 
+Equations K_dec (x y : list (Q * Q)) : list (list (Q * Q)) :=
+  K_dec x y := (** Tricky! *) [].
+
 Equations K (x y z : Ensemble (Q * Q)) : Prop :=
   K x y z := (** Tricky! *) False.
 
